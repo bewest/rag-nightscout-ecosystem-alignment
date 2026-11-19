@@ -2,10 +2,9 @@
 import datetime as dt,hashlib,json,os,re,socket,subprocess,sys,time
 from pathlib import Path
 from lifecycle_config import fixture_config
-import owned_worker
 control=fixture_config(Path(sys.argv[1]))
 d=Path(control['caseDirectory']); live=d/'runtime'
-src=Path(control['instrumentDirectory'])/'tools/mt-bench'; K=src/'kubernetes'
+K=Path(__file__).resolve().parent
 read=lambda f:json.loads(f.read_bytes())
 sha=lambda f:hashlib.sha256(f.read_bytes()).hexdigest()
 def write(p,v):p.write_text(json.dumps(v,indent=2)+'\n');p.chmod(0o600)
@@ -15,14 +14,15 @@ dl=read(live/'deadlines.json');until=dt.datetime.fromisoformat(dl['workUntil']).
 os.umask(0o077)
 base=Path(control['runTemplate']['path'])
 cfg=read(base)
-for key in ('pins','completion','workload'):cfg.pop(key,None)
+for key in ('pins','completion','workload','ordinaryRosterTenants'):cfg.pop(key,None)
 core=Path(control['coreRepository'])
 cfg['driver']['coreRepository']=str(core)
 k6=Path(control['k6'])
 cfg['driver'].update(k6=str(k6),k6Sha256=sha(k6));cfg['readonlyGuard']=str(Path(control['readonlyGuard']))
 cfg.update(context=e['context'],runId=e['runId'],namespace=ns,tenants=e['tenantCount'],deadlines={k:v.replace('+00:00','Z') for k,v in dl.items()},tenantsFile=str(live/'packet/primer/tenants.json'))
-if worker := control.get('ownedWorkerPreflight'):
-    cfg[owned_worker.FIELD] = {**worker['proof'], 'namespaceUid': uid}
+serving_stage = next((row for row in read(live/'stages.json') if row['stage'] == 'serving'), {})
+if 'monoMs' in serving_stage:
+    cfg['servingStartMonoMs'] = serving_stage['monoMs']
 def execute(label,args,deadline=1800):
     path=live/(label+'.log')
     remaining=min(deadline,until-time.time())
@@ -53,26 +53,7 @@ def observe_selected_bootstrap(packet, runtime, namespace_uid, adapter_cmd, exec
     execute('candidate-proof', adapter_cmd+['candidate-proof', packet])
     execute('policy', adapter_cmd+['policy', packet])
 
-if worker:
-    import kube_adapter as adapter
-    scoped = adapter.Client(cfg)
-    owner = scoped.get('namespace', ns)
-    metadata = owner['metadata']
-    adapter.need(metadata['name'] == ns and metadata['uid'] == uid and not metadata.get('deletionTimestamp')
-                 and metadata.get('labels', {}).get('nightscout.org/run-id') == e['runId'],
-                 'OWNED_WORKER_NAMESPACE_UID_CHANGED')
-    selected = worker['proof']['selection']
-    def roster(kind):
-        return json.loads(scoped.call(['get', kind, '--chunk-size=0', '-o', 'json']))
-    fixture = owned_worker.stage_pods(selected, ns, roster('pods'), roster('replicasets'),
-                                     read(live/'created.json'), adapter.need)
-    owned_worker.live(selected, worker['proof']['infrastructure'], fixture,
-                      lambda argv: json.loads(scoped.call(argv, owned_worker_view=True)), adapter.need)
-
 exp=[sys.executable,'-B',K/'experiment.py'];ad=[sys.executable,'-B',K/'adapter.py']
-fp=execute('source-settings',[cfg['driver']['node'],src/'m7-joined/fingerprint.cjs',core,e['sourceCommit'],live/'primer-config.private.json',str(e['tenantCount'])],30)
-# The source CLI may write legacy app initialization lines before its final JSON record.
-cfg['settingsFingerprint']=json.loads(fp.read_text().splitlines()[-1])['sha256']
 obj=read(live/'latest-edge.json');edge=obj['name'];edgeuid=obj['uid']
 kub=[cfg['kubectl'],'--context',cfg['context'],'-n',ns]
 def edge_id():return subprocess.check_output(kub+['get','pod',edge,'-o','jsonpath={.metadata.uid}'],timeout=12).decode()
@@ -89,15 +70,13 @@ try:
     else:raise RuntimeError('EDGE_FORWARD_UNAVAILABLE')
     assert edge_id()==edgeuid
     cfg['baseUrl']='http://127.0.0.1:'+match[1]
-    if control.get('resourcePhasePreflight'):
-        import phase_source_private
-        cfg['resourcePhasePlan']={'plan':control['resourcePhasePreflight']['plan'],
-                                  'retirement':ref(live/'provision-retirement.json'),
-                                  'privateSource':phase_source_private.write_scope(control,cfg,e,live)}
     write(live/'input.json',cfg)
     instance={'config':str(live/'input.json'),'inventory':str(d/'inventory.json'),'render':str(d/'render.json'),
               'bindingReceipt':ref(Path(control['bindingDirectory'])/'binding.json'),'delivery':control['delivery'],
               'roleDocuments':{role:str(live/(role+'-config.private.json')) for role in ('evaluator','realtime')}}
+    instance['roleDocuments']['nativeReceipt']=str(live/'native-receipt-source.private.json')
+    if (live/'platform-verification.json').exists():
+        instance['verificationProof']=ref(live/'platform-verification.json')
     if 'pgstreamNotifierAckTimeoutMs' in m:
         instance['producerAckReadback']=ref(live/'producer-ack-readback.json')
     if 'primerStorage' in m:
@@ -105,10 +84,9 @@ try:
     write(live/'instance.json',instance)
     execute('prepare',exp+['prepare',d/'intent.json',live/'instance.json',packet,'--await-primer'])
     observe_selected_bootstrap(packet, live, uid, ad, execute)
-    startup=control.get('startupWindowPreflight',{}).get('selectedSeconds',{})
     primer_args=[] if control.get('primerOptionsPreflight') else ['--concurrency',str(control['primerConcurrency'])]
     execute('prime',[sys.executable,'-B',K/'primer.py',packet,packet/'primer',*primer_args],
-            startup.get('dataPrimerSeconds',3600))
+            until-time.time())
     assert read(packet/'primer/result.json')['verdict']=='OBSERVED'
     # Capture read-only SQL independently of optional client measurements.
     try:execute('sql',ad+['observe-sql',packet,live/'sql'],120)
@@ -120,7 +98,15 @@ try:
     mode=cfg.get('resourceAccounting','limits-v1')
     assert mode in ('limits-v1','requests-v1') and pre['trialEnvelope'].get('resourceAccounting','limits-v1')==mode,'RESOURCE_ACCOUNTING_MISMATCH'
     group='requests' if mode=='requests-v1' else 'limits'
-    nodes={node:{'millicpus':round(total[group]['cpu']*1000),'memoryBytes':int(total[group]['memory']),'ephemeralBytes':int(total[group]['ephemeral-storage'])} for node,total in pre['trialEnvelope']['placementEnvelopes'].items()}
+    if control.get('schedulerPlacement'):
+        from scheduler_placement import confirm
+        placement = confirm(packet, control['bindingDirectory'])
+        write(live/'scheduler-placement.json', placement)
+        if not placement['fits']:
+            raise RuntimeError('K8S_SCHEDULER_FIT_REFUSED')
+        nodes = placement['nodeCeilings']
+    else:
+        nodes={node:{'millicpus':round(total[group]['cpu']*1000),'memoryBytes':int(total[group]['memory']),'ephemeralBytes':int(total[group]['ephemeral-storage'])} for node,total in pre['trialEnvelope']['placementEnvelopes'].items()}
     grant={'version':1,'status':'RELEASED','existingCapacityOnly':True,'context':cfg['context'],**cfg['deadlines'],
            'resourceAccounting':mode,
            'preflight':ref(d/'preflight.json'),'experimentSha256':sha(d/'intent.json'),'nodeCeilings':nodes,

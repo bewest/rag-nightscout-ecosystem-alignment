@@ -69,7 +69,7 @@ class DiscoveryReporting(unittest.TestCase):
    (d/'tenants.private.json').write_text('[]')
   m={'pair':{'core':'a'*40,'deploy':'b'*40},'imageId':'sha256:'+'c'*64,'instrument':{},'tenants':2,'cadence':self.selected(2)['workload']['cadence']};out=d/'load';out.mkdir();(out/'runid').write_text('synthetic')
   if frame_error:(out/'fanout.json').write_text(json.dumps({'probeWrites':{'byTenant':{}}}))
-  with patch.object(app.a,'verify',side_effect=source_error),patch.object(app,'load'),patch.object(app.a.profile_provenance,'fingerprint_check',return_value={'verdict':'UNMEASURED'}),patch.object(discovery,'count_observation',return_value=({'verdict':'GREEN'},True),side_effect=counts),patch('clinical.completed',return_value={'verdict':'PASS'},side_effect=clinical_error),patch('viewer_plan.check',side_effect=frame_error),patch.object(app,'measurements',side_effect=RuntimeError('missing optional')):
+  with patch.object(app.a,'verify',side_effect=source_error),patch.object(app,'load'),patch.object(discovery,'count_observation',return_value=({'verdict':'GREEN'},True),side_effect=counts),patch('clinical.completed',return_value={'verdict':'PASS'},side_effect=clinical_error),patch('viewer_plan.check',side_effect=frame_error),patch.object(app,'measurements',side_effect=RuntimeError('missing optional')):
    return app.discovery_summary(d,m,self.selected(2),{'prime':{'primed':0},**({'window':{'writes':1}}if frame_error else{})}, {'metrics':{}})
  def test_hard_clinical_and_frame_errors_remain_fail_and_missing_clinical_stays_unknown(self):
   for kwargs,code in [({'clinical_error':RuntimeError('REMOTE_CLINICAL_WRONG_DATA')},'REMOTE_CLINICAL_WRONG_DATA'),({'frame_error':RuntimeError('M7_VIEWER_FRAME_WRONG_DATA')},'M7_VIEWER_FRAME_WRONG_DATA')]:

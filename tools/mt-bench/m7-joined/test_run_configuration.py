@@ -221,7 +221,7 @@ class Controls(unittest.TestCase):
 
     def test_record_retains_truthful_acceptance_scope(self):
         from profile_provenance import identity,selection
-        PROFILE=identity({'schema':1,'sha256':'f'*64,'sourceCommit':'a'*40,'sourceBlobs':{}},selection(),
+        PROFILE=identity(selection(),
             {'services':{'api':{},'vault':{'command':['vault','server']},'realtime':{},'evaluator':{}}})
         cfg=config();cfg['prepare'].update({'core-commit':'a'*40,'deploy-commit':'b'*40})
         m,r=packet(cfg)

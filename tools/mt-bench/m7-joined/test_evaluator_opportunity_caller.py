@@ -39,8 +39,9 @@ class Caller(unittest.TestCase):
                              'identity':'7'*64,'digest':'8'*64,'revision':str(revision),'generation':None,'enabled':True,'arrayBounds':True,'bodyMetadataAbsent':True}}
         return d,out,m,row
 
-    def exercise(self,*,stale=False,missing=False,health=False,initial=False,malformed=False,phase="load",timing=False):
+    def exercise(self,*,stale=False,missing=False,health=False,initial=False,malformed=False,phase="load",timing=False,allocation=None):
         d,out,m,row=self.fixture();sql_calls=[];rpc_calls=[]
+        if allocation is not None:m['cadence']['opportunityObservation']=allocation
         m['cadence']['idleSeconds']=0
         due=int(time.time()*1000)-1000
         def sql(directory,query,database,**kwargs):
@@ -61,7 +62,7 @@ class Caller(unittest.TestCase):
             if stale and step==2:rows[0]['typed']['completed'][0]='11';rows[0]['state']['completed']['clock']='11'
             if missing and step==1:rows.pop(0)
             return '\n'.join(json.dumps(r) for r in rows)+'\n'
-        def rpc(directory,service,*args):
+        def rpc(directory,service,*args,**options):
             step=len(rpc_calls);rpc_calls.append(step);frame=fixtures.Progress().frame()
             frame['observedAt']=int(time.time()*1000)
             for r in frame['view']['tenants']:
@@ -177,15 +178,18 @@ class Caller(unittest.TestCase):
         self.assertEqual(proof['failedCollection']['diagnostic']['failedRow']['alert'],'SYNTHETIC_CLINICAL_FAILURE')
         self.assertIsNone(self.exercise()[4],'restored actual observer remains healthy')
 
-    def test_unclassified_counter_is_retained_and_reset_refuses(self):
-        # The former HIDDEN_FAILURE assertion treated rejected/superseded
-        # attempts as clinical failures. Preserve the count and its uncertainty.
-        _,out,_,_,error,_,_=self.exercise(health='counter');self.assertIsNone(error)
-        attempts=a.document(out/'evaluator-progress.json')['uncreditedAttempts']
-        self.assertEqual(attempts['uncreditedAttemptDelta'],1)
-        self.assertEqual(attempts['causeAttribution'],'UNMEASURED')
+    def test_untyped_counter_is_hard_at_midpoint_and_reset_refuses(self):
+        # Decision outcome-evaluator-gate: until the source emits typed reasons
+        # every failed completion is untyped, hence hard. The midpoint stops.
+        _,out,_,_,error,_,_=self.exercise(health='counter')
+        self.assertEqual(str(error),'M7_OUTCOME_MIDPOINT_HARD');self.assertEqual(error.verdict,'FAIL')
+        signal=a.document(out/'evaluator-midpoint-signal.json')
+        self.assertEqual(signal['action'],'stop');self.assertIn('M7_OUTCOME_UNTYPED_FAILURE',signal['reason'])
+        self.assertTrue(sorted((out/'evaluator-progress-raw').glob('load-01-*.private.jsonl')),'raw midpoint response not retained')
+        # The reset fixture raises the counter at the midpoint before rewinding
+        # it; that untyped failure is now the first hard reason and stops.
         _,out,_,_,error,_,_=self.exercise(health='reset')
-        self.assertEqual(str(error),'M7_EVALUATOR_PROGRESS_RESET');self.assertEqual(error.verdict,'FAIL')
+        self.assertEqual(str(error),'M7_OUTCOME_MIDPOINT_HARD');self.assertEqual(error.verdict,'FAIL')
         self.assertEqual(a.document(out/'evaluator-progress.json')['verdict'],'FAIL')
         self.assertIsNone(self.exercise()[4])
 
@@ -215,6 +219,23 @@ class Caller(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'PROFILE_UNSUPPORTED'):
             a.select_opportunities(argparse.Namespace(evaluator_opportunities='wrong-contract'),m)
         with self.assertRaisesRegex(RuntimeError,'PROFILE_UNSUPPORTED'):a.select_opportunities(argparse.Namespace(evaluator_opportunities=o.CONTRACT),{'profile':'capacity'})
+
+    def test_frozen_observer_budget_verified_independently_and_legacy_artifacts_keep_original_bound(self):
+        selected = {'sqlMaxBytes': 26214400, 'roundSeconds': 90}
+        _,out,_,_,error,_,_ = self.exercise(allocation=selected)
+        self.assertIsNone(error)
+        proof = a.document(out/'evaluator-progress.json')
+        self.assertEqual(proof['opportunityBudget'], o.round_budget(2, selected))
+        self.assertEqual(o.verify(proof,2,['evaluator'],BINDING,opportunity_budget=selected)['verdict'],'PASS')
+        with self.assertRaisesRegex(p.Refused,'BUDGET_CHANGED'):
+            o.verify(proof,2,['evaluator'],BINDING)
+        del proof['opportunityBudget']
+        with self.assertRaisesRegex(p.Refused,'BUDGET_CHANGED'):
+            o.verify(proof,2,['evaluator'],BINDING,opportunity_budget=selected)
+        self.assertEqual(o.verify(proof,2,['evaluator'],BINDING)['verdict'],'PASS')
+        proof['durableCollectorCost']['rounds'][0]['rawSqlBytes'] = o.ROUND_BYTES + 1
+        with self.assertRaisesRegex(p.Refused,'BYTE_BOUND'):
+            o.verify(proof,2,['evaluator'],BINDING)
 
     def test_actual_capture_byte_and_deadline_bounds_refuse_before_decoding_or_querying(self):
         d,_,m,_=self.fixture();collector=a.opportunity_collector(d,m,[A,B])

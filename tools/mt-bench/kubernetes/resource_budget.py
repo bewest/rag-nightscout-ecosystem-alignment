@@ -46,57 +46,70 @@ def quantity(value, cpu, need):
     return int(exact_quantity(value, cpu, need).to_integral_value(rounding=ROUND_CEILING))
 
 
-def equivalent_quantities(expected, actual, need):
-    """Compare exact resource values while retaining the declared dimension set."""
-    if not isinstance(expected, dict) or not isinstance(actual, dict) or set(expected) != set(actual):
-        return False
-    if not set(expected) <= {resource for resource, _ in DIMENSIONS}:
-        return False
-    return all(exact_quantity(expected[key], key == 'cpu', need) ==
-               exact_quantity(actual[key], key == 'cpu', need) for key in expected)
+def quota_spec_matches(expected, actual):
+    """Accept canonical quantity spellings only when the quota is exactly equal.
 
-
-def equivalent_resources(expected, actual, need):
-    """Only absent and empty limits share an unbounded meaning; no cap is dropped."""
+    Unlike Pod resource observations, this quota enforces the declared budget.
+    Compare exact Decimal values without scheduling's round-up, retain every
+    hard-map key and compare all other fields unchanged. Unknown dimensions and
+    masked values get no projection or inferred equality.
+    """
     if not isinstance(expected, dict) or not isinstance(actual, dict):
         return False
-    if not set(expected) <= {'requests', 'limits'} or not set(actual) <= {'requests', 'limits'}:
+    wanted, got = expected.get('hard'), actual.get('hard')
+    if not isinstance(wanted, dict) or not isinstance(got, dict) or wanted.keys() != got.keys():
         return False
-    def groups(value):
-        return {key for key in value if key != 'limits' or value[key] != {}}
-    keys = groups(expected)
-    return keys == groups(actual) and all(
-        equivalent_quantities(expected[key], actual[key], need) for key in keys)
+    quantities = {prefix + resource: resource == 'cpu'
+                  for resource, _ in DIMENSIONS for prefix in ('', 'requests.', 'limits.')}
+    value = copy.deepcopy(actual)
+    def require(ok, _code):
+        if not ok:
+            raise ValueError('invalid quantity')
+    for name in wanted.keys() & quantities.keys():
+        try:
+            if exact_quantity(wanted[name], quantities[name], require) != exact_quantity(got[name], quantities[name], require):
+                return False
+        except ValueError:
+            return False
+        value['hard'][name] = wanted[name]
+    return expected == value
 
 
-def readback_projection(expected, actual, need):
-    """Project equivalent API quantity spellings for comparison, never observation.
+def readback_projection(expected, actual, need=None):
+    """Project the rendered resources onto a copy of a read-back Pod spec.
 
-    Kubernetes canonicalizes quantities. Preserve actual raw objects and replace
-    only resource fields in this comparison copy after exact equivalence checks.
+    Kubernetes defaults and canonicalizes resources (LimitRange defaults, Pod
+    overhead from a RuntimeClass, quantity spelling). Quota, LimitRange and the
+    scheduler enforce the budget, so the readback records what Kubernetes holds
+    (``observed``) and never refuses on it. The rest of the spec is still
+    compared by the caller. ``need`` is accepted for old callers and unused.
     """
     value = copy.deepcopy(actual)
-    need(actual.get('resources', {}) == expected.get('resources', {}) and
-         not actual.get('resources') and not expected.get('resources'), 'POD_BUDGET_CHANGED')
-    need(equivalent_quantities(expected.get('overhead', {}), actual.get('overhead', {}), need),
-         'POD_BUDGET_CHANGED')
+    value.pop('resources', None)
+    if 'resources' in expected:
+        value['resources'] = copy.deepcopy(expected['resources'])
+    value.pop('overhead', None)
     if 'overhead' in expected:
         value['overhead'] = copy.deepcopy(expected['overhead'])
-    else:
-        value.pop('overhead', None)
     for section in ('containers', 'initContainers'):
-        want, got = expected.get(section, []), actual.get(section, [])
-        need(isinstance(want, list) and isinstance(got, list) and len(want) == len(got), 'POD_SPEC_CHANGED')
-        for index, (left, right) in enumerate(zip(want, got)):
-            need(left.get('name') == right.get('name') and
-                 left.get('restartPolicy') == right.get('restartPolicy') and
-                 equivalent_resources(left.get('resources', {}), right.get('resources', {}), need),
-                 'POD_BUDGET_CHANGED')
+        want, got = expected.get(section, []), value.get(section, [])
+        if not isinstance(want, list) or not isinstance(got, list):
+            continue
+        for left, right in zip(want, got):
+            if not isinstance(left, dict) or not isinstance(right, dict):
+                continue
+            right.pop('resources', None)
             if 'resources' in left:
-                value[section][index]['resources'] = copy.deepcopy(left['resources'])
-            else:
-                value[section][index].pop('resources', None)
+                right['resources'] = copy.deepcopy(left['resources'])
     return value
+
+
+def observed(spec):
+    """The resources Kubernetes holds for a Pod spec, recorded as read."""
+    return {'containers': {c.get('name'): c.get('resources', {})
+                           for c in spec.get('containers', []) + spec.get('initContainers', [])},
+            **({'overhead': spec['overhead']} if 'overhead' in spec else {}),
+            **({'podResources': spec['resources']} if 'resources' in spec else {})}
 
 
 def validate_container(container, mode, need):

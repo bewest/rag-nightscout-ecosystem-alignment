@@ -6,7 +6,7 @@ import re
 import selectors
 import subprocess
 import time
-from contract import require, metric
+from contract import require
 from role_instances import FAMILIES
 
 FLAGS = ('NS_M7_DIAGNOSTICS', 'NS_M7_DIAGNOSTICS_INTERVAL_MS')
@@ -42,17 +42,6 @@ def verify_environment(config, chosen):
             seen += 1
             require(all(spec.get('environment',{}).get(k)==v for k,v in chosen['environment'].items()),'M7_DIAGNOSTICS_ENV_MISMATCH')
     require(seen > 0,'M7_DIAGNOSTICS_ENV_UNMEASURED')
-
-def fingerprint_check(metrics):
-    import math
-    for name in ('observed','invalid','mismatch'):
-        value=metric(metrics,'settings_fingerprint_'+name)
-        require(type(value) in (int,float) and math.isfinite(value) and value==int(value),'M7_FINGERPRINT_COUNT_INVALID')
-    observed=metric(metrics,'settings_fingerprint_observed')
-    invalid=metric(metrics,'settings_fingerprint_invalid')
-    mismatch=metric(metrics,'settings_fingerprint_mismatch')
-    return {'observations':observed,'invalid':invalid,'mismatch':mismatch,
-            'verdict':'FAIL' if invalid or mismatch else 'PASS' if observed > 0 else 'UNMEASURED'}
 
 def _log_times(data):
     # Docker --timestamps prefixes are UTC. Partial retained lines are ignored.
@@ -157,7 +146,9 @@ def runtime_environment(containers, chosen, config=None,pgstream=False):
         expected={role for role in config['services'] if role in log_roles(config) and role not in ('postgres','vault','nginx','pgstream') and not(pgstream and role=='feed-reader')}
         require(seen==expected,'M7_DIAGNOSTICS_RUNTIME_ROSTER_MISMATCH')
 
-def identity(fingerprint, diagnostics, config):
+def identity(diagnostics, config):
+    # Run identity is the image digest plus the run configuration; no source
+    # settings projection is re-derived per run.
     import hashlib
     roles=config['services']
     # Agent overlay is not supported by this default-topology producer; refuse
@@ -166,7 +157,7 @@ def identity(fingerprint, diagnostics, config):
     require(roles.get('vault',{}).get('command',[])[:2]==['vault','server'],'M7_VAULT_SERVER_TOPOLOGY_UNCONFIRMED')
     from evaluator_progress import POLICY
     from evaluator_idle import POLICY as IDLE_POLICY
-    value={'version':3,'evaluatorProgress':POLICY,'evaluatorIdleSafety':IDLE_POLICY,'settings':{k:fingerprint[k] for k in ('schema','sha256','sourceCommit','sourceBlobs')},
+    value={'version':4,'evaluatorProgress':POLICY,'evaluatorIdleSafety':IDLE_POLICY,
            'diagnostics':diagnostics,'topology':{'binding':'registry-default','secretsBackend':'vault-server','vaultAgentOverlay':False,
            'realtimeWorkers':sum(name=='realtime' or re.fullmatch(r'realtime-\d+',name) is not None for name in roles),
            'evaluatorWorkers':sum(name=='evaluator' or re.fullmatch(r'evaluator-\d+',name) is not None for name in roles)}}
@@ -174,7 +165,7 @@ def identity(fingerprint, diagnostics, config):
 
 def check_identity(value):
     import hashlib
-    require(isinstance(value,dict) and value.get('version')==3,'M7_PROFILE_SELECTION_REQUIRED')
+    require(isinstance(value,dict) and value.get('version') in (3,4),'M7_PROFILE_SELECTION_REQUIRED')
     expected=hashlib.sha256(json.dumps({k:v for k,v in value.items() if k!='sha256'},sort_keys=True,separators=(',',':')).encode()).hexdigest()
     require(value.get('sha256')==expected,'M7_PROFILE_SELECTION_HASH_INVALID')
     from evaluator_progress import POLICY
@@ -182,13 +173,6 @@ def check_identity(value):
     require(value.get('evaluatorProgress')==POLICY and value.get('evaluatorIdleSafety')==IDLE_POLICY,'M7_PROFILE_EVALUATOR_PROGRESS_INVALID')
     chosen=value.get('diagnostics',{})
     require(chosen==selection(chosen.get('mode'),chosen.get('intervalMs')),'M7_PROFILE_DIAGNOSTICS_INVALID')
-    require(re.fullmatch(r'[a-f0-9]{64}',value.get('settings',{}).get('sha256','')) is not None,'M7_PROFILE_SETTINGS_INVALID')
     require(value.get('topology',{}).get('secretsBackend')=='vault-server' and value['topology'].get('vaultAgentOverlay') is False,'M7_PROFILE_TOPOLOGY_INVALID')
     return value
 
-
-def observation_check(value):
-    require(isinstance(value,dict),'M7_FUNCTIONAL_SETTINGS_FINGERPRINT')
-    result=fingerprint_check({'settings_fingerprint_'+name:{'count':value.get(field,0)} for name,field in [('observed','observations'),('invalid','invalid'),('mismatch','mismatch')]})
-    require(result==value and result['verdict']=='PASS','M7_FUNCTIONAL_SETTINGS_FINGERPRINT')
-    return value

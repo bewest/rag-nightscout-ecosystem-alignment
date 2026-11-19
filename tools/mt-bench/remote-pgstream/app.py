@@ -166,7 +166,7 @@ def export_traffic(cell, spec):
     need({f.name for f in out.iterdir() if f.is_file()} == set(TRAFFIC_FILES), 'EXTERNAL_TRAFFIC_EXPORT_ALLOWLIST')
     descriptor = {'version': 1, 'profile': b['profile'], 'binding': b, 'generator': m['generator'],
                   'evaluatorIdleSafety':a.evaluator_idle.POLICY,'evaluatorIdleArtifact':a.evaluator_idle.ARTIFACT_KIND,'sqlSnapshotTiming':'existing-query-request-brackets-v1',
-                  'settingsFingerprint': m['settingsFingerprint']['sha256'], 'trafficRunId': 'm7-' + m['owner'][:12], 'probe': generated,
+                  'trafficRunId': 'm7-' + m['owner'][:12], 'probe': generated,
                   'files': {f.name: a.digest(f) for f in out.iterdir() if f.is_file()}}
     write(out / 'traffic.json', descriptor)
     return descriptor
@@ -242,8 +242,6 @@ def summarize(d, m, b, idle_result, load_result, recovered, health_result, resta
     from clinical import completed
     clinical = completed(d, m)
     load(d, b)  # Recheck actual NIC and admission before final qualification.
-    fingerprint = a.profile_provenance.fingerprint_check(k6['metrics'])
-    need(fingerprint['verdict'] == 'PASS', 'EXTERNAL_SETTINGS_FINGERPRINT')
     oracle = a.count_oracle(d)
     a.control(d, m)
     need(not any(not row['owned'] for row in a.inventory(m['owner'])['containers']), 'EXTERNAL_FOREIGN_ACTIVE_CONTAINERS')
@@ -254,7 +252,7 @@ def summarize(d, m, b, idle_result, load_result, recovered, health_result, resta
     result = {'version': 1, 'kind': 'remote-pgstream-calibration-cell', 'profile': b['profile'], 'binding': b,
               'pair': m['pair'], 'imageId': m['imageId'], 'baseInstrument': m['instrument'],
               'externalInstrument': source_identity(HERE), 'profileSelection': m['profileSelection'],
-              'settingsFingerprintObservation': fingerprint, 'tenants': m['tenants'], 'verdict': 'PASS',
+              'tenants': m['tenants'], 'verdict': 'PASS',
               'capacityAcceptance': 'NOT_GRANTED', 'topologyQualification': 'REQUIRES_REVIEWED_LIVE_SMOKE',
               'observerProfile': {'evaluatorIdleSafety':a.evaluator_idle.POLICY,'evaluatorIdleArtifact':a.evaluator_idle.ARTIFACT_KIND,'sqlSnapshotTiming':'existing-query-request-brackets-v1','idleTailScope':'point completion outside original metric window; no global tail quiescence', 'perWriteSqlLatencyPolling': 'NOT_RUN', 'strictServerProgress': 'UNCHANGED', 'loadQueryCostComparison': 'placement and observer changes; not placement-only'},
               'metricsAvailability': {'writeToFrameMs': 'generator-monotonic-clock', 'writeToEvaluationMs': 'UNMEASURED',
@@ -316,8 +314,6 @@ def discovery_summary(d,m,b,probe,k6):
             else:need(not discovery.hard_recovery(observed),'REMOTE_DISCOVERY_CLINICAL_FAILURE')
             result['strictChecks'][stage]={k:observed[k] for k in ('verdict','code') if k in observed}
         metrics=k6.get('metrics',{})
-        result['settingsFingerprintObservation']=a.profile_provenance.fingerprint_check(metrics)
-        need(result['settingsFingerprintObservation']['verdict']!='FAIL','EXTERNAL_SETTINGS_FINGERPRINT')
         try:
             counts,known=discovery.count_observation(a,d,out,(out/'runid').read_text().strip(),metrics)
             result['oracleFindings']=counts;result['oracle']=counts if known else None

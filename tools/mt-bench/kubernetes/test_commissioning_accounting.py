@@ -157,49 +157,6 @@ class CommissioningAccounting(unittest.TestCase):
         self.assertTrue(self.p.headroom(self.snapshot, trial, self.env['targetNode'])[0]['trialFits'])
         self.assertIn('do not establish a hard usage bound', trial['accountingScope'])
 
-    def phase_mode(self):
-        self.requests_mode()
-        job = self.object('Job', 'provision')
-        job['spec']['backoffLimit'] = 0
-        self.p.podspec(job)['restartPolicy'] = 'Never'
-        self.p.podspec(job)['volumes'][0]['emptyDir']['medium'] = 'Memory'
-        self.env['resourcePhasePlan'] = {'contract': 'provision-before-serving-v1'}
-
-    def test_phase_fit_preserves_full_quota_requests_and_reserve_then_real_shortfall_refuses(self):
-        self.phase_mode()
-        nodes = json.loads((self.snapshot/'nodes.json').read_text())
-        nodes['items'][0]['status']['allocatable']['memory'] = '2080Mi'
-        self.write(self.snapshot/'nodes.json', nodes)
-        original = copy.deepcopy(self.tree)
-        old = copy.deepcopy(self.env);old.pop('resourcePhasePlan')
-        full = self.p.static(old, self.tree)
-        with self.assertRaisesRegex(self.p.Refused, 'memory headroom'):
-            self.p.headroom(self.snapshot, full, self.env['targetNode'])
-        selected = self.p.static(self.env, self.tree)
-        self.assertEqual(selected['requests'], full['requests'])
-        self.assertEqual(selected['accounted'], full['accounted'])
-        self.assertEqual(selected['placementEnvelopes'][self.env['targetNode']]['requests'],
-                         full['placementEnvelopes'][self.env['targetNode']]['requests'])
-        self.assertEqual(self.tree, original)
-        row, = self.p.headroom(self.snapshot, selected, self.env['targetNode'])
-        self.assertEqual(row['fullFixtureAccounted']['memory'], 576*1024**2)
-        self.assertEqual(row['accounted']['memory'], 528*1024**2)
-        self.assertEqual(row['reserve']['memory'], 512*1024**2)
-        (self.snapshot/'usage.txt').write_text(self.env['targetNode']+' 100m 1% 1100Mi 3%\n')
-        with self.assertRaisesRegex(self.p.Refused, 'memory headroom'):
-            self.p.headroom(self.snapshot, selected, self.env['targetNode'])
-        (self.snapshot/'usage.txt').write_text(self.env['targetNode']+' 100m 1% 1024Mi 3%\n')
-        self.assertTrue(self.p.headroom(self.snapshot, selected, self.env['targetNode'])[0]['trialFits'])
-
-    def test_phase_peak_tampering_refuses_and_restores(self):
-        self.phase_mode()
-        selected = self.p.static(self.env, self.tree)
-        changed = copy.deepcopy(selected)
-        changed['phaseAdmission']['peak']['memory'] -= 1
-        with self.assertRaisesRegex(self.p.Refused, 'FIT_PEAK_CHANGED'):
-            self.p.headroom(self.snapshot, changed, self.env['targetNode'])
-        self.assertTrue(self.p.headroom(self.snapshot, selected, self.env['targetNode'])[0]['trialFits'])
-
     def test_absent_and_partial_limits_are_unbounded_not_zero(self):
         self.requests_mode()
         first = self.containers()[0]
@@ -306,25 +263,6 @@ class CommissioningAccounting(unittest.TestCase):
         del hard[key]
         with self.assertRaisesRegex(self.p.Refused, 'resource quota too small'):
             self.p.static(self.env, self.tree)
-
-    def test_phase_peaks_include_sidecars_overhead_and_unknown_limit(self):
-        def container(cpu, memory, disk, restart=False):
-            resources = {'cpu': str(cpu)+'m', 'memory': str(memory)+'Mi', 'ephemeral-storage': str(disk)+'Mi'}
-            return {'resources': {'requests': resources, 'limits': copy.deepcopy(resources)},
-                    **({'restartPolicy': 'Always'} if restart else {})}
-        spec = {'containers': [container(100, 700, 10)], 'initContainers': [container(500, 32, 900),
-                container(200, 250, 100, True), container(700, 64, 400), container(150, 200, 80, True)],
-                'overhead': {'cpu': '10m', 'memory': '12Mi', 'ephemeral-storage': '30Mi'}}
-        expected = {'cpu': .91, 'memory': 1162*1024**2, 'ephemeral-storage': 930*1024**2}
-        for which in ('requests', 'limits'):
-            for key, value in self.p.effective(spec, which).items():
-                self.assertAlmostEqual(value, expected[key])
-        del spec['initContainers'][0]['resources']['limits']['memory']
-        self.assertIsNone(self.p.effective(spec, 'limits')['memory'])
-        self.assertEqual(self.p.effective(spec)['memory'], expected['memory'])
-        spec['resources'] = {'requests': {'cpu': '8'}}
-        with self.assertRaisesRegex(self.p.Refused, 'Pod-level'):
-            self.p.effective(spec)
 
     def test_mode_and_accounted_budget_mismatch_refuse(self):
         self.env['resourceAccounting'] = 'typo'

@@ -7,19 +7,24 @@ import re
 import subprocess
 import sys
 from producer_startup import cohort_ready_seconds
-sys.path.append(str(Path(__file__).resolve().parent.parent/'m7-joined'))
+sys.path.insert(1, str(Path(__file__).resolve().parent.parent/'m7-joined'))
 import workload_inputs
 import primer_options
 import population_ceiling
-import phase_fit
-import owned_worker
+import application_topology
 
 FIELDS = {'version','caseDirectory','instrumentDirectory','instrumentSha256','bindingDirectory',
           'toolsDirectory','snapshotDirectory','cacheAbsence','runTemplate','delivery','coreRepository',
           'k6','readonlyGuard','observerScript','nativeLimits','primerConcurrency','edgePort','pullSecretCommand','inputs',
-          'startupWindowPreflight','resourcePhasePreflight','primerOptionsPreflight',
-          'ownedWorkerPreflight','populationCeilingPreflight'}
+          'startupWindowPreflight','primerOptionsPreflight',
+          'populationCeilingPreflight','schedulerPlacement','capturedSourceCommit'}
 STAGES = ('namespace','cluster-trust','foundation','stores','provision','private-admin','primer','serving')
+
+def stages_for(inventory):
+    if 'verification' in inventory.get('workloads', {}):
+        return (*STAGES, 'verification')
+    return STAGES
+
 
 def need(ok, code):
     if not ok: raise ValueError('K8S_LIFECYCLE_' + code)
@@ -50,12 +55,24 @@ def startup_preflight(intent, environment, objects):
         if kind not in ('Job','Deployment','StatefulSet'):
             continue
         spec=obj['spec'];pod=spec['template']['spec']
+        if kind=='Job' and name=='primer' and 'primerReadySeconds' in authored:
+            values=[env.get('value') for actor in pod.get('initContainers',[]) if actor['name']=='primer'
+                    for env in actor.get('env',[]) if env['name']=='NS_PRIMER_STALL_SECONDS']
+            need(values==[str(selected['primerReadySeconds'])], 'PRIMER_STALL_WINDOW_CHANGED')
         native[kind+'/'+name]={'activeDeadlineSeconds':spec.get('activeDeadlineSeconds'),
             'containers':{actor['name']:{probe:{key:actor[probe][key] for key in probe_fields if key in actor[probe]}
                                          for probe in ('startupProbe','readinessProbe') if probe in actor}
                           for actor in pod.get('initContainers',[])+pod['containers']}}
-    return {'selectedSeconds':selected,'authoredFields':sorted(set(authored)|({'cohortReadySeconds'} if 'cohortReadySeconds' in phases else set())),
+    return {**({application_topology.FIELD:application_topology.selection(intent,need)}
+               if application_topology.FIELD in intent else {}),
+            'selectedSeconds':selected,'authoredFields':sorted(set(authored)|({'cohortReadySeconds'} if 'cohortReadySeconds' in phases else set())),
             'workDeadlineSeconds':environment['workDeadlineSeconds'],'native':native}
+
+def helper_directory(config):
+    root = Path(config['instrumentDirectory'])
+    need(root.is_absolute(), 'INSTRUMENT_DIRECTORY')
+    return root.resolve() / 'tools/mt-bench/kubernetes'
+
 
 def fixture_config(path, capture=False):
     c=read(path)
@@ -64,12 +81,21 @@ def fixture_config(path, capture=False):
         need(Path(c[key]).is_absolute() and Path(c[key]).is_dir(), 'DIRECTORY')
     for key in ('k6','readonlyGuard','observerScript'):
         need(Path(c[key]).is_absolute() and Path(c[key]).is_file(), 'TOOL')
+    need(helper_directory(c) == Path(__file__).resolve().parent, 'INSTRUMENT_DIRECTORY_MISMATCH')
+    from kube_adapter import instrument
+    identity = instrument()['sha256']
+    need(c.get('instrumentSha256', identity if capture else None) == identity, 'INSTRUMENT_CHANGED')
+    c['instrumentSha256'] = identity
     limits=c['nativeLimits'];need(set(limits)=={'millicpus','memoryBytes'} and all(type(x)is int and x>0 for x in limits.values()), 'FINITE_NATIVE_LIMITS')
     need(type(c.get('edgePort',8080))is int and 1<=c.get('edgePort',8080)<=65535,'EDGE_PORT')
     if c.get('pullSecretCommand') is not None:
         need(isinstance(c['pullSecretCommand'],list) and c['pullSecretCommand'] and
              all(isinstance(x,str) and x and '\x00' not in x for x in c['pullSecretCommand']), 'PULL_COMMAND')
-    files=[reference(c[key]) for key in ('runTemplate','delivery','cacheAbsence')]
+    scheduler = c.get('schedulerPlacement', False)
+    need(type(scheduler) is bool, 'SCHEDULER_PLACEMENT')
+    files=[reference(c[key]) for key in ('runTemplate','delivery')]
+    if not scheduler:
+        files.append(reference(c['cacheAbsence']))
     d=Path(c['caseDirectory']);e=read(d/'environment.json');m=read(d/'intent.json');pre=read(d/'preflight.json')
     primer = primer_options.from_profile(m['profile'],need)
     population=population_ceiling.from_profile(m['profile'],need)
@@ -84,8 +110,14 @@ def fixture_config(path, capture=False):
     need(re.fullmatch(r'[a-z0-9][a-z0-9-]{0,62}',e['runId']) and e['runId']==d.name and e['namespace'].startswith('ns-synth-'), 'INSTANCE_IDENTITY')
     need(e['tenantCount']==m['profile']['population']['provisionedTenants'], 'POPULATION')
     need(pre.get('commissioning')=='PREFLIGHT_ONLY' and pre['experiment']['renderSha256']==sha(d/'render.json'), 'PREFLIGHT')
+    need(scheduler == (pre.get('trialEnvelope', {}).get('placementMode') == 'scheduler'),
+         'SCHEDULER_PREFLIGHT_CHANGED')
     need(all(limits[k]<=m['profile']['proposedEnvelope']['nativeLimits'][k] for k in limits), 'ALLOCATION_EXCEEDED')
     template=read(c['runTemplate']['path'])
+    inventory=read(d/'inventory.json')
+    need(m.get('nativeLoad') == template.get('nativeLoad') == inventory.get('nativeLoad'),
+         'NATIVE_LOAD_SELECTION_CHANGED')
+    application_topology.bind(m,template,inventory,need)
     mode=template.get('resourceAccounting','limits-v1')
     need(mode in ('limits-v1','requests-v1') and mode==e.get('resourceAccounting','limits-v1') and
          mode==pre.get('trialEnvelope',{}).get('resourceAccounting','limits-v1') and
@@ -93,21 +125,20 @@ def fixture_config(path, capture=False):
     need(all(sum(template[a]['resources'][k] for a in ('driver','observer'))<=limits[k] for k in limits),'ALLOCATION_EXCEEDED')
     need(template['driver']['hostId']==template['observer']['hostId'], 'NATIVE_HOST')
     need(e['workDeadlineSeconds']>0 and e['cleanupDeadlineSeconds']>e['workDeadlineSeconds'] and e['provisionDeadlineSeconds']>0,'DEADLINES')
-    core=subprocess.check_output(['git','-C',c['coreRepository'],'rev-parse','HEAD'],text=True).strip()
-    need(core==e['sourceCommit'],'SOURCE_CHANGED')
-    instrument=Path(c['instrumentDirectory'])/'tools/mt-bench/kubernetes/adapter.py'
-    identity=json.loads(subprocess.check_output([sys.executable,'-B',instrument,'identity']))
-    need(identity['sha256']==c['instrumentSha256'],'INSTRUMENT_CHANGED')
+    # Run identity is the image digest plus this configuration. Source heads,
+    # tools and binding file hashes are recorded at capture.
     package=Path(c['bindingDirectory']);binding=read(package/'binding.json')
     authored_startup=m['profile'].get('phases',{}).get('startupWindows',{}).get('kubernetes',{})
-    if 'pgstreamNotifierAckTimeoutMs' in m or 'primerStorage' in m or 'jobCompleteSeconds' in authored_startup or primer is not None or population is not None:
+    if 'verification' in inventory.get('workloads', {}) or 'pgstreamNotifierAckTimeoutMs' in m or 'primerStorage' in m or 'jobCompleteSeconds' in authored_startup or primer is not None or population is not None:
         files.append(package/'binding.json')
     for name,expected in binding['files'].items():
         p=package/'bindings/kubernetes'/name
-        need(p.is_relative_to(package) and sha(p)==expected,'BINDING_CHANGED');files.append(p)
+        need(p.is_relative_to(package),'BINDING_CHANGED');files.append(p)
     files += [d/(name+'.json') for name in ('environment','intent','inventory','render','preflight')]
     rendered=[]; stage_objects={}
-    for stage in STAGES:
+    stages = stages_for(inventory)
+    split = 'verification' in stages
+    for stage in stages:
         p=d/'stages'/(stage+'.json');files.append(p)
         stage_objects[stage]=read(p)['items']
         for obj in stage_objects[stage]:
@@ -116,37 +147,17 @@ def fixture_config(path, capture=False):
             need(kind in ('Namespace','ClusterRoleBinding','ConfigMap','Service','Secret','ServiceAccount','Role','RoleBinding','NetworkPolicy','ResourceQuota','LimitRange','Deployment','StatefulSet','Job'),'RESOURCE_UNSUPPORTED')
             need(kind in ('Namespace','ClusterRoleBinding') or meta['namespace']==e['namespace'],'STAGE_NAMESPACE')
             need(kind!='Service' or obj['spec'].get('type','ClusterIP')=='ClusterIP','NEW_BILLABLE_RESOURCE')
+            if scheduler and kind in ('Deployment','StatefulSet','Job'):
+                need(not obj['spec']['template']['spec'].get('nodeName'), 'SCHEDULER_BYPASSED')
+    if split:
+        expected = [o for o in stage_objects['verification'] if o['kind']=='Job' and o['metadata']['name']=='verification']
+        need(len(expected)==len(stage_objects['verification'])==1 and
+             sum(o['kind']=='Job' and o['metadata']['name']=='verification' for o in rendered)==1 and
+             expected[0]['spec'].get('suspend') is True, 'VERIFICATION_STAGE')
+        from kube_adapter import manifests
+        need(expected == [o for o in manifests(read(d/'render.json'))
+                          if o['kind']=='Job' and o['metadata']['name']=='verification'], 'VERIFICATION_STAGE')
     startup=startup_preflight(m,e,rendered)
-    worker_preflight = None
-    if owned_worker.FIELD in e:
-        selection = e[owned_worker.FIELD]
-        inventory = read(d/'inventory.json')
-        need(inventory.get(owned_worker.FIELD) == selection and inventory.get('targetNode') == e['targetNode']
-             and inventory.get('cleanupOwner') == e['cleanupOwner'], 'OWNED_WORKER_INVENTORY_CHANGED')
-        approved_render = list(phase_fit.objects(read(d/'render.json')))
-        owned_worker.render(selection, approved_render, need)
-        expected_workloads = {(row['kind'], row['metadata']['name']): row for row in approved_render
-                              if row['kind'] in owned_worker.WORKLOADS}
-        staged = [row for row in rendered if row['kind'] in owned_worker.WORKLOADS]
-        need(len(staged) == len(expected_workloads)
-             and {(row['kind'], row['metadata']['name']): row for row in staged} == expected_workloads,
-             'OWNED_WORKER_STAGE_CHANGED')
-        proof = owned_worker.prove(selection, e, c['snapshotDirectory'], need, fresh=capture)
-        guard = Path(c['readonlyGuard']).resolve()
-        commissioner = guard.parents[1]/'staging-k8s'
-        pin_paths = [commissioner/'bin/preflight.py', commissioner/'overlay.libsonnet',
-                     commissioner/'bin/owned_worker.py', commissioner/'bin/owned_worker_view.py']
-        source_dir = Path(owned_worker.__file__).parent
-        need(all(path.is_file() for path in pin_paths)
-             and all(sha(path) == sha(source_dir/path.name) for path in pin_paths[2:]),
-             'OWNED_WORKER_COMMISSIONER_SOURCE_CHANGED')
-        pins = owned_worker.source_pins(guard, *pin_paths)
-        worker_preflight = {'proof': proof, 'source': pins}
-        need(pre.get('ownedWorkerAdmission') == worker_preflight, 'OWNED_WORKER_PREFLIGHT_CHANGED')
-        files += [*pin_paths, *(source_dir/path.name for path in pin_paths[2:])]
-    else:
-        need(owned_worker.FIELD not in read(d/'inventory.json') and 'ownedWorkerAdmission' not in pre,
-             'OWNED_WORKER_UNDECLARED')
     primer_preflight=None
     if primer is not None:
         contract_path=package/'bindings/kubernetes/assets/source-contract.json'
@@ -154,13 +165,12 @@ def fixture_config(path, capture=False):
         contract=json.loads(data)
         rendered_proof=[obj['data']['source-contract.json'].encode() for obj in stage_objects['foundation']
                         if obj['kind']=='ConfigMap' and obj['metadata']['name']=='provision-scripts']
-        need(rendered_proof==[data] and binding.get('sourceContractSha256')==sha(contract_path)
+        need((split or rendered_proof==[data]) and binding.get('sourceContractSha256')==sha(contract_path)
              and binding['files'].get('assets/source-contract.json')==sha(contract_path)
              and contract.get(primer_options.FIELD)==primer,'PRIMER_OPTIONS_BINDING_CHANGED')
         protocol=contract.get(primer_options.PROTOCOL_FIELD)
         primer_options.require_source(primer,protocol,need)
         primer_preflight={'selection':primer,'sourceContractSha256':sha(contract_path),'sourceProtocol':protocol}
-    phase=phase_fit.staged_projection(e,list(phase_fit.objects(read(d/'render.json'))),stage_objects,need)
     population_preflight=None
     if population is not None:
         contract_path=package/'bindings/kubernetes/assets/source-contract.json'
@@ -174,39 +184,28 @@ def fixture_config(path, capture=False):
              'POPULATION_BINDING_CHANGED')
         population_preflight={'selection':population,'sourceContractSha256':sha(contract_path),
                               'sourceProtocol':population_ceiling.PROTOCOL}
-    phase_preflight=None
-    if phase is not None:
-        need(pre.get('trialEnvelope',{}).get(phase_fit.FIELD)==phase,'RESOURCE_PHASE_PREFLIGHT_CHANGED')
-        publisher=package/'bindings/kubernetes/scripts/secrets.sh'
-        phase_preflight={'plan':phase,'publisherSha256':sha(publisher),
-                         'lifecycleSha256':sha(Path(__file__).with_name('lifecycle.py')),
-                         'moduleSha256':sha(Path(phase_fit.__file__))}
-        try:
-            import phase_source_private
-            phase_preflight['privateSource']=phase_source_private.preflight(c)
-        except (ImportError,OSError,ValueError,KeyError,RuntimeError):
-            need(False,'PHASE_PRIVATE_HELPER_UNAVAILABLE')
-        files += [publisher,Path(phase_fit.__file__),Path(phase_fit.resource_budget.__file__)]
-        files.append(Path(phase_source_private.__file__))
     files += [Path(c[key]) for key in ('k6','readonlyGuard','observerScript')]
     files += [Path(c['toolsDirectory'])/'kubectl']
     files += [Path(__file__).with_name(n) for n in ('lifecycle_config.py','lifecycle.py','attach.py')]
-    expected={str(p.resolve()):sha(p) for p in files}
+    if scheduler:
+        files.append(Path(__file__).with_name('scheduler_placement.py'))
     if capture:
-        c['inputs']=expected
+        from experiment import workload
+        workload(m)
+        intent_hash = pre['experiment'].get('experimentSha256')
+        need(intent_hash is None or sha(d/'intent.json') == intent_hash, 'EXPERIMENT_CHANGED')
+        c['inputs']={str(p.resolve()):sha(p) for p in files}
+        c['capturedSourceCommit']=subprocess.check_output(['git','-C',c['coreRepository'],'rev-parse','HEAD'],text=True).strip()
         c['startupWindowPreflight']=startup
         if primer_preflight is not None:c['primerOptionsPreflight']=primer_preflight
         if population_preflight is not None:c['populationCeilingPreflight']=population_preflight
-        if phase_preflight is not None:c['resourcePhasePreflight']=phase_preflight
-        if worker_preflight is not None:c['ownedWorkerPreflight']=worker_preflight
     else:
-        need(c.get('inputs')==expected,'INPUT_CHANGED')
         need(c.get('startupWindowPreflight')==startup or
              'startupWindowPreflight' not in c and not startup['authoredFields'],'STARTUP_PREFLIGHT_CHANGED')
         need(c.get('primerOptionsPreflight')==primer_preflight,'PRIMER_OPTIONS_PREFLIGHT_CHANGED')
         need(c.get('populationCeilingPreflight')==population_preflight,'POPULATION_PREFLIGHT_CHANGED')
-        need(c.get('resourcePhasePreflight')==phase_preflight,'RESOURCE_PHASE_PREFLIGHT_CHANGED')
-        need(c.get('ownedWorkerPreflight')==worker_preflight,'OWNED_WORKER_PREFLIGHT_CHANGED')
+        intent_path = str((d/'intent.json').resolve())
+        need(c['inputs'].get(intent_path) == sha(intent_path), 'EXPERIMENT_CHANGED')
     return c
 
 if __name__=='__main__':

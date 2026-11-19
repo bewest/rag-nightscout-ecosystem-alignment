@@ -30,7 +30,6 @@ M7 = HERE.parent / 'm7-joined'
 sys.modules.setdefault('kube_adapter', sys.modules[__name__])
 sys.path.insert(0, str(M7))
 import candidate
-import owned_worker
 import frozen
 import discovery_counts
 import evaluator_progress
@@ -42,7 +41,7 @@ import workload_inputs
 import resource_budget
 import primer_storage
 import edge_configuration
-import phase_fit
+import application_topology
 
 SHA = re.compile(r'[a-f0-9]{40}')
 HEX = re.compile(r'[a-f0-9]{64}')
@@ -69,9 +68,9 @@ def need(ok, code, verdict='FAIL'):
         raise Refused('K8S_' + code, verdict)
 
 
-def document(path):
+def document(path, *, max_bytes=32 * 1024 * 1024):
     p = Path(path)
-    need(p.is_file() and not p.is_symlink() and p.stat().st_size <= 32 * 1024 * 1024, 'INPUT_FILE')
+    need(p.is_file() and not p.is_symlink() and (max_bytes is None or p.stat().st_size <= max_bytes), 'INPUT_FILE')
     return json.loads(p.read_text())
 
 
@@ -94,13 +93,12 @@ def hashed(value):
 
 
 def instrument():
-    paths = [p for p in HERE.iterdir() if p.suffix in ('.py', '.cjs') and not p.name.startswith('test_')]
-    paths += [p for p in (HERE / 'workloads').iterdir() if p.suffix in ('.py', '.cjs') and not p.name.startswith('test_')]
-    paths += list(M7.glob('*.py')) + list(M7.glob('*.cjs')) + list(M7.glob('*.js'))
+    paths = [p for folder in (HERE, HERE / 'workloads', M7) for p in folder.iterdir()
+             if p.suffix in ('.py', '.cjs', '.js', '.patch')
+             and not p.name.startswith(('test_', 'test-', 'control_')) and '.test.' not in p.name
+             and not p.stem.endswith(('-control', '_control'))]
     paths += [ROOT / 'tools/mt-bench/capacity/probe.js', ROOT / 'tools/mt-bench/capacity/k6/workload.js']
     files = {str(p.relative_to(ROOT)): digest(p) for p in sorted(paths)}
-    path = HERE / 'binding-input.patch'
-    files[str(path.relative_to(ROOT))] = digest(path)
     return {'sha256': hashed(files), 'files': files}
 
 
@@ -226,8 +224,8 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
     deadline(c, cleanup=cleanup, now=now)
     need(isinstance(c.get('roles'), dict) and {'postgres', 'api', 'realtime', 'evaluator'} <= set(c['roles']), 'ROLE_ROSTER')
     if 'workload' in c:
-        from workload_runtime import validate as validate_workload
-        validate_workload(c['workload'], need, c['tenants'])
+        from workload_runtime import driver_count, validate as validate_workload
+        validate_workload(c['workload'], need, driver_count(c, need))
         need('probeLedger' not in c['workload'] or c.get('tier','discovery')=='discovery', 'PROBE_LEDGER_DISCOVERY_ONLY')
         need('evaluatorProgressBudget' not in c['workload'] or c.get('tier','discovery')=='discovery', 'EVALUATOR_PROGRESS_BUDGET_DISCOVERY_ONLY')
     if 'accessSetupSeconds' in c:
@@ -241,13 +239,15 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
         preload.selection(c['preloadConvergence'])
     objs = manifests(rendered)
     primer_storage.check_render(c, objs)
-    owned_worker.packet(c, inventory, objs, need, cleanup=cleanup)
     if 'edgeConfiguration' in inventory or 'edgeConfiguration' in c:
         need(isinstance(c.get('edgeConfiguration'),dict),'EDGE_CONFIGURATION_CHANGED')
         edge=edge_configuration.check({'edge':c['edgeConfiguration'].get('requested')},inventory,objs,need)
         need(c.get('edgeConfiguration')==edge,'EDGE_CONFIGURATION_CHANGED')
     by_key = {key(x): x for x in objs}
     need(len(by_key) == len(objs), 'DUPLICATE_RESOURCE')
+    import native_join
+    native_join.validate(c, inventory, by_key)
+    application_topology.validate(c, inventory, by_key, need)
     ns = by_key.get('Namespace/' + c['namespace'])
     need(ns is not None and ns['metadata'].get('labels', {}).get(c['ownerLabel']) == c['runId'], 'NAMESPACE_OWNERSHIP')
     for obj in objs:
@@ -266,7 +266,12 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
             for container in t['spec'].get('containers', []) + t['spec'].get('initContainers', []):
                 resource_budget.validate_container(container, accounting, need)
     need(workload_inputs.tenants(c.get('tenants', 2)) and c.get('tenants', 2) >= 2, 'DIAGNOSTIC_TENANT_ROSTER')
-    if c.get('tenants', 2) != 2:
+    if 'Job/verification' in by_key:
+        actors = template(by_key['Job/primer'])['spec'].get('initContainers', [])
+        primer = [actor for actor in actors if actor['name'] == 'primer']
+        need(len(primer) == 1 and primer[0].get('args') == ['--tenant-count', str(c.get('tenants', 2))],
+             'DIAGNOSTIC_TENANTS_CHANGED')
+    elif c.get('tenants', 2) != 2:
         count = c['tenants']
         provision = by_key.get('Job/provision')
         need(workload_inputs.tenants(count) and count >= 2 and provision is not None, 'DIAGNOSTIC_TENANT_ROSTER')
@@ -302,18 +307,6 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
              hashlib.sha256(visible_helper['data']['bootstrap.js'].encode()).hexdigest() == helper['sha256'],
              'BOOTSTRAP_HELPER_SCOPE')
     candidate.pins(sys.modules[__name__], c, inventory, by_key)
-    phase_fit.runtime_binding(c,objs,need)
-    if phase_fit.FIELD in c:
-        try:
-            import phase_source_private
-        except ImportError:
-            need(False,'PHASE_PRIVATE_HELPER_UNAVAILABLE','UNMEASURED')
-        try:
-            phase_source_private.binding(c,by_key)
-        except phase_source_private.Refused as error:
-            raise Refused(str(error),error.verdict)
-        except (ImportError,OSError,ValueError,KeyError):
-            need(False,'PHASE_PRIVATE_PROOF_REQUIRED','UNMEASURED')
     return by_key
 
 
@@ -322,7 +315,7 @@ class Client:
         self.c, self.run = c, run
 
     def call(self, args, *, data=None, read=True, cleanup=False, output_limit=32*1024*1024,
-             response_sink=None, owned_worker_view=False):
+             response_sink=None, timeout=None, rows=None):
         c = self.c
         deadline(c, cleanup)
         need(Path(c['kubectl']).is_absolute() and Path(c['kubectl']).is_file() and Path(c['kubectl']).name == 'kubectl', 'PINNED_KUBECTL_REQUIRED')
@@ -330,24 +323,29 @@ class Client:
         # The existing guard accepts the literal tool name. Select the pinned
         # compatible binary through PATH rather than bypassing that guard.
         binary = 'kubectl' if read else c['kubectl']
-        argv = prefix + [binary, '--context', c['context'], '--namespace', c['namespace'], '--request-timeout=15s', *args]
+        read_seconds = getattr(self, 'request_seconds', None)
+        limit = min(timeout if timeout is not None else read_seconds or 20, deadline(c, cleanup))
+        if read_seconds is not None and rows is None:
+            limit = min(limit, read_seconds)
+        request_timeout = str(max(1, math.ceil(1000 * limit)))+'ms' if rows or read_seconds else '15s'
+        argv = prefix + [binary, '--context', c['context'], '--namespace', c['namespace'], '--request-timeout='+request_timeout, *args]
         env = dict(os.environ, PATH=str(Path(c['kubectl']).parent) + os.pathsep + os.environ.get('PATH', ''), RO_ALLOW_SENSITIVE='1')
-        if owned_worker_view:
-            need(read and owned_worker.FIELD in c, 'OWNED_WORKER_VIEW_SCOPE')
-            env.update(RO_OWNED_WORKER_VIEW='1', RO_NO_LOG='1')
-        else:
-            env.pop('RO_OWNED_WORKER_VIEW', None)
+        env.pop('RO_OWNED_WORKER_VIEW', None)
         need(Path(shutil.which('kubectl', path=env['PATH']) or '/missing').resolve() == Path(c['kubectl']).resolve(), 'PINNED_KUBECTL_REQUIRED')
         try:
-            result = self.run(argv, input=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                              timeout=min(20, deadline(c, cleanup)), check=False, env=env)
+            if rows and self.run is subprocess.run:
+                result = rows.run(argv, input=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  timeout=limit, env=env)
+            else:
+                result = self.run(argv, input=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  timeout=limit, check=False, env=env)
         except (OSError, subprocess.TimeoutExpired):
             raise Refused('K8S_OBSERVATION_LOST', 'UNMEASURED')
         def bounded_response():
             raw = result.stdout
             if isinstance(raw, str):
                 raw = raw.encode()
-            need(isinstance(raw, bytes) and len(raw) <= output_limit, 'OBSERVATION_BOUND', 'UNMEASURED')
+            need(isinstance(raw, bytes) and (rows is not None or len(raw) <= output_limit), 'OBSERVATION_BOUND', 'UNMEASURED')
             return raw
         # Only an explicit private observer sink receives bounded returned bytes
         # before the original deadline/exit refusal. Partial timeout output and
@@ -369,36 +367,6 @@ class Client:
         except ValueError:
             raise Refused('K8S_OBSERVATION_LOST', 'UNMEASURED')
 
-    def phase_source_proof(self, request):
-        """Fixed private equality helper; this port never accepts kubectl argv."""
-        import phase_source_private
-        c=self.c
-        deadline(c)
-        helper=HERE/'phase_source_private.py'
-        need(helper.is_file(),'PHASE_PRIVATE_HELPER_UNAVAILABLE','UNMEASURED')
-        env={k:v for k,v in os.environ.items() if k not in ('PYTHONPATH','PYTHONHOME')}
-        env['PYTHONDONTWRITEBYTECODE']='1'
-        try:
-            need(request.get('scope')==c.get(phase_fit.FIELD,{}).get('privateSource'),
-                 'PHASE_PRIVATE_SCOPE_CHANGED')
-            request['until']=min(request['until'],time.time()+deadline(c))
-            result=self.run([sys.executable,'-B',str(helper)],input=json.dumps(request,allow_nan=False).encode(),
-                            stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=deadline(c),check=False,
-                            env=env,cwd=str(HERE))
-            deadline(c)
-            need(isinstance(result.stdout,bytes) and len(result.stdout)<=phase_source_private.MAX_BYTES,
-                 'PHASE_PRIVATE_PROOF_UNAVAILABLE','UNMEASURED')
-            answer=json.loads(result.stdout)
-        except (OSError,subprocess.TimeoutExpired,ValueError):
-            raise Refused('K8S_PHASE_PRIVATE_PROOF_UNAVAILABLE','UNMEASURED')
-        if result.returncode:
-            need(isinstance(answer,dict) and set(answer)=={'code','verdict'} and
-                 answer['verdict'] in ('FAIL','UNMEASURED') and
-                 answer['code'] in phase_source_private.ERROR_CODES,
-                 'PHASE_PRIVATE_PROOF_UNAVAILABLE','UNMEASURED')
-            raise Refused(answer['code'],answer['verdict'])
-        return answer
-
 
 def meta(obj):
     m = obj['metadata']
@@ -418,7 +386,7 @@ def controller(obj):
     return refs[0]
 
 
-SETUP_JOBS = {'Job/primer', 'Job/provision'}
+SETUP_JOBS = {'Job/primer', 'Job/provision', 'Job/verification'}
 
 
 def job_terminal(job):
@@ -461,6 +429,15 @@ def check_retired_jobs(c, current, baseline):
                                  'lastObservedExitCode': ended.get('exitCode', 'UNMEASURED')}
         retired[name] = {'job': job, 'podUid': old['uid'], **terminal, 'containers': states}
     return retired
+
+
+def completed_primer(c, baseline, job_uid):
+    """Bind successful setup to the original Pod and its exported DATA credentials."""
+    import primer
+    directory = Path(c['primerOutput']).parent
+    original = primer.require_roster(directory, c, baseline)
+    need(original.get('controllerUid') == job_uid, 'POD_RETIREMENT_UNPROVEN')
+    return {field: original[field] for field in ('name', 'uid', 'workload', 'nodeName')}
 
 
 BOOTSTRAP_MAP = frozen.HELPER_MAP
@@ -545,22 +522,26 @@ def capture_bootstrap_map(d, c, objects, namespace_uid, client):
 
 
 def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=None, serving_sql=False):
+    import native_join
     ns = client.get('namespace', c['namespace'], cleanup)
     need(ns['metadata']['name'] == c['namespace'] and ns['metadata'].get('labels', {}).get(c['ownerLabel']) == c['runId'], 'FOREIGN_NAMESPACE')
     result = {'context': c['context'], 'runId': c['runId'], 'namespace': meta(ns), 'pins': copy.deepcopy(c['pins']),
               'observedAt': time.time(), 'objects': {}, 'pods': {}, 'driver': c['driver'], 'observer': c['observer'],
               'storageMode': c['storageMode'], 'capacityAcceptance': 'NOT_GRANTED'}
+    if native_join.selected(c) is not None:
+        result['testActors'] = {}
     if serving_sql:
         need(baseline is not None and not cleanup and restarted_role is None, 'SERVING_BASELINE_REQUIRED')
         need(not ns['metadata'].get('deletionTimestamp'), 'NAMESPACE_TERMINATING')
         result['setupJobs'] = {}
-    phase_job=None
+    primer_terminal = None
     for name, expected in by_key.items():
         if expected['kind'] not in PLURALS:
             continue
         actual = client.get(expected['kind'], expected['metadata']['name'], cleanup)
-        if name==phase_fit.PROVISION:phase_job=actual
         owned(c, actual)
+        if name == native_join.JOB:
+            actual = native_join.exact_spec(c, client, actual, ns['metadata']['uid'], cleanup=cleanup)
         if serving_sql:
             need(not actual['metadata'].get('deletionTimestamp'), 'RESOURCE_TERMINATING')
             if name in SETUP_JOBS:
@@ -587,6 +568,11 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             visible_object = actual
         expected_visible = visible(expected, visible_object)
         if actual['kind'] in WORKLOADS:
+            if name == native_join.JOB:
+                selected_spec = dict(expected['spec'], suspend=actual['spec'].get('suspend'))
+                need(type(actual['spec'].get('suspend')) is bool and native_join.native_load.job_spec_matches(selected_spec, actual['spec']),
+                     'NATIVE_LOAD_JOB_CHANGED')
+                result['nativeLoadSuspended'] = actual['spec']['suspend']
             replica_scope(actual)
             helper_annotations(expected['metadata'], actual['metadata'])
             helper_annotations(template(expected)['metadata'], template(actual)['metadata'])
@@ -594,14 +580,25 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             comparison = dict(template(actual), spec=resource_budget.readback_projection(
                 template(expected)['spec'], template(actual)['spec'], need))
             need(subset(template(expected_visible), comparison), 'BINDING_READBACK_CHANGED')
+        elif name == native_join.POLICY:
+            need(actual.get('spec') == expected['spec'], 'NATIVE_LOAD_EDGE_POLICY_CHANGED')
+        elif expected['kind'] == 'ResourceQuota':
+            need(resource_budget.quota_spec_matches(expected['spec'], actual.get('spec')),
+                 'RESOURCE_READBACK_CHANGED:ResourceQuota.' + expected['metadata']['name'])
         elif 'spec' in expected:
-            need(subset(expected_visible['spec'], actual.get('spec')), 'RESOURCE_READBACK_CHANGED')
+            need(subset(expected_visible['spec'], actual.get('spec')),
+                 'RESOURCE_READBACK_CHANGED:' + expected['kind'] + '.' + expected['metadata']['name'])
         elif expected['kind'] == 'ConfigMap' and name != 'ConfigMap/' + BOOTSTRAP_MAP:
             if name=='ConfigMap/edge-nginx' and c.get('edgeConfiguration'):
                 edge_configuration.readback(expected,actual,need)
             need(subset(expected_visible.get('data', {}), actual.get('data', {})), 'CONFIGMAP_CHANGED')
+        elif c.get('nativeLoad') is not None and expected['metadata']['name'] == native_join.ACCOUNT:
+            need(subset(expected_visible, actual), 'NATIVE_LOAD_RBAC_CHANGED')
         result['objects'][name] = meta(actual)
         result['objects'][name]['maskedPaths'] = masked
+        if name == 'Job/primer':
+            result['objects'][name]['activeDeadlineSeconds'] = actual['spec'].get('activeDeadlineSeconds')
+            primer_terminal = job_terminal(actual)
         if name=='ConfigMap/edge-nginx' and c.get('edgeConfiguration'):
             result['edgeConfiguration']={**c['edgeConfiguration'],'configurationSha256':edge_configuration.readback(expected,actual,need)}
     replicas = client.get('replicasets', cleanup=cleanup)['items']
@@ -621,6 +618,11 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         parent = result['objects'].get(name)
         need(parent is not None and parent['uid'] == ref['uid'], 'POD_CONTROLLER')
         expected = template(by_key[name])['spec']
+        if name == native_join.JOB:
+            pod = native_join.exact_spec(c, client, pod, ns['metadata']['uid'], cleanup=cleanup)
+            result['testActors'][pod['metadata']['name']] = native_join.test_pod(c, by_key[name], pod, parent['uid'])
+            need(len(result['testActors']) <= 1, 'NATIVE_LOAD_POD_CENSUS')
+            continue
         helper_annotations(template(by_key[name])['metadata'], pod['metadata'])
         helper_pod(expected, pod['spec'])
         readback, admitted = admission_projection(expected, pod['spec'])
@@ -637,7 +639,9 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         declared = expected.get('containers', []) + expected.get('initContainers', [])
         need(set(containers) == {r['name'] for r in declared}, 'CONTAINER_IDENTITY_UNMEASURED', 'UNMEASURED')
         result['pods'][pod['metadata']['name']] = {**meta(pod), 'workload': name, 'controllerUid': parent['uid'], 'nodeName': pod['spec'].get('nodeName'),
-            'resources': {r['name']: r['resources'] for r in pod['spec'].get('containers', []) + pod['spec'].get('initContainers', [])},
+            'resources': {r['name']: r.get('resources', {}) for r in pod['spec'].get('containers', []) + pod['spec'].get('initContainers', [])},
+            # Recorded as Kubernetes holds them; quota, LimitRange and the scheduler enforce budgets.
+            'observedResources': resource_budget.observed(pod['spec']),
             'imageReferences': {r['name']: r['image'] for r in declared}, 'containers': containers,
             'admissionVolumes': admitted,
             'maskedPaths': masked,
@@ -654,27 +658,6 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         if baseline is not None:
             need(baseline.get('bootstrapHelper', {}).get('configMapUid') == result['bootstrapHelper']['configMapUid'],
                  'BOOTSTRAP_HELPER_UID_CHANGED')
-    if not cleanup and (worker := c.get(owned_worker.FIELD)):
-        need(worker['namespaceUid'] == result['namespace']['uid'], 'OWNED_WORKER_NAMESPACE_UID_CHANGED')
-        selection = worker['selection']
-        def guarded_worker_get(argv):
-            return json.loads(client.call(argv, owned_worker_view=True))
-        result[owned_worker.FIELD] = owned_worker.live(selection, worker['infrastructure'],
-            [owned_worker.identity(pod, need) for pod in pods], guarded_worker_get, need)
-    if not cleanup and phase_fit.FIELD in c:
-        try:
-            import phase_source_private
-        except ImportError:
-            need(False,'PHASE_PRIVATE_HELPER_UNAVAILABLE','UNMEASURED')
-        try:
-            result['resourcePhasePlan']=phase_source_private.observe(c,by_key,result,ns,phase_job,pods,client,
-                                                                     lambda:deadline(c))
-        except phase_source_private.Refused as error:
-            raise Refused(str(error),error.verdict)
-        except (ImportError,OSError,ValueError,KeyError) as error:
-            if isinstance(error,ValueError) and str(error) in phase_source_private.SOURCE_CODES:
-                raise Refused(str(error),'FAIL')
-            need(False,'PHASE_PRIVATE_PROOF_UNAVAILABLE','UNMEASURED')
     candidate.images(sys.modules[__name__], c, result)
     for role, selection in c['roles'].items():
         selected = [r for r in result['pods'].values() if r['workload'] == selection['workload']]
@@ -684,10 +667,39 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         need(all(result[k] == baseline[k] for k in ('context', 'runId', 'pins')), 'SOURCE_IMAGE_BINDING_CHANGED')
         need(result['namespace']['uid'] == baseline['namespace']['uid'], 'NAMESPACE_UID_CHANGED')
         need(result['objects'].keys() == baseline['objects'].keys() and all(result['objects'][k]['uid'] == baseline['objects'][k]['uid'] for k in result['objects']), 'RESOURCE_UID_CHANGED')
+        previous_primer = next((pod for pod in baseline['pods'].values() if pod['workload'] == 'Job/primer'),
+                               baseline.get('completedPrimer'))
+        current_primer = result['pods'].get(previous_primer['name']) if previous_primer else None
+        if previous_primer and current_primer is None and primer_terminal is None and (serving_sql or 'primerOutput' in c):
+            # The Pod list is newer than the original Job GET. Read its controller
+            # once more to resolve retirement, under the same observation deadline.
+            job = client.get('Job', 'primer', cleanup)
+            owned(c, job)
+            need(key(job) == 'Job/primer' and job['metadata']['uid'] == result['objects']['Job/primer']['uid'],
+                 'RESOURCE_UID_CHANGED')
+            primer_terminal = job_terminal(job)
+            if serving_sql:
+                need(not job['metadata'].get('deletionTimestamp'), 'RESOURCE_TERMINATING')
+                result['setupJobs']['Job/primer'] = primer_terminal
         if serving_sql:
             result['retiredJobs'] = check_retired_jobs(c, result, baseline)
         else:
-            need(result['pods'].keys() == baseline['pods'].keys(), 'POD_ROSTER_CHANGED')
+            expected_pods = set(baseline['pods'])
+            job_complete = primer_terminal and primer_terminal['condition'] == 'Complete'
+            pod_succeeded = current_primer and current_primer['phase'] == 'Succeeded'
+            if baseline.get('completedPrimer'):
+                need(job_complete or pod_succeeded, 'POD_RETIREMENT_UNPROVEN')
+            if 'primerOutput' in c and primer_terminal and not job_complete and not cleanup:
+                raise Refused('K8S_PRIMER_JOB_FAILED')
+            if 'primerOutput' in c and (job_complete or pod_succeeded):
+                if pod_succeeded:
+                    need(all((r.get('state') or {}).get('terminated', {}).get('exitCode') == 0
+                             for r in current_primer['containers'].values()), 'PRIMER_POD_EXIT')
+                finished = completed_primer(c, baseline, result['objects']['Job/primer']['uid'])
+                result['completedPrimer'] = finished
+                if finished['name'] not in result['pods']:
+                    expected_pods.discard(finished['name'])
+            need(set(result['pods']) == expected_pods, 'POD_ROSTER_CHANGED')
         target = c['roles'].get(restarted_role)
         for name, current in result['pods'].items():
             old = baseline['pods'][name]
@@ -742,9 +754,10 @@ def sql(d, c, objects, query, client=None):
     return raw
 
 
-def postgres_read(client, pod, container, query):
+def postgres_read(client, pod, container, query, **options):
     data = ('BEGIN READ ONLY;\n' + query + '\nROLLBACK;\n').encode()
-    raw = client.call(['exec', '-i', pod, '-c', container, '--', 'psql', '-X', '-qAt', '-F', '\t', '-v', 'ON_ERROR_STOP=1', '-U', 'postgres', '-d', 'nightscout_compose_test'], data=data, read=False)
+    fetch = ['-v', 'FETCH_COUNT=128'] if options.get('rows') else []
+    raw = client.call(['exec', '-i', pod, '-c', container, '--', 'psql', '-X', *fetch, '-qAt', '-F', '\t', '-v', 'ON_ERROR_STOP=1', '-U', 'postgres', '-d', 'nightscout_compose_test'], data=data, read=False, **options)
     return raw.decode()
 
 
@@ -804,6 +817,32 @@ def stored(d, c, objects, runid, client=None):
     return values
 
 
+def probe_sql_bridge():
+    """Retain bounded failure metadata without SQL, argv or child output."""
+    return r"""const psqlAsync = sql => new Promise((resolve,reject)=>{
+  const began=performance.now();
+  const child=execFile(process.env.K8S_PYTHON,[process.env.K8S_ADAPTER,'clinical-sql',process.env.K8S_RUN_DIRECTORY],
+    {encoding:'utf8',timeout:60000,maxBuffer:32<<20},(err,stdout,stderr)=>{
+      if(!err)return resolve(stdout);
+      const nodeErrorCode=typeof err.code==='string'&&/^ERR_[A-Z_]{1,80}$/.test(err.code)?err.code:null;
+      const value={version:1,verdict:'UNMEASURED',code:'M7_PROBE_SQL_OBSERVATION_UNAVAILABLE',
+        reason:nodeErrorCode==='ERR_CHILD_PROCESS_STDIO_MAXBUFFER'?'OUTPUT_BOUND':err.killed?'TIMEOUT':'CHILD_EXIT',
+        exitCode:Number.isInteger(err.code)?err.code:null,nodeErrorCode,
+        signal:typeof err.signal==='string'&&/^[A-Z0-9]{1,24}$/.test(err.signal)?err.signal:null,
+        timeoutMs:60000,wallMs:performance.now()-began,
+        stdoutBytes:Buffer.byteLength(stdout||''),stderrBytes:Buffer.byteLength(stderr||''),
+        childReportedCodes:[...new Set((stderr||'').match(/\b(?:K8S|M7)_[A-Z_]{1,88}\b/g)||[])].slice(0,16)};
+      // The first transport failure is evidence; later callbacks cannot replace it.
+      // A diagnostic write failure must never turn the failed read into success.
+      try{fs.writeFileSync(path.join(signalDir,'sql-observation-failure.json'),
+        JSON.stringify(value)+'\n',{mode:0o600,flag:'wx'});}catch{}
+      reject(Error(value.code));
+    });
+  child.stdin.end(sql);
+});
+"""
+
+
 def generate_probe(target):
     result = probe.generate(ROOT, target)
     source = Path(target).read_text()
@@ -812,7 +851,7 @@ def generate_probe(target):
     source = source.replace(old, "if(args.restart!=='0'||!process.env.M7_COMPLETION_SOURCE)throw Error('K8S_PROBE_BOUNDARY');")
     start = source.index('const psqlAsync =')
     end = source.index('const pct =', start)
-    source = source[:start] + "const psqlAsync = sql => new Promise((resolve,reject)=>{const child=execFile(process.env.K8S_PYTHON,[process.env.K8S_ADAPTER,'sql',process.env.K8S_RUN_DIRECTORY],{encoding:'utf8',timeout:60000,maxBuffer:32<<20},(err,stdout)=>err?reject(Error('K8S_SQL_OBSERVATION_LOST')):resolve(stdout));child.stdin.end(sql);});\n" + source[end:]
+    source = source[:start] + probe_sql_bridge() + source[end:]
     # Do not emulate Docker health/restart. Kubernetes role restart is a distinct
     # operator command while the ordinary stock probe remains connected.
     start = source.index("  if (args.restart === '1') {")
@@ -824,7 +863,7 @@ def generate_probe(target):
     anchor = "const at = Date.now(); s.frames.push(at);"
     need(source.count(anchor) == 1, 'PROBE_FRAME_ANCHOR_CHANGED')
     source = source.replace(anchor, anchor + "\n    if(kubernetesFrames.rows.length<4096){const ids=(frame?.sgvs||[]).slice(0,1024).map(v=>String(v._id));if((frame?.sgvs||[]).length>1024)kubernetesFrames.overflow=true;kubernetesFrames.rows.push({tenant:t.id,socket:sockets.indexOf(s),ids,at});}else kubernetesFrames.overflow=true;")
-    anchor = "e.completion=withinDeadline?result:{...result,ready:false,code:'M7_COMPLETION_DEADLINE'};"
+    anchor = "e.completion=withinDeadline?result:{...result,ready:false,code:'M7_COMPLETION_DEADLINE',assessedCode:result.code,...(result.clientFailure?{assessedClientFailure:result.clientFailure}:{})};"
     need(source.count(anchor) == 1, 'PROBE_CLINICAL_ANCHOR_CHANGED')
     source = source.replace(anchor, anchor + "e.rawRow=row;")
     anchor = "requestStartedAt:e.sent,...e.completion"
@@ -888,10 +927,12 @@ def cleanup_plan(c, observation, current):
             'absence': 'Read exact target; only Kubernetes Status reason=NotFound/code=404 proves absence. Command errors and Terminating do not.', 'cleanupUntil': c['deadlines']['cleanupUntil']}
 
 
-def completion_source(c, evaluator_config, realtime_config):
+def completion_source(c, evaluator_config, realtime_config, native_receipt=None):
     binding = {'kind': 'evaluator-work-v2', 'pair': c['pins']['pair'], 'imageId': c['pins']['appImageId'], 'instrument': c['pins']['instrument']}
-    code = "const fs=require('fs'),o=require(process.argv[1]);const v=JSON.parse(fs.readFileSync(0,'utf8'));console.log(JSON.stringify(o.source(v.evaluator,v.realtime,v.binding)));"
-    result = subprocess.run([c['driver']['node'], '-e', code, str(M7 / 'completed-oracle.cjs')], input=json.dumps({'evaluator': document(evaluator_config), 'realtime': document(realtime_config), 'binding': binding}).encode(), capture_output=True, timeout=10)
+    need(native_receipt is not None or c['pins'].get('candidate',{}).get('platformVerification') not in candidate.NATIVE_RECEIPT_PROTOCOLS,
+         'COMPLETION_RECEIPT_REQUIRED')
+    code = "const fs=require('fs'),o=require(process.argv[1]);const v=JSON.parse(fs.readFileSync(0,'utf8'));console.log(JSON.stringify(o.source(v.evaluator,v.realtime,v.binding,v.receipt)));"
+    result = subprocess.run([c['driver']['node'], '-e', code, str(M7 / 'completed-oracle.cjs')], input=json.dumps({'evaluator': document(evaluator_config), 'realtime': document(realtime_config), 'binding': binding, **({'receipt':document(native_receipt)} if native_receipt is not None else {})}).encode(), capture_output=True, timeout=10)
     need(result.returncode == 0, 'COMPLETION_SOURCE_REFUSED')
     return json.loads(result.stdout)
 
@@ -903,13 +944,14 @@ def main():
     p = sub.add_parser('completion-source')
     for arg in ('config', 'evaluator_config', 'realtime_config'):
         p.add_argument(arg)
+    p.add_argument('--native-receipt')
     p = sub.add_parser('tenant-projection')
     p.add_argument('primer_result')
     p.add_argument('count', type=int)
     p = sub.add_parser('prepare')
     for arg in ('config', 'inventory', 'render', 'directory'):
         p.add_argument(arg)
-    for name in ('observe', 'sql', 'commission', 'recovery', 'access', 'policy', 'load', 'cleanup-plan', 'assess', 'candidate-proof'):
+    for name in ('observe', 'sql', 'clinical-sql', 'commission', 'recovery', 'access', 'policy', 'load', 'cleanup-plan', 'assess', 'candidate-proof'):
         p = sub.add_parser(name)
         p.add_argument('directory')
     p = sub.add_parser('bootstrap-map')
@@ -939,7 +981,7 @@ def main():
         return tenant_projection(document(args.primer_result), args.count)
     if args.command == 'completion-source':
         c = document(args.config)
-        return completion_source(c, args.evaluator_config, args.realtime_config)
+        return completion_source(c, args.evaluator_config, args.realtime_config, native_receipt=args.native_receipt)
     if args.command == 'prepare':
         return prepare(args.config, args.inventory, args.render, args.directory)
     if args.command == 'matrix-plan':
@@ -980,6 +1022,10 @@ def main():
         return observation
     if args.command == 'sql':
         sys.stdout.write(sql(d, c, objects, sys.stdin.read(131073), client))
+        return None
+    if args.command == 'clinical-sql':
+        import clinical_sql
+        sys.stdout.write(clinical_sql.read(d, c, objects, sys.stdin.read(131073), client))
         return None
     if args.command == 'cleanup-plan':
         initial = document(d / 'observation.initial.json')

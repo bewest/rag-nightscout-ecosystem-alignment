@@ -9,6 +9,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from decimal import Decimal
 import fcntl
+import hashlib
 import os
 import copy
 import json
@@ -201,7 +202,7 @@ def explicit_allocation(value):
     for role,limit in value['services'].items():
         need(isinstance(role,str) and (role in LIMITS and role!='k6' or role in ('pgstream','socket-edge') or re.fullmatch(r'(api|realtime|evaluator)-(?:[2-9]|1[0-6])',role)),'UNKNOWN_ROLE')
         allocation_limit(limit,field='services.'+role)
-    allocation_limit(value['driver'],driver=True,field='driver')
+    driver = driver_limit(value)
     ceiling=value['ceiling']
     # This is an accounting ceiling, not one native container field. Its
     # caller-selected aggregate may exceed any individual container quota.
@@ -210,7 +211,7 @@ def explicit_allocation(value):
     need(isinstance(edge,dict) and set(edge)=={'workerProcesses','workerConnections'} and 'nginx' in value['services'] and type(edge['workerProcesses']) is int and 1<=edge['workerProcesses']<=NGINX_MAX_WORKERS and type(edge['workerConnections']) is int and edge['workerConnections']>=1,'ALLOCATION_EDGE')
     need(edge['workerConnections']<=EDGE_NOFILE,'ALLOCATION_EDGE_DESCRIPTOR_LIMIT:workerConnections exceeds retained worker_rlimit_nofile=65536; a larger configured/read-back descriptor budget is required')
     cpu=sum(limit['millicpus']*(2 if role in ('bootstrap','primer') else 1) for role,limit in value['services'].items())+value['driver']['millicpus']
-    memory=sum(limit['memoryBytes']*(2 if role in ('bootstrap','primer') else 1) for role,limit in value['services'].items())+value['driver']['memoryBytes']
+    memory=sum(limit['memoryBytes']*(2 if role in ('bootstrap','primer') else 1) for role,limit in value['services'].items())+driver.memory
     need(cpu<=ceiling['millicpus'] and memory<=ceiling['memoryBytes'],'ALLOCATION_AGGREGATE_EXCEEDED')
     return value
 
@@ -229,8 +230,38 @@ def external_selection(value):
     return isinstance(value,dict) or value in EXTERNAL_PROFILES
 
 
+def driver_memory_request(profile):
+    return isinstance(profile, dict) and 'memoryReservationBytes' in profile['driver']
+
+
 def driver_limit(profile):
-    return allocation_limit(profile['driver'],driver=True,field='driver') if isinstance(profile,dict) else LIMITS['k6']
+    if not isinstance(profile, dict):
+        return LIMITS['k6']
+    driver = dict(profile['driver']) if isinstance(profile['driver'], dict) else profile['driver']
+    if isinstance(driver, dict) and 'memoryReservationBytes' in driver:
+        need('memoryBytes' not in driver, 'ALLOCATION_LIMIT:driver')
+        driver['memoryBytes'] = driver.pop('memoryReservationBytes')
+    return allocation_limit(driver, driver=True, field='driver')
+
+
+def driver_record(profile):
+    limit = driver_limit(profile)
+    memory = 'memoryReservationBytes' if driver_memory_request(profile) else 'memoryBytes'
+    return {'millicpus': limit.cpu, memory: limit.memory, 'maximumConcurrent': 1}
+
+
+def standalone_flags(limit, request_only):
+    cpu = ['--cpus', limit.cpus]
+    if request_only:
+        return cpu + ['--memory-reservation', str(limit.memory)]
+    return cpu + ['--memory', str(limit.memory), '--memory-swap', str(limit.memory)]
+
+
+def standalone_native(limit, request_only):
+    native = {'NanoCpus': limit.cpu * 1000000}
+    if request_only:
+        return {**native, 'MemoryReservation': limit.memory, 'Memory': 0, 'MemorySwap': 0}
+    return {**native, 'Memory': limit.memory, 'MemorySwap': limit.memory}
 
 
 def selection(name=None):
@@ -323,7 +354,7 @@ class Plan:
         native={role:{'kind':'cfs-quota-period-v1','quotaMicros':quota,'periodMicros':period} for role,quota,period in self.cpu_enforcement}
         return {'version': 1, 'profile': self.profile,
                 'services': {r: {'millicpus': l.cpu, 'memoryBytes': l.memory, 'maximumConcurrent': n, **({'cpuEnforcement':native[r]} if r in native else {})} for r, l, n in self.services},
-                'standalone': {'k6': {'millicpus': driver_limit(self.profile).cpu, 'memoryBytes': driver_limit(self.profile).memory, 'maximumConcurrent': 1}},
+                'standalone': {'k6': driver_record(self.profile)},
                 'host': {r: {'heapMiB': h, 'maximumConcurrent': n} for r, (h, n) in HOST.items()},
                 'aggregate': {'millicpus': sum(l.cpu*n for _, l, n in self.services)+driver_limit(self.profile).cpu,
                               'memoryBytes': sum(l.memory*n for _, l, n in self.services)+driver_limit(self.profile).memory,
@@ -447,7 +478,7 @@ def discovery_driver_record(owner):
     if owner.get('runPurpose') != 'discovery' or owner.get('profile') != 'pgstream-sample' or 'diagnosticResources' not in owner:
         return None
     original=owner['diagnosticResources']
-    if isinstance(original.get('profile'),dict):return None  # explicit driver quota remains authoritative
+    if isinstance(original.get('profile'),dict):return None  # Keep the authored driver settings.
     return {'kind':'discovery-k6-allocation-v1','owner':owner['owner'],'pair':owner['pair'],
             'imageId':owner['imageId'],'instrument':owner['instrument']['sha256'],
             'serverProfile':original['profile'],'serverResourceRecordUnchanged':True,
@@ -481,14 +512,14 @@ def standalone(argv, budget):
     # must bind image/owner and exact argv using existing orchestration custody.
     need(argv[2:3] == ['--rm'], 'STANDALONE_SHAPE')
     limit = standalone_limit()
-    flags = ['--cpus', limit.cpus, '--memory', str(limit.memory), '--memory-swap', str(limit.memory)]
+    flags = standalone_flags(limit, driver_memory_request(budget.profile))
     # Existing custody inserts attempt labels/cidfile after --rm. Accept the
     # exact selected flags once at their resulting position, without reordering
     # that actual argv or weakening duplicate/override refusal.
     indices = [i for i in range(3, len(argv)) if argv[i] == '--cpus']
-    present = len(indices) == 1 and argv[indices[0]:indices[0]+6] == flags
-    tail = argv[3:indices[0]] + argv[indices[0]+6:] if present else argv[3:]
-    need(not any(str(a).split('=')[0] in ('--cpus', '--cpu-quota', '--cpu-period', '--memory', '-m', '--memory-swap') for a in tail), 'STANDALONE_LIMIT_OVERRIDE')
+    present = len(indices) == 1 and argv[indices[0]:indices[0]+len(flags)] == flags
+    tail = argv[3:indices[0]] + argv[indices[0]+len(flags):] if present else argv[3:]
+    need(not any(str(a).split('=')[0] in ('--cpus', '--cpu-quota', '--cpu-period', '--memory', '-m', '--memory-swap', '--memory-reservation') for a in tail), 'STANDALONE_LIMIT_OVERRIDE')
     return argv if present else argv[:3] + flags + tail
 
 
@@ -503,12 +534,14 @@ def node_argv(argv, env, role='helper'):
 class Runtime:
     """One existing fixture driver process; callers retain cleanup ownership.
 
-    The host driver lock serializes selected CLI processes. Container ownership
+    The driver lock serializes calls for one fixture. Independent fixtures may
+    overlap within their authored allocations; their measurements are contended.
+    Container ownership
     and the sole finite runtime window remain with the existing orchestrator.
     The container census must be fresh, whole-project and identity-qualified by
     the existing caller. It is an admission read, not a new custody mechanism.
     """
-    def __init__(self, config=None, record=None, observe=None):
+    def __init__(self, config=None, record=None, observe=None, driver_scope=None):
         self.budget = plan(config) if config is not None else None
         if record is not None:
             need(self.budget is not None and record == self.budget.record(), 'RECORD_CHANGED')
@@ -519,15 +552,23 @@ class Runtime:
         self.lock = threading.RLock()
         self.host = Counter()
         self.driver_fd = None
+        self.driver_scope = driver_scope
 
     def acquire(self, lock_file=None):
-        # One host-Node driver across CLI processes. A killed driver leaves its
+        # One driver per fixture across CLI processes. A killed driver leaves its
         # nonempty heap-lease marker; a successor refuses until exact-owned
         # orphan cleanup is verified externally. Never expire a lease by time.
         from experiment_batch import child_lock, global_lock_path
         reserved = child_lock()
         need(not (reserved and lock_file), 'BATCH_LOCK_OVERRIDE')
-        path = Path(reserved or lock_file or global_lock_path())
+        scope = self.driver_scope
+        if scope is not None:
+            need(Path(scope).is_absolute(), 'DRIVER_SCOPE_PATH')
+            key = hashlib.sha256(str(Path(scope).resolve()).encode()).hexdigest()[:32]
+            scoped = global_lock_path().with_name(global_lock_path().stem + '-' + key + '.lock')
+        else:
+            scoped = global_lock_path()  # legacy/batch callers keep their original custody
+        path = Path(reserved or lock_file or scoped)
         need(path.is_absolute(), 'DRIVER_LOCK_PATH')
         fd = os.open(path, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
         try:
@@ -605,7 +646,9 @@ class Runtime:
                 quota,period=next((q,p) for r,q,p in self.budget.cpu_enforcement if r==role)
                 cpu_matches=all(type(native.get(key)) is int for key in ('NanoCpus','CpuQuota','CpuPeriod')) and native['NanoCpus']==0 and native['CpuQuota']==quota and native['CpuPeriod']==period and all(native.get(key,0)==0 for key in ('CpuCount','CpuPercent','CpuRealtimePeriod','CpuRealtimeRuntime'))
             else:cpu_matches=native.get('NanoCpus')==limit.cpu*1000000
-            need(cpu_matches and native.get('Memory') == limit.memory and native.get('MemorySwap') == limit.memory,
+            expected = (standalone_native(limit, driver_memory_request(self.budget.profile)) if role == 'k6'
+                        else {'Memory': limit.memory, 'MemorySwap': limit.memory})
+            need(cpu_matches and all(native.get(key) == value for key, value in expected.items()),
                  'NATIVE_LIMITS_CHANGED')
             counts[role] += 1
         for role, count in (additions or {}).items():
@@ -657,7 +700,7 @@ class Runtime:
 _ACTIVE = None
 
 
-def configure(selected=None, config=None, record=None, observe=None):
+def configure(selected=None, config=None, record=None, observe=None, driver_scope=None):
     global _ACTIVE
     selection(selected)
     need(_ACTIVE is None or not any(_ACTIVE.host.values()), 'ACTIVE_HOST_LEASES')
@@ -665,7 +708,7 @@ def configure(selected=None, config=None, record=None, observe=None):
         _ACTIVE.close()
     _ACTIVE = None
     if selected is not None:
-        candidate = Runtime(config, record, observe)
+        candidate = Runtime(config, record, observe, driver_scope=driver_scope)
         candidate.acquire()
         _ACTIVE = candidate
     return _ACTIVE

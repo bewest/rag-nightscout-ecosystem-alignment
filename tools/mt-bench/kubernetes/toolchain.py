@@ -11,6 +11,7 @@ import frozen
 import edge_configuration
 import primer_options
 import population_ceiling
+import application_topology
 from workloads import profile
 from contract import discovery_api_replicas, discovery_workers
 
@@ -18,16 +19,19 @@ FRESH={'core-repo','deploy-repo','generator-dependencies','generator-dependency-
        'generator-dependency-receipt-sha256','fixture-project','backend-subnet','edge-subnet','port','receipt','freeze'}
 DERIVED={'core-commit','deploy-commit','image','image-id','postgres-image','tenants','replicas',
          'load-seconds','hot-factor','accel','offered-rps','workload-mix','workload-scale',
-         'logical-polling-clients','probe-every-ms','probe-ledger','evaluator-progress-budget','startup-windows','setup-seconds','drain-seconds','jwt-setup-concurrency','driver-plan','driver-vu-diagnostic','driver-shards',
+         'logical-polling-clients','viewer-setup','probe-every-ms','probe-ledger','evaluator-progress-budget','drain-observation','startup-windows','setup-seconds','drain-seconds','jwt-setup-concurrency','driver-plan','driver-vu-diagnostic','driver-shards',
          'static-workers','static-build-receipt','static-build-receipt-sha256','pgstream-topology'}
 
 def legacy(m,target='kubernetes'):
-    if m.get('kind')=='k8s-frozen-experiment':return copy.deepcopy(m)
+    if m.get('kind')=='k8s-frozen-experiment':
+        application_topology.selection(m,frozen.require)
+        return copy.deepcopy(m)
     frozen.require(m.get('kind')=='multitenant-experiment' and m.get('version')==1 and
         set(m)<= {'version','kind','application','profile','topology','deploymentJobs','local','kubernetes','tier',
                   frozen.ACK_BUDGET,frozen.PRIMER_STORAGE},'MANIFEST')
     transport=m.get('kubernetes',{})
-    frozen.require(isinstance(transport,dict) and set(transport)<={'edge'},'KUBERNETES_FIELDS')
+    frozen.require(isinstance(transport,dict) and set(transport)<={'edge',application_topology.FIELD},'KUBERNETES_FIELDS')
+    application_topology.selection(transport,frozen.require)
     edge=edge_configuration.selection(transport.get('edge'),frozen.require)
     app=m['application']
     frozen.require(set(app)<= {'sourceReceipt','buildReceipt','bindingCommit','postgresImageId','bootstrapHelper'},'APPLICATION_FIELDS')
@@ -41,6 +45,8 @@ def legacy(m,target='kubernetes'):
     return dict(version=1,kind='k8s-frozen-experiment',**copy.deepcopy(app),profile=copy.deepcopy(m['profile']),
                 **({'tier': m['tier']} if 'tier' in m else {}),
                 **({'edge':edge} if target=='kubernetes' and edge is not None else {}),
+                **({application_topology.FIELD:transport[application_topology.FIELD]}
+                   if target=='kubernetes' and application_topology.FIELD in transport else {}),
                 **({frozen.ACK_BUDGET: m[frozen.ACK_BUDGET]} if frozen.ACK_BUDGET in m else {}),
                 **({frozen.PRIMER_STORAGE: m[frozen.PRIMER_STORAGE]} if frozen.PRIMER_STORAGE in m else {}),
                 **({'deploymentJobs':copy.deepcopy(m['deploymentJobs'])} if 'deploymentJobs'in m else {}))
@@ -57,6 +63,8 @@ def local(m,instance):
         frozen.require('pgstream-notifier-ack-timeout-ms' not in options, 'DUPLICATE_LOCAL_FACT')
         options['pgstream-notifier-ack-timeout-ms'] = selected[frozen.ACK_BUDGET]
     p=profile.validate(dict(original['profile'],referencePins=dict(core=selected['coreCommit'],deploy=selected['deployCommit'],bindingCommit=original['bindingCommit'])))
+    frozen.require(p['population']['ordinaryRosterTenants'] == p['population']['provisionedTenants'],
+                   'COMPOSE_ORDINARY_ROSTER_SUBSET_UNSUPPORTED')
     w=p['workload'];t=m['topology']
     primer=primer_options.from_profile(p,frozen.require)
     population=population_ceiling.from_profile(p,frozen.require)
@@ -78,10 +86,14 @@ def local(m,instance):
     for field, option in (('setupSeconds', 'setup-seconds'), ('drainSeconds', 'drain-seconds'), ('jwtSetupConcurrency', 'jwt-setup-concurrency')):
         if field in w:
             options[option] = w[field]
+    if 'viewerSetup' in w:
+        options['viewer-setup'] = json.dumps(w['viewerSetup'])
     if 'probeLedger' in w:
         options['probe-ledger'] = json.dumps(w['probeLedger'])
     if 'evaluatorProgressBudget' in w:
         options['evaluator-progress-budget'] = json.dumps(w['evaluatorProgressBudget'])
+    if 'drainObservation' in w:
+        options['drain-observation'] = json.dumps(w['drainObservation'])
     startup=profile.workload_runtime.workload_inputs.startup_selection(p['phases'],frozen.require)
     if 'compose' in startup:
         options['startup-windows'] = json.dumps(startup['compose'])
@@ -108,6 +120,7 @@ def project(m,instance,target,out):
             core=frozen.source(result)['coreCommit'],deploy=frozen.source(result)['deployCommit'],bindingCommit=result['bindingCommit'])))
         k.write(out/'manifest.json',result)
         inputs={**({'edge':result['edge']} if 'edge' in result else {})}
+        if application_topology.FIELD in result:inputs[application_topology.FIELD]=result[application_topology.FIELD]
         population=population_ceiling.from_profile(result['profile'],frozen.require)
         if population is not None:inputs[population_ceiling.FIELD]=population
         if inputs:k.write(out/'binding-inputs.json',inputs)

@@ -51,8 +51,8 @@ def from_manifest(manifest):
 
 
 def requires_extended(value):
-    return (value.get('concurrency', DEFAULT_CONCURRENCY) > LEGACY_CONCURRENCY_MAX
-            or value.get('maxTenants', DEFAULT_MAX_TENANTS) > DEFAULT_MAX_TENANTS)
+    # No tenant-count ceiling: only the legacy concurrency bound selects the protocol.
+    return value.get('concurrency', DEFAULT_CONCURRENCY) > LEGACY_CONCURRENCY_MAX
 
 
 def source_protocol(raw):

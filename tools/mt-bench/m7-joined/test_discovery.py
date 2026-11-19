@@ -132,10 +132,11 @@ class Discovery(unittest.TestCase):
         self.assertEqual(events,['k6']);self.assertFalse((folder/'load/.restart').exists());self.assertEqual(record.value['processes']['probe']['returncode'],7)
         self.assertIsNone(record.value['oracle']);self.assertEqual(record.value['oracleFindings']['probeCountProof'],'UNMEASURED');self.assertEqual(record.value['status'],'PARTIAL');self.assertEqual(record.value['capacityAcceptance'],'NOT_GRANTED')
 
-    def fingerprint_collection(self,kind,corrupt=False):
+    def wrong_data_collection(self):
+        corrupt=True
         folder,m=self.setup();m.update(project='owned',port=1234,restartRoles=['api'],generator={'tools':{'node':{'path':'node'}}})
         a.write(folder/'deploy-before-host.json',{});a.write(folder/'tenants.private.json',[{'id':'a'},{'id':'b'}]);events=[]
-        metrics={'writes_ok':{'count':2},'writes_ok{tenant:a}':{'count':1},'writes_ok{tenant:b}':{'count':1},'writes_uncertain{tenant:a}':{'count':0},'writes_uncertain{tenant:b}':{'count':0},'writes_ok{kind:entries}':{'count':2},'writes_ok{kind:devicestatus}':{'count':0},'writes_ok{kind:treatments}':{'count':0},'settings_fingerprint_observed':{'count':1 if kind=='mismatch' else 0},'settings_fingerprint_'+kind:{'count':1}}
+        metrics={'writes_ok':{'count':2},'writes_ok{tenant:a}':{'count':1},'writes_ok{tenant:b}':{'count':1},'writes_uncertain{tenant:a}':{'count':0},'writes_uncertain{tenant:b}':{'count':0},'writes_ok{kind:entries}':{'count':2},'writes_ok{kind:devicestatus}':{'count':0},'writes_ok{kind:treatments}':{'count':0}}
         class Process:
             pid=12345;returncode=0
             def poll(self):return None
@@ -154,15 +155,10 @@ class Discovery(unittest.TestCase):
             stack.enter_context(patch.object(a.time,'sleep'));stack.enter_context(patch.object(a,'command',side_effect=command));stack.enter_context(patch.object(a,'progress_services',return_value=['evaluator']));stack.enter_context(patch.object(a,'progress_attribution',return_value={}))
             for name in ('sampling','loadgen_process','observe_progress'):stack.enter_context(patch.object(a,name,ctx))
             stack.enter_context(patch.object(a.subprocess,'Popen',side_effect=popen));stack.enter_context(patch.object(a,'stored',side_effect=stored));stack.enter_context(patch('reduce.measurements',side_effect=reduced))
-            with self.assertRaisesRegex(RuntimeError,'M7_DISCOVERY_WRONG_DATA' if corrupt else 'M7_FUNCTIONAL_SETTINGS_FINGERPRINT'):d.run_discovery(a,folder,m,'k6')
+            with self.assertRaisesRegex(RuntimeError,'M7_DISCOVERY_WRONG_DATA'):d.run_discovery(a,folder,m,'k6')
         value=a.document(folder/'summary.json');self.assertEqual(events,['k6','counts','measurements']);self.assertTrue(value['measurements']['complete']);self.assertTrue((folder/'load/stored-counts.json').is_file())
-        if corrupt:
-            self.assertIsNone(value['oracle']);self.assertEqual(value['oracleFindings']['verdict'],'RED');self.assertEqual(value['strictChecks']['collection']['verdict'],'FAIL');self.assertGreater(value['countDiagnostics']['failureCount'],0);self.assertLessEqual(len(value['countDiagnostics']['failures']),64);self.assertEqual(value['hardFailures'][-1]['code'],'M7_DISCOVERY_WRONG_DATA')
-        else:
-            self.assertEqual(value['oracle']['verdict'],'GREEN');self.assertEqual(value['settingsFingerprintObservation']['verdict'],'FAIL');self.assertEqual(value['hardFailures'][-1]['code'],'M7_FUNCTIONAL_SETTINGS_FINGERPRINT')
-    def test_count_failure_retains_actual_findings_and_existing_resource_reducer(self):self.fingerprint_collection('invalid',corrupt=True)
-    def test_fingerprint_invalid_retains_existing_counts_and_measurements_before_refusal(self):self.fingerprint_collection('invalid')
-    def test_fingerprint_mismatch_retains_existing_counts_and_measurements_before_refusal(self):self.fingerprint_collection('mismatch')
+        self.assertIsNone(value['oracle']);self.assertEqual(value['oracleFindings']['verdict'],'RED');self.assertEqual(value['strictChecks']['collection']['verdict'],'FAIL');self.assertGreater(value['countDiagnostics']['failureCount'],0);self.assertLessEqual(len(value['countDiagnostics']['failures']),64);self.assertEqual(value['hardFailures'][-1]['code'],'M7_DISCOVERY_WRONG_DATA')
+    def test_count_failure_retains_actual_findings_and_existing_resource_reducer(self):self.wrong_data_collection()
 
     def test_timeout_stops_only_exact_owned_k6_before_recovery(self):
         folder,m=self.setup();record=d.Record(a,folder,m);record.value['processes']['k6']={'timeout':True,'returncode':None}

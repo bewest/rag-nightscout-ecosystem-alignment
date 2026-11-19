@@ -164,23 +164,6 @@ reservation explicitly refuses this larger variant; it must not underreserve it.
 Timeline preloads, mounts and extra observations are separate instrument changes
 and must be sealed and reported, not called a pure performance comparison.
 
-For that variant only, `--clinical-intake-timeline two-target-intake-timeline-v1`
-selects a sealed diagnostic preload outside `/opt/app`. A readonly owned-state
-mount and explicit Node `--require` argument load the tap; image product files
-stay unchanged. After priming, before evaluator startup, the helper publishes
-only the first probe tenant ID and the last comparison tenant ID. It exposes no
-roster credentials. Quietness of the comparison tenant requires unchanged SQL
-writer observations. The tap records bounded receipt/pool/SQL/HTTP, existing
-scheduler callbacks and durable begin/completion events without awaiting them;
-it preserves original Promise and timer-handle returns. Scheduler run callbacks
-carry no version, so their version is UNMEASURED; durable begin/completion events
-record actual vectors. The host probe separately persists writer ACK and first
-matching frame events. Drops, persistence failure or absent exit status refuse
-complete trace qualification. Cleanup retains bounded evaluator traces before
-removing private state, including partial traces after failure. Source hashes,
-argv, mount, overhead and limits are instrument deltas; clinical gates and the
-existing write-to-completion budget remain unchanged.
-
 The timeline preload observes canonical module loads after the paired entrypoint
 applies its ordinary private environment. It does not import core or PostgreSQL
 modules during preloading. Runtime wrapping retains static export descriptors

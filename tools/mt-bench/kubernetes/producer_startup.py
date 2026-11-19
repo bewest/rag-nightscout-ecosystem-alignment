@@ -1,5 +1,6 @@
 """Classify bounded startup convergence for the owned producer Deployment."""
 
+import json
 import re
 
 HARD_WAITING = {
@@ -46,6 +47,22 @@ def log_codes(raw):
     return sorted(codes)
 
 
+def role_diagnostics(raw):
+    """Keep the source's coded startup diagnosis without the log body."""
+    found = []
+    for match in re.finditer(rb'^(?:API|Evaluator|Realtime) startup refused (\{[^\n]*\})$', raw, re.M):
+        try:
+            row = json.loads(match[1])
+        except (UnicodeDecodeError, ValueError):
+            continue
+        if (isinstance(row, dict) and set(row) == {'targetRole', 'checkPhase', 'causeCode'}
+                and row['targetRole'] in (None, 'api', 'evaluator', 'realtime')
+                and all(isinstance(row[key], str) and re.fullmatch('[A-Z0-9_]{1,90}', row[key])
+                        for key in ('checkPhase', 'causeCode')) and row not in found):
+            found.append(row)
+    return found
+
+
 def disposition(container, convergence):
     state = container['state']
     waiting = state.get('waiting', {}).get('reason')
@@ -78,3 +95,21 @@ class StableReady:
             self.identity = identity
             self.started = now
         return identity is not None and now - self.started >= self.seconds
+
+
+def milestones(status):
+    conditions = sum(c.get('status')=='True' for c in status.get('conditions', [])
+                     if c.get('type') in ('PodScheduled','PodReadyToStartContainers','Initialized'))
+    count = conditions
+    for container in status.get('initContainerStatuses', []) + status.get('containerStatuses', []):
+        state = container.get('state', {})
+        if state.get('terminated', {}).get('exitCode') == 0:
+            count += 3
+        elif 'running' in state:
+            count += 1 + int(container.get('started') is True) + int(container.get('ready') is True)
+    return count
+
+
+def vault_sealed(value):
+    health = value.get('data') if isinstance(value, dict) and 'data' in value else value
+    return isinstance(health, dict) and health.get('initialized') is True and health.get('sealed') is True

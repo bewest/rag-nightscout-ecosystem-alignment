@@ -3,8 +3,12 @@
 // The controller prefixes only bounded synthetic UUIDs and byte/query limits.
 (async()=>{
   let bytes=0,queries=0;
-  const deadline=Date.now()+15000;
-  const watchdog=setTimeout(()=>process.exit(1),16000);
+  const selected=typeof M7_PROGRESS_DEADLINE_MS==='undefined'?15000:M7_PROGRESS_DEADLINE_MS;
+  if(!Number.isSafeInteger(selected)||selected<1)throw Error('M7_EVALUATOR_PROGRESS_BUDGET');
+  const deadline=Date.now()+selected;
+  // Node timers clamp at signed-int32 milliseconds. A longer controller
+  // deadline is still checked between RPC pages and by its bounded exec.
+  const watchdog=setTimeout(()=>process.exit(1),Math.min(selected+1000,2147483647));
   try {
     const values=require('./deploy/multitenant/service-environment').read();
     // Read the same pure pool contract without loading evaluator execution/settings.

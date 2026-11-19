@@ -17,43 +17,17 @@ The frozen Compose environment, generated private environment overrides and
 actual running-container environment are checked. Unsupported numbered worker
 roles refuse rather than silently escaping diagnostics/log inventory.
 
-After infrastructure bootstrap and before provisioning, `fingerprint.cjs` reads
-the actual private `state/primer/config.json`, requires the exact synthetic seed
-shape without settings/overrides and checks the pinned provisioning source's
-blank settings insert. It verifies nine source blobs against the paired core
-commit, then constructs the default tenant environment from those source bytes.
-No SQL seed, owner setting mutation or additional HTTP request is used.
+The per-run settings fingerprint (`fingerprint.cjs`) was removed on 2026-11-18.
+It re-derived a settings projection from core source blobs at the paired commit
+and refused any source layout it had not seen, which stopped runs on source
+moves rather than on a product property. Run identity is the image digest plus
+the run configuration. The k6 `r_status` read remains an ordinary status read.
 
-Fingerprint schema1 hashes a fixed, bounded projection: units; ordered enabled
-plugins; timeFormat/dayStart/dayEnd, focusHours/heartbeat; display/alarm booleans,
-alarm minute arrays/timeago minutes; four BG thresholds; devicestatus advanced
-and days. Other strings, authentication, credentials, runtime state, identifiers,
-times and the full status document are excluded. Whitelisted values exist only
-in RAM. Exported evidence contains only schema/hash, exact source-blob IDs and
-a seed-shape proof. This is a selected-settings fingerprint, not a claim to hash
-every server setting or every extended plugin option.
-
-The existing generated k6 `r_status` response supplies observations. Successful
-200 bodies over128KiB or malformed/missing selected fields are invalid. A
-changed hash is a functional failure. Zero valid observations is UNMEASURED and
-cannot pass. Metrics are `settings_fingerprint_observed`,
-`settings_fingerprint_invalid`, `settings_fingerprint_mismatch`; the adapter
-writes `settingsFingerprintObservation` with counts and verdict to its summary.
-No status body, whitelist projection or per-tenant label is exported by this
-seam. k6 itself retains its existing transient response handling.
-
-`settingsFingerprint` also records the exact six Transit purpose/type schema
-from pinned registry rules. `transit.keyCountObservation` is UNMEASURED: source
-schema is not an observed Vault key count. Registry defaults include their
-current complete enabled-plugin list, rather than the historical static lean
-five-plugin profile. The source hash records that difference without overriding
-new defaults to imitate the historical workload.
-
-`profileSelection` contains version, settings schema/hash/source provenance,
+`profileSelection` (version 4) contains version,
 diagnostics selection, topology and a canonical SHA256 over those fields.
 It deliberately excludes tenant count and API replica count. All pilot levels
 and all same-workload API-scaling cells must carry the exact same object/hash.
-Changing diagnostics, settings or realtime/evaluator topology creates a distinct
+Changing diagnostics or realtime/evaluator topology creates a distinct
 profile; it cannot be called API replication alone. Pilot `--replicas 1|2|4`
 selects one fixed count across500/750/1000 (default1); `profileReplicas` records
 that choice. Fixed2 is a pilot profile, not evidence of API scaling. Full-ladder

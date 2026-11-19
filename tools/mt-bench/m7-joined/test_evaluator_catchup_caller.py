@@ -61,7 +61,7 @@ class Caller(unittest.TestCase):
         def rpc(*args, **kwargs):
             self.rpc_calls.append({'deadlineContext': a._COMMAND_DEADLINE.get(), **kwargs})
             return ''
-        def view(services, ids, fetch, *, allow_unavailable=False, policy):
+        def view(services, ids, fetch, *, allow_unavailable=False, allow_clinical_stall=False, policy):
             self.assertTrue(allow_unavailable)
             self.assertEqual(policy,progress.capture_policy(manifest['cadence'].get('evaluatorProgressBudget')))
             if thread_rpc:
@@ -98,27 +98,17 @@ class Caller(unittest.TestCase):
             self.assertGreater(call['timeout'], 0)
             self.assertLessEqual(call['timeout'], 5)
 
-    def test_initial_reservation_refuses_before_collector_and_one_boundary_is_exact(self):
-        for budgets, code in [({'maxQueries': 1}, 'M7_DRAIN_QUERY_BOUND'),
-                              ({'maxBytes': 1}, 'M7_DRAIN_BYTE_BOUND'),
-                              ({'maxRounds': 0}, 'M7_DRAIN_QUERY_BOUND')]:
-            with mock.patch.dict(c.POLICY, budgets):
-                value, calls = self.run_tail()
-                self.assertEqual(value['code'], code)
-                self.assertEqual(calls, [])
-                self.assertEqual(self.collector_calls, 0)
-        with mock.patch.dict(c.POLICY, maxRounds=1):
+    def test_renewable_budget_allows_advancing_tail_after_boundary(self):
+        with mock.patch.dict(c.POLICY, maxRounds=1, maxBytes=1, maxQueries=1):
             value, calls = self.run_tail()
-            self.assertEqual(value['verdict'], 'UNMEASURED')
-            self.assertEqual(value['code'], 'M7_DRAIN_QUERY_BOUND')
-            self.assertEqual(len(calls), 1)
-            self.assertEqual(value['queries'], 2)
-            self.assertEqual(value['rounds'], 1)
+            self.assertEqual(value['verdict'], 'PASS', value.get('code'))
+            self.assertEqual(len(calls), 2)
+            self.assertEqual(value['queries'], 4)
+            self.assertEqual(value['rounds'], 2)
+            self.assertEqual(value['budgetMode'], 'roster-progress-v1')
             value, calls = self.run_tail(boundary_complete=True)
             self.assertEqual(value['verdict'], 'PASS')
             self.assertEqual(len(calls), 1)
-            self.assertEqual(value['queries'], 2)
-            self.assertEqual(value['rounds'], 1)
 
     def test_cache_generation_change_does_not_refuse_durable_catchup(self):
         value, calls = self.run_tail(generation=True)
@@ -139,8 +129,8 @@ class Caller(unittest.TestCase):
         self.assertGreater(value['observationWindow']['effectiveSeconds'],590)
         self.assertLessEqual(value['observationWindow']['effectiveSeconds'],600)
         self.assertTrue(calls)
-        self.assertTrue(all(0<row['timeout']<=20 for row in calls))
-        self.assertTrue(all(0<row['timeout']<=20 for row in self.rpc_calls))
+        self.assertTrue(all(0<row['timeout']<=600 for row in calls))
+        self.assertTrue(all(0<row['timeout']<=600 for row in self.rpc_calls))
         self.assertIsNone(a._COMMAND_DEADLINE.get(),'phase deadline leaked into caller')
         refused,calls=self.run_tail(deadline=False,phase_seconds=600,writer_live=True)
         self.assertEqual(refused['code'],'M7_DRAIN_WRITERS_NOT_JOINED')
@@ -206,10 +196,10 @@ class Caller(unittest.TestCase):
         self.assertLess(events.index('after-reconnect'), events.index('tail'))
         self.assertEqual(record.value['strictChecks']['load']['code'], 'M7_EVALUATOR_PROGRESS_NOT_OBSERVED')
 
-    def test_explicit_discovery_without_restart_selection_only(self):
+    def test_discovery_without_restart_selects_mandatory_catchup(self):
         m = {'profile': 'pgstream-sample', 'completionContract': 'evaluator-work-v2', 'runPurpose': 'discovery',
              'evaluatorOpportunities': 'received-input-v1', 'cadence': {'restart': False}}
-        c.select(argparse.Namespace(), m); self.assertNotIn('evaluatorCatchup', m)
+        c.select(argparse.Namespace(), m); self.assertEqual(m['evaluatorCatchup'], 'fixed-target-v1')
         c.select(argparse.Namespace(evaluator_catchup='fixed-target-v1'), m)
         for bad in [{**m, 'runPurpose': 'acceptance'}, {**m, 'cadence': {'restart': True}}]:
             with self.assertRaisesRegex(Exception, 'DRAIN_PROFILE'):

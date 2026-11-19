@@ -39,12 +39,6 @@ class Profile(unittest.TestCase):
         row={'Config':{'Labels':{'com.docker.compose.service':'api'},'Env':['NS_M7_DIAGNOSTICS=1','NS_M7_DIAGNOSTICS_INTERVAL_MS=1000']},'State':{'Running':True}}
         profile.runtime_environment([row],chosen);row['Config']['Env'].pop()
         with self.assertRaisesRegex(RuntimeError,'RUNTIME_MISMATCH'):profile.runtime_environment([row],chosen)
-    def test_missing_observation_not_green_and_invalid_mismatch_fail(self):
-        self.assertEqual(profile.fingerprint_check({})['verdict'],'UNMEASURED')
-        good={'settings_fingerprint_observed':{'count':1}}
-        self.assertEqual(profile.fingerprint_check(good)['verdict'],'PASS')
-        for key in ('invalid','mismatch'):
-            self.assertEqual(profile.fingerprint_check({**good,'settings_fingerprint_'+key:{'count':1}})['verdict'],'FAIL')
     def test_private_logs_actual_timeout_truncation_global_budget(self):
         with tempfile.TemporaryDirectory() as d:
             config={'services':{'api':{},'api-2':{},'vault':{'command':['vault','server']}}}
@@ -79,59 +73,26 @@ class Profile(unittest.TestCase):
             self.assertEqual(row['reason'],'scan-byte-cap');self.assertFalse(row['streamComplete']);self.assertTrue(row['truncated'])
             self.assertEqual(row['bytes'],128);self.assertLessEqual(row['observedBytes'],row['scanLimitBytes']+1)
 
-    def test_topology_diagnostics_and_settings_are_comparison_identity(self):
-        f={'schema':1,'sha256':'a'*64,'sourceCommit':'b'*40,'sourceBlobs':{'file':'c'*40}}
+    def test_topology_and_diagnostics_are_comparison_identity(self):
         config={'services':{'api':{},'realtime':{},'evaluator':{},'vault':{'command':['vault','server']}}}
-        base=profile.identity(f,profile.selection(),config)
+        base=profile.identity(profile.selection(),config)
         self.assertEqual(base['topology']['secretsBackend'],'vault-server')
-        self.assertNotEqual(base['sha256'],profile.identity(f,profile.selection('on'),config)['sha256'])
+        self.assertNotEqual(base['sha256'],profile.identity(profile.selection('on'),config)['sha256'])
         config['services']['api-2']={}
-        self.assertEqual(base,profile.identity(f,profile.selection(),config))
+        self.assertEqual(base,profile.identity(profile.selection(),config))
         config['services']['vault-agent']={}
-        with self.assertRaisesRegex(RuntimeError,'AGENT_OVERLAY_UNSUPPORTED'):profile.identity(f,profile.selection(),config)
-    @unittest.skipUnless(CORE and COMMIT,'explicit owned pinned core fixture required')
-    def test_actual_source_defaults_real_status_and_generated_k6_plugin_control(self):
-        with tempfile.TemporaryDirectory(prefix='m7-status-profile-') as d:
-            d=Path(d);seed=d/'primer.json';status=d/'status.json';work=d/'workload.js';tenants=d/'tenants.json'
-            seed_value={'version':1,'seed':[{'id':A,'hosts':['a.example.test'],'issueRootSecret':True}]};seed.write_text(json.dumps(seed_value))
-            command=['node',str(HERE/'fingerprint.cjs'),CORE,COMMIT,str(seed),'1']
-            expected=json.loads(subprocess.check_output(command,text=True))
-            self.assertEqual(len(expected['transit']['purposes']),6);self.assertEqual(expected['transit']['keyCountObservation'],'UNMEASURED')
-            self.assertNotIn('enable',expected);self.assertNotIn('hosts',json.dumps(expected))
-            subprocess.run(['node',str(HERE/'status-fixture.cjs'),CORE,str(status)],check=True,timeout=20)
-            original=status.read_text();raw=json.loads(original);self.assertIn('careportal',raw['settings']['enable'])
-            generate(adapter.ROOT,work);tenants.write_text(json.dumps([{'id':A,'host':'a.example.test','token':'fixture-only'}]))
-            env={**os.environ,'M7_FIXTURE_STATUS':str(status),'M7_FIXTURE_FINGERPRINT':expected['sha256']}
-            def calls():return json.loads(subprocess.check_output(['node',str(HERE/'workload-shapes.cjs'),str(work),str(tenants)],env=env,text=True))
-            baseline=calls();self.assertEqual(sum(c.get('value',0) for c in baseline if c.get('counter')=='settings_fingerprint_observed'),1)
-            self.assertFalse(any(c.get('counter') in ('settings_fingerprint_invalid','settings_fingerprint_mismatch') for c in baseline))
-            # No added status request; exactly one existing status shape.
-            self.assertEqual(sum(c.get('method')=='GET' and '/status.json' in c.get('url','') for c in baseline),1)
-            raw['settings']['enable']=['bgnow'];status.write_text(json.dumps(raw))
-            self.assertTrue(any(c.get('counter')=='settings_fingerprint_mismatch' for c in calls()))
-            del raw['settings'];status.write_text(json.dumps(raw))
-            self.assertTrue(any(c.get('counter')=='settings_fingerprint_invalid' for c in calls()))
-            seed_value['seed'][0]['settings']={};seed.write_text(json.dumps(seed_value))
-            denied=subprocess.run(command,text=True,capture_output=True);self.assertNotEqual(denied.returncode,0);self.assertIn('SEED_INVALID',denied.stderr)
-            seed_value['seed'][0].pop('settings');seed.write_text(json.dumps(seed_value))
-            self.assertEqual(json.loads(subprocess.check_output(command,text=True))['sha256'],expected['sha256'])
-            status.write_text(original)
-            self.assertFalse(any(c.get('counter') in ('settings_fingerprint_invalid','settings_fingerprint_mismatch') for c in calls()))
-
-    def test_comparison_refuses_same_source_but_changed_diagnostics_settings_and_missing_observation(self):
+        with self.assertRaisesRegex(RuntimeError,'AGENT_OVERLAY_UNSUPPORTED'):profile.identity(profile.selection(),config)
+    def test_comparison_refuses_same_source_but_changed_diagnostics(self):
         import contract
-        f={'schema':1,'sha256':'a'*64,'sourceCommit':'b'*40,'sourceBlobs':{}}
         config={'services':{'api':{},'realtime':{},'evaluator':{},'vault':{'command':['vault','server']}}}
-        chosen=profile.identity(f,profile.selection(),config)
+        chosen=profile.identity(profile.selection(),config)
         pair={'core':'b'*40,'deploy':'c'*40}
-        row={'pair':pair,'hostIdentity':'d'*64,'instrument':'e'*64,'imageId':'sha256:'+'f'*64,'verdict':'PASS','profile':'remote-pilot','replicas':2,'measurements':{'complete':True},'profileSelection':chosen,'settingsFingerprintObservation':{'verdict':'PASS','observations':1,'invalid':0,'mismatch':0}}
+        row={'pair':pair,'hostIdentity':'d'*64,'instrument':'e'*64,'imageId':'sha256:'+'f'*64,'verdict':'PASS','profile':'remote-pilot','replicas':2,'measurements':{'complete':True},'profileSelection':chosen}
         doc={'kind':'m7-joined-remote-pilot','pair':pair,'hostIdentity':'d'*64,'instrument':'e'*64,'imageId':row['imageId'],'profileSelection':chosen,'profileReplicas':2,'cells':[{**row,'tenants':n} for n in contract.PILOT_COUNTS]}
         self.assertTrue(contract.pilot_check(doc))
-        for replacement in (profile.identity(f,profile.selection('on'),config),profile.identity({**f,'sha256':'0'*64},profile.selection(),config)):
+        for replacement in (profile.identity(profile.selection('on'),config),):
             broken=copy.deepcopy(doc);broken['cells'][1]['profileSelection']=replacement
             with self.assertRaisesRegex(RuntimeError,'PROFILE_SELECTION_MISMATCH'):contract.pilot_check(broken)
-        broken=copy.deepcopy(doc);broken['cells'][1]['settingsFingerprintObservation']['observations']=0
-        with self.assertRaisesRegex(RuntimeError,'FUNCTIONAL_SETTINGS_FINGERPRINT'):contract.pilot_check(broken)
 
     def test_stats_only_exited_k6_separate_and_unknown_serving_missing_fail(self):
         with tempfile.TemporaryDirectory() as temporary:

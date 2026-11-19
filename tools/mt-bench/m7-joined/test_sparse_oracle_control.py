@@ -24,7 +24,7 @@ class SparseControl(unittest.TestCase):
            'profile':'pgstream-sample','runPurpose':'discovery','owner':'f'*32,'tenants':size,'replicas':1,
            'generator':{},'hostIdentity':'c'*64,'imageId':'sha256:'+'e'*64,'cadence':{'loadSeconds':180,'idleSeconds':1,'warmupSeconds':1},
            'settingsFingerprint':{'schema':1,'sha256':'f'*64,'sourceCommit':'a'*40,'sourceBlobs':{}}}
-        m['profileSelection']=profile_provenance.identity(m['settingsFingerprint'],profile_provenance.selection(),
+        m['profileSelection']=profile_provenance.identity(profile_provenance.selection(),
             {'services':{'api':{},'vault':{'command':['vault','server']},'realtime':{},'evaluator':{}}})
         a.write(root/'owner.json',m);a.write(root/'tenants.private.json',[{'id':t} for t in ids]);(out/'runid').write_text('synthetic-sparse')
         metrics={'writes_ok':{'count':345},**{'writes_ok{kind:'+k+'}':{'count':345 if k==domain else 0} for k in ('entries','devicestatus','treatments')}}

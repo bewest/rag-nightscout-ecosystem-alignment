@@ -1,7 +1,0 @@
-'use strict';
-const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path'),{create}=require('./clinical-timeline-client.cjs');
-(async()=>{const ids=['11111111-1111-4111-8111-111111111111','22222222-2222-4222-8222-222222222222'],directory=fs.mkdtempSync(path.join(os.tmpdir(),'clinical-client-control-'));
- const tap=create({directory,ids});tap.record('writer-ack',ids[0],{date:2,sent:1,acked:3});tap.record('first-matching-frame',ids[0],{date:2,sent:1,received:4});tap.record('writer-ack','33333333-3333-4333-8333-333333333333',{date:2,sent:1,acked:3});while(tap.status().pending)await new Promise(r=>setImmediate(r));assert.equal(tap.status().written,2);assert.equal(tap.seal().qualification,'COMPLETE');
- let called=false;const refused=create({directory,ids,io:{writeFile(file,text,options,callback){called=true;callback({code:'ENOSPC'});},writeFileSync(){}}});refused.record('writer-ack',ids[0],{date:2,sent:1,acked:3});assert(called);assert.equal(refused.status().failed,'ENOSPC');assert.equal(refused.status().qualification,'UNMEASURED');
- const limited=create({directory,ids,maxRows:0});limited.record('writer-ack',ids[0],{date:2,sent:1,acked:3});assert.equal(limited.status().dropped,1);assert.equal(limited.status().qualification,'UNMEASURED');
- console.log(JSON.stringify({status:'PASS',controls:['ACK and first frame persist independently','other tenants ignored','ENOSPC typed/refuses qualification','overflow UNMEASURED'],actors:0}));})().catch(e=>{console.error(e.stack);process.exitCode=1;});

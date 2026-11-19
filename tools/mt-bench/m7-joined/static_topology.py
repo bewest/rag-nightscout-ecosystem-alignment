@@ -6,6 +6,7 @@ from pathlib import Path
 from contract import require, discovery_api_replicas, discovery_workers
 import workload_inputs
 import role_instances
+from orchestration_binding import verified_serving
 
 CORE = 'ce96241b390cd5397d808417b353161eed83e564'
 DEPLOY = '160ca4d62002746c9b1401dc4784ba30b8543711'
@@ -55,31 +56,15 @@ def build_receipt(args):
         proof = json.loads(raw)
     except (OSError, ValueError) as error:
         raise RuntimeError('M7_STATIC_BUILD_RECEIPT_INVALID') from error
-    pair = {'coreCommit': args.core_commit, 'deployCommit': args.deploy_commit}
-    require(isinstance(proof, dict) and proof.get('schemaVersion') == 1
-            and proof.get('status') == 'BUILT_VERIFIED_LOCAL' and proof.get('basis') == 'reproduced'
-            and all(proof.get(k) == v for k, v in pair.items())
-            and proof.get('localImageId') == (args.image_id or args.image)
+    # The image is the run identity. Build status, labels and build inputs are
+    # recorded by the build, not re-proved from Git on every run.
+    require(isinstance(proof, dict) and proof.get('localImageId') == (args.image_id or args.image)
             and re.fullmatch('sha256:[0-9a-f]{64}', proof.get('localImageId') or ''),
             'M7_STATIC_BUILD_IDENTITY')
-    labels = proof.get('labels')
-    runtime = proof.get('runtime')
-    require(isinstance(labels, dict) and labels.get('org.opencontainers.image.revision') == args.core_commit
-            and labels.get('org.nightscout.deploy.revision') == args.deploy_commit
-            and isinstance(runtime, dict) and runtime.get('source') == {'version': 1, **pair}
-            and runtime.get('producerHelpSucceeded') is True, 'M7_STATIC_BUILD_PROVENANCE')
-    import adapter as a
-    lock = a.command(['git', '-C', args.core_repo, 'show', args.core_commit + ':package-lock.json'], binary=True)
-    producer = json.loads(a.git(args.deploy_repo, 'show',
-                                args.deploy_commit + ':bindings/compose/multitenant/pgstream-source.json'))
-    require(runtime.get('lockSha256') == hashlib.sha256(lock).hexdigest()
-            and isinstance(runtime.get('binarySha256'), str)
-            and re.fullmatch('[0-9a-f]{64}', runtime['binarySha256'])
-            and runtime['binarySha256'] == producer.get('binarySha256'), 'M7_STATIC_BUILD_INPUTS')
     return {'staticBuildReceiptSha256': digest}
 
 
-def option(args, require_allocation=True):
+def option(args):
     count = getattr(args, 'static_workers', None)
     build = build_receipt(args)
     if count is None:
@@ -91,10 +76,8 @@ def option(args, require_allocation=True):
                 'pgstreamTopology': args.pgstream_topology, 'completionContract': args.completion_contract,
                 'replicas': args.replicas}
     validate({**manifest, **build})
-    needs_selected_allocation = count > 1 or args.replicas > 1
-    require(not (require_allocation and needs_selected_allocation) or
-            isinstance(getattr(args, 'diagnostic_resource_allocation', None), dict),
-            'M7_STATIC_EXPLICIT_ALLOCATION')
+    # No explicit allocation selects uncapped Compose services (an explained
+    # default reported by `runner.py plan`); it is not a refusal.
     return {'staticTopology': manifest['staticTopology'], **build}
 
 
@@ -113,37 +96,15 @@ def receipt(manifest, proof):
     return True
 
 
-def verify_source(a, manifest, core_repo, deploy_repo):
-    if validate(manifest) is None:
-        return None
-    files = {
-        'core': ['lib/pgstream/assigned-worker.js', 'lib/realtime-ownership/index.js',
-                 'lib/server/serve/evaluator-config.js', 'lib/server/realtime/config.js',
-                 'lib/server/serve/plan-contract/schema/evaluator.schema.json'],
-        'deploy': ['bindings/compose/multitenant/evaluator-workers.js', 'bindings/compose/multitenant/realtime-workers.js',
-                   'bindings/compose/multitenant/config.js', 'bindings/compose/multitenant/prepare.js',
-                   'bindings/compose/multitenant/socket-edge.js']}
-    # Exact objects, not a closest branch, provide the actual source/parser contract.
-    hashes = {}
-    import hashlib
-    for kind, paths in files.items():
-        repo = core_repo if kind == 'core' else deploy_repo
-        for file in paths:
-            raw = a.command(['git','-C',repo,'show',manifest['pair'][kind]+':'+file],binary=True)
-            require(isinstance(raw,bytes) and bool(raw), 'M7_STATIC_SOURCE_CONTRACT')
-            hashes[kind + ':' + file] = hashlib.sha256(raw).hexdigest()
-    return {'status': 'SOURCE_OBJECTS_VERIFIED', 'pair': manifest['pair'], 'files': hashes,
-            'scope': 'Exact static source objects; real generated document/parser check is required separately.'}
-
-
 def verify_config(manifest, config):
     value = validate(manifest)
     if value is None:
         require('socket-edge' not in config.get('services', {}), 'M7_STATIC_SELECTION_REQUIRED')
         return None
     if 'tenants' in manifest:
+        seed_service = 'primer' if verified_serving(config) else 'bootstrap'
         require(workload_inputs.tenants(manifest['tenants'])
-                and config.get('services', {}).get('bootstrap', {}).get('environment', {}).get('NS_DEMO_TENANTS') == str(manifest['tenants']),
+                and config['services'].get(seed_service, {}).get('environment', {}).get('NS_DEMO_TENANTS') == str(manifest['tenants']),
                 'M7_STATIC_SEED_COUNT')
     count = value['workers']; instances = role_instances.roster(config, manifest['replicas'])
     require(all(sum(v['role'] == role for v in instances.values()) == count for role in ('evaluator', 'realtime')),

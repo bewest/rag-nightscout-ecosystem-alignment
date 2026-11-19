@@ -10,12 +10,14 @@ from lifecycle_config import fixture_config, startup_preflight
 import frozen
 import primer_storage
 import producer_startup
-import phase_fit
-import owned_worker
+import application_topology
+import candidate
+import run_cleanup
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
 from auto_catalog import auto_catalog
+from primer_progress import ProgressWindow
 cfg=fixture_config(Path(sys.argv[1]))
-d=Path(cfg['caseDirectory']); inst=Path(cfg['instrumentDirectory']); tool=Path(cfg['toolsDirectory'])
+d=Path(cfg['caseDirectory']); tool=Path(cfg['toolsDirectory'])
 read=lambda p:json.loads(p.read_bytes())
 os.umask(0o077);sys.dont_write_bytecode=True
 e=read(d/'environment.json'); ns=e['namespace'];ctx=e['context'];rid=e['runId']
@@ -26,23 +28,25 @@ assert e['runId']==d.name and ns.startswith('ns-synth-'),'INSTANCE_IDENTITY_CHAN
 live=d/'runtime';live.mkdir(mode=0o700,exist_ok=True);assert not any(live.iterdir()),'ENTERED_OUTPUT_EXISTS'
 def put(n,obj):(live/n).write_text(json.dumps(obj,indent=2)+'\n')
 def timestamp():return dt.datetime.now(dt.timezone.utc).isoformat()
-def command(argv,data=None,timeout=None,private=False,worker_view=False):
+def command(argv,data=None,timeout=None,private=False):
     rem=cleanup-time.time() if cleaning else work-time.time()
     if not cleaning and phase_cutoff is not None:
         rem=min(rem,phase_cutoff-time.time())
     assert rem>0,'CUTOFF'
     if timeout is None:timeout=18 if cleaning else waits['commandSeconds']
-    q=subprocess.run([str(x) for x in argv],input=data,capture_output=True,timeout=min(timeout,rem),env=dict(env, RO_OWNED_WORKER_VIEW='1') if worker_view else env)
+    q=subprocess.run([str(x) for x in argv],input=data,capture_output=True,
+                     timeout=ProgressWindow.read_seconds(min(timeout,rem)),env=env)
     if q.returncode:
         import re
         codes=sorted(set(re.findall(rb'\b(?:K8S_|M7_|PRIMER_|BOOTSTRAP_|PLATFORM_|VAULT_|EVALUATOR_)[A-Z0-9_]{2,90}\b',q.stderr+q.stdout)))
-        put('last-command-error.json',{'program':Path(str(argv[0])).name,'returncode':q.returncode,'codes':[x.decode() for x in codes]})
+        error = {'program':Path(str(argv[0])).name,'returncode':q.returncode,'codes':[x.decode() for x in codes]}
+        if cfg.get('schedulerPlacement') and not private:
+            error['stderr'] = q.stderr[-1500:].decode(errors='replace')
+        put('last-command-error.json',error)
         raise RuntimeError('PRIVATE_STEP_FAILED' if private else 'STAGE_COMMAND_FAILED')
     return q.stdout
 env={**os.environ,'PATH':str(tool)+':'+os.environ['PATH'],'TMPDIR':str(live),'NS_KUBE_CONTEXT':ctx,'NS_RUN_ID':rid,'RO_NO_LOG':'1','PYTHONDONTWRITEBYTECODE':'1'}
 env.pop('RO_OWNED_WORKER_VIEW', None)
-if cfg.get('ownedWorkerPreflight'):
-    env['RO_ALLOW_SENSITIVE'] = '1'
 rpc=[tool/'kubectl','--context',ctx,'--request-timeout='+str(waits['requestSeconds'])+'s']
 start=time.time();work=start+e['workDeadlineSeconds'];cleanup=start+e['cleanupDeadlineSeconds'];cleaning=False
 phase_cutoff=None
@@ -65,52 +69,19 @@ def get(kind,name,local=True):
     b=k(['get',kind,name,*(['-n',ns] if local else []),'--ignore-not-found','-o','json'])
     return json.loads(b) if b.strip() else None
 def create(obj):
-    if cfg.get('ownedWorkerPreflight') and obj['kind'] in owned_worker.WORKLOADS:
-        check_worker()
     return json.loads(k(['create','-f','-','-o','json'],obj))
-def deluid(path,uid):
-    k(['delete','--raw',path,'-f','-'],{'apiVersion':'v1','kind':'DeleteOptions','propagationPolicy':'Foreground','preconditions':{'uid':uid}})
-def absent(kind,name,local):
-    deadline=time.monotonic()+150
-    while time.monotonic()<deadline:
-        if get(kind,name,local) is None:return
-        time.sleep(2)
-    raise RuntimeError('ABSENCE_UNCONFIRMED_'+kind)
 def owned():
     cur=get('namespace',ns,False)
     assert cur and cur['metadata']['uid']==nsuid and cur['metadata']['labels']['nightscout.org/run-id']==rid
 def objects(stage):return read(d/'stages'/f'{stage}.json')['items']
+split = 'verification' in read(d/'inventory.json').get('workloads', {})
+startup_stages = ('foundation','stores','provision','private-admin','primer','serving') + (('verification',) if split else ())
 def step(stage):
     global current
     current=stage
-    events.append({'stage':stage,'time':timestamp()});put('stages.json',events)
-def check_worker():
-    worker = cfg.get('ownedWorkerPreflight')
-    if worker is None:
-        return
-    def guarded_get(argv, worker_view=True):
-        prefix = [cfg['readonlyGuard'], 'kubectl', '--context', ctx,
-                  '--request-timeout='+str(waits['requestSeconds'])+'s']
-        return json.loads(command(prefix+argv, private=True, worker_view=worker_view))
-    selection = worker['proof']['selection']
-    fixture = []
-    if nsuid is not None:
-        owned()
-        all_pods = guarded_get(['get','pods','-n',ns,'--chunk-size=0','-o','json'], False)
-        replicas = guarded_get(['get','replicasets','-n',ns,'--chunk-size=0','-o','json'], False)
-        fixture = owned_worker.stage_pods(selection, ns, all_pods, replicas, uids)
-    observation = owned_worker.live(selection, worker['proof']['infrastructure'], fixture, guarded_get)
-    if nsuid is not None:
-        owned()
-    put('owned-worker-last.json', {**observation, 'stage': current, 'namespaceUid': nsuid, 'time': timestamp()})
-
-
+    events.append({'stage':stage,'time':timestamp(),'monoMs':time.monotonic_ns()/1e6});put('stages.json',events)
 def install(stage):
     step(stage);owned()
-    if cfg.get('ownedWorkerPreflight'):
-        check_worker()
-    if cfg.get('resourcePhasePreflight') and stage in ('private-admin','primer','serving'):
-        confirm_provision_retirement()
     for obj in objects(stage):
         assert obj['metadata']['namespace']==ns
         made=create(obj)
@@ -118,38 +89,48 @@ def install(stage):
         put('created.json',uids)
 def pods(label):
     return json.loads(k(['get','pods','-n',ns,'-l',label,'-o','json']))['items']
-def confirm_provision_retirement():
-    """Positive retirement precedes every post-provision allocation."""
-    owned()
-    expected,=objects('provision')
-    job=get('job','provision')
-    made,=(r for r in uids if r['kind']=='Job' and r['name']=='provision')
-    assert job is not None and job['metadata']['uid']==made['uid'],'K8S_PHASE_JOB_UID_CHANGED'
-    path=live/'provision-retirement.json'
-    previous=read(path) if path.exists() else None
-    old={k:v for k,v in previous.items() if k!='planSha256'} if previous else None
-    proof=phase_fit.terminal(expected,job,pods(''),nsuid,rid,old)
-    proof['planSha256']=phase_fit.digest(cfg['resourcePhasePreflight']['plan'])
-    if previous is not None:
-        assert previous==proof,'K8S_PHASE_TERMINAL_PROOF_CHANGED'
-    else:put('provision-retirement.json',proof)
-    return proof
 def summary(pod):
     sts=pod.get('status',{})
-    return {'name':pod['metadata']['name'],'uid':pod['metadata']['uid'],'node':pod['spec'].get('nodeName'),'phase':sts.get('phase'),
+    record = {'name':pod['metadata']['name'],'uid':pod['metadata']['uid'],'node':pod['spec'].get('nodeName'),'phase':sts.get('phase'),
             'resources':[{k:v.get(k) for k in ('name','resources')} for v in pod['spec'].get('initContainers',[])+pod['spec'].get('containers',[])],
             'containers':[{k:c.get(k) for k in ('name','imageID','restartCount','ready')}|{'state':c.get('state',{}),'previousTermination':c.get('lastState',{}).get('terminated')} for c in sts.get('initContainerStatuses',[])+sts.get('containerStatuses',[])]}
+    if cfg.get('schedulerPlacement'):
+        record['createdAt'] = pod['metadata'].get('creationTimestamp')
+        record['scheduled'] = next((row for row in sts.get('conditions', ())
+                                    if row['type'] == 'PodScheduled'), None)
+    return record
 def failure_codes(pod,container,uid,previous=False):
     owned()
     require_pod_uid(pod,uid)
-    args=['logs',pod,'-n',ns,'-c',container,'--tail=60']
+    limit=65536
+    args=['logs',pod,'-n',ns,'-c',container,'--tail=60','--limit-bytes='+str(limit)]
     if previous:args.append('--previous')
+    output=None
     try:
         output=command(rpc+args,private=True)
         observed={'status':'CAPTURED','codes':producer_startup.log_codes(output)}
+        diagnostics = producer_startup.role_diagnostics(output)
+        if diagnostics:
+            observed['roleDiagnostics'] = diagnostics
     except (RuntimeError, OSError, subprocess.TimeoutExpired):
         observed={'status':'UNMEASURED','codes':[]}
     require_pod_uid(pod,uid)
+    if output is not None:
+        retained=output[-limit:]
+        digest=hashlib.sha256(retained).hexdigest()
+        identity=hashlib.sha256((uid+'\0'+container+'\0'+str(previous)).encode()).hexdigest()[:16]
+        path=live/('failed-container-'+identity+'-'+digest+'.private.log')
+        try:
+            if path.exists():
+                assert path.read_bytes()==retained,'FAILED_CONTAINER_CAPTURE_CHANGED'
+            else:
+                with os.fdopen(os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600),'wb') as stream:
+                    stream.write(retained)
+            observed['privateLog']={'status':'CAPTURED','path':str(path),'bytes':len(retained),
+                'sha256':digest,'responseBytes':len(output),'responseSha256':hashlib.sha256(output).hexdigest(),
+                'responseTruncated':len(output)>limit,'tailLines':60,'byteLimit':limit}
+        except OSError as error:
+            observed['privateLog']={'status':'UNMEASURED','code':type(error).__name__}
     return observed
 
 def require_pod_uid(name,uid):
@@ -157,60 +138,221 @@ def require_pod_uid(name,uid):
     if row is None or row['metadata']['uid']!=uid:
         raise RuntimeError('POD_OWNERSHIP_CHANGED')
 
-def ready(label,typ,timeout,convergence=None):
+def provisioned_count(pod):
+    # Read only the count from the source's atomic custody file, in the active
+    # init container. Existing source images use the same checkpoint.
+    if not any(c['name']=='primer' and 'running' in c['state']
+               for c in pod.get('status',{}).get('initContainerStatuses', [])):
+        return None
+    script = """const fs=require('node:fs');
+const path=(process.env.NS_PRIMER_STATE || '/run/ns-primer')+'/provisioned.json';
+try {
+  const rows=JSON.parse(fs.readFileSync(path));
+  if (!Array.isArray(rows)) throw new Error('PRIMER_CHECKPOINT_INVALID');
+  console.log(rows.length);
+}
+catch(e) { if(e.code!=='ENOENT')throw e; console.log(0); }"""
+    return int(execpod(pod, 'primer', ['node', '-e', script]))
+
+
+def ready(label,typ,timeout,convergence=None,primer_job=None):
     step('wait-'+typ)
     started=time.time()
-    until=min(started+timeout,work,phase_cutoff if phase_cutoff is not None else work)
+    outer=min(work,phase_cutoff if phase_cutoff is not None else work)
+    # The optional producer convergence scenario also selects a hard ceiling.
+    until=min(outer, started+convergence['maxSeconds']) if convergence else outer
+    progress=ProgressWindow(timeout, now=time.monotonic)
+    checkpoint={'stallSeconds':timeout, 'startedAtEpochSeconds':started, 'workUntilEpochSeconds':outer}
+    put('startup-window-'+typ+'.json',checkpoint)
+    if primer_job is not None:
+        checkpoint={'selectedSeconds':timeout, 'startedAtEpochSeconds':started, 'completedTenants':0,
+                    'workUntilEpochSeconds':outer, 'jobUid':primer_job['metadata']['uid']}
+        put('startup-window-primer.json',checkpoint)
+        unavailable=False
     stable=producer_startup.StableReady(convergence['stableReadySeconds'] if convergence else 0)
     failures={}
-    while time.time()<until:
-        owned()
-        found=pods(label)
-        if any(x['metadata']['labels'].get('nightscout.org/run-id')!=rid for x in found):raise RuntimeError('FOREIGN_POD')
-        ready_pod=None
-        identity=None
-        for pod in found:
-            s=summary(pod);put('latest-'+typ+'.json',s)
-            for v in s['containers']:
-                disposition=producer_startup.disposition(v,convergence)
-                if disposition is None:
-                    continue
-                key=(s['uid'],v['name'],v['restartCount'],disposition)
-                if key not in failures:
-                    current=failure_codes(s['name'],v['name'],s['uid'])
-                    previous=(failure_codes(s['name'],v['name'],s['uid'],previous=True)
-                              if v['previousTermination'] else {'status':'NOT_EXERCISED','codes':[]})
-                    codes=sorted(set(current['codes']+previous['codes']))
-                    hard=disposition=='HARD' or bool(producer_startup.TERMINAL_CODES.intersection(codes))
-                    finding={'pod':s['name'],'uid':s['uid'],'failed':[{'container':v['name'],
-                             'codes':codes,'state':v['state'],'priorTermination':v['previousTermination'],
-                             'restartCount':v['restartCount'],'currentLog':current,'previousLog':previous}],
-                             'disposition':'HARD' if hard else 'RETRY','at':timestamp()}
-                    failures[key]=finding
-                    if len(failures)==1:put('failure-'+typ+'.json',finding)
-                    put('startup-attempts-'+typ+'.json',list(failures.values()))
-                if failures[key]['disposition']=='HARD':
-                    raise RuntimeError('STARTUP_CONTAINER_FAILED_'+typ)
-            if any(x.get('type')=='Ready' and x.get('status')=='True' for x in pod.get('status',{}).get('conditions',[])):
-                ready_pod=pod
-                identity=(s['uid'],tuple((v['name'],v['restartCount']) for v in s['containers']))
-        if stable.observe(identity,time.monotonic()) and time.time()<until:
-            if convergence:
-                put('startup-convergence-'+typ+'.json',{'verdict':'READY','uid':identity[0],
-                    'effectivePolicy':convergence,'observedStableSeconds':time.monotonic()-stable.started,
-                    'recordedFailures':len(failures)})
-            return ready_pod
-        time.sleep(min(2,max(0,until-time.time())))
-    raise RuntimeError('READY_DEADLINE_'+typ)
+    try:
+        with progress.bound_reads():
+            while time.time()<until and progress.remaining()>0:
+                owned()
+                found=pods(label)
+                if any(x['metadata']['labels'].get('nightscout.org/run-id')!=rid for x in found):raise RuntimeError('FOREIGN_POD')
+                ready_pod=None
+                identity=None
+                for pod in found:
+                    if primer_job is not None:
+                        controllers=[owner['uid'] for owner in pod['metadata'].get('ownerReferences',[]) if owner.get('controller')]
+                        if controllers != [checkpoint['jobUid']]:
+                            raise RuntimeError('PRIMER_JOB_OWNERSHIP_CHANGED')
+                        try:
+                            count=provisioned_count(pod)
+                            if count is not None:
+                                if not 0 <= count <= e['tenantCount']:
+                                    raise RuntimeError('PRIMER_CHECKPOINT_INVALID')
+                                unavailable=False
+                                if progress.observe(count):
+                                    checkpoint.update(completedTenants=count, lastProgressEpochSeconds=time.time())
+                                    put('startup-window-primer.json',checkpoint)
+                        except (RuntimeError, subprocess.TimeoutExpired, ValueError) as error:
+                            # A completed init container can disappear between status and
+                            # exec. Recheck Pod readiness. Signals and custody errors escape.
+                            if isinstance(error,RuntimeError) and str(error)!='PRIVATE_STEP_FAILED':
+                                raise
+                            unavailable=True
+                    s=summary(pod);put('latest-'+typ+'.json',s)
+                    if primer_job is None:
+                        # Admission, scheduling and per-container startup/ready transitions
+                        # are finite milestones. Restarts and repeated RPCs earn no credit.
+                        status = pod.get('status', {})
+                        count = producer_startup.milestones(status)
+                        if progress.observe(count):
+                            checkpoint.update(milestones=count, lastProgressEpochSeconds=time.time())
+                            put('startup-window-'+typ+'.json',checkpoint)
+                    for v in s['containers']:
+                        disposition=producer_startup.disposition(v,convergence)
+                        if disposition is None:
+                            continue
+                        key=(s['uid'],v['name'],v['restartCount'],disposition)
+                        if key not in failures:
+                            current=failure_codes(s['name'],v['name'],s['uid'])
+                            previous=(failure_codes(s['name'],v['name'],s['uid'],previous=True)
+                                      if v['previousTermination'] else {'status':'NOT_EXERCISED','codes':[]})
+                            codes=sorted(set(current['codes']+previous['codes']))
+                            hard=disposition=='HARD' or bool(producer_startup.TERMINAL_CODES.intersection(codes))
+                            finding={'pod':s['name'],'uid':s['uid'],'failed':[{'container':v['name'],
+                                     'codes':codes,'state':v['state'],'priorTermination':v['previousTermination'],
+                                     'restartCount':v['restartCount'],'currentLog':current,'previousLog':previous}],
+                                     'disposition':'HARD' if hard else 'RETRY','at':timestamp()}
+                            failures[key]=finding
+                            if len(failures)==1:put('failure-'+typ+'.json',finding)
+                            put('startup-attempts-'+typ+'.json',list(failures.values()))
+                        if failures[key]['disposition']=='HARD':
+                            raise RuntimeError('STARTUP_CONTAINER_FAILED_'+typ)
+                    if any(x.get('type')=='Ready' and x.get('status')=='True' for x in pod.get('status',{}).get('conditions',[])):
+                        ready_pod=pod
+                        identity=(s['uid'],tuple((v['name'],v['restartCount']) for v in s['containers']))
+                if stable.observe(identity,time.monotonic()) and time.time()<until and progress.remaining()>0:
+                    if convergence:
+                        put('startup-convergence-'+typ+'.json',{'verdict':'READY','uid':identity[0],
+                            'effectivePolicy':convergence,'observedStableSeconds':time.monotonic()-stable.started,
+                            'recordedFailures':len(failures)})
+                    return ready_pod
+                delay=min(2,max(0,until-time.time()))
+                time.sleep(min(delay,timeout/2,progress.remaining()))
+    except subprocess.TimeoutExpired:
+        if progress.remaining()>0 and time.time()<until:
+            raise
+        if primer_job is not None:
+            unavailable=True
+    if primer_job is not None and time.time()<outer:
+        raise RuntimeError('PRIMER_PROVISION_PROGRESS_UNMEASURED' if unavailable else 'PRIMER_PROVISION_STALLED')
+    if application_topology.readiness_signal(intent,typ,frozen.require) and time.time()<work:
+        # The serving workload's readiness window elapsed inside the run's work window.
+        # Readiness is a signal under readiness-serve-then-warm: record it, continue.
+        put('readiness-signal-'+typ+'.json',{'verdict':'UNMEASURED','reason':'READINESS_STALLED',
+            'waitedSeconds':round(time.time()-started,3)})
+        return None
+    raise RuntimeError(('READINESS_STALLED_' if time.time()<until else 'READY_DEADLINE_')+typ)
 
 def workload_ready(stage):
     for obj in objects(stage):
         nm=obj['metadata']['name']; sel=obj['spec']['selector']['matchLabels']
         convergence=producer_policy if nm=='pgstream' else None
-        timeout=waits['cohortReadySeconds'] if stage=='serving' and obj['kind']=='StatefulSet' and nm=='cohort' else waits['workloadReadySeconds']
+        timeout=waits['cohortReadySeconds'] if application_topology.serving_workload(intent,stage,obj,frozen.require) else waits['workloadReadySeconds']
         seconds=convergence['maxSeconds'] if convergence else timeout
-        with startup_window(nm,seconds):
-            ready(','.join(k+'='+v for k,v in sel.items()),nm,seconds,convergence)
+        if stage=='stores' and nm=='vault':
+            # The bootstrap Job initializes and unseals Vault. The headless
+            # bootstrap Service routes to the Pod before its Ready condition.
+            probe=obj['spec']['template']['spec']['containers'][0].get('readinessProbe',{})
+            if probe.get('httpGet',{}).get('path')=='/v1/sys/health?uninitcode=200':
+                continue
+        ready(','.join(k+'='+v for k,v in sel.items()),nm,seconds,convergence)
+def release_job(name):
+    owned()
+    job = get('job', name)
+    uid, = (row['uid'] for row in uids if row['kind']=='Job' and row['name']==name)
+    assert job['metadata']['uid']==uid and job['spec']['suspend'] is True, 'JOB_OWNERSHIP_CHANGED'
+    patch=[{'op':'test','path':'/metadata/uid','value':uid},
+           {'op':'test','path':'/spec/suspend','value':True}]
+    if name=='primer':
+        left=int(work-time.time())
+        if left<=0:
+            raise RuntimeError('PRIMER_WORK_DEADLINE')
+        patch.append({'op':'replace','path':'/spec/activeDeadlineSeconds','value':left})
+    patch.append({'op':'replace','path':'/spec/suspend','value':False})
+    return json.loads(k(['patch','job',name,'-n',ns,'--type=json','-o','json','-p',json.dumps(patch)]))
+
+
+def verify_database(job_uid, seconds):
+    import kube_adapter as adapter
+    with startup_window('platform-verify', seconds) as until:
+        remaining = until-time.time()
+        assert remaining > 1, 'SOURCE_VERIFICATION_JOB_DEADLINE'
+        # Kubernetes owns Job progress. Read its terminal condition and the
+        # selected Pod after the watch, with diagnostic time left in the run.
+        try:
+            command([tool/'kubectl','--context',ctx,'-n',ns,'wait','--for=condition=complete',
+                     'job/verification','--timeout='+str(max(1,int(remaining)))+'s'], timeout=remaining, private=True)
+        except (RuntimeError, subprocess.TimeoutExpired):
+            pass
+    owned()
+    job = get('job','verification')
+    assert job['metadata']['uid']==job_uid, 'JOB_OWNERSHIP_CHANGED'
+    condition = candidate.job_condition(job)
+    witnesses = [p for p in pods('job-name=verification') if
+                 adapter.controller(p)['uid']==job_uid and
+                 p['metadata']['labels'].get('nightscout.org/run-id')==rid]
+    if condition != 'Complete':
+        failures = []
+        for pod in witnesses:
+            for container in summary(pod)['containers']:
+                if container['state'].get('terminated',{}).get('exitCode',0)!=0:
+                    failures.append(failure_codes(pod['metadata']['name'], container['name'], pod['metadata']['uid']))
+        put('platform-failure.json', {'jobUid':job_uid,'condition':condition,'logs':failures})
+        raise RuntimeError('SOURCE_PLATFORM_VERIFICATION_FAILED' if condition=='Failed' else 'SOURCE_VERIFICATION_JOB_DEADLINE')
+    pod, = witnesses
+    name, uid = pod['metadata']['name'], pod['metadata']['uid']
+    done, = (row for row in pod['status']['containerStatuses'] if row['name']=='done')
+    assert done['state'].get('terminated',{}).get('exitCode')==0, 'SOURCE_PLATFORM_VERIFICATION_FAILED'
+    raw = command(rpc+['logs',name,'-n',ns,'-c','done','--limit-bytes=65536'],private=True)
+    require_pod_uid(name,uid)
+    source = read(Path(cfg['bindingDirectory'])/'bindings/kubernetes/assets/source-contract.json')
+    config = {'namespace':ns, 'runId':rid, 'pins':{'candidate':source}}
+    proof = candidate.verification_log(adapter,config,raw)
+    put('platform-verification.json', {'jobUid':job_uid,'podUid':uid,'containerId':done['containerID'],'proof':proof})
+
+
+def start_serving(split):
+    if split:
+        install('verification')
+        verification = release_job('verification')
+        step('platform verification')
+        verify_database(verification['metadata']['uid'],
+                        min(waits['platformVerifySeconds'], verification['spec']['activeDeadlineSeconds']))
+        install('serving')
+        workload_ready('serving')
+    install('primer')
+    pobj = release_job('primer')
+    primer = ready('job-name=primer', 'primer', waits['primerReadySeconds'], primer_job=pobj)
+    if not split:
+        step('platform verification')
+        # done runs source verification before writing the ready marker.
+        with startup_window('platform-verify',waits['platformVerifySeconds']) as until:
+            while time.time()<until:
+                row=get('pod',primer['metadata']['name'])
+                assert row['metadata']['uid']==primer['metadata']['uid']
+                cons=row['status'].get('containerStatuses',[])
+                if any(c['state'].get('terminated',{}).get('exitCode',0)!=0 for c in cons):
+                    put('platform-failure.json',{'podUid':row['metadata']['uid'],'codes':failure_codes(row['metadata']['name'],'done',row['metadata']['uid'])['codes']})
+                    raise RuntimeError('SOURCE_PLATFORM_VERIFICATION_FAILED')
+                try:
+                    execpod(primer,'done',['test','-s','/run/ns-primer/verified.json'])
+                    break
+                except RuntimeError:time.sleep(min(2,max(0,until-time.time())))
+            else:raise RuntimeError('SOURCE_VERIFICATION_MARKER_DEADLINE')
+        install('serving');workload_ready('serving')
+
+
 def execpod(pod,container,args,seconds=None):
     uid=pod['metadata']['uid']; nm=pod['metadata']['name']
     owned();assert get('pod',nm)['metadata']['uid']==uid
@@ -221,45 +363,47 @@ def execpod(pod,container,args,seconds=None):
 raw=Path(cfg['snapshotDirectory']);src=read(raw/'capture.json')
 assert dt.datetime.now(dt.timezone.utc).timestamp()-dt.datetime.fromisoformat(src['capturedAt']).timestamp()<300,'REFRESH_BEFORE_ENTRY'
 pre=read(d/'preflight.json');assert pre['commissioning']=='PREFLIGHT_ONLY'
-selected=pre['trialEnvelope']['placementEnvelopes']
-if len(selected)>1:assert all(v['trialFits'] for v in pre['workers'])
-else:
-    ordered=[n['metadata']['name'] for n in read(raw/'nodes.json')['items']]
-    assert pre['workers'][ordered.index(e['targetNode'])]['trialFits']
+scheduler = cfg.get('schedulerPlacement', False)
+if not scheduler:
+    selected=pre['trialEnvelope']['placementEnvelopes']
+    if len(selected)>1:assert all(v['trialFits'] for v in pre['workers'])
+    else:
+        ordered=[n['metadata']['name'] for n in read(raw/'nodes.json')['items']]
+        assert pre['workers'][ordered.index(e['targetNode'])]['trialFits']
 assert pre['experiment']['renderSha256']==hashlib.sha256((d/'render.json').read_bytes()).hexdigest()
 assert get('namespace',ns,False) is None
 trust=objects('cluster-trust')[0]; tn=trust['metadata']['name']
 assert tn==ns+'-vault-tokenreview' and trust['roleRef']['name']=='system:auth-delegator' and trust['subjects']==[{'kind':'ServiceAccount','name':'vault','namespace':ns}] and get('clusterrolebinding',tn,False) is None
-assert read(Path(cfg['cacheAbsence']['path']))['verifiedAt']
+if not scheduler:assert read(Path(cfg['cacheAbsence']['path']))['verifiedAt']
 producer_policy=producer_startup.policy(intent['profile']['phases'].get('producerStartup'),e['workDeadlineSeconds'])
 selected_source=frozen.source(intent)
 if frozen.JOB_COMPLETE in selected_source:
     contract, = (row['data']['source-contract.json'] for row in objects('foundation')
                  if row['kind']=='ConfigMap' and row['metadata']['name']=='provision-scripts')
     receipt=(Path(cfg['bindingDirectory'])/'binding.json').resolve()
+    if split:
+        contract = (receipt.parent/'bindings/kubernetes/assets/source-contract.json').read_bytes()
     frozen.rendered_contract(intent,contract,{'path':str(receipt),'sha256':cfg['inputs'][str(receipt)]})
 frozen.check_bootstrap_render(intent, [row for stage in
-    ('foundation','stores','provision','private-admin','primer','serving') for row in objects(stage)])
+    startup_stages for row in objects(stage)])
 primer_storage.check_render(selected_source, objects('primer'))
 nsuid=trustuid=None;events=[];uids=[];current='create-namespace'
 def interrupted(signum, frame):raise RuntimeError('CONTROLLER_SIGNAL_'+str(signum))
 signal.signal(signal.SIGTERM,interrupted)
 put('deadlines.json',{'workUntil':dt.datetime.fromtimestamp(work,dt.timezone.utc).isoformat(),'cleanupUntil':dt.datetime.fromtimestamp(cleanup,dt.timezone.utc).isoformat()})
 try:
-    if worker := cfg.get('ownedWorkerPreflight'):
-        owned_worker.prove(worker['proof']['selection'], e, raw, fresh=True)
-        check_worker()
     node=create(objects('namespace')[0]);nsuid=node['metadata']['uid'];put('custody.json',{'namespace':ns,'namespaceUid':nsuid})
     owned();node=create(trust);trustuid=node['metadata']['uid'];put('custody.json',{'namespace':ns,'namespaceUid':nsuid,'trustName':tn,'trustUid':trustuid})
     install('foundation')
-    # All private application/DB containers are cache-only in these final, hashed stages.
-    for stage in ('stores','provision','private-admin','primer','serving'):
-        for obj in objects(stage):
-            spec=obj['spec']['template']['spec']
-            for actor in spec.get('initContainers',[])+spec.get('containers',[]):
-                if actor['image'] in (e['images']['app'],e['images']['postgres']):assert actor['imagePullPolicy']=='Never'
-    # The owner may select its existing short-lived read-only pull credential.
-    # Cache-only private image execution requires no registry operation here.
+    # Legacy fixtures expect prewarmed images. Scheduler fixtures leave the
+    # digest-pinned image pull policy to Kubernetes and the authored manifest.
+    if not scheduler:
+        for stage in startup_stages[1:]:
+            for obj in objects(stage):
+                spec=obj['spec']['template']['spec']
+                for actor in spec.get('initContainers',[])+spec.get('containers',[]):
+                    if actor['image'] in (e['images']['app'],e['images']['postgres']):
+                        assert actor['imagePullPolicy']=='Never'
     if cfg.get('pullSecretCommand'):
         pull=command(cfg['pullSecretCommand'],private=True)
         command(rpc+['create','secret','generic',e['imagePullSecret'],'-n',ns,'--type=kubernetes.io/dockerconfigjson','--from-file=.dockerconfigjson=/dev/stdin','-o','name'],pull,private=True)
@@ -272,8 +416,7 @@ try:
     put('bootstrap-helper-readback.json',frozen.bootstrap_readback(selected_source,actual,uids,ns,rid))
     install('stores');workload_ready('stores')
     install('provision')
-    with startup_window('provision',waits['provisionReadySeconds']):
-        provision=ready('job-name=provision','provision',waits['provisionReadySeconds'])
+    provision=ready('job-name=provision','provision',waits['provisionReadySeconds'])
     step('owned role export')
     # Keep the two private configuration documents required for the completion oracle only.
     with startup_window('role-export',waits['roleExportSeconds']) as until:
@@ -291,9 +434,12 @@ try:
             try:execpod(provision,'done',['test','-f','/state/.ready']);break
             except RuntimeError:time.sleep(min(1,max(0,until-time.time())))
         else:raise RuntimeError('SOURCE_ROLE_EXPORT_NOT_READY')
-        (live/'primer-config.private.json').write_bytes(execpod(provision,'done',['cat','/state/primer/config.json']))
+        if frozen.PRIMER_STORAGE in selected_source:
+            (live/'primer-config.private.json').write_bytes(execpod(provision,'done',['cat','/state/primer/config.json']))
         for role in ('evaluator','realtime'):
             (live/(role+'-config.private.json')).write_bytes(execpod(provision,'done',['cat','/state/'+role+'/config.json']))
+        receipt_code=(Path(__file__).resolve().parent.parent/'m7-joined/native-receipt-source.cjs').read_text()+"\nconsole.log(JSON.stringify(module.exports.captureFiles('/opt/app','/state')));"
+        (live/'native-receipt-source.private.json').write_bytes(execpod(provision,'done',['node','-e',receipt_code]))
     with startup_window('secret-publish',waits['secretPublishSeconds']):
         published=command(['bash',secret_script,'publish',ns,'unused'],timeout=waits['secretPublishSeconds'],private=True)
     if frozen.PRIMER_STORAGE in selected_source:
@@ -308,33 +454,8 @@ try:
         ack_wire=json.loads(published.splitlines()[-2])
         assert ack_wire['effectiveTimeoutMs']==selected_source[frozen.ACK_BUDGET], 'K8S_PGSTREAM_ACK_PUBLISH_CHANGED'
         put('producer-ack-published.json',ack_wire)
-    if cfg.get('resourcePhasePreflight'):
-        with startup_window('provision-terminal',waits['jobCompleteSeconds']):
-            confirm_provision_retirement()
     install('private-admin');workload_ready('private-admin')
-    install('primer');pobj=get('job','primer')
-    assert pobj['spec']['suspend'] is True
-    check_worker()
-    k(['patch','job','primer','-n',ns,'--type=json','-p',json.dumps([{'op':'test','path':'/metadata/uid','value':pobj['metadata']['uid']},{'op':'test','path':'/spec/suspend','value':True},{'op':'replace','path':'/spec/suspend','value':False}])])
-    primer_seconds=min(waits['primerReadySeconds'],pobj['spec']['activeDeadlineSeconds'])
-    with startup_window('primer',primer_seconds):
-        primer=ready('job-name=primer','primer',primer_seconds)
-    step('platform verification')
-    # done runs source verification before writing the ready marker.
-    with startup_window('platform-verify',waits['platformVerifySeconds']) as until:
-        while time.time()<until:
-            row=get('pod',primer['metadata']['name'])
-            assert row['metadata']['uid']==primer['metadata']['uid']
-            cons=row['status'].get('containerStatuses',[])
-            if any(c['state'].get('terminated',{}).get('exitCode',0)!=0 for c in cons):
-                put('platform-failure.json',{'podUid':row['metadata']['uid'],'codes':failure_codes(row['metadata']['name'],'done',row['metadata']['uid'])['codes']})
-                raise RuntimeError('SOURCE_PLATFORM_VERIFICATION_FAILED')
-            try:
-                execpod(primer,'done',['test','-s','/run/ns-primer/verified.json'])
-                break
-            except RuntimeError:time.sleep(min(2,max(0,until-time.time())))
-        else:raise RuntimeError('SOURCE_VERIFICATION_MARKER_DEADLINE')
-    install('serving');workload_ready('serving')
+    start_serving(split)
     if ack_wire is not None:
         latest=read(live/'latest-pgstream.json')
         pod=get('pod',latest['name']);assert pod['metadata']['uid']==latest['uid'], 'POD_OWNERSHIP_CHANGED'
@@ -348,8 +469,6 @@ try:
         put('producer-ack-readback.json',{**ack_wire,'runId':rid,'namespace':ns,'namespaceUid':nsuid,
                                         'podUid':latest['uid'],'containerId':container['containerID']})
     step('attach released runtime')
-    check_worker()
-    if cfg.get('resourcePhasePreflight'):confirm_provision_retirement()
     limits=cfg['nativeLimits']
     command(['systemd-run','--user','--scope','--quiet','--unit=ns-'+rid+'-native',
              '-p','CPUQuota='+str(limits['millicpus']/10)+'%',
@@ -367,7 +486,22 @@ except Exception as exc:
             observed=json.loads(execpod(pod,'admin',['node','-e',observer]))
             put('admin-classification.json',{k:observed[k] for k in ('status','reason','targetRole','checkPhase','causeCode') if k in observed})
         except Exception as audit:put('admin-observation-refusal.json',{'status':'UNMEASURED','error':str(audit)[:120]})
-    put('first-failure.json',{'stage':current,'code':str(exc)[:500],'time':timestamp()})
+    failure={'stage':current,'code':str(exc)[:500],'time':timestamp()}
+    try:
+        owned()
+        vault, = [pod for pod in pods('nightscout.org/run-id='+rid)
+                  if any(c['name']=='vault' for c in pod['spec']['containers'])]
+        # Ask Vault itself over verified TLS. Status overrides let its CLI
+        # expose initialized/sealed separately even when normal health is 503.
+        raw=execpod(vault,'vault',['env','VAULT_MAX_RETRIES=0','vault','read','-format=json',
+            '-address=https://vault-bootstrap:8200','-ca-cert=/run/ns-ca/ca.crt','sys/health',
+            'sealedcode=200','uninitcode=200'],seconds=4)
+        state=json.loads(raw)
+        if producer_startup.vault_sealed(state):
+            failure['stopReason']='VAULT_SEALED'
+    except (OSError, RuntimeError, AssertionError, ValueError, subprocess.SubprocessError):
+        pass
+    put('first-failure.json',failure)
     raise
 finally:
     # Capture every surviving init/steady termination before exact owned cleanup.
@@ -376,27 +510,16 @@ finally:
         put('terminal-pods.json',[summary(p) for p in pods('nightscout.org/run-id='+rid)])
     except Exception:put('terminal-pods-unavailable.json',{'status':'UNMEASURED'})
     cleaning=True
-    rpc=[tool/'kubectl','--context',ctx,'--request-timeout=14s']
+    rpc=[tool/'kubectl','--context',ctx,'--request-timeout=170s']  # `delete --wait` holds one request
     cleanup_errors=[]
-    if trustuid:
+    if nsuid or trustuid:
         try:
-            t=get('clusterrolebinding',tn,False)
-            if t:
-                assert t['metadata']['uid']==trustuid and t['subjects']==trust['subjects'],'TRUST_OWNERSHIP_CHANGED'
-                deluid('/apis/rbac.authorization.k8s.io/v1/clusterrolebindings/'+tn,trustuid)
-            absent('clusterrolebinding',tn,False)
-        except Exception as error:cleanup_errors.append({'scope':'trust','code':type(error).__name__})
-    if nsuid:
-        try:
-            cur=get('namespace',ns,False)
-            if cur:
-                owned();deluid('/api/v1/namespaces/'+ns,nsuid)
-            absent('namespace',ns,False)
-        except Exception as error:cleanup_errors.append({'scope':'namespace','code':type(error).__name__})
+            result=run_cleanup.cleanup(lambda argv:command(rpc+argv,timeout=min(150,max(1,cleanup-time.time()-2))).decode(),ns,rid)
+            put('absence.json',{**result,'namespaceUid':nsuid,'trustUid':trustuid,'verifiedAt':timestamp()})
+        except run_cleanup.CleanupFailed as error:cleanup_errors.append({'scope':'absence','code':'K8S_CLEANUP_LEFTOVER','leftovers':error.leftovers})
+        except Exception as error:cleanup_errors.append({'scope':'cleanup','code':type(error).__name__})
     if cleanup_errors:
-        put('cleanup-failure.json',{'verdict':'UNMEASURED','failures':cleanup_errors})
-    else:
-        put('absence.json',{'namespace':ns,'namespaceUid':nsuid,'trustUid':trustuid,'verifiedAt':timestamp()})
+        put('cleanup-failure.json',{'verdict':'FAIL' if any(x['scope']=='absence' for x in cleanup_errors) else 'UNMEASURED','failures':cleanup_errors})
     auto_catalog(d, lambda path, value: path.write_text(json.dumps(value, indent=2) + '\n'))
     if cleanup_errors:
         raise RuntimeError('OWNED_CLEANUP_UNCONFIRMED')

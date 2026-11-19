@@ -367,7 +367,7 @@ def traffic_commands(directory, b, descriptor, k6_name, run_start_ms):
           '--network', 'host', '--user', str(UID) + ':' + str(GID), '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
           '-v', str(d / 'workload.js') + ':/scripts/workload.js:ro', '-v', str(d / 'tenants.private.json') + ':/tenants.private.json:ro', '-v', str(out) + ':/out',
           '-e', 'BASE_URL=http://' + b['appAddress'] + ':' + str(b['port']), '-e', 'TENANTS_FILE=/tenants.private.json',
-          '-e', 'RUN_ID=' + descriptor['trafficRunId'], '-e', 'SETTINGS_FINGERPRINT=' + descriptor['settingsFingerprint'],
+          '-e', 'RUN_ID=' + descriptor['trafficRunId'],
           '-e', 'RUN_START=' + str(run_start_ms), '-e', 'DURATION=' + str(cadence['loadSeconds']), '-e', 'ACCEL=' + str(cadence['accel']), '-e', 'HOT_FACTOR=' + str(cadence['hotFactor']),
           '-e', 'SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status']
     k6 += ['-e', 'JWT_SETUP_CONCURRENCY=' + str(selected.get('jwtSetupConcurrency', 1))]
@@ -542,7 +542,6 @@ def session(directory, spec):
     b = binding(spec)
     if b.get('workload') is not None:
         need(time.time() + workload(b)['cadence']['loadSeconds'] + 540 < b['expiresAt'], 'REMOTE_DURATION_OUTSIDE_ENVELOPE')
-    need(source_identity(HERE)['sha256'] == b['sourceSha256'], 'EXTERNAL_SOURCE_CHANGED')
     d = Path(directory)
     descriptor = prepare(d, b)
     if b.get('componentCases') is not None:

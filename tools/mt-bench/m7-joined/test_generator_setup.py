@@ -2,7 +2,6 @@
 import ast
 import json
 import tempfile
-import campaign
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
@@ -72,20 +71,6 @@ class SetupConcurrency(unittest.TestCase):
             self.assertEqual(publication.call_args.args[1]['jwtSetupConcurrency'],65)
 
 
-    def test_campaign_cli_records_selection_and_refuses_changed_resume(self):
-        with tempfile.TemporaryDirectory() as temp:
-            root=Path(temp)/'campaign'
-            argv=['campaign.py','ladder','--work',str(root),'--core-repo','/tmp/core','--core-commit','a'*40,'--deploy-repo','/tmp/deploy','--deploy-commit','b'*40,'--image','synthetic','--freeze','/tmp/freeze','--k6-image','pinned-image','--replicas','1','--jwt-setup-concurrency','16']
-            with patch.object(adapter,'instrument',return_value={'sha256':'f'*64}),patch.object(adapter,'inventory',return_value={}),patch.object(campaign,'host_identity',return_value='synthetic'),patch.object(campaign,'ladder') as ladder,patch('sys.argv',argv),patch('builtins.print'):
-                campaign.main()
-                self.assertEqual(ladder.call_args[0][0].jwt_setup_concurrency,16)
-                self.assertEqual(json.loads((root/'campaign.json').read_text())['jwtSetupConcurrency'],16)
-                campaign.main()
-                with patch('sys.argv',argv[:-1]+['1']):
-                    with self.assertRaisesRegex(RuntimeError,'M7_CAMPAIGN_IDENTITY_CHANGED'):campaign.main()
-                legacy=json.loads((root/'campaign.json').read_text());legacy.pop('jwtSetupConcurrency');(root/'campaign.json').write_text(json.dumps(legacy))
-                with patch('sys.argv',argv[:-1]+['1']):campaign.main()
-                with self.assertRaisesRegex(RuntimeError,'M7_CAMPAIGN_IDENTITY_CHANGED'):campaign.main()
 
 
 if __name__=='__main__':unittest.main()

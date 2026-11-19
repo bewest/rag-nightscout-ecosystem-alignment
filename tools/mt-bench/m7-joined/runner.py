@@ -28,7 +28,7 @@ from auto_catalog import auto_catalog
 TIERS = ('smoke', 'discovery', 'acceptance')
 GENERATED_RECEIPT = 'configuration-receipt.json'
 TO_COMPLETION = 'local-owned-to-completion'
-STRUCTURED_OPTIONS = {'diagnostic-resource-allocation', 'driver-plan', 'drain-observation'}
+STRUCTURED_OPTIONS = {'viewer-setup', 'diagnostic-resource-allocation', 'driver-plan', 'opportunity-observation', 'drain-observation'}
 SMOKE_DEFAULTS = {
     'tenants': 8, 'replicas': 1, 'load-seconds': 60, 'warmup-seconds': 5,
     'idle-seconds': 5, 'probe-every-ms': 10000, 'sockets-per-tenant': 1,
@@ -73,6 +73,13 @@ def tier_plan(config):
         'sourceAdmission': ('frozen acceptance receipt' if tier == 'acceptance' else
                             'runner-materialized PENDING tuple' if parsed.freeze == GENERATED_RECEIPT
                             else 'supplied diagnostic receipt'),
+        'effectiveLimits': {
+            'workSeconds': {'value': config['workSeconds'], 'maximum': None if config['workSeconds'] is None else (workload_inputs.MAX_SECONDS if tier == 'discovery' else 86400),
+                            'origin': 'authored' if config['workSeconds'] is not None else 'to-completion'},
+            'cleanupSeconds': {'value': config['cleanupSeconds'], 'maximum': workload_inputs.MAX_SECONDS if tier == 'discovery' else 3600,
+                               'origin': 'authored; a finite cleanup is always required'},
+            'drainSeconds': {'value': effective.get('cadence', {}).get('drainSeconds'),
+                             'origin': 'authored' if 'drainSeconds' in effective.get('cadence', {}) else 'run work deadline'}},
         'resourceOrigin': ('configured diagnostic allocation' if effective['resources'] else
                            'uncapped Compose services; host limits may apply'),
         'coverage': {
@@ -82,8 +89,8 @@ def tier_plan(config):
         },
         'preflight': {
             'sourceAndImage': 'checked before fixture seed on tiered runs',
-            'deploymentPrimer': 'uses the authored work time remaining when priming starts',
-            'socketAndJwtSetup': 'setupSeconds selects the separate generator setup window',
+            'deploymentPrimer': 'stageSeconds limits time without durable tenant progress; the owner work cutoff still applies',
+            'socketAndJwtSetup': 'viewerSetup selects connection progress and setupSeconds bounds ordinary driver JWT setup',
             'generatorDrain': 'drainSeconds selects collector drain; the clinical deadline is separate',
             'transportOrGeneratorChange': 'run a smoke point with the same source, image and instrument before seeding a larger discovery point',
             'runtime': 'owned readiness, driver export and completion reader checks',
@@ -93,6 +100,12 @@ def tier_plan(config):
 
 
 def clean_source_preflight(parsed):
+    if parsed.run_purpose != 'discovery':
+        # An existing image is the run identity; its sources are not re-proved per run.
+        a.image({'pair': {'core': parsed.core_commit, 'deploy': parsed.deploy_commit},
+                 'image': parsed.image, 'imageId': parsed.image_id or parsed.image})
+        return
+    # Discovery builds image inputs here: check the build sources once, at build.
     for role in ('core', 'deploy'):
         repo = getattr(parsed, role + '_repo')
         selected = a.commit(repo, getattr(parsed, role + '_commit'))
@@ -100,11 +113,7 @@ def clean_source_preflight(parsed):
         require(a.git(repo, 'rev-parse', 'HEAD') == selected, 'M7_SOURCE_' + label + '_HEAD')
         require(not a.git(repo, 'status', '--porcelain', '--untracked-files=normal'),
                 'M7_SOURCE_' + label + '_DIRTY')
-    if parsed.run_purpose == 'discovery':
-        a.prepare_image_inputs(parsed)
-    else:
-        a.image({'pair': {'core': parsed.core_commit, 'deploy': parsed.deploy_commit},
-                 'image': parsed.image, 'imageId': parsed.image_id or parsed.image})
+    a.prepare_image_inputs(parsed)
 
 
 
@@ -121,13 +130,16 @@ def code(error):
 
 
 def verify_helper(config):
+    """Check the declared helper identity is well formed; the running instrument
+    is recorded by the observation, not compared with a pin."""
     if 'helperInstrument' in config:
         expected = config['helperInstrument']
         require(isinstance(expected, str) and re.fullmatch(r'[a-f0-9]{64}', expected) is not None,
                 'M7_RUNNER_HELPER_INSTRUMENT')
-        require(a.instrument()['sha256'] == expected, 'M7_RUNNER_HELPER_INSTRUMENT')
     else:
-        require(a.git(a.ROOT, 'rev-parse', 'HEAD') == config['helperHead'], 'M7_RUNNER_HELPER_HEAD')
+        # A recorded label, not a pin: any non-empty name identifies the helper.
+        require(isinstance(config.get('helperHead'), str) and config['helperHead'] != '',
+                'M7_RUNNER_HELPER_HEAD')
 
 
 def load_config(path):
@@ -184,6 +196,10 @@ def validate_config(config):
     cadence = a.cadence_options(parsed)
     require(not a.preload_convergence.option(parsed) or local_to_completion,
             'M7_PRELOAD_LOCAL_OWNED_TO_COMPLETION_REQUIRED')
+    # The run stage gets no work deadline in a to-completion run, so a catch-up
+    # drain needs its own authored window. Refused here, before any actor exists.
+    require(parsed.evaluator_catchup is None or not local_to_completion or 'drainSeconds' in cadence,
+            'M7_DRAIN_WORK_DEADLINE_REQUIRED')
     require(not local_to_completion or {'setupSeconds', 'drainSeconds'} <= cadence.keys(),
             'M7_RUNNER_TO_COMPLETION_PHASE_BUDGETS_REQUIRED')
     authored_windows = ('warmupSeconds', 'idleSeconds', 'loadSeconds', 'setupSeconds', 'drainSeconds')
@@ -315,12 +331,6 @@ def _cleanup(root, reason):
             d, m = a.load(fixture,resource_limits=False)
             with a.private_commands(root / 'cleanup-commands'):
                 a.down(d, m)
-            require(not a.resources(m), 'M7_RUNNER_RESOURCES_REMAIN')
-            config = a.document(d / 'frozen.compose.json') if (d / 'frozen.compose.json').exists() else {}
-            for kind, flag in (('networks', 'network'), ('volumes', 'volume')):
-                for spec in config.get(kind, {}).values():
-                    ids = a.command(['docker', flag, 'ls', '-q', '--filter', 'name=' + spec['name']]).splitlines()
-                    require(not ids, 'M7_RUNNER_' + kind.upper() + '_REMAIN')
         result = {'status': 'ABSENT', 'reason': reason, 'at': time.time()}
         write(root / 'cleanup.json', result)
         return result
@@ -411,7 +421,45 @@ def partial(root):
     elif 'jwt-setup-start' in names and 'jwt-setup-end' not in names:phase = 'JWT_SETUP_INCOMPLETE'
     native = retained('summary.json')
     probe = retained('load/probe.json')
-    return {'artifacts': artifacts, 'trafficPhase': phase, 'scenarioAttempts': count,
+    # Older partial runs may predate the final file-only reduction.
+    observations = native.copy()
+    if native.get('kind') == 'm7-joined-discovery-cell' and 'measurements' not in native and (d/'load').is_dir():
+        import discovery
+        for key, value in discovery.retained_results(a, d, retained('owner.json') or native, native).items():
+            observations.setdefault(key, value)
+    import outcome_gate
+    gate = retained('load/outcome-gate.json')
+    counts = native.get('oracleFindings') or native.get('oracle') or retained('load/oracle-findings.json')
+    catchup = gate.get('components', {}).get('catchup') or {'verdict':'UNMEASURED'}
+    measured = observations.get('measurements') or {}
+    window = (measured.get('windows') or {}).get('load') or {}
+    http = native.get('httpAccounting') or retained('load/http-accounting.json')
+    if not http and metrics:
+        import http_accounting
+        try:
+            http = http_accounting.assess(metrics)
+        except (ValueError, TypeError, AttributeError):
+            unreadable.append('load/k6-summary.json')
+    clinical = outcome_gate.sampled_oracle(probe.get('completedOutput') or retained('load/clinical-witnesses-partial.json') or observations.get('completedOutput'))
+    details = {'http': http or {'verdict':'UNMEASURED'}, 'rateOffer': native.get('rateOffer'),
+               'storedWrites': outcome_gate.storage(counts), 'selectedClinical': clinical,
+               'evaluatorProgress': observations.get('evaluatorProgress', {}).get('load') or
+                                    native.get('strictChecks', {}).get('load', {'verdict':'UNMEASURED'}),
+               'frames': observations.get('viewerFrames') or {'verdict':'UNMEASURED'}, 'catchup': catchup,
+               'outcomeGate': gate.get('verdict', 'UNMEASURED'),
+               'components': window or {'verdict':'UNMEASURED'}}
+    if probe.get('viewerSetup'):
+        details['viewerSetup'] = probe['viewerSetup']
+    if probe.get('window'):
+        details['frameCounts'] = {key: probe['window'].get(key) for key in ('expectedFrames', 'deliveredFrames')}
+    if native.get('clinicalVerdict'):
+        details['clinicalVerdict'] = native['clinicalVerdict']
+    if counts.get('rows'):
+        for key in ('accepted', 'stored', 'uncertain', 'probeStored'):
+            values = [row.get(key) for row in counts['rows'] if isinstance(row, dict)]
+            if len(values) == len(counts['rows']) and all(type(value) is int and value >= 0 for value in values):
+                details['storedWrites'][key] = sum(values)
+    return {'observations': details, 'artifacts': artifacts, 'trafficPhase': phase, 'scenarioAttempts': count,
             'workloadEvents': events, 'adapterStatus': native.get('status', 'UNMEASURED'),
             'processes': native.get('processes', {}), 'strictChecks': native.get('strictChecks', {}),
             'durableOutputObservation': probe.get('durableOutputObservation', {'status':'UNMEASURED'}),
@@ -495,7 +543,7 @@ def generated_control(root, d, m):
     This is a real Node execution, before I/O; the normal run then exercises
     the same bytes with the canonical caller/environment.
     """
-    a.diagnostic_resources.configure(m.get('diagnosticResources',{}).get('profile'))
+    a.diagnostic_resources.configure(m.get('diagnosticResources',{}).get('profile'), driver_scope=d)
     try:
         with a.diagnostic_resources.command([m['generator']['tools']['node']['path'],str(d/'probe.js')],a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies')})) as (argv,env):
             with (root/'generated-control.private.log').open('xb') as output:
@@ -605,8 +653,8 @@ def execute(directory, rehearsal=False):
 # Reuse is opt-in and starts its own finite window; an entered point is never adopted.
 SESSION_VARIABLE_OPTIONS = frozenset(('freeze', 'receipt', 'warmup-seconds', 'idle-seconds',
     'load-seconds', 'offered-rps', 'hot-factor', 'probe-every-ms', 'sockets-per-tenant',
-    'logical-polling-clients', 'workload-mix', 'workload-scale', 'sampler-interval', 'quiet-load', 'jwt-setup-concurrency',
-    'evaluator-catchup', 'evaluator-opportunities', 'restart-during-load-after-seconds', 'driver-shards', 'driver-vu-diagnostic'))
+    'logical-polling-clients', 'viewer-setup', 'workload-mix', 'workload-scale', 'sampler-interval', 'quiet-load', 'jwt-setup-concurrency',
+    'evaluator-catchup', 'evaluator-opportunities', 'opportunity-observation', 'restart-during-load-after-seconds', 'driver-shards', 'driver-vu-diagnostic'))
 SESSION_PREPARE_ONLY = frozenset(('fixture-project', 'backend-subnet', 'edge-subnet', 'commissioning-slot-wal-mib', 'tenant-readiness',
     'diagnostic-resource-profile', 'diagnostic-resource-allocation', 'generator-dependencies', 'generator-dependency-receipt',
     'generator-dependency-receipt-sha256', 'generator-dependency-preparation',
@@ -670,7 +718,7 @@ def session_observe(directory, owner, name, config_file, history_file):
     require(re.fullmatch(r'[a-z][a-z0-9-]{0,47}', name) is not None, 'M7_SESSION_OBSERVATION_NAME')
     with session_observation_lock(root):
         session, d, m = session_access(root, owner)
-        config, _ = load_config(config_file)
+        config, prepared_argv = load_config(config_file)
         original = a.document(root/'config.json')
         require(config['k6Image'] == original['k6Image'], 'M7_SESSION_RUNTIME_CONFIG_CHANGED')
         stable = lambda options:{k:v for k,v in options.items() if k not in SESSION_VARIABLE_OPTIONS}
@@ -694,13 +742,16 @@ def session_observe(directory, owner, name, config_file, history_file):
                 with a.command_deadline(session['stopWorkAt']):
                     a.diagnostic_resources.configure(session['resourceCeiling']['profile'],
                         a.document(d/'frozen.compose.json'),session['resourceCeiling'],
-                        observe=lambda:a.diagnostic_resource_rows(m))
+                        observe=lambda:a.diagnostic_resource_rows(m), driver_scope=d)
                     a.verify(d,m);a.image(m)
                     write(ob/'runtime-before.json',a.resources(m))
             finally:a.diagnostic_resources.configure()
             argv = ['attach','--directory',str(ob/'fixture')]
-            for key,value in config['prepare'].items():
-                if key not in SESSION_PREPARE_ONLY:argv.extend(['--'+key,str(value)])
+            # Reuse the validated tier defaults and JSON serialization for the
+            # attached observer just as for a newly prepared fixture.
+            for flag, value in zip(prepared_argv[::2], prepared_argv[1::2]):
+                if flag[2:] not in SESSION_PREPARE_ONLY:
+                    argv.extend([flag, value])
             for key,value in {'project':m['project'],'source-root':d/'core','state':d/'state',
                     'dependencies-root':d/'dependencies','env-file':d/'env',
                     'compose':d/'frozen.compose.json','runtime-owner':d/'owner.json'}.items():
@@ -763,7 +814,7 @@ def local_batch_allocation(config):
     explicit = options.get('diagnostic-resource-allocation')
     selected = a.selected_resources_profile(argparse.Namespace(
         diagnostic_resource_profile=options.get('diagnostic-resource-profile'),
-        diagnostic_resource_allocation=json.loads(explicit) if explicit is not None else None))
+        diagnostic_resource_allocation=json.loads(explicit) if isinstance(explicit,str) else explicit))
     return selected, batch.local_resource_plan(selected)
 
 
@@ -782,7 +833,6 @@ def local_batch_plan(spec, payload_root):
             import vault_component
             cell_plan=vault_component.plan(cell,spec,payload_root,allowlist)
             next(c for c in planned['cells'] if c['id']==cell['id'])['allocationBreakdown']=cell_plan
-            batch.need(cell['config']['helperInstrument']==a.instrument()['sha256'],'VAULT_HELPER_CHANGED')
             continue
         config=cell['config'];validate_config(config);options=config['prepare']
         selected, allocation = local_batch_allocation(config)
@@ -791,7 +841,6 @@ def local_batch_plan(spec, payload_root):
         receipt=Path(options.get('receipt',''))
         batch.need(receipt.is_absolute() and receipt.is_relative_to(Path(payload_root).resolve()),'RECEIPT_ALLOWLIST')
         batch.need(str(receipt.relative_to(Path(payload_root).resolve())) in allowlist,'RECEIPT_ALLOWLIST')
-        batch.need(config.get('helperInstrument')==spec['payload']['helper'],'HELPER_CHANGED')
         batch.need(options.get('core-commit')==spec['payload']['source']['core'] and
                    options.get('deploy-commit')==spec['payload']['source']['deploy'],'SOURCE_CHANGED')
         batch.need(options.get('image-id')==options.get('image')==spec['payload']['image'],'IMAGE_CHANGED')

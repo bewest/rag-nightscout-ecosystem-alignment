@@ -243,19 +243,23 @@ def campaign_contract():
 
 def profile_selection(cell, expected):
     chosen=expected.get('profileSelection')
-    need(isinstance(chosen,dict) and set(chosen)=={'version','settings','diagnostics','topology','sha256','evaluatorProgress','evaluatorIdleSafety'} and type(chosen['version']) is int and chosen['version']==3,'M7_PROFILE_SELECTION_PIN')
+    # Version 4 drops the per-run source settings fingerprint; run identity is the
+    # image digest plus the run configuration. Retained version 3 records still check.
+    legacy=isinstance(chosen,dict) and chosen.get('version')==3
+    keys={'version','diagnostics','topology','sha256','evaluatorProgress','evaluatorIdleSafety'}|({'settings'} if legacy else set())
+    need(isinstance(chosen,dict) and set(chosen)==keys and type(chosen['version']) is int and chosen['version'] in (3,4),'M7_PROFILE_SELECTION_PIN')
     need(chosen['evaluatorProgress']==progress_contract().POLICY and chosen['evaluatorIdleSafety']==idle_contract().POLICY,'M7_PROFILE_EVALUATOR_PROGRESS_PIN')
     digest=hashlib.sha256(json.dumps({k:v for k,v in chosen.items() if k!='sha256'},sort_keys=True,separators=(',',':')).encode()).hexdigest()
     need(chosen['sha256']==digest,'M7_PROFILE_SELECTION_HASH')
-    settings=chosen['settings']
-    need(isinstance(settings,dict) and type(settings.get('schema')) is int and settings['schema']==1 and isinstance(settings.get('sha256'),str) and DIGEST.fullmatch(settings['sha256']) and settings.get('sourceCommit')==expected['identity']['pair']['core'] and isinstance(settings.get('sourceBlobs'),dict) and bool(settings['sourceBlobs']) and all(isinstance(k,str) and isinstance(v,str) and SHA.fullmatch(v) for k,v in settings['sourceBlobs'].items()),'M7_PROFILE_SETTINGS_PIN')
+    settings=chosen.get('settings') if legacy else None
+    need(not legacy or isinstance(settings,dict) and type(settings.get('schema')) is int and settings['schema']==1 and isinstance(settings.get('sha256'),str) and DIGEST.fullmatch(settings['sha256']) and settings.get('sourceCommit')==expected['identity']['pair']['core'] and isinstance(settings.get('sourceBlobs'),dict) and bool(settings['sourceBlobs']) and all(isinstance(k,str) and isinstance(v,str) and SHA.fullmatch(v) for k,v in settings['sourceBlobs'].items()),'M7_PROFILE_SETTINGS_PIN')
     diagnostics=chosen['diagnostics']
     need(isinstance(diagnostics,dict) and diagnostics.get('mode') in ('off','on') and integer(diagnostics.get('intervalMs'),1000) and diagnostics['intervalMs']<=60000 and diagnostics.get('environment')=={'NS_M7_DIAGNOSTICS':'1' if diagnostics['mode']=='on' else '0','NS_M7_DIAGNOSTICS_INTERVAL_MS':str(diagnostics['intervalMs'])},'M7_PROFILE_DIAGNOSTICS_PIN')
     topology=chosen['topology']
     need(isinstance(topology,dict) and topology.get('binding')=='registry-default' and topology.get('secretsBackend')=='vault-server' and topology.get('vaultAgentOverlay') is False and integer(topology.get('realtimeWorkers'),1) and integer(topology.get('evaluatorWorkers'),1),'M7_PROFILE_TOPOLOGY_PIN')
     need(cell.get('profileSelection')==chosen,'M7_PROFILE_SELECTION_MISMATCH')
     observed=cell.get('settingsFingerprintObservation',{})
-    need(isinstance(observed,dict) and observed.get('verdict')=='PASS' and integer(observed.get('observations'),1) and type(observed.get('invalid')) is int and observed['invalid']==0 and type(observed.get('mismatch')) is int and observed['mismatch']==0,'M7_FINGERPRINT_UNMEASURED')
+    need(not legacy or isinstance(observed,dict) and observed.get('verdict')=='PASS' and integer(observed.get('observations'),1) and type(observed.get('invalid')) is int and observed['invalid']==0 and type(observed.get('mismatch')) is int and observed['mismatch']==0,'M7_FINGERPRINT_UNMEASURED')
 
 
 def progress_contract():

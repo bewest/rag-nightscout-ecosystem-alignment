@@ -49,6 +49,18 @@ class Catchup(unittest.TestCase):
         self.assertEqual(result['drainAfterWriterJoinMs'][A], {'lower': 2000.0, 'upper': 7200.0})
         self.assertEqual(result['byTenant'][A]['outputRevision'], self.boundary['rows'][0]['outputRevision'])
 
+    def test_only_progress_towards_frozen_targets_renews_stalled_read_budget(self):
+        options = {'renew_on_progress':True, 'policy':{'maxRounds':1, 'maxQueries':1, 'maxBytes':1}}
+        irrelevant = copy.deepcopy(self.boundary)
+        irrelevant['rows'][0]['outputRevision'] = '99'
+        stopped = self.observe([irrelevant], **options)
+        self.assertEqual((stopped['verdict'], stopped['rounds']), ('UNMEASURED',1))
+        self.assertEqual(stopped['code'], 'M7_DRAIN_QUERY_BOUND')
+        partial = copy.deepcopy(self.boundary)
+        partial['rows'][0]['observed']['clock'] = '11'
+        result = self.observe([partial, self.completed()], **options)
+        self.assertEqual((result['verdict'], result['queries'], result['responseBytes']), ('PASS',2,256))
+
     def test_initial_zero_target_without_completion_is_pending(self):
         for row in self.boundary['rows']:
             row.update(writerClock='0',observed={},completed={},outputRevision='0')
@@ -278,3 +290,26 @@ class NativeCatchup(unittest.TestCase):
 
 
 if __name__ == '__main__': unittest.main()
+
+
+class AutomaticSelection(unittest.TestCase):
+    def criterion(self, module):
+        from types import SimpleNamespace
+        manifest = dict(profile='pgstream-sample', runPurpose='discovery',
+                        completionContract='evaluator-work-v2', evaluatorOpportunities='received-input-v1',
+                        cadence={'restart':False})
+        module.select(SimpleNamespace(evaluator_catchup=None), manifest)
+        self.assertEqual(manifest.get('evaluatorCatchup'), 'fixed-target-v1')
+
+    def test_omitted_selection_red_then_restored(self):
+        import types
+        from pathlib import Path
+        self.criterion(c)
+        source = Path(c.__file__).read_text()
+        needle = "    if selected is None and (manifest.get('profile') == 'pgstream-sample'"
+        self.assertEqual(source.count(needle), 1)
+        broken = types.ModuleType('missing_selection')
+        exec(compile(source.replace(needle, "    if False and (manifest.get('profile') == 'pgstream-sample'"), c.__file__, 'exec'), broken.__dict__)
+        with self.assertRaises(AssertionError): self.criterion(broken)
+        self.criterion(c)
+        print('AUTOMATIC_CATCHUP missing selection RED; RESTORED_GREEN')

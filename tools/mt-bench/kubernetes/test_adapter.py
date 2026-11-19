@@ -168,31 +168,32 @@ class Adapter(unittest.TestCase):
         changed.update(containerID='containerd://evaluator',restartCount=0)
         self.green()
 
-    def test_pod_budget_must_match_the_render(self):
+    def test_pod_budget_changes_by_kubernetes_are_recorded_not_refused(self):
         spec = self.client.pods[0]['spec']
         for name, change in [('overhead', {'cpu': '100m'}), ('resources', {'limits': {'cpu': '1'}})]:
             spec[name] = change
-            with self.assertRaisesRegex(k.Refused, 'POD_BUDGET_CHANGED'):
-                self.green()
+            observed = self.green()['pods']['cohort-0']['observedResources']
+            self.assertEqual(observed['overhead' if name == 'overhead' else 'podResources'], change)
             del spec[name]
             self.green()
-        original = {'initContainers': [{'name': 'install', 'resources': {}}]}
-        changed = copy.deepcopy(original)
-        changed['initContainers'][0]['restartPolicy'] = 'Always'
-        with self.assertRaisesRegex(k.Refused, 'POD_BUDGET_CHANGED'):
-            k.admission_projection(original, changed)
-        k.admission_projection(original, original)
 
-    def test_retired_job_only_allows_independent_stored_seed_observation(self):
+    def primer_pod(self):
         job = copy.deepcopy(self.objects['StatefulSet/postgres'])
         job.update(kind='Job', apiVersion='batch/v1')
         job['metadata'].update(name='primer', uid='job-id', resourceVersion='4')
+        job['spec']['template']['spec']['containers'][0]['name'] = 'done'
         self.objects['Job/primer'] = job
         self.client.objects['Job/primer'] = copy.deepcopy(job)
         pod = copy.deepcopy(self.client.pods[-1])
+        pod['spec']['containers'][0]['name'] = 'done'
+        pod['status']['containerStatuses'][0].update(name='done', containerID='containerd://done')
         pod['metadata'].update(name='primer-old', uid='primer-pod-id',
                                ownerReferences=[{'kind':'Job','name':'primer','uid':'job-id','controller':True}])
         self.client.pods.append(pod)
+        return self.client.objects['Job/primer'], pod
+
+    def test_retired_job_only_allows_independent_stored_seed_observation(self):
+        job, pod = self.primer_pod()
         baseline = self.green()
         self.client.pods.pop()
         with self.assertRaisesRegex(k.Refused, 'POD_ROSTER_CHANGED'):
@@ -208,7 +209,7 @@ class Adapter(unittest.TestCase):
         value = inspect()['retiredJobs']['primer-old']
         self.assertEqual((value['podUid'], value['jobUid'], value['condition'], value['reason']),
                          ('primer-pod-id', 'job-id', 'Failed', 'DeadlineExceeded'))
-        self.assertEqual(value['containers']['postgres']['lastObservedExitCode'], 'UNMEASURED')
+        self.assertEqual(value['containers']['done']['lastObservedExitCode'], 'UNMEASURED')
         with tempfile.TemporaryDirectory() as name:
             d = Path(name)
             k.write(d/'run.json', self.c)
@@ -249,6 +250,76 @@ class Adapter(unittest.TestCase):
         self.client.pods.append(pod)
         k.observe(self.c, self.objects, self.client, baseline)
 
+    def test_exported_primer_can_finish_and_retire_across_load_and_recovery(self):
+        import matrix
+        job, pod = self.primer_pod()
+        with tempfile.TemporaryDirectory() as tmp:
+            d = Path(tmp)
+            output = d/'primer'
+            output.mkdir()
+            roster = output/'tenants.json'
+            self.c.update(primerOutput=str(output), tenantsFile=str(roster), tenants=2)
+            k.write(d/'run.json', self.c)
+            initial = self.green()
+            k.write(d/'observation.initial.json', initial)
+            k.write(roster, [{'id': id, 'host': host, 'token':'synthetic'} for id,host in ((A,'a.test'),(B,'b.test'))])
+            receipt = dict(verdict='OBSERVED', runSha256=k.digest(d/'run.json'), namespaceUid=initial['namespace']['uid'],
+                           jobUid='job-id', podUid='primer-pod-id', containerId='containerd://done',
+                           sourceResult={'state':'synthetic-data-primed','tenants':2},dataTenants=2,rosterSha256=k.digest(roster))
+            k.write(output/'result.json', receipt)
+            job['status'] = {'conditions':[{'status':'True','type':'Complete','reason':'CompletionsReached',
+                                           'lastTransitionTime':iso(time.time())}],'succeeded':1}
+            pod['status'].update(phase='Succeeded', conditions=[])
+            pod['status']['containerStatuses'][0].update(ready=False,state={'terminated':{'exitCode':0}})
+            def observe(baseline=initial):
+                point = k.observe(self.c, self.objects, self.client, baseline)
+                matrix.identity(self.c, baseline, point)
+                return point
+            # The kubelet may publish the clean exit ahead of the Job controller.
+            with patch.dict(job['status'], {'conditions':[]}):
+                present = observe()
+                with patch.dict(pod['status']['containerStatuses'][0], {'state':{'terminated':{'exitCode':1}}}):
+                    with self.assertRaisesRegex(k.Refused,'PRIMER_POD_EXIT'):
+                        observe()
+            self.client.pods.pop()
+            # The Pod may disappear between the first Job GET and the Pod LIST.
+            original_get = self.client.get
+            reads = []
+            def delayed_condition(kind,name=None,cleanup=False,*,replacement=False):
+                reply = original_get(kind,name,cleanup)
+                if kind == 'Job' and name == 'primer':
+                    reads.append(kind)
+                    if len(reads) == 1:
+                        reply['status'] = {'active':1}
+                    elif replacement:
+                        reply['metadata']['uid'] = 'other-job'
+                return reply
+            with patch.object(self.client,'get',side_effect=delayed_condition):
+                retired = observe(present)
+            self.assertEqual(len(reads),2)
+            reads.clear()
+            with patch.object(self.client,'get',side_effect=lambda *args,**kw: delayed_condition(*args,**kw,replacement=True)):
+                with self.assertRaisesRegex(k.Refused,'RESOURCE_UID_CHANGED'):
+                    observe(present)
+            self.assertEqual(len(reads),2)
+            self.assertEqual(retired['completedPrimer']['uid'], 'primer-pod-id')
+            self.assertNotIn('primer-old',retired['pods'])
+            self.assertEqual(matrix.node_requests(self.objects,retired,'limits-v1'),matrix.node_requests(self.objects,initial,'limits-v1'))
+            k.write(d/'restart.json',{'status':'OBSERVED','before':initial,'after':retired})
+            self.assertEqual(len(execute.roster(self.c)),2)
+            observe(k.active_baseline(d))
+            with patch.dict(job['status'], {'conditions':[]}):
+                with self.assertRaisesRegex(k.Refused,'POD_RETIREMENT_UNPROVEN'):
+                    observe(retired)
+            k.write(output/'result.json', dict(receipt, podUid='replacement'))
+            with self.assertRaisesRegex(k.Refused, 'PRIMER_ROSTER_CHANGED'):
+                observe()
+            k.write(output/'result.json',receipt)
+            with patch.dict(self.client.pods[0]['metadata'], {'uid':'replacement'}):
+                with self.assertRaisesRegex(k.Refused,'POD_UID_CHANGED'):
+                    observe()
+            observe()
+
     def test_actual_sql_transport_and_readonly_transaction(self):
         with tempfile.TemporaryDirectory() as name:
             d=Path(name);k.write(d/'observation.initial.json',self.green())
@@ -274,6 +345,10 @@ class Adapter(unittest.TestCase):
             self.assertIn('rawRow:e.rawRow',source)
             native=subprocess.run(['node',str(HERE/'probe.test.cjs'),str(target)],capture_output=True,text=True,timeout=15)
             self.assertEqual(native.returncode,0,native.stderr)
+            for mode in ('sql-unavailable', 'restored', 'warm'):
+                result = subprocess.run(['node', str(HERE/'probe.test.cjs'), str(target), mode],
+                                        capture_output=True, text=True, timeout=15)
+                self.assertEqual(result.returncode, 0, result.stderr)
             work=Path(name)/'workload.js';record=k.workload.generate(k.ROOT,work)
             self.assertEqual(record['adaptedSha256'],k.digest(work))
 
@@ -358,6 +433,53 @@ class Adapter(unittest.TestCase):
             with self.assertRaisesRegex(k.Refused,'ACCEPTED_WRITE_UNMEASURED'):criterion()
             k.write(out/'probe-accounting.json',ledger);criterion()
 
+    def test_subset_storage_in_stage_and_retained_report(self):
+        from workloads.reduce import reduce_stage
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            out = root / 'load'
+            out.mkdir()
+            run_id = 'synthetic-subset'
+            (out / 'runid').write_text(run_id)
+            # The first roster entry drives ordinary load even when IDs sort differently.
+            roster = [{'id': tenant, 'host':'fixture.test', 'token':'synthetic'} for tenant in (B, A)]
+            k.write(root / 'tenants.json', roster)
+            config = {'tenantsFile':str(root / 'tenants.json'), 'tenants':2, 'ordinaryRosterTenants':1}
+            k.write(root / 'run.json', config)
+            metrics = {'writes_ok':{'count':1}, 'writes_ok{kind:entries}':{'count':1},
+                       'writes_ok{kind:devicestatus}':{'count':0}, 'writes_ok{kind:treatments}':{'count':0},
+                       f'writes_ok{{tenant:{B}}}':{'count':1}, f'writes_uncertain{{tenant:{B}}}':{'count':0}}
+            ledger = {'version':2, 'kind':'m7-discovery-probe-accounting', 'runId':run_id, 'roster':[B,A],
+                      'admissionsClosed':True, 'attempts':1,
+                      'byTenant':{A:{'attempts':1,'accepted':1,'uncertain':0,'refused':0,'pending':0}}}
+            k.write(out / 'probe-accounting.json', ledger)
+            values = {A:{'probe':1}, B:{'entries':1}}
+
+            def report(case):
+                k.write(out / 'k6-summary.json', {'metrics':metrics})
+                k.write(out / 'stored-counts.json', values)
+                return reduce_stage(out, root / case)['stored']
+
+            self.assertEqual(report('full-read')['verdict'], 'PASS')
+            counts = execute.accepted_writes(out, config, values)
+            self.assertEqual([(row['tenant'], row['ordinarySelected']) for row in counts['rows']], [(A,False), (B,True)])
+            del metrics[f'writes_uncertain{{tenant:{B}}}']
+            self.assertEqual(report('missing-selected')['verdict'], 'UNMEASURED')
+            with self.assertRaisesRegex(k.Refused, 'ACCEPTED_WRITE_UNMEASURED'):
+                execute.accepted_writes(out, config, values)
+            values[A]['entries'] = values[B].pop('entries')
+            self.assertEqual(report('misplaced')['verdict'], 'FAIL')
+            with self.assertRaisesRegex(RuntimeError, 'M7_DISCOVERY_WRONG_DATA') as error:
+                execute.accepted_writes(out, config, values)
+            self.assertIn({'kind':'unselected-workload-write', 'tenant':A}, error.exception.oracleFindings['failures'])
+            values[B]['entries'] = values[A].pop('entries')
+            metrics[f'writes_uncertain{{tenant:{B}}}'] = {'count':0}
+            metrics['writes_uncertain'] = {'count':1}
+            self.assertEqual(report('unattributed-uncertainty')['verdict'], 'FAIL')
+            metrics['writes_uncertain'] = {'count':0}
+            self.assertEqual(report('restored')['verdict'], 'PASS')
+            self.assertEqual(execute.accepted_writes(out, config, values)['verdict'], 'GREEN')
+
     def test_matrix_collision_headroom_and_restore(self):
         with tempfile.TemporaryDirectory() as name:
             d=Path(name)
@@ -407,6 +529,30 @@ class Adapter(unittest.TestCase):
         self.assertEqual(value['objects']['StatefulSet/postgres']['maskedPaths'],[])
         self.assertEqual(value['pods']['cohort-0']['maskedPaths'],['/containers/0/env/0/value'])
         self.assertEqual(value['pods']['postgres-0']['maskedPaths'],[])
+
+
+class NativeDriverRecord(unittest.TestCase):
+    def test_driver_tools_and_dependencies_are_recorded_not_pinned(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as area:
+            root = Path(area); deps = root / 'deps'; (deps / 'node_modules').mkdir(parents=True)
+            (deps / 'package.json').write_text('{}'); (deps / 'package-lock.json').write_text('{}')
+            node = root / 'node'; node.write_text('synthetic')
+            driver = {'hostId': 'h', 'node': str(node), 'nodeSha256': '0'*64, 'dependencies': str(deps),
+                      'coreRepository': '/nonexistent', 'packageSha256': '0'*64, 'lockSha256': '0'*64,
+                      'nodeModules': 'captured', 'resources': {}}
+            c = {'driver': driver, 'observer': {'hostId': 'h'}, 'pins': {'pair': {'core': 'a'*40}}}
+            with patch.object(execute.k.dependency_reuse, 'tree', return_value='changed'), \
+                 patch.object(execute, 'finite_scope', return_value='scope'):
+                value = execute.actor(c)
+            self.assertFalse(value['matchesCapture'])
+            self.assertEqual(value['observedTools']['nodeSha256'], execute.k.digest(node))
+            self.assertEqual(value['nodeModules'], 'changed')
+            driver['node'] = 'relative'
+            with patch.object(execute.k.dependency_reuse, 'tree', return_value='changed'), \
+                 patch.object(execute, 'finite_scope', return_value='scope'):
+                with self.assertRaisesRegex(execute.k.Refused, 'DRIVER_TOOL_PATH'):
+                    execute.actor(c)
 
 
 if __name__=='__main__':

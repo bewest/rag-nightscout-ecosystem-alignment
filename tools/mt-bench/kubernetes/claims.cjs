@@ -9,6 +9,7 @@ function assess(v){
   const byId=new Map(),results=[];
   for(const witness of rows){
     if(!counts.has(witness.tenant)||!witness.rawRow||!Array.isArray(witness.clientObservations))fail('K8S_CLINICAL_UNMEASURED');
+    if(witness.clientProofVersion===3 && witness.clinicalTiming?.verdict!=='PASS')fail('K8S_CLINICAL_DEADLINE_UNCONFIRMED');
     const result=o.assess(witness.rawRow,witness,witness.clientObservations,counts.get(witness.tenant),v.completion);
     if(!result.ready)fail(result.code);
     const previous=byId.get(result.storedId);if(previous&&previous!==witness.tenant)fail('K8S_STORED_ID_TENANT_COLLISION');

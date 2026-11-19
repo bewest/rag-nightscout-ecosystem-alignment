@@ -48,7 +48,7 @@ class DiscoverySource(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             d=Path(root);(d/'dependencies').mkdir();(d/'dependencies/node_modules').symlink_to(config['dependencies'],target_is_directory=True)
             for pair in config['pairs']:
-                a.commit(core,pair['core']);a.commit(deploy,pair['deploy']);a.discovery_source_features(core,pair['core'])
+                a.commit(core,pair['core']);a.commit(deploy,pair['deploy'])
                 result=a.discovery_source_contract(d,{'pair':pair,'replicas':1},core,deploy)
                 self.assertTrue(result['ok']);self.assertTrue(result['processes'])
             m={'pair':config['pairs'][0],'replicas':1};command=a.command

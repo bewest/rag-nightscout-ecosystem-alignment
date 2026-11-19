@@ -244,7 +244,7 @@ def binding(value, now=None):
          and re.fullmatch(re.escape(value['runId']) + r'-[a-f0-9]{12}', value['cloudId']) is not None
          and re.fullmatch(r'[a-f0-9]{32}', value['nonce']) is not None, 'EXTERNAL_RUN_BINDING')
     need(type(value['cell']) is int and value['cell'] == 1
-         and type(value['tenants']) is int and (1<=value['tenants']<=10000 if discovery_mode(value) else value['tenants'] in SUPPORTED_COHORTS), 'EXTERNAL_CELL')
+         and type(value['tenants']) is int and value['tenants']>=1, 'EXTERNAL_CELL')
     workload(value)
     topology(value)
     source_admission(value);static_selection(value)

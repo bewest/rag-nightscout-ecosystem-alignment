@@ -26,14 +26,13 @@ def validate_prepare(args):
     a.stream_topology.ack_option(args)
     a.preload_convergence.option(args)
     require(args.measurement_mode=='accepted','M7_CONFIG_DISCOVERY_MEASUREMENT_MODE')
-    require(workload_inputs.tenants(args.tenants) and (args.run_purpose=='discovery' or args.tenants<=10000)
+    require(workload_inputs.tenants(args.tenants)
             and (discovery_api_replicas(args.replicas) if args.run_purpose=='discovery'
                  else type(args.replicas) is int and args.replicas in REPLICAS)
             and (args.replicas == 1 or static),
             'M7_CONFIG_SINGLE_API_TENANT_RANGE')
     a.profile_provenance.selection(args.diagnostics,args.diagnostics_interval_ms)
     a.prepare_primer_options(args)
-    a.prepare_population_ceiling(args)
     a.jwt_setup_concurrency(args.jwt_setup_concurrency, args.run_purpose=='discovery')
     a.fixture_project(args, '0'*32)
     networks = [ipaddress.ip_network(getattr(args, key), strict=True) for key in ('backend_subnet', 'edge_subnet')]
@@ -48,20 +47,26 @@ def validate_prepare(args):
     return cadence
 
 
+def resource_projection(resources, profile):
+    if profile is None:
+        return None
+    return {'profile': profile, 'millicpus': resources.cpu_ceiling(profile),
+            'memoryBytes': resources.memory_ceiling(profile),
+            **({'standalone': {'k6': resources.driver_record(profile)}}
+               if resources.driver_memory_request(profile) else {})}
+
+
 def from_args(args, instrument):
     import adapter as a
     # This is semantic input, independent of transport paths and observed limits.
     cadence = validate_prepare(args)
     profile = a.selected_resources_profile(args)
-    resources = None if profile is None else {
-        'profile': profile, 'millicpus': a.diagnostic_resources.cpu_ceiling(profile),
-        'memoryBytes': a.diagnostic_resources.memory_ceiling(profile)}
+    resources = resource_projection(a.diagnostic_resources, profile)
     return {**commissioning_wal.option(args), **a.stream_topology.ack_option(args), **a.preload_convergence.option(args), **({'tenantReadiness':args.tenant_readiness} if getattr(args,'tenant_readiness',None) else {}), **a.static_topology.option(args), **a.node_observation.option(args), **a.api_warm_cause.option(args), **({'apiCauseObservation':'on'} if getattr(args,'api_cause_observation','off')=='on' else {}),'version': 1, 'pair': {'core': args.core_commit, 'deploy': args.deploy_commit},
             'imageId': args.image_id or args.image, 'instrument': instrument,
             'postgresImageId': args.postgres_image, 'profile': args.profile,
             'runPurpose': args.run_purpose, 'tenants': args.tenants, 'replicas': args.replicas,
             'cadence': cadence, 'primerConcurrency': args.primer_concurrency,
-            **({'populationCeiling':args.population_ceiling} if getattr(args,'population_ceiling',None) is not None else {}),
             **({'primerMaxTenants': args.primer_max_tenants} if getattr(args,'primer_max_tenants',None) is not None else {}),
             'jwtSetupConcurrency': args.jwt_setup_concurrency,
             'pgstreamTopology': args.pgstream_topology, 'resources': resources,
@@ -72,9 +77,7 @@ def from_args(args, instrument):
 def from_manifest(m):
     import adapter as a
     profile = m.get('diagnosticResources', {}).get('profile')
-    resources = None if profile is None else {'profile': profile,
-        'millicpus': a.diagnostic_resources.cpu_ceiling(profile),
-        'memoryBytes': a.diagnostic_resources.memory_ceiling(profile)}
+    resources = resource_projection(a.diagnostic_resources, profile)
     node = m.get('nodeObservation')
     warm = m.get('apiWarmCause')
     return {**({'staticBuildReceiptSha256': m['staticBuildReceiptSha256']} if m.get('staticBuildReceiptSha256') else {}),
@@ -83,7 +86,6 @@ def from_manifest(m):
             **({'apiCauseObservation':'on'} if m.get('apiCause') else {}),'version': 1, **{k: m.get(k) for k in ('pair','imageId','profile','runPurpose','tenants','replicas','cadence','completionContract')},
             'instrument': m['instrument']['sha256'], 'postgresImageId': m.get('postgresImageId'),
             'primerConcurrency': m.get('primerConcurrency',1), 'jwtSetupConcurrency': m.get('jwtSetupConcurrency',1),
-            **({'populationCeiling':m['populationCeiling']} if 'populationCeiling' in m else {}),
             **({'primerMaxTenants':m['primerMaxTenants']} if 'primerMaxTenants' in m else {}),
             'pgstreamTopology': m.get('pgstreamTopology',a.stream_topology.COLOCATED), 'resources': resources,
             'diagnostics':m.get('diagnostics',a.profile_provenance.selection())}
@@ -107,9 +109,7 @@ def resolve(config, source_acceptance=None):
     from contract import discovery_authorization
     discovery_authorization({**resolved,'instrument':{'sha256':resolved['instrument']},'runConfiguration':resolved},template)
     authored=resolved['cadence'].get('startupWindows',{})
-    return {**({'populationCommissioning':a.population_ceiling.commissioning(resolved['tenants'],a.primer_options.from_manifest(resolved))}
-               if 'populationCeiling' in resolved else {}),
-            'configuration': resolved, 'configurationSha256': sha(resolved), 'diagnosticReceiptTemplate':template,
+    return {'configuration': resolved, 'configurationSha256': sha(resolved), 'diagnosticReceiptTemplate':template,
             'receiptLimits': limits,
             'startupWindows':{key:{'seconds':authored.get(key,value), 'origin':'authored' if key in authored else 'reference'}
                               for key,value in workload_inputs.COMPOSE_STARTUP_DEFAULTS.items()},
@@ -132,8 +132,10 @@ def remote_projection(config, overlay, source_acceptance=None):
         sys.path[:]=previous
     require(config['workSeconds'] is not None, 'M7_REMOTE_TO_COMPLETION_UNSUPPORTED')
     result = resolve(config,source_acceptance); r = result['configuration']
+    resources = (r.get('resources') or {}).get('profile')
+    require(not a.diagnostic_resources.driver_memory_request(resources),
+            'M7_CONFIG_REMOTE_DRIVER_MEMORY_RESERVATION_UNSUPPORTED')
     import primer_options
-    require('populationCeiling' not in r,'M7_REMOTE_POPULATION_CEILING_UNSUPPORTED')
     require('primerMaxTenants' not in r and not primer_options.requires_extended(primer_options.from_manifest(r)),
             'M7_REMOTE_PRIMER_OPTIONS_UNSUPPORTED')
     if r.get('staticTopology'):
@@ -147,7 +149,7 @@ def remote_projection(config, overlay, source_acceptance=None):
     require(not set(b).intersection({'tenants','pair','imageId','k6Image','workload','reportMode','pgstreamTopology','diagnosticResourceProfile','diagnosticResourceAllocation','staticTopology','commissioningSlotWalMiB','tenantReadiness'}),
             'M7_CONFIG_REMOTE_MIRROR_REFUSED')
     cadence = dict(r['cadence'])
-    require(not {'setupSeconds','drainSeconds','drainObservation','startupWindows','probeLedger','evaluatorProgressBudget'} & cadence.keys(),
+    require(not {'setupSeconds','drainSeconds','drainObservation','opportunityObservation','startupWindows','probeLedger','evaluatorProgressBudget'} & cadence.keys(),
             'M7_REMOTE_PHASE_WINDOWS_UNSUPPORTED')
     viewers = cadence.get('logicalPollingClients',r['tenants']*cadence['socketsPerTenant'])
     b.update(tenants=r['tenants'], pair=r['pair'], imageId=r['imageId'], reportMode='discovery',

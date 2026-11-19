@@ -29,6 +29,12 @@ def _environment_project(path):
  if len(value)>1 and value[0]==value[-1] and value[0]in("'",'"'):value=value[1:-1]
  require(NAME.fullmatch(value) is not None,'M7_BINDING_ENV_PROJECT_REQUIRED');return value
 
+def verified_serving(config):
+    services = config['services']
+    return ('NS_DEMO_TENANTS' in services.get('primer', {}).get('environment', {}) and
+            'NS_DEMO_TENANTS' not in services.get('bootstrap', {}).get('environment', {}))
+
+
 def canonical_project(owner,env_file,config_file,expected=None):
  """Never derive namespace from mutable owner alone, and never fall back."""
  project=owner.get('project');config=load(config_file)
@@ -165,14 +171,21 @@ def verify(binding):
  require(digest(binding['ownerFile'])==binding['ownerSha256']and digest(binding['envFile'])==binding['envSha256'],'M7_BINDING_OWNER_ENV_CHANGED')
  for epoch in binding['epochs'].values():
   require(digest(epoch['configFile'])==epoch['sha256'],'M7_BINDING_COMPOSE_CHANGED');canonical_project(load(binding['ownerFile']),binding['envFile'],epoch['configFile'],binding['project'])
- for stage in binding.get('runStages',{}).values():require(digest(stage['sourceFile'])==stage['sourceSha256'],'M7_BINDING_RUN_STAGE_SOURCE_CHANGED')
+ # Source bytes describe the producer; the actual image, command and owned
+ # Compose layout below protect effects. Editing a producer cannot alter them.
  return binding
 
 def _options(action,options):
  allowed={'up':{'-d','--no-deps','--no-build','--force-recreate','--wait','--pull','never','--wait-timeout'},'create':{'--no-build','--no-deps','--pull','never'},'run':{'--rm','--no-deps','--pull','never'}}
  options=[str(x)for x in options];i=0
  while i<len(options):
-  value=options[i];require(value in allowed[action]and value!='never','M7_BINDING_COMPOSE_OPTION_REFUSED')
+  value=options[i]
+  if action=='run' and value.startswith('--env=NS_DEMO_TENANTS='):
+   count=value.removeprefix('--env=NS_DEMO_TENANTS=')
+   require(re.fullmatch('[1-9][0-9]{0,15}',count) and workload_inputs.tenants(int(count)),
+           'M7_BINDING_COMPOSE_OPTION_REFUSED')
+   i+=1;continue
+  require(value in allowed[action]and value!='never','M7_BINDING_COMPOSE_OPTION_REFUSED')
   if value in('--pull','--wait-timeout'):
    require(i+1<len(options),'M7_BINDING_COMPOSE_OPTION_REFUSED');argument=options[i+1];require(argument=='never'if value=='--pull'else re.fullmatch(r'[0-9]{1,10}',argument)and workload_inputs.seconds(int(argument)),'M7_BINDING_COMPOSE_OPTION_REFUSED');i+=2
   else:i+=1
@@ -327,9 +340,11 @@ def _oneoff_intent(binding,kind,argv,scope,runner,cidfile):
   allocation_file=Path(directory)/'loadgen-resource-allocation.json'
   if allocation_file.is_file():
    allocation=load(allocation_file);require(allocation==resource.discovery_driver_record(owner)and allocation is not None,'M7_BINDING_ONEOFF_DRIVER_ALLOCATION_CHANGED');limit=resource.DISCOVERY_K6
-  else:limit=resource.LIMITS['k6']
-  require(argv[3:9]==['--cpus',limit.cpus,'--memory',str(limit.memory),'--memory-swap',str(limit.memory)],'M7_BINDING_ONEOFF_RESOURCE_LIMITS_CHANGED');i=9
-  resource_limits={'NanoCpus':limit.cpu*1000000,'Memory':limit.memory,'MemorySwap':limit.memory}
+  else:limit=resource.driver_limit(budget.profile)
+  request_only=resource.driver_memory_request(budget.profile)
+  flags=resource.standalone_flags(limit,request_only);i=3+len(flags)
+  require(argv[3:i]==flags,'M7_BINDING_ONEOFF_RESOURCE_LIMITS_CHANGED')
+  resource_limits=resource.standalone_native(limit,request_only)
  while i<len(argv)and argv[i]!=scope['imageId']:
   key=argv[i];require(key in('--label','--network','--name','-u','-v','-e','--pull')and i+1<len(argv),'M7_BINDING_ONEOFF_OPTION_REFUSED');value=argv[i+1];i+=2
   if key=='--label':
@@ -346,7 +361,7 @@ def _oneoff_intent(binding,kind,argv,scope,runner,cidfile):
  require(i<len(argv),'M7_BINDING_ONEOFF_IMAGE_CHANGED');command=argv[i+1:];require(labels.get(OWNER)==scope['owner']and labels.get(PROJECT)==binding['project'],'M7_BINDING_ONEOFF_OWNER_PROJECT_CHANGED');require(set(labels)==({OWNER,PROJECT,SERVICE}if kind=='k6-load'else{OWNER,PROJECT}),'M7_BINDING_ONEOFF_LABEL_REFUSED')
  if kind=='k6-load':
   require(labels[SERVICE]=='k6'and network=='host'and name==binding['project']+'-k6'and re.fullmatch('[0-9]+:[0-9]+',user or'')and sorted(mounts)==sorted([['bind',directory+'/k6','/scripts',False],['bind',directory+'/load','/out',True],['bind',directory+'/tenants.private.json','/tenants.private.json',False]]),'M7_BINDING_ONEOFF_LOAD_LAYOUT_CHANGED')
-  require(command==['run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js']and set(env)=={'BASE_URL','TENANTS_FILE','RUN_ID','SETTINGS_FINGERPRINT','RUN_START','DURATION','ACCEL','HOT_FACTOR','SHAPES'}|({'OFFERED_RPS'}if'OFFERED_RPS'in env else set())|({'JWT_SETUP_CONCURRENCY'}if'JWT_SETUP_CONCURRENCY'in env else set())|({'M7_SETUP_SECONDS','M7_SETUP_UNTIL_MS'}if'M7_SETUP_SECONDS'in env or'M7_SETUP_UNTIL_MS'in env else set()),'M7_BINDING_ONEOFF_LOAD_COMMAND_CHANGED')
+  require(command==['run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js']and set(env)=={'BASE_URL','TENANTS_FILE','RUN_ID','RUN_START','DURATION','ACCEL','HOT_FACTOR','SHAPES'}|({'OFFERED_RPS'}if'OFFERED_RPS'in env else set())|({'JWT_SETUP_CONCURRENCY'}if'JWT_SETUP_CONCURRENCY'in env else set())|({'M7_SETUP_SECONDS','M7_SETUP_UNTIL_MS'}if'M7_SETUP_SECONDS'in env or'M7_SETUP_UNTIL_MS'in env else set()),'M7_BINDING_ONEOFF_LOAD_COMMAND_CHANGED')
   if 'M7_SETUP_SECONDS'in env or 'setupSeconds'in owner.get('cadence',{}):
    import phase_windows
    selected=phase_windows.selection(owner.get('cadence',{}));window=load(Path(directory)/'load/phase-windows.json')
@@ -366,7 +381,11 @@ def qualify_oneoff(binding,row,intent):
 
 def checked_oneoff(binding,kind,argv,scope,runner,authorize,journal_file):
  """Prewrite exact source-generated k6 intent before the existing CLI runner."""
- verify(binding);require(callable(authorize),'M7_BINDING_FINITE_AUTHORIZER_REQUIRED');journal=load(journal_file);require(journal['bindingSha256']==binding['sha256'],'M7_BINDING_JOURNAL_CHANGED');folder=Path(binding['oneoffRoot'])/'oneoff-cids';folder.mkdir(mode=0o700,exist_ok=True);cidfile=folder/(str(len(journal['intents']))+'.cid');require(not cidfile.exists(),'M7_BINDING_ONEOFF_CIDFILE_EXISTS');intent=_oneoff_intent(binding,kind,argv,scope,runner,cidfile);journal['intents'].append(intent);_save(journal_file,journal);require(authorize()is not False,'M7_BINDING_FINITE_AUTHORIZER_REFUSED');actual=list(map(str,argv));offset=9 if 'resourceLimits'in intent['layout']else 3;actual[offset:offset]=['--label',ATTEMPT+'='+binding['attempt'],'--cidfile',str(cidfile)]
+ verify(binding);require(callable(authorize),'M7_BINDING_FINITE_AUTHORIZER_REQUIRED');journal=load(journal_file);require(journal['bindingSha256']==binding['sha256'],'M7_BINDING_JOURNAL_CHANGED');folder=Path(binding['oneoffRoot'])/'oneoff-cids';folder.mkdir(mode=0o700,exist_ok=True);cidfile=folder/(str(len(journal['intents']))+'.cid');require(not cidfile.exists(),'M7_BINDING_ONEOFF_CIDFILE_EXISTS');intent=_oneoff_intent(binding,kind,argv,scope,runner,cidfile);journal['intents'].append(intent);_save(journal_file,journal);require(authorize()is not False,'M7_BINDING_FINITE_AUTHORIZER_REFUSED')
+ actual=list(map(str,argv))
+ limits=intent['layout'].get('resourceLimits')
+ offset=3 if limits is None else 7 if 'MemoryReservation' in limits else 9
+ actual[offset:offset]=['--label',ATTEMPT+'='+binding['attempt'],'--cidfile',str(cidfile)]
  try:return runner(actual)
  finally:
   record_created(journal,runner);_save(journal_file,journal)

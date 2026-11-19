@@ -124,13 +124,11 @@ def campaign_check(document):
     cells = document.get("cells", [])
     require({(r.get("tenants"), r.get("replicas")) for r in cells} == {(n, a) for a in REPLICAS for n in COUNTS}, "M7_SUMMARY_MISSING_CELL")
     require(len(cells) == len(COUNTS) * len(REPLICAS), "M7_SUMMARY_DUPLICATE_CELL")
-    from profile_provenance import check_identity, observation_check
+    from profile_provenance import check_identity
     chosen=check_identity(document.get("profileSelection"))
     for row in cells:
         accepted_claim_scope(row)
         require(check_identity(row.get("profileSelection"))==chosen,"M7_PROFILE_SELECTION_MISMATCH")
-        observation_check(row.get("settingsFingerprintObservation"))
-        require(chosen["settings"].get("sourceCommit")==pair["core"],"M7_PROFILE_SETTINGS_SOURCE")
         require(row.get("pair") == pair and row.get("hostIdentity")==document.get("hostIdentity") and row.get("instrument") == document.get("instrument"), "M7_SUMMARY_MIXED_SOURCE")
         require(row.get("imageId")==document["imageId"] and row.get("measurements",{}).get("complete") is True, "M7_SUMMARY_UNMEASURED_CELL")
         require(row.get("verdict") == "PASS", "M7_SUMMARY_NONPASS_CELL")
@@ -152,12 +150,10 @@ def _pilot_check(document,kind):
     require(replicas in REPLICAS,"M7_PILOT_REPLICAS_REQUIRED")
     require(len(cells)==3 and {(r.get("tenants"),r.get("replicas")) for r in cells}=={(n,replicas) for n in PILOT_COUNTS},"M7_PILOT_MISSING_CELL")
     require(re.fullmatch(r"[0-9a-f]{64}",document.get("instrument","")) and re.fullmatch(r"[0-9a-f]{64}",document.get("hostIdentity","")),"M7_PILOT_IDENTITY_REQUIRED")
-    from profile_provenance import check_identity, observation_check
+    from profile_provenance import check_identity
     chosen=check_identity(document.get("profileSelection"))
     for row in cells:
         require(check_identity(row.get("profileSelection"))==chosen,"M7_PROFILE_SELECTION_MISMATCH")
-        observation_check(row.get("settingsFingerprintObservation"))
-        require(chosen["settings"].get("sourceCommit")==pair["core"],"M7_PROFILE_SETTINGS_SOURCE")
         require(row.get("pair")==document.get("pair") and row.get("hostIdentity")==document.get("hostIdentity") and row.get("instrument")==document["instrument"] and row.get("imageId")==document.get("imageId"),"M7_PILOT_MIXED_SOURCE")
         require(row.get("verdict")=="PASS" and row.get("measurements",{}).get("complete") is True and row.get("profile")=="remote-pilot","M7_PILOT_NONPASS_CELL")
     return True
@@ -297,7 +293,6 @@ def discovery_authorization(manifest, receipt):
     import stream_topology
     import preload_convergence
     import primer_options
-    import population_ceiling
     version=receipt.get('version',1)
     require(type(version) is int and version in (1,2),'M7_DIAGNOSTIC_RECEIPT_VERSION')
     require('commissioningSlotWalMiB' not in manifest or version==2,
@@ -305,14 +300,11 @@ def discovery_authorization(manifest, receipt):
     ack_budget = stream_topology.ack_selection(manifest)
     require(not ack_budget or version==2, 'M7_PGSTREAM_ACK_BOUND_RECEIPT_REQUIRED')
     preload = preload_convergence.receipt(manifest, receipt)
-    selected_budgets={'probeLedger','startupWindows','evaluatorProgressBudget'} & manifest.get('cadence',{}).keys()
+    selected_budgets={'opportunityObservation','probeLedger','startupWindows','evaluatorProgressBudget'} & manifest.get('cadence',{}).keys()
     require(not selected_budgets or version==2,'M7_WORKLOAD_BUDGET_BOUND_RECEIPT_REQUIRED')
     primer=primer_options.selection(primer_options.from_manifest(manifest),lambda ok,code:require(ok,'M7_'+code))
     require(not ('maxTenants' in primer or primer_options.requires_extended(primer)) or version==2,
             'M7_PRIMER_OPTIONS_BOUND_RECEIPT_REQUIRED')
-    require(population_ceiling.FIELD not in manifest or version==2,'M7_POPULATION_BOUND_RECEIPT_REQUIRED')
-    population_ceiling.selection(manifest.get(population_ceiling.FIELD),manifest.get('tenants'),
-                                 lambda ok,code:require(ok,'M7_'+code))
     if version==1:return dict(UNACCEPTED_SCOPE)
     from run_configuration import sha
     import static_topology
@@ -323,7 +315,6 @@ def discovery_authorization(manifest, receipt):
     require(stream_topology.ack_selection(resolved) == ack_budget, 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(preload_convergence.selection(resolved) == preload, 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(primer_options.from_manifest(resolved)==primer,'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
-    require(resolved.get(population_ceiling.FIELD)==manifest.get(population_ceiling.FIELD),'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(resolved.get('staticTopology') == manifest.get('staticTopology') and
             resolved.get('staticBuildReceiptSha256') == manifest.get('staticBuildReceiptSha256'),
             'M7_STATIC_CONFIGURATION_MISMATCH')

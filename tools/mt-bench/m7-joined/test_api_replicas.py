@@ -114,7 +114,7 @@ class ApiReplicas(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'M7_STATIC_RECEIPT'):
             static_topology.receipt(selected,proof)
 
-    def test_explicit_allocation_remains_required_and_aggregate_checked(self):
+    def test_explicit_allocation_is_aggregate_checked_and_absence_is_uncapped(self):
         value=config(3);allocation=json.loads(value['prepare']['diagnostic-resource-allocation'])
         selected=resources.selection(allocation)
         bad=copy.deepcopy(allocation);bad['ceiling']['millicpus']=1
@@ -122,7 +122,7 @@ class ApiReplicas(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'M7_DIAGNOSTIC_RESOURCE_ALLOCATION_AGGREGATE_EXCEEDED'):
             configuration.resolve(value)
         value=config(3);value['prepare'].pop('diagnostic-resource-allocation')
-        with self.assertRaisesRegex(RuntimeError,'M7_STATIC_EXPLICIT_ALLOCATION'):configuration.resolve(value)
+        self.assertIsNone(configuration.resolve(value)['configuration']['resources'])
         self.assertIn('api-3',selected['services'])
 
     def test_discovery_reader_retains_scope_and_legacy_profile_grid(self):
@@ -130,7 +130,7 @@ class ApiReplicas(unittest.TestCase):
         value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL',
                'capacityAcceptance':'NOT_GRANTED','pair':{'core':'a'*40,'deploy':'b'*40},
                'instrument':'d'*64,'hostIdentity':'c'*64,'imageId':'sha256:'+'e'*64,
-               'profileSelection':PROFILE,'settingsFingerprint':{'sha256':'f'*64,'sourceCommit':'a'*40},
+               'profileSelection':PROFILE,
                'owner':'f'*32,'ownershipVerified':True,'tenants':2,'strictChecks':{},'processes':{},
                'hardFailures':[],'oracle':None,'profile':'pgstream-sample',**c.UNACCEPTED_SCOPE}
         for count in (3,16):

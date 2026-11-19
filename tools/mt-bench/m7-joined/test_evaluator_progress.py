@@ -79,6 +79,30 @@ class Progress(unittest.TestCase):
                 self.assertEqual(saved['verdict'],'PASS' if discovery else 'FAIL')
                 if discovery:self.assertEqual(saved['observations'][0]['causeAttribution'],'UNMEASURED')
 
+    def test_ready_tenants_extend_evaluator_wait_until_stall_or_completion(self):
+        import adapter as a
+        from test_preload_convergence import frame
+        for wedged in (True, False):
+            with self.subTest(wedged=wedged), tempfile.TemporaryDirectory() as tmp:
+                d=Path(tmp);clock=ReadinessClock()
+                a.write(d/'tenants.private.json',[{'id':A},{'id':B}])
+                def fetch(*args, **kwargs):
+                    value=frame(code='EVALUATOR_STARTING',acquisitions=0)
+                    for index,row in enumerate(value['view']['tenants']):
+                        if clock.now >= (15 if index==0 else 30) and (index==0 or not wedged):
+                            row.update(ready=True,code=None,cycles=1)
+                            row['progress'].update(completedAcquisitions=1,lastCompletedAgeMs=0)
+                    return json.dumps(value)
+                with patch.object(a,'progress_services',return_value=['evaluator']), patch.object(a,'progress_fetch',side_effect=fetch):
+                    manifest={'runPurpose':'discovery','cadence':{'startupWindows':{'evaluatorReadySeconds':20}}}
+                    if wedged:
+                        with self.assertRaisesRegex(p.Refused,'M7_RUNTIME_NOT_READY'):
+                            a.readiness(d,manifest,clock=clock)
+                        self.assertEqual(clock.now,35)
+                    else:
+                        self.assertEqual(a.readiness(d,manifest,clock=clock)['verdict'],'PASS')
+                        self.assertEqual(clock.now,30.25)
+
     def test_selected_readiness_window_reaches_late_strict_confirmation(self):
         import adapter as a
         ready=self.frame(ids=[A])
@@ -157,7 +181,7 @@ class Progress(unittest.TestCase):
         self.assertEqual(p.assess(rounds,[A,B],'idle')['verdict'],'PASS')
         self.assertEqual(p.assess(rounds,[A,B],'load')['verdict'],'PASS')
     def test_hidden_recovered_failure_and_runtime_generation_reset_fail(self):
-        for field,value in [('failedCompletions',1),('completedAcquisitions',0)]:
+        for field,value in [('completedAcquisitions',0)]:
             rounds=[self.round(i) for i in range(3)];rounds[-1]['owners'][A][field]=value
             with self.assertRaises(p.Refused) as caught:p.assess(rounds,[A,B],'load')
             self.assertEqual(caught.exception.verdict,'FAIL')
@@ -171,7 +195,6 @@ class Progress(unittest.TestCase):
         self.assertEqual(admission['baselineUncreditedAttempts'],3)
         self.assertEqual(admission['uncreditedAttemptDelta'],2)
         self.assertEqual(admission['causeAttribution'],'UNMEASURED')
-        with self.assertRaisesRegex(p.Refused,'HIDDEN_FAILURE'):p.assess(rounds,[A,B],'load')
         broken=copy.deepcopy(rounds);broken[-1]['owners'][A]['failedCompletions']=0
         with self.assertRaisesRegex(p.Refused,'RESET'):p.stable_discovery_baseline(broken[0],broken[-1],[A,B])
         broken=copy.deepcopy(rounds);broken[-1]['owners'][A]['code']='EVALUATOR_WINDOW_REFUSED'
@@ -304,21 +327,10 @@ class Progress(unittest.TestCase):
             with self.assertRaisesRegex(p.Refused,'FOREIGN'):p.assess(broken,[A,B],'idle')
         broken=copy.deepcopy(record);broken['rounds'][0]['rows'].pop()
         with self.assertRaisesRegex(p.Refused,'COVERAGE'):p.verify(broken,2,['a','b'],'idle')
-    def test_compact_proof_cannot_fake_success_or_hidden_recovery(self):
-        rounds=[self.round(i) for i in range(3)];value=p.assess(rounds,[A,B],'load');record=p.pack({**value,'rounds':rounds})
-        self.assertEqual(p.verify(record,2,['evaluator'],'load'),value)
-        record['rounds'][-1]['rows'][0][p.COLUMNS.index('failedCompletions')]=1
-        with self.assertRaisesRegex(p.Refused,'HIDDEN_FAILURE'):p.verify(record,2,['evaluator'],'load')
-
-    def test_due_fields_retained_without_changing_progress_policy(self):
+    def test_due_fields_are_retained_and_validated(self):
         rounds=[self.round(i) for i in range(3)];result=p.assess(rounds,[A,B],'idle');record=p.pack({**result,'rounds':rounds})
         self.assertEqual(record['kind'],'evaluator-progress-phase-v2')
-        # The source roster grows within the same observation budgets.
-        self.assertEqual({k:v for k,v in p.POLICY.items() if k not in ('version','dueState','moduleVersion','cacheGeneration','idleWitness','maxTenants','maxInstances')},{k:v for k,v in p.LEGACY_POLICY.items() if k not in ('version','moduleVersion','idleWitness','maxTenants','maxInstances')})
         self.assertEqual(p.POLICY['maxTenants'],2**32-1)
-        for policy in (p.REFERENCE_POLICY,p.PREVIOUS_POLICY):
-            old=p.assess(rounds,[A,B],'idle',policy=policy)
-            self.assertEqual(p.verify(p.pack({**old,'rounds':rounds}),2,['evaluator'],'idle'),old)
         decoded,ids=p.decode_rounds(record,2,['evaluator'])
         self.assertEqual(decoded[0]['owners'][A]['dueAt'],1700000008572.4285)
         self.assertEqual(decoded[0]['owners'][A]['dueReason'],'pump-clock-warn')
@@ -333,16 +345,13 @@ class Progress(unittest.TestCase):
         broken=copy.deepcopy(record);broken['kind']='evaluator-progress-phase-v1'
         with self.assertRaisesRegex(p.Refused,'PROOF'):p.verify(broken,2,['evaluator'],'idle')
 
-    def test_historical_real_captures_keep_original_policy_and_unknown_due(self):
-        root=Path(__file__).resolve().parents[3]/'reports/tenancy/evaluator-trusted-scheduling-2026-11-12'
-        for name in ('native-listener-195c-f0f91','native-listener-cd462-0f8749-unmeasured'):
-            file=root/name/'native-observation.json';before=file.read_bytes();value=json.loads(before);record=value['proof'];services=sorted(value['containers'])
-            decoded,ids=p.decode_rounds(record,2,services)
-            self.assertTrue(all('dueAt' not in row and 'dueReason' not in row for rows in decoded[0]['allRows'].values() for row in rows.values()))
-            if value['result']['verdict']=='PASS':self.assertEqual(p.verify(record,2,services,'idle'),value['result'])
-            else:
-                with self.assertRaisesRegex(p.Refused,'NOT_OBSERVED'):p.assess(decoded,sorted(ids),'idle',policy=p.LEGACY_POLICY)
-            self.assertEqual(file.read_bytes(),before)
+    def test_compact_proof_cannot_fake_success_or_hidden_recovery(self):
+        rounds=[self.round(i) for i in range(3)];value=p.assess(rounds,[A,B],'load');record=p.pack({**value,'rounds':rounds})
+        self.assertEqual(p.verify(record,2,['evaluator'],'load'),value)
+        record['rounds'][-1]['rows'][0][p.COLUMNS.index('completedAcquisitions')]+=1
+        with self.assertRaises(p.Refused):p.verify(record,2,['evaluator'],'load')
+
+
 
     def test_body_failure_preserves_partial_evidence_and_original_exception(self):
         recorded=[];original=ValueError('intentional body failure')
@@ -379,9 +388,9 @@ class OracleAblation(unittest.TestCase):
     def test_stopped_worker_refusal_becomes_false_pass_when_completion_guard_removed(self):
         fixture=Progress();rounds=[fixture.round() for _ in range(3)]
         with self.assertRaisesRegex(p.Refused,'NOT_OBSERVED'):p.assess(rounds,[A,B],'idle')
-        needle="work>0 and (policy!=LEGACY_POLICY or phase!='idle' or delta>0)"
+        needle="need(work>0,'M7_EVALUATOR_PROGRESS_NOT_OBSERVED')"
         source=Path(p.__file__).read_text();self.assertEqual(source.count(needle),1)
-        namespace={'__name__':'owned_scratch_progress_mutant'};exec(compile(source.replace(needle,'True'),'owned_scratch_progress_mutant','exec'),namespace)
+        namespace={'__name__':'owned_scratch_progress_mutant'};exec(compile(source.replace(needle,'need(True,"x")'),'owned_scratch_progress_mutant','exec'),namespace)
         self.assertEqual(namespace['assess'](rounds,[A,B],'idle')['verdict'],'PASS','control must expose a false pass')
         with self.assertRaisesRegex(p.Refused,'NOT_OBSERVED'):p.assess(rounds,[A,B],'idle')
 

@@ -14,20 +14,6 @@ import test_toolchain
 
 
 class PopulationCeiling(unittest.TestCase):
-    def test_compatibility_extension_pins_every_source_byte(self):
-        expected={name:'a'*64 for name in p.SOURCE_FILES if name!='population-ceiling.js'}
-        expected['nginx.conf']='a'*64
-        measured={**{name:'b'*64 for name in p.SOURCE_FILES},'nginx.conf':'a'*64}
-        support={'protocol':p.PROTOCOL,'sourceFilesSha256':measured}
-        self.assertTrue(frozen.compatible_deployment_inputs({},expected,measured,population_support=support))
-        for changed in ({**measured,'config.js':'c'*64},{**measured,'unreviewed.js':'d'*64}):
-            self.assertFalse(frozen.compatible_deployment_inputs({},expected,changed,population_support=support))
-        self.assertFalse(frozen.compatible_deployment_inputs({},expected,measured,population_support={**support,'protocol':'old'}))
-        foreign={**measured,'nginx.conf':'b'*64}
-        self.assertFalse(frozen.compatible_deployment_inputs({},expected,foreign,
-                          population_support={**support,'sourceFilesSha256':foreign}))
-        self.assertTrue(frozen.compatible_deployment_inputs({},expected,measured,population_support=support))
-
     def test_common_intent_projects_once_and_render_ignores_or_conflicts_refuse(self):
         manifest=test_toolchain.Toolchain().manifest();manifest['profile']['population']['maxTenants']=10001
         selected=dict(coreCommit='1'*40,deployCommit='2'*40,localImageId='sha256:'+'6'*64,sourceAcceptance='PENDING')

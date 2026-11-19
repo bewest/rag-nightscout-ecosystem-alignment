@@ -21,16 +21,19 @@ REALISTIC_CADENCE_MS = {
 }
 
 
-def realistic_cycle_ms(scale):
+def realistic_cycle_ms(scale, write_scale=1):
     """Resolve finite k6 time units without a reference multiplier ceiling."""
     try:
-        positive=type(scale) in (int,float) and scale>0 and math.isfinite(scale)
+        positive = all(type(factor) in (int, float) and factor > 0 and math.isfinite(factor)
+                       for factor in (scale, write_scale))
     except OverflowError:
         positive=False
     require(positive,'M7_WORKLOAD_SCALE_CONFIGURATION')
     result={}
     for shape,interval in REALISTIC_CADENCE_MS.items():
         value=interval*(5 if shape=='r_sgv' else 1)/scale
+        if shape.startswith('w_'):
+            value /= write_scale
         require(math.isfinite(value),'M7_WORKLOAD_SCALE_TIME_UNIT')
         unit=math.floor(value+.5)
         require(1<=unit<=MAX_TIME_UNIT_MS,'M7_WORKLOAD_SCALE_TIME_UNIT')
@@ -84,13 +87,21 @@ const mix = __ENV.M7_WORKLOAD_MIX;
 const workloadScale = __ENV.M7_WORKLOAD_SCALE === undefined ? 1 : Number(__ENV.M7_WORKLOAD_SCALE);
 if (!Number.isFinite(workloadScale) || workloadScale <= 0 ||
     (__ENV.M7_WORKLOAD_SCALE !== undefined && mix !== '{REALISTIC_MIX}')) throw Error('M7_WORKLOAD_SCALE_CONFIGURATION');
+const driverPlan = __ENV.M7_DRIVER_VU_DIAGNOSTIC === 'configured-v1' ? JSON.parse(__ENV.M7_DRIVER_PLAN) : {{}};
+const writeScale = driverPlan.writeRateScale === undefined ? 1 : driverPlan.writeRateScale;
+if (!Number.isFinite(writeScale) || writeScale <= 0 ||
+    (driverPlan.writeRateScale !== undefined && mix !== '{REALISTIC_MIX}')) throw Error('M7_WORKLOAD_SCALE_CONFIGURATION');
 const realisticCadenceMs = {json.dumps(REALISTIC_CADENCE_MS)};
 if (mix !== undefined &&
     (mix !== '{REALISTIC_MIX}' || offered !== null || ACCEL !== 1 || HOT !== 1 ||
      Object.keys(realisticCadenceMs).some(name => !shapes[name]))) {{
   throw Error('M7_REALISTIC_MIX_CONFIGURATION');
 }}
-const cycleMs = name => mix === undefined ? ARRIVAL_CYCLE_MS : Math.round(realisticCadenceMs[name] * shapes[name] / workloadScale);
+function cycleMs(name) {{
+  if (mix === undefined) return ARRIVAL_CYCLE_MS;
+  const interval = realisticCadenceMs[name] * shapes[name] / workloadScale;
+  return Math.round(name.startsWith('w_') ? interval / writeScale : interval);
+}}
 if (Object.keys(shapes).some(name => !Number.isSafeInteger(cycleMs(name)) || cycleMs(name) < 1 || cycleMs(name) > {MAX_TIME_UNIT_MS})) {{
   throw Error('M7_OFFERED_RPS_TIME_UNIT');
 }}
@@ -142,10 +153,6 @@ if (Object.keys(shapes).some(name => !Number.isSafeInteger(cycleMs(name)) || cyc
     account("else if (res.status === 0 || res.status >= 500) writesUncertain.add(1, tags);", "else if (!(res.status >= 400 && res.status < 500)) writesUncertain.add(1, tags);")
     account("function exchangeRequest (t) {", "function exchangeRequest (t) {\n  httpAttempts.add(1,{http_shape:'jwt_setup'});")
     account("    for (let j = 0; j < requests.length; j++) {", "    // Settle the whole dispatched batch before the first JWT refusal aborts.\n    for (const response of responses) recordHttp('jwt_setup',response,[200],false);\n    for (let j = 0; j < requests.length; j++) {")
-    helper=(Path(__file__).parent/'fingerprint.cjs').read_text()
-    projection=helper[helper.index('function projection('):helper.index("const fs = require(")]
-    source="import { sha256 } from 'k6/crypto';\n"+source
-    source+= "\n"+projection+"\n"
     source += """
 // An authored remaining setup window replaces the historical default. The
 // surrounding runner still enforces its original absolute work cutoff.
@@ -170,20 +177,7 @@ function setupRemainingMs () {
     account("responseType: 'text', timeout: '60s'", "responseType: 'text', timeout: Math.min(60000,setupRemainingMs()) + 'ms'")
     account("    for (let j = 0; j < requests.length; j++) {", "    setupRemainingMs();\n    for (let j = 0; j < requests.length; j++) {")
     account("  return { jwts };", "  setupRemainingMs();\n  return { jwts };")
-    source+= "const fingerprintObserved = new Counter('settings_fingerprint_observed');\nconst fingerprintInvalid = new Counter('settings_fingerprint_invalid');\nconst fingerprintMismatch = new Counter('settings_fingerprint_mismatch');\n"
-    old="export function r_status () { const { t } = pick(); get(t, '/api/v1/status.json', 'GET v1 status'); }"
-    require(source.count(old)==1,'M7_WORKLOAD_STATUS_ANCHOR_CHANGED')
-    source=source.replace(old,"""export function r_status () {
-      const { t } = pick(); const response = get(t, '/api/v1/status.json', 'GET v1 status', 'text');
-      if (response.status !== 200) return;
-      try {
-        if (typeof response.body !== 'string' || response.body.length > 131072 || !/^[a-f0-9]{64}$/.test(__ENV.SETTINGS_FINGERPRINT || '')) throw Error('invalid');
-        const encoded = projection(JSON.parse(response.body));
-        fingerprintObserved.add(1);
-        if (sha256(encoded, 'hex') !== __ENV.SETTINGS_FINGERPRINT) fingerprintMismatch.add(1);
-      } catch (_) { fingerprintInvalid.add(1); }
-    }""")
     target=Path(target);target.parent.mkdir(parents=True,exist_ok=True);target.write_text(source)
     return {'baseline':'tools/mt-bench/capacity/k6/workload.js','baselineSha256':hashlib.sha256(baseline.read_bytes()).hexdigest(),
             'adaptedSha256':hashlib.sha256(target.read_bytes()).hexdigest(),
-            'changes':['exact bounded per-shape HTTP status and outcome counters, JWT setup separate, main-context-only histogram metadata; unexpected mutation responses remain uncertain','explicit optional scenario arrival rate with current-clock stamps and separate request-attempt/HTTP-response/transport counters','current nominal arrival timestamps with deterministic uniqueness','opt-in realistic-v1 per-shape cadence with equal tenant weights and bounded optional uniform rate bracket; scale1 preserves sensor cadence','explicit read 4xx counter blocks functional advancement','bounded allowlisted JWT setup refusal provenance without credentials, raw URL or response body; first refusal still aborts without retry','existing status GET retains text body for fixed whitelist fingerprint under global discard; no extra request']}
+            'changes':['exact bounded per-shape HTTP status and outcome counters, JWT setup separate, main-context-only histogram metadata; unexpected mutation responses remain uncertain','explicit optional scenario arrival rate with current-clock stamps and separate request-attempt/HTTP-response/transport counters','current nominal arrival timestamps with deterministic uniqueness','opt-in realistic-v1 cadence with equal tenant weights, uniform scale and independent configured write scale; default factors preserve sensor cadence','explicit read 4xx counter blocks functional advancement','bounded allowlisted JWT setup refusal provenance without credentials, raw URL or response body; first refusal still aborts without retry']}

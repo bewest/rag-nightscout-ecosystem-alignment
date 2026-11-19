@@ -12,6 +12,13 @@ from test_adapter import fixture
 
 
 class CandidateControls(unittest.TestCase):
+    def test_v4_preserves_the_required_native_completion_receipt(self):
+        for protocol in ('startup-v3', 'startup-v4'):
+            c = {'pins': {'pair': {'core':'1'*40,'deploy':'2'*40}, 'appImageId':'sha256:'+'3'*64,
+                          'instrument':'4'*64, 'candidate':{'platformVerification':protocol}}}
+            with self.assertRaisesRegex(k.Refused, 'COMPLETION_RECEIPT_REQUIRED'):
+                k.completion_source(c, '/missing/evaluator', '/missing/realtime')
+
     def test_ack_readback_binds_the_owned_running_container(self):
         c = {'pins': {'candidate': {}}, 'roles': {'pgstream': {'workload': 'Deployment/pgstream', 'container': 'pgstream'}},
              'producerAckReadback': {'namespaceUid': 'owned', 'podUid': 'pod', 'containerId': 'stream',
@@ -45,13 +52,15 @@ class CandidateControls(unittest.TestCase):
         candidate.pins(k, c, inv, objects)
         inv['candidateContract']['sourceAcceptance'] = p['candidate']['sourceAcceptance'] = 'PENDING'
         candidate.pins(k, c, inv, objects)
-        for field, value in [('coreCommit', 'a'*40), ('nativeCatalogueSha256', '9'*64), ('localImageId', 'sha256:'+'9'*64)]:
-            original = objects['ConfigMap/provision-scripts']['data']['source-contract.json']
-            objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = json.dumps(dict(contract, **{field:value}))
-            with self.assertRaisesRegex(k.Refused, '^K8S_CANDIDATE_SOURCE_IMAGE_CHANGED$'):
-                candidate.pins(k, c, inv, objects)
-            objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = original
+        # Source commits in the contract are provenance; a changed commit runs.
+        objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = json.dumps(dict(contract, coreCommit='a'*40))
+        candidate.pins(k, c, inv, objects)
+        # The image digest is identity: a different delivered image refuses.
+        inv['candidateContract']['imageConfigId'] = p['candidate']['imageConfigId'] = 'sha256:'+'9'*64
+        with self.assertRaisesRegex(k.Refused, '^K8S_CANDIDATE_SOURCE_IMAGE_CHANGED$'):
             candidate.pins(k, c, inv, objects)
+        inv['candidateContract']['imageConfigId'] = p['candidate']['imageConfigId'] = p['appImageId']
+        candidate.pins(k, c, inv, objects)
         pod = {'imageReferences': {'api': p['appImage'], 'postgres': p['postgresImage']},
                'containers': {'api': {'imageID': p['appImage']}, 'postgres': {'imageID': p['postgresImageId']}}}
         observation = {'pods': {'fixture': pod}}

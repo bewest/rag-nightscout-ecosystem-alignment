@@ -22,6 +22,31 @@ class RestAlongsideClinicalStall(unittest.TestCase):
         row.update(ready=False,code=r.CODE,jobs=dict.fromkeys(p.JOB_FLAGS,False));row['jobs']['running']=True
         row['progress'].update(completedAcquisitions=1,failedCompletions=0,lastCompletedAgeMs=41175)
         return frame
+    def test_first_acquisition_stall_keeps_fail_without_completion_credit(self):
+        # The second local 1000 point retained this source-reported debt
+        # before the tenant's first acquisition completed. No completed
+        # position or completion age may be invented to collect REST.
+        for running in (True,False):
+            frame=self.frame();row=frame['view']['tenants'][0]
+            row['jobs']['running']=running
+            row['progress'].update(completedAcquisitions=0,completedTimeCycles=0,failedCompletions=0,lastCompletedAgeMs=None)
+            m=self.manifest()
+            with tempfile.TemporaryDirectory() as tmp:
+                d=Path(tmp);a.write(d/'tenants.private.json',[{'id':A},{'id':B}])
+                with patch.object(a,'progress_services',return_value=['evaluator']),patch.object(a,'progress_fetch',return_value=json.dumps(frame)),patch.object(a.time,'sleep'):
+                    finding=a.readiness(d,m)
+                self.assertTrue(r.result(finding))
+                self.assertEqual(finding['clinicalVerdict'],'FAIL')
+                self.assertEqual(finding['capacityAcceptance'],'NOT_GRANTED')
+                self.assertTrue(r.permitted(a,d,m))
+            with self.assertRaisesRegex(p.Refused,'ERROR'):
+                p.round_view(['evaluator'],[A,B],lambda *_:json.dumps(frame),warming=True,allow_unavailable=True)
+            for change in (lambda f:f['view']['tenants'][0].update(admitted=False),
+                           lambda f:f['view']['tenants'][0].update(code='EVALUATOR_RESTORE_CHANGED'),
+                           lambda f:f['view']['tenants'][0]['jobs'].update(running='true')):
+                broken=copy.deepcopy(frame);change(broken)
+                with self.assertRaises(p.Refused):
+                    p.round_view(['evaluator'],[A,B],lambda *_:json.dumps(broken),warming=True,allow_unavailable=True,allow_clinical_stall=True)
     def test_real_readiness_retains_clinical_fail_and_allows_only_discovery(self):
         frame=self.frame();m=self.manifest()
         with tempfile.TemporaryDirectory() as tmp:
@@ -87,7 +112,7 @@ class RestAlongsideClinicalStall(unittest.TestCase):
             with patch.object(a,'frozen'),patch.object(a,'quiet'),patch.object(a,'verify'),patch.object(a,'readiness',return_value=finding),patch.object(a,'psql'),patch.object(a,'phase_snapshot'),patch.object(a,'enabled_idle',return_value=types.SimpleNamespace(result=finding)),patch.object(app.time,'sleep'):
                 self.assertEqual(app.idle(d,m),finding)
             out=d/'load';out.mkdir();(out/'runid').write_text('synthetic');(d/'idle/evaluator-progress.json').write_text(json.dumps(self.artifact()))
-            with patch.object(a,'verify'),patch.object(app,'load'),patch.object(a,'progress_services',return_value=['evaluator']),patch.object(a.profile_provenance,'fingerprint_check',return_value={'verdict':'UNMEASURED'}),patch.object(discovery,'count_observation',return_value=({'verdict':'GREEN'},True)),patch('clinical.completed',return_value={'verdict':'UNMEASURED'}),patch.object(app,'measurements',return_value={}):
+            with patch.object(a,'verify'),patch.object(app,'load'),patch.object(a,'progress_services',return_value=['evaluator']),patch.object(discovery,'count_observation',return_value=({'verdict':'GREEN'},True)),patch('clinical.completed',return_value={'verdict':'UNMEASURED'}),patch.object(app,'measurements',return_value={}):
                 result=app.discovery_summary(d,m,{}, {},{'metrics':{'http_reqs':{'count':3}}})
             self.assertEqual(result['clinicalVerdict'],'FAIL');self.assertEqual(result['metrics']['http_reqs']['count'],3);self.assertEqual(result['capacityAcceptance'],'NOT_GRANTED');self.assertEqual(result['strictChecks']['idle']['verdict'],'FAIL')
     def test_independent_work_runs_and_record_keeps_fail(self):
@@ -106,5 +131,35 @@ class RestAlongsideClinicalStall(unittest.TestCase):
         with patch.object(a,'observe_progress',side_effect=p.Refused('M7_OPPORTUNITY_BINDING','FAIL')):
             with self.assertRaises(p.Refused):discovery.observed_load(a,Path('/synthetic'),{},Path('/synthetic/load'),lambda:calls.append('MUST_NOT_RUN'))
         self.assertNotIn('MUST_NOT_RUN',calls)
+
+
+    def test_idle_known_clinical_stall_retains_fail_with_red_restored_control(self):
+        # Shape reproduced at local1000 readiness: admitted, one completed
+        # acquisition, explicit stall, all six jobs false, no failed completions.
+        frame=self.frame()
+        row=frame['view']['tenants'][0]
+        row['jobs']=dict.fromkeys(p.JOB_FLAGS,False)
+        row['progress'].update(completedAcquisitions=1,failedCompletions=0,lastCompletedAgeMs=2170)
+        def criterion():
+            with tempfile.TemporaryDirectory() as tmp:
+                d=Path(tmp);a.write(d/'tenants.private.json',[{'id':A},{'id':B}])
+                with patch.object(a,'progress_services',return_value=['evaluator']),patch.object(a,'progress_fetch',return_value=json.dumps(frame)),patch.object(a.time,'sleep'):
+                    finding=a.readiness(d,self.manifest())
+                self.assertTrue(r.result(finding))
+                self.assertEqual(finding['clinicalVerdict'],'FAIL')
+                self.assertEqual(finding['capacityAcceptance'],'NOT_GRANTED')
+                return finding
+        criterion()
+        selected=p.clinical_stall
+        with patch.object(p,'clinical_stall',side_effect=lambda value:selected(value) and value['jobState']['running']):
+            with self.assertRaisesRegex(p.Refused,'M7_EVALUATOR_PROGRESS_ERROR'):criterion()
+        criterion()
+        for change in (lambda value:value.update(code='EVALUATOR_RESTORE_CHANGED'),
+                       lambda value:value.update(evaluation={'alert':'unknown'}),
+                       lambda value:value['jobs'].update(running='false')):
+            broken=copy.deepcopy(frame);change(broken['view']['tenants'][0])
+            with self.assertRaises(p.Refused):
+                p.round_view(['evaluator'],[A,B],lambda *_:json.dumps(broken),warming=True,allow_unavailable=True,allow_clinical_stall=True)
+        print('IDLE_CLINICAL_STALL busy-bit representation RED; clinical FAIL retained; RESTORED_GREEN')
 
 if __name__=='__main__':unittest.main()

@@ -58,7 +58,7 @@ The unchanged `native_time_witness` function's AST SHA-256 is
 This is source compatibility evidence, not a new native witness.
 
 Source: [generator](../../../tools/mt-bench/m7-joined/workload.py),
-[body regression](../../../tools/mt-bench/m7-joined/test_fingerprint_body.py),
+body regression (`tools/mt-bench/m7-joined/test_fingerprint_body.py` at `50c10c47ce`, removed 2026-11-18 with the settings fingerprint),
 [discovery collector](../../../tools/mt-bench/m7-joined/discovery.py),
 [ordering controls](../../../tools/mt-bench/m7-joined/test_discovery.py).
 

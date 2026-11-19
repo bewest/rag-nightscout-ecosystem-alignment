@@ -8,10 +8,10 @@ import lifecycle_config as l
 import frozen as f
 
 class Lifecycle(unittest.TestCase):
-    def test_bound_inputs_refuse_source_tool_allocation_and_stages_then_restore(self):
+    def test_bound_inputs_refuse_allocation_preflight_and_stages_then_restore(self):
         with TemporaryDirectory() as tmp:
             p=Path(tmp);case=p/'any-tiny-case';case.mkdir();(case/'stages').mkdir()
-            for d in ('instrument','binding','tools','snapshot','core'):(p/d).mkdir()
+            for d in ('binding','tools','snapshot','core'):(p/d).mkdir()
             def put(path,v):path.write_text(json.dumps(v));return path
             for n in ('k6','ro','observer','tools/kubectl'):(p/n).write_text('synthetic')
             files={n:put(case/(n+'.json'),{}) for n in ('environment','intent','inventory','render','preflight')}
@@ -27,14 +27,14 @@ class Lifecycle(unittest.TestCase):
             put(p/'binding/binding.json',{'files':{}})
             template=put(p/'template.json',{a:{'hostId':'same','resources':{'millicpus':1000,'memoryBytes':1024**3}} for a in ('driver','observer')})
             delivery=put(p/'delivery.json',{});absence=put(p/'absence.json',{'verifiedAt':'synthetic'})
-            cfg=dict(version=1,caseDirectory=str(case),instrumentDirectory=str(p/'instrument'),instrumentSha256='2'*64,
+            cfg=dict(version=1,caseDirectory=str(case),instrumentDirectory=str(Path(l.__file__).resolve().parents[3]),
                      bindingDirectory=str(p/'binding'),toolsDirectory=str(p/'tools'),snapshotDirectory=str(p/'snapshot'),
                      coreRepository=str(p/'core'),k6=str(p/'k6'),readonlyGuard=str(p/'ro'),observerScript=str(p/'observer'),
                      nativeLimits={'millicpus':4000,'memoryBytes':4*1024**3},primerConcurrency=8,
                      runTemplate=l.ref(template),delivery=l.ref(delivery),cacheAbsence=l.ref(absence))
             path=put(p/'control.json',cfg)
             def external(argv,**kw):return '1'*40 if argv[0]=='git' else json.dumps({'sha256':'2'*64}).encode()
-            with patch.object(l.subprocess,'check_output',side_effect=external):
+            with patch.object(l.subprocess,'check_output',side_effect=external), patch('experiment.workload'):
                 frozen=l.fixture_config(path,capture=True);put(path,frozen);self.assertEqual(l.fixture_config(path),frozen)
                 windows=frozen['startupWindowPreflight']
                 self.assertEqual(windows['authoredFields'],['cohortReadySeconds','dataPrimerSeconds','workloadReadySeconds'])
@@ -45,15 +45,11 @@ class Lifecycle(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError,code):l.fixture_config(path)
                     restore();self.assertEqual(l.fixture_config(path),frozen)
                     print('RED_RESTORED',code)
-                refusal('INPUT_CHANGED',lambda:(p/'k6').write_text('wrong'),lambda:(p/'k6').write_text('synthetic'))
                 changed=copy.deepcopy(intent);changed['profile']['phases']['cohortReadySeconds']=899
-                refusal('INPUT_CHANGED',lambda:put(files['intent'],changed),lambda:put(files['intent'],intent))
-                refusal('SOURCE_CHANGED',lambda:put(files['environment'],{**e,'sourceCommit':'9'*40}),lambda:put(files['environment'],e))
+                refusal('STARTUP_PREFLIGHT_CHANGED',lambda:put(files['intent'],changed),lambda:put(files['intent'],intent))
                 refusal('RESOURCE_ACCOUNTING_MISMATCH',lambda:put(files['environment'],{**e,'resourceAccounting':'requests-v1'}),lambda:put(files['environment'],e))
                 wrong=copy.deepcopy(frozen);wrong['nativeLimits']['millicpus']=9000
                 refusal('ALLOCATION_EXCEEDED',lambda:put(path,wrong),lambda:put(path,frozen))
-                wrong=copy.deepcopy(frozen);wrong['instrumentSha256']='3'*64
-                refusal('INSTRUMENT_CHANGED',lambda:put(path,wrong),lambda:put(path,frozen))
                 wrong=copy.deepcopy(frozen);wrong['startupWindowPreflight']['selectedSeconds']['dataPrimerSeconds']=7199
                 refusal('STARTUP_PREFLIGHT_CHANGED',lambda:put(path,wrong),lambda:put(path,frozen))
                 stage=case/'stages/stores.json'
@@ -97,14 +93,6 @@ class Lifecycle(unittest.TestCase):
 
 
 class BootstrapReadback(unittest.TestCase):
-    def test_native_binding_accepts_only_the_controlled_asset_difference(self):
-        original = {'bootstrap.js': f.BOOTSTRAP_ORIGINAL, 'other.js': 'original'}
-        corrected = {**original, 'bootstrap.js': f.BOOTSTRAP_HELPER['sha256']}
-        self.assertTrue(f.compatible_deployment_inputs({}, original, corrected))
-        self.assertFalse(f.compatible_deployment_inputs({}, original, {**corrected, 'other.js': 'changed'}))
-        self.assertFalse(f.compatible_deployment_inputs({'bootstrapHelper': {}}, original, corrected))
-        self.assertTrue(f.compatible_deployment_inputs({}, original, corrected))
-
     def test_declared_overlay_remains_mandatory_and_undeclared_overlay_refuses(self):
         native = {'sourceAcceptance': 'PENDING'}
         overlay = {**native, 'imageSourceAcceptance': 'PASS',

@@ -332,7 +332,6 @@ transport remain with the remote owner. Independent remote pairs retain exact
 unconditional deletion; retaining a pair across cells is a separate reset and
 rig-ownership capability. Active experiments stay pinned to their original tools.
 
-
 Scheduling checks use the real local caller/process/ticket/flock path with
 synthetic prepare/execute actors, and the remote caller with synthetic root hooks.
 They qualify admission, overlap, failure isolation and custody, not application
@@ -555,6 +554,38 @@ missing files or malformed reads remain UNMEASURED. It never subtracts peaks or
 sums independent role peaks as a concurrent total. Existing raw cgroup counters,
 current memory and configured-limit checks keep their separate meanings.
 
+## Outcome evaluator gate
+
+Decision [outcome-evaluator-gate](../../../docs/30-design/tenancy/multitenancy-decisions.md#outcome-evaluator-gate)
+replaces the lifetime `failedCompletions == 0` rule and the instant midpoint
+readiness rule. [outcome_gate.py](outcome_gate.py) is the one frozen gate; its
+identity is the SHA-256 of that file. Tenants, rate, windows, budgets and
+`deadlineMs` (default 120000) are configuration under the same identity.
+
+| component | FAIL | UNMEASURED |
+|---|---|---|
+| failed completions (lifetime counters at the end point) | untyped, `unknown`, hard or unrecognised reason; a transient reason resolved or still open past the deadline | typed rows without reasons or resolution fields; a transient still open at the end inside the deadline; no end point |
+| isolation | runtime reset, foreign row ready, foreign counters changed, duplicate owner | one point only |
+| readiness | preload refused; an owner not ready, with a code or with an alert at the end point | preload not selected or not retained; no end point |
+| storage | count oracle RED | oracle missing or not GREEN |
+| sampled oracle | probe `completedOutput` FAIL | missing |
+| all-tenant catch-up | a tenant pending once the window after writer join exceeds the deadline; a completion whose lower bound exceeds it; input changed | not captured; pending inside the deadline |
+
+A declared transient reason (`verification-pending`, `startup-warming`) that
+completed inside the deadline is counted by reason and passes. Until the
+source declares `view.failureReasonContract = evaluator-failure-reasons-v1`
+with `progress.failureReasons`, `unresolvedFailure` and
+`maxFailureResolutionMs`, every failed completion is untyped and fails.
+
+The midpoint is a signal. The runner records ``load/evaluator-midpoint-signal.json`` and stops
+the driver only for a hard reason (a FAIL above, or an evaluation alert). A
+not-ready owner at the midpoint continues. Raw responses are written before
+any decoder reads them (`load/evaluator-progress-raw/`). The verdict is ``load/outcome-gate.json` and the discovery check `outcomeGate``; HTTP
+latency over every k6 shard summary is reported beside it (exact pooled
+count and mean; per-shard quantile ranges; pooled quantiles UNMEASURED).
+`outcome_rereduce.py` re-reduces a retained run into a new file beside it and
+refuses if any original file changes.
+
 ## Planned evaluator restart during local discovery demand
 
 For a **new local capture**, `restart-during-load-after-seconds` selects a planned
@@ -696,7 +727,6 @@ connection budget remains 16384 per worker. Preflight reads exact-owned nginx
 traffic. This qualifies the fixture configuration; it does not measure edge or
 application capacity. Default deployments retain their existing automatic count.
 
-
 Discovery `pgstream-sample` observations now declare a prospective standalone k6
 driver allocation of 2 CPU cores and 4 GiB in `loadgen-resource-allocation.json`.
 The original session resource record and server limits remain unchanged; the
@@ -705,7 +735,7 @@ combined ceiling. Native launch, container census and oneoff custody validate th
 new allocation together. Strict observations retain the original driver limits.
 A driver reaching its quota is not evidence of a backend throughput ceiling.
 
-### Prospective HTTP and revision witnesses
+### Prospective HTTP accounting
 
 New generated workloads retain exact HTTP status distributions for each selected
 shape and JWT setup separately. `load/http-accounting.json` reconciles request
@@ -723,54 +753,12 @@ at capacity. Its two-second traffic window and process/export wall time are
 separate measurements; the fixture records both. Preserve that distinction when
 choosing a driver allocation.
 
-For a new **discovery** sample, the existing adapter `prepare` command accepts
-`--revision-witness-targets /absolute/private/targets.json`. The file is a JSON
-list of one or two synthetic identities, for example:
-
-```json
-[{"tenant":"11111111-1111-4111-8111-111111111111","storedId":"synthetic-row-a"}]
-```
-
-The target must identify an actual synthetic stored SGV that can appear in the
-selected client's frame. A timestamp alone is insufficient. Prepare copies the
-private preload, records helper/config/source hashes and installs it on the
-canonical evaluator and realtime entrypoints. Run uses the existing probe and
-stock callback; the source files and public wire payload receive no new fields.
-This option is incompatible with another preload that changes those entrypoint
-arguments. Use a fresh fixture; changing a frozen fixture is refused.
-
-Each process writes a separate private capture incarnation under `state/ipc/`
-or `load/`. The witness permits 64 events and 65,536 event bytes per process.
-Saturation, publication failure, missing correlation, duplicate identity or a
-wrong source/owner/socket/clock domain yields `UNMEASURED`. The collector reduces
-at most eight capture files; originals remain unchanged. `load/revision-witness-assessment.json`
-joins an acquired **output revision** to the actual authorized Socket.IO adapter
-broadcast, Engine.IO arrival and existing stock callback using payload digest,
-socket identity, incarnation and FIFO ordinal. Its fixed input checkpoint is
-reported separately from typed input coverage. A delivery revision and raw-tail
-head are distinct identities and remain `UNMEASURED` when no exact bridge exists.
-The optional complete/send/confirmed-receipt hooks retain their own revision types;
-tenant/time proximity never supplies a missing bridge.
-
-Only durations within one process clock domain are subtracted. The emitted
-payload's transit to the receiving process is `UNMEASURED_CROSS_PROCESS`; polling,
-transport scheduling and observer publication must not be inferred from unrelated
-percentiles. Per-process `overheadNs` includes synchronous event publication;
-the last event file can omit its own final publication cost until the exit seal.
-The native control uses real shipping projection/runtime/protocol and stock
-Socket.IO HTTP polling with synthetic storage and authority ports. It does not
-qualify database completion, clinical equivalence, recovery or capacity.
-
 Focused reproduction commands (choose new absolute output directories):
 
 ```bash
 python3 -B -m unittest discover -s tools/mt-bench/m7-joined -p 'test_http_accounting.py'
 python3 -B -m unittest discover -s tools/mt-bench/m7-joined -p 'test_collection_segments.py'
-python3 -B -m unittest discover -s tools/mt-bench/m7-joined -p 'test_revision_witness.py'
-node tools/mt-bench/m7-joined/revision-witness.test.cjs
-node tools/mt-bench/m7-joined/revision-witness-hooks.test.cjs
 python3 -B tools/mt-bench/m7-joined/http-accounting-native.py /absolute/new/http-control grafana/k6:1.3.0
-node tools/mt-bench/m7-joined/revision-witness-smoke.cjs /absolute/pinned/core /absolute/new/polling-control
 ```
 
 Completed SQL, cgroup, HTTP and probe files receive immediate collection receipts
@@ -807,6 +795,17 @@ discovery does not replace it with its historical driver default. Runtime checks
 continue to compare actual CPU, memory, no-swap limits and one-worker nginx
 configuration against the authored allocation.
 
+For local Compose discovery, set `driver.memoryReservationBytes` in place of
+`driver.memoryBytes` to request memory without a container memory or swap limit.
+The aggregate ceiling accounts for the reservation and the driver CPU setting
+still applies. The plan shows the reservation under `effective.resources.standalone.k6`.
+The runner checks the exact created container before launch. Read
+`load/driver-memory.json` for verified settings, terminal state, and the
+largest sampled kernel `memory.peak` with run and container identity.
+`load/k6-memory.tsv` retains the underlying samples. The observed peak is a
+lower bound on the final lifetime peak. A driver that exits before a usable
+sample leaves its peak UNMEASURED.
+
 Remote preparation requires the paired controller/worker allocation support.
 Its packet carries `diagnosticResourceAllocation`; its receipt mirrors the exact
 object as `remoteDiagnosticResourceAllocation`. Both boundaries check finite
@@ -836,28 +835,6 @@ wrong limit, while preserving that refusal and the primary error. The fixed
 readback file is beside the existing captured-CID record. Historical requests
 without an explicit allocation keep their launch and qualification behavior.
 
-For a fresh c117 discovery fixture, the existing clinical timeline also accepts
-the validated explicit `diagnostic-resource-allocation`. Keep that allocation
-unchanged when diagnosing its rate result. Select
-`--clinical-intake-timeline two-target-intake-timeline-v1` and
-`--clinical-intake-targets /absolute/private/targets.json`, containing a JSON
-list of one or two synthetic tenant UUIDs from the new fixture roster. Omission
-keeps the original first/last roster selection. New explicit-allocation traces
-require c117 and exact source hashes for the receiver, scheduler, evaluator
-runtime, materializer SQL and preview wiring; changed source refuses at prepare,
-verification and preload. This scope extension grants no resource authority.
-
-The selected trace avoids recording every unaddressed POST. The existing raw
-variant remains opt-in with its unchanged limit.
-
-The selected clock path observes materializer `clinical.accept`, preserving its
-original object, brand, arguments, Promise and error. Existing HTTP, receipt SQL,
-scheduler and durable begin/complete events retain their limits and format.
-This collector delta requires fresh receipts and a fresh fixture; it cannot
-change or relabel a frozen curve. The client trace and evaluator trace use
-different clocks. Raw arrival is an HTTP callback boundary, not kernel arrival;
-no sender binary is selected by this option.
-
 ### Statements per unit, clinical sample size and driver shards
 
 `statement_units.py <point>` reduces one point folder (the folder with
@@ -875,13 +852,11 @@ detected. Two point folders compare only when both use the same explicit
 allocation (`M7_UNITS_PROFILE_MISMATCH`, `M7_UNITS_PROFILE_NOT_EXPLICIT`) and the
 same workload (`M7_UNITS_WORKLOAD_MISMATCH`).
 
-The same reduction summarizes probe witnesses: accepted, durable-observed,
-120-second deadline misses (no ready observation within the budget, plus later
-observations), durable upper-bound and matched-frame distributions. A p95 from
+The same reduction reports accepted probe writes, first durable observations,
+matched frames and clinical deadline misses. A p95 from
 fewer than 30 accepted witnesses is reported with `p95Qualified: false`. Set
 `probe-every-ms` to 10000 for a 310-second window to write about 31 witnesses,
-about 0.1 extra request/s; each witness keeps its own 120-second observation
-budget after the window.
+about 0.1 extra request/s. Each witness retains its own acceptance timestamp.
 
 `driver-shards` (two through the selected tenant count, default unsharded) runs that many k6 processes inside the
 one admitted k6 container, with the same native limits, labels and cleanup. Each
@@ -912,7 +887,6 @@ reducer normalizes sampled waiter observations by its existing REST,
 evaluator and delivery counts. The sampling cadence and resource bookends
 define the scope. Missing ticks, duration and causal attribution remain
 unmeasured where the observer cannot establish them.
-
 
 ### Local k6 scheduling diagnostic
 
@@ -1037,9 +1011,6 @@ Run the focused pure checks and, explicitly, the native qualification:
 
 ```bash
 PYTHONPATH=tools/mt-bench/m7-joined python3 -B -m unittest test_driver_config test_driver_vu_diagnostic test_driver_shards
-python3 -B tools/mt-bench/m7-joined/qualify_driver_config.py \
-  --out /absolute/new/overflow/driver-qualification \
-  --k6-image sha256:EXISTING_LOCAL_K6_IMAGE_ID
 ```
 
 The native command uses only owned synthetic loopback HTTP targets and the actual
@@ -1069,15 +1040,6 @@ leaves observer-cost eligibility UNMEASURED while retaining independent valid
 CPU/ELU captures. `--diagnostics off` disables the entire M7 observer; a matched
 ON/OFF/ON SUT comparison measures that total intervention, not exclusive query
 wrapper cost. SQL bookends, host/process counters and Node captures stay separate.
-
-`node query-wrapper-bench.cjs CORE_WORKTREE EXPECTED_HEAD OUTPUT_JSON` measures
-only the exact selected source's query-wrapper component using synthetic client
-calls. Checkout and wrapper installation happen before timing. Enabled observer
-and inert sink remain the same for default, direct-query bypass and restored
-arms, on Promise and callback paths. Counts and result identity are required;
-mislabeling a bypass as wrapped goes red. The finite repeated CPU/wall figures
-exclude network, database, log-worker and periodic serialization costs and imply
-no service throughput or capacity.
 
 ### Selected static branch diagnostics
 
@@ -1159,7 +1121,6 @@ These tooling controls do not establish K2/N2 operating gains, clinical behavior
 Compose replacement timing or capacity. Those need actual attributed runs on the
 selected image, and coherent source qualification remains the integration owner.
 
-
 ### Bounded rate brackets for the realistic mix
 
 `workload-scale` is an optional positive finite factor, accepted only
@@ -1180,6 +1141,14 @@ shared container. Each scenario time unit is rounded to integer milliseconds;
 factor-one sensor cadence separately from a uniform rate bracket. This selector
 authorizes no run, expense or capacity. Select a justified bracket in a fresh
 configuration/receipt; never change an entered run.
+
+To vary ordinary writes independently, set `writeRateScale` in the configured
+`driverPlan` for `realistic-v1`. Its positive finite multiplier applies to SGV,
+device-status and treatment writes on top of the selected `workloadScale`.
+The default is one. A plan with `workloadScale` one and `writeRateScale` two
+doubles the three write rates with the four read intervals held at baseline.
+Viewer count and the probe-write interval remain separate workload inputs.
+Compose and Kubernetes report the rounded rates per shape.
 
 ### Startup selection in a reused session
 
@@ -1208,7 +1177,6 @@ receipt and unchanged ordinary Git source. Those controls model only the removed
 source/state existence observations and stop before image/resource access; they
 never recreate or adopt the closed fixture. Authored field omission reproduces
 the original configuration-digest refusal, then restoration passes.
-
 
 When the existing `platform-verify` deployment stage fails, the runner makes one
 bounded read-only GET of the owned admin operation before cleanup. The selected
@@ -1246,6 +1214,12 @@ optional counters do not erase retained termination facts or authorize replay.
 
 ## Run tiers and effective settings
 
+For a binding with a separate verified serving sequence, select
+`tenant-readiness: serve` in `prepare` for demand-driven discovery. Private
+admin verification and the serving roles precede the lab client's provisioning
+and DATA preload stages. Ordinary traffic requires DATA credentials for its
+active roster. Primer failures and uncertain writes remain setup evidence.
+
 ### Explicit local pre-load convergence
 
 For a fresh `tier: discovery` run with `workSeconds: null`, the preparation
@@ -1267,14 +1241,13 @@ remains failed; this does not declare its cause benign or allow ordinary work.
 Permanent source errors, failed evaluations, changed ownership/runtime identity,
 counter rewind and incomplete observations refuse the phase.
 
-Only two complete stable whole-cohort strict ready views with completed
-acquisition credit and nonnull completion age close convergence. The existing
-normal readiness check then runs fresh and unchanged. The selected clinical
-120-second deadline, source pending threshold, workload and clinical/storage/
-client oracles remain unchanged. The finite pre-load deadline ends with this
-phase and does not become a whole-run cutoff. Expiry refuses the run and retains
-its source history. Capture budgets scale with the declared duration, interval,
-cohort and source-page bounds; they are observation budgets, not reservations.
+Convergence requires two stable whole-cohort views with completed acquisition
+credit and a recorded completion age. The default `preload-readiness: signal`
+records expiry as `NOT_CONVERGED` and lets the run proceed to its ordinary
+checks. Select `preload-readiness: require-all` when the experiment requires
+whole-cohort convergence before traffic. The clinical deadline and clinical,
+storage and client verdicts have their own checks. Capture budgets scale with
+the configured observation duration, interval, cohort and source-page bounds.
 
 Add `"tier": "smoke"`, `"tier": "discovery"` or `"tier": "acceptance"` to
 the existing runner configuration. Existing version 1 configurations that
@@ -1317,15 +1290,36 @@ memory sizing from the frozen runtime configuration and records the affected
 fields. Deployment checks the owned Docker readback. Host constraints still
 apply. A named profile or an authored
 allocation selects its explicit service/driver caps and existing readback.
-Static workers and batch reservations still require their exact allocation
-inputs. Review requested versus observed limits before comparing operating
-points.
+Static workers and extra API replicas without an allocation resolve as
+uncapped services, and `runner.py plan` says so (`resourceOrigin`). Batch
+reservations still require their exact allocation inputs. Review requested
+versus observed limits before comparing operating points.
 
 ### Phase clocks and local discovery to completion
 
-`setup-seconds` covers stock-client priming and the ordinary driver's JWT
-exchanges. `drain-seconds` governs the post-writer probe and fixed-target
-observer. It leaves the selected per-write clinical deadline at 120 seconds.
+`viewer-setup` selects the Socket.IO connection scenario. The ordinary driver
+opens at most 50 viewers per second by default. It tries WebSocket first and
+permits polling fallback. For example, `{"opensPerSecond":20,"stallSeconds":90}`
+selects a slower ramp. Setup advances on successful tenant JWT exchanges,
+first connections and first data frames for distinct viewers. A lack of
+progress for the selected interval (default 300 seconds) stops viewer setup.
+The operator's overall work deadline still applies. Select
+`{"transport":"polling"}` for stock display transport compatibility.
+`{"scenario":"simultaneous-reconnect"}` ramps and primes the full cohort,
+disconnects it, then reconnects all its viewers together before ordinary
+traffic. The probe records actual initial and reconnect frame coverage and
+transport counts under `viewerSetup`.
+
+`setup-seconds` covers the ordinary k6 driver's JWT exchanges. `drain-seconds` governs the post-writer probe and fixed-target
+observer. Local and Kubernetes probes measure 120 seconds from the later of HTTP
+acknowledgement and evaluator warmth for that tenant. Independent owner inspection
+brackets the transition between the last zero-acquisition read and the first ready
+owner with a credited acquisition. A deadline inside that uncertainty interval can
+leave the verdict UNMEASURED. The outcome includes per-tenant warm intervals and
+coverage, acceptance-to-durable and acceptance-to-frame delays, nominal deadline
+misses before warmth, and witnesses censored by the remaining drain clock. Terminal
+zero lifetime acquisitions on the observed owner fail the never-warm criterion.
+Earlier packets retain the clinical verdict of their own instrument.
 Use `plan` to inspect their values and the work they cover. Set these limits
 from observed phase timings and keep their evidence with the experiment.
 Deployment priming is a separate provisioning stage. A traffic window names
@@ -1402,12 +1396,35 @@ and 64 MiB. Select `--evaluator-progress-budget` with `maxQueriesPerPhase` and
 tenants across eight workers need 1,896 queries. Each retained observation uses
 the selected query and byte budget. Exhausted capture stays `UNMEASURED`.
 
+The local durable opportunity observer reads the selected roster in 64-tenant
+SQL batches before each evaluator inspection. Each new selected SQL row or
+inspection page renews the inactivity clock. Query counts cover generated SELECTs.
+PostgreSQL cursor fetches carry their rows. By default a read allows 20 s
+between advances and 16 MiB for an unfinished SQL row. A scenario can select
+these allowances with `prepare.opportunity-observation.roundSeconds` and
+`sqlMaxBytes`. The receipt records total SQL bytes, largest row, longest SQL
+inactivity, query count and elapsed time. Retained fixed-budget receipts keep
+their original checks. The operator work cutoff applies throughout.
+`drainObservation` selects the separate post-writer observation. Its round,
+query and byte counters stop repeated snapshots that make no progress toward
+the frozen targets. All captures count toward reported cost.
+
+
 `--startup-windows` accepts optional `composeReadySeconds`, `stageSeconds` and
 `evaluatorReadySeconds` for fresh Compose discovery. A shared experiment places
 the same object in `profile.phases.startupWindows.compose`. Plans show the
-selected values and their reference defaults. Commands and waits use the lesser
-of the selected window and remaining authorized work. Owner-monitored priming
-and provision use their completion path when `stageSeconds` is omitted.
+selected values and their reference defaults. During provisioning and DATA
+priming, `stageSeconds` is the maximum inactivity between increases in the
+number of tenants saved to the respective checkpoint. Each stage records its
+last completed count. The verified-serving binding starts the Vault process,
+waits for PostgreSQL, runs platform bootstrap and verification, then starts
+all serving roles in one Compose invocation before tenant provision and prime.
+`composeReadySeconds` measures time without a new service startup milestone.
+`evaluatorReadySeconds` measures time without a newly observed warm tenant.
+The owner's overall work cutoff clips each wait. During DATA priming,
+`primeSlotWal` records the observed slot setting, active flag, retained bytes
+and sample coverage. A failed slot read remains visible in the unavailable
+count.
 An explicit evaluator window or progress budget derives the readiness capture
 allowance from the effective window, roster, and per-round byte bound. Each
 discovery attempt allows a second capture to confirm readiness. The result
@@ -1420,3 +1437,31 @@ reports unrepresentable k6 durations/time units and combined wheel lengths befor
 seeding. Explicit resource allocations remain checked against the lane's actual
 authority. Select uncapped services where a reference profile would distort a
 measurement.
+
+## Offline resolution, signals and removed instruments
+
+`runner.py plan CONFIG` is the one offline resolver. It reports the effective
+`workSeconds`, `cleanupSeconds` and `drainSeconds` with their maximum and origin,
+and the resource origin, before any actor exists. Refusals that depend only on
+the configuration fire here, not at run time. A to-completion run that selects
+`evaluator-catchup` without its own `drain-seconds` refuses with
+`M7_DRAIN_WORK_DEADLINE_REQUIRED` at plan time. A finite cleanup is always
+required (`M7_RUNNER_FINITE_LIMIT`); 600 seconds is accepted.
+
+The Kubernetes access witness and cohort readiness window record warm-up
+refusals as `UNMEASURED` signals and continue. Isolation, authorization and
+foreign-frame failures still stop the run. See
+[the Kubernetes guide](../kubernetes/README.md).
+
+The evaluator-progress readers use one policy and judge failed completions
+through the outcome gate only. Retained runs re-reduce with
+`outcome_rereduce.py`.
+
+Removed from the run tooling at alignment `5a203ee7` plus the tooling branch
+(history keeps them; retained evidence is unchanged): the revision witness, the
+clinical intake timeline and sender trace, the runtime source-access census,
+pool diagnostics, component profiles, the query-wrapper bench, `campaign.py`,
+`smoke.py` (use `tier_smoke.py`), `qualify_driver_config.py`, the Kubernetes
+`examples.py` and the workload `qualify.py` and `loopback.py`, and the
+`--population-ceiling` option of the Compose path. The API cause, warm-cause and
+serial-exchange discriminators remain until their last users finish.

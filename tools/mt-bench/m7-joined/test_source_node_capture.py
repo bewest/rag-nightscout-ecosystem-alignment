@@ -17,9 +17,7 @@ class SourceNodeCapture(unittest.TestCase):
         code = "const fs=require('node:fs');fs.writeSync(1,'o'.repeat(300000));fs.writeSync(2,'e'.repeat(300000)+'\\nM7_SAFE_SOURCE_REFUSAL\\nprivate-synthetic-value');process.exit(7);"
         return a._command([str(Path(shutil.which('node')).resolve()), '-e', code], phase=kwargs.get('phase'))
 
-    def call(self, root, phase, fingerprint=None):
-        if phase == 'settings-fingerprint':
-            return (fingerprint or a.settings_fingerprint)(root, {'pair': {'core': 'a' * 40}, 'tenants': 4})
+    def call(self, root, phase, contract=None):
         (root / 'state/pgstream').mkdir(parents=True)
         (root / 'state/pgstream/pgstream.yaml').write_text('{}')
         a.write(root / 'frozen.compose.json', {})
@@ -27,13 +25,13 @@ class SourceNodeCapture(unittest.TestCase):
             stack.enter_context(patch.object(a.static_topology, 'state_documents', return_value={}))
             stack.enter_context(patch.object(a.static_topology, 'verify_documents', return_value={'status': 'VERIFIED'}))
             stack.enter_context(patch.object(a.static_topology, 'verify_producer', return_value={'status': 'VERIFIED'}))
-            return a.static_runtime_contract(root, {})
+            return (contract or a.static_runtime_contract)(root, {})
 
-    def criterion(self, root, phase, fingerprint=None):
+    def criterion(self, root, phase, contract=None):
         root.mkdir()
         with patch.object(a, 'command', side_effect=self.fail):
             with self.assertRaisesRegex(RuntimeError, 'M7_COMMAND_FAILED:') as failure:
-                self.call(root, phase, fingerprint)
+                self.call(root, phase, contract)
         self.assertNotIn('private-synthetic-value', str(failure.exception))
         files = list((root / 'source-node-checks' / phase).glob('*/*.json'))
         if len(files) != 1:
@@ -52,36 +50,35 @@ class SourceNodeCapture(unittest.TestCase):
         self.assertIn(b'M7_SAFE_SOURCE_REFUSAL', (files[0].parent / record['stderr']).read_bytes())
         self.assertEqual(files[0].parent.stat().st_mode & 0o777, 0o700)
 
-    def test_actual_source_plan_and_fingerprint_call_boundaries_retain_private_refusal(self):
+    def test_actual_source_plan_call_boundary_retains_private_refusal(self):
         with tempfile.TemporaryDirectory() as temporary:
-            for phase in ('static-runtime-plan', 'settings-fingerprint'):
+            for phase in ('static-runtime-plan',):
                 self.criterion(Path(temporary) / phase, phase)
 
     def test_normal_source_helper_json_is_unchanged_and_capture_is_complete(self):
         def success(argv, **kwargs):
             return a._command([str(Path(shutil.which('node')).resolve()), '-e', "console.log(JSON.stringify({ok:true,schema:1}))"], phase=kwargs.get('phase'))
         with tempfile.TemporaryDirectory() as temporary:
-            for phase in ('static-runtime-plan', 'settings-fingerprint'):
+            for phase in ('static-runtime-plan',):
                 root = Path(temporary) / phase;root.mkdir()
                 with patch.object(a, 'command', side_effect=success):
                     value = self.call(root, phase)
-                if phase == 'settings-fingerprint':self.assertEqual(value, {'ok': True, 'schema': 1})
-                else:self.assertEqual(value['status'], 'VERIFIED')
+                self.assertEqual(value['status'], 'VERIFIED')
                 record = json.loads(next((root / 'source-node-checks' / phase).glob('*/*.json')).read_text())
                 self.assertEqual(record['returncode'], 0);self.assertIsNone(record['failureType'])
                 self.assertTrue(all(not row['truncated'] for row in record['outputRetention']['streams'].values()))
 
     def test_removed_capture_is_red_and_restored(self):
-        source = inspect.getsource(a.settings_fingerprint)
-        broken = source.replace("with private_commands(d/'source-node-checks'/'settings-fingerprint'/uuid.uuid4().hex, max_output_bytes=262144):", 'with contextlib.nullcontext():')
+        source = inspect.getsource(a.static_runtime_contract)
+        broken = source.replace("with private_commands(d/'source-node-checks'/'static-runtime-plan'/uuid.uuid4().hex, max_output_bytes=262144):", 'with contextlib.nullcontext():')
         self.assertNotEqual(source, broken)
         with tempfile.TemporaryDirectory() as temporary:
             with patch.object(a, 'command', side_effect=self.fail):
                 scope = dict(vars(a));exec(compile(broken, 'source_capture_control', 'exec'), scope)
-            self.criterion(Path(temporary) / 'normal', 'settings-fingerprint')
+            self.criterion(Path(temporary) / 'normal', 'static-runtime-plan')
             with self.assertRaisesRegex(AssertionError, 'SOURCE_NODE_FAILURE_MUST_BE_RETAINED'):
-                self.criterion(Path(temporary) / 'removed', 'settings-fingerprint', scope['settings_fingerprint'])
-            self.criterion(Path(temporary) / 'restored', 'settings-fingerprint')
+                self.criterion(Path(temporary) / 'removed', 'static-runtime-plan', scope['static_runtime_contract'])
+            self.criterion(Path(temporary) / 'restored', 'static-runtime-plan')
 
     def test_timeout_retains_bounded_tail_and_successful_truncation_refuses(self):
         with tempfile.TemporaryDirectory() as temporary:

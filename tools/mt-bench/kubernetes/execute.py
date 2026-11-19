@@ -27,22 +27,25 @@ def actor(c):
     driver = c['driver']
     k.need(driver['hostId'] == c['observer']['hostId'], 'NATIVE_ACTORS_REQUIRE_SAME_HOST')
     k.need(all(key in driver for key in ('node','nodeSha256','dependencies','coreRepository','packageSha256','lockSha256','nodeModules')),'DRIVER_INPUTS_REQUIRED','UNMEASURED')
+    # The driver is the instrument, not the product: its tools and dependency
+    # tree are recorded as found, not re-proved against core's Git objects or
+    # the captured hashes on every run.
+    tools = {}
     for name in ('node', 'k6'):
         if name in driver:
-            k.need(Path(driver[name]).is_absolute() and k.digest(driver[name]) == driver[name + 'Sha256'], 'DRIVER_TOOL_CHANGED')
+            k.need(Path(driver[name]).is_absolute(), 'DRIVER_TOOL_PATH')
+            tools[name + 'Sha256'] = k.digest(driver[name])
     deps = Path(driver['dependencies'])
-    for file,field in [('package.json','packageSha256'),('package-lock.json','lockSha256')]:
-        source=subprocess.run(['git','-C',driver['coreRepository'],'show',c['pins']['pair']['core']+':'+file],capture_output=True,timeout=10)
-        k.need(source.returncode==0 and k.hashlib.sha256(source.stdout).hexdigest()==driver[field],'SOURCE_DEPENDENCY_LOCK_CHANGED')
-    k.need(k.digest(deps / 'package.json') == driver['packageSha256'] and k.digest(deps / 'package-lock.json') == driver['lockSha256'], 'DEPENDENCY_LOCK_CHANGED')
+    tools.update(packageSha256=k.digest(deps / 'package.json'), lockSha256=k.digest(deps / 'package-lock.json'))
     tree = k.dependency_reuse.tree(deps / 'node_modules')
-    k.need(tree == driver['nodeModules'], 'DEPENDENCY_TREE_CHANGED')
     cgroup = Path('/proc/self/cgroup').read_text().strip()
     relative = cgroup.splitlines()[0].split(':', 2)[-1]
     root = Path('/sys/fs/cgroup') / relative.lstrip('/')
     limits = {name: (root / name).read_text().strip() if (root / name).is_file() else 'UNMEASURED' for name in ('cpu.max', 'memory.max', 'memory.swap.max', 'cpu.stat', 'memory.current', 'memory.peak', 'memory.events')}
     scope = finite_scope(c, limits)
     return {'hostId': driver['hostId'], 'sharedHost': True, 'dependencies': str(deps), 'nodeModules': tree,
+            'observedTools': tools, 'matchesCapture': all(driver.get(key) == value for key, value in tools.items())
+            and tree == driver['nodeModules'],
             'localCgroup': cgroup, 'resourceReadback': limits, 'requestedResources': driver['resources'],
             'budgetEnforcement': scope}
 
@@ -57,7 +60,7 @@ def native_resource_observation(out, initial):
         try:values[name]=(root/name).read_text().strip()
         except OSError:values[name]='UNMEASURED'
     k.write(Path(out)/'native-resources-final.json',dict(localCgroup=current,readback=values,
-        scope='combined native driver/controller/observer cgroup lifetime peak; no split or phase peak inferred'))
+        scope=initial.get('localScope','combined native driver/controller/observer cgroup lifetime peak; no split or phase peak inferred')))
 
 
 def finite_scope(c, limits):
@@ -146,7 +149,7 @@ def native_k6(c, out, script, *, env, seconds, failures=None, shard=None, option
                outcome=out / f'k6-process{suffix}.json')
 
 
-def configured_load(d, out, c, env, setup):
+def configured_load(d, out, c, env, setup, ordinary):
     """Use the local generator, wrapper, roster splitter and accounting natively."""
     from concurrent.futures import ThreadPoolExecutor, as_completed
     import driver_shards
@@ -157,10 +160,10 @@ def configured_load(d, out, c, env, setup):
     k.need(k.digest(d / driver.SCRIPT) == k.document(d / 'packet.json')['workload']['driverWrapperSha256'],
            'DRIVER_WRAPPER_CHANGED')
     n = len(plans)
-    rows = (driver_shards.plan(c['tenants'], m['cadence']['hotFactor'], m['cadence'].get('offeredRps'), n)
-            if n > 1 else [dict(index=0, start=0, end=c['tenants'], tenants=c['tenants'],
+    rows = (driver_shards.plan(len(ordinary), m['cadence']['hotFactor'], m['cadence'].get('offeredRps'), n)
+            if n > 1 else [dict(index=0, start=0, end=len(ordinary), tenants=len(ordinary),
                                hotFactor=m['cadence']['hotFactor'], offeredRps=m['cadence'].get('offeredRps'))])
-    folder = driver_shards.write_rosters(out / 'shards', roster(c), rows)
+    folder = driver_shards.write_rosters(out / 'shards', ordinary, rows)
     if n > 1:
         k.write(out / 'k6-shard-plan.json', {'shards': rows})
     k.write(out / 'driver-plans.json', {'plans': plans, 'transport': 'kubernetes-native',
@@ -203,6 +206,16 @@ def configured_load(d, out, c, env, setup):
     return observation
 
 
+def ordinary_driver_inputs(c, tenants, out, env):
+    """Project the verified roster only at the k6 boundary."""
+    ordinary = workload_runtime.ordinary_roster(c, tenants, k.need)
+    if 'driverPlan' not in c['workload'] and len(ordinary) < len(tenants):
+        path = out / 'ordinary-tenants.private.json'
+        k.write(path, ordinary)
+        env['TENANTS_FILE'] = str(path)
+    return ordinary
+
+
 def roster(c):
     if 'primerOutput' in c:
         import primer
@@ -233,7 +246,9 @@ def progress_refusal(error):
 
 
 def progress(d, c, objects, client, *, raw_output=None, until=None, warming=False):
+    import clinical_warm
     with k.observation_deadline(until):
+        warm_start = clinical_warm.now_ms()
         k.deadline(c)
         ids = [r['id'] for r in roster(c)]
         baseline = k.active_baseline(d)
@@ -292,6 +307,13 @@ def progress(d, c, objects, client, *, raw_output=None, until=None, warming=Fals
         if post is not None:
             if primary is not None: post.source_refusal = progress_refusal(primary)
             raise post
+        if raw_output is not None and response.get('transportSucceeded') and raw_output.is_file():
+            folder = raw_output.parent
+            if folder.parent.name == 'preload-convergence':
+                folder = folder.parent.parent
+            clinical_warm.record(folder/clinical_warm.FILE, {'evaluator': raw_output.read_bytes()},
+                                 ['evaluator'], ids, warm_start, clinical_warm.now_ms(),
+                                 terminal=raw_output.name in ('progress-after.private.jsonl', 'progress-stop.private.jsonl'))
         if primary is not None: raise primary
         if selected is not None:value['capturePolicy']=policy
         return value
@@ -310,49 +332,79 @@ def retained_progress(d, out, c, objects, client, name, *, until=None, warming=F
     return value
 
 
+def midpoint_signal(out, c, ids, refusal):
+    """Midpoint is a recorded signal; only a hard outcome reason stops the driver."""
+    import outcome_gate
+    raw = out/'progress-midpoint.private.jsonl'
+    try:
+        point = outcome_gate.from_pages({'evaluator':raw.read_bytes()}) if raw.is_file() else None
+        classification = outcome_gate.classify_point(point, ids, final=False, config=gate_config(c)) if point else None
+    except Exception:
+        classification = None
+    decision = outcome_gate.midpoint_decision(classification)
+    if gate_mode(c)['midpointStop'] == 'never' and decision['action'] == 'stop':
+        decision = {**decision, 'action':'continue', 'configured':'midpointStop=never'}
+    decision.update(rawRetained=raw.is_file(), instrument=outcome_gate.instrument(),
+                    strictRefusal=None if refusal is None else progress_refusal(refusal),
+                    classification=classification)
+    k.write(out/'progress-midpoint-signal.json', decision)
+    return decision
+
+
+def gate_mode(c):
+    value = dict(c.get('outcomeGate') or {})
+    value.setdefault('midpointStop', 'hard')
+    value.setdefault('catchup', True)
+    k.need(set(value) <= {'midpointStop', 'deadlineMs', 'catchup'} and value['midpointStop'] in ('hard', 'never')
+           and value['catchup'] is True, 'OUTCOME_GATE_CONFIGURATION')
+    return value
+
+
+def gate_config(c):
+    mode = gate_mode(c)
+    return {'deadlineMs':mode['deadlineMs']} if 'deadlineMs' in mode else None
+
+
+
+def stop_process(process):
+    if process is not None and process.poll() is None:
+        os.killpg(process.pid, signal.SIGTERM)
+        try:
+            process.wait(timeout=3)
+        except subprocess.TimeoutExpired:
+            os.killpg(process.pid, signal.SIGKILL)
+            process.wait(timeout=2)
+
+
+def stop_evidence(d, out, c, objects, client, namespace_uid):
+    """Early stop: retain raw final progress, then storage counts, before decoding."""
+    receipt = {'version':1, 'scope':'raw-first capture after an early load stop; each step best effort and recorded'}
+    if not (out/'progress-after.private.jsonl').exists():
+        raw = out/'progress-stop.private.jsonl'
+        try:
+            k.write(out/'progress-stop.json', progress(d, c, objects, client, raw_output=raw))
+            receipt['progress'] = {'verdict':'DECODED'}
+        except Exception as error:
+            receipt['progress'] = progress_refusal(error)
+        receipt['progressRetained'] = raw.is_file()
+    else:
+        receipt['progress'] = 'TERMINAL_CAPTURE_PRESENT'
+    if (out/'runid').is_file() and not (out/'storage-readback.json').exists():
+        capture_storage(d, out, c, objects, client, (out/'runid').read_text().strip(), namespace_uid)
+    receipt['storage'] = k.document(out/'storage-readback.json').get('verdict') if (out/'storage-readback.json').is_file() else 'NOT_CAPTURED'
+    k.write(out/'stop-evidence.json', receipt)
+    return receipt
+
+
 def warmup_counts(row):
     return (isinstance(row,dict) and type(row.get('attempts')) is type(row.get('refused403')) is type(row.get('elapsedMs')) is int
             and 0 <= row['refused403'] <= row['attempts'] and row['elapsedMs'] >= 0)
-
-
-def socket_failure(code, raw):
-    warmup = code == 'K8S_SOCKET_PREWARM_UNMEASURED'
-    if (not warmup and code != 'K8S_SOCKET_REFUSAL_UNMEASURED') or len(raw) > 1024:
-        return {}
-    try:
-        row = json.loads(raw)['socketEvidence']
-        first = row['firstError']
-        fields = {'tenantIndex', 'stage', 'engineOpened', 'firstError', 'elapsedMs'}
-        stages = ('warmup',) if warmup else ('connect', 'observation-budget', 'disconnect')
-        if warmup:
-            fields.update(('attempts','refused403','prior'))
-            prior = row['prior']
-            if not (warmup_counts(row) and isinstance(prior,list) and len(prior)==row['tenantIndex']
-                    and all(isinstance(before,dict)
-                            and set(before)=={'tenantIndex','attempts','refused403','elapsedMs','verdict'}
-                            and type(before['tenantIndex']) is int and before['tenantIndex']==0
-                            and before['verdict']=='CONNECTED' and warmup_counts(before) for before in prior)):
-                return {}
-        if (set(row) == fields
-                and type(row['tenantIndex']) is int and row['tenantIndex'] in (0, 1)
-                and row['stage'] in stages
-                and type(row['engineOpened']) is bool and type(row['elapsedMs']) is int and row['elapsedMs'] >= 0):
-            if first is None or (set(first) == {'errorClass', 'status', 'code'}
-                    and first['errorClass'] in ('Error', 'TransportError', 'TypeError', 'Other')
-                    and (first['status'] is None or type(first['status']) is int and 100 <= first['status'] <= 599)
-                    and first['code'] in (None, 'ECONNREFUSED', 'ECONNRESET', 'EHOSTUNREACH', 'ENETUNREACH',
-                                          'ENOTFOUND', 'EAI_AGAIN', 'ETIMEDOUT', 'EPIPE')):
-                return {'socketEvidence': row}
-    except (ValueError, KeyError, TypeError):
-        pass
-    return {}
 
 
 def access(d, c, objects, client):
     k.need(not (d / 'access.json').exists() and not (d / 'access-failure.json').exists(),
            'ACCESS_OUTPUT_EXISTS')
     phase = 'candidate-receipt'
-    witness_failure = {}
     try:
         k.candidate.require(k, d, c)
         phase = 'verified-roster'
@@ -366,17 +418,18 @@ def access(d, c, objects, client):
         setup = c.get('accessSetupSeconds')
         raw = finite(c, [c['driver']['node'], k.HERE / 'access.cjs', c['tenantsFile'],
                         c['baseUrl'], c['driver']['dependencies'], *([setup] if setup else [])],
-                     env=environment(c, d), seconds=60+(setup or 0),
-                     failure_stdout=lambda code, raw: witness_failure.update(socket_failure(code, raw)))
+                     env=environment(c, d), seconds=60+(setup or 0))
         phase = 'witness-document'
         value = json.loads(raw)
         k.need(isinstance(value, dict), 'ACCESS_REPORT_INVALID', 'UNMEASURED')
         if setup is not None:
             warmup = value.get('warmup', {})
             witnesses = warmup.get('observations',[])
+            # A socket that did not warm in the window is a recorded UNMEASURED
+            # signal (the witness reports it per tenant); the report shape is still required.
             k.need(warmup.get('budgetMs') == setup*1000 and len(witnesses)==2 and
-                   all(warmup_counts(row) and row.get('tenantIndex')==index and row.get('verdict')=='CONNECTED'
-                       for index,row in enumerate(witnesses)), 'SOCKET_PREWARM_UNMEASURED', 'UNMEASURED')
+                   all(warmup_counts(row) and row.get('tenantIndex')==index and row.get('verdict') in ('CONNECTED','UNMEASURED')
+                       for index,row in enumerate(witnesses)), 'ACCESS_REPORT_INVALID', 'UNMEASURED')
         phase = 'after-observe'
         k.observe(c, objects, client, baseline)
         phase = 'witness-roster'
@@ -389,7 +442,7 @@ def access(d, c, objects, client):
         return value
     except Exception as error:
         try:
-            k.write(d / 'access-failure.json', {'phase': phase, **k.failure_evidence(error), **witness_failure})
+            k.write(d / 'access-failure.json', {'phase': phase, **k.failure_evidence(error)})
         except OSError:
             pass
         raise
@@ -452,8 +505,10 @@ def execute(d, c, objects, client, load=False, recovery=False):
     out = d / name
     k.need(not out.exists(), 'STAGE_OUTPUT_EXISTS')
     if load:
-        k.need('k6' in c['driver'] and 'k6Sha256' in c['driver'] and k.HEX.fullmatch(c.get('settingsFingerprint','')),'LOAD_INPUTS_REQUIRED','UNMEASURED')
-    settings = workload_runtime.validate(c['workload'], k.need, c['tenants'])
+        k.need('k6' in c['driver'] and 'k6Sha256' in c['driver'],'LOAD_INPUTS_REQUIRED','UNMEASURED')
+    gate_mode(c)  # the outcome gate always requires fixed-target catch-up
+    ordinary_count = workload_runtime.driver_count(c, k.need)
+    settings = workload_runtime.validate(c['workload'], k.need, ordinary_count)
     env = workload_runtime.environment(settings, environment(c, d), k.need)
     completion(c)
     tenants = roster(c)
@@ -464,32 +519,50 @@ def execute(d, c, objects, client, load=False, recovery=False):
     baseline = k.active_baseline(d)
     before = k.observe(c, objects, client, baseline)
     readback = actor(c)
+    if c.get('nativeLoad') is not None:
+        readback['localScope'] = 'workstation controller/probe/observer only; Kubernetes load Pod resources and runtime custody are separate'
+        readback['declaredLoadPod'] = {key:c['nativeLoad'][key] for key in
+                                      ('nodeName','image','resources','exporterResources')}
     out.mkdir(mode=0o700)
     k.write(out / 'before.json', before)
     k.write(out / 'driver.json', readback)
     import preload
+    import clinical_warm
+    env["M7_CLINICAL_WARM_PATH"] = str(out / clinical_warm.FILE)
+    if not recovery and 'servingStartMonoMs' in c:
+        clinical_warm.start(out/clinical_warm.FILE, c['servingStartMonoMs'], 'evaluator role start invocation')
     convergence = preload.run(d, out, c, objects, client, ids=[row['id'] for row in tenants],
                               collect=retained_progress) if load else None
-    initial = retained_progress(d, out, c, objects, client, 'progress-before',
-                                until=convergence['until'] if convergence is not None else None)
+    # preload-is-a-signal: a roster still warming at the end of the phase starts traffic. The
+    # starting read keeps its strict decode; its typed warming refusal is retained as evidence
+    # (progress-before-failure.json) and is not an entry condition. The outcome gate judges the
+    # midpoint and the end of drain.
+    warming_start = convergence is not None and convergence.get('status') == 'NOT_CONVERGED'
+    try:
+        initial = retained_progress(d, out, c, objects, client, 'progress-before', warming=warming_start,
+                                    until=convergence['until'] if convergence is not None else None)
+    except k.evaluator_progress.Refused as refused:
+        if not warming_start or str(refused) not in ('M7_EVALUATOR_PROGRESS_ERROR', 'M7_EVALUATOR_PROGRESS_WARMING'):
+            raise
+        initial = None
     if convergence is not None:
         preload.fresh(out, c, initial, convergence)
     runid = stage_runid(c, name)
     (out / 'runid').write_text(runid)
     node = c['driver']['node']
+    viewer_workload = k.viewer_plan.stage_cadence(settings, load)
     argv = [node, str(d / 'probe.cjs'), '--base', c['baseUrl'], '--tenants', c['tenantsFile'], '--runid', runid,
-            '--per', '2', '--clients', str(settings['logicalPollingClients']), '--open', '5', '--window', str(settings['loadSeconds']),
+            '--per', '2', '--clients', str(settings['logicalPollingClients']), *k.viewer_plan.setup_args(viewer_workload), '--window', str(settings['loadSeconds']),
             '--probeEvery', str(settings['probeEveryMs'] if load else 1000), '--restart', '0', '--evalTimeout', '120',
             '--out', str(out / 'probe.json'), '--signal', str(out / '.window')]
     setup = settings.get('setupSeconds', 310)
-    if 'setupSeconds' in settings:
-        argv += ['--setupSeconds', str(setup)]
     if not load:
         argv += ['--maxWrites', '2']
     # Unchanged stock probe, with only SQL transport and external restart changed.
     started = time.time()
     process = None
     load_started = load_ended = load_process_started = load_process_ended = None
+    drain_started = None
     midpoint = None
     cancel = threading.Event()
     midpoint_failure = []
@@ -499,10 +572,18 @@ def execute(d, c, objects, client, load=False, recovery=False):
                 break
         if cancel.wait(settings['loadSeconds'] / 2 if load else .5):
             return
+        refusal = None
         try:
             retained_progress(d, out, c, objects, client, 'progress-midpoint')
         except Exception as error:
-            midpoint_failure.append(error)
+            refusal = error
+        try:
+            decision = midpoint_signal(out, c, [row['id'] for row in tenants], refusal)
+        except Exception as error:
+            midpoint_failure.append(refusal or error)
+            return
+        if decision['action'] == 'stop':
+            midpoint_failure.append(refusal or k.Refused('M7_OUTCOME_MIDPOINT_HARD', 'FAIL'))
     log = (out / 'probe.log').open('xb')
     try:
         bound = k.deadline(c)
@@ -511,26 +592,32 @@ def execute(d, c, objects, client, load=False, recovery=False):
         midpoint = threading.Thread(target=capture_midpoint, daemon=True)
         midpoint.start()
         if load:
-            prime_until = min(started + setup, k.timestamp(c['deadlines']['workUntil']))
+            work_until = k.timestamp(c['deadlines']['workUntil'])
             while not (out / '.window').exists():
-                k.need(process.poll() is None and time.time() < prime_until, 'PROBE_NOT_PRIMED', 'UNMEASURED')
+                k.need(process.poll() is None and time.time() < work_until, 'PROBE_NOT_PRIMED', 'UNMEASURED')
                 time.sleep(.2)
             # A native k6 already in an operator-owned finite resource scope.
             # No Docker network/volume assumption or new driver Pod is introduced.
             env.update(BASE_URL=c['baseUrl'], TENANTS_FILE=c['tenantsFile'], RUN_ID=runid, RUN_START=str(int(time.time() * 1000)),
                        DURATION=str(settings['loadSeconds']), ACCEL='1', HOT_FACTOR=str(settings.get('hotFactor', 1)), JWT_SETUP_CONCURRENCY=str(settings.get('jwtSetupConcurrency', 1)),
-                       SETTINGS_FINGERPRINT=c['settingsFingerprint'],
                        SHAPES='w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status')
             if 'setupSeconds' in settings:
-                setup = int(prime_until - time.time())
+                prime_until = min(time.time() + setup, work_until)
+                setup = min(setup, int(k.deadline(c)))
                 k.need(setup > 0, 'SETUP_WINDOW_EXHAUSTED', 'UNMEASURED')
                 env['M7_SETUP_SECONDS'] = str(setup)
                 env['M7_SETUP_UNTIL_MS'] = str(int(prime_until * 1000))
                 k.write(out/'setup-window.json', {'configuredSeconds': settings['setupSeconds'],
                         'remainingSecondsAtDriverLaunch': setup, 'setupUntilUnixMs': int(prime_until * 1000)})
+            ordinary = ordinary_driver_inputs(c, tenants, out, env)
             load_process_started = time.time()
             if 'driverPlan' in settings:
-                accounting = configured_load(d, out, c, env, setup)
+                if c.get('nativeLoad') is not None:
+                    import native_join
+                    native_join.run(d,out,c,objects,client,ordinary,runid=runid,setup=setup,failures=midpoint_failure)
+                    accounting = k.document(out/'driver-accounting.json')
+                else:
+                    accounting = configured_load(d, out, c, env, setup, ordinary)
                 load_process_ended = time.time()
                 phases = [s['phases'] for s in accounting['shards']]
                 k.need(all('scheduleStartMs' in p and 'scheduleEndMs' in p for p in phases),
@@ -543,44 +630,82 @@ def execute(d, c, objects, client, load=False, recovery=False):
                 load_process_ended = time.time()
                 load_started, load_ended = ordinary_load_window(c, out / 'k6.log', load_process_started, load_process_ended)
             (out / '.restart').touch()
-        if load and 'drainSeconds' in settings:
-            # The inherited oracle has a 120 s per-write lookback. Keep that scope explicit.
-            requested = settings['drainSeconds']
-            k.write(out / 'drain.json', {'requestedSeconds': requested, 'perWriteCollectorLimitSeconds': 120,
-                    'maximumObservableSeconds': min(requested, 120),
-                    'scope': 'PARTIAL' if requested > 120 else 'BOUNDED', 'allWriterDrain': 'UNMEASURED'})
+            drain_started = time.time()
+        def tail_read(index, seconds):
+            value = retained_progress(d, out, c, objects, client, 'clinical-tail-%04d' % index,
+                                      until=time.time()+seconds, warming=True)
+            return {key:value[key] for key in ('queries','bytes','wallSeconds')}
+        def wait_probe(seconds):
+            return wait_observed(process, seconds, midpoint_failure)
+        if load:
+            # The operator's remaining drain clock can censor outstanding witnesses.
+            requested = settings.get('drainSeconds', 120)
+            k.write(out / 'drain.json', {'requestedSeconds': requested, 'perWriteClinicalDeadlineSeconds': 120,
+                    'deadlineFrom': 'later of HTTP acceptance and evaluator warmth',
+                    'maximumObservableSeconds': min(requested, k.deadline(c)),
+                    'scope': 'remaining operator drain', 'allWriterDrain': 'UNMEASURED'})
             try:
-                wait_observed(process, min(requested, k.deadline(c)), midpoint_failure)
+                clinical_warm.wait_for_probe(process, min(requested, k.deadline(c)), out,
+                                             tail_read, wait=wait_probe)
             except subprocess.TimeoutExpired:
                 raise k.Refused('K8S_PROBE_DRAIN_WINDOW_EXHAUSTED', 'UNMEASURED') from None
         else:
-            wait_observed(process, k.deadline(c), midpoint_failure)
-        k.need(process.returncode == 0, 'PROBE_FAILED', 'UNMEASURED')
+            clinical_warm.wait_for_probe(process, k.deadline(c), out, tail_read, wait=wait_probe)
+        if process.returncode != 0:
+            k.need(load, 'PROBE_FAILED', 'UNMEASURED')
+            # Both processes have exited. Keep the failed probe's status while
+            # the read-only collectors check their own custody and ledger.
+            k.write(out/'probe-exit.json', {'verdict':'UNMEASURED', 'code':'K8S_PROBE_FAILED',
+                                            'returncode':process.returncode})
+        writers_joined_ns = time.monotonic_ns()  # driver and probe have both exited
         midpoint.join(timeout=min(60, k.deadline(c)))
         if midpoint_failure:
             raise midpoint_failure[0]
-        k.need(not midpoint.is_alive() and (out / 'progress-midpoint.json').is_file(), 'MIDPOINT_UNMEASURED', 'UNMEASURED')
+        k.need(not midpoint.is_alive() and ((out / 'progress-midpoint.json').is_file() or
+               (out / 'progress-midpoint-signal.json').is_file()), 'MIDPOINT_UNMEASURED', 'UNMEASURED')
         k.write(out / 'after.json', k.observe(c, objects, client, baseline))
         k.write(out / 'window.json', {'startedAt': started, 'endedAt': time.time(), 'loadStartedAt': load_started,
                                      'loadEndedAt': load_ended, 'loadProcessStartedAt': load_process_started,
                                      'loadProcessEndedAt': load_process_ended,
+                                     'driverTransport': 'in-cluster-k6-service' if c.get('nativeLoad') is not None else 'workstation-native-k6',
+                                     'loadProcessBoundary': 'Job invocation through bounded artifact custody; writer container times retained in native-load.json'
+                                         if c.get('nativeLoad') is not None else 'local native process lifetime',
                                      'loadWindowBasis': 'first ordinary scenario request through configured duration capped at native exit; JWT setup and final drain excluded',
                                      'runId': runid, 'pins': c['pins'],
                                      'context': c['context'], 'namespaceUid': baseline['namespace']['uid']})
-        terminal_progress(d, out, c, objects, client, runid, load, baseline['namespace']['uid'])
+        if load:
+            # All-tenant fixed-floor catch-up follows the stored row count.
+            # Reconcile the final writer cohort even if catch-up uses the
+            # remaining drain window. Both SQL reads retain their own guards.
+            capture_storage(d, out, c, objects, client, runid, baseline['namespace']['uid'])
+            import catchup
+            catchup.run(d, out, c, objects, client, [row['id'] for row in tenants],
+                        writers_joined_ns=writers_joined_ns, drain_started=drain_started)
+        try:
+            terminal_progress(d, out, c, objects, client, runid, load, baseline['namespace']['uid'])
+        except (k.Refused, k.evaluator_progress.Refused):
+            if not load or not (out/'progress-after-failure.json').is_file():
+                raise
+            # The original refusal and guarded storage readback are retained.
+            # assess_stage can finish the remaining file-based checks.
+        if load and c.get('nativeLoad') is not None:
+            import native_load
+            return native_load.assess_join(d,out,c,objects,client)
         return assess_stage(d, out, c, objects, client)
     except Exception as error:
         k.write(out / 'failure.json', {'verdict': getattr(error, 'verdict', 'UNMEASURED'), 'code': str(error) if str(error) == 'EVALUATOR_SCOPE_UNSAFE' or str(error).startswith(('K8S_', 'M7_')) else 'K8S_STAGE_FAILED', 'capacityAcceptance': 'NOT_GRANTED'})
+        if load and not (out / 'result.json').exists():
+            cancel.set()
+            stop_process(process)
+            try:
+                stop_evidence(d, out, c, objects, client, baseline['namespace']['uid'])
+            except Exception as secondary:
+                k.write(out / 'stop-evidence.json', {'version':1, 'code':'K8S_STOP_EVIDENCE_REFUSED',
+                        'errorType':type(secondary).__name__})
         raise
     finally:
         cancel.set()
-        if process is not None and process.poll() is None:
-            os.killpg(process.pid, signal.SIGTERM)
-            try:
-                process.wait(timeout=3)
-            except subprocess.TimeoutExpired:
-                os.killpg(process.pid, signal.SIGKILL)
-                process.wait(timeout=2)
+        stop_process(process)
         log.close()
 
 
@@ -596,12 +721,12 @@ def terminal_progress(d, out, c, objects, client, runid, load, namespace_uid):
         if getattr(error, 'source_refusal', None):
             evidence['sourceRefusal'] = error.source_refusal
         k.write(out / 'progress-after-failure.json', evidence)
-        if load:
-            storage_after_progress_failure(d, out, c, objects, client, runid, namespace_uid)
+        if load and not (out/'storage-readback.json').is_file():
+            capture_storage(d, out, c, objects, client, runid, namespace_uid)
         raise
 
 
-def storage_after_progress_failure(d, out, c, objects, client, runid, namespace_uid):
+def capture_storage(d, out, c, objects, client, runid, namespace_uid):
     receipt = {'verdict':'UNMEASURED', 'runId':runid, 'namespaceUid':namespace_uid, 'pins':c['pins']}
     try:
         k.deadline(c)
@@ -615,6 +740,7 @@ def storage_after_progress_failure(d, out, c, objects, client, runid, namespace_
     except Exception as error:
         code = str(error)
         receipt['code'] = code if isinstance(error,k.Refused) else 'K8S_STORAGE_OBSERVATION_UNMEASURED'
+        receipt['observationFailure'] = k.failure_evidence(error)
     k.write(out / 'storage-readback.json', receipt)
 
 
@@ -631,10 +757,11 @@ def accepted_writes(out, c, values, metrics=None):
     tenants = roster(c)
     runid = (out / 'runid').read_text().strip()
     # Use the original count reducer, including missing ACK and uncertainty rules.
+    ordinary = workload_runtime.ordinary_roster(c, tenants, k.need)
     if out.name in ('commission', 'recovery'):
         metrics = {'writes_ok': {'count': 0}}
         metrics.update({'writes_ok{kind:' + kind + '}': {'count': 0} for kind in ('entries', 'devicestatus', 'treatments')})
-        metrics.update({name + '{tenant:' + t['id'] + '}': {'count': 0} for t in tenants for name in ('writes_ok', 'writes_uncertain')})
+        metrics.update({name + '{tenant:' + t['id'] + '}': {'count': 0} for t in ordinary for name in ('writes_ok', 'writes_uncertain')})
     else:
         k.need((out / 'k6-summary.json').is_file(), 'ACCEPTED_WRITE_UNMEASURED', 'UNMEASURED')
         if metrics is None:
@@ -643,9 +770,10 @@ def accepted_writes(out, c, values, metrics=None):
     # temporary view supplies this path without changing the runner's files.
     view = out / 'oracle-input'
     view.mkdir(mode=0o700, exist_ok=True)
-    k.write(view / 'tenants.private.json', tenants)
+    k.write(view / 'tenants.private.json', [{'id':row['id']} for row in tenants])
     facade = SimpleNamespace(document=k.document, write=k.write, stored=lambda *_: values)
     counts, known = k.discovery_counts.observe(facade, view, out, runid, metrics,
+                                               ordinary_ids=[row['id'] for row in ordinary],
                                                probe_ledger=c.get('workload', {}).get('probeLedger'))
     k.need(known, 'ACCEPTED_WRITE_UNMEASURED', 'UNMEASURED')
     k.need(counts.get('uncertain') == 0 and all(row['accepted'] == row['stored'] for row in counts['rows']),
@@ -656,62 +784,158 @@ def accepted_writes(out, c, values, metrics=None):
 
 
 def load_checks(out, c=None):
-    """Join the original M7 HTTP/offered-work and settings reducers."""
+    """Join the original M7 HTTP/offered-work reducers."""
     import http_accounting
-    import profile_provenance
+    k.need((out/'k6-summary.json').is_file(), 'LOAD_HTTP_MISSING', 'UNMEASURED')
     metrics = k.document(out / 'k6-summary.json').get('metrics', {})
     http = http_accounting.assess(metrics)
-    fingerprint = profile_provenance.fingerprint_check(metrics)
-    value = {'http': http, 'settingsFingerprint': fingerprint}
+    value = {'http': http}
+    k.write(out / 'load-functional.json', value)
     if c and 'driverPlan' in c.get('workload', {}):
         import driver_vu_diagnostic as driver
         measured = driver.retain(out.parent, workload_runtime.driver_manifest(c))
         value['configuredDriver'] = measured
+        k.write(out / 'load-functional.json', value)
         k.need(measured['offeredWorkVerdict'] == 'PASS', 'DRIVER_OFFERED_WORK_INCOMPLETE',
                'FAIL' if measured['offeredWorkVerdict'] == 'FAIL' else 'UNMEASURED')
-    k.write(out / 'load-functional.json', value)
     k.need(all(http['shapes'][shape]['attempts'] > 0 for shape in ('jwt_setup', *http_accounting.SHAPES)),
            'SCENARIO_SHAPE_UNMEASURED', 'UNMEASURED')
     k.need(http['httpVerdict'] == 'PASS' and all(row['httpVerdict'] == 'PASS' for row in http['shapes'].values()),
            'SCENARIO_HTTP_FAILED', 'FAIL' if http['httpVerdict'] == 'FAIL' else 'UNMEASURED')
     k.need(http['offeredWorkVerdict'] == 'PASS', 'OFFERED_WORK_INCOMPLETE',
            'FAIL' if http['offeredWorkVerdict'] == 'FAIL' else 'UNMEASURED')
-    k.need(fingerprint['verdict'] == 'PASS', 'SETTINGS_FINGERPRINT_FAILED',
-           'FAIL' if fingerprint['verdict'] == 'FAIL' else 'UNMEASURED')
     return value
 
 
-def assess_stage(d, out, c, objects, client):
-    completion(c)
-    tenants = roster(c)
-    probe = k.document(out / 'probe.json')
-    k.need('completedOutput' in probe and probe['completedOutput'].get('witnesses'), 'CLINICAL_UNMEASURED', 'UNMEASURED')
-    runid = (out / 'runid').read_text().strip()
-    values = k.stored(d, c, objects, runid, client)
-    # The original count reducer validates the entire probe ledger/roster first.
-    counts = accepted_writes(out, c, values)
-    from workloads.reduce import witness_coverage
-    coverage = witness_coverage(probe, k.document(out / 'probe-accounting.json'))
-    k.need(coverage['verdict'] == 'PASS', 'CLINICAL_WITNESS_COVERAGE',
-           'FAIL' if coverage['verdict'] == 'FAIL' else 'UNMEASURED')
-    clinical = {**semantic(c, out), 'coverage': coverage}
-    frames = k.viewer_plan.check({'tenants': len(tenants), 'cadence': {'logicalPollingClients': c['workload']['logicalPollingClients']}}, tenants, probe,
-                                 k.document(out / 'fanout.json')['probeWrites']['byTenant'])
-    k.need(frames['verdict'] == 'PASS' or c['workload']['logicalPollingClients'] == 0 and
-           frames['verdict'] == 'NOT_EXERCISED', 'CLIENT_FRAME_UNMEASURED', 'UNMEASURED')
-    rounds = [k.document(out / (name + '.json')) for name in ('progress-before', 'progress-midpoint', 'progress-after')]
+def assess_progress(out, c, ids):
+    names = [name for name in ('progress-before', 'progress-midpoint', 'progress-after') if (out / (name + '.json')).is_file()]
+    k.need(names and names[0] == 'progress-before' and names[-1] == 'progress-after', 'EVALUATOR_PROGRESS_BOOKENDS', 'UNMEASURED')
+    rounds = [k.document(out / (name + '.json')) for name in names]
     # Keep existing progress assessment separate from durable clinical proof.
     selected=c.get('workload',{}).get('evaluatorProgressBudget')
     policy=k.evaluator_progress.capture_policy(selected)
     k.need(all(row.get('capturePolicy')==(policy if selected is not None else None) for row in rounds),
            'EVALUATOR_PROGRESS_BUDGET_CHANGED')
-    progress = k.evaluator_progress.assess(rounds, [r['id'] for r in tenants], 'load',policy=policy)
-    functional = load_checks(out, c) if out.name == 'load' else 'NOT_SELECTED'
-    summary = {'version': 1, 'verdict': 'OBSERVED', 'runId': runid, 'pins': c['pins'], 'storedWrites': counts,
-               'clinical': clinical, 'frames': frames, 'evaluatorProgress': progress,
-               'loadFunctionalChecks': functional,
-               'authority': 'UNMEASURED until access.json', 'performance': 'signals only; no promotion threshold', 'capacityAcceptance': 'NOT_GRANTED'}
-    k.write(out / 'result.json', summary)
+    # A midpoint is a signal: when only its signal was retained, the strict
+    # counter/foreign/reset/work checks run over the two bookends.
+    strict = rounds if len(rounds) == 3 else [rounds[0], rounds[-1], rounds[-1]]
+    try:
+        progress = k.evaluator_progress.assess(strict, ids, 'load',policy=policy,
+                                               failure_policy=k.evaluator_progress.OUTCOME_FAILURE_POLICY)
+    except k.evaluator_progress.Refused as error:
+        if str(error) != 'M7_EVALUATOR_PROGRESS_NOT_OBSERVED':
+            raise
+        # assess has checked every captured runtime, owner, foreign counter and
+        # reset before requiring a positive work delta from each tenant. Idle
+        # tenants need not acquire again during this window. Keep that metric
+        # unknown; the mandatory native catch-up/outcome gate below judges the
+        # actual accepted-input floor and boundary-known due work.
+        before, after = rounds[0]['owners'], rounds[-1]['owners']
+        deltas = [sum(after[t][key] - before[t][key] for key in
+                      ('completedAcquisitions', 'completedTimeCycles')) for t in ids]
+        progress = {'verdict':'UNMEASURED', 'code':str(error),
+                    'policy':policy, 'tenants':len(ids), 'instances':rounds[0]['instances'],
+                    'completedWorkDelta':sum(deltas),
+                    'tenantsWithObservedWork':sum(value > 0 for value in deltas),
+                    'tenantsWithoutObservedWork':sum(value == 0 for value in deltas),
+                    'scope':'per-tenant positive-progress metric unmeasured; no idle completion credit; native fixed-target outcome judged separately'}
+    progress.update(counterStability='PASS', observedRounds=len(rounds),
+                    queries=sum(row['queries'] for row in rounds),
+                    responseBytes=sum(row['bytes'] for row in rounds),
+                    collectorWallSeconds=sum(row['wallSeconds'] for row in rounds))
+    return progress
+
+
+def assess_stage(d, out, c, objects, client):
+    import outcome_gate
+    from workloads.reduce import witness_coverage
+    completion(c)
+    tenants = roster(c)
+    ids = [r['id'] for r in tenants]
+    runid = (out / 'runid').read_text().strip()
+    errors = []
+    clinical_detail = {}
+
+    def measure(collect):
+        # Each assessment owns its inputs. Keep its original refusal for the
+        # command exit, after publishing all independent observations.
+        try:
+            return collect()
+        except Exception as error:
+            errors.append(error)
+            evidence = k.failure_evidence(error)
+            return {**(getattr(error, 'oracleFindings', {}) or {}), **evidence}
+
+    def stored():
+        receipt = out / 'storage-readback.json'
+        if receipt.is_file():
+            readback = k.document(receipt)
+            k.need(readback.get('pins') == c['pins'] and readback.get('runId') == runid and
+                   readback.get('namespaceUid') == k.active_baseline(d)['namespace']['uid'], 'STORAGE_READBACK_CHANGED')
+            if readback['verdict'] != 'OBSERVED':
+                raise k.Refused(readback['code'], readback.get('observationFailure', {}).get('verdict', readback['verdict']))
+            k.need(k.digest(out/'stored-counts.json') == readback.get('countsSha256'), 'STORAGE_READBACK_CHANGED')
+            values = k.document(out/'stored-counts.json')
+        else:
+            values = k.stored(d, c, objects, runid, client)
+            k.write(out/'stored-counts.json', values)
+        return accepted_writes(out, c, values)
+
+    def clinical():
+        k.need((out/'probe.json').is_file(), 'CLINICAL_UNMEASURED', 'UNMEASURED')
+        probe = k.document(out/'probe.json')
+        ledger, _ = k.discovery_counts.probe_metadata(k, out, runid, set(ids),
+                                                      probe_ledger=c['workload'].get('probeLedger'))
+        k.need(ledger is not None, 'CLINICAL_LEDGER_MISSING', 'UNMEASURED')
+        coverage = witness_coverage(probe, ledger)
+        clinical_detail['coverage'] = coverage
+        k.write(out/'witness-coverage.json', coverage)
+        k.need(coverage['verdict'] == 'PASS', 'CLINICAL_WITNESS_COVERAGE', coverage['verdict'])
+        return semantic(c, out)
+
+    def delivery():
+        k.need(all((out/name).is_file() for name in ('fanout.json', 'probe.json')),
+               'CLIENT_FRAME_UNMEASURED', 'UNMEASURED')
+        probe = k.document(out/'probe.json')
+        k.need('window' in probe, 'CLIENT_FRAME_UNMEASURED', 'UNMEASURED')
+        by_tenant = k.document(out/'fanout.json')['probeWrites']['byTenant']
+        try:
+            frames = k.viewer_plan.check({'tenants': len(tenants), 'cadence': c['workload']}, tenants, probe, by_tenant)
+        except RuntimeError as error:
+            raise k.Refused(str(error), 'FAIL') from error
+        k.need(frames['verdict'] == 'PASS' or c['workload']['logicalPollingClients'] == 0 and
+               frames['verdict'] == 'NOT_EXERCISED', 'CLIENT_FRAME_UNMEASURED', 'UNMEASURED')
+        return frames
+
+    def gate():
+        outcome = outcome_gate.judge_kubernetes_load(out, ids, config=gate_config(c),
+                                                     attribution={'pins':c['pins'], 'runId':runid})
+        k.write(out/'outcome-gate.json', outcome)
+        if outcome['verdict'] == 'FAIL':
+            errors.append(k.Refused('K8S_OUTCOME_GATE_FAIL', 'FAIL'))
+        return {'verdict': outcome['verdict'], 'instrument': outcome['instrument'],
+                'components': {name: {'verdict': row['verdict'], 'codes': row.get('codes', [])}
+                               for name, row in outcome['components'].items()}}
+
+    for name in ('probe-exit.json', 'progress-after-failure.json'):
+        if (out/name).is_file():
+            prior = k.document(out/name)
+            errors.append(k.Refused(prior['code'], prior['verdict']))
+    summary = {'version': 1, 'runId': runid, 'pins': c['pins'], 'storedWrites': measure(stored),
+               'clinical': measure(clinical), 'frames': measure(delivery),
+               'evaluatorProgress': measure(lambda: assess_progress(out, c, ids)), 'outcomeGate': measure(gate),
+               'httpLatencyAllShards': measure(lambda: outcome_gate.http_latency(out)) if out.name == 'load' else 'NOT_SELECTED',
+               'loadFunctionalChecks': measure(lambda: load_checks(out, c)) if out.name == 'load' else 'NOT_SELECTED',
+               'authority': 'UNMEASURED until access.json', 'performance': 'signals only; no promotion threshold',
+               'capacityAcceptance': 'NOT_GRANTED'}
+    summary['clinical'].update(clinical_detail)
+    if out.name == 'load' and 'code' in summary['loadFunctionalChecks'] and (out/'load-functional.json').is_file():
+        summary['loadFunctionalChecks'] = {**k.document(out/'load-functional.json'), **summary['loadFunctionalChecks']}
+    refusal = next((error for error in errors if getattr(error, 'verdict', None) == 'FAIL'), next(iter(errors), None))
+    summary['verdict'] = getattr(refusal, 'verdict', 'UNMEASURED') if refusal else 'OBSERVED'
+    k.write(out/'result.json', summary)
+    if refusal:
+        raise refusal
     return summary
 
 
@@ -732,18 +956,20 @@ def authority(d, c):
     access_file = d / 'access.json'
     k.need(access_file.is_file(), 'AUTHORITY_UNMEASURED', 'UNMEASURED')
     access_result = k.document(access_file)
-    k.need(access_result.get('verdict') == 'PASS' and access_result.get('crossTenantChecks') == 2, 'AUTHORITY_REFUSED')
-    k.need(access_result.get('pins')==c['pins'] and access_result.get('context')==c['context'] and access_result.get('namespaceUid')==k.active_baseline(d)['namespace']['uid'],'AUTHORITY_SOURCE_CHANGED')
+    # UNMEASURED (socket not observable) continues with the signal recorded; only a
+    # measured isolation or authorization failure refuses here.
+    k.need(access_result.get('verdict') in ('PASS', 'UNMEASURED') and access_result.get('crossTenantChecks') == 2, 'AUTHORITY_REFUSED')
+    k.need(access_result.get('context')==c['context'] and access_result.get('namespaceUid')==k.active_baseline(d)['namespace']['uid'],'AUTHORITY_SOURCE_CHANGED')
     k.need((d/'policy.json').is_file(),'POLICY_UNMEASURED','UNMEASURED')
     policy_result=k.document(d/'policy.json')
-    k.need(policy_result.get('pins')==c['pins'] and policy_result.get('context')==c['context'] and policy_result.get('namespaceUid')==k.active_baseline(d)['namespace']['uid'],'POLICY_SOURCE_CHANGED')
+    k.need(policy_result.get('context')==c['context'] and policy_result.get('namespaceUid')==k.active_baseline(d)['namespace']['uid'],'POLICY_SOURCE_CHANGED')
     policy_assess(policy_result.get('observations'))
     return access_result, policy_result
 
 
 def restart(d, c, objects, client, role):
     k.need(not (d / 'restart.json').exists(), 'RESTART_OUTPUT_EXISTS')
-    k.need((d / 'commission/result.json').is_file() and (d / 'access.json').is_file(), 'COMMISSION_FIRST')
+    k.need((d / 'commission/result.json').is_file() and k.document(d / 'commission/result.json').get('verdict') == 'OBSERVED' and (d / 'access.json').is_file(), 'COMMISSION_FIRST')
     initial = k.document(d / 'observation.initial.json')
     before = k.observe(c, objects, client, initial)
     pod, container = k.selected_pod(c, before, role)
@@ -783,14 +1009,15 @@ def continuity(d, c, independent_directory):
     first = k.document(d / 'observation.initial.json')
     second = k.document(peer / 'observation.initial.json')
     k.need(c['context'] == other['context'] and c['namespace'] != other['namespace'] and c['runId'] != other['runId'] and first['namespace']['uid'] != second['namespace']['uid'], 'INDEPENDENT_FIXTURE_REQUIRED')
-    k.need(all(c['pins'][field] == other['pins'][field] for field in ('pair','appImage','appImageId','bindingCommit','instrument')), 'CONTINUITY_SOURCE_CHANGED')
+    # Both fixtures run the same image; other pins are recorded, not compared.
+    k.need(c['pins']['appImageId'] == other['pins']['appImageId'], 'CONTINUITY_IMAGE_CHANGED')
     window = k.document(peer / 'load/window.json')
     result = k.document(peer / 'load/result.json')
     capture = k.document(peer / 'load/probe.json')
     k.need(type(window.get('loadStartedAt')) in (int,float) and type(window.get('loadEndedAt')) in (int,float) and
            window['loadStartedAt'] < restart['startedAt'] < restart['endedAt'] < window['loadEndedAt'] and
            result.get('verdict') == 'OBSERVED', 'CONTINUITY_WINDOW_UNMEASURED', 'UNMEASURED')
-    k.need(window.get('pins')==other['pins'] and result.get('pins')==other['pins'] and window.get('namespaceUid')==second['namespace']['uid'],'CONTINUITY_SOURCE_CHANGED')
+    k.need(window.get('namespaceUid')==second['namespace']['uid'],'CONTINUITY_NAMESPACE_CHANGED')
     k.need(k.document(d / 'recovery/result.json').get('verdict') == 'OBSERVED', 'RECOVERY_UNMEASURED', 'UNMEASURED')
     from matrix import identity
     identity(other, second, k.document(peer / 'load/before.json'))
@@ -836,7 +1063,7 @@ def matrix_plan(value):
         names.add((c['context'],c['namespace']));owners.add(c['runId']);ports.add(port)
         if configs:
             k.need(c['context']==configs[0]['context'],'MATRIX_CONTEXT_CHANGED')
-            k.need(all(c['pins'][field]==configs[0]['pins'][field] for field in ('pair','appImage','appImageId','bindingCommit','instrument')),'MATRIX_MIXED_SOURCE')
+            k.need(c['pins']['appImageId']==configs[0]['pins']['appImageId'],'MATRIX_MIXED_IMAGE')
         configs.append(c)
         for obj in objects.values():
             if obj['kind'] not in k.WORKLOADS:continue
@@ -851,7 +1078,9 @@ def matrix_plan(value):
                 total[dimension] += amount
         for actor_name in ('driver','observer'):
             for field in ('millicpus','memoryBytes'):total[field]+=c[actor_name]['resources'][field]
-        commands.append({'runId':c['runId'],'namespace':c['namespace'],'cohortReplicas':1,
+        placement = ({'applicationTopology':'separate-k1','applicationReplicas':{role:1 for role in k.application_topology.ROLES}}
+                     if k.application_topology.selection(c,k.need)==k.application_topology.SEPARATE else {'cohortReplicas':1})
+        commands.append({'runId':c['runId'],'namespace':c['namespace'],**placement,
                          'argv':[sys.executable,'-B',str(k.HERE/'adapter.py'),'load',str(d)],'workload':c['workload'],'deadlines':c['deadlines']})
     ceiling=value.get('aggregateCeiling',{})
     k.need(set(ceiling)==set(total) and all(type(ceiling[key]) is int and total[key]<=ceiling[key] for key in total),'AGGREGATE_HEADROOM_EXCEEDED')

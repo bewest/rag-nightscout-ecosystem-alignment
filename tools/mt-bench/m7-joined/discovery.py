@@ -8,6 +8,7 @@ import sys
 import time
 import discovery_rest
 import evaluator_catchup
+import driver_memory
 import driver_vu_diagnostic
 import node_observation
 import phase_windows
@@ -85,8 +86,6 @@ def check_discovery(value):
         require(len(set(roster))==len(roster),'M7_DISCOVERY_DUPLICATE_CELL')
         if value['status']=='MEASURED':require(all(row['status']=='MEASURED' for row in cells),'M7_DISCOVERY_MISSING_MEASUREMENT')
         return True
-    declared=value.get('settingsFingerprint',{})
-    require(declared.get('sha256')==chosen['settings']['sha256'] and declared.get('sourceCommit')==value['pair']['core'] and chosen['settings']['sourceCommit']==value['pair']['core'],'M7_DISCOVERY_DECLARED_SETTINGS')
     require(re.fullmatch(r'[a-f0-9]{32}',value.get('owner','')) and value.get('ownershipVerified') is True,'M7_DISCOVERY_OWNERSHIP')
     api_ok=(discovery_api_replicas(value.get('replicas')) if value.get('profile')=='pgstream-sample'
             else type(value.get('replicas')) is int and value['replicas'] in REPLICAS)
@@ -117,9 +116,9 @@ def check_discovery(value):
 class Record:
     def __init__(self,a,d,m):
         self.a,self.d,self.m=a,d,m
-        self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'settingsFingerprint':m['settingsFingerprint'],'coverage':{'fullNominalCgmCycle':m['cadence']['loadSeconds']>=300/m['cadence'].get('accel',1),'timerWitness':'UNMEASURED; observed progress is retained separately'},'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,**(discovery_scope(m) if m['profile']=='pgstream-sample' else {}),**({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
+        self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'coverage':{'fullNominalCgmCycle':m['cadence']['loadSeconds']>=300/m['cadence'].get('accel',1),'timerWitness':'UNMEASURED; observed progress is retained separately'},'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,**(discovery_scope(m) if m['profile']=='pgstream-sample' else {}),**({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
     def save(self):
-        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','http-accounting.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json','node-observation.json','k6-scheduling.csv.gz','driver-vu-assessment.json','host-load.tsv','pg-activity.tsv','pg-blockers.tsv') if (file:=self.d/folder/name).is_file()}
+        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','http-accounting.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json','node-observation.json','k6-scheduling.csv.gz','driver-vu-assessment.json',driver_memory.RESULT,driver_memory.SAMPLES,'host-load.tsv','pg-activity.tsv','pg-blockers.tsv') if (file:=self.d/folder/name).is_file()}
         preload = self.d/'preload-convergence/result.json'
         if preload.is_file():
             self.value['artifacts']['preload-convergence/result.json'] = self.a.digest(preload)
@@ -181,9 +180,14 @@ def run_discovery(a,d,m,k6_image,oneoff=None):
 
 
 def _run_discovery(a,d,m,k6_image,oneoff=None):
-    record=Record(a,d,m);record.save()
+    record=Record(a,d,m)
+    if driver_memory.selected(m):
+        record.value['driverMemory'] = {'status':'UNMEASURED', 'reason':'driver-observation-not-retained'}
+    record.save()
     try:
         require(m.get('profile')!='fresh-image-diagnostic','M7_DIAGNOSTIC_CANNOT_RUN_CAPACITY')
+        require(not driver_memory.selected(m) or (oneoff is None and not m.get('attached')),
+                'M7_DRIVER_MEMORY_LOCAL_FIXTURE_REQUIRED')
         a.frozen(m,'run');a.quiet(d,m,'run-before',check_load=False);a.verify(d,m);a.image(m)
         record.value['ownershipVerified']=True;record.save()
         require((d/'deploy-before-host.json').is_file(),'M7_DEPLOY_QUIET_RECORD_REQUIRED')
@@ -206,41 +210,78 @@ def _run_discovery(a,d,m,k6_image,oneoff=None):
             record.value.update(status='PARTIAL',diagnosticOnly=True,ordinaryTraffic='NOT_RUN',
                 measurements={'complete':False,'code':'M7_SERIAL_EXCHANGE_DIAGNOSTIC_ONLY'})
             record.save();check_discovery(record.value);return record.value
-        try:discovery_load(a,d,m,k6_id,record,**({'oneoff':oneoff}if oneoff else{}))
-        except Exception as error:
-            if hasattr(error,'oracleFindings'):
-                # File-only reducer: no extra SQL or work after a hard count
-                # refusal; already captured cost bookends must remain visible.
-                from reduce import measurements
-                try:record.value['measurements']=measurements(d,m)
-                except Exception as missing:record.value['measurements']={'complete':False,'code':safe_code(missing)}
-                record.save()
-            raise
+        try:
+            discovery_load(a,d,m,k6_id,record,**({'oneoff':oneoff}if oneoff else{}))
+        finally:
+            # File-only reductions also run on a hard stop. They never re-open
+            # the fixture or replace the original load failure.
+            record.value.update(retained_results(a, d, m, record.value))
+            record.save()
         if m['profile']=='pgstream-sample':
             probe=record.value.get('probe')
             if probe:
-                record.value['sqlAttribution']=a.sample_results(d,probe,sql_roles)
-                record.value['completedOutput']=probe['completedOutput']
+                record.value['completedOutput']=probe.get('completedOutput', {'verdict':'UNMEASURED'})
+                record.save()
+                try:
+                    record.value['sqlAttribution']=a.sample_results(d,probe,sql_roles)
+                except Exception as error:
+                    record.failure('sqlAttribution',error,True)
+                    require(record.value['completedOutput']['verdict']=='PASS','M7_COMPLETED_OUTPUT_ORACLE')
+                    raise
+                record.save()
+                if record.value['completedOutput'].get('clinicalTiming') and record.value['completedOutput']['verdict']=='UNMEASURED':
+                    record.value['strictChecks']['sampledOracle']={'verdict':'UNMEASURED','code':'M7_CLINICAL_OBSERVATION_INCOMPLETE'}
+                else:
+                    require(record.value['completedOutput']['verdict']=='PASS','M7_COMPLETED_OUTPUT_ORACLE')
             counts=record.value.get('oracle')
             from discovery_counts import control_domain
             if control_domain(counts,m['tenants']) is not None:
                 a.control(d,m);record.value['oracleControl']=a.document(d/'load/oracle-control.json')
             else:record.value['strictChecks']['oracleControl']={'verdict':'UNMEASURED','code':'M7_DISCOVERY_COUNTS_MISSING'}
-        for phase in ('idle','load'):
-            if (d/phase/'evaluator-progress.json').is_file():record.value.setdefault('evaluatorProgress',{})[phase]=a.progress_summary(d/phase)
-        from reduce import measurements
-        try:record.value['measurements']=measurements(d,m)
-        except Exception as error:record.value['measurements']={'complete':False,'code':safe_code(error)}
-        # Independent owned counts and resource reduction remain observable
-        # before classifying the already recorded fingerprint finding.
-        record.save()
-        require(record.value.get('settingsFingerprintObservation',{}).get('verdict')!='FAIL','M7_FUNCTIONAL_SETTINGS_FINGERPRINT')
-        if not any('recoveryEpisode' in row for row in record.value['strictChecks'].values()) and record.value.get('settingsFingerprintObservation',{}).get('verdict')=='PASS' and record.value['measurements'].get('complete') and record.value['oracle'] is not None and record.value['probe'] is not None and (record.value['probe'].get('restart') is not None or m['profile']=='pgstream-sample' and record.value.get('completedOutput',{}).get('verdict')=='PASS' and record.value.get('oracleControl')=={'baseline':'GREEN','broken':'RED','restored':'GREEN'}) and all(record.value['processes'].get(k,{}).get('returncode')==0 for k in ('k6','probe')):record.value['status']='MEASURED'
-        if any('recoveryEpisode' in row for row in record.value['strictChecks'].values()) or record.value.get('clinicalVerdict')=='FAIL':record.value['status']='PARTIAL'
+        if not any('recoveryEpisode' in row for row in record.value['strictChecks'].values()) and record.value['measurements'].get('complete') and record.value['oracle'] is not None and record.value['probe'] is not None and (record.value['probe'].get('restart') is not None or m['profile']=='pgstream-sample' and record.value.get('completedOutput',{}).get('verdict')=='PASS' and record.value.get('oracleControl')=={'baseline':'GREEN','broken':'RED','restored':'GREEN'}) and all(record.value['processes'].get(k,{}).get('returncode')==0 for k in ('k6','probe')):record.value['status']='MEASURED'
+        if record.value['hardFailures'] or any('recoveryEpisode' in row for row in record.value['strictChecks'].values()) or record.value.get('clinicalVerdict')=='FAIL':record.value['status']='PARTIAL'
         record.save();check_discovery(record.value);return record.value
     except Exception as error:
+        record.value['status']='PARTIAL'
         if not any(row['code']==safe_code(error) for row in record.value['hardFailures']):record.failure('collection',error,True)
         record.save();raise
+
+def retained_results(a, d, m, summary):
+    """Read completed observations independently, including on a partial run."""
+    from reduce import measurements
+    from viewer_plan import check
+    result = {}
+    def read(key, fn):
+        try:
+            result[key] = fn()
+        except Exception as error:
+            result[key] = {'verdict': getattr(error, 'verdict', 'UNMEASURED'), 'code': safe_code(error)}
+
+    read('measurements', lambda: measurements(d, m))
+    result['measurements'].setdefault('complete', False)
+    progress = {}
+    for phase in ('idle', 'load'):
+        if (d/phase/'evaluator-progress.json').is_file():
+            try:
+                progress[phase] = a.progress_summary(d/phase)
+            except Exception as error:
+                progress[phase] = {'verdict': 'UNMEASURED', 'code': safe_code(error)}
+    result['evaluatorProgress'] = progress
+    out = d/'load'
+    if driver_memory.selected(m) and (out / driver_memory.RESULT).is_file():
+        read('driverMemory', lambda: a.document(out / driver_memory.RESULT))
+    probe = summary.get('probe') or {}
+    if probe:
+        result['completedOutput'] = probe.get('completedOutput', {'verdict':'UNMEASURED'})
+    if not summary.get('viewerFrames') and probe.get('window') and (out/'fanout.json').is_file():
+        def frames():
+            try:
+                return check(m, a.document(d/'tenants.private.json'), probe, a.document(out/'fanout.json')['probeWrites']['byTenant'])
+            except RuntimeError as error:
+                return {'verdict':'FAIL', 'code':safe_code(error)}
+        read('viewerFrames', frames)
+    return result
+
 
 def serial_exchange_diagnostic(a,d,m,record):
     """Existing stock probe, selected paired exchange hooks, no ordinary load."""
@@ -305,20 +346,17 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
     spec=m['project']+'|'+str(d/'env')+'|'+str(d/'frozen.compose.json')
     completion=a.document(d/'completion-source.json') if m['profile']=='pgstream-sample' else {}
     env=a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies'),**({'M7_COMPLETION_SOURCE':json.dumps(completion)} if completion else {}),'M7_RUN_PURPOSE':'discovery','M7_RESTART_ROLES':json.dumps(m['restartRoles']),'M7_EVALUATOR_SERVICES':json.dumps(a.progress_services(d)),'M7_PROGRESS_PYTHON':a.sys.executable,'M7_PROGRESS_ATTRIBUTION':json.dumps(a.progress_attribution(m)),'STOCK_MS':'300000','RECOVERY_MS':'120000'})
+    if completion: env['M7_CLINICAL_WARM_PATH'] = str(d / a.clinical_warm.FILE)
     env.update(workload_inputs.probe_ledger_env(m['cadence']))
-    env.update(a.clinical_timeline.probe_environment(m))
-    env.update(a.revision_witness.probe_environment(d,m))
     a.psql(d,'SELECT pg_stat_statements_reset();');a.phase_snapshot(d,out,'before-prime')
     windows=phase_windows.start(m,time.monotonic_ns(),int(time.time()*1000))
     if windows:a.write(out/'phase-windows.json',windows)
     process=None;monitor=None;load_started=False;primed=False;probe_stopped=False
     try:
         with (out/'probe.log').open('wb') as probe_log,a.sampling(d,out):
-            process=a.diagnostic_resources.popen(a.subprocess.Popen, [m['generator']['tools']['node']['path'],str(d/'probe.js'),'--base','http://127.0.0.1:'+str(m['port']),'--tenants',str(d/'tenants.private.json'),'--compose',spec,'--runid',runid,'--clients',str(viewer_plan.total(m)),'--per',str(m['cadence'].get('socketsPerTenant',2)),'--open','5','--window',str(m['cadence']['loadSeconds']),'--probeEvery',str(m['cadence'].get('probeEveryMs',3000)),'--restart','1' if m['cadence'].get('restart',True) else '0','--evalTimeout','900','--out',str(out/'probe.json'),'--signal',str(out/'.window'),*(['--setupSeconds',str(windows['setupSeconds'])] if 'setupSeconds' in windows else [])],env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
+            process=a.diagnostic_resources.popen(a.subprocess.Popen, [m['generator']['tools']['node']['path'],str(d/'probe.js'),'--base','http://127.0.0.1:'+str(m['port']),'--tenants',str(d/'tenants.private.json'),'--compose',spec,'--runid',runid,'--clients',str(viewer_plan.total(m)),'--per',str(m['cadence'].get('socketsPerTenant',2)),*viewer_plan.setup_args(m['cadence']),'--window',str(m['cadence']['loadSeconds']),'--probeEvery',str(m['cadence'].get('probeEveryMs',3000)),'--restart','1' if m['cadence'].get('restart',True) else '0','--evalTimeout','900','--out',str(out/'probe.json'),'--signal',str(out/'.window')],env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
             a.job_record(out/'probe-job.json',process,m['owner'],group=True)
-            setup_seconds=(a.remaining_seconds(phase_windows.remaining(windows,'setup',time.monotonic_ns()))
-                           if 'setupSeconds' in windows else a.discovery_seconds(m,600))
-            deadline=a.time.monotonic()+setup_seconds
+            deadline=a.time.monotonic()+a.remaining_seconds(float('inf'))
             while not (out/'.window').is_file() and process.poll() is None and a.time.monotonic()<deadline:a.time.sleep(1)
             primed=(out/'.window').is_file()
             if (out/'probe.json').is_file():
@@ -337,10 +375,16 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
                             argv=k6_command(a,d,m,k6_id,runid)
                             timeout=a.discovery_seconds(m,m['cadence']['loadSeconds']+600)
                             if 'setupSeconds' in windows:
-                                setup=a.remaining_seconds(phase_windows.remaining(windows,'setup',time.monotonic_ns()))
+                                # The k6 JWT window begins when its own actor launches.
+                                windows['setupStartedMonoNs']=time.monotonic_ns()
+                                setup=a.remaining_seconds(windows['setupSeconds'])
+                                windows['setupUntilUnixMs']=int(time.time()*1000 + setup*1000)
+                                a.write(out/'phase-windows.json',windows)
                                 argv=phase_windows.k6_setup(argv,k6_id,setup,windows['setupUntilUnixMs'])
                                 grace=max((row.get('gracefulStopSeconds',30) for row in m['cadence'].get('driverPlan',{}).get('scenarios',{}).values()),default=30)
                                 timeout=a.remaining_seconds(setup+m['cadence']['loadSeconds']+grace+5)
+                            if driver_memory.selected(m):
+                                return driver_memory.launch(a,m,out,k6_id,argv,file=output,timeout=timeout)
                             return (oneoff('k6-load',argv,file=output,timeout=timeout) if oneoff
                                     else a.command(argv,file=output,timeout=timeout))
                         record.process('k6',launch)
@@ -363,7 +407,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
                 try:a.phase_snapshot(d,out,'after')
                 except Exception as secondary:
                     record.failure('after-snapshot',secondary,True)
-                    if primary is None:raise
+                    if primary is None and not getattr(secondary, 'snapshotObserverFailed', False):raise
             # Recheck owned custody before the existing bounded restart protocol.
             a.assert_owned(m)
             if 'drainSeconds' in windows:
@@ -373,15 +417,17 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
                 (out/'.restart').touch();start=time.time()
                 drain=(a.remaining_seconds(phase_windows.remaining(windows,'drain',time.monotonic_ns()))
                        if 'drainSeconds' in windows else a.discovery_seconds(m,1500))
-                try:rc=process.wait(timeout=drain)
+                try:rc=a.clinical_warm.wait_compose(a,d,m,process,drain) if completion else process.wait(timeout=drain)
                 except a.subprocess.TimeoutExpired:rc=None
                 record.value['processes']['probe']={'returncode':rc,'startedRecoveryAt':start,'endedAt':time.time(),'timeout':rc is None,'endMonoNs':time.monotonic_ns()};record.save()
             else:
                 record.value['strictChecks']['recovery']={'verdict':'UNMEASURED','code':'M7_DISCOVERY_RECOVERY_NOT_STARTED'};record.save()
     finally:
+        if driver_memory.selected(m):
+            driver_memory.retain(a,m,out,k6_id,runid)
         if process is not None:
             a.stop_job(out/'probe-job.json',m['owner']);process.wait(timeout=10)
-            if 'probe' not in record.value['processes']:record.value['processes']['probe']={'returncode':process.returncode,'stoppedByRunner':True};record.save()
+            if 'probe' not in record.value['processes']:record.value['processes']['probe']={'returncode':process.returncode,'stoppedByRunner':True,'endMonoNs':time.monotonic_ns()};record.save()
         if monitor:monitor.__exit__(None,None,None)
         retain_load(a,d,m,record)
         if load_started:
@@ -389,7 +435,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
             try:a.phase_snapshot(d,out,'after-reconnect')
             except Exception as secondary:
                 record.failure('after-reconnect-snapshot',secondary,True)
-                if primary is None:raise
+                if primary is None and not getattr(secondary, 'snapshotObserverFailed', False):raise
         if (out/'probe.json').is_file():
             record.value['probe']=a.document(out/'probe.json');record.save()
             require(not record.value['probe'].get('hardFailure'),'M7_DISCOVERY_PROBE_HARD_FAILURE')
@@ -409,10 +455,14 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
     # Publish completed HTTP/frame segments before later optional collection.
     retain_load(a,d,m,record)
     if m.get('evaluatorCatchup') is not None:evaluator_catchup.run(a,d,m,record)
-    if (out/'k6-summary.json').is_file():
-        metrics=a.document(out/'k6-summary.json')['metrics']
+    if (d/'tenants.private.json').is_file() or (out/'k6-summary.json').is_file():
+        try:
+            metrics = a.document(out/'k6-summary.json')['metrics'] if (out/'k6-summary.json').is_file() else {}
+        except (OSError, ValueError, KeyError) as error:
+            record.failure('httpCounters', error, True)
+            metrics = {}
         record.value['rateOffer']=a.rate_offer(m)
-        fingerprint=a.profile_provenance.fingerprint_check(metrics);record.value['settingsFingerprintObservation']=fingerprint;record.save()
+        record.save()
         try:result,known=count_observation(a,d,out,runid,metrics,probe_ledger=m['cadence'].get('probeLedger'))
         except Exception as error:
             if hasattr(error,'oracleFindings'):
@@ -425,6 +475,8 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
         record.value['countDiagnostics']={k:v for k,v in result.items() if k in ('verdict','code','failures','failureCount','probeCountProof','probeAccounting','domains','missingFieldCount')}
         record.save()
         if not known:record.value['strictChecks']['counts']={'verdict':'UNMEASURED','code':'M7_DISCOVERY_COUNTS_MISSING'}
+
+    outcome_record(a,d,m,record)
 
     if (record.value.get('probe') or {}).get('window') and (out/'fanout.json').is_file():
         from viewer_plan import check
@@ -442,12 +494,6 @@ def retain_load(a,d,m,record):
             a.write(out/'api-cause-assessment.json',result)
         except Exception as error:
             record.value.setdefault('retentionFailures',{})['apiCause']={'verdict':'UNMEASURED','code':safe_code(error)}
-    if m.get('revisionWitness'):
-        try:
-            result=a.revision_witness.retain(d,m);record.value['revisionWitness']=result
-            a.write(out/'revision-witness-assessment.json',result)
-        except Exception as error:
-            record.value.setdefault('retentionFailures',{})['revisionWitness']={'verdict':'UNMEASURED','code':safe_code(error)}
     for name,key in (('k6-summary.json','metrics'),('probe.json','probe')):
         if not (out/name).is_file():continue
         try:
@@ -479,6 +525,7 @@ def observed_load(a,d,m,out,work,record=None,oneoff=None):
         require(record is not None,'M7_DEMAND_RECOVERY_RECORD_REQUIRED')
         return demand_recovery.run(a,d,m,out,work,record,lambda:stop_k6(a,m,record,oneoff))
     observer=a.observe_progress(d,m,out,'load')
+    observer.on_hard_midpoint=lambda:hard_midpoint_stop(a,m,oneoff)
     try:observer.__enter__()
     except Exception as error:
         if not incomplete(error):raise
@@ -513,7 +560,7 @@ def k6_command(a,d,m,image,runid):
 
 
 def k6_base(a,d,m,image,runid):
-    return (['docker','run','--rm','--name',m['project']+'-k6','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],'--label','com.docker.compose.service=k6','--network','host','-u',str(a.os.getuid())+':'+str(a.os.getgid()),'-v',str(d/'k6')+':/scripts:ro','-v',str(d/'load')+':/out','-v',str(d/'tenants.private.json')+':/tenants.private.json:ro','-e','BASE_URL=http://127.0.0.1:'+str(m['port']),'-e','TENANTS_FILE=/tenants.private.json','-e','RUN_ID='+runid,'-e','SETTINGS_FINGERPRINT='+m['settingsFingerprint']['sha256'],'-e','RUN_START='+str(int(time.time()*1000)),'-e','DURATION='+str(m['cadence']['loadSeconds']),'-e','ACCEL='+str(m['cadence'].get('accel',1)),'-e','HOT_FACTOR='+str(m['cadence'].get('hotFactor',10)),*(['-e','OFFERED_RPS='+str(m['cadence']['offeredRps'])] if 'offeredRps' in m['cadence'] else []),*(['-e','M7_WORKLOAD_MIX='+m['cadence']['workloadMix']] if 'workloadMix' in m['cadence'] else []),*(['-e','M7_WORKLOAD_SCALE='+str(m['cadence']['workloadScale'])] if 'workloadScale' in m['cadence'] else []),'-e',a.jwt_setup_env(m),'-e','SHAPES='+','.join(m['cadence'].get('driverPlan',{}).get('scenarios',driver_vu_diagnostic.SHAPES)),image,'run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js'])
+    return (['docker','run','--rm','--name',m['project']+'-k6','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],'--label','com.docker.compose.service=k6','--network','host','-u',str(a.os.getuid())+':'+str(a.os.getgid()),'-v',str(d/'k6')+':/scripts:ro','-v',str(d/'load')+':/out','-v',str(d/'tenants.private.json')+':/tenants.private.json:ro','-e','BASE_URL=http://127.0.0.1:'+str(m['port']),'-e','TENANTS_FILE=/tenants.private.json','-e','RUN_ID='+runid,'-e','RUN_START='+str(int(time.time()*1000)),'-e','DURATION='+str(m['cadence']['loadSeconds']),'-e','ACCEL='+str(m['cadence'].get('accel',1)),'-e','HOT_FACTOR='+str(m['cadence'].get('hotFactor',10)),*(['-e','OFFERED_RPS='+str(m['cadence']['offeredRps'])] if 'offeredRps' in m['cadence'] else []),*(['-e','M7_WORKLOAD_MIX='+m['cadence']['workloadMix']] if 'workloadMix' in m['cadence'] else []),*(['-e','M7_WORKLOAD_SCALE='+str(m['cadence']['workloadScale'])] if 'workloadScale' in m['cadence'] else []),'-e',a.jwt_setup_env(m),'-e','SHAPES='+','.join(m['cadence'].get('driverPlan',{}).get('scenarios',driver_vu_diagnostic.SHAPES)),image,'run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js'])
 
 def count_observation(a,d,out,runid,metrics,*,probe_ledger=None):
     from discovery_counts import observe
@@ -531,6 +578,37 @@ def stop_k6(a,m,record,oneoff=None):
         a.owned(row,m['owner']);require(re.fullmatch(r'[a-f0-9]{64}',row.get('Id','')),'M7_DISCOVERY_LOADGEN_CUSTODY')
         a.command(['docker','stop','--time','10',row['Id']],timeout=20)
     record.value['processes']['k6']['ownedContainerStopCompleted']=True;record.save()
+
+
+def hard_midpoint_stop(a,m,oneoff=None):
+    """A hard outcome reason at the midpoint stops the owned driver early."""
+    try:
+        if oneoff is not None:oneoff.stop();return
+        a.assert_owned(m)
+        for row in a.resources(m):
+            if (row.get('Config',{}).get('Labels') or {}).get('com.docker.compose.service')=='k6':
+                a.owned(row,m['owner'])
+                if re.fullmatch(r'[a-f0-9]{64}',row.get('Id','')):a.command(['docker','stop','--time','10',row['Id']],timeout=20)
+    except Exception:pass  # The phase failure stays authoritative.
+
+
+def outcome_record(a,d,m,record):
+    """Outcome gate verdict from retained files; a FAIL is a hard failure."""
+    import outcome_gate
+    try:
+        ids=sorted(row['id'] for row in a.document(d/'tenants.private.json'))
+        value=outcome_gate.judge_compose_run(d,ids,attribution={'pair':m['pair'],'imageId':m['imageId'],'instrument':m['instrument']['sha256']})
+    except Exception as error:
+        # Missing inputs never become a pass, and never replace the run's own refusal.
+        record.value['strictChecks']['outcomeGate']={'verdict':'UNMEASURED','code':'M7_OUTCOME_GATE_INPUT_UNAVAILABLE','errorType':type(error).__name__,'hardFailure':False}
+        record.save();return None
+    value['httpLatencyAllShards']=outcome_gate.http_latency(d/'load')
+    a.write(d/'load'/'outcome-gate.json',value)
+    row={'verdict':value['verdict'],'codes':sorted({c for x in value['components'].values() for c in x.get('codes',[])}),
+         'hardFailure':value['verdict']=='FAIL','artifact':'load/outcome-gate.json','sha256':a.digest(d/'load'/'outcome-gate.json')}
+    record.value['strictChecks']['outcomeGate']=row
+    if row['hardFailure']:record.value['hardFailures'].append({'stage':'outcomeGate','code':'M7_OUTCOME_GATE_FAIL'})
+    record.save();return value
 
 
 def hard_recovery(value):return value.get('verdict')=='FAIL' and value.get('code') not in SOFT_WORK_FAILURES

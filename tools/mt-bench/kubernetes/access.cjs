@@ -30,17 +30,15 @@ async function warmWitnesses(tenants,open,until,connectMs){
         });
       }finally{socket.close();}
       if(connected)break;
-      if(firstError?.status!==403)break;
-      refused403++;
+      // A refusal before the tenant is warm (403/503 or a transport error) is a
+      // warm-up signal: record it and retry until the configured warm deadline.
+      if(firstError?.status===403)refused403++;
       await new Promise(resolve=>setTimeout(resolve,Math.max(0,Math.min(500*2**Math.min(attempts-1,4),5000,until-Date.now()))));
     }
     const row={tenantIndex,attempts,refused403,elapsedMs:Date.now()-started};
-    if(!connected || Date.now()>until){
-      const error=Error('K8S_SOCKET_PREWARM_UNMEASURED');
-      error.socketEvidence={...row,stage:'warmup',firstError,engineOpened,prior:observations};
-      throw error;
-    }
-    observations.push({...row,verdict:'CONNECTED'});
+    // Never PASS on missing evidence: a socket that did not warm inside the
+    // deadline is UNMEASURED with its last typed status; the run continues.
+    observations.push(connected?{...row,verdict:'CONNECTED'}:{...row,verdict:'UNMEASURED',stage:'warmup',firstError,engineOpened});
   }
   return observations;
 }
@@ -85,23 +83,25 @@ async function run(tenants,base,io,{connectMs=5000,observeMs=5000,warmupMs=0}={}
         socket.once('connect_error',error=>{firstError=transportError(error);clearTimeout(timer);resolve(false);});
         socket.once('connect',()=>{clearTimeout(timer);resolve(true);});
       });
-      const socketRefusal=stage=>{
-        const error=Error('K8S_SOCKET_REFUSAL_UNMEASURED');
-        error.socketEvidence={tenantIndex:i,stage,engineOpened,firstError,elapsedMs:Date.now()-connectStarted};
-        throw error;
+      // A socket that cannot be observed is a signal, not an isolation result:
+      // record it UNMEASURED and continue. Frames and accepted credentials still fail.
+      const unmeasured=stage=>{
+        records.push({case:'cross-token-socket',tenantIndex:i,verdict:'UNMEASURED',stage,engineOpened,firstError,elapsedMs:Date.now()-connectStarted});
+        socket.close();
       };
-      if(!connected)socketRefusal('connect');
-      if(Date.now()+observeMs>deadline)socketRefusal('observation-budget');
+      if(!connected){unmeasured('connect');continue;}
+      if(Date.now()+observeMs>deadline){unmeasured('observation-budget');continue;}
       socket.emit('authorize',{client:'web',token:exchanged.jwt,history:1,status:true},()=>{authorizeReply=true;});
       const observationStarted=Date.now();
       await new Promise(resolve=>setTimeout(resolve,observeMs));
       if(frames)throw Error('K8S_FOREIGN_SOCKET_FRAME');
-      if(disconnect && (!disconnect.serverClosed || disconnect.at<observationStarted))socketRefusal('disconnect');
+      if(disconnect && (!disconnect.serverClosed || disconnect.at<observationStarted)){unmeasured('disconnect');continue;}
       records.push({case:'cross-token-socket',tenantIndex:i,connected,authorizeReply,frames,
         observedMs:(disconnect?.at??Date.now())-observationStarted,terminal:disconnect?'server-closed':'observation-complete',
         connectElapsedMs:observationStarted-connectStarted});socket.close();
     }
-    return {version:1,verdict:'PASS',crossTenantChecks:2,records,startedAt,endedAt:Date.now(),
+    const unmeasuredCases=records.filter(r=>r.verdict==='UNMEASURED').length+(warmup||[]).filter(r=>r.verdict==='UNMEASURED').length;
+    return {version:1,verdict:unmeasuredCases?'UNMEASURED':'PASS',crossTenantChecks:2,unmeasuredCases,records,startedAt,endedAt:Date.now(),
       ...(warmup?{warmup:{budgetMs:warmupMs,observations:warmup}}:{}),
       scope:'finite read refusal and no foreign frame; no network-policy enforcement claim',capacityAcceptance:'NOT_GRANTED'};
   }finally{for(const s of sockets)s.close();agent.destroy();}

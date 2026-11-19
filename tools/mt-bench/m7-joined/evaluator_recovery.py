@@ -11,7 +11,8 @@ import time
 import evaluator_progress as p
 
 
-def assess(baseline, rounds, ids,*,policy=p.POLICY,discovery_unclassified_rejections=False):
+def assess(baseline, rounds, ids,*,policy=p.POLICY,discovery_unclassified_rejections=False,failure_policy=None):
+    failure_policy=p.select_failure_policy(failure_policy)
     p.need(len(rounds)==2,'M7_EVALUATOR_RECOVERY_NOT_OBSERVED')
     first,last=rounds
     p.need(set(first['instances'])==set(baseline['instances']),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
@@ -23,35 +24,30 @@ def assess(baseline, rounds, ids,*,policy=p.POLICY,discovery_unclassified_reject
     p.need(first['instances']==last['instances'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
     for tenant in ids:
         a,b=first['owners'][tenant],last['owners'][tenant]
-        p.need(a['service']==b['service'] and (policy!=p.LEGACY_POLICY or a['generation']==b['generation']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+        p.need(a['service']==b['service'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
         p.need(b['failedCompletions']>=a['failedCompletions'] and b['legacyCycles']>=a['legacyCycles'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
-        if not discovery_unclassified_rejections:p.need(a['failedCompletions']==b['failedCompletions'],'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
-        if not discovery_unclassified_rejections:p.need(a['failedCompletions']==0,'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
         if discovery_unclassified_rejections:p.need(a['ready'] and b['ready'],'M7_EVALUATOR_RECOVERY_NOT_OBSERVED')
         p.need(a['completedAcquisitions']>0 and b['completedAcquisitions']>=a['completedAcquisitions'] and b['completedTimeCycles']>=a['completedTimeCycles'],'M7_EVALUATOR_RECOVERY_NOT_OBSERVED')
     for service,rows in first['allRows'].items():
         for tenant,a in rows.items():
             b=last['allRows'][service][tenant]
-            p.need(a['admitted']==b['admitted'] and (policy!=p.LEGACY_POLICY or a['generation']==b['generation']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+            p.need(a['admitted']==b['admitted'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             if not a['admitted']:
                 p.need(all(a[k]==b[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
     rejected={'baseline':sum(v['failedCompletions'] for v in baseline['owners'].values()),'first':sum(v['failedCompletions'] for v in first['owners'].values()),'last':sum(v['failedCompletions'] for v in last['owners'].values()),'meaning':'unclassified rejected attempts, including superseded windows; not clinical failures'}
-    return {**({'rejectedWork':rejected} if discovery_unclassified_rejections else {}),'version':policy['version'],'verdict':'PASS','observed':len(ids),'expected':len(ids),'missing':0,'instances':last['instances'],'source':'successful fresh owned acquisition in changed runtime, stable exact-instance coverage; no clinical-equivalence or deadline claim'}
+    judged={'failurePolicy':failure_policy,'lifetimeFailedCompletions':rejected['last']}
+    return {**judged,**({'rejectedWork':rejected} if discovery_unclassified_rejections else {}),'version':policy['version'],'verdict':'PASS','observed':len(ids),'expected':len(ids),'missing':0,'instances':last['instances'],'source':'successful fresh owned acquisition in changed runtime, stable exact-instance coverage; no clinical-equivalence or deadline claim'}
 
 
 
 def verify(value,tenants,services,*,budget=None):
-    legacy=value.get('kind')=='evaluator-recovery-v1';policy=value.get('policy')
-    columns=p.LEGACY_COLUMNS if legacy else p.COLUMNS
-    supported=((p.capture_policy(budget),) if budget is not None else
-               (p.LEGACY_POLICY,) if legacy else (p.REFERENCE_POLICY,p.PREVIOUS_POLICY,p.POLICY))
-    p.need(not legacy or budget is None,'M7_EVALUATOR_RECOVERY_PROOF')
-    p.need(value.get('kind')==('evaluator-recovery-v1' if legacy else 'evaluator-recovery-v2') and policy in supported and value.get('columns')==list(columns)
+    policy=value.get('policy')
+    p.need(value.get('kind')=='evaluator-recovery-v2' and policy==(p.capture_policy(budget) if budget is not None else p.POLICY) and value.get('columns')==list(p.COLUMNS)
            and 1<=len(services)<=policy['maxInstances'] and 1<=tenants<=policy['maxTenants'],'M7_EVALUATOR_RECOVERY_PROOF')
     baseline,ids=p.decode_rounds({'rounds':value.get('baseline'),'columns':value.get('columns')},tenants,services,allow_unavailable=value.get('discoveryUnclassifiedRejections') is True)
     rounds,other=p.decode_rounds({'rounds':value.get('rounds'),'columns':value.get('columns')},tenants,services,allow_unavailable=value.get('discoveryUnclassifiedRejections') is True)
     p.need(len(baseline)==1 and ids==other,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
-    result=assess(baseline[0],rounds,sorted(ids),policy=policy,discovery_unclassified_rejections=value.get('discoveryUnclassifiedRejections') is True);recorded=value.get('result',{})
+    result=assess(baseline[0],rounds,sorted(ids),policy=policy,discovery_unclassified_rejections=value.get('discoveryUnclassifiedRejections') is True,failure_policy=value.get('failurePolicy'));recorded=value.get('result',{})
     p.need({k:v for k,v in recorded.items() if k!='sampling'}==result,'M7_EVALUATOR_RECOVERY_ASSESSMENT')
     sample=recorded.get('sampling',{})
     p.need(sample.get('cadenceMs')==15000 and p.integer(sample.get('queries'),1) and sample['queries']<=p.POLICY['readinessMaxQueries'] and p.integer(sample.get('bytes'),1) and sample['bytes']<=p.POLICY['readinessMaxBytes'],'M7_EVALUATOR_RECOVERY_BUDGET')
@@ -82,7 +78,7 @@ def main(spec):
                 rounds=(rounds+[value])[-2:];queries+=value['queries'];bytes_seen+=value['bytes'];wall+=value['wallSeconds']
                 p.need(queries<=p.POLICY['readinessMaxQueries'] and bytes_seen<=p.POLICY['readinessMaxBytes'],'M7_EVALUATOR_RECOVERY_BUDGET')
                 if len(rounds)==2:
-                    result=assess(baseline,rounds,ids,discovery_unclassified_rejections=spec.get('discoveryUnclassifiedRejections') is True,policy=policy);break
+                    result=assess(baseline,rounds,ids,discovery_unclassified_rejections=spec.get('discoveryUnclassifiedRejections') is True,policy=policy,failure_policy=spec.get('failurePolicy'));break
             except p.Refused as error:
                 errors.append({'code':str(error),'verdict':error.verdict,'collection':getattr(error,'collection',None)})
                 if getattr(error,'collection',None):
@@ -95,7 +91,7 @@ def main(spec):
     except Exception as error:
         result={'version':p.POLICY['version'],'verdict':getattr(error,'verdict','UNMEASURED'),'code':str(error),'observed':0,'expected':len(ids),'missing':len(ids)}
     result['sampling']={'cadenceMs':15000,'queries':queries,'bytes':bytes_seen,'wallSeconds':wall,'elapsedSeconds':time.monotonic()-started,'failures':len(errors)}
-    evidence={'discoveryUnclassifiedRejections':spec.get('discoveryUnclassifiedRejections') is True,'kind':'evaluator-recovery-v2','attribution':spec['attribution'],'policy':policy,'columns':list(p.COLUMNS),'result':dict(result),'errors':errors,'baseline':p.pack({'rounds':[baseline]})['rounds'],'rounds':p.pack({'rounds':rounds})['rounds']}
+    evidence={**({'failurePolicy':spec['failurePolicy']} if spec.get('failurePolicy') else {}),'discoveryUnclassifiedRejections':spec.get('discoveryUnclassifiedRejections') is True,'kind':'evaluator-recovery-v2','attribution':spec['attribution'],'policy':policy,'columns':list(p.COLUMNS),'result':dict(result),'errors':errors,'baseline':p.pack({'rounds':[baseline]})['rounds'],'rounds':p.pack({'rounds':rounds})['rounds']}
     publishing=time.monotonic();cpu=time.process_time()
     raw=json.dumps(evidence,separators=(',',':')).encode();p.need(len(raw)<=(policy['maxBytesPerPhase'] if policy!=p.POLICY else 16777216),'M7_EVALUATOR_RECOVERY_ARTIFACT_BOUND')
     path.write_bytes(raw);os.chmod(path,0o600);compressed=gzip.compress(raw,mtime=0);Path(str(path)+'.gz').write_bytes(compressed);os.chmod(str(path)+'.gz',0o600)

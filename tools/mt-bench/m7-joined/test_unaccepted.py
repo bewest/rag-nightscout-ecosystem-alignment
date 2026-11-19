@@ -4,7 +4,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).parent))
-import adapter,campaign,contract as c
+import adapter,contract as c
 from profile_provenance import selection,identity
 PAIR={'core':'a'*40,'deploy':'b'*40};IMAGE='sha256:'+'c'*64;SHA='d'*64
 RUN='synthetic-controller-run'
@@ -12,8 +12,8 @@ def manifest():return {'measurementMode':'unaccepted','pair':PAIR,'profile':'rem
 def authorization():return {'version':1,'kind':'joined-measurement-authorization','status':'AUTHORIZED_UNACCEPTED_MEASUREMENT','pair':PAIR,'instrument':SHA,'imageId':IMAGE,'runId':RUN,'functionalAcceptanceAtAuthorization':'PENDING','purpose':'PRE_ACCEPTANCE_BASELINE_ONLY','limits':copy.deepcopy(c.MEASUREMENT_LIMITS)}
 def topology():return {'services':{**{role:{'command':['node','serve',role]} for role in ('api','realtime','evaluator')},'vault':{'command':['vault','server']}}}
 def aggregate():
- p=identity({'schema':1,'sha256':'e'*64,'sourceCommit':'a'*40,'sourceBlobs':{}},selection(),topology())
- m=manifest();row={**c.measurement_output(m),'pair':PAIR,'hostIdentity':'f'*64,'instrument':SHA,'imageId':IMAGE,'verdict':'PASS','measurements':{'complete':True},'profileSelection':p,'settingsFingerprintObservation':{'verdict':'PASS','observations':1,'invalid':0,'mismatch':0},'profile':'remote-pilot','replicas':1,'cadence':c.CADENCE['remote-pilot']}
+ p=identity(selection(),topology())
+ m=manifest();row={**c.measurement_output(m),'pair':PAIR,'hostIdentity':'f'*64,'instrument':SHA,'imageId':IMAGE,'verdict':'PASS','measurements':{'complete':True},'profileSelection':p,'profile':'remote-pilot','replicas':1,'cadence':c.CADENCE['remote-pilot']}
  return {**c.measurement_output(m,aggregate=True),'version':1,'pair':PAIR,'hostIdentity':'f'*64,'instrument':SHA,'imageId':IMAGE,'verdict':'PASS','profileReplicas':1,'profileSelection':p,'diagnostics':selection(),'cells':[{**row,'tenants':n} for n in c.PILOT_COUNTS]}
 class Unaccepted(unittest.TestCase):
  def test_exact_authorization_and_old_accepted_path(self):
@@ -79,23 +79,4 @@ class Unaccepted(unittest.TestCase):
     with self.assertRaisesRegex(ValueError,'NOT_ACCEPTANCE'):fixture.check()
    finally:fixture.doCleanups()
   finally:sys.path.pop(0)
- def test_campaign_recording_preserves_counts_scope_and_functional_stop(self):
-  for fail_at in (None,750):
-   with self.subTest(fail_at=fail_at),tempfile.TemporaryDirectory(prefix='m7-unaccepted-ladder-') as root:
-    folder=Path(root);doc=aggregate();master={**doc,'directory':str(folder),'cells':[],'collectionStatus':'FAILED'};seen=[]
-    args=SimpleNamespace(mode='pilot',measurement_mode='unaccepted',run_id=RUN,image_id=IMAGE,maximum_run_minutes=180,ceiling_receipt=None,k6_image='recording-only')
-    def prepare(options):
-     seen.append((options.tenants,options.replicas,options.profile,options.measurement_mode,options.run_id,options.image_id));d=Path(options.directory);d.mkdir();adapter.write(d/'owner.json',{})
-    def run(d,m,k6):
-     count=int(d.name.split('-')[0][1:]);row=copy.deepcopy(next(r for r in doc['cells'] if r['tenants']==count))
-     if count==fail_at:row.update(verdict='FAIL',oracle={'verdict':'RED'})
-     adapter.write(d/'summary.json',row)
-     if count==fail_at:raise RuntimeError('M7_ORACLE_SYNTHETIC_FAILURE')
-    with patch.object(adapter,'generator_tools',return_value={}),patch.object(adapter,'prepare',prepare),patch.object(adapter,'load',side_effect=lambda d:(Path(d),{})),patch.object(adapter,'deploy'),patch.object(adapter,'run',side_effect=run),patch.object(adapter,'down'):
-     if fail_at:
-      with self.assertRaisesRegex(RuntimeError,'ORACLE'):campaign.ladder(args,1,folder,master)
-     else:campaign.ladder(args,1,folder,master)
-    self.assertEqual([r[0] for r in seen],[500,750] if fail_at else [500,750,1000]);self.assertTrue(all(r[1:]==(1,'remote-pilot','unaccepted',RUN,IMAGE) for r in seen))
-    if fail_at:self.assertTrue(master['functionalBlock']);self.assertEqual(master['collectionStatus'],'FAILED');self.assertEqual(master['cells'][-1]['verdict'],'FAIL');self.assertEqual(master['cells'][-1]['oracle']['verdict'],'RED')
-    else:self.assertEqual(len(master['cells']),3)
 if __name__=='__main__':unittest.main()

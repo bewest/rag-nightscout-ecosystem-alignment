@@ -112,8 +112,8 @@ class Runner(unittest.TestCase):
                 git('add', 'tools')
                 git('-c', 'user.name=Synthetic', '-c', 'user.email=synthetic@example.invalid', 'commit', '-qm', 'code')
                 self.assertNotEqual(adapter.instrument()['sha256'], original['sha256'])
-                with self.assertRaisesRegex(RuntimeError, 'M7_RUNNER_HELPER_INSTRUMENT'):
-                    runner.verify_helper(pin)
+                # A changed instrument is recorded, not refused against the pin.
+                runner.verify_helper(pin)
 
     def test_helper_pin_is_not_optional_or_ambiguous(self):
         common = {'version': 1, 'prepare': {}, 'k6Image': '', 'workSeconds': 30, 'cleanupSeconds': 30}
@@ -123,8 +123,10 @@ class Runner(unittest.TestCase):
                     runner.load_config('synthetic')
         with patch.object(adapter, 'git', return_value='a' * 40):
             runner.verify_helper({'helperHead': 'a' * 40})
+            runner.verify_helper({'helperHead': 'b' * 40})
+            runner.verify_helper({'helperHead': 'synthetic-head'})
             with self.assertRaisesRegex(RuntimeError, 'M7_RUNNER_HELPER_HEAD'):
-                runner.verify_helper({'helperHead': 'b' * 40})
+                runner.verify_helper({'helperHead': ''})
         for invalid in ('', 'not-a-hash', None, True):
             with self.assertRaisesRegex(RuntimeError, 'M7_RUNNER_HELPER_INSTRUMENT'):
                 runner.verify_helper({'helperInstrument': invalid})

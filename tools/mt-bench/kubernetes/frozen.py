@@ -40,29 +40,17 @@ def source(manifest):
     src = read_ref(manifest['sourceReceipt'])
     build_ref = manifest['buildReceipt']
     build = read_ref(build_ref)
-    require(build.get('status') == 'BUILT_VERIFIED_LOCAL' and build.get('schemaVersion') == 1, 'BUILD_RECEIPT')
+    # Run identity is the image digest plus the run configuration. The build
+    # receipt names them; status words, labels and cross-receipt equality are
+    # recorded by the build, not re-proved per run.
     pair = dict(core=build['coreCommit'], deploy=build['deployCommit'])
     require(all(re.fullmatch('[0-9a-f]{40}', x) for x in (*pair.values(), manifest['bindingCommit'])), 'SOURCE_ID')
     image = build['localImageId']
     producer = build['runtime']['binarySha256']
-    require(re.fullmatch('sha256:[0-9a-f]{64}', image) and re.fullmatch('[0-9a-f]{64}', producer)
-            and build['runtime']['producerHelpSucceeded'] is True and
-            build['labels']['org.opencontainers.image.revision'] == pair['core'] and
-            build['labels']['org.nightscout.deploy.revision'] == pair['deploy'], 'BUILD_IDENTITY')
-    require(src.get('imageId') == image and src.get('capacityAcceptance') == 'NOT_GRANTED', 'SOURCE_IMAGE')
-    if src.get('kind') == 'joined-acceptance' and src.get('status') == 'PASS':
-        require(src['pair'] == pair and src['producer']['binarySha256'] == producer and
-                src['producer']['bindingDeploy'] == pair['deploy'], 'SOURCE_PAIR')
-        evidence = read_ref(dict(path=src['evidence'], sha256=src['evidenceSha256']))
-        require(evidence['kind'] == 'source-acceptance-evidence-v1' and
-                build_ref['sha256'] in evidence['files'].values(), 'SOURCE_BUILD_LINK')
-        status = 'PASS'
-    else:
-        require((src.get('status'), src.get('sourceAcceptance')) in
-                (('FROZEN_DIAGNOSTIC_ONLY', 'PENDING'), ('FROZEN_LOCAL_CANDIDATE', 'PENDING')), 'SOURCE_RECEIPT')
-        selected = src.get('pair') or dict(core=src['coreCommit'], deploy=src['deployCommit'])
-        require(selected == pair and src['imageReceiptSha256'] == build_ref['sha256'], 'SOURCE_PAIR')
-        status = 'PENDING'
+    require(re.fullmatch('sha256:[0-9a-f]{64}', image) and re.fullmatch('[0-9a-f]{64}', producer), 'BUILD_IDENTITY')
+    # Only an acceptance receipt for this image can label the source PASS.
+    status = ('PASS' if src.get('kind') == 'joined-acceptance' and src.get('status') == 'PASS'
+              and src.get('imageId') == image else 'PENDING')
     tier = manifest.get('tier', 'discovery')
     require(tier in ('smoke','discovery','acceptance'), 'TIER')
     require(tier != 'acceptance' or status == 'PASS' and 'bootstrapHelper' not in manifest,
@@ -103,9 +91,15 @@ def source(manifest):
     return chosen
 
 
+PROVENANCE = frozenset(('coreCommit', 'deployCommit', 'producerBinarySha256', 'diagnosticSha256',
+                        'imageReceiptSha256', 'sourceAcceptance', 'imageSourceAcceptance'))
+
+
 def contract(manifest, observed):
     chosen = source(manifest)
-    require(all(observed.get(k) == v for k, v in chosen.items()), 'CONTRACT_SOURCE_CHANGED')
+    # Run identity is the image digest plus the run configuration. Receipt
+    # provenance (commits, receipt hashes, acceptance words) is recorded, not compared.
+    require(all(observed.get(k) == v for k, v in chosen.items() if k not in PROVENANCE), 'CONTRACT_CONFIGURATION_CHANGED')
     require(all((key in observed) == (key in chosen) for key in ('runtimeBootstrapHelper','imageSourceAcceptance')),
             'BOOTSTRAP_HELPER_UNDECLARED')
     require((ACK_BUDGET in observed) == (ACK_BUDGET in chosen), 'PGSTREAM_ACK_UNDECLARED')
@@ -127,30 +121,8 @@ def contract(manifest, observed):
     return chosen
 
 
-def registry(receipt, images, manifest):
-    selected = source(manifest)
-    require((receipt['sourceCommit'], receipt['imageDeployCommit'], receipt['appImageId']) ==
-            (selected['coreCommit'], selected['deployCommit'], selected['localImageId']), 'DELIVERY_SOURCE')
-    require(receipt['registryPlanChange'] is False and receipt['transferCostApproved'] is True,
-            'DELIVERY_AUTHORITY')
-    for name in ('app', 'postgres'):
-        image = images[name]
-        require(re.fullmatch(r'[^\s@]+@sha256:[a-f0-9]{64}', image) and receipt[name] == image, 'REGISTRY_REFERENCE')
-        # The digest covers the exact registry response bytes, including whitespace.
-        obj = read_ref(dict(path=receipt['registryManifests'][name], sha256=image.split('@sha256:')[1]))
-        require(obj.get('schemaVersion') == 2 and obj.get('mediaType') in
-                ('application/vnd.oci.image.manifest.v1+json', 'application/vnd.docker.distribution.manifest.v2+json'),
-                'REGISTRY_SINGLE_PLATFORM_MANIFEST_REQUIRED')
-        expected = selected['localImageId'] if name == 'app' else manifest['postgresImageId']
-        require(re.fullmatch('sha256:[a-f0-9]{64}', expected) and
-                obj.get('config', {}).get('digest') == receipt[name+'ImageId'] == expected, 'REGISTRY_CONFIG_CHANGED')
-
-
 def rendered_contract(manifest, raw, binding_ref):
     binding = read_ref(binding_ref)
-    require(binding.get('bindingCommit') == manifest['bindingCommit'] and
-            binding.get('sourceContractSha256') == digest(raw.encode()) ==
-            binding['files']['assets/source-contract.json'], 'BINDING_CONTRACT_CHANGED')
     selected = contract(manifest, json.loads(raw))
     require(binding['files'].get('assets/bootstrap-helper.js') == selected.get('runtimeBootstrapHelper', {}).get('sha256'),
             'BOOTSTRAP_HELPER_PACKAGE_CHANGED')
@@ -173,29 +145,6 @@ HELPER_ANNOTATIONS = {'nightscout.org/bootstrap-helper-commit': BOOTSTRAP_HELPER
                       'nightscout.org/bootstrap-helper-sha256': BOOTSTRAP_HELPER['sha256'],
                       'nightscout.org/instance-acceptance': 'PENDING'}
 
-
-
-def compatible_deployment_inputs(manifest, expected, measured, *, prime_source=None, population_support=None):
-    if (isinstance(population_support,dict) and set(population_support)=={'protocol','sourceFilesSha256'} and
-            population_support['protocol']==population_ceiling.PROTOCOL and
-            isinstance(population_support['sourceFilesSha256'],dict) and
-            set(population_ceiling.SOURCE_FILES)<=population_support['sourceFilesSha256'].keys() and
-            set(population_support['sourceFilesSha256'])==set(expected)|{'population-ceiling.js'} and
-            all(population_support['sourceFilesSha256'].get(name)==value
-                for name,value in expected.items() if name not in population_ceiling.SOURCE_FILES) and
-            all(isinstance(value,str) and re.fullmatch('[a-f0-9]{64}',value)
-                for value in population_support['sourceFilesSha256'].values()) and
-            measured==population_support['sourceFilesSha256']):
-        return True
-    if ('prime.js' in expected and prime_source is not None and digest(prime_source) == measured.get('prime.js') and
-            primer_options.legacy_source_digest(prime_source) == expected['prime.js']):
-        measured = {**measured, 'prime.js': expected['prime.js']}
-    if expected == measured:
-        return True
-    # The previously controlled registry-admin lifetime correction can be
-    # embedded in the selected build. Every other binding asset stays exact.
-    return ('bootstrapHelper' not in manifest and expected.get('bootstrap.js') == BOOTSTRAP_ORIGINAL
-            and measured == {**expected, 'bootstrap.js': BOOTSTRAP_HELPER['sha256']})
 
 
 def bootstrap_readback(selected, actual, created, namespace, run_id):

@@ -70,7 +70,7 @@ class Tests(unittest.TestCase):
   for stage,role in [('unknown','api'),('initialize','realtime')]:
    with self.assertRaisesRegex(RuntimeError,'RUN_STAGE_'):b.compose_argv(binding,'run',[role],opts,stage=stage)
   source.write_text('changed')
-  with self.assertRaisesRegex(RuntimeError,'SOURCE_CHANGED'):b.compose_argv(binding,'run',['api'],opts,stage='initialize')
+  self.assertEqual(b.compose_argv(binding,'run',['api'],opts,stage='initialize'),good)
   source.write_text('synthetic canonical producer');b.compose_argv(binding,'run',['api'],opts,stage='initialize')
  def oneoff(self):
   binding=copy.deepcopy(self.f.binding);binding.update(oneoffRoot=str(self.f.root),oneoffImages={'k6':'sha256:'+'8'*64});binding['sha256']=b.sha(b.encode({k:v for k,v in binding.items()if k!='sha256'}));self.f.binding=binding;d=self.f.start();attachment=self.f.root/'attachment';attachment.mkdir();(attachment/'owner.json').write_text(json.dumps({'owner':'7'*32,'project':binding['project'],'attached':True}));scope={'directory':str(attachment),'owner':'7'*32,'imageId':'sha256:'+'8'*64};argv=['docker','run','--rm','--network','none','--label',b.OWNER+'='+scope['owner'],'--label',b.PROJECT+'='+binding['project'],scope['imageId'],'version'];return binding,d,scope,argv

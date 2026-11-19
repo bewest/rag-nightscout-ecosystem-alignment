@@ -5,7 +5,7 @@ from pathlib import Path
 def need(ok,code):
  if not ok:raise RuntimeError('REMOTE_COMPONENT_'+code)
 def plan(value,cohort):
- need(type(cohort)is int and 16<=cohort<=10000,'COHORT')
+ need(type(cohort)is int and cohort>=16,'COHORT')
  need(isinstance(value,dict)and set(value)=={'version','cases'}and type(value['version'])is int and value['version']==1,'PLAN_SHAPE')
  cases=value['cases'];need(isinstance(cases,list)and 1<=len(cases)<=6,'CASE_BOUND');ids=[]
  for c in cases:

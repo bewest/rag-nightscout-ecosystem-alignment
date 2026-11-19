@@ -4,7 +4,7 @@ from pathlib import Path
 from contract import DISCOVERY_MAX_WORKERS, require
 
 
-def generate(root, target, *, serial_exchange=False):
+def generate(root, target, *, serial_exchange=False, host_warm_clock=True):
     baseline = Path(root) / "tools/mt-bench/capacity/probe.js"
     source = baseline.read_text()
     old = "const roles = ['api', 'realtime', 'evaluator', 'tenant-admin'];"
@@ -43,6 +43,11 @@ def generate(root, target, *, serial_exchange=False):
     prime = "  fs.writeFileSync(args.signal, String(Date.now()));"
     require(source.count(prime)==1, "M7_PROBE_PRIME_ANCHOR_CHANGED")
     source = source.replace(prime, "  fs.writeFileSync(path.join(signalDir,'prime.json'),JSON.stringify(out.prime)); if(out.prime.primed!==tenants.length*PER)throw new Error('M7_ESTABLISHED_SOCKETS_INCOMPLETE');\n" + prime)
+    # Preserve the transport error at the discovery SQL boundary. An empty
+    # successful result still means the witness has not appeared yet.
+    source=source.replace("sql => new Promise(resolve => execFile", "sql => new Promise((resolve,reject) => execFile")
+    source=source.replace("(err, stdout) => resolve(err ? '' : stdout)",
+                          "(err, stdout) => err && discovery && completionSource ? reject(Error('M7_PROBE_SQL_OBSERVATION_UNAVAILABLE')) : resolve(err ? '' : stdout)")
     # A single shared probe container must not issue docker commands itself:
     # the runner supplies a narrowly scoped Docker CLI through a host process.
     # Probe executes on the host with npm dependencies from an owned extraction
@@ -71,7 +76,18 @@ def generate(root, target, *, serial_exchange=False):
         const ids=[...new Set(open.map(e=>e.tenant))];
         oracleCost.durablePendingPeak=Math.max(oracleCost.durablePendingPeak,open.filter(e=>e.acked!==null&&!e.durableObservation).length);
         const queryStart=performance.now();
-        const raw=await psqlAsync(completionOracle.query(completionSource,ids,args.runid));
+        const query=completionOracle.query(completionSource,ids,args.runid);
+        let raw;
+        try { raw=await psqlAsync(query); }
+        catch(error) {
+          if(!discovery || error.message!=='M7_PROBE_SQL_OBSERVATION_UNAVAILABLE')throw error;
+          out.sqlObserverFailure={verdict:'UNMEASURED',code:error.message};
+          for(const witness of evalPending){
+            if(witness.evaluatedAt===null && queryStart-witness.sentMono>=120000)
+              witness.completion={...witness.completion,ready:false,code:'M7_COMPLETION_DEADLINE'};
+          }
+          return;
+        }
         const queryEnd=performance.now();oracleCost.queries++;oracleCost.bytes+=Buffer.byteLength(raw);oracleCost.elapsedMs+=queryEnd-queryStart;if(!raw)oracleCost.missing++;
         const rows=new Map(raw.split('\\n').filter(Boolean).map(line=>{const row=JSON.parse(line);return [row.tenant,row];}));
         for(const e of open){
@@ -85,14 +101,88 @@ def generate(root, target, *, serial_exchange=False):
           // The SQL read may cross the deadline after admission. Credit only
           // evidence returned within the same-process strict 120-second window.
           const withinDeadline=performance.now()-e.sentMono<120000;
-          e.completion=withinDeadline?result:{...result,ready:false,code:'M7_COMPLETION_DEADLINE'};
+          e.completion=withinDeadline?result:{...result,ready:false,code:'M7_COMPLETION_DEADLINE',assessedCode:result.code,...(result.clientFailure?{assessedClientFailure:result.clientFailure}:{})};
           if(e.completion.ready){e.evaluatedAt=Date.now();evalLatencies.push(e.evaluatedAt-e.sent);}
         }
       }else if (open.length) {""")
     source=source.replace("const e = { tenant: t.id, sent: p.sent,", "const e = { tenant: t.id, date, sent: p.sent,")
     source=source.replace("    await sleep(PROBE);", "    if(completionSource){const until=Date.now()+PROBE;while(Date.now()<until&&!fs.existsSync(path.join(signalDir,'.restart')))await sleep(Math.min(1000,until-Date.now()));}else await sleep(PROBE);")
-    source=source.replace("  fs.writeFileSync(args.out, JSON.stringify(out, null, 2)", "  if(completionSource){oracleCost.observationEndMono=performance.now();out.durableOutputObservation=lag.summary(evalPending,pending,oracleCost);out.completedOutput={rosterTenants:tenants.length,witnessTenants:[...new Set(evalPending.map(e=>e.tenant))],witnessTenantCount:new Set(evalPending.map(e=>e.tenant)).size,verdict:evalPending.length>0&&evalPending.every(e=>e.completion?.ready)&&writes.failed===0?'PASS':'FAIL',witnesses:evalPending.map(e=>({tenant:e.tenant,date:e.date,stamp:e.stamp,requestStartedAt:e.sent,...e.completion})),probeCadenceMs:PROBE,scope:'sampled stored/output/client witnesses and selected BG-now mean; witnessTenants is the exercised subset, not all-roster clinical equivalence; uploader separate from ordinary k6 workload; any planned restart is qualified by its separate receipt'};for(const s of sockets)s.socket.close();}\n  fs.writeFileSync(args.out, JSON.stringify(out, null, 2)")
-    source=source.replace("  while (!fs.existsSync(path.join(signalDir, '.restart'))) {", "  while (!fs.existsSync(path.join(signalDir, '.restart')) && (args.maxWrites===undefined || k<Number(args.maxWrites))) {")
+    source=source.replace("  fs.writeFileSync(args.out, JSON.stringify(out, null, 2)", """  if(completionSource){oracleCost.observationEndMono=performance.now();
+    out.durableOutputObservation=lag.summary(evalPending,pending,oracleCost);
+    let verdict='FAIL';
+    if(evalPending.length && evalPending.every(e=>e.completion?.ready) && writes.failed===0)verdict='PASS';
+    else if(out.sqlObserverFailure && writes.failed===0 && !evalPending.some(e=>e.completion?.code==='M7_COMPLETION_DEADLINE'))
+      verdict='UNMEASURED';
+    out.completedOutput={rosterTenants:tenants.length,witnessTenants:[...new Set(evalPending.map(e=>e.tenant))],
+      witnessTenantCount:new Set(evalPending.map(e=>e.tenant)).size,verdict,
+      ...(out.sqlObserverFailure?{observerFailure:out.sqlObserverFailure}:{}),
+      witnesses:evalPending.map(e=>({tenant:e.tenant,date:e.date,stamp:e.stamp,requestStartedAt:e.sent,...e.completion})),
+      probeCadenceMs:PROBE,scope:'sampled stored/output/client witnesses and selected BG-now mean; witnessTenants is the exercised subset, not all-roster clinical equivalence; uploader separate from ordinary k6 workload; any planned restart is qualified by its separate receipt'};
+    for(const s of sockets)s.socket.close();
+  }
+  fs.writeFileSync(args.out, JSON.stringify(out, null, 2)""")
+    # Close admissions on observer loss. For restart runs, the controller
+    # still owns the phase transition; an early probe exit cannot trigger it.
+    source=source.replace("  while (!fs.existsSync(path.join(signalDir, '.restart'))) {",
+                          "  while (!out.sqlObserverFailure && !fs.existsSync(path.join(signalDir, '.restart')) && (args.maxWrites===undefined || k<Number(args.maxWrites))) {")
+    restart_block = "  if (args.restart === '1') {"
+    source=source.replace(restart_block, restart_block+"\n    if(out.sqlObserverFailure){out.failure=out.sqlObserverFailure;} else {")
+    source=source.replace("    out.restart = restart;\n  }", "    out.restart = restart;\n    }\n  }")
+    source=source.replace("  process.exit(0);", "  process.exit(out.sqlObserverFailure && args.restart==='1' ? 1 : 0);")
+    source=source.replace("  savePartial();\n  log('window'", "  if(out.sqlObserverFailure)out.window.evaluationMissedWithin120s=null;\n  savePartial();\n  log('window'")
+    if host_warm_clock:
+        # CLOCK_MONOTONIC source and probe run on the same workstation in both transports.
+        source=source.replace("const signalDir = path.dirname(args.signal);", """const timing=process.env.M7_CLINICAL_WARM_PATH?require('./clinical-timing.cjs'):null;
+const clinicalWarm=timing?timing.source(process.env.M7_CLINICAL_WARM_PATH,path.dirname(args.signal)):null;
+const signalDir = path.dirname(args.signal);""")
+        source=source.replace(" evalPending.push(e);", """ if(clinicalWarm){e.warmClinical=true;e.clientProofVersion=3;} evalPending.push(e);""")
+        source=source.replace("e.acked = Date.now();", """e.acked = Date.now(); if(e.warmClinical){e.acceptedMono=performance.now();e.acceptedHostMs=Number(process.hrtime.bigint())/1e6;}""")
+        start=source.index("    while (polling || evalPending.some(")
+        end=source.index("      if(open.length && completionSource)",start)
+        source=source[:start]+"""    for (;;) {
+      if(typeof clinicalWarm!=='undefined' && clinicalWarm)clinicalWarm.refresh();
+      const open=evalPending.filter(e=>e.evaluatedAt===null && (e.warmClinical?
+        timing.shouldPoll(e,clinicalWarm.row(e.tenant),polling,performance.now(),clinicalWarm):Date.now()-e.sent<120000));
+      let waitingForWarm=false;
+      if(typeof clinicalWarm!=='undefined' && clinicalWarm?.inTail()){
+        waitingForWarm=clinicalWarm.needsObservation(evalPending);
+        timing.checkpoint(signalDir,evalPending,pending,clinicalWarm);
+      }
+      if(!polling&&!open.length&&!waitingForWarm)break;
+"""+source[end:]
+        source=source.replace("          if(e.acked===null)continue;", """          if(e.warmClinical){
+            e.lastQueryStartMono=queryStart;
+            if(clinicalWarm.timeLeftMs()<=0)continue;
+          }
+          if(e.acked===null)continue;""")
+        source=source.replace("          if(e.completion.ready){e.evaluatedAt", """          if(e.warmClinical){
+            timing.observe(e,result,queryStart);
+            if(result.ready)e.semanticObservedMono=queryEnd;
+            e.completion=result;
+          }
+          if(e.completion.ready){e.evaluatedAt""")
+        source=source.replace("lag.summary(evalPending,pending,oracleCost)",
+                              "lag.summary(evalPending,pending,oracleCost,clinicalWarm?timing:null)")
+        source=source.replace("    let verdict='FAIL';", """    if(clinicalWarm){
+      clinicalWarm.refresh();
+      out.window.evaluationMissedWithin120s=out.sqlObserverFailure?null:
+        evalPending.filter(e=>e.semanticObservedMono==null || e.semanticObservedMono-e.sentMono>=timing.deadlineMs).length;
+      for(const e of evalPending){
+        const frames=[...(pending.get(e.tenant+':'+e.date)?.clientFrames?.values()||[])];
+        e.clinicalTiming=timing.assess(e,frames,clinicalWarm.row(e.tenant));
+        e.completion={...e.completion,ready:e.clinicalTiming.verdict==='PASS',
+          code:e.clinicalTiming.code,assessedCode:e.semantic?.code,clinicalTiming:e.clinicalTiming};
+      }
+    }
+    let verdict='FAIL';""")
+        source=source.replace("    out.completedOutput={rosterTenants:", """    if(clinicalWarm){
+      const results=evalPending.map(e=>e.clinicalTiming.verdict);
+      verdict=writes.failed || results.includes('FAIL')?'FAIL':
+        results.length && results.every(v=>v==='PASS')?'PASS':'UNMEASURED';
+    }
+    out.completedOutput={rosterTenants:""")
+        source=source.replace("witnessTenantCount:new Set", """...(clinicalWarm?{clinicalTiming:timing.summary(evalPending)}:{}),
+      witnessTenantCount:new Set""")
     if serial_exchange:
         stock="async function exchange (t) {"
         require(source.count(stock)==1,'M7_SERIAL_EXCHANGE_STOCK_ANCHOR')
@@ -141,10 +231,35 @@ def generate(root, target, *, serial_exchange=False):
     viewers_change("],PER,completionSource)", "],viewers[tenants.findIndex(t=>t.id===e.tenant)],completionSource)")
     viewers_change("out.completedOutput={rosterTenants", "out.completedOutput={clientFrames:{verdict:out.window.expectedFrames===0?'NOT_EXERCISED':evalPending.every(e=>e.completion?.ready)?'PASS':'UNMEASURED'},rosterTenants")
     viewers_change("  log('prime', out.prime);", "  out.viewerBindings=sockets.map((s,socket)=>({socket,tenant:tenants[s.index].id}));\n  log('prime', out.prime);")
+    # Keep the stock polling path for the serial-exchange and historical public
+    # calibration actors. Current runners explicitly select the viewer scenario.
+    viewers_change("const sockets = [], reasons = {}, pending = new Map();",
+                   Path(__file__).with_name('viewer-setup.cjs').read_text() +
+                   "\nconst viewerSetup = args.viewerSetup ? JSON.parse(args.viewerSetup) : null;\n"
+                   "const sockets = [], reasons = {}, pending = new Map();")
+    viewers_change("transports: ['polling'], agent,",
+                   "transports: viewerSetup?.transport === 'websocket-first' ? ['websocket','polling'] : ['polling'], "
+                   "tryAllTransports: true, agent,")
+    viewers_change("  const jwts = new Array(tenants.length);\n  let next = 0;",
+                   "  let t0 = Date.now();\n  if (viewerSetup) { await primeViewers(out,viewerSetup); } else {\n"
+                   "  const jwts = new Array(tenants.length);\n  let next = 0;")
+    viewers_change("  const t0 = Date.now();", "  t0 = Date.now();")
+    viewers_change("  out.prime = { sockets:", "  }\n  out.prime = { sockets:")
+    viewers_change("const r1 = Date.now(); retrying = true;",
+                   "const r1 = Date.now(); retrying = !viewerSetup;\n"
+                   "    if(viewerSetup) restart.retryPolicy = {opensPerSecond:viewerSetup.opensPerSecond};")
+    viewers_change("    for (const s of sockets) if (!s.connected) s.socket.connect();", """
+    for (const s of sockets) {
+      if (s.connected) continue;
+      if (viewerSetup && Date.now() - r1 >= RECOVERY) break;
+      s.socket.connect();
+      if (viewerSetup) await sleep(Math.min(Math.ceil(1000/viewerSetup.opensPerSecond),
+                                            Math.max(0,r1+RECOVERY-Date.now())));
+    }""")
     target = Path(target)
     target.write_text(source)
     helpers={}
-    for name in ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs','probe-accounting.cjs','clinical-timeline-client.cjs','revision-witness.cjs','revision-witness-preload.cjs','completed-oracle.cjs','native-observation.cjs','client-delivery.cjs','durable-lag.cjs'):
+    for name in ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs','probe-accounting.cjs','completed-oracle.cjs','native-observation.cjs','client-delivery.cjs','durable-lag.cjs',*(['clinical-timing.cjs'] if host_warm_clock else [])):
         data=Path(__file__).with_name(name).read_bytes();target.with_name(name).write_bytes(data)
         helpers[name]=hashlib.sha256(data).hexdigest()
     if serial_exchange:

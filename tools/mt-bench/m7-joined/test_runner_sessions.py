@@ -59,6 +59,17 @@ class Sessions(unittest.TestCase):
         self.assertEqual(history['previousObservations'],['first'])
         self.assertEqual(history['runtime'],'REUSED')
         with self.assertRaisesRegex(RuntimeError,'OBSERVATION_EXISTS'):self.observe()
+    def test_observer_attach_uses_validated_json_and_omits_prepare_only_options(self):
+        selected={'roundSeconds':90}
+        self.config['prepare']['opportunity-observation']=selected
+        serialized=json.dumps(selected)
+        argv=['--fixture-project','owned','--run-purpose','discovery','--opportunity-observation',serialized]
+        with patch.object(r,'load_config',return_value=(self.config,argv)):
+            self.observe()
+        attached=next(args for _,args in self.calls if args[0]=='attach')
+        self.assertEqual(attached[attached.index('--opportunity-observation')+1],serialized)
+        self.assertNotIn('--fixture-project',attached)
+
     def test_failed_collection_retains_partial_and_can_collect_again(self):
         def failure(root,name,args):
             self.perform(root,name,args)

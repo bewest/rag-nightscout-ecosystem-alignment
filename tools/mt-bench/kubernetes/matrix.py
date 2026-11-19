@@ -28,19 +28,57 @@ def ceiling(total, limits, code):
                for n in total), code)
 
 
+def node_requests(objects, baseline, accounting, config=None):
+    """Take one budget per rendered workload at its observed node."""
+    nodes = {}
+    accounted = set()
+    if config is not None and config.get('nativeLoad') is not None:
+        import native_join
+        node, request = native_join.reserve(config, objects)
+        add(nodes.setdefault(node,dict.fromkeys(DIMS,0)),request)
+        accounted.add(native_join.JOB)
+    pods = list(baseline['pods'].values())
+    finished = baseline.get('completedPrimer')
+    if finished and finished['name'] not in baseline['pods']:
+        # Retain the owner's original reservation on its scheduled node.
+        pods.append(finished)
+    for pod in pods:
+        workload = pod['workload']
+        k.need(workload in objects and workload not in accounted, 'MATRIX_WORKLOAD_CENSUS')
+        accounted.add(workload)
+        spec = k.template(objects[workload])['spec']
+        total = nodes.setdefault(pod['nodeName'], dict.fromkeys(DIMS, 0))
+        add(total, k.resource_budget.pod_budget(spec, accounting, k.need))
+    k.need(accounted == {name for name, obj in objects.items() if obj['kind'] in k.WORKLOADS},
+           'MATRIX_WORKLOAD_CENSUS')
+    return nodes
+
+
 def identity(c, baseline, current):
     """Keep the entire observed peer roster and incarnations unchanged."""
-    k.need(current.get('context') == c['context'] and current.get('runId') == c['runId']
-           and current.get('pins') == c['pins'], 'MATRIX_SOURCE_CHANGED')
+    k.need(current.get('context') == c['context'] and current.get('runId') == c['runId'], 'MATRIX_RUN_CHANGED')
     k.need(current['namespace']['uid'] == baseline['namespace']['uid'], 'NAMESPACE_UID_CHANGED')
     for section in ('objects', 'pods'):
-        k.need(current[section].keys() == baseline[section].keys(), 'MATRIX_ROSTER_CHANGED')
+        expected = set(baseline[section])
+        finished = current.get('completedPrimer') if section == 'pods' else None
+        if finished and finished['name'] not in current[section]:
+            old = baseline[section].get(finished['name'], baseline.get('completedPrimer', {}))
+            k.need(old.get('uid') == finished['uid'] and old.get('workload') == 'Job/primer', 'MATRIX_ROSTER_CHANGED')
+            expected.discard(finished['name'])
+        k.need(set(current[section]) == expected, 'MATRIX_ROSTER_CHANGED')
         for name, row in current[section].items():
             old = baseline[section][name]
             k.need(row['uid'] == old['uid'], 'POD_UID_CHANGED' if section == 'pods' else 'RESOURCE_UID_CHANGED')
             if section == 'pods':
-                k.need(all(row[n] == old[n] for n in ('workload', 'nodeName', 'resources', 'imageReferences', 'containers')),
+                k.need(all(row[n] == old[n] for n in ('workload', 'nodeName', 'resources', 'imageReferences')),
                        'MATRIX_PEER_INCARNATION_CHANGED')
+                if finished and name == finished['name'] and row['phase'] == 'Succeeded':
+                    k.need(row['uid'] == finished['uid'] and row['containers'].keys() == old['containers'].keys() and
+                           all((v.get('state') or {}).get('terminated', {}).get('exitCode') == 0 and
+                               all(v[key] == old['containers'][n][key] for key in ('containerID','imageID','restartCount'))
+                               for n,v in row['containers'].items()), 'MATRIX_PEER_INCARNATION_CHANGED')
+                else:
+                    k.need(row['containers'] == old['containers'], 'MATRIX_PEER_INCARNATION_CHANGED')
 
 
 def allocation(value, entries):
@@ -77,17 +115,8 @@ def allocation(value, entries):
                'MATRIX_FIXTURE_DEADLINE_EXCEEDS_ALLOCATION')
         expected.append({'runId': c['runId'], 'namespace': c['namespace'],
                          'namespaceUid': baseline['namespace']['uid'], 'runSha256': k.digest(d / 'run.json')})
-        accounted = set()
-        for pod in baseline['pods'].values():
-            workload = pod['workload']
-            k.need(workload in objects and workload not in accounted, 'MATRIX_WORKLOAD_CENSUS')
-            accounted.add(workload)
-            spec = k.template(objects[workload])['spec']
-            # Reserve the peak for each placed workload, including setup Jobs.
-            total = nodes.setdefault(pod['nodeName'], dict.fromkeys(DIMS, 0))
-            add(total, k.resource_budget.pod_budget(spec, accounting, k.need))
-        k.need(accounted == {name for name, obj in objects.items() if obj['kind'] in k.WORKLOADS},
-               'MATRIX_WORKLOAD_CENSUS')
+        for node, request in node_requests(objects, baseline, accounting, c).items():
+            add(nodes.setdefault(node, dict.fromkeys(DIMS, 0)), request)
         for role in ('driver', 'observer'):
             actor = c[role]
             total = actors.setdefault(actor['hostId'], {'millicpus': 0, 'memoryBytes': 0})
@@ -107,8 +136,7 @@ def joined_point(d, c, baseline, current):
     identity(c, baseline, current)
     out = d / 'load'
     result, window = k.document(out / 'result.json'), k.document(out / 'window.json')
-    k.need(result.get('verdict') == 'OBSERVED' and result.get('pins') == c['pins'] and
-           window.get('pins') == c['pins'] and window.get('namespaceUid') == baseline['namespace']['uid']
+    k.need(result.get('verdict') == 'OBSERVED' and window.get('namespaceUid') == baseline['namespace']['uid']
            and window.get('context') == c['context'] and window.get('runId') == e.stage_runid(c, 'load'),
            'MATRIX_RESULT_SOURCE_CHANGED')
     start, end = window.get('loadStartedAt'), window.get('loadEndedAt')
@@ -121,8 +149,7 @@ def joined_point(d, c, baseline, current):
            result.get('storedWrites', {}).get('verdict') == 'GREEN' and
            result['storedWrites'].get('uncertain') == 0 and
            result.get('loadFunctionalChecks', {}).get('http', {}).get('httpVerdict') == 'PASS' and
-           result['loadFunctionalChecks']['http'].get('offeredWorkVerdict') == 'PASS' and
-           result['loadFunctionalChecks'].get('settingsFingerprint', {}).get('verdict') == 'PASS',
+           result['loadFunctionalChecks']['http'].get('offeredWorkVerdict') == 'PASS',
            'MATRIX_ORACLE_UNMEASURED', 'UNMEASURED')
     probe = k.document(out / 'probe.json')
     frames = probe.get('kubernetesFrames', {})

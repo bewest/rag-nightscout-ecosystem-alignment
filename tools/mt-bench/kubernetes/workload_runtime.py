@@ -1,16 +1,34 @@
 """Select the existing M7 generator inputs, independently of roster and viewers."""
 from workload import REALISTIC_MIX, realistic_cycle_ms
 import workload_inputs
+import viewer_plan
 
 SHAPES = dict(w_sgv=1, w_devicestatus=1, w_treatments_v3=1,
               r_sgv=5, r_devicestatus=1, r_treatments=1, r_status=1)
 SELECTORS = ('OFFERED_RPS', 'M7_WORKLOAD_MIX', 'M7_WORKLOAD_SCALE', 'JWT_SETUP_CONCURRENCY')
 
 
+def ordinary_count(provisioned, selected, need):
+    need(workload_inputs.tenants(provisioned) and workload_inputs.tenants(selected)
+         and selected <= provisioned, 'ORDINARY_ROSTER_TENANTS')
+    return selected
+
+
+def driver_count(c, need):
+    return ordinary_count(c['tenants'], c.get('ordinaryRosterTenants', c['tenants']), need)
+
+
+def ordinary_roster(c, tenants, need):
+    """Select the same verified roster prefix for ordinary traffic and its ACKs."""
+    need(c.get('tenants') == len(tenants), 'TENANT_ROSTER')
+    return tenants[:driver_count(c, need)]
+
+
 def validate(w, need, tenants=None):
     need(isinstance(w, dict) and set(w) <= {'loadSeconds', 'offeredRps', 'workloadMix',
-         'workloadScale', 'logicalPollingClients', 'probeEveryMs', 'hotFactor', 'pointId', 'setupSeconds', 'drainSeconds',
-         'driverPlan', 'driverShards', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget'}, 'WORKLOAD_FIELDS')
+         'workloadScale', 'logicalPollingClients', 'viewerSetup', 'probeEveryMs', 'hotFactor', 'pointId', 'setupSeconds', 'drainSeconds',
+         'driverPlan', 'driverShards', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget','drainObservation'}, 'WORKLOAD_FIELDS')
+    viewer_plan.setup(w, need)
     need(workload_inputs.seconds(w.get('loadSeconds')), 'WORKLOAD_LOAD_SECONDS')
     need(workload_inputs.polling_clients(w.get('logicalPollingClients')), 'WORKLOAD_VIEWERS')
     need(workload_inputs.probe_interval(w.get('probeEveryMs')), 'WORKLOAD_PROBE_INTERVAL')
@@ -27,6 +45,10 @@ def validate(w, need, tenants=None):
     need(workload_inputs.concurrency(w.get('jwtSetupConcurrency', 1)), 'WORKLOAD_JWT_SETUP_CONCURRENCY')
     for key, default in (('setupSeconds', 310), ('drainSeconds', 120)):
         need(workload_inputs.seconds(w.get(key, default)), 'PHASE_WINDOW:' + key)
+    if 'drainObservation' in w:
+        import phase_windows
+        try:phase_windows.observation_override(w['drainObservation'])
+        except (RuntimeError,ValueError):need(False,'WORKLOAD_DRAIN_OBSERVATION')
     if 'workloadMix' in w:
         need(w['workloadMix'] == REALISTIC_MIX and 'offeredRps' not in w and w.get('hotFactor', 1) == 1,
              'REALISTIC_MIX_CONFIGURATION')
@@ -55,7 +77,7 @@ def driver_manifest(c):
     cadence = dict(c['workload'], accel=1, hotFactor=c['workload'].get('hotFactor', 1),
                    driverVuDiagnostic=driver.CONFIGURED)
     cadence['driverPlan'] = driver.configuration(cadence['driverPlan'], cadence)
-    m = dict(tenants=c['tenants'], replicas=sum(r == 'api' or r.startswith('api-') for r in c['roles']),
+    m = dict(tenants=c.get('ordinaryRosterTenants', c['tenants']), replicas=sum(r == 'api' or r.startswith('api-') for r in c['roles']),
              cadence=cadence, pair=c['pins']['pair'], imageId=c['pins']['appImageId'],
              instrument=c['pins']['instrument'], runPurpose='discovery', transport='kubernetes-native')
     driver.expected_plans(m)
@@ -80,7 +102,7 @@ def environment(w, inherited, need):
 
 def rates(w, n):
     if 'workloadMix' in w:
-        cycles = realistic_cycle_ms(w.get('workloadScale',1))
+        cycles = realistic_cycle_ms(w.get('workloadScale', 1), w.get('driverPlan', {}).get('writeRateScale', 1))
     else:
         cycle = workload_inputs.aggregate_cycle_ms(n, w.get('hotFactor', 1), w['offeredRps'])
         cycles = dict.fromkeys(SHAPES, cycle)

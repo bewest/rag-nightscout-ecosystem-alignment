@@ -30,18 +30,19 @@ from probe import generate
 from workload import REALISTIC_CADENCE_MS, REALISTIC_MIX, realistic_cycle_ms, generate as generate_workload
 import profile_provenance
 import orchestration_binding
+from orchestration_binding import verified_serving
 import evaluator_progress
-import clinical_timeline
-import revision_witness
+import outcome_gate
+import clinical_warm
 import api_cause
 import driver_vu_diagnostic
 import api_warm_cause
 import commissioning_wal
 import node_observation
-import source_access
 import discovery_rest
 import evaluator_idle
 import evaluator_opportunities
+import observation_rows
 import evaluator_catchup
 import preload_convergence
 import sql_attribution
@@ -56,7 +57,7 @@ import collection_segments
 import vault_refusal
 import workload_inputs
 import primer_options
-import population_ceiling
+from primer_progress import ComposePrimerWait, ComposeProgressWait, ProgressWindow
 import phase_windows
 BASE = ROOT / "tools/mt-bench/compose-baseline"
 REUSED = ["tools/mt-bench/capacity/probe.js", "tools/mt-bench/capacity/k6/workload.js",
@@ -128,7 +129,7 @@ def private_output(path, limit):
     return data, {'observedBytes':size,'retainedBytes':len(data),'truncated':size>len(data),'retention':'tail' if size>len(data) else 'complete'}
 
 
-def _command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, binary=False, phase=None):
+def _command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, binary=False, phase=None, wait_for_primer=None, rows=None):
     # Raw output belongs only in private phase artifacts; never argv/env in
     # public exceptions. Capture begins before prepared=true or state exists.
     timeout=remaining_seconds(timeout)
@@ -137,16 +138,17 @@ def _command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, bi
     if capture is not None:
         capture['sequence']+=1
         prefix=capture['directory']/(str(capture['sequence']).zfill(4)+'-'+Path(str(argv[0])).name)
+    run = rows.run if rows is not None else wait_for_primer or subprocess.run
     result=None;failure=None;stdout=b'';stderr=b'';output_counts={}
     try:
         if prefix is None:
-            result=subprocess.run([str(a) for a in argv],cwd=cwd,env=runtime_env() if env is None else env,input=input,
+            result=run([str(a) for a in argv],cwd=cwd,env=runtime_env() if env is None else env,input=input,
                                   stdout=file or subprocess.PIPE,stderr=subprocess.STDOUT if file else subprocess.PIPE,timeout=timeout)
             stdout=result.stdout or b'';stderr=result.stderr or b''
         else:
             with prefix.with_suffix('.stdout').open('wb') as out,prefix.with_suffix('.stderr').open('wb') as err:
                 prefix.with_suffix('.stdout').chmod(0o600);prefix.with_suffix('.stderr').chmod(0o600)
-                result=subprocess.run([str(a) for a in argv],cwd=cwd,env=runtime_env() if env is None else env,input=input,stdout=out,stderr=err,timeout=timeout)
+                result=run([str(a) for a in argv],cwd=cwd,env=runtime_env() if env is None else env,input=input,stdout=out,stderr=err,timeout=timeout)
             stdout,output_counts['stdout']=private_output(prefix.with_suffix('.stdout'),capture.get('maxOutputBytes'))
             stderr,output_counts['stderr']=private_output(prefix.with_suffix('.stderr'),capture.get('maxOutputBytes'))
             if file:file.write(stdout);file.write(stderr)
@@ -183,17 +185,17 @@ def diagnostic_resource_rows(m):
     return rows
 
 
-def command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, binary=False, phase=None):
+def command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, binary=False, phase=None, wait_for_primer=None, rows=None):
     selected_env = runtime_env() if env is None else env
     if _CLEANUP_NODE_LIMIT.get() and argv and Path(str(argv[0])).name=='node':
         # Teardown must not acquire the diagnostic driver lock or a new actor
         # quota lease. Its source verifier still gets a fixed small V8 heap cap.
         bounded=[argv[0],'--max-heap-size=128',*argv[1:]]
         return _command(bounded,cwd=cwd,env=selected_env,input=input,file=file,timeout=timeout,binary=binary,phase=phase)
-    role = 'generator' if phase in ('product-prepare', 'settings-fingerprint', 'generator-client-preflight','completed-oracle') else 'helper'
+    role = 'generator' if phase in ('product-prepare', 'generator-client-preflight','completed-oracle') else 'helper'
     if diagnostic_resources._ACTIVE is not None and list(map(str,argv[:2]))==['docker','run']:argv=bounded_k6_argv(argv)
     with diagnostic_resources.command(argv, selected_env, role) as (bounded_argv, bounded_env):
-        return _command(bounded_argv, cwd=cwd, env=bounded_env, input=input, file=file, timeout=timeout, binary=binary, phase=phase)
+        return _command(bounded_argv, cwd=cwd, env=bounded_env, input=input, file=file, timeout=timeout, binary=binary, phase=phase, wait_for_primer=wait_for_primer, **({'rows':rows} if rows is not None else {}))
 
 
 def bounded_k6_argv(argv):
@@ -203,7 +205,12 @@ def bounded_k6_argv(argv):
         require(not any(str(x).startswith('--pull=') for x in value),'M7_DIAGNOSTIC_PULL_POLICY_CHANGED')
         if '--pull' in value:
             i=value.index('--pull');require(value.count('--pull')==1 and value[i+1:i+2]==['never'],'M7_DIAGNOSTIC_PULL_POLICY_CHANGED')
-        else:value[9:9]=['--pull','never']
+        else:
+            profile = diagnostic_resources._ACTIVE.budget.profile
+            flags = diagnostic_resources.standalone_flags(
+                diagnostic_resources.standalone_limit(), diagnostic_resources.driver_memory_request(profile))
+            offset = 3 + len(flags)
+            value[offset:offset] = ['--pull', 'never']
     return value
 
 
@@ -284,7 +291,7 @@ def load(directory, *, resource_limits=True):
         if 'diagnosticResources' in m:require(isinstance(record,dict) and diagnostic_resources.selection(record.get('profile')) is not None,'M7_DIAGNOSTIC_RESOURCE_RECORD_REQUIRED')
         diagnostic_resources.configure(record.get('profile') if record is not None else None,
             document(d/'frozen.compose.json') if record is not None else None,record,
-            observe=lambda:diagnostic_resource_rows(m))
+            observe=lambda:diagnostic_resource_rows(m), driver_scope=d)
     elif diagnostic_resources._ACTIVE is None or not any(diagnostic_resources._ACTIVE.host.values()):
         # Down retains ownership/source guards but must not acquire a diagnostic
         # driver lock or validate corrupt quotas before exact-owned cleanup.
@@ -292,7 +299,7 @@ def load(directory, *, resource_limits=True):
     return d, m
 
 
-def compose(d, *args, file=None, input=None, timeout=120):
+def compose(d, *args, file=None, input=None, timeout=120, wait_for_primer=None, rows=None):
     if diagnostic_resources._ACTIVE is not None:
         args=list(args);i=0
         while i<len(args) and args[i]=='--profile':i+=2
@@ -303,7 +310,6 @@ def compose(d, *args, file=None, input=None, timeout=120):
             else:args[i+1:i+1]=['--pull','never']
     argv=orchestration_binding.fixture_argv(d,args)
     if orchestration_binding.mutation(args):
-        clinical_timeline.before_sender_effect(Path(d),args,document(Path(d)/'frozen.compose.json'),document(Path(d)/'owner.json'))
         orchestration_binding.fixture_mutation_preflight(d,argv,command)
     if diagnostic_resources._ACTIVE is not None:
         try:
@@ -312,7 +318,7 @@ def compose(d, *args, file=None, input=None, timeout=120):
         except RuntimeError as error:
             resource_cpu_failure(error)
             raise
-    return command(argv, file=file, input=input, timeout=timeout)
+    return command(argv, file=file, input=input, timeout=timeout, wait_for_primer=wait_for_primer, **({'rows':rows} if rows is not None else {}))
 
 
 def resources(m, all_containers=True):
@@ -461,6 +467,12 @@ def cadence_options(args):
         require(args.profile=='pgstream-sample' and discovery_inputs,'M7_STARTUP_WINDOWS_DISCOVERY_ONLY')
         workload_inputs.startup_windows(startup,workload_inputs.COMPOSE_STARTUP_DEFAULTS,require)
         value['startupWindows']=startup
+    opportunity_budget = getattr(args, 'opportunity_observation', None)
+    if opportunity_budget is not None:
+        require(discovery_inputs and args.profile == 'pgstream-sample' and
+                getattr(args,'completion_contract',None) == 'evaluator-work-v2', 'M7_OPPORTUNITY_PROFILE_UNSUPPORTED')
+        evaluator_opportunities.round_budget(args.tenants, opportunity_budget)
+        value['opportunityObservation'] = opportunity_budget
     progress_budget=getattr(args,'evaluator_progress_budget',None)
     if progress_budget is not None:
         require(args.profile=='pgstream-sample' and discovery_inputs,'M7_EVALUATOR_PROGRESS_BUDGET_DISCOVERY_ONLY')
@@ -497,6 +509,9 @@ def cadence_options(args):
     if args.profile=='pgstream-sample' and discovery_inputs:
         require(workload_inputs.shard_count(value.get('driverShards',1),getattr(args,'tenants',1)), 'M7_DRIVER_SHARDS_RANGE')
         require(workload_inputs.polling_clients(value.get('logicalPollingClients',getattr(args,'tenants',1)*value['socketsPerTenant'])), 'M7_VIEWER_TOTAL_RANGE')
+    if getattr(args, 'viewer_setup', None) is not None:
+        value['viewerSetup'] = args.viewer_setup
+        viewer_plan.setup(value)
     restart=getattr(args,'restart_during_load_after_seconds',None)
     if restart is not None:
         value['restartDuringLoadAfterSeconds']=restart
@@ -518,7 +533,9 @@ def cadence_options(args):
     observation = getattr(args, 'drain_observation', None)
     if observation is not None:
         require(args.profile == 'pgstream-sample' and args.run_purpose == 'discovery'
-                and 'drainSeconds' in value and args.evaluator_catchup == 'fixed-target-v1',
+                and 'drainSeconds' in value
+                and (args.evaluator_catchup == 'fixed-target-v1' or
+                     args.evaluator_catchup is None and getattr(args, 'completion_contract', None) == 'evaluator-work-v2'),
                 'M7_DRAIN_OBSERVATION_SCOPE')
         value['drainObservation'] = observation
     phase_windows.selection(value)
@@ -530,11 +547,17 @@ def rate_offer(m):
     if m['cadence'].get('workloadMix') == REALISTIC_MIX:
         scale = m['cadence'].get('workloadScale', 1)
         weights = {shape: 5 if shape == 'r_sgv' else 1 for shape in REALISTIC_CADENCE_MS}
-        units = realistic_cycle_ms(scale)
+        plan = m['cadence'].get('driverPlan', {})
+        write_scale = plan.get('writeRateScale', 1)
+        units = realistic_cycle_ms(scale, write_scale)
+        interpretation = 'sensor-cadence' if scale == 1 else 'uniform-rate-bracket'
+        if write_scale != 1:
+            interpretation = 'write-rate-bracket'
         rates = {shape: m['tenants'] * weights[shape] * 1000 / units[shape] for shape in units}
         return {'workloadMix': REALISTIC_MIX, 'workloadScale': scale,
-                'workloadInterpretation': 'sensor-cadence' if scale == 1 else 'uniform-rate-bracket',
-                'sensorCadence': scale == 1, 'requestedScenarioRps': None,
+                **({'writeRateScale': write_scale} if 'writeRateScale' in plan else {}),
+                'workloadInterpretation': interpretation,
+                'sensorCadence': scale == 1 and write_scale == 1, 'requestedScenarioRps': None,
                 'effectiveScenarioRps': sum(rates.values()),
                 'perTenantIntervalMs': {shape: units[shape] / weights[shape] for shape in units},
                 'scenarioTimeUnitMs': units, 'scenarioRpsByShape': rates,
@@ -552,13 +575,13 @@ def rate_offer(m):
 
 
 def attach(args):
-    static_selection=static_topology.option(args,require_allocation=False)
+    static_selection=static_topology.option(args)
     require(not static_selection or getattr(args,'runtime_owner',None),'M7_STATIC_ATTACH_OWNER_REQUIRED')
     require(not commissioning_wal.option(args) and getattr(args,'tenant_readiness',None) is None,'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     stream_topology.ack_option(args)
     preload_convergence.option(args)
     require(not api_warm_cause.option(args),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
-    require(not selected_resources_profile(args) and not getattr(args,'revision_witness_targets',None) and getattr(args,'api_cause_observation','off')=='off' and not getattr(args,'generator_dependencies',None) and not getattr(args,'vault_refusal_control',None),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
+    require(not selected_resources_profile(args) and getattr(args,'api_cause_observation','off')=='off' and not getattr(args,'generator_dependencies',None) and not getattr(args,'vault_refusal_control',None),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     diagnostic_resources.configure()
     # Bind only instrumentation metadata to the runtime owner's exact existing
     # fixture. Never deploy, restart, install, relabel or assume cleanup custody.
@@ -585,17 +608,9 @@ def attach(args):
     bound_primer='maxTenants' in selected_primer or primer_options.requires_extended(selected_primer)
     require(not bound_primer or getattr(args,'runtime_owner',None),'M7_PRIMER_OPTIONS_RUNTIME_OWNER_REQUIRED')
     m['primerConcurrency']=selected_primer['concurrency']
-    population=prepare_population_ceiling(args)
-    if population is not None:
-        require(getattr(args,'runtime_owner',None),'M7_POPULATION_RUNTIME_OWNER_REQUIRED')
-        m[population_ceiling.FIELD]=population
     if 'maxTenants' in selected_primer:m['primerMaxTenants']=selected_primer['maxTenants']
     if getattr(args,'runtime_owner',None):
         runtime=document(args.runtime_owner)
-        require(runtime.get(population_ceiling.FIELD)==m.get(population_ceiling.FIELD),'M7_POPULATION_RUNTIME_CHANGED')
-        if population is not None:
-            require(runtime.get('populationCeilingReadback',{}).get(population_ceiling.FIELD)==population,
-                    'M7_POPULATION_READBACK_REQUIRED')
         owner_path=Path(args.runtime_owner).resolve()
         runtime_directory=Path(runtime.get('directory','')).resolve()
         require(owner_path==runtime_directory/'owner.json' and runtime.get('prepared') is True
@@ -609,10 +624,6 @@ def attach(args):
         if static_selection:
             require(m.get('staticBuildReceiptSha256') == runtime.get('staticBuildReceiptSha256'),
                     'M7_STATIC_ATTACH_RUNTIME_MISMATCH')
-            topology = static_selection['staticTopology']
-            if topology['workers'] > 1 or m['replicas'] > 1:
-                require(isinstance(runtime.get('diagnosticResources',{}).get('profile'),dict),
-                        'M7_STATIC_EXPLICIT_ALLOCATION')
         if 'diagnosticResources' in runtime:m['diagnosticResources']=runtime['diagnosticResources']
         commissioning_wal.inherit(args,m,runtime,runtime_directory)
         node_observation.inherit(args,m,runtime,runtime_directory)
@@ -660,8 +671,7 @@ def attach(args):
             candidates=[file for file in (state/'primer/tenants.json',state/'ops/tenants.json') if file.exists()]
             projections=[tenant_projection(document(file),m['tenants']) for file in candidates]
             require(projections and all(value==projections[0] for value in projections),'M7_PRIMER_OUTPUT_CONFLICT');write(target/'tenants.private.json',projections[0])
-            fingerprint=json.loads(command(['node',HERE/'fingerprint.cjs',source,pair['core'],state/'primer/config.json',str(m['tenants'])]))
-            m['settingsFingerprint']=fingerprint;m['profileSelection']=profile_provenance.identity(fingerprint,m['diagnostics'],config);m['restartRoles']=service_roster(config)
+            m['profileSelection']=profile_provenance.identity(m['diagnostics'],config);m['restartRoles']=service_roster(config)
             write(target/'owner.json',m);write(target/'generator-provenance.json',m['generator']);write(target/'deploy-before-host.json',fixture_inventory(m));verify(target,m)
             print('M7_EXISTING_FIXTURE_BOUND_NO_RESOURCE_CHANGE')
     except Exception as error:
@@ -674,16 +684,6 @@ def prepare_image_inputs(args):
     # Build-after-prepare profiles retain their existing admission at deploy.
     if args.profile!='pgstream-sample' or getattr(args,'run_purpose','acceptance')!='discovery':return None
     options=prepare_primer_options(args)
-    population=prepare_population_ceiling(args)
-    population_files=None
-    if population is not None:
-        population_files={}
-        try:
-            for name in population_ceiling.SOURCE_FILES:
-                population_files[name]=command(['git','-C',args.deploy_repo,'show',args.deploy_commit+':'+population_ceiling.SOURCE_PREFIX+name],binary=True)
-        except RuntimeError:
-            primer_need(False,'POPULATION_SOURCE_UNSUPPORTED')
-        population_ceiling.source_hashes(population_files,primer_need)
     primer_raw=None
     if primer_options.requires_extended(options):
         primer_raw=command(['git','-C',args.deploy_repo,'show',args.deploy_commit+':'+primer_options.SOURCE_PATH],binary=True)
@@ -697,21 +697,7 @@ def prepare_image_inputs(args):
         result['primerSource']=primer_options.probe_image(
             lambda argv,timeout:command(argv,timeout=timeout,phase='primer-source-preflight'),
             selected,primer_raw,options,primer_need)
-    if population_files is not None:
-        result['populationSource']=population_ceiling.probe_image(
-            lambda argv,timeout:command(argv,timeout=timeout,phase='population-source-preflight'),
-            selected,population_files,population,primer_need)
-        result['populationCommissioning']=population_ceiling.commissioning(args.tenants,options)
     return result
-
-
-def discovery_source_features(repo, core_commit, static=False):
-    commit(repo,core_commit)
-    progress_contract=json.loads(git(repo,"show",core_commit+":lib/server/internal-api/contracts/evaluator-inspection.json"))
-    require(progress_contract.get("version")== (3 if static else 2),"M7_EVALUATOR_PROGRESS_SOURCE_REQUIRED")
-    due=progress_contract['operations']['inspectEvaluator']['response']['properties']['tenants']['items']
-    require(all(key in due.get('properties',{}) and key in due.get('required',[]) for key in ('dueAt','dueReason')),'M7_EVALUATOR_DUE_SOURCE_REQUIRED')
-    require('jobs' in due.get('properties',{}) and 'jobs' in due.get('required',[]),'M7_EVALUATOR_IDLE_SOURCE_REQUIRED')
 
 
 def discovery_source_preflight(d,m):
@@ -729,8 +715,6 @@ def discovery_source_preflight(d,m):
     require(deploy_repo and marker.get('deployCommit')==m['pair']['deploy'] and
             str(Path(deploy_repo).resolve())==str(Path(marker['deployRepository']).resolve()),'M7_DEPLOY_SOURCE_REQUIRED')
     commit(core_repo,m['pair']['core']);commit(deploy_repo,m['pair']['deploy'])
-    discovery_source_features(core_repo,m['pair']['core'],static=bool(m.get('staticTopology')))
-    if m.get('staticTopology'):static_topology.verify_source(sys.modules[__name__],m,core_repo,deploy_repo)
     if m.get('pgstreamTopology')==stream_topology.EXTERNAL:
         stream_topology.verify_source(m,json.loads(git(core_repo,'show',m['pair']['core']+':lib/server/serve/plan-contract/schema/evaluator.schema.json')))
     image(m)
@@ -745,7 +729,6 @@ def discovery_source_preflight(d,m):
 def preparation_environment(m):
     # Static overlays pin seed counts during prepare, before .env is appended.
     return {'NS_API_REPLICAS': str(m['replicas']), 'NS_DEMO_TENANTS': str(m['tenants']),
-            **({population_ceiling.ENV:str(m[population_ceiling.FIELD])} if population_ceiling.FIELD in m else {}),
             **static_topology.environment(m)}
 
 
@@ -766,7 +749,6 @@ def discovery_source_contract(d,m,core_repo,deploy_repo):
         (core/'node_modules').symlink_to(d/'dependencies/node_modules',target_is_directory=True)
         env=runtime_env({'NS_PGSTREAM':'1',**preparation_environment(m)})
         if m.get('staticTopology'):
-            static_topology.verify_source(sys.modules[__name__],m,core_repo,deploy_repo)
             # Use the ordinary product generator; the historical convenience
             # generated() wrapper explicitly refuses static realtime.
             code = "const p=require('./deploy/multitenant/config'),l=p.layout();const urls=Object.fromEntries(Object.keys(l.roles).map(k=>[k,'postgres://'+l.roles[k]+':placeholder@postgres:5432/nightscout_compose_test']));const docs=p.documents({layout:l,urls,tokens:[],publicKeys:[],managementKeys:[],vaultAddress:'https://vault:8200',registryMode:true,realtimeOwnership:require('./deploy/multitenant/realtime-workers').initial(require('./deploy/multitenant/realtime-workers').selection())});console.log(JSON.stringify(require('./tools/prospective-plan-documents').documentSet(docs)));"
@@ -831,14 +813,14 @@ def prepare(args):
     require(not local_observer or (selected and document(args.freeze).get('version')==2),
             'M7_LOCAL_OBSERVER_RECEIPT')
     options=prepare_primer_options(args)
-    extended_primer=primer_options.requires_extended(options) or prepare_population_ceiling(args) is not None
+    extended_primer=primer_options.requires_extended(options)
     if extended_primer:
         # The fixture-specific resource driver receives its container budget
         # after Compose is rendered. Check the isolated cached-image parser
         # before arming that driver, without borrowing any runtime one-off.
         commit(args.deploy_repo,args.deploy_commit)
         args.image_input_preflight=prepare_image_inputs(args)
-    diagnostic_resources.configure(selected)
+    diagnostic_resources.configure(selected, driver_scope=Path(args.directory).resolve())
     commissioning_wal.option(args)
     fixture_project(args,'0'*32)
     ack_budget=stream_topology.ack_option(args)
@@ -858,12 +840,9 @@ def prepare(args):
     require(not target.exists() and not any(p in (".git", "node_modules") for p in target.parts), "M7_TARGET_MUST_BE_NEW")
     for repo in (args.core_repo, args.deploy_repo):
         commit(repo, args.core_commit if repo == args.core_repo else args.deploy_commit)
-    discovery_source_features(args.core_repo,args.core_commit,static=bool(static_topology.option(args)))
     if getattr(args,'pgstream_topology',stream_topology.COLOCATED)==stream_topology.EXTERNAL:
         stream_topology.verify_source({'pgstreamTopology':args.pgstream_topology},json.loads(git(args.core_repo,'show',args.core_commit+':lib/server/serve/plan-contract/schema/evaluator.schema.json')))
     static_selection=static_topology.option(args)
-    if static_selection:
-        static_topology.verify_source(sys.modules[__name__],{**static_selection,'pair':{'core':args.core_commit,'deploy':args.deploy_commit},'profile':args.profile,'runPurpose':args.run_purpose,'pgstreamTopology':args.pgstream_topology,'completionContract':args.completion_contract,'replicas':args.replicas},args.core_repo,args.deploy_repo)
     pinned = instrument()
     if getattr(args,'measurement_mode','accepted')=='unaccepted' or (args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery'):
         candidate={'profile':args.profile,'tenants':args.tenants,'replicas':args.replicas,'pair':{'core':args.core_commit,'deploy':args.deploy_commit},'instrument':pinned,
@@ -871,8 +850,6 @@ def prepare(args):
                    'diagnostics':profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000)),**static_selection,**({'pgstreamTopology':args.pgstream_topology,'completionContract':args.completion_contract} if static_selection else {}),
                    'primerConcurrency':options['concurrency'],**({'primerMaxTenants':options['maxTenants']} if 'maxTenants' in options else {})}
         candidate.update(commissioning_wal.option(args))
-        population=prepare_population_ceiling(args)
-        if population is not None:candidate[population_ceiling.FIELD]=population
         candidate.update(ack_budget)
         candidate.update(preload)
         if preload:
@@ -923,8 +900,6 @@ def prepare_staged(args,target,pinned):
     if getattr(args,'pgstream_topology',stream_topology.COLOCATED)!=stream_topology.COLOCATED:m['pgstreamTopology']=args.pgstream_topology
     options=prepare_primer_options(args)
     m["primerConcurrency"]=options['concurrency']
-    population=prepare_population_ceiling(args)
-    if population is not None:m[population_ceiling.FIELD]=population
     if 'maxTenants' in options:m['primerMaxTenants']=options['maxTenants']
     m.update(commissioning_wal.option(args))
     m.update(stream_topology.ack_option(args))
@@ -963,7 +938,6 @@ def prepare_staged(args,target,pinned):
     # the owned lockfile context before invoking it, not after bootstrap.
     setup_generator(target,m)
     env = runtime_env({**preparation_environment(m),**({"NS_PGSTREAM":"1","NS_POSTGRES_IMAGE":args.postgres_image} if args.profile=="pgstream-sample" else {})})
-    if population is not None:env[population_ceiling.ENV]=str(population)
     edge_budget=diagnostic_resources.edge_worker_budget(selected_resources_profile(args))
     if edge_budget is not None:
         explicit_edge=edge_budget['source']=='explicit-resource-allocation-v1'
@@ -1003,7 +977,6 @@ def prepare_staged(args,target,pinned):
             if volume.get("type")=="bind":
                 require(Path(volume["source"]).resolve().is_relative_to(target / "state"), "M7_FOREIGN_STATE_MOUNT_REFUSED")
     required=("postgres","vault","admin","primer","api","realtime","evaluator","tenant-admin","ui","nginx")+(() if args.profile=="pgstream-sample" else ("feed-reader",))
-    population_ceiling.project_compose(config,population,primer_need)
     require(all(name in config["services"] for name in required),"M7_BINDING_CAPABILITY_MISSING")
     # Ordinary runtime source stays in its paired image. The explicit clinical
     # diagnostic may later stage one separately attested sender executable;
@@ -1031,8 +1004,6 @@ def prepare_staged(args,target,pinned):
                                 for _,kind,argv in planned if kind=='compose'))
             observation=resource_cpu_preflight(selected_resources,roles=roles,observation=observation)
         m['cpuPrecisionPreflight']=observation
-    clinical_timeline.install(config,target,m,getattr(args,'clinical_intake_timeline','off'),getattr(args,'clinical_sender_binary',None),getattr(args,'clinical_sender_receipt',None),getattr(args,'clinical_intake_targets',None))
-    revision_witness.install(config,target,m,getattr(args,'revision_witness_targets',None))
     api_cause.install(config,target,m,getattr(args,'api_cause_observation','off')=='on')
     api_warm_cause.install(config,target,m,api_warm_cause.option(args).get('apiWarmCauseMode','off'))
     m['servingInstances'] = role_instances.roster(config,m['replicas'])
@@ -1061,13 +1032,18 @@ def prepare_staged(args,target,pinned):
     print(json.dumps({"prepared": m["project"], "pair": m["pair"], "tenants": args.tenants, "replicas": args.replicas}))
 
 
+def verify_source(d, m):
+    """Once per candidate, before the image is built: the owned core copy is the
+    selected commit and the shipping build inputs are clean. Later stages
+    identify the run by image id and frozen configuration only."""
+    require(git(d / "core", "rev-parse", "HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
+    code = "require('./deploy/multitenant/build').assertCleanSource(process.cwd(),process.argv[1])"
+    command(["node", "-e", code, m["pair"]["core"]], cwd=d / "core")
+
+
 def verify(d, m, teardown=False):
     require(host_identity(fixture_inventory(m))==m["hostIdentity"],"M7_HOST_IDENTITY_CHANGED")
-    require(git(d / "core", "rev-parse", "HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
     require(digest(d / "frozen.compose.json") == m["composeSha256"], "M7_COMPOSE_CHANGED")
-    if not teardown:
-        population_ceiling.project_compose(document(d/'frozen.compose.json'),m.get(population_ceiling.FIELD),primer_need,verify=True)
-        if not m.get('attached'):population_ceiling.verify_image(d,m,primer_need)
     if not teardown and not m.get('attached') and primer_options.requires_extended(primer_options.from_manifest(m)):
         reference=m.get('imageInputPreflight',{})
         source=reference.get('primerSource',{})
@@ -1089,8 +1065,6 @@ def verify(d, m, teardown=False):
         stream_topology.verify_ack_budget(d,m,document(d/'frozen.compose.json')['services']['pgstream']['volumes'])
     commissioning_wal.verify(document(d/"frozen.compose.json"),m)
     platform_startup_config(document(d/"frozen.compose.json"),d,m,verify=True)
-    clinical_timeline.verify(document(d/"frozen.compose.json"),d,m,teardown=teardown)
-    revision_witness.verify(document(d/"frozen.compose.json"),d,m)
     api_cause.verify(document(d/"frozen.compose.json"),d,m)
     api_warm_cause.verify(document(d/"frozen.compose.json"),d,m)
     node_observation.verify(document(d/"frozen.compose.json"),d,m)
@@ -1106,14 +1080,11 @@ def verify(d, m, teardown=False):
     require(digest(d / "k6/workload.js") == m["workload"]["adaptedSha256"], "M7_WORKLOAD_CHANGED")
     for file, sha in m["sourceCompose"].items():
         require(digest(d / file) == sha, "M7_SOURCE_COMPOSE_CHANGED")
-    # Shipping build admission checks every input against the two commits.
-    code = "require('./deploy/multitenant/build').assertCleanSource(process.cwd(),process.argv[1])"
-    command(["node", "-e", code, m["pair"]["core"]], cwd=d / "core")
     assert_owned(m)
 
 
-def psql(d, sql, database="postgres", *, timeout=None):
-    return compose(d, "exec", "-T", "postgres", "psql", "-X", "-q", "-At", "-F", "\t", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", database, input=sql.encode(),**({'timeout':timeout} if timeout is not None else {}))
+def psql(d, sql, database="postgres", *, timeout=None, rows=None):
+    return compose(d, "exec", "-T", "postgres", "psql", "-X", *(["-v", "FETCH_COUNT=64"] if rows else []), "-q", "-At", "-F", "\t", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", database, input=sql.encode(),**({'rows':rows} if rows else {}),**({'timeout':timeout} if timeout is not None else {}))
 
 
 def service_roster(config):
@@ -1136,14 +1107,6 @@ def prepare_primer_options(args):
     return chosen
 
 
-def prepare_population_ceiling(args):
-    value=getattr(args,'population_ceiling',None)
-    if value is None:return None
-    value=population_ceiling.selection(value,args.tenants,primer_need)
-    require(value is None or getattr(args,'run_purpose','acceptance')=='discovery' and args.profile=='pgstream-sample',
-            'M7_POPULATION_CEILING_DISCOVERY_ONLY')
-    return value
-
 
 def application_database(d):
     # The frozen canonical Compose contract selects the application's database.
@@ -1156,10 +1119,17 @@ def application_database(d):
 def primer_counts(d,m):
     """Read independent custody and database counts before workers or load start."""
     state=d/"state/primer"
-    seed=document(state/"config.json")["seed"]
-    expected={row["id"] for row in seed}
-    require(len(seed)==len(expected)==m["tenants"],"M7_PRIMER_SEED_COUNT")
     issued=document(state/"provisioned.json")
+    seed=document(state/"config.json").get("seed")
+    if seed is None:
+        require(verified_serving(document(d/"frozen.compose.json")), "M7_PRIMER_SEED_COUNT")
+        module=d/"core/deploy/multitenant/demo-tenants.js"
+        expected=set(json.loads(command(["node", "-e", "console.log(JSON.stringify(require(process.argv[1]).tenantIds(Number(process.argv[2]))))",
+                                         module, str(m["tenants"])])))
+    else:
+        expected={row["id"] for row in seed}
+        require(len(seed)==len(expected), "M7_PRIMER_SEED_COUNT")
+    require(len(expected)==m["tenants"],"M7_PRIMER_SEED_COUNT")
     accepted=document(state/"tenants.json")
     tenant_projection(accepted,m["tenants"])
     complete=document(state/"primed.json")
@@ -1175,7 +1145,7 @@ def primer_counts(d,m):
         require(tenant not in stored,"M7_PRIMER_DATABASE_DUPLICATE_GROUP")
         stored[tenant]=int(count)
     ok=set(stored)==expected and all(count==1 for count in stored.values())
-    result={"verdict":"PASS" if ok else "FAIL","requestedTenants":len(seed),"provisionedTenants":len(issued),
+    result={"verdict":"PASS" if ok else "FAIL","requestedTenants":len(expected),"provisionedTenants":len(issued),
             "acceptedAndSavedTenants":len(accepted["tenants"]),"persistedTenants":len(stored),
             "persistedEntries":sum(stored.values()),"perTenantEntries":stored,
             "scope":"PRIVATE synthetic commissioning only; accepted means HTTP success plus saved custody; SQL is independent"}
@@ -1214,12 +1184,13 @@ def platform_startup_config(config,d,m,readiness=None,verify=False):
 def deployment_plan(config,pgstream=False,primer_concurrency_value=1,platform_verification=False,compose_ready_seconds=1200,*,primer_max_tenants=None):
     selected={'concurrency':primer_concurrency_value}
     if primer_max_tenants is not None:selected['maxTenants']=primer_max_tenants
+    elif verified_serving(config):selected['maxTenants']=int(config['services']['primer']['environment']['NS_DEMO_TENANTS'])
     prime_options=primer_options.argv(primer_options.selection(selected,primer_need))
     roster=service_roster(config)
     apis=[name for name in roster if config["services"][name]["command"][-1]=="api"]
     remaining=[name for name in roster if name not in apis]
     start=["up","-d","--no-build","--pull","never","--wait","--wait-timeout",str(compose_ready_seconds)]
-    return [
+    plan = [
         ("infrastructure","compose",[*start,"postgres","vault"]),
         ("bootstrap","compose",["--profile","ops","run","--rm","bootstrap"]),
         ("admin-feed","compose",[*start,"admin",*(["feed-reader"] if not pgstream else [])]),
@@ -1230,6 +1201,20 @@ def deployment_plan(config,pgstream=False,primer_concurrency_value=1,platform_ve
         ("prime","compose",["--profile","ops","run","--rm","--no-deps","primer","node","deploy/multitenant/prime.js","prime",*prime_options]),
         ("publish-primer","local",["publish-primer.js"]),
         ("remaining-roles","compose",[*start,*remaining,"ui","nginx"])]
+    if verified_serving(config):
+        require(platform_verification, 'M7_PLATFORM_STARTUP_CAPABILITY_MISSING')
+        stages = {row[0]: row for row in plan}
+        commission = stages['commission'][2]
+        commission[commission.index('bootstrap'):commission.index('bootstrap')] = [
+            '--env=NS_DEMO_TENANTS='+config['services']['primer']['environment']['NS_DEMO_TENANTS']]
+        # Start the Vault process so bootstrap can initialize or unseal it.
+        # The infrastructure stage needs PostgreSQL ready for its SQL setup.
+        stages['vault-start'] = ('vault-start', 'compose', ['up','-d','--no-build','--pull','never','vault'])
+        stages['infrastructure'] = ('infrastructure', 'compose', [*start, 'postgres'])
+        stages['serving'] = ('serving', 'compose', [*start, *roster, 'ui', 'nginx'])
+        return [stages[name] for name in ('vault-start', 'infrastructure', 'bootstrap', 'admin-feed',
+                                          'platform-verify', 'serving', 'provision', 'commission', 'prime', 'publish-primer')]
+    return plan
 
 
 def generator_tools():
@@ -1301,7 +1286,7 @@ def attachment_generator(d,source,root,m,owner_file=None):
     if runtime and runtime.get('diagnosticResources'):
         require(m.get('diagnosticResources')==runtime['diagnosticResources'],'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
         diagnostic_resources.configure(runtime['diagnosticResources']['profile'],document(d/'frozen.compose.json'),
-            runtime['diagnosticResources'],observe=lambda:diagnostic_resource_rows(m))
+            runtime['diagnosticResources'],observe=lambda:diagnostic_resource_rows(m), driver_scope=d)
     tools=generator_tools();client=generator_client(d,tools)
     contexts={'generator':dependency_context(root,root/'node_modules',['socket.io-client','pg','js-yaml']),
               'source':dependency_context(source,root/'node_modules',['pg','js-yaml'])}
@@ -1467,7 +1452,9 @@ def deployment_stage(d, stages, name):
         if name == 'platform-verify':
             row['verificationDiagnostic'] = platform_failure_observation(d)
         try:
-            terminal_snapshot(d,document(d/'owner.json'),'terminal-'+name+'.json')
+            terminal=terminal_snapshot(d,document(d/'owner.json'),'terminal-'+name+'.json')
+            if terminal.get('vaultCondition')=='VAULT_SEALED':
+                row['stopReason']='VAULT_SEALED'
             row['terminalObservation']='terminal-'+name+'.json'
         except Exception:
             row['terminalObservation']='UNMEASURED; cleanup makes an independent bounded capture'
@@ -1477,6 +1464,22 @@ def deployment_stage(d, stages, name):
         try:write(d/"deployment-stages.json",stages)
         except Exception:
             if primary is None:raise
+
+
+def compose_role_progress(d, roles, stage, seconds):
+    # Read only service/status fields, from the same project as the foreground up.
+    # The high-water sum cannot renew on a flapping health check or restart.
+    raw = compose(d, 'ps', '--all', '--format', '{{.Service}}|{{.State}}|{{.Health}}', *roles, timeout=ProgressWindow.read_seconds(min(seconds,5)))
+    levels = {}
+    for line in raw.splitlines():
+        name, state, health = line.split('|')
+        if name in roles:
+            level = 3 if health == 'healthy' else 2 if state == 'running' else 1
+            levels[name] = max(level, levels.get(name, 0))
+    high_water = stage.setdefault('roleProgress', {})
+    for name, level in levels.items():
+        high_water[name] = max(high_water.get(name, 0), level)
+    return sum(high_water.values())
 
 
 def deploy(d, m):
@@ -1490,23 +1493,35 @@ def deploy(d, m):
     if m.get("postgresImageId"):
         pg=json.loads(command(["docker","image","inspect",m["postgresImageId"]]))[0]
         require(pg["Id"]==m["postgresImageId"] and config["services"]["postgres"]["image"]==pg["Id"],"M7_POSTGRES_IMAGE_CHANGED")
-    write(d / "frozen.compose.json", config);m["composeSha256"] = digest(d / "frozen.compose.json");write(d / "owner.json", m)
-    stages=[]
     authored=m.get('cadence',{}).get('startupWindows',{})
     startup=workload_inputs.startup_windows(authored,workload_inputs.COMPOSE_STARTUP_DEFAULTS,require)
+    if 'primer' in config['services']:
+        config['services']['primer'].setdefault('environment',{})['NS_PRIMER_STALL_SECONDS']=str(startup['stageSeconds'])
+    write(d / "frozen.compose.json", config);m["composeSha256"] = digest(d / "frozen.compose.json");write(d / "owner.json", m)
+    stages=[]
     for name,scope,args in deployment_plan(config,pgstream=m.get("profile")=="pgstream-sample",primer_concurrency_value=m.get("primerConcurrency",1),platform_verification=bool(m.get("platformStartup")),compose_ready_seconds=startup['composeReadySeconds'],primer_max_tenants=m.get('primerMaxTenants')):
         with deployment_stage(d, stages, name) as stage:
-            timeout = remaining_seconds(authored['stageSeconds']) if 'stageSeconds' in authored else discovery_seconds(m, startup['stageSeconds'])
-            if ('stageSeconds' not in authored and name in ("provision", "prime") and
-                    m.get('discoveryAuthorization', {}).get('executionScope') == 'LOCAL_OWNED_TO_COMPLETION'):
-                timeout = None
+            if name in ('serving', 'remaining-roles') and m.get('profile') == 'pgstream-sample':
+                clinical_warm.start(d/clinical_warm.FILE, clinical_warm.now_ms(), 'evaluator role start invocation')
+            waiter = None
+            if name in ('provision', 'prime'):
+                waiter = ComposePrimerWait(d/'state/primer', name, startup['stageSeconds'], stage)
+                if name == 'prime' and verified_serving(config) and m.get('profile') == 'pgstream-sample':
+                    waiter.sample = commissioning_wal.sampler(
+                        lambda query: psql(d, query, application_database(d), timeout=ProgressWindow.read_seconds(3)), stage)
+            elif '--wait-timeout' in args:
+                index = args.index('--wait-timeout')
+                roles = args[index+2:]
+                del args[index:index+2]  # Docker still owns --wait readiness and hard failures.
+                seconds = startup['composeReadySeconds']
+                stage['composeReadyWindow'] = {'stallSeconds':seconds}
+                waiter = ComposeProgressWait(seconds, 'M7_ROLE_READINESS_STALLED',
+                                             lambda: compose_role_progress(d, roles, stage, seconds))
+            if waiter:
+                timeout = remaining_seconds(float('inf')) if _COMMAND_DEADLINE.get() is not None else None
+            else:
+                timeout = remaining_seconds(authored['stageSeconds']) if 'stageSeconds' in authored else discovery_seconds(m, startup['stageSeconds'])
             stage['stageTimeoutSeconds']=timeout
-            if '--wait-timeout' in args:
-                advertised=startup['composeReadySeconds']
-                bounded=math.floor(min(remaining_seconds(advertised),timeout if timeout is not None else advertised))
-                require(bounded>=1,'M7_COMMAND_DEADLINE')
-                args[args.index('--wait-timeout')+1]=str(bounded)
-                stage['composeReadyWindow']={'selectedSeconds':advertised,'effectiveSeconds':bounded}
             write(d/'deployment-stages.json',stages)
             if name=="prime":
                 prior=d/"state/primer/tenants.json"
@@ -1520,26 +1535,19 @@ def deploy(d, m):
                 if scope=="local":
                     command(["node",d/"core/deploy/multitenant"/args[0],d/"state"],file=output,
                             **({'timeout':timeout} if 'stageSeconds' in authored else {}))
+                elif waiter:
+                    compose(d,*args,file=output,timeout=timeout,wait_for_primer=waiter)
                 else:compose(d,*args,file=output,timeout=timeout)
             if name=="commission" and m.get("vaultRefusalControl"):vault_control(d,m,"deny")
-            if name=="prime" and m.get("primerConcurrency",1)!=1:primer_counts(d,m)
-            if name=="publish-primer" and m.get("clinicalTimeline"):
-                clinical_timeline.publish(d,m,tenant_projection(document(d/"state/primer/tenants.json"),m["tenants"]))
-                write(d/"owner.json",m)
+            if name=="prime" and (verified_serving(config) or m.get("primerConcurrency",1)!=1):primer_counts(d,m)
             if name=="infrastructure":psql(d,"CREATE EXTENSION IF NOT EXISTS pg_stat_statements;")
             if name=="bootstrap":
-                population_readback=population_ceiling.local_readback(d,m,primer_need)
-                if population_readback is not None:
-                    m['populationCeilingReadback']=population_readback
-                    write(d/'population-ceiling-readback.json',population_readback)
                 ack_wire=stream_topology.install_ack_budget(d,m,config)
                 if ack_wire is not None:
                     m['pgstreamNotifierAckWire']=ack_wire
                     write(d/'producer-ack-budget.json',ack_wire)
                 if m.get('staticTopology'):static_runtime_contract(d,m)
-                fingerprint=settings_fingerprint(d,m)
-                m["settingsFingerprint"]=fingerprint
-                m["profileSelection"]=profile_provenance.identity(fingerprint,m["diagnostics"],config)
+                m["profileSelection"]=profile_provenance.identity(m["diagnostics"],config)
                 profile_provenance.state_environment(d/"state",config,m["diagnostics"])
                 write(d/"owner.json",m)
                 layout=document(d/"state/bootstrap/layout.json")
@@ -1633,6 +1641,12 @@ def terminal_snapshot(d, m, filename='terminal-before-cleanup.json', seconds=20)
             expected=spec.get('image','')
             require(not expected.startswith('sha256:') or row['Image']==expected,'M7_TERMINAL_IMAGE_CHANGED')
             state=row.get('State',{});pid=state.get('Pid',0)
+            if service=='vault':
+                health=state.get('Health',{})
+                latest=(health.get('Log') or [{}])[-1]
+                if (health.get('Status')=='unhealthy' and latest.get('ExitCode')==1
+                        and 'VAULT_SEALED' in latest.get('Output','').splitlines()):
+                    result['vaultCondition']='VAULT_SEALED'
             item={'id':row['Id'],'service':service,'imageId':row['Image'],
                   'restartCount':row.get('RestartCount','UNMEASURED'),
                   'state':{key:state.get(key,'UNMEASURED') for key in
@@ -1705,13 +1719,21 @@ def phase_snapshot(d, out, name):
     timings={'version':1,'collectorOwner':snapshot_owner.get('owner'),'hostIdentity':snapshot_owner.get('hostIdentity'),'clockDomain':'collector-host-monotonic-v1','scope':'existing SQL snapshot request bounds; not exact query instants or database-role CPU','reads':{}}
     sql="SELECT r.rolname,sum(s.calls),sum(s.total_exec_time) FROM pg_stat_statements s JOIN pg_roles r ON r.oid=s.userid GROUP BY 1 ORDER BY 1;"
     statements="SELECT r.rolname,s.calls,s.total_exec_time,s.queryid,s.dbid,encode(convert_to(s.query,'UTF8'),'hex') FROM pg_stat_statements s JOIN pg_roles r ON r.oid=s.userid ORDER BY r.rolname,s.queryid;"
+    deferred_read_error = None
+    discovery_bookend = snapshot_owner.get('runPurpose') == 'discovery' and out == d/'load'
     for kind,query in [('pg-role',sql),('pg-statements',statements)]:
         row={'wallStartedAtNs':time.time_ns(),'monotonicStartedAtNs':time.monotonic_ns()};timings['reads'][kind]=row
         try:
             with segments.capture(kind,[name+'-'+kind+'.tsv']):
                 (out/(name+'-'+kind+'.tsv')).write_text(psql(d,query));row['status']='PASS'
-        except BaseException:
-            row['status']='FAILED';raise
+        except Exception as error:
+            row['status']='FAILED'
+            if not discovery_bookend:
+                raise
+            # Verify custody and time before another independent read.
+            assert_owned(snapshot_owner)
+            remaining_seconds(1)
+            deferred_read_error = deferred_read_error or error
         finally:
             row.update(wallFinishedAtNs=time.time_ns(),monotonicFinishedAtNs=time.monotonic_ns())
             # Timing publication never conceals the original SQL failure.
@@ -1736,17 +1758,9 @@ def phase_snapshot(d, out, name):
         except Exception as error:
             write(out/(name+'-'+kind+'-failure.json'),{'status':'UNMEASURED','code':collection_segments.code(error),'failureType':type(error).__name__})
 
-
-    # Exact new native configurations expose a runtime source-access census.
-    # Optional observation is independent of mandatory SQL/cgroup captures.
-    completion_path=d/'completion-source.json'
-    if completion_path.is_file() and document(completion_path).get('native'):
-        try:
-            with segments.capture('source-access',[name+'-source-access.json']):
-                ids=sorted(row['id'] for row in document(d/'tenants.private.json'))[:128]
-                write(out/(name+'-source-access.json'),source_access.collect(sys.modules[__name__],d,snapshot_owner,ids))
-        except Exception as error:
-            write(out/(name+'-source-access-failure.json'),{'status':'UNMEASURED','code':collection_segments.code(error),'failureType':type(error).__name__})
+    if deferred_read_error is not None:
+        deferred_read_error.snapshotObserverFailed = True
+        raise deferred_read_error
 
 
 def sql_counter_rate_bounds(before,after,delta,kind='pg-role'):
@@ -1796,6 +1810,9 @@ def sampling(d, out):
     log = (out / "sampler.log").open("wb")
     env = runtime_env({"M7_SAMPLE_OWNER": m["owner"]}) if (
         m.get("profile") == "pgstream-sample" and m.get("runPurpose") == "discovery") else runtime_env()
+    import driver_memory
+    if out.name == 'load' and driver_memory.selected(m):
+        env['M7_SAMPLE_DRIVER_MEMORY'] = '1'
     process = subprocess.Popen([str(BASE / "probes/sample.sh"), m["project"], str((d / "env").resolve()), str((d / "frozen.compose.json").resolve()), str(empty.resolve()), str(out.resolve()),str(m.get("cadence",{}).get("samplerIntervalSeconds",2))], cwd=d.resolve(),env=env, stdout=log, stderr=log, start_new_session=True)
     job=out/"sampler-job.json";job_record(job,process,m["owner"],group=True)
     before = time.monotonic()
@@ -1936,11 +1953,24 @@ def progress_services(d):
     return services
 
 
-def progress_fetch(d,service,ids,queries,budget,timeout=20):
+def progress_fetch(d,service,ids,queries,budget,timeout=20,*,stall_seconds=None):
     prefix="const M7_PROGRESS_IDS="+json.dumps(ids)+";const M7_PROGRESS_QUERY_BUDGET="+str(queries)+";const M7_PROGRESS_BYTE_BUDGET="+str(budget)+";\n"
+    options = {}
+    if stall_seconds is not None:
+        timeout = min(timeout, remaining_seconds((queries+1)*stall_seconds))
+        prefix += 'const M7_PROGRESS_DEADLINE_MS='+str(max(1,math.floor(timeout*1000)))+';\n'
+        reader = observation_rows.Rows(ids, stall_seconds, evaluator_progress.POLICY['responseMaxBytes']+8192, pages=True)
+        options['rows'] = reader
     code=prefix+(HERE/"evaluator-progress.cjs").read_text()
-    try:return compose(d,"exec","-T",service,"node","-",input=code.encode(),timeout=timeout)
-    except Exception:raise evaluator_progress.Refused("M7_EVALUATOR_PROGRESS_UNAVAILABLE")
+    try:
+        raw = compose(d,"exec","-T",service,"node","-",input=code.encode(),timeout=timeout,**options)
+        if stall_seconds is not None:
+            reader.finish(raw.encode())
+        return raw
+    except evaluator_progress.Refused:
+        raise
+    except Exception:
+        raise evaluator_progress.Refused("M7_EVALUATOR_PROGRESS_UNAVAILABLE")
 
 
 def progress_attribution(m):
@@ -1965,22 +1995,57 @@ def progress_summary(out):
     return {**result,'rawSha256':digest(out/'evaluator-progress.json'),'gzipSha256':digest(out/'evaluator-progress.json.gz')}
 
 
+def retain_raw(out,phase,fetch):
+    """Raw-first: write each response before any decoder reads it."""
+    folder=out/'evaluator-progress-raw';folder.mkdir(mode=0o700,exist_ok=True)
+    counts={};lock=threading.Lock()
+    def retained(service,*args):
+        with lock:index=counts.get(service,0);counts[service]=index+1
+        raw=fetch(service,*args)
+        data=raw.encode() if isinstance(raw,str) else raw
+        if isinstance(data,bytes):
+            path=folder/('%s-%02d-%s.private.jsonl'%(phase,index,service))
+            with path.open('xb') as stream:stream.write(data)
+            path.chmod(0o600)
+        return raw
+    return retained
+
+
+def midpoint_judge(ids):
+    def judge(raw):
+        point=outcome_gate.from_pages({service:value for service,value in raw.items() if value is not None})
+        return outcome_gate.midpoint_decision(outcome_gate.classify_point(point,ids,final=False))
+    return judge
+
+
 def observe_progress(d,m,out,phase):
     ids=sorted(row['id'] for row in document(d/'tenants.private.json'))
     until=_COMMAND_DEADLINE.get()
     def fetch(*args):
         # Executor threads do not inherit ContextVars. Keep the original cutoff.
-        with command_deadline(until):return progress_fetch(d,*args)
+        with command_deadline(until):
+            if 'evaluatorOpportunities' in m and phase in ('idle','load'):
+                seconds = allocation['effective']['roundSeconds']
+                return progress_fetch(d,*args,timeout=(args[2]+1)*seconds,stall_seconds=seconds)
+            return progress_fetch(d,*args)
+    fetch=retain_raw(out,phase,fetch)
+    fetch=clinical_warm.observing(fetch,d/clinical_warm.FILE,progress_services(d),ids)
     args=(progress_services(d),ids,fetch,m['cadence'][phase+'Seconds'],phase,lambda value:write_progress(out,value,m))
+    observer={'midpoint_judge':midpoint_judge(ids),'signal_write':lambda value:write(out/'evaluator-midpoint-signal.json',{**value,'instrument':outcome_gate.instrument()})}
     policy=evaluator_progress.capture_policy(m['cadence'].get('evaluatorProgressBudget'))
     if 'evaluatorOpportunities' in m:
         opportunity_contract(m)
         if phase in ('idle','load'):
-            collector=opportunity_collector(d,m,ids)
-            observer=evaluator_opportunities.Observer(*args,durable_fetch=collector,binding=collector.binding,preparation_cost=collector.preparation_cost,source_sha256=collector.source_sha256,query_sha256=collector.query_sha256,policy=policy)
+            allocation=evaluator_opportunities.round_budget(len(ids),m['cadence'].get('opportunityObservation'))
+            policy=evaluator_progress.roster_policy(m['cadence'].get('evaluatorProgressBudget'), len(ids), len(args[0]))
+            collector=opportunity_collector(d,m,ids,byte_limit=allocation['effective']['sqlMaxBytes'],
+                                            round_seconds=allocation['effective']['roundSeconds'])
+            observer=evaluator_opportunities.Observer(*args,durable_fetch=collector,binding=collector.binding,preparation_cost=collector.preparation_cost,source_sha256=collector.source_sha256,query_sha256=collector.query_sha256,round_allocation=allocation,policy=policy,**observer)
             observer.rest_only=discovery_rest.permitted(sys.modules[__name__],d,m)
             return observer
-    return evaluator_idle.Observer(*args,tail_fetch=fetch,policy=policy) if phase=='idle' else evaluator_progress.Observer(*args,policy=policy)
+    if phase=='idle':return evaluator_idle.Observer(*args,tail_fetch=fetch,policy=policy,failure_policy=evaluator_progress.OUTCOME_FAILURE_POLICY,**observer)
+    value=evaluator_progress.Observer(*args,policy=policy,**observer);value.failure_policy=evaluator_progress.OUTCOME_FAILURE_POLICY
+    return value
 
 
 def opportunity_contract(m):
@@ -1994,9 +2059,11 @@ def select_opportunities(args,m):
     if selected is not None:m['evaluatorOpportunities']=selected;opportunity_contract(m)
 
 
-def opportunity_collector(d,m,ids):
+def opportunity_collector(d,m,ids,*,byte_limit=None,round_seconds=None):
     """Existing private SQL executor; no public-driver SQL or new connection."""
     opportunity_contract(m);evaluator_progress.validate_ids(ids)
+    def sql_bytes():return evaluator_opportunities.ROUND_BYTES if byte_limit is None else byte_limit
+    evaluator_progress.need(type(sql_bytes()) is int and 0<sql_bytes()<=2**53-1,'M7_OPPORTUNITY_BYTE_BOUND')
     config_path=d/'completion-source.json'
     require(config_path.is_file(),'M7_OPPORTUNITY_SOURCE_REQUIRED')
     config=document(config_path);source_sha=digest(config_path)
@@ -2010,8 +2077,7 @@ def opportunity_collector(d,m,ids):
     def invoke(value,timeout):
         if until is not None:
             require(until>time.time(),'M7_COMMAND_DEADLINE');timeout=min(timeout,until-time.time())
-        raw=command([node,*([] if diagnostic_resources._ACTIVE is not None else ['--max-old-space-size=256']),'-e',script,HERE/'completed-oracle.cjs'],input=json.dumps({'config':config,**value}).encode(),timeout=timeout,phase='completed-oracle')
-        evaluator_progress.need(len(raw.encode())<=evaluator_opportunities.ROUND_BYTES,'M7_OPPORTUNITY_BYTE_BOUND')
+        raw=command([node,'-e',script,HERE/'completed-oracle.cjs'],input=json.dumps({'config':config,**value}).encode(),timeout=timeout,phase='completed-oracle')
         value=json.loads(raw)
         if isinstance(value,dict) and 'refused' in value:
             code=value['refused'];error=evaluator_progress.Refused(code,'UNMEASURED' if code in ('M7_OPPORTUNITY_COVERAGE','M7_COMPLETION_NATIVE_INVALIDATED') else 'FAIL')
@@ -2019,26 +2085,42 @@ def opportunity_collector(d,m,ids):
             raise error
         return value
     batches=[ids[offset:offset+64] for offset in range(0,len(ids),64)]
-    start=time.monotonic();cpu=time.process_time();queries=invoke({'mode':'queries','batches':batches},10)
+    start=time.monotonic();cpu=time.process_time()
+    queries=invoke({'mode':'queries','batches':batches}, round_seconds or evaluator_opportunities.ROUND_SECONDS)
     evaluator_progress.need(isinstance(queries,list) and len(queries)==len(batches) and all(isinstance(q,str) and q.startswith('SELECT ') for q in queries),'M7_OPPORTUNITY_QUERY_BINDING')
     preparation={'wallSeconds':time.monotonic()-start,'observerProcessCpuSeconds':time.process_time()-cpu,'nodeCalls':1,'sqlQueries':0}
     def capture(timeout=None):
-        if timeout is None:timeout=evaluator_opportunities.ROUND_SECONDS
-        evaluator_progress.need(type(timeout) in (int,float) and math.isfinite(timeout) and timeout>0,'M7_OPPORTUNITY_DEADLINE')
+        stall = evaluator_opportunities.ROUND_SECONDS if round_seconds is None else round_seconds
+        evaluator_progress.need(stall > 0 and (timeout is None or timeout > 0),'M7_OPPORTUNITY_DEADLINE')
+        # Without an operator work cutoff, the finite roster bounds the number
+        # of possible renewals. A silent process still has one inactivity window.
+        start = time.monotonic()
+        cpu = time.process_time()
+        deadline = start + (timeout if timeout is not None else (len(ids) + len(queries) + 1) * stall)
+        def remaining():
+            left = min(deadline-time.monotonic(), until-time.time() if until is not None else float('inf'))
+            evaluator_progress.need(left > 0,'M7_OPPORTUNITY_DEADLINE')
+            return left
         require(digest(config_path)==source_sha,'M7_OPPORTUNITY_SOURCE_CHANGED')
-        start=time.monotonic();cpu=time.process_time();deadline=start+min(timeout,evaluator_opportunities.ROUND_SECONDS);rows=[];used=0;count=0
-        cost={'sqlQueries':0,'rawSqlBytes':0,'nodeCalls':0}
+        rows = []
+        cost = {'sqlQueries':0, 'rawSqlBytes':0, 'nodeCalls':0, 'largestRowBytes':0, 'maxInactivitySeconds':0}
         try:
-            for query in queries:
-                remaining=min(deadline-time.monotonic(),until-time.time() if until is not None else float('inf'));evaluator_progress.need(remaining>0,'M7_OPPORTUNITY_DEADLINE')
-                ms=max(1,min(4000,int(remaining*1000)-100))
-                raw=psql(d,"BEGIN; SET LOCAL statement_timeout='"+str(ms)+"ms';\n"+query+"\nCOMMIT;",database,timeout=min(5,remaining))
-                count+=1;used+=len(raw.encode());cost.update(sqlQueries=count,rawSqlBytes=used)
-                evaluator_progress.need(used<=evaluator_opportunities.ROUND_BYTES,'M7_OPPORTUNITY_BYTE_BOUND')
-                rows.extend(json.loads(line) for line in raw.splitlines() if line)
-            remaining=deadline-time.monotonic();evaluator_progress.need(remaining>0,'M7_OPPORTUNITY_DEADLINE')
-            cost['nodeCalls']=1;snapshot=invoke({'mode':'snapshot','rows':rows,'ids':ids},remaining)
-            evaluator_progress.need(time.monotonic()<=deadline,'M7_OPPORTUNITY_DEADLINE')
+            for query, batch in zip(queries,batches):
+                reader = observation_rows.Rows(batch, stall, sql_bytes())
+                left = min(remaining(), (len(batch)+1)*stall)
+                ms = max(1,min(2147483647,int(left*1000)))
+                cost['sqlQueries'] += 1
+                try:
+                    raw = psql(d,"BEGIN READ ONLY; SET LOCAL statement_timeout='"+str(ms)+"ms';\n"+query+"\nROLLBACK;",database,timeout=left,rows=reader)
+                    reader.finish(raw.encode())
+                finally:
+                    cost['rawSqlBytes'] += reader.total
+                    cost['largestRowBytes'] = max(cost['largestRowBytes'], reader.largest)
+                    cost['maxInactivitySeconds'] = max(cost['maxInactivitySeconds'], reader.max_gap)
+                rows.extend(json.loads(line) for line in raw.splitlines())
+            cost['nodeCalls'] = 1
+            snapshot = invoke({'mode':'snapshot','rows':rows,'ids':ids}, min(stall,remaining()))
+            remaining()
             return snapshot,{**cost,'wallSeconds':time.monotonic()-start,'observerProcessCpuSeconds':time.process_time()-cpu}
         except Exception as error:
             error.opportunityCost={**cost,'wallSeconds':time.monotonic()-start,'observerProcessCpuSeconds':time.process_time()-cpu};raise
@@ -2054,8 +2136,12 @@ def readiness(d, m, *, clock=time):
     authored=cadence.get('startupWindows',{})
     seconds=workload_inputs.startup_windows(authored,workload_inputs.COMPOSE_STARTUP_DEFAULTS,require)['evaluatorReadySeconds']
     effective=remaining_seconds(seconds)
-    deadline=clock.monotonic()+effective
-    window={'selectedSeconds':seconds,'effectiveSeconds':effective}
+    started=clock.monotonic()
+    work_left=remaining_seconds(float('inf'))
+    work_until=started+work_left
+    stall=ProgressWindow(seconds,now=clock.monotonic)
+    deadline=min(work_until,stall.deadline)
+    window={'selectedSeconds':seconds,'effectiveSeconds':effective,'stallSeconds':seconds}
     progress_budget=cadence.get('evaluatorProgressBudget')
     policy=evaluator_progress.capture_policy(progress_budget)
     discovery=m.get('runPurpose')=='discovery'
@@ -2085,8 +2171,9 @@ def readiness(d, m, *, clock=time):
         return raw
 
     def capture():
+        measured=clinical_warm.observing(fetch,d/clinical_warm.FILE,services,ids)
         try:
-            value=evaluator_progress.round_view(services,ids,fetch,warming=True,allow_unavailable=discovery,
+            value=evaluator_progress.round_view(services,ids,measured,warming=True,allow_unavailable=discovery,
                                                 allow_clinical_stall=clinical_stall,policy=policy)
         except evaluator_progress.Refused as error:
             for key in ('queries','bytes'):
@@ -2138,6 +2225,19 @@ def readiness(d, m, *, clock=time):
             publish(error.verdict,code=str(error))
             if str(error) not in ('M7_EVALUATOR_PROGRESS_WARMING','M7_EVALUATOR_PROGRESS_ERROR','M7_EVALUATOR_PROGRESS_GATE','M7_EVALUATOR_PROGRESS_COVERAGE'):
                 raise
+        # Source-validated first warm observations can arrive across several
+        # retries. Only a new tenant renews the inactivity window. Add the
+        # per-attempt observation budget for the additional elapsed intervals.
+        warm = clinical_warm.coverage(d/clinical_warm.FILE, ids)['coverage']['WARM']
+        if stall.observe(warm):
+            previous = deadline
+            deadline = min(stall.deadline, work_until)
+            extra = math.ceil((deadline-started)/interval) - math.ceil((previous-started)/interval)
+            captures = extra * (2 if discovery else 1)
+            limits['attempts'] += extra
+            limits['queries'] += captures * len(services) * math.ceil(len(ids)/policy['selectorRows'])
+            limits['bytes'] += captures * (policy['maxBytesPerPhase']//policy['roundsPerPhase'])
+            window.update(warmTenants=warm, effectiveSeconds=deadline-started)
         clock.sleep(min(interval,max(0,deadline-clock.monotonic())))
     code=not_ready if clock.monotonic()>=deadline else exhausted
     publish('UNMEASURED',code=code)
@@ -2177,11 +2277,6 @@ def run(d,m,k6_image,oneoff=None):
         raise
 
 
-def settings_fingerprint(d,m):
-    with private_commands(d/'source-node-checks'/'settings-fingerprint'/uuid.uuid4().hex, max_output_bytes=262144):
-        return json.loads(command(['node',HERE/'fingerprint.cjs',d/'core',m['pair']['core'],d/'state/primer/config.json',str(m['tenants'])],phase='settings-fingerprint'))
-
-
 def static_runtime_contract(d,m):
     import yaml
     config=document(d/'frozen.compose.json')
@@ -2217,8 +2312,17 @@ def sample_context(d,m):
     write(d/'image-dependency-contexts.json',contexts)
     if m.get('staticTopology'):static_runtime_contract(d,m)
     evaluator=document(d/'state/evaluator/config.json');realtime=document(d/'state/realtime/config.json')
-    code="const o=require(process.argv[1]);const fs=require('fs');console.log(JSON.stringify(o.source(JSON.parse(fs.readFileSync(process.argv[2])),JSON.parse(fs.readFileSync(process.argv[3])),JSON.parse(process.argv[4]))));"
-    completion=json.loads(command(['node','-e',code,HERE/'completed-oracle.cjs',d/'state/evaluator/config.json',d/'state/realtime/config.json',json.dumps({'kind':m.get('completionContract'),'pair':m['pair'],'imageId':m['imageId'],'instrument':m['instrument']['sha256']})]))
+    receipt=None
+    if evaluator.get('pgstream',{}).get('generation'):
+        inputs={'evaluator':evaluator,'realtime':realtime,'operation':document(d/'state/evaluator/operation.json'),
+                'checkpoints':document(d/'state/admin/config.json')['provisioning']['checkpoints']}
+        receipt_code=(HERE/'native-receipt-source.cjs').read_text()+"\nconsole.log(JSON.stringify(module.exports.capture('/opt/app',"+json.dumps(inputs)+")));"
+        role=next((name for name,row in m.get('servingInstances',{}).items() if row['role']=='evaluator'),'evaluator')
+        receipt=json.loads(compose(d,'exec','-T','--workdir','/opt/app',role,'node','-',input=receipt_code.encode()))
+        require(isinstance(receipt,dict),'M7_COMPLETION_RECEIPT_REQUIRED')
+        write(d/'native-receipt-source.json',receipt)
+    code="const o=require(process.argv[1]);const fs=require('fs');console.log(JSON.stringify(o.source(JSON.parse(fs.readFileSync(process.argv[2])),JSON.parse(fs.readFileSync(process.argv[3])),JSON.parse(process.argv[4]),JSON.parse(process.argv[5]))));"
+    completion=json.loads(command(['node','-e',code,HERE/'completed-oracle.cjs',d/'state/evaluator/config.json',d/'state/realtime/config.json',json.dumps({'kind':m.get('completionContract'),'pair':m['pair'],'imageId':m['imageId'],'instrument':m['instrument']['sha256']}),json.dumps(receipt)]))
     sql_roles=sql_attribution.identities(evaluator,[document(d/'state'/role/'env.json') for role in ('evaluator','realtime')])
     observed_roles=psql(d,'SELECT rolname FROM pg_roles;').splitlines()
     require({role for values in sql_roles.values() for role in values}<=set(observed_roles),'M7_SQL_ROLE_MISSING')
@@ -2287,8 +2391,6 @@ def sample_preflight(d,m,k6_id,oneoff=None):
             sql_attribution.statements(attempt/'readability-pg-statements.tsv')
             snapshots=document(attempt/'readability-cgroups.json')['roles']
             stream_topology.readable_processes(snapshots,m)
-            sender=clinical_timeline.sender_runtime(d,m,diagnostic_resource_rows(m),snapshots.get('pgstream',{})) if m.get('clinicalSender') else None
-            if sender is not None:write(attempt/'clinical-sender-runtime.json',sender)
             version=(lambda argv,**kw:oneoff('k6-version',argv,**kw)if oneoff else command(argv,**kw))(bounded_k6_argv(['docker','run','--rm','--network','none','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],k6_id,'version']),timeout=30)
             require('k6' in version.lower(),'M7_SAMPLE_LOADGEN_CONTEXT')
             help_text=(lambda argv,**kw:oneoff('k6-help',argv,**kw)if oneoff else command(argv,**kw))(bounded_k6_argv(['docker','run','--rm','--network','none','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],k6_id,'run','--help']),timeout=30)
@@ -2315,8 +2417,15 @@ def sample_preflight(d,m,k6_id,oneoff=None):
 
 
 def sample_results(d,probe,sql_roles):
-    require(probe.get('completedOutput',{}).get('verdict')=='PASS','M7_COMPLETED_OUTPUT_ORACLE')
-    result={name:sql_attribution.assess(sql_attribution.statements(d/name/'before-pg-statements.tsv'),sql_attribution.statements(d/name/'after-pg-statements.tsv'),sql_roles) for name in ('idle-disabled','idle','load')}
+    result = {}
+    errors = []
+    for name in ('idle-disabled', 'idle', 'load'):
+        try:
+            result[name] = sql_attribution.assess(sql_attribution.statements(d/name/'before-pg-statements.tsv'),
+                                                  sql_attribution.statements(d/name/'after-pg-statements.tsv'), sql_roles)
+        except (OSError, ValueError, RuntimeError) as error:
+            result[name] = {'status':'UNMEASURED', 'code':collection_segments.code(error)}
+            errors.append(error)
     write(d/'sql-attribution.json',result)
     companion={}
     for phase in ('idle-disabled','idle','load'):
@@ -2325,6 +2434,8 @@ def sample_results(d,probe,sql_roles):
         companion[phase]={'sql':cost_companion.assess(*(document(p) for p in sql)) if all(p.is_file() for p in sql) else {'status':'NO-INSTRUMENT','reason':'M7_COST_BOOKEND_UNAVAILABLE'},
                           'realtime':realtime_costs.assess(*(document(p) for p in rt)) if all(p.is_file() for p in rt) else {'status':'NO-INSTRUMENT','reason':'M7_REALTIME_COST_BOOKEND_UNAVAILABLE'}}
     write(d/'cost-companion-assessment.json',{'version':1,'scope':'next pinned instrument only; raw snapshots unchanged; shared SQL-role costs remain combined','phases':companion})
+    if errors:
+        raise errors[0]
     return result
 
 
@@ -2349,16 +2460,15 @@ def run_cell(d, m, k6_image):
     runid = "m7-" + m["owner"][:12];(out / "runid").write_text(runid)
     spec = m["project"] + "|" + str(d / "env") + "|" + str(d / "frozen.compose.json")
     probe_env = runtime_env({"M7_GENERATOR_ROOT": str(d / "dependencies"), "M7_RESTART_ROLES": json.dumps(m["restartRoles"]), "M7_EVALUATOR_SERVICES": json.dumps(progress_services(d)), "M7_PROGRESS_PYTHON": sys.executable, "M7_PROGRESS_ATTRIBUTION":json.dumps(progress_attribution(m)), "STOCK_MS": "300000", "RECOVERY_MS": "120000", **({"M7_COMPLETION_SOURCE":json.dumps(completion)} if completion else {})})
-    probe_env.update(clinical_timeline.probe_environment(m))
-    probe_env.update(revision_witness.probe_environment(d,m))
+    if completion: probe_env["M7_CLINICAL_WARM_PATH"] = str(d / clinical_warm.FILE)
     psql(d, "SELECT pg_stat_statements_reset();");phase_snapshot(d, out, "before-prime")
     probe_log = (out / "probe.log").open("wb")
     with sampling(d, out):
         probe_process = diagnostic_resources.popen(subprocess.Popen, [m["generator"]["tools"]["node"]["path"], str(d / "probe.js"), "--base", "http://127.0.0.1:" + str(m["port"]), "--tenants", str(d / "tenants.private.json"), "--compose", spec,
-            "--runid", runid, "--clients", str(viewer_plan.total(m)), "--per", str(m["cadence"].get("socketsPerTenant",2)), "--open", "5", "--window", str(m["cadence"]["loadSeconds"]), "--probeEvery", str(m["cadence"].get("probeEveryMs",3000)), "--restart", "1" if m["cadence"].get("restart",True) else "0", "--evalTimeout", "900", "--out", str(out / "probe.json"), "--signal", str(out / ".window")], env=probe_env, stdout=probe_log, stderr=subprocess.STDOUT)
+            "--runid", runid, "--clients", str(viewer_plan.total(m)), "--per", str(m["cadence"].get("socketsPerTenant",2)), *viewer_plan.setup_args(m["cadence"]), "--window", str(m["cadence"]["loadSeconds"]), "--probeEvery", str(m["cadence"].get("probeEveryMs",3000)), "--restart", "1" if m["cadence"].get("restart",True) else "0", "--evalTimeout", "900", "--out", str(out / "probe.json"), "--signal", str(out / ".window")], env=probe_env, stdout=probe_log, stderr=subprocess.STDOUT)
         job_record(out/"probe-job.json",probe_process,m["owner"])
         try:
-            deadline = time.monotonic() + 600
+            deadline = time.monotonic() + remaining_seconds(float("inf"))
             while not (out / ".window").exists():
                 require(probe_process.poll() is None and time.monotonic() < deadline, "M7_PROBE_NOT_PRIMED")
                 time.sleep(1)
@@ -2370,12 +2480,12 @@ def run_cell(d, m, k6_image):
                 command(["docker", "run", "--rm", "--name", m["project"] + "-k6", "--label", OWNER + "=" + m["owner"], "--label", "com.docker.compose.project=" + m["project"], "--label", "com.docker.compose.service=k6",
                     "--network", "host", "-u", str(os.getuid()) + ":" + str(os.getgid()), "-v", str(d / "k6") + ":/scripts:ro", "-v", str(out) + ":/out", "-v", str(d / "tenants.private.json") + ":/tenants.private.json:ro",
                     "-e", "BASE_URL=http://127.0.0.1:" + str(m["port"]), "-e", "TENANTS_FILE=/tenants.private.json", "-e", "RUN_ID=" + runid,
-                    "-e", "SETTINGS_FINGERPRINT=" + m["settingsFingerprint"]["sha256"],
                     "-e", "RUN_START=" + str(int(time.time()*1000)), "-e", "DURATION=" + str(m["cadence"]["loadSeconds"]), "-e", "ACCEL="+str(m["cadence"]["accel"]), "-e", "HOT_FACTOR="+str(m["cadence"]["hotFactor"]), "-e", jwt_setup_env(m),
                     *(["-e","OFFERED_RPS="+str(m["cadence"]["offeredRps"])] if "offeredRps" in m["cadence"] else []), "-e", "SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status", k6_id, "run", "--quiet", "--summary-export", "/out/k6-summary.json", "/scripts/workload.js"], file=output, timeout=m["cadence"]["loadSeconds"]+600)
             phase_snapshot(d, out, "after")
             (out / ".restart").touch()
-            require(probe_process.wait(timeout=1500) == 0, "M7_PROBE_FAILED")
+            probe_status = clinical_warm.wait_compose(sys.modules[__name__],d,m,probe_process,remaining_seconds(1500)) if completion else probe_process.wait(timeout=1500)
+            require(probe_status == 0, "M7_PROBE_FAILED")
         finally:
             stop_job(out/"probe-job.json",m["owner"])
             probe_process.wait(timeout=10)
@@ -2386,9 +2496,9 @@ def run_cell(d, m, k6_image):
     control(d, m)
     host = fixture_inventory(m);write(d / "run-after-host.json", host)
     result_probe = document(out / "probe.json")
-    fingerprint_result=profile_provenance.fingerprint_check(document(out/"k6-summary.json")["metrics"])
     completed_output=result_probe.get('completedOutput')
     if completion:
+        require((completed_output or {}).get('verdict')=='PASS','M7_COMPLETED_OUTPUT_ORACLE')
         attributed=sample_results(d,result_probe,sql_roles)
     from viewer_plan import check as check_viewers, total as viewer_total
     viewer_result=check_viewers(m,document(d/'tenants.private.json'),result_probe,document(out/'fanout.json')['probeWrites']['byTenant'])
@@ -2398,12 +2508,12 @@ def run_cell(d, m, k6_image):
                    metric(document(out / "k6-summary.json")["metrics"], "writes_refused") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "http_req_failed", "rate") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "dropped_iterations") == 0,
-                   result_probe["window"]["writes"]["failed"] == 0, fingerprint_result["verdict"]=="PASS", idle_progress.result["verdict"]=="PASS", load_progress.result["verdict"]=="PASS"]
+                   result_probe["window"]["writes"]["failed"] == 0, idle_progress.result["verdict"]=="PASS", load_progress.result["verdict"]=="PASS"]
     summary = {"pair": m["pair"], "hostIdentity":m["hostIdentity"], "profile":m["profile"], "instrument": m["instrument"]["sha256"], "tenants": m["tenants"], "replicas": m["replicas"],
                "imageId":m["imageId"], "verdict": "PASS" if all(correctness) else "FAIL", "correctness": correctness, "cadence": m["cadence"],
                "viewerFrames":viewer_result, "completedOutput":completed_output or "NOT_SELECTED", "sqlAttribution":attributed if completion else "NOT_SELECTED",
                "oracle": {key: value for key, value in result.items() if key != "rows"}, "probe": result_probe,
-               "profileSelection":m["profileSelection"],"settingsFingerprint":m["settingsFingerprint"],"settingsFingerprintObservation":fingerprint_result,
+               "profileSelection":m["profileSelection"],
                "evaluatorProgressCollectionCosts":{**{phase:document(d/phase/"evaluator-progress-publication.json") for phase in ("idle","load")},"idleTail":document(d/"idle/evaluator-tail-publication.json") if (d/"idle/evaluator-tail-publication.json").is_file() else None,"recovery":document(out/"evaluator-recovery.private.json.publication.json") if m["cadence"].get("restart",True) else "NOT_RUN"},
                "evaluatorProgress":{**{phase:progress_summary(d/phase) for phase in ("idle","load")},"recovery":{**{k:v for k,v in result_probe["restart"]["runtimeAcquisitionObservation"].items() if k not in ("baselineObservation","evidence")},**result_probe["restart"]["runtimeAcquisitionObservation"]["evidence"]} if m["cadence"].get("restart",True) else "NOT_RUN"},
                "performanceThresholds": "none invented; raw latency/CPU/RSS/PG metrics are measurements, not predeclared capacity limits"}
@@ -2414,7 +2524,6 @@ def run_cell(d, m, k6_image):
     write(d / "summary.json", summary)
     metrics = document(out / "k6-summary.json")["metrics"]
     require(metric(metrics,"writes_refused")==0 and metric(metrics,"responses_refused")==0,"M7_FUNCTIONAL_REQUEST_REFUSAL")
-    require(fingerprint_result["verdict"]=="PASS","M7_FUNCTIONAL_SETTINGS_FINGERPRINT")
     require(summary["verdict"] == "PASS", "M7_CORRECTNESS_GROWTH_GATE_FAILED")
 
 
@@ -2452,7 +2561,7 @@ def diagnose(d,m):
         outcome=document(out/"diagnostic-observations.json")
         result={"kind":"m7-joined-fresh-image-diagnostic","profile":m["profile"],"pair":m["pair"],"instrument":m["instrument"]["sha256"],
                 "hostIdentity":m["hostIdentity"],"imageId":m["imageId"],"tenants":m["tenants"],"replicas":m["replicas"],"verdict":"PASS",
-                "profileSelection":m["profileSelection"],"settingsFingerprintObservation":"UNMEASURED; diagnostic is not k6 capacity",
+                "profileSelection":m["profileSelection"],
                 "checks":outcome["checks"],"acceptedWrites":outcome["acceptedWrites"],"dataHttpRequests":outcome["dataHttpRequests"],**{key:outcome[key] for key in ("httpAccountingVersion","criterionHttpRequests","physicalHttpRequests","warmProbeHttpRequests","trailRecords","trailBytes")},"oracle":counted["verdict"],"oracleControl":document(out/"oracle-control.json"),
                 "fullAcceptance":"NOT_RUN","capacity":"NO-MEASUREMENT","trafficDeadlineSeconds":scope["trafficSeconds"]}
         diagnostic_check(result);write(d/"diagnostic.json",result)
@@ -2480,30 +2589,25 @@ def down(d,m):
 
 
 def _down(d, m):
+    # Decision simple-run-cleanup: `docker compose down -v` on the owned project, then one absence
+    # check on the project label. The project name is unique to the run; no census of container
+    # identities, no per-resource ownership proof and no source re-verification precede the delete.
     for file in list(d.glob("*/sampler-job.json"))+list(d.glob("*/probe-job.json"))+list(d.glob("*/diagnostic-job.json")):stop_job(file,m["owner"])
-    assert_owned(m)
     try:terminal_snapshot(d,m)
     except Exception as error:
         write(d/'terminal-capture-unavailable.json',{'status':'UNMEASURED','type':type(error).__name__})
     if m.get('attached'):
         write(d/'instrument-jobs-stopped.json',{'runtimeResources':'UNCHANGED','cleanupOwner':'runtime owner'});return
+    import driver_memory
+    if driver_memory.selected(m) and (d / 'load' / driver_memory.CID).is_file():
+        driver_memory.cleanup(sys.modules[__name__],m,d/'load',document(d/'loadgen-image.json')['k6'])
     if m.get("prepared"):
-        verify(d, m, teardown=True)
         config=document(d/"frozen.compose.json")
-        sender_cleanup=clinical_timeline.sender_cleanup_observation(config,d,m)
-        if sender_cleanup is not None:write(d/("clinical-sender-cleanup-observation-"+uuid.uuid4().hex+".json"),sender_cleanup)
         try:captured=profile_provenance.capture_logs(d/"role-logs",config,lambda role:["docker","compose","-p",m["project"],"--env-file",str(d/"env"),"-f",str(d/"frozen.compose.json"),"logs","--no-color","--no-log-prefix","--timestamps","--tail","1000",role],seconds=remaining_seconds(5*len(config['services']))/max(1,len(config['services'])))
         except Exception:captured={"version":1,"scope":"PRIVATE","error":"capture-failed","complete":False}
         write(d/"role-logs/manifest.json",captured)
         compose(d, "--profile", "ops", "down", "--volumes", "--remove-orphans", timeout=120)
-        for row in resources(m):
-            owned(row,m["owner"]);command(["docker","rm","--force","--volumes",row["Id"]])
-    else:
-        require(not resources(m), "M7_PARTIAL_PREPARE_HAS_RESOURCES")
     write(d/'cleanup-absence.json',assert_absent(m))
-    if m.get('clinicalTimeline'):
-        try:clinical_timeline.retain(d,m)
-        except Exception as error:write(d/'clinical-timeline-retain-refusal.json',{'status':'UNMEASURED','type':type(error).__name__,'code':'M7_CLINICAL_TIMELINE_RETAIN_REFUSED'})
     core = d / "core"
     if core.exists():
         require(git(core,"rev-parse","HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
@@ -2528,6 +2632,7 @@ def parser():
                       help='Private correlated warm refusal class for the owned 10000-tenant primer')
     prep.add_argument('--api-cause-observation',choices=('off','on'),default='off',help='Source-pinned private setup-diagnostic observer; file-I/O overhead is separate')
     prep.add_argument('--completion-contract',choices=('evaluator-work-v1','evaluator-work-v2'),help='Explicit source-bound pgstream completion reader; mandatory at sample preflight')
+    prep.add_argument('--opportunity-observation', type=json.loads, help='Local all-roster idle/load observer overrides: sqlMaxBytes, roundSeconds')
     prep.add_argument('--drain-observation', type=json.loads, help='Optional bounded post-writer catchup observer budget')
     prep.add_argument('--probe-ledger', type=json.loads, help='Discovery probe accounting budgets maxWrites and maxBytes')
     prep.add_argument('--startup-windows', type=json.loads, help='Prospective Compose deployment and evaluator readiness windows')
@@ -2549,11 +2654,6 @@ def parser():
     prep.add_argument('--vault-refusal-control',choices=('api-policy-deny-v1',))
     prep.add_argument('--diagnostic-resource-profile',choices=diagnostic_resources.PROFILES)
     prep.add_argument('--diagnostic-resource-allocation',type=json.loads,help='Explicit finite JSON service/driver allocation and ceiling; exclusive with named profile')
-    prep.add_argument('--clinical-sender-binary',help='Explicit reviewed sender binary staged only for the opt-in raw external diagnostic')
-    prep.add_argument('--clinical-sender-receipt',help='Immutable reviewed twin CLI build receipt; no command or version fallback')
-    prep.add_argument('--revision-witness-targets',help='Private JSON list of one or two synthetic tenant/storedId targets; discovery sample only')
-    prep.add_argument('--clinical-intake-targets',help='Private JSON list of one or two synthetic roster tenant IDs for the selected timeline')
-    prep.add_argument('--clinical-intake-timeline',choices=('off',clinical_timeline.NAME,clinical_timeline.RAW_NAME),default='off')
     prep.add_argument('--generator-dependencies')
     prep.add_argument('--generator-dependency-receipt')
     prep.add_argument('--generator-dependency-receipt-sha256')
@@ -2563,6 +2663,7 @@ def parser():
     prep.add_argument("--serial-exchange-diagnostic",action="store_true",help="Receipt-selected3k diagnostic only:64 serial exchanges before/after stock priming; no ordinary traffic")
     prep.add_argument("--profile",choices=tuple(CADENCE),default="capacity")
     prep.add_argument('--sockets-per-tenant',type=int)
+    prep.add_argument('--viewer-setup', type=json.loads, help='Viewer opening rate, transport, scenario and stall interval')
     prep.add_argument('--logical-polling-clients',type=int)
     prep.add_argument('--probe-every-ms',type=int)
     prep.add_argument('--driver-shards',type=int)
@@ -2581,10 +2682,11 @@ def parser():
                       help='Opt-in finite pre-load source convergence before unchanged normal readiness; local owned-to-completion discovery only')
     prep.add_argument('--preload-convergence-interval-seconds', type=int,
                       help='Interval between original strict pre-load source snapshots')
+    prep.add_argument('--preload-readiness', choices=('signal', 'require-all'),
+                      help='Opt in to refusing traffic until every tenant is ready; omitted, convergence is a recorded signal')
     prep.add_argument("--tenant-readiness",choices=("serve","all"),help="Explicit selected platform startup readiness, bound into the receipt and serving environment")
     prep.add_argument("--primer-concurrency",type=int,default=1,help="Native DATA primer worker limit; default serial")
     prep.add_argument("--primer-max-tenants",type=int,help="Native DATA primer maximum pending tenants per invocation")
-    prep.add_argument("--population-ceiling",type=int,help="Optional finite registry population budget, independent of cache/page/chunk sizing")
     prep.add_argument("--tenants", type=int, required=True);prep.add_argument("--replicas", type=int, required=True, help="Discovery API count 1..16; acceptance retains its fixed grid");prep.add_argument("--quiet-load", type=float, default=3)
     attached=sub.add_parser('attach',parents=[prep],add_help=False)
     for name in ('project','source-root','state','env-file'):attached.add_argument('--'+name,required=True)
@@ -2627,10 +2729,10 @@ def main():
         observed=fixture_inventory(m);write(d/"host-identity-inventory.json",observed)
         require(host_identity(observed)==m["hostIdentity"],"M7_HOST_IDENTITY_CHANGED")
         return print(json.dumps({"hostIdentity":m["hostIdentity"],"pair":m["pair"],"instrument":m["instrument"]["sha256"]}))
-    if args.command == "verify":verify(d, m);image(m);print("M7_PAIR_AND_INSTRUMENT_PINNED")
+    if args.command == "verify":verify_source(d, m);verify(d, m);image(m);print("M7_PAIR_AND_INSTRUMENT_PINNED")
     elif args.command == "build":
         require(not m.get("diagnosticResources"),"M7_DIAGNOSTIC_RESOURCE_BUILD_REFUSED")
-        frozen(m,"build");experiment_host(d,m,"build-before");verify(d,m)
+        frozen(m,"build");experiment_host(d,m,"build-before");verify_source(d,m);verify(d,m)
         overlay = d / "core/deploy/multitenant"
         command(["node", overlay / "build.js"], cwd=overlay, timeout=1800)
     elif args.command == "source-preflight":discovery_source_preflight(d,m)

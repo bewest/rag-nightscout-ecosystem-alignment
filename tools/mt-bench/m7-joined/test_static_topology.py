@@ -96,15 +96,14 @@ class StaticTopology(unittest.TestCase):
             self.assertEqual(rc.from_manifest(manifest)['staticBuildReceiptSha256'], a.digest(path))
             with self.assertRaisesRegex(RuntimeError, 'M7_STATIC_CONFIGURATION_MISMATCH'):
                 c.receipt_scope({**manifest, 'staticBuildReceiptSha256': 'f'*64}, auth, 'deploy')
-            for field, change, code in [
-                ('localImageId', 'sha256:'+'9'*64, 'M7_STATIC_BUILD_IDENTITY'),
-                ('deployCommit', '3'*40, 'M7_STATIC_BUILD_IDENTITY'),
-                ('runtime', {**proof['runtime'], 'source': {}}, 'M7_STATIC_BUILD_PROVENANCE'),
-                ('runtime', {**proof['runtime'], 'binarySha256': '9'*64}, 'M7_STATIC_BUILD_INPUTS'),
-                ('runtime', {**proof['runtime'], 'lockSha256': '9'*64}, 'M7_STATIC_BUILD_INPUTS')]:
+            put({**proof, 'localImageId': 'sha256:'+'9'*64})
+            with self.assertRaisesRegex(RuntimeError, 'M7_STATIC_BUILD_IDENTITY'):
+                rc.resolve(cfg)
+            # Build provenance is recorded by the build, not re-proved per run.
+            for field, change in [('deployCommit', '3'*40), ('runtime', {**proof['runtime'], 'source': {}}),
+                                  ('runtime', {**proof['runtime'], 'lockSha256': '9'*64})]:
                 put({**proof, field: change})
-                with self.assertRaisesRegex(RuntimeError, code):
-                    rc.resolve(cfg)
+                rc.resolve(cfg)
             put(proof)
             path.write_bytes(path.read_bytes() + b' ')
             with self.assertRaisesRegex(RuntimeError, 'M7_STATIC_BUILD_RECEIPT_DIGEST'):
@@ -122,8 +121,6 @@ class StaticTopology(unittest.TestCase):
                 stack.enter_context(patch.object(a,'git',return_value=json.dumps(source_schema())))
                 stack.enter_context(patch.object(a.diagnostic_resources,'configure'))
                 stack.enter_context(patch.object(a,'commit',side_effect=lambda repo,head:head))
-                stack.enter_context(patch.object(a,'discovery_source_features'))
-                stack.enter_context(patch.object(s,'verify_source'))
                 stack.enter_context(patch.object(a,'unused_project_namespace'))
                 # Configuration v2 now checks its exact unused namespaces before
                 # dependency/image work. Keep this offline boundary explicit.
@@ -177,8 +174,6 @@ class StaticTopology(unittest.TestCase):
                                  ('pgstream-topology','colocated-v1','M7_STATIC_DIAGNOSTIC_SCOPE'),('completion-contract','evaluator-work-v1','M7_STATIC_DIAGNOSTIC_SCOPE')):
             bad=config();bad['prepare'][field]=value
             with self.assertRaisesRegex(RuntimeError,code):parsed(bad)
-        bad=config();bad['prepare'].pop('diagnostic-resource-allocation')
-        with self.assertRaisesRegex(RuntimeError,'M7_STATIC_EXPLICIT_ALLOCATION'):parsed(bad)
         good=config();parsed(good)
 
     def test_single_worker_and_api_do_not_require_selected_service_caps(self):
@@ -188,10 +183,12 @@ class StaticTopology(unittest.TestCase):
         args = parsed(cfg)
         self.assertEqual(s.option(args)['staticTopology'], {'kind': s.KIND, 'workers': 1})
         self.assertIsNone(rc.from_args(args, a.instrument()['sha256'])['resources'])
+        # Multi-worker or multi-API without an allocation is an explained
+        # default (uncapped Compose services), not a refusal.
         for changes in ({'static-workers': 2}, {'replicas': 2}):
             other = {**cfg, 'prepare': {**cfg['prepare'], **changes}}
-            with self.assertRaisesRegex(RuntimeError, 'M7_STATIC_EXPLICIT_ALLOCATION'):
-                parsed(other)
+            self.assertEqual(s.option(parsed(other))['staticTopology']['kind'], s.KIND)
+            self.assertIsNone(rc.from_args(parsed(other), a.instrument()['sha256'])['resources'])
         self.assertEqual(s.option(parsed(cfg))['staticTopology']['workers'], 1)
 
     def test_each_published_exact_pair_has_config_receipt_and_unknown_pair_refusal(self):

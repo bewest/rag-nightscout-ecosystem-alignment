@@ -95,6 +95,53 @@ class DiagnosticOneoffs(unittest.TestCase):
         self.assertEqual(r.standalone_limit(),r.LIMITS['k6'])
         self.assertIsNone(r.discovery_driver_record({**owner,'runPurpose':'acceptance'}))
 
+    def test_request_only_memory_is_bound_in_command_and_docker_readback(self):
+        from test_resource_allocation import allocation
+        selected = allocation()
+        selected['driver']['memoryReservationBytes'] = selected['driver'].pop('memoryBytes')
+        config = r.overlay({'services': {role: {} for role in selected['services']}}, selected)
+        budget = r.plan(config)
+        owner = b.load(self.root / 'owner.json')
+        owner['diagnosticResources'] = budget.record()
+        (self.root / 'owner.json').write_text(json.dumps(owner))
+        (self.root / 'frozen.compose.json').write_text(json.dumps(config))
+        r.configure(selected, config, budget.record(), observe=lambda: [])
+        argv = adapter.bounded_k6_argv(self.argv)
+        self.assertEqual(argv[3:9], ['--cpus','2','--memory-reservation',str(4096*r.MIB),'--pull','never'])
+        for mutation in (argv[:5] + ['--memory', str(4096*r.MIB)] + argv[7:],
+                         argv[:7] + ['--memory-swap','-1'] + argv[7:]):
+            with self.assertRaisesRegex(RuntimeError, 'M7_BINDING_ONEOFF_'):
+                b._oneoff_intent(self.binding,'k6-version',mutation,self.scope,self.meta,self.root/'cid')
+        intent = b._oneoff_intent(self.binding,'k6-version',argv,self.scope,self.meta,self.root/'cid')
+        layout = intent['layout']
+        native = layout['resourceLimits']
+        self.assertEqual(native, {'NanoCpus': 2000000000, 'MemoryReservation': 4096*r.MIB,
+                                  'Memory': 0, 'MemorySwap': 0})
+        row = {'Id':'e'*64, 'Image':self.scope['imageId'], 'Config':{'Image':self.scope['imageId'],
+               'Cmd':['version'],'Entrypoint':['k6'],'Env':[],'User':'','Labels':layout['labels']},
+               'HostConfig':{'NetworkMode':'none','Tmpfs':{},'Privileged':False,**native},'Mounts':[]}
+        for key in ('MemoryReservation','Memory','MemorySwap'):
+            broken = copy.deepcopy(row)
+            broken['HostConfig'][key] += r.MIB
+            with self.assertRaisesRegex(RuntimeError, 'RESOURCE_LIMITS_CHANGED'):
+                b.qualify_oneoff(self.binding, broken, intent)
+        b.qualify_oneoff(self.binding, row, intent)
+
+        effects = []
+        def runner(args):
+            if args[:3] == ['docker', 'image', 'inspect']:
+                return self.meta(args)
+            if args[:2] == ['docker', 'run']:
+                with r.command(args, {}) as (actual, _):
+                    self.assertEqual(actual[3:7], argv[3:7])
+                    self.assertIn('--cidfile', actual)
+                    effects.append(actual)
+                return ''
+            return self.d(args)
+        b.checked_oneoff(self.binding, 'k6-version', argv, self.scope, runner, lambda: True,
+                         self.fixture.f.journal)
+        self.assertEqual(len(effects), 1)
+
     def test_checked_custody_labels_do_not_break_resource_command_guard(self):
         argv=self.selected();effects=[]
         def runner(args):

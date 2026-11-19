@@ -45,15 +45,18 @@ def validate(p):
     population_ceiling.from_profile(p,need)
     w = p['workload']
     need(workload_runtime.workload_inputs.tenants(n) and n >= 2, 'TENANTS')
-    workload_runtime.validate(w, need, n)
-    need(p['population']['ordinaryRosterTenants'] == n and
-         workload_runtime.workload_inputs.tenants(p['population']['hotFactor']) and
+    ordinary = workload_runtime.ordinary_count(n, p['population']['ordinaryRosterTenants'], need)
+    workload_runtime.validate(w, need, ordinary)
+    need(workload_runtime.workload_inputs.tenants(p['population']['hotFactor']) and
          p['population']['hotFactor'] == w.get('hotFactor', 1),
          'ADAPTER_ROSTER_OR_HOT_FACTOR_UNSUPPORTED')
     need(p['history'] == {'mode': 'existing-provisioner-only', 'additionalSeedRows': 0,
                           'retention': 'UNMEASURED'}, 'HISTORY_UNSUPPORTED')
-    need(p['phases']['restart'] is False and p['phases']['reconnectBurstClients'] == 0,
-         'RESTART_IS_SEPARATE_SCENARIO')
+    burst = p['phases'].get('reconnectBurstClients', 0)
+    viewer_setup = workload_runtime.viewer_plan.setup(w)
+    need(p['phases']['restart'] is False and type(burst) is int and
+         (burst == 0 or viewer_setup['scenario'] == 'simultaneous-reconnect' and
+          burst == w['logicalPollingClients']), 'RESTART_IS_SEPARATE_SCENARIO')
     access_setup = p['phases'].get('accessSetupSeconds')
     if 'accessSetupSeconds' in p['phases']:
         need(workload_runtime.workload_inputs.seconds(access_setup), 'ACCESS_SETUP_WINDOW')
@@ -87,9 +90,9 @@ def describe(p):
             'preloadConvergence':preload.selection(p['phases'].get('preloadConvergence')),
             **({primer_options.FIELD:p['phases'][primer_options.FIELD]} if primer_options.FIELD in p['phases'] else {}),
             **({population_ceiling.FIELD:population_ceiling.from_profile(p,need)} if 'maxTenants' in p['population'] else {}),
-            **({'populationCommissioning':population_ceiling.commissioning(n,primer_options.from_profile(p,need))}
+            **({'populationCommissioning':population_ceiling.commissioning(p['population']['provisionedTenants'],primer_options.from_profile(p,need))}
                if 'maxTenants' in p['population'] else {}),
-            'workload': w, 'arrivalCycleMs': cycle_ms, 'shapeCycleMs': cycles, 'shapeRequestsPerSecond': rates,
+            'population': p['population'], 'workload': w, 'arrivalCycleMs': cycle_ms, 'shapeCycleMs': cycles, 'shapeRequestsPerSecond': rates,
             'effectivePhaseWindows': {
                 key: {'seconds': w.get(key, default), 'origin': 'authored' if key in w else 'legacy default'}
                 for key, default in (('setupSeconds', 310), ('drainSeconds', 120))
@@ -107,12 +110,13 @@ def describe(p):
             'ordinaryWritesPerSecond': sum(v for k, v in rates.items() if k.startswith('w_')),
             'ordinaryReadsPerSecond': sum(v for k, v in rates.items() if k.startswith('r_')),
             'setupJwtExchanges': n, 'stockViewers': w['logicalPollingClients'],
+            'viewerSetup': workload_runtime.viewer_plan.setup(w),
             'probeWritesPerSecondWhileOpen': 1000 / w['probeEveryMs'],
             'probeWrites': 'observed independently; initial write and drain can extend the nominal window',
-            'limits': ['realistic-v1 scale1 preserves per-shape sensor cadence; aggregate profiles retain their authored rate',
+            'limits': ['realistic-v1 uses sensor cadence when both the uniform and write factors are one; aggregate profiles retain their authored rate',
                        'HTTP logical pollers are not a configured population; shape rates define offered REST',
                        'all ordinary roster tenants are eligible; actual changed/witness sets are observed',
-                       'hotFactor weights the first roster tenant; no extra history seeding, alarm synthesis or reconnect burst is executed'],
+                       'hotFactor weights the first roster tenant; viewerSetup.scenario selects any reconnect burst'],
             'capacityAcceptance': 'NOT_GRANTED'}
 
 
@@ -140,6 +144,8 @@ def bind(p, config):
     need(existing.get('probeLedger',p['workload'].get('probeLedger')) == p['workload'].get('probeLedger'), 'PROBE_LEDGER_CHANGED')
     budget=p['workload'].get('evaluatorProgressBudget')
     need(existing.get('evaluatorProgressBudget',budget)==budget,'EVALUATOR_PROGRESS_BUDGET_CHANGED')
+    observation=p['workload'].get('drainObservation')
+    need(existing.get('drainObservation',observation)==observation,'DRAIN_OBSERVATION_CHANGED')
     result = copy.deepcopy(config)
     access_setup = p['phases'].get('accessSetupSeconds')
     need(config.get('accessSetupSeconds', access_setup) == access_setup, 'ACCESS_SETUP_WINDOW_CHANGED')
@@ -164,7 +170,10 @@ def bind(p, config):
     # runtime marker identity. Revalidate to refuse incompatible combinations.
     result['workload'] = {k: v for k, v in existing.items() if k in ('pointId', 'hotFactor')}
     result['workload'].update(p['workload'])
-    workload_runtime.validate(result['workload'], need, config['tenants'])
+    ordinary = p['population']['ordinaryRosterTenants']
+    need(config.get('ordinaryRosterTenants', ordinary) == ordinary, 'CONFIG_ORDINARY_ROSTER')
+    result['ordinaryRosterTenants'] = ordinary
+    workload_runtime.validate(result['workload'], need, ordinary)
     return result
 
 

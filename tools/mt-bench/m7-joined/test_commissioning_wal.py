@@ -62,6 +62,21 @@ class CommissioningWal(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'REMOTE_STARTUP_SELECTION'):rc.remote_projection(selected(),overlay())
         with self.assertRaisesRegex(RuntimeError,'FRESH_PREPARE_ONLY'):a.attach(parsed(selected()))
 
+    def test_disk_generous_default_can_still_select_finite_wal_and_sample_live_slot(self):
+        config=compose()
+        config['services']['postgres']['command'][-1]='max_slot_wal_keep_size=-1'
+        m={w.FIELD:256,'profile':'pgstream-sample','runPurpose':'discovery'}
+        w.install(config,m)
+        self.assertEqual(config['services']['postgres']['command'][-1],'max_slot_wal_keep_size=256MB')
+        at=0
+        result={};rows=iter(['','-1\tt\t64','-1\tf\t32'])
+        sample=w.sampler(lambda query:next(rows),result,now=lambda:at)
+        sample()
+        self.assertEqual(result['primeSlotWal']['status'],'UNMEASURED')
+        for at in (5,6,10):sample()
+        self.assertEqual(result['primeSlotWal'],dict(status='OBSERVED',samples=2,unavailable=1,
+                         setting='-1',lastActive=False,lastRetainedBytes=32,maxRetainedBytes=64))
+
     def test_exact_token_only_and_baseline_shape_refusal(self):
         m={w.FIELD:1024,'profile':'pgstream-sample','runPurpose':'discovery'}
         original=compose();actual=copy.deepcopy(original);w.install(actual,m)
@@ -100,7 +115,7 @@ class CommissioningWal(unittest.TestCase):
             root=Path(tmp);cfg=selected();_,receipt=packet(cfg);a.write(root/'receipt.json',receipt)
             cfg['prepare']['receipt']=str(root/'receipt.json');args=parsed(cfg);args.directory=str(root/'never')
             with contextlib.ExitStack() as stack:
-                for name in ('commit','discovery_source_features'):stack.enter_context(patch.object(a,name))
+                for name in ('commit',):stack.enter_context(patch.object(a,name))
                 stack.enter_context(patch.object(rc,'namespace_preflight'))
                 stack.enter_context(patch.object(a.os,'getuid',return_value=1000));stack.enter_context(patch.object(a.os,'getgid',return_value=1000))
                 effect=stack.enter_context(patch.object(a,'qualified_dependencies',side_effect=RuntimeError('CONTROL_PREFLIGHT_COMPLETE')))
