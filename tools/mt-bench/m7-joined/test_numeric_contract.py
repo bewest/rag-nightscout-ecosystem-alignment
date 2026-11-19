@@ -129,8 +129,6 @@ load(ledger); ledger.close(); console.log(JSON.stringify(ledger.snapshot()));
         self.assertTrue(inputs.population_fits(12001,32))
         self.assertFalse(inputs.population_fits(2**32-1,2))
         self.assertFalse(inputs.probe_fits_ledger(1,90000))
-        self.assertEqual(a.jwt_setup_env({'runPurpose':'discovery','jwtSetupConcurrency':128}),
-                         'JWT_SETUP_CONCURRENCY=128')
         with self.assertRaisesRegex(RuntimeError,'JWT_SETUP_CONCURRENCY_INVALID'):
             a.jwt_setup_concurrency(128)
 
@@ -164,26 +162,19 @@ load(ledger); ledger.close(); console.log(JSON.stringify(ledger.snapshot()));
         cfg['maxAggregateVUs']=14999
         with self.assertRaisesRegex(RuntimeError,'M7_DRIVER_VU_LIMIT'):driver.expected_plans(m)
 
-    def test_real_generated_jwt_batching_retains_every_request_and_hot_weight(self):
+    def test_real_workload_large_roster_hot_weight_and_duration(self):
         script=r'''
-const fs=require('fs'),vm=require('vm');const [file,concurrency]=process.argv.slice(1),batches=[];
-const c={batches,__ENV:{JWT_SETUP_CONCURRENCY:concurrency,HOT_FACTOR:'32',ACCEL:'1',DURATION:'90000',
- SHAPES:'w_treatments_v3',OFFERED_RPS:'20'},console:{log(){}},Counter:class{add(){}},
- SharedArray:function(_,fn){return fn()},open:()=>JSON.stringify(Array.from({length:129},(_,i)=>({id:i,token:'synthetic',host:'synthetic.invalid'}))),
- http:{batch:r=>{batches.push(r.length);return r.map(()=>({status:200,body:'{"token":"synthetic-jwt"}'}))},get:()=>{batches.push(1);return {status:200,body:'{"token":"synthetic-jwt"}'}}}};
+const fs=require('fs'),vm=require('vm');const [file]=process.argv.slice(1);
+const c={__ENV:{HOT_FACTOR:'32',ACCEL:'1',DURATION:'90000',SHAPES:'w_treatments_v3',OFFERED_RPS:'20'},console:{log(){}},Counter:class{add(){}},
+ SharedArray:function(_,fn){return fn()},open:()=>JSON.stringify(Array.from({length:129},(_,i)=>({id:i,token:'synthetic',host:'synthetic.invalid',jwt:'synthetic-jwt'})))};
 const s=fs.readFileSync(file,'utf8').replace(/^import .*;$/gm,'').replace(/^export /gm,'');
-console.log(JSON.stringify(vm.runInNewContext(s+'\n({jwts:setup().jwts.length,batches,weight,options});',c)));
+console.log(JSON.stringify(vm.runInNewContext(s+'\n({setup:setup(),weight,options});',c)));
 '''
         with tempfile.TemporaryDirectory() as tmp:
             file=Path(tmp)/'workload.js';workload.generate(a.ROOT,file)
-            result=subprocess.run(['node','-e',script,str(file),'128'],capture_output=True,text=True,check=True)
-            value=json.loads(result.stdout)
-            self.assertEqual((value['jwts'],value['batches'],value['weight']),(129,[128,1],160))
+            value=json.loads(subprocess.run(['node','-e',script,str(file)],capture_output=True,text=True,check=True).stdout)
+            self.assertEqual((value.get('setup'),value['weight']),(None,160))
             self.assertEqual(value['options']['scenarios']['w_treatments_v3']['duration'],'90000s')
-            for bad in ('0','true','NaN','Infinity','9007199254740992'):
-                failed=subprocess.run(['node','-e',script,str(file),bad],capture_output=True,text=True)
-                self.assertNotEqual(failed.returncode,0)
-                self.assertIn('M7_JWT_SETUP_CONCURRENCY_INVALID',failed.stderr)
 
     def test_generated_probe_and_accounting_accept_larger_declarations(self):
         with tempfile.TemporaryDirectory() as tmp:

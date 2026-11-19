@@ -15,7 +15,6 @@ from unittest.mock import patch
 
 import adapter as a
 import contract as c
-import diagnostic_resources as resources
 import discovery
 import profile_provenance
 import run_configuration as configuration
@@ -26,10 +25,6 @@ import test_role_instances as instance_fixtures
 
 def config(count):
     value=fixtures.config();value['prepare']['replicas']=count
-    allocation=fixtures.allocation()
-    for ordinal in range(3,count+1):
-        allocation['services']['api-'+str(ordinal)]=dict(allocation['services']['api'])
-    value['prepare']['diagnostic-resource-allocation']=json.dumps(allocation)
     return value
 
 
@@ -95,12 +90,7 @@ class ApiReplicas(unittest.TestCase):
 
     def test_eight_workers_bind_exact_receipt(self):
         value=config(3)
-        allocation=json.loads(value['prepare']['diagnostic-resource-allocation'])
-        for role in ('evaluator','realtime'):
-            for ordinal in range(3,9):
-                allocation['services'][f'{role}-{ordinal}']=dict(allocation['services'][role])
         value['prepare']['static-workers']=8
-        value['prepare']['diagnostic-resource-allocation']=json.dumps(allocation)
         result=configuration.resolve(value)
         self.assertEqual(result['receiptLimits']['staticWorkers'],8)
         selected=result['configuration']
@@ -110,19 +100,6 @@ class ApiReplicas(unittest.TestCase):
         proof['limits']['staticWorkers']=4
         with self.assertRaisesRegex(RuntimeError,'M7_STATIC_RECEIPT'):
             static_topology.receipt(selected,proof)
-
-    def test_explicit_role_allocation_accepts_legacy_estimate_or_omission(self):
-        value=config(3);allocation=json.loads(value['prepare']['diagnostic-resource-allocation'])
-        selected=resources.selection(allocation)
-        bad=copy.deepcopy(allocation);bad['ceiling']['millicpus']=1
-        value['prepare']['diagnostic-resource-allocation']=json.dumps(bad)
-        self.assertEqual(configuration.resolve(value)['configuration']['resources']['profile'], bad)
-        del bad['ceiling']
-        value['prepare']['diagnostic-resource-allocation']=json.dumps(bad)
-        self.assertEqual(configuration.resolve(value)['configuration']['resources']['profile'], bad)
-        value=config(3);value['prepare'].pop('diagnostic-resource-allocation')
-        self.assertIsNone(configuration.resolve(value)['configuration']['resources'])
-        self.assertIn('api-3',selected['services'])
 
     def test_discovery_reader_retains_scope_and_legacy_profile_grid(self):
         from test_contract import PROFILE

@@ -268,7 +268,7 @@ acceptance remains separate and failed correctness remains failed.
 | `primer-concurrency`, `primer-max-tenants` | The bound DATA primer accepts positive JavaScript safe integers when the selected source supports them. Defaults are one worker and at most 10,000 pending tenants per invocation. Both settings are bounded by the actual pending roster. |
 | `population-ceiling` | Optional whole-registry population budget for a fresh discovery fixture. Omission retains 10,000. The seed must fit the selected budget and the source's UUID/array representation. Page, cache, byte, resource and primer chunk bounds stay independent. |
 | `jwt-setup-concurrency` | Discovery JWT setup accepts a positive JavaScript safe integer and batches at most the remaining roster. |
-| `diagnostic-resource-profile`, `diagnostic-resource-allocation` | Compose accepts named profiles and explicit per-service CPU and memory. Native Kubernetes binds requests and selected limits in its own fixture and allocation. |
+| `diagnostic-resource-profile`, `diagnostic-resource-allocation` | Retired 2026-11-19: Compose services run uncapped. Native Kubernetes binds requests in its own fixture. |
 
 The [legacy remote protocol](../remote-pgstream/protocol.py) still uses a
 three-hour combined warmup, idle and load ceiling, a one-hour probe interval
@@ -524,6 +524,8 @@ container/network/volume inventories; a Docker error string is never proof of
 absence.
 
 ### Explicit finite allocation
+
+**Retired 2026-11-19:** the `diagnostic-resource-profile` and `diagnostic-resource-allocation` options were deleted; Compose services always run uncapped and the host's `MemAvailable` is recorded once at run entry (`run-before-host.json`). The text below is historical.
 
 A new discovery fixture can use `--diagnostic-resource-allocation '<JSON>'`
 instead of `--diagnostic-resource-profile`. Runner preparation configuration uses
@@ -990,8 +992,7 @@ Use `exactStatementSignals` for baseline keys whose deterministic statement
 count per unit must match. PostgreSQL timing changes remain observations.
 Measurements with uncertain or variable units stay outside the exact list.
 
-Omitting both `diagnostic-resource-profile` and
-`diagnostic-resource-allocation` selects uncapped Compose services, including
+Compose services are always uncapped (the resource options were retired 2026-11-19), including
 ordinary external pgstream discovery. Preparation removes reference CPU and
 memory sizing from the frozen runtime configuration and records the affected
 fields. Deployment checks the owned Docker readback. Host constraints still

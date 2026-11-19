@@ -6,7 +6,6 @@ import re
 import subprocess
 import sys
 import time
-import driver_memory
 import driver_vu_diagnostic
 import phase_windows
 from contract import require, SHA, OWNER, REPLICAS, UNACCEPTED_SCOPE, discovery_scope, check_discovery_scope, discovery_api_replicas
@@ -50,8 +49,9 @@ def check_discovery(value):
         if 'rows' in oracle:
             rows=oracle['rows'];require(isinstance(rows,list) and len(rows)==value['tenants'] and len({r.get('tenant') for r in rows})==len(rows),'M7_DISCOVERY_COUNT_ROSTER')
             require(oracle.get('probeCountProof')=='KNOWN' and oracle.get('probeAccounting',{}).get('version')==2 and oracle['probeAccounting'].get('admissionsClosed') is True and oracle['probeAccounting'].get('pending')==0,'M7_DISCOVERY_PROBE_COUNTS_UNMEASURED')
+            require(all(type(oracle.get(k)) in (int,float) and oracle[k]>=0 for k in ('accepted','stored','uncertain')) and oracle['accepted']<=oracle['stored']<=oracle['accepted']+oracle['uncertain'],'M7_DISCOVERY_WRONG_DATA')
             for row in rows:
-                require(all(type(row.get(k)) in (int,float) and row[k]>=0 for k in ('accepted','stored','uncertain')) and row['accepted']<=row['stored']<=row['accepted']+row['uncertain'] and row.get('match') is True,'M7_DISCOVERY_WRONG_DATA')
+                require(type(row.get('stored')) is int and row['stored']>=0 and row.get('match') is True,'M7_DISCOVERY_WRONG_DATA')
                 require(all(type(row.get(k)) is int and row[k]>=0 for k in ('probeAccepted','probeStored','probeUncertain','probeRefused','probePending')) and row['probePending']==0 and row['probeAccepted']<=row['probeStored']<=row['probeAccepted']+row['probeUncertain'],'M7_DISCOVERY_WRONG_DATA')
     if value.get('profile')=='pgstream-sample':
         check_discovery_scope(value)
@@ -69,7 +69,7 @@ class Record:
         self.a,self.d,self.m=a,d,m
         self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'coverage':{'fullNominalCgmCycle':m['cadence']['loadSeconds']>=300/m['cadence'].get('accel',1),'timerWitness':'UNMEASURED; observed progress is retained separately'},'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,**(discovery_scope(m) if m['profile']=='pgstream-sample' else {}),**({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
     def save(self):
-        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('load',) for name in ('evaluator-progress.json','probe.json','k6-summary.json','http-accounting.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json','node-observation.json','k6-scheduling.csv.gz','driver-vu-assessment.json',driver_memory.RESULT,driver_memory.SAMPLES,'host-load.tsv','pg-activity.tsv','pg-blockers.tsv') if (file:=self.d/folder/name).is_file()}
+        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('load',) for name in ('evaluator-progress.json','probe.json','k6-summary.json','http-accounting.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json','node-observation.json','k6-scheduling.csv.gz','driver-vu-assessment.json','host-load.tsv','pg-activity.tsv','pg-blockers.tsv') if (file:=self.d/folder/name).is_file()}
         self.value['collectionSegments']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('load',) for file in (self.d/folder).glob('*-collection.json') if file.is_file()}
         self.a.write(self.d/'summary.json',self.value)
     def failure(self,stage,error,hard=False):
@@ -102,22 +102,10 @@ class Record:
             self.save()
 
 def run_discovery(a,d,m,k6_image,oneoff=None):
-    # The standalone driver has its own prospective declaration. Do not mutate
-    # the original session's server profile or resource/cleanup ownership.
-    with a.diagnostic_resources.discovery_driver(m) as allocation:
-        if allocation is not None:a.write(d/'loadgen-resource-allocation.json',allocation)
-        return _run_discovery(a,d,m,k6_image,oneoff)
-
-
-def _run_discovery(a,d,m,k6_image,oneoff=None):
     record=Record(a,d,m)
-    if driver_memory.selected(m):
-        record.value['driverMemory'] = {'status':'UNMEASURED', 'reason':'driver-observation-not-retained'}
     record.save()
     try:
         require(m.get('profile')!='fresh-image-diagnostic','M7_DIAGNOSTIC_CANNOT_RUN_CAPACITY')
-        require(not driver_memory.selected(m) or oneoff is None,
-                'M7_DRIVER_MEMORY_LOCAL_FIXTURE_REQUIRED')
         a.frozen(m,'run');a.quiet(d,m,'run-before',check_load=False);a.verify(d,m);a.image(m)
         record.value['ownershipVerified']=True;record.save()
         require((d/'deploy-before-host.json').is_file(),'M7_DEPLOY_QUIET_RECORD_REQUIRED')
@@ -178,8 +166,6 @@ def retained_results(a, d, m, summary):
                 progress[phase] = {'verdict': 'UNMEASURED', 'code': safe_code(error)}
     result['evaluatorProgress'] = progress
     out = d/'load'
-    if driver_memory.selected(m) and (out / driver_memory.RESULT).is_file():
-        read('driverMemory', lambda: a.document(out / driver_memory.RESULT))
     probe = summary.get('probe') or {}
     if probe:
         result['completedOutput'] = probe.get('completedOutput', {'verdict':'UNMEASURED'})
@@ -210,7 +196,7 @@ def run_load(a,d,m,k6_id,record,oneoff,out,runid,completion,accepted):
     process=None;monitor=None;load_started=False;primed=False;probe_stopped=False
     try:
         with (out/'probe.log').open('wb') as probe_log,a.sampling(d,out):
-            process=a.diagnostic_resources.popen(a.subprocess.Popen, [m['generator']['tools']['node']['path'],str(d/'probe.js'),'--base','http://127.0.0.1:'+str(m['port']),'--tenants',str(d/'tenants.private.json'),'--compose',spec,'--runid',runid,'--clients',str(viewer_plan.total(m)),'--per',str(m['cadence'].get('socketsPerTenant',2)),*viewer_plan.setup_args(m['cadence']),'--window',str(m['cadence']['loadSeconds']),'--probeEvery',str(m['cadence'].get('probeEveryMs',3000)),'--restart','1' if m['cadence'].get('restart',True) else '0','--evalTimeout','900','--out',str(out/'probe.json'),'--signal',str(out/'.window')],env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
+            process=a.subprocess.Popen([m['generator']['tools']['node']['path'],str(d/'probe.js'),'--base','http://127.0.0.1:'+str(m['port']),'--tenants',str(d/'tenants.private.json'),'--compose',spec,'--runid',runid,'--clients',str(viewer_plan.total(m)),'--per',str(m['cadence'].get('socketsPerTenant',2)),*viewer_plan.setup_args(m['cadence']),'--window',str(m['cadence']['loadSeconds']),'--probeEvery',str(m['cadence'].get('probeEveryMs',3000)),'--restart','1' if m['cadence'].get('restart',True) else '0','--evalTimeout','900','--out',str(out/'probe.json'),'--signal',str(out/'.window')],env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
             a.job_record(out/'probe-job.json',process,m['owner'],group=True)
             deadline=a.time.monotonic()+a.remaining_seconds(float('inf'))
             while not (out/'.window').is_file() and process.poll() is None and a.time.monotonic()<deadline:a.time.sleep(1)
@@ -228,6 +214,7 @@ def run_load(a,d,m,k6_id,record,oneoff,out,runid,completion,accepted):
                 def work():
                     with (out/'k6.log').open('wb') as output:
                         def launch():
+                            a.k6_tenants(d,m)
                             argv=k6_command(a,d,m,k6_id,runid)
                             timeout=a.discovery_seconds(m,m['cadence']['loadSeconds']+600)
                             if 'setupSeconds' in windows:
@@ -239,8 +226,6 @@ def run_load(a,d,m,k6_id,record,oneoff,out,runid,completion,accepted):
                                 argv=phase_windows.k6_setup(argv,k6_id,setup,windows['setupUntilUnixMs'])
                                 grace=max((row.get('gracefulStopSeconds',30) for row in m['cadence'].get('driverPlan',{}).get('scenarios',{}).values()),default=30)
                                 timeout=a.remaining_seconds(setup+m['cadence']['loadSeconds']+grace+5)
-                            if driver_memory.selected(m):
-                                return driver_memory.launch(a,m,out,k6_id,argv,file=output,timeout=timeout)
                             return (oneoff('k6-load',argv,file=output,timeout=timeout) if oneoff
                                     else a.command(argv,file=output,timeout=timeout))
                         record.process('k6',launch)
@@ -278,8 +263,6 @@ def run_load(a,d,m,k6_id,record,oneoff,out,runid,completion,accepted):
             else:
                 record.value['strictChecks']['recovery']={'verdict':'UNMEASURED','code':'M7_DISCOVERY_RECOVERY_NOT_STARTED'};record.save()
     finally:
-        if driver_memory.selected(m):
-            driver_memory.retain(a,m,out,k6_id,runid)
         if process is not None:
             a.stop_job(out/'probe-job.json',m['owner']);process.wait(timeout=10)
             if 'probe' not in record.value['processes']:record.value['processes']['probe']={'returncode':process.returncode,'stoppedByRunner':True,'endMonoNs':time.monotonic_ns()};record.save()
@@ -400,9 +383,9 @@ def k6_command(a,d,m,image,runid):
         driver_vu_diagnostic.expected_plans(m)
     base=k6_base(a,d,m,image,runid)
     shards=m['cadence'].get('driverShards',1)
-    if shards==1:return a.bounded_k6_argv(driver_vu_diagnostic.select_command(a,d,m,base))
+    if shards==1:return driver_vu_diagnostic.select_command(a,d,m,base)
     import driver_shards
-    tenants=json.loads((d/'tenants.private.json').read_text())
+    tenants=json.loads(k6_roster(d).read_text())
     rows=driver_shards.plan(len(tenants),m['cadence'].get('hotFactor',10),m['cadence'].get('offeredRps'),shards)
     folder=driver_shards.write_rosters(d/'k6-shards',tenants,rows)
     a.write(d/'load'/'k6-shard-plan.json',{'version':1,'shards':rows,'scope':'one admitted k6 container; contiguous roster slices; summed weight equals the unsharded plan'})
@@ -413,11 +396,17 @@ def k6_command(a,d,m,image,runid):
         driver = {'environment': [driver_vu_diagnostic.configured_environment(m,i) for i in range(shards)],
                   'observer': m['cadence']['driverPlan']['observer']}
         base = [*configured[:configured.index(image)], *base[base.index(image):]]
-    return a.bounded_k6_argv(driver_shards.argv(base,image,rows,folder,driver=driver))
+    return driver_shards.argv(base,image,rows,folder,driver=driver)
+
+
+def k6_roster(d):
+    """The roster k6 loads: with each tenant's JWT once exchanged (adapter.k6_tenants)."""
+    roster=d/'load'/'k6-tenants.private.json'
+    return roster if roster.is_file() else d/'tenants.private.json'
 
 
 def k6_base(a,d,m,image,runid):
-    return (['docker','run','--rm','--name',m['project']+'-k6','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],'--label','com.docker.compose.service=k6','--network','host','-u',str(a.os.getuid())+':'+str(a.os.getgid()),'-v',str(d/'k6')+':/scripts:ro','-v',str(d/'load')+':/out','-v',str(d/'tenants.private.json')+':/tenants.private.json:ro','-e','BASE_URL=http://127.0.0.1:'+str(m['port']),'-e','TENANTS_FILE=/tenants.private.json','-e','RUN_ID='+runid,'-e','RUN_START='+str(int(time.time()*1000)),'-e','DURATION='+str(m['cadence']['loadSeconds']),'-e','ACCEL='+str(m['cadence'].get('accel',1)),'-e','HOT_FACTOR='+str(m['cadence'].get('hotFactor',10)),*(['-e','OFFERED_RPS='+str(m['cadence']['offeredRps'])] if 'offeredRps' in m['cadence'] else []),*(['-e','M7_WORKLOAD_MIX='+m['cadence']['workloadMix']] if 'workloadMix' in m['cadence'] else []),*(['-e','M7_WORKLOAD_SCALE='+str(m['cadence']['workloadScale'])] if 'workloadScale' in m['cadence'] else []),'-e',a.jwt_setup_env(m),'-e','SHAPES='+','.join(m['cadence'].get('driverPlan',{}).get('scenarios',driver_vu_diagnostic.SHAPES)),image,'run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js'])
+    return (['docker','run','--rm','--name',m['project']+'-k6','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],'--label','com.docker.compose.service=k6','--network','host','-u',str(a.os.getuid())+':'+str(a.os.getgid()),'-v',str(d/'k6')+':/scripts:ro','-v',str(d/'load')+':/out','-v',str(k6_roster(d))+':/tenants.private.json:ro','-e','BASE_URL=http://127.0.0.1:'+str(m['port']),'-e','TENANTS_FILE=/tenants.private.json','-e','RUN_ID='+runid,'-e','RUN_START='+str(int(time.time()*1000)),'-e','DURATION='+str(m['cadence']['loadSeconds']),'-e','ACCEL='+str(m['cadence'].get('accel',1)),'-e','HOT_FACTOR='+str(m['cadence'].get('hotFactor',10)),*(['-e','OFFERED_RPS='+str(m['cadence']['offeredRps'])] if 'offeredRps' in m['cadence'] else []),*(['-e','M7_WORKLOAD_MIX='+m['cadence']['workloadMix']] if 'workloadMix' in m['cadence'] else []),*(['-e','M7_WORKLOAD_SCALE='+str(m['cadence']['workloadScale'])] if 'workloadScale' in m['cadence'] else []),'-e','SHAPES='+','.join(m['cadence'].get('driverPlan',{}).get('scenarios',driver_vu_diagnostic.SHAPES)),image,'run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js'])
 
 def count_observation(a,d,out,runid,metrics,*,probe_ledger=None):
     from discovery_counts import observe

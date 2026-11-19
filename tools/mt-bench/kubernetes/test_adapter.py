@@ -382,7 +382,7 @@ class Adapter(unittest.TestCase):
             root=Path(name);out=root/'load';out.mkdir();(out/'runid').write_text('synthetic-probe')
             tenants=root/'tenants.json';k.write(tenants,[{'id':A,'host':'a.example.test','token':'synthetic-a'},{'id':B,'host':'b.example.test','token':'synthetic-b'}])
             c={**self.c,'tenants':2,'tenantsFile':str(tenants)}
-            metrics={'writes_ok':{'count':2},**{'writes_ok{kind:'+kind+'}':{'count':int(kind=='entries')*2} for kind in ('entries','devicestatus','treatments')},**{key+'{tenant:'+t+'}':{'count':int(key=='writes_ok')} for t in (A,B) for key in ('writes_ok','writes_uncertain')}}
+            metrics={'writes_ok':{'count':2},**{'writes_ok{kind:'+kind+'}':{'count':int(kind=='entries')*2} for kind in ('entries','devicestatus','treatments')},'writes_uncertain':{'count':0}}
             ledger={'version':2,'kind':'m7-discovery-probe-accounting','runId':'synthetic-probe','roster':[A,B],'admissionsClosed':True,'attempts':2,'byTenant':{t:{'attempts':1,'accepted':1,'uncertain':0,'refused':0,'pending':0} for t in (A,B)}}
             k.write(out/'probe-accounting.json',ledger)
             k.write(out/'fanout.json',{'probeWrites':{'byTenant':{A:1,B:1}}})
@@ -390,10 +390,10 @@ class Adapter(unittest.TestCase):
             values={t:{'entries':1,'probe':1} for t in (A,B)}
             criterion=lambda:execute.accepted_writes(out,c,values)
             self.assertEqual(criterion()['verdict'],'GREEN')
-            changed=copy.deepcopy(metrics);del changed['writes_ok{tenant:'+A+'}'];k.write(out/'k6-summary.json',{'metrics':changed})
+            changed=copy.deepcopy(metrics);del changed['writes_uncertain'];k.write(out/'k6-summary.json',{'metrics':changed})
             with self.assertRaisesRegex(k.Refused,'ACCEPTED_WRITE_UNMEASURED'):criterion()
             k.write(out/'k6-summary.json',{'metrics':metrics});criterion()
-            changed=copy.deepcopy(metrics);changed['writes_uncertain{tenant:'+A+'}']['count']=1
+            changed=copy.deepcopy(metrics);changed['writes_uncertain']['count']=1
             k.write(out/'k6-summary.json',{'metrics':changed})
             with self.assertRaisesRegex(k.Refused,'WORKLOAD_WRITE_UNCERTAIN'):criterion()
             k.write(out/'k6-summary.json',{'metrics':metrics});criterion()
@@ -419,7 +419,7 @@ class Adapter(unittest.TestCase):
             k.write(root / 'run.json', config)
             metrics = {'writes_ok':{'count':1}, 'writes_ok{kind:entries}':{'count':1},
                        'writes_ok{kind:devicestatus}':{'count':0}, 'writes_ok{kind:treatments}':{'count':0},
-                       f'writes_ok{{tenant:{B}}}':{'count':1}, f'writes_uncertain{{tenant:{B}}}':{'count':0}}
+                       'writes_uncertain':{'count':0}}
             ledger = {'version':2, 'kind':'m7-discovery-probe-accounting', 'runId':run_id, 'roster':[B,A],
                       'admissionsClosed':True, 'attempts':1,
                       'byTenant':{A:{'attempts':1,'accepted':1,'uncertain':0,'refused':0,'pending':0}}}
@@ -435,7 +435,7 @@ class Adapter(unittest.TestCase):
             report('full-read')
             counts = execute.accepted_writes(out, config, values)
             self.assertEqual([(row['tenant'], row['ordinarySelected']) for row in counts['rows']], [(A,False), (B,True)])
-            del metrics[f'writes_uncertain{{tenant:{B}}}']
+            del metrics['writes_uncertain']
             report('missing-selected')
             with self.assertRaisesRegex(k.Refused, 'ACCEPTED_WRITE_UNMEASURED'):
                 execute.accepted_writes(out, config, values)
@@ -445,7 +445,6 @@ class Adapter(unittest.TestCase):
                 execute.accepted_writes(out, config, values)
             self.assertIn({'kind':'unselected-workload-write', 'tenant':A}, error.exception.oracleFindings['failures'])
             values[B]['entries'] = values[A].pop('entries')
-            metrics[f'writes_uncertain{{tenant:{B}}}'] = {'count':0}
             metrics['writes_uncertain'] = {'count':1}
             report('unattributed-uncertainty')
             metrics['writes_uncertain'] = {'count':0}

@@ -22,7 +22,7 @@ def assess(metrics):
             'storage':'UNMEASURED','clinical':'UNMEASURED','clientDelivery':'UNMEASURED',
             'limits':'HTTP status is observed; write commit and cause require an independent oracle. No mutation is retried.'}
     coverage = {}
-    for shape in ('jwt_setup',*SHAPES):
+    for shape in SHAPES:
         coverage[shape] = {key: observed('m7_http_' + key + '{http_shape:' + shape + '}') != 'UNMEASURED'
                            for key in ('attempts', 'completed')}
         attempts=tagged('m7_http_attempts',shape)
@@ -46,7 +46,6 @@ def assess(metrics):
             row['httpVerdict'] = 'FAIL' if any(categories[key] for key in CATEGORIES if key != 'http_expected') else 'UNMEASURED'
     rows=list(result['shapes'].values());scenario=list(result['shapes'][shape] for shape in SHAPES)
     result['scenario']={'attempts':sum(row['attempts'] for row in scenario),'completed':sum(row['completed'] for row in scenario)}
-    result['setup']=result['shapes']['jwt_setup']
     result['sourceCounts']={key:observed(key) for key in ('scenario_request_attempts','scenario_http_responses','scenario_transport_failures','http_reqs','dropped_iterations')}
     # Native source counters are independently incremented by the existing code.
     # Missing source counters are not fabricated as proof of reconciliation.

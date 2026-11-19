@@ -27,10 +27,7 @@ class SparseControl(unittest.TestCase):
         m['profileSelection']=profile_provenance.identity(profile_provenance.selection(),
             {'services':{'api':{},'vault':{'command':['vault','server']},'realtime':{},'evaluator':{}}})
         a.write(root/'owner.json',m);a.write(root/'tenants.private.json',[{'id':t} for t in ids]);(out/'runid').write_text('synthetic-sparse')
-        metrics={'writes_ok':{'count':345},**{'writes_ok{kind:'+k+'}':{'count':345 if k==domain else 0} for k in ('entries','devicestatus','treatments')}}
-        for t in ids:
-            metrics['writes_ok{tenant:'+t+'}']={'count':345 if t==ids[0] else 0}
-            metrics['writes_uncertain{tenant:'+t+'}']={'count':0}
+        metrics={'writes_ok':{'count':345},'writes_uncertain':{'count':0},**{'writes_ok{kind:'+k+'}':{'count':345 if k==domain else 0} for k in ('entries','devicestatus','treatments')}}
         a.write(out/'k6-summary.json',{'metrics':metrics});a.write(out/'fanout.json',{'probeWrites':{'byTenant':{}}})
         ledger={'version':2,'kind':'m7-discovery-probe-accounting','runId':'synthetic-sparse','roster':ids,
                 'admissionsClosed':True,'attempts':0,'byTenant':{}}
@@ -65,8 +62,8 @@ class SparseControl(unittest.TestCase):
     def test_missing_uncertain_inexact_or_empty_witness_refuses_before_mutation(self):
         for case in ('missing','ordinary-uncertain','probe-uncertain','pending','empty','wrong-count'):
             root,m,metrics,state,sql,psql=self.fixture(size=3);out=root/'load'
-            if case=='missing':del metrics['writes_ok{tenant:tenant-1}']
-            if case=='ordinary-uncertain':metrics['writes_uncertain{tenant:tenant-1}']={'count':1}
+            if case=='missing':del metrics['writes_uncertain']
+            if case=='ordinary-uncertain':metrics['writes_uncertain']={'count':1}
             if case in ('probe-uncertain','pending'):
                 ledger=a.document(out/'probe-accounting.json');ledger['attempts']=1
                 ledger['byTenant']={'tenant-1':{'attempts':1,'accepted':0,'uncertain':int(case=='probe-uncertain'),'pending':int(case=='pending'),'refused':0}}
@@ -129,12 +126,12 @@ class SparseControl(unittest.TestCase):
         self.assertEqual(result['oracleControl'],{'baseline':'GREEN','broken':'RED','restored':'GREEN'});self.assertEqual(len(sql),2)
         # Resource admission now wraps the collector. Ablate the predicate
         # in the actual collector rather than the delegation-only wrapper.
-        source=inspect.getsource(d._run_discovery)
+        source=inspect.getsource(d.run_discovery)
         needle="control_domain(counts,m['tenants']) is not None"
         self.assertIn(needle,source);namespace=dict(d.__dict__)
         old="counts and counts.get('rows') and all(row.get('accepted',0)>0 and row.get('uncertain',0)==0 for row in counts['rows'])"
         exec(compile(source.replace(needle,old),d.__file__,'exec'),namespace)
-        broken,sql=self.run_collection(namespace['_run_discovery'])
+        broken,sql=self.run_collection(namespace['run_discovery'])
         self.assertNotIn('oracleControl',broken);self.assertEqual(sql,[])
         self.assertEqual(broken['strictChecks']['oracleControl']['code'],'M7_DISCOVERY_COUNTS_MISSING')
         restored,sql=self.run_collection(d.run_discovery);self.assertIn('oracleControl',restored);self.assertEqual(len(sql),2)

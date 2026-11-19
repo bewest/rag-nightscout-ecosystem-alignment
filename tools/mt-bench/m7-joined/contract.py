@@ -72,7 +72,11 @@ def metric(metrics, name, field="count"):
 
 
 def oracle(stored, metrics, probes, tenants, strict=False, allow_empty=False, probes_known=True):
-    """Independent SQL counts vs client-acknowledged counts; never API reads."""
+    """Independent SQL counts vs client-acknowledged totals; never API reads.
+
+    k6 counts writes per kind and in total, never per tenant: the per-tenant
+    figure is the stored row count, and each accepted input is judged by the
+    assessor (four-product-failures, storedWrites)."""
     expected = {row["id"] for row in tenants}
     require(expected and set(stored).issubset(expected) and set(probes).issubset(expected), "M7_ORACLE_TENANT_SCOPE")
     rows, failures = [], []
@@ -81,29 +85,27 @@ def oracle(stored, metrics, probes, tenants, strict=False, allow_empty=False, pr
         values = stored.get(tenant, {})
         require(set(values).issubset(set(total) | {"probe"}) and all(isinstance(n, int) and n >= 0 for n in values.values()), "M7_ORACLE_COUNTS_INVALID")
         count = sum(values.get(kind, 0) for kind in total)
-        accepted = metric(metrics, f"writes_ok{{tenant:{tenant}}}")
-        uncertain = metric(metrics, f"writes_uncertain{{tenant:{tenant}}}")
-        match = accepted <= count <= accepted + uncertain and (not probes_known or values.get("probe", 0) == probes.get(tenant, 0))
+        match = not probes_known or values.get("probe", 0) == probes.get(tenant, 0)
         if strict:
-            match = match and accepted > 0 and uncertain == 0
-        rows.append({"tenant": tenant, "stored": count, "accepted": accepted, "uncertain": uncertain,
+            match = match and count > 0
+        rows.append({"tenant": tenant, "stored": count,
                      "probeStored": values.get("probe", 0), "probeAccepted": probes.get(tenant, 0) if probes_known else None, "match": match})
         if not match:
             failures.append("tenant:" + tenant)
         for kind in total:
             total[kind] += values.get(kind, 0)
-    # Unlike the old baseline formatter, enforce the domain totals too.
+    accepted, uncertain = metric(metrics, "writes_ok"), metric(metrics, "writes_uncertain")
+    stored_total = sum(total.values())
+    if not accepted <= stored_total <= accepted + uncertain or (strict and uncertain):
+        failures.append("total")
     for kind, count in total.items():
-        accepted = metric(metrics, f"writes_ok{{kind:{kind}}}")
-        # Per-kind uncertain submetrics are absent in the baseline. Nonzero
-        # uncertainty therefore cannot establish exact domain equality.
-        uncertain = sum(row["uncertain"] for row in rows)
-        if not accepted <= count <= accepted + uncertain:
+        kind_accepted = metric(metrics, f"writes_ok{{kind:{kind}}}")
+        if not kind_accepted <= count <= kind_accepted + uncertain:
             failures.append("domain:" + kind)
-    require(allow_empty or sum(row["accepted"] for row in rows) > 0, "M7_ORACLE_NO_ACCEPTED_WRITES")
-    require(sum(row["accepted"] for row in rows) == metric(metrics, "writes_ok"), "M7_ORACLE_CLIENT_TOTAL_MISMATCH")
+    require(allow_empty or accepted > 0, "M7_ORACLE_NO_ACCEPTED_WRITES")
     return {"verdict": "RED" if failures else "GREEN", "rows": rows, "domains": total, "failures": failures,
-            "uncertain": sum(row["uncertain"] for row in rows), **({"probeCountProof":"UNMEASURED"} if not probes_known else {})}
+            "accepted": accepted, "stored": stored_total, "uncertain": uncertain,
+            **({"probeCountProof":"UNMEASURED"} if not probes_known else {})}
 
 
 def serving_mounts(config):

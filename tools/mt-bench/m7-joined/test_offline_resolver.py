@@ -39,11 +39,9 @@ class OfflineResolver(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'M7_RUNNER_FINITE_LIMIT'):
                 runner.validate_config(value)
 
-    def test_no_allocation_resolves_as_uncapped_and_says_so(self):
-        value = copy.deepcopy(config())
-        value['prepare'].pop('diagnostic-resource-allocation', None)
-        plan = runner.tier_plan(value)
-        self.assertIsNone(plan['effective']['resources'])
+    def test_compose_services_resolve_as_uncapped_and_say_so(self):
+        plan = runner.tier_plan(copy.deepcopy(config()))
+        self.assertNotIn('resources', plan['effective'])
         self.assertIn('uncapped', plan['resourceOrigin'])
 
 

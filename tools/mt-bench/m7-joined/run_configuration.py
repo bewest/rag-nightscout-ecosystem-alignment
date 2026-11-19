@@ -36,30 +36,13 @@ def validate_prepare(args):
     private=[ipaddress.ip_network(c) for c in ('10.0.0.0/8','172.16.0.0/12','192.168.0.0/16')]
     require(all(n.version==4 and any(n.subnet_of(p) for p in private) for n in networks) and not networks[0].overlaps(networks[1]),
             'M7_CONFIG_SUBNET_OVERLAP_OR_PUBLIC')
-    selected = a.selected_resources_profile(args)
-    external = args.pgstream_topology == a.stream_topology.EXTERNAL
-    require(not selected or external == a.diagnostic_resources.external_selection(selected),
-            'M7_CONFIG_RESOURCE_TOPOLOGY')
-    require(not selected or args.generator_dependencies, 'M7_DIAGNOSTIC_DEPENDENCIES_REQUIRED')
     return cadence
-
-
-def resource_projection(resources, profile):
-    if profile is None:
-        return None
-    legacy_estimate = ({} if isinstance(profile, dict) and 'ceiling' not in profile else
-                       {'millicpus': resources.cpu_ceiling(profile), 'memoryBytes': resources.memory_ceiling(profile)})
-    return {'profile': profile, **legacy_estimate,
-            **({'standalone': {'k6': resources.driver_record(profile)}}
-               if resources.driver_memory_request(profile) else {})}
 
 
 def from_args(args, instrument):
     import adapter as a
     # This is semantic input, independent of transport paths and observed limits.
     cadence = validate_prepare(args)
-    profile = a.selected_resources_profile(args)
-    resources = resource_projection(a.diagnostic_resources, profile)
     return {**commissioning_wal.option(args), **a.stream_topology.ack_option(args), **({'tenantReadiness':args.tenant_readiness} if getattr(args,'tenant_readiness',None) else {}), **a.static_topology.option(args), **({'apiCauseObservation':'on'} if getattr(args,'api_cause_observation','off')=='on' else {}),'version': 1, 'pair': {'core': args.core_commit, 'deploy': args.deploy_commit},
             'imageId': args.image_id or args.image, 'instrument': instrument,
             'postgresImageId': args.postgres_image, 'profile': args.profile,
@@ -67,22 +50,20 @@ def from_args(args, instrument):
             'cadence': cadence, 'primerConcurrency': args.primer_concurrency,
             **({'primerMaxTenants': args.primer_max_tenants} if getattr(args,'primer_max_tenants',None) is not None else {}),
             'jwtSetupConcurrency': args.jwt_setup_concurrency,
-            'pgstreamTopology': args.pgstream_topology, 'resources': resources,
+            'pgstreamTopology': args.pgstream_topology,
             'completionContract': args.completion_contract,
             'diagnostics':a.profile_provenance.selection(args.diagnostics,args.diagnostics_interval_ms)}
 
 
 def from_manifest(m):
     import adapter as a
-    profile = m.get('diagnosticResources', {}).get('profile')
-    resources = resource_projection(a.diagnostic_resources, profile)
     return {**({'staticBuildReceiptSha256': m['staticBuildReceiptSha256']} if m.get('staticBuildReceiptSha256') else {}),
             **commissioning_wal.from_manifest(m), **a.stream_topology.ack_selection(m), **({'tenantReadiness':m['tenantReadiness']} if m.get('tenantReadiness') else {}), **({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),
             **({'apiCauseObservation':'on'} if m.get('apiCause') else {}),'version': 1, **{k: m.get(k) for k in ('pair','imageId','profile','runPurpose','tenants','replicas','cadence','completionContract')},
             'instrument': m['instrument']['sha256'], 'postgresImageId': m.get('postgresImageId'),
             'primerConcurrency': m.get('primerConcurrency',1), 'jwtSetupConcurrency': m.get('jwtSetupConcurrency',1),
             **({'primerMaxTenants':m['primerMaxTenants']} if 'primerMaxTenants' in m else {}),
-            'pgstreamTopology': m.get('pgstreamTopology',a.stream_topology.COLOCATED), 'resources': resources,
+            'pgstreamTopology': m.get('pgstreamTopology',a.stream_topology.COLOCATED),
             'diagnostics':m.get('diagnostics',a.profile_provenance.selection())}
 
 

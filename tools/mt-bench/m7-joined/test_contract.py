@@ -24,7 +24,7 @@ OBS={'verdict':'PASS','observations':1,'invalid':0,'mismatch':0}
 class Contract(unittest.TestCase):
     def setUp(self):
         self.tenants=[{'id':A,'host':'a.example.test','token':uuid.uuid4().hex}, {'id':B,'host':'b.example.test','token':uuid.uuid4().hex}]
-        self.metrics={'writes_ok':{'count':4}, f'writes_ok{{tenant:{A}}}':{'count':2},f'writes_ok{{tenant:{B}}}':{'values':{'count':2}},'writes_ok{kind:entries}':{'count':2},'writes_ok{kind:devicestatus}':{'count':2}}
+        self.metrics={'writes_ok':{'count':4},'writes_uncertain':{'values':{'count':0}},'writes_ok{kind:entries}':{'count':2},'writes_ok{kind:devicestatus}':{'count':2}}
         self.stored={A:{'entries':1,'devicestatus':1},B:{'entries':1,'devicestatus':1}}
     def test_independent_accepted_and_domain_oracle_break_restore(self):
         self.assertEqual(oracle(self.stored,self.metrics,{},self.tenants,True)['verdict'],'GREEN')
@@ -37,7 +37,7 @@ class Contract(unittest.TestCase):
         self.assertEqual(oracle(self.stored,self.metrics,{},self.tenants,True)['verdict'],'RED')
     def test_empty_uncertain_and_unknown_tenant_are_never_capacity_green(self):
         with self.assertRaisesRegex(RuntimeError,'NO_ACCEPTED'):oracle({}, {}, {}, self.tenants)
-        self.metrics[f'writes_uncertain{{tenant:{A}}}']={'count':1}
+        self.metrics['writes_uncertain']={'count':1}
         self.assertEqual(oracle(self.stored,self.metrics,{},self.tenants,True)['verdict'],'RED')
         with self.assertRaisesRegex(RuntimeError,'TENANT_SCOPE'):oracle({'other':{}},self.metrics,{},self.tenants)
     def test_primer_requires_new_data_token_contract_and_exact_roster(self):

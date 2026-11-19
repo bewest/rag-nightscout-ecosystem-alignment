@@ -192,8 +192,8 @@ class Matrix(unittest.TestCase):
         out = self.root / 'functional';out.mkdir()
         metrics = {name: {'count': value} for name, value in {
             'scenario_request_attempts': 7, 'scenario_http_responses': 7,
-            'scenario_transport_failures': 0, 'http_reqs': 8, 'dropped_iterations': 0}.items()}
-        for shape in ('jwt_setup', *http_accounting.SHAPES):
+            'scenario_transport_failures': 0, 'http_reqs': 7, 'dropped_iterations': 0}.items()}
+        for shape in http_accounting.SHAPES:
             for key in ('m7_http_attempts{http_shape:' + shape + '}',
                         'm7_http_completed{http_shape:' + shape + '}',
                         'm7_http_completed{http_shape:' + shape + ',status:200}',

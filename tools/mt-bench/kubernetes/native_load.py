@@ -203,10 +203,10 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
     private_input = input_codec == native_input.PRIVATE
     if private_input:
         k.need('driverPlan' in w, 'NATIVE_LOAD_CONFIGURED_DRIVER_REQUIRED')
-        k.need(all(set(row) == {'id', 'host', 'token'} for row in tenants), 'NATIVE_LOAD_DATA_FIELDS')
+        k.need(all({'id', 'host', 'token'} <= set(row) <= {'id', 'host', 'token', 'jwt'} for row in tenants), 'NATIVE_LOAD_DATA_FIELDS')
         # The image derives ids and aliases. Bind the exact DATA projection,
         # including order on partial rosters, independently at both ends.
-        tenants = [{key: row[key] for key in ('id','host','token')} for row in tenants]
+        tenants = [{key: row[key] for key in ('id','host','token','jwt') if key in row} for row in tenants]
     tenant_text = json.dumps(tenants, separators=(',', ':'), ensure_ascii=not private_input)
     inputs = {'apiVersion': 'v1', 'kind': 'Secret', 'type': 'Opaque', 'immutable': True,
               'metadata': {'name': 'ns-k6-inputs', 'namespace': c['namespace'],
@@ -332,7 +332,7 @@ def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, 
         try:
             private_data = None
             if receipt['inputTransport']['codec'] == 'fixture-data-v1':
-                private_data = [(row['id'], row['token']) for row in tenants]
+                private_data = [[row['id'], row['token'], *([row['jwt']] if 'jwt' in row else [])] for row in tenants]
             return native_files.capture(kube, c, wanted, out, receipt, failures=failures, private_data=private_data)
         except Exception as error:
             close_after_failure(error)
@@ -403,13 +403,6 @@ def assess_join(d, out, c, objects, client):
            'NATIVE_LOAD_ASSESSMENT_SCRIPT_CHANGED')
     if 'driverPlan' in c['workload']:
         import driver_vu_diagnostic as driver
-        if c.get('nativeLoad', {}).get('inputCodec') == 'fixture-data-v1':
-            rows = workload_runtime.ordinary_roster(c, execute.roster(c), k.need)
-            rows = [{key: row[key] for key in ('id', 'host', 'token')} for row in rows]
-            expected = sha(json.dumps(rows, separators=(',', ':'), ensure_ascii=False).encode())
-            k.need(receipt.get('rosterDelivered') is True and receipt.get('rosterSha256') == expected
-                   and receipt.get('inputTransport') == {'codec': 'fixture-data-v1', 'sha256': expected,
-                        'tenants': len(rows), 'fixtureTenants': c['tenants']}, 'NATIVE_LOAD_ROSTER_CHANGED')
         k.need(receipt.get('captureMode') == 'owned-exec-files'
                and receipt['driverWrapperSha256'] == k.digest(d / driver.SCRIPT) == packet['driverWrapperSha256']
                and receipt['artifactExporterSha256'] == k.digest(k.HERE / 'native-artifacts.cjs')

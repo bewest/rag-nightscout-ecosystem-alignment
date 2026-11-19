@@ -357,7 +357,7 @@ class NativeJoin(unittest.TestCase):
             def assess(*_):events.append('full-assessor');return {'verdict':'OBSERVED'}
             with (patch.object(k.candidate,'require'),patch.object(k,'active_baseline',return_value=baseline),
                   patch.object(k,'observe',return_value=baseline),patch.object(execute,'actor',return_value={}),
-                  patch.object(execute,'completion'),patch.object(execute,'roster',return_value=TENANTS),
+                  patch.object(execute,'completion'),patch.object(execute,'roster',return_value=TENANTS),patch('jwt_tenants.attach',side_effect=lambda rows,*args,**kwargs:[{**row,'jwt':'synthetic-jwt'} for row in rows]),
                   patch.object(execute,'retained_progress',side_effect=collect),
 
                   patch.object(execute.subprocess,'Popen',side_effect=spawn),patch.object(j,'run',side_effect=native),

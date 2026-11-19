@@ -9,7 +9,6 @@ from contextlib import ExitStack
 from unittest.mock import patch
 import adapter as a
 import contract as c
-import diagnostic_resources as dr
 import evaluator_progress as ep
 import run_configuration as rc
 import runner
@@ -19,20 +18,10 @@ import test_evaluator_progress as fixture_progress
 from test_evaluator_progress import A, B, R, S
 
 
-def allocation():
-    services={role:{'millicpus':limit.cpu,'memoryBytes':limit.memory} for role,limit in dr.LIMITS.items() if role!='k6'}
-    services.update({'pgstream':{'millicpus':1000,'memoryBytes':512*dr.MIB},'socket-edge':{'millicpus':250,'memoryBytes':256*dr.MIB}})
-    for role in ('api','realtime','evaluator'):
-        services[role]={'millicpus':1000,'memoryBytes':1024*dr.MIB}
-        services[role+'-2']=dict(services[role])
-    return {'version':1,'services':services,'driver':{'millicpus':4000,'memoryBytes':8192*dr.MIB},
-            'ceiling':{'millicpus':64000,'memoryBytes':128*1024*dr.MIB},'edge':{'workerProcesses':1,'workerConnections':16384}}
-
-
 def config():
     value=legacy_config();value['prepare'].update({'core-commit':s.CORE,'deploy-commit':s.DEPLOY,
         'pgstream-topology':'external-service-v1','completion-contract':'evaluator-work-v2','static-workers':2,'replicas':2,
-        'diagnostic-resource-allocation':json.dumps(allocation()),'generator-dependencies':'/synthetic/owned-dependencies'})
+        'generator-dependencies':'/synthetic/owned-dependencies'})
     return value
 
 
@@ -50,8 +39,7 @@ class StaticTopology(unittest.TestCase):
         cfg=config();args=parsed(cfg);projection=rc.resolve(cfg)
         self.assertEqual(projection['configuration']['staticTopology'],{'kind':s.KIND,'workers':2})
         self.assertEqual(projection['receiptLimits']['staticWorkers'],2)
-        m={**projection['configuration'],'instrument':{'sha256':'d'*64},'runConfiguration':projection['configuration'],
-           'diagnosticResources':{'profile':projection['configuration']['resources']['profile']}}
+        m={**projection['configuration'],'instrument':{'sha256':'d'*64},'runConfiguration':projection['configuration']}
         proof={**projection['diagnosticReceiptTemplate'],'status':'AUTHORIZED_DIAGNOSTIC'}
         self.assertEqual(c.receipt_scope(m,proof,'run')['capacityAcceptance'],'NOT_GRANTED')
         self.assertEqual(c.receipt_scope(m,proof,'deploy')['functionalAcceptance'],'PENDING')
@@ -119,7 +107,6 @@ class StaticTopology(unittest.TestCase):
             with ExitStack() as stack:
                 from test_stream_topology import source_schema
                 stack.enter_context(patch.object(a,'git',return_value=json.dumps(source_schema())))
-                stack.enter_context(patch.object(a.diagnostic_resources,'configure'))
                 stack.enter_context(patch.object(a,'commit',side_effect=lambda repo,head:head))
                 stack.enter_context(patch.object(a,'unused_project_namespace'))
                 # Configuration v2 now checks its exact unused namespaces before
@@ -176,19 +163,17 @@ class StaticTopology(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,code):parsed(bad)
         good=config();parsed(good)
 
-    def test_single_worker_and_api_do_not_require_selected_service_caps(self):
+    def test_single_worker_and_api_have_no_service_caps(self):
         cfg = config()
-        cfg['prepare'].pop('diagnostic-resource-allocation')
         cfg['prepare'].update({'static-workers': 1, 'replicas': 1})
         args = parsed(cfg)
         self.assertEqual(s.option(args)['staticTopology'], {'kind': s.KIND, 'workers': 1})
-        self.assertIsNone(rc.from_args(args, a.instrument()['sha256'])['resources'])
-        # Multi-worker or multi-API without an allocation is an explained
-        # default (uncapped Compose services), not a refusal.
+        self.assertNotIn('resources', rc.from_args(args, a.instrument()['sha256']))
+        # Multi-worker or multi-API runs uncapped Compose services.
         for changes in ({'static-workers': 2}, {'replicas': 2}):
             other = {**cfg, 'prepare': {**cfg['prepare'], **changes}}
             self.assertEqual(s.option(parsed(other))['staticTopology']['kind'], s.KIND)
-            self.assertIsNone(rc.from_args(parsed(other), a.instrument()['sha256'])['resources'])
+            self.assertNotIn('resources', rc.from_args(parsed(other), a.instrument()['sha256']))
         self.assertEqual(s.option(parsed(cfg))['staticTopology']['workers'], 1)
 
     def test_each_published_exact_pair_has_config_receipt_and_unknown_pair_refusal(self):
@@ -207,7 +192,6 @@ class StaticTopology(unittest.TestCase):
         m=manifest();self.assertEqual(s.environment(m),{'NS_EVALUATOR_WORKERS':'2','NS_REALTIME_WORKERS':'2'})
         self.assertEqual(s.environment({}),{})
         with self.assertRaisesRegex(RuntimeError,'M7_STATIC_SOURCE_PAIR'):s.validate({**m,'pair':{'core':'a'*40,'deploy':s.DEPLOY}})
-        self.assertEqual(dr.explicit_allocation(allocation())['services']['socket-edge']['millicpus'],250)
 
     def test_socket_edge_is_explicit_in_existing_launch_and_readiness_roster(self):
         config={'services':{}}

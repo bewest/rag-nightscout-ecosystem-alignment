@@ -154,35 +154,6 @@ class Instances(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'ROSTER_MISMATCH'): p.runtime_environment(observed + observed[-1:], chosen, c)
         p.runtime_environment(observed, chosen, c)
 
-    def test_resource_plan_counts_every_static_ordinal_and_transient_overlap(self):
-        import diagnostic_resources as dr
-        from test_static_topology import allocation
-        for k, apis in ((1, 1), (2, 2)):
-            limits = allocation()
-            if k == 1:
-                for role in ('api-2', 'evaluator-2', 'realtime-2'):
-                    limits['services'].pop(role)
-            c = config(k, apis)
-            for service in limits['services']:
-                c['services'].setdefault(service, {})
-            overlaid = dr.overlay(c, limits)
-            budget = dr.plan(overlaid).record()
-            self.assertEqual(set(budget['services']), set(c['services']))
-            instances = r.roster(overlaid, apis)
-            for role in ('api', 'evaluator', 'realtime'):
-                expected = {role, role + '-2'} if k == 2 else {role}
-                self.assertEqual({name for name, row in instances.items() if row['role'] == role}, expected)
-                for name in expected:
-                    service = budget['services'][name]
-                    self.assertEqual((service['millicpus'], service['memoryBytes'], service['maximumConcurrent']),
-                                     (1000, 1024 * dr.MIB, 1))
-            for service in ('bootstrap', 'primer'):
-                self.assertEqual(budget['services'][service]['maximumConcurrent'], 2)
-            broken = copy.deepcopy(overlaid); broken['services'].pop('evaluator')
-            with self.assertRaisesRegex(RuntimeError, 'M7_DIAGNOSTIC_RESOURCE_ALLOCATION_ROSTER_CHANGED'):
-                dr.plan(broken)
-            self.assertEqual(dr.plan(overlaid).record(), budget)
-
     def test_effective_limits_missing_invalid_and_restored(self):
         row = {'Id': 'exact', 'HostConfig': {'NanoCpus': 500000000, 'Memory': 1048576}}
         class A:

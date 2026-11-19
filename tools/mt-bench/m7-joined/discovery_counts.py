@@ -65,17 +65,14 @@ def observe(a,d,out,runid,metrics,*,probe_ledger=None,ordinary_ids=None):
         ledger,legacy=probe_metadata(a,out,runid,expected,probe_ledger=probe_ledger)
         require(isinstance(metrics,dict),'M7_DISCOVERY_COUNTER_INVALID')
         domains = dict.fromkeys(('entries', 'devicestatus', 'treatments'), 0)
-        required = ['writes_ok', *(f'writes_ok{{kind:{kind}}}' for kind in domains)]
-        required.extend(f'{name}{{tenant:{tenant}}}' for tenant in sorted(ordinary)
-                        for name in ('writes_ok', 'writes_uncertain'))
+        # k6 counts writes per kind and in total, never per tenant; the per-tenant
+        # figure is the stored row count. Each accepted input is judged by the assessor.
+        required = ['writes_ok', 'writes_uncertain', *(f'writes_ok{{kind:{kind}}}' for kind in domains)]
         counts = {key: counter(metrics, key) for key in required}
-        tagged = (key for key in metrics if key.startswith(('writes_ok{tenant:', 'writes_uncertain{tenant:')))
-        require(all(key in counts for key in tagged), 'M7_DISCOVERY_ORDINARY_COUNTER_SCOPE')
-        reported_uncertain = counter(metrics, 'writes_uncertain')
         # Validate malformed present counters before opening the SQL client.
         values=a.stored(d,runid);a.write(out/'stored-counts.json',values)
         require(isinstance(values,dict) and set(values)<=expected,'M7_ORACLE_TENANT_SCOPE')
-        missing=[key for key,value in counts.items() if value is None];uncertain_total=0;all_uncertain=True;rows=[]
+        missing=[key for key,value in counts.items() if value is None];rows=[];ordinary_stored=0
         complete=ledger is not None and ledger['admissionsClosed'] and all(r['pending']==0 for r in ledger['byTenant'].values())
         findings['probeCountProof']='KNOWN' if complete else 'UNMEASURED'
         findings['probeAccounting']={'version':2 if ledger else None,'admissionsClosed':ledger['admissionsClosed'] if ledger else None,'attempts':ledger['attempts'] if ledger else None,'pending':sum(r['pending'] for r in ledger['byTenant'].values()) if ledger else None}
@@ -86,43 +83,32 @@ def observe(a,d,out,runid,metrics,*,probe_ledger=None,ordinary_ids=None):
         for tenant in sorted(expected):
             value=values.get(tenant,{})
             require(isinstance(value,dict) and set(value)<=set(domains)|{'probe'} and all(type(n) is int and n>=0 for n in value.values()),'M7_ORACLE_COUNTS_INVALID')
-            ok='writes_ok{tenant:'+tenant+'}';uncertain='writes_uncertain{tenant:'+tenant+'}'
-            # No ordinary writes are expected on an inactive tenant.
-            # Every selected counter still has to be measured, including zero.
-            accepted, ambiguous = (counts[ok], counts[uncertain]) if tenant in ordinary else (0, 0)
-            absent = accepted is None or ambiguous is None
-            if ambiguous is not None:uncertain_total+=ambiguous
-            else:all_uncertain=False
             stored=sum(value.get(kind,0) for kind in domains)
-            if not absent and not accepted <= stored <= accepted + ambiguous:
-                violation('workload-count-bound' if tenant in ordinary else 'unselected-workload-write', tenant)
+            # No ordinary writes are expected on an inactive tenant.
+            if tenant in ordinary:ordinary_stored+=stored
+            elif stored:violation('unselected-workload-write', tenant)
             probe=value.get('probe',0);pr=ledger['byTenant'].get(tenant,{k:0 for k in FIELDS}) if ledger else None
             if pr is not None:
                 if not pr['accepted']<=probe<=pr['accepted']+pr['uncertain']+pr['pending']:violation('probe-count-bound',tenant)
             elif legacy is not None and probe<legacy.get(tenant,0):violation('probe-ack-missing',tenant)
             rows.append({
-                'tenant': tenant, 'ordinarySelected': tenant in ordinary,
-                'accepted': accepted, 'stored': stored, 'uncertain': ambiguous,
+                'tenant': tenant, 'ordinarySelected': tenant in ordinary, 'stored': stored,
                 'probeStored': probe,
                 'probeAccepted': pr['accepted'] if pr else legacy.get(tenant, 0) if legacy is not None else None,
                 'probeUncertain': pr['uncertain'] if pr else None,
                 'probePending': pr['pending'] if pr else None,
                 'probeRefused': pr['refused'] if pr else None,
-                'match': not absent and complete and accepted <= stored <= accepted + ambiguous
+                'match': complete and (tenant in ordinary or stored == 0)
                          and pr['accepted'] <= probe <= pr['accepted'] + pr['uncertain'],
             })
             for kind in domains:domains[kind]+=value.get(kind,0)
-        for kind,count in domains.items():
-            key='writes_ok{kind:'+kind+'}'
-            if counts[key] is not None and all_uncertain and not counts[key]<=count<=counts[key]+uncertain_total:violation('domain-count-bound:'+kind)
-        # A present aggregate must equal all available tenant ACKs. Missing data
-        # does not authorize fabricating zeros, even when the stored count is0.
-        if counts['writes_ok'] is not None and all(row['accepted'] is not None for row in rows):
-            if sum(row['accepted'] for row in rows) != counts['writes_ok']:
-                violation('client-total-mismatch')
-        if reported_uncertain is not None and all_uncertain and reported_uncertain != uncertain_total:
-            violation('client-uncertain-total-mismatch')
-        findings.update(rows=rows,domains=domains,uncertain=uncertain_total,missingFieldCount=len(missing),missingFields=missing[:64])
+        accepted,uncertain=counts['writes_ok'],counts['writes_uncertain']
+        if accepted is not None and uncertain is not None:
+            if not accepted<=ordinary_stored<=accepted+uncertain:violation('workload-count-bound')
+            for kind,count in domains.items():
+                key='writes_ok{kind:'+kind+'}'
+                if counts[key] is not None and not counts[key]<=count<=counts[key]+uncertain:violation('domain-count-bound:'+kind)
+        findings.update(rows=rows,domains=domains,accepted=accepted,stored=ordinary_stored,uncertain=uncertain,missingFieldCount=len(missing),missingFields=missing[:64])
         if findings['failureCount']:fail('M7_DISCOVERY_WRONG_DATA')
         if not missing and complete:findings.update(verdict='GREEN',code='M7_DISCOVERY_COUNTS_KNOWN')
         else:findings['code']='M7_DISCOVERY_ACK_METADATA_MISSING' if missing else 'M7_DISCOVERY_PROBE_COUNTS_UNMEASURED'
@@ -148,11 +134,11 @@ def control_domain(findings, tenant_count):
     if any(not isinstance(row,dict) or not isinstance(row.get('tenant'),str) for row in rows):return None
     if len({row['tenant'] for row in rows})!=len(rows):return None
     for row in rows:
-        if any(type(row.get(k)) is not int or row[k]<0 for k in ('accepted','stored','uncertain','probeStored','probeAccepted','probeUncertain','probePending')):return None
-        if row.get('match') is not True or row['uncertain']!=0 or row['accepted']!=row['stored']:return None
+        if any(type(row.get(k)) is not int or row[k]<0 for k in ('stored','probeStored','probeAccepted','probeUncertain','probePending')):return None
+        if row.get('match') is not True:return None
         if row['probeUncertain']!=0 or row['probePending']!=0 or row['probeAccepted']!=row['probeStored']:return None
-    total=sum(row['accepted'] for row in rows)
+    total=findings.get('accepted')
     domains=findings.get('domains')
-    if total<=0 or findings.get('uncertain')!=0 or not isinstance(domains,dict) or set(domains)!={'entries','devicestatus','treatments'}:return None
+    if type(total) is not int or total<=0 or findings.get('uncertain')!=0 or findings.get('stored')!=total or not isinstance(domains,dict) or set(domains)!={'entries','devicestatus','treatments'}:return None
     if any(type(n) is not int or n<0 for n in domains.values()) or sum(domains.values())!=total:return None
     return next(kind for kind in ('entries','devicestatus','treatments') if domains[kind]>0)

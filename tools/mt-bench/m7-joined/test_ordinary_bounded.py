@@ -9,21 +9,9 @@ from types import SimpleNamespace
 from unittest.mock import patch
 import adapter as a
 import runner
-import diagnostic_resources as r
 
 
 class OrdinaryBounded(unittest.TestCase):
-    def setUp(self):
-        # These controls exercise real flock in scratch, never a live lane's lock.
-        scratch=tempfile.TemporaryDirectory();self.addCleanup(scratch.cleanup)
-        original=r.Runtime.acquire
-        lock=Path(scratch.name)/'driver.lock'
-        def acquire(runtime,lock_file=None):return original(runtime,lock_file or lock)
-        self.patch_lock=patch.object(r.Runtime,'acquire',acquire)
-        self.patch_lock.start();self.addCleanup(self.patch_lock.stop)
-
-    def tearDown(self):
-        r.configure()
 
     def test_full_noinstall_resource_vault_config_is_expressible(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -31,12 +19,11 @@ class OrdinaryBounded(unittest.TestCase):
             options={'core-repo':'/synthetic/core','core-commit':'a'*40,'deploy-repo':'/synthetic/deploy','deploy-commit':'b'*40,
                      'image':'sha256:'+'c'*64,'receipt':'/synthetic/receipt','tenants':2,'replicas':1,'profile':'pgstream-sample','run-purpose':'discovery',
                      'fixture-project':'synthetic','backend-subnet':'10.248.226.0/24','edge-subnet':'10.248.227.0/24',
-                     'diagnostic-resource-profile':r.NAME,'load-seconds':30,
+                     'load-seconds':30,
                      'generator-dependencies':'/synthetic/deps','generator-dependency-receipt':'/synthetic/original.json',
                      'generator-dependency-receipt-sha256':'d'*64,'generator-dependency-preparation':'/synthetic/preparation.json',
                      'generator-dependency-preparation-sha256':'e'*64,'generator-dependency-preparation-head':'f'*40}
             config={'version':1,'helperHead':'synthetic-head','prepare':options,'k6Image':'sha256:'+'1'*64,'workSeconds':1500,'cleanupSeconds':300}
-            # Explicit duration is independent of the diagnostic CPU/RAM/heap caps.
             with patch.object(a,'git',return_value='synthetic-head'),patch.object(runner.os,'cpu_count',return_value=8):
                 for seconds in (1500,3600,10800,10801,86400):
                     with self.subTest(workSeconds=seconds):
@@ -124,34 +111,6 @@ class OrdinaryBounded(unittest.TestCase):
             with patch.object(runner.time,'time',return_value=101),patch.object(runner.time,'sleep',side_effect=AssertionError('GUARD_WAITED_PAST_WORK_DEADLINE')),patch.object(runner,'cleanup',side_effect=cleanup) as called:
                 runner.guard(root)
             called.assert_called_once_with(root,'FINITE_DEADLINE')
-
-    def test_execute_parent_does_not_hold_driver_lock_against_stages(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            root=Path(tmp);d=root/'fixture';d.mkdir()
-            config=r.overlay({'services':{'api':{}}},r.NAME)
-            m={'directory':str(d),'owner':'a'*32,'instrument':{'sha256':'same'},
-               'diagnosticResources':r.plan(config).record()}
-            a.write(d/'owner.json',m);a.write(d/'frozen.compose.json',config)
-            a.write(root/'result.json',{'status':'PREPARED'})
-            a.write(root/'cleanup.json',{'status':'ABSENT'})
-            capture=d/'setup-attempts/one';capture.mkdir(parents=True)
-            a.write(capture/'readability-realtime-costs.json',{'status':'MEASURED'})
-            calls=[]
-            def stage(directory,name,args):
-                self.assertIsNone(r._ACTIVE)
-                r.configure(r.NAME);r.configure()
-                calls.append(name)
-            with patch.object(runner,'load_config',return_value=({'k6Image':'image'},[])),patch.object(a,'instrument',return_value={'sha256':'same'}),patch.object(runner,'execution_window',return_value={}),patch.object(runner,'stage',side_effect=stage),patch.object(runner,'cleanup'),patch.object(runner,'guard_alive',return_value=False),patch.object(runner,'partial',return_value={'adapterStatus':'MEASURED'}):
-                runner.execute(root)
-            self.assertEqual(calls,['deploy','preflight','run'])
-
-    def test_existing_completed_oracle_has_admitted_generator_heap(self):
-        calls=[]
-        r.configure(r.NAME)
-        with patch.object(a,'_command',side_effect=lambda argv,**kw:calls.append(argv)):
-            a.command(['/qualified/node','-e','oracle'],phase='completed-oracle')
-        self.assertEqual(calls,[['/qualified/node','--max-heap-size=256','-e','oracle']])
-        self.assertFalse(any(r._ACTIVE.host.values()))
 
     def test_cleanup_commands_share_original_absence_budget_and_expire_before_launch(self):
         with a.command_deadline(100),patch.object(a.time,'time',return_value=97):

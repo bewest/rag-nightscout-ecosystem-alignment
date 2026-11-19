@@ -1,5 +1,12 @@
 # External traffic generator — isolated profile
 
+> **NOT RUNNABLE (2026-11-19).** This path imports `tools/mt-bench/m7-joined` modules that the
+> simplification round deleted: `evaluator_idle`, plus adapter seams built on the idle and opportunity family (`enabled_idle`, `opportunity_collector`). Every module here raises `ImportError` at import, and its
+> tests skip, rather than half-work. Maintainer decision: port later, do not delete. The port target
+> is the single assessor (`m7-joined/assessor.py`) and its raw event format (accepted, stored, output,
+> frame, access, datastore, readback); the k6 roster now carries each tenant's JWT
+> (`m7-joined/jwt_tenants.py`). The round's base, `ea2231e834`, still has the deleted modules.
+
 Contributor-facing source capability. Runtime and cloud behavior are **UNMEASURED**
 until the remote owner runs a reviewed smoke. The current colocated pilot is unchanged.
 

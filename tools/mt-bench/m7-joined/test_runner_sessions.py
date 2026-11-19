@@ -19,15 +19,15 @@ class Sessions(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
         self.root=Path(self.tmp.name)/'session';self.root.mkdir()
         self.d=self.root/'fixture';self.d.mkdir();(self.root/'observations').mkdir()
-        self.config={'prepare':{'fixture-project':'owned','diagnostic-resource-profile':a.diagnostic_resources.NAME,
+        self.config={'prepare':{'fixture-project':'owned',
             'image':'sha256:synthetic','core-commit':'core','deploy-commit':'deploy'},
             'k6Image':'k6','workSeconds':30,'cleanupSeconds':30}
-        self.owner={'owner':'a'*32,'project':'owned','directory':str(self.d),'diagnosticResources':{'profile':a.diagnostic_resources.NAME}}
+        self.owner={'owner':'a'*32,'project':'owned','directory':str(self.d)}
         a.write(self.d/'owner.json',self.owner);a.write(self.d/'frozen.compose.json',{});a.write(self.root/'config.json',self.config)
         self.state={'owner':'b'*32,'startedAt':time.time(),'stopWorkAt':time.time()+30,'cleanupAt':time.time()+60}
         a.write(self.root/'execution.json',self.state)
         self.session={**self.state,'runtimeOwner':self.owner['owner'],'runtimeOwnerSha256':a.digest(self.d/'owner.json'),
-            'resourceCeiling':self.owner['diagnosticResources'],'cleanupRunner':str(Path(r.__file__).resolve())}
+            'cleanupRunner':str(Path(r.__file__).resolve())}
         a.write(self.root/'session.json',self.session)
         self.history=Path(self.tmp.name)/'history.json'
         a.write(self.history,{k:'retained synthetic fixture' for k in ('warmCache','seedHistory','previousWrites','restarts','activeViewers','elapsedAges')})
@@ -36,7 +36,6 @@ class Sessions(unittest.TestCase):
         self.stack.enter_context(patch.object(r,'execution_window',return_value=self.state))
         self.stack.enter_context(patch.object(r,'load_config',return_value=(self.config,[])))
         self.stack.enter_context(patch.object(a,'instrument',return_value={'sha256':'collector'}))
-        self.stack.enter_context(patch.object(a.diagnostic_resources,'configure'))
         self.verify=self.stack.enter_context(patch.object(a,'verify'))
         self.stack.enter_context(patch.object(a,'image'))
         self.stack.enter_context(patch.object(a,'resources',return_value=[]))
@@ -98,15 +97,11 @@ class Sessions(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'RUNTIME_CONFIG_CHANGED'):
             self.observe('different-roster')
 
-    def test_session_without_explicit_allocation(self):
-        self.config['prepare'].pop('diagnostic-resource-profile')
-        a.write(self.root / 'config.json', self.config)
-        self.owner.pop('diagnosticResources')
-        a.write(self.d / 'owner.json', self.owner)
+    def test_session_start_then_observe(self):
         (self.root / 'observations').rmdir()
         with patch.object(r, 'prepare', return_value=self.root), patch.object(a, 'load', return_value=(self.d, self.owner)):
             session = r.session_start('config', self.root)
-        self.assertIsNone(session['resourceCeiling'])
+        self.assertNotIn('resourceCeiling', session)
         self.observe()
 
     def test_failed_collection_retains_partial_and_can_collect_again(self):
@@ -203,23 +198,8 @@ class Sessions(unittest.TestCase):
 
 
 class ActualAttachment(unittest.TestCase):
-    def test_profile_driver_is_configured_only_after_canonical_owner_binding(self):
-        from test_attach_dependencies import AttachmentDependencies
-        fixture=AttachmentDependencies();fixture.setUp()
-        try:
-            record={'profile':a.diagnostic_resources.NAME}
-            fixture.owner['diagnosticResources']=record;fixture.m['diagnosticResources']=record;fixture.save()
-            a.write(fixture.target/'frozen.compose.json',{})
-            with patch.object(a.diagnostic_resources,'configure') as configure:
-                fixture.m['runtimeOwnerLabels']=['foreign']
-                with self.assertRaisesRegex(RuntimeError,'RUNTIME_OWNER_MISMATCH'):fixture.run_binding()
-                configure.assert_not_called()
-                fixture.m['runtimeOwnerLabels']=[fixture.owner['owner']]
-                fixture.run_binding()
-                self.assertEqual(configure.call_args.args[:3],(record['profile'],{},record))
-        finally:fixture.doCleanups()
 
-    def test_attach_calls_preserve_seed_and_bind_profile_and_external_topology(self):
+    def test_attach_calls_preserve_seed_and_bind_external_topology(self):
         from types import SimpleNamespace
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);runtime=root/'runtime';runtime.mkdir()
@@ -227,10 +207,7 @@ class ActualAttachment(unittest.TestCase):
             (runtime/'state/primer').mkdir();(runtime/'state/primer/tenants.json').write_text('[]')
             (runtime/'state/seed').write_text('unchanged')
             (runtime/'env').write_text('synthetic');(runtime/'compose.json').write_text('{}')
-            profile={'profile':a.diagnostic_resources.EXTERNAL_NAME,'synthetic':'exact ceiling'}
-            edge_budget={'workerProcesses':1,'workerConnections':16384,'nginxMillicpus':125,
-                'configurationSha256':'a'*64}
-            a.write(runtime/'owner.json',{'edgeWorkerBudget':edge_budget,'diagnosticResources':profile,'directory':str(runtime),'prepared':True,
+            a.write(runtime/'owner.json',{'directory':str(runtime),'prepared':True,
                 'project':'synthetic','pair':{'core':'core','deploy':'deploy'},'imageId':'sha256:'+'e'*64})
             config={'services':{'nginx':{'ports':[{'host_ip':'127.0.0.1','published':12345}]},
                 'vault':{'command':['vault','server']},'pgstream':{'command':a.stream_topology.EXTERNAL_COMMAND},'evaluator':{'command':['evaluator']}}}
@@ -248,7 +225,6 @@ class ActualAttachment(unittest.TestCase):
                     'tenant_projection':[]}.items():
                     stack.enter_context(patch.object(a,name,return_value=value))
                 stack.enter_context(patch.object(a,'commit',side_effect=lambda repo,head:head))
-                stack.enter_context(patch.object(a.diagnostic_resources,'configure'))
                 def bind(d,source,dependencies,m,owner_file):
                     self.assertNotIn('edgeWorkerBudget',m)
                     return {'runtimeOwner':{'owner':'original'}}
@@ -268,10 +244,7 @@ class ActualAttachment(unittest.TestCase):
                 stack.enter_context(patch.object(a,'serving_mounts'))
                 stack.enter_context(patch.object(a,'command',side_effect=lambda argv,**kw:json.dumps(config if 'config' in argv else dict(schema='synthetic',sha256='synthetic',sourceCommit='core',sourceBlobs={}))))
                 def verify(d,m):
-                    self.assertEqual(m['diagnosticResources'],profile)
-                    owner=a.document(runtime/'owner.json')
-                    if 'edgeWorkerBudget' in owner:self.assertEqual(m.get('edgeWorkerBudget'),edge_budget)
-                    else:self.assertNotIn('edgeWorkerBudget',m)
+                    self.assertNotIn('diagnosticResources',m);self.assertNotIn('edgeWorkerBudget',m)
                     self.assertEqual(a.stream_topology.verify_config(m,config),a.stream_topology.EXTERNAL)
                 stack.enter_context(patch.object(a,'verify',side_effect=verify))
                 for name in ('one','two'):

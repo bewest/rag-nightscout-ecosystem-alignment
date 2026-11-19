@@ -53,17 +53,15 @@ class Runner(unittest.TestCase):
                         self.assertEqual(result['capacityAcceptance'], 'NOT_GRANTED')
                         self.assertEqual(adapter.document(root / 'preflight-observations.json')['realtimeCosts']['status'], 'NO-INSTRUMENT')
 
-    def test_generated_control_preserves_selected_typed_profile(self):
-        for selected in (adapter.diagnostic_resources.NAME,adapter.diagnostic_resources.EXTERNAL_NAME):
-            with self.subTest(selected=selected),tempfile.TemporaryDirectory() as tmp:
-                root=Path(tmp);manifest={'diagnosticResources':{'profile':selected},'generator':{'tools':{'node':{'path':'node'}}}}
-                def node(*args,**kwargs):
-                    kwargs['stdout'].write(b'ERR_INVALID_URL');return Mock(returncode=1)
-                from contextlib import nullcontext
-                with patch.object(adapter.diagnostic_resources,'configure') as configure, patch.object(adapter.diagnostic_resources,'command',return_value=nullcontext((['node'],{}))),patch.object(runner.subprocess,'run',side_effect=node),patch.object(adapter,'digest',return_value='synthetic'):
-                    runner.generated_control(root,root,manifest)
-                self.assertEqual(configure.call_args_list[0].args,(selected,))
-                self.assertEqual(configure.call_args_list[-1].args,())
+    def test_generated_control_runs_the_probe_without_its_required_input(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);manifest={'generator':{'tools':{'node':{'path':'node'}}}}
+            def node(argv,**kwargs):
+                self.assertEqual(argv,['node',str(root/'probe.js')])
+                kwargs['stdout'].write(b'ERR_INVALID_URL');return Mock(returncode=1)
+            with patch.object(runner.subprocess,'run',side_effect=node),patch.object(adapter,'digest',return_value='synthetic'):
+                runner.generated_control(root,root,manifest)
+            self.assertEqual(adapter.document(root/'generated-control.json')['status'],'EXPECTED_FAILURE')
 
     def test_optional_counter_gaps_are_retained_without_banning_discovery(self):
         with tempfile.TemporaryDirectory() as tmp:

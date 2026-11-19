@@ -12,7 +12,7 @@ class PublishedStartup(unittest.TestCase):
             'tenant-readiness':'serve','primer-concurrency':16,'commissioning-slot-wal-mib':1024})
         with patch.object(a,'instrument',return_value={'sha256':'d'*64}):projection=rc.resolve(cfg,{'status':'PENDING'})
         value=projection['configuration'];proof={**projection['diagnosticReceiptTemplate'],'status':'AUTHORIZED_DIAGNOSTIC'}
-        m={**value,'instrument':{'sha256':'d'*64},'runConfiguration':value,'diagnosticResources':{'profile':value['resources']['profile']}}
+        m={**value,'instrument':{'sha256':'d'*64},'runConfiguration':value}
         self.assertEqual(value['pair'],{'core':s.STARTUP_STATIC_CORE,'deploy':s.STARTUP_STATIC_DEPLOY})
         self.assertEqual((value['tenantReadiness'],value['primerConcurrency'],value['commissioningSlotWalMiB']),('serve',16,1024))
         self.assertEqual(c.receipt_scope(m,proof,'run')['functionalAcceptance'],'PENDING')

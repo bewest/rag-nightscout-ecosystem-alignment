@@ -66,7 +66,7 @@ class GeneratorPreparation(unittest.TestCase):
                 target=Path(temp)/('selection-'+str(value));m=prepare_fixture(target,value)
                 self.assertTrue(m['prepared']);self.assertEqual(m['jwtSetupConcurrency'],value)
                 source=(target/'k6/workload.js').read_text()
-                for retained in ('ARRIVAL_CYCLE_MS','M7_OFFERED_RPS_RANGE','scenario_request_attempts','scenario_http_responses','scenario_transport_failures','M7_SETUP_REFUSAL','requestOrdinal:tenantIndex+1','startedAtMs','finishedAtMs','SharedArray','exchangeResponse(responses[j], offset + j, exchangeStartedAtMs)'):
+                for retained in ('ARRIVAL_CYCLE_MS','M7_OFFERED_RPS_RANGE','scenario_request_attempts','scenario_http_responses','scenario_transport_failures','SharedArray'):
                     self.assertIn(retained,source)
                 # Execute the emitted schedule; per-scenario cadence no longer
                 # has one literal ARRIVAL_CYCLE_MS expression for every mix.

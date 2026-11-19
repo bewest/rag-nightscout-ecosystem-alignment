@@ -38,7 +38,6 @@ import observation_rows
 import sql_attribution
 import cost_companion
 import realtime_costs
-import diagnostic_resources
 import stream_topology
 import role_instances
 import static_topology
@@ -59,8 +58,12 @@ def jwt_setup_concurrency(value, discovery=False):
     return value
 
 
-def jwt_setup_env(manifest):
-    return "JWT_SETUP_CONCURRENCY=" + str(jwt_setup_concurrency(manifest.get("jwtSetupConcurrency", 1), manifest.get('runPurpose') == 'discovery'))
+def k6_tenants(d, m):
+    """Exchange every tenant's JWT once, before k6 starts (bounded by jwtSetupConcurrency)."""
+    import jwt_tenants
+    concurrency = jwt_setup_concurrency(m.get("jwtSetupConcurrency", 1), m.get('runPurpose') == 'discovery')
+    rows = jwt_tenants.attach(document(d/"tenants.private.json"), "http://127.0.0.1:" + str(m["port"]), concurrency)
+    return jwt_tenants.write(d/"load"/"k6-tenants.private.json", rows)
 
 
 def runtime_env(extra=None):
@@ -70,7 +73,6 @@ def runtime_env(extra=None):
 
 
 _COMMAND_DEADLINE=contextvars.ContextVar('m7_command_deadline',default=None)
-_CLEANUP_NODE_LIMIT=contextvars.ContextVar('m7_cleanup_node_limit',default=False)
 _PRIVATE_COMMANDS=contextvars.ContextVar('m7_private_commands',default=None)
 
 
@@ -176,31 +178,26 @@ def diagnostic_resource_rows(m):
 
 def command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, binary=False, phase=None, wait_for_primer=None, rows=None):
     selected_env = runtime_env() if env is None else env
-    if _CLEANUP_NODE_LIMIT.get() and argv and Path(str(argv[0])).name=='node':
-        # Teardown must not acquire the diagnostic driver lock or a new actor
-        # quota lease. Its source verifier still gets a fixed small V8 heap cap.
-        bounded=[argv[0],'--max-heap-size=128',*argv[1:]]
-        return _command(bounded,cwd=cwd,env=selected_env,input=input,file=file,timeout=timeout,binary=binary,phase=phase)
-    role = 'generator' if phase in ('product-prepare', 'generator-client-preflight','completed-oracle') else 'helper'
-    if diagnostic_resources._ACTIVE is not None and list(map(str,argv[:2]))==['docker','run']:argv=bounded_k6_argv(argv)
-    with diagnostic_resources.command(argv, selected_env, role) as (bounded_argv, bounded_env):
-        return _command(bounded_argv, cwd=cwd, env=bounded_env, input=input, file=file, timeout=timeout, binary=binary, phase=phase, wait_for_primer=wait_for_primer, **({'rows':rows} if rows is not None else {}))
+    return _command(argv, cwd=cwd, env=selected_env, input=input, file=file, timeout=timeout, binary=binary, phase=phase, wait_for_primer=wait_for_primer, **({'rows':rows} if rows is not None else {}))
 
 
-def bounded_k6_argv(argv):
-    value=diagnostic_resources.bounded_standalone(argv)
-    if diagnostic_resources._ACTIVE is not None:
-        value=list(value)
-        require(not any(str(x).startswith('--pull=') for x in value),'M7_DIAGNOSTIC_PULL_POLICY_CHANGED')
-        if '--pull' in value:
-            i=value.index('--pull');require(value.count('--pull')==1 and value[i+1:i+2]==['never'],'M7_DIAGNOSTIC_PULL_POLICY_CHANGED')
-        else:
-            profile = diagnostic_resources._ACTIVE.budget.profile
-            flags = diagnostic_resources.standalone_flags(
-                diagnostic_resources.standalone_limit(), diagnostic_resources.driver_memory_request(profile))
-            offset = 3 + len(flags)
-            value[offset:offset] = ['--pull', 'never']
-    return value
+# Compose services run with no CPU or memory limits (decision generous-run-resources):
+# reference sizing in the deploy files is projected out of the frozen configuration.
+COMPOSE_LIMIT_FIELDS = ('cpus', 'cpu_quota', 'cpu_period', 'cpu_count', 'cpu_percent', 'mem_limit', 'memswap_limit', 'mem_reservation')
+
+
+def uncapped_compose(config):
+    removed = {}
+    for role, spec in config['services'].items():
+        fields = [key for key in COMPOSE_LIMIT_FIELDS if spec.pop(key, None) is not None]
+        alternate = spec.get('deploy', {}).get('resources', {})
+        for kind in ('limits', 'reservations'):
+            for key in ('cpus', 'memory'):
+                if alternate.get(kind, {}).pop(key, None) is not None:
+                    fields.append('deploy.resources.' + kind + '.' + key)
+        if fields:
+            removed[role] = fields
+    return config, removed
 
 
 def seal_diagnostic_images(config,m):
@@ -283,37 +280,13 @@ def load(directory, *, resource_limits=True):
     m = document(d / "owner.json")
     require(m.get("directory") == str(d) and re.fullmatch(r"[0-9a-f]{32}", m.get("owner", "")), "M7_OWNER_MANIFEST_INVALID")
     require(isinstance(m.get("instrument", {}).get("sha256"), str) and m["instrument"]["sha256"], "M7_INSTRUMENT_REQUIRED")
-    if resource_limits:
-        if 'dependencyReuse' in m:require(isinstance(m['dependencyReuse'],dict),'M7_DEPENDENCY_REUSE_RECORD_REQUIRED')
-        record=m.get('diagnosticResources')
-        if 'diagnosticResources' in m:require(isinstance(record,dict) and diagnostic_resources.selection(record.get('profile')) is not None,'M7_DIAGNOSTIC_RESOURCE_RECORD_REQUIRED')
-        diagnostic_resources.configure(record.get('profile') if record is not None else None,
-            document(d/'frozen.compose.json') if record is not None else None,record,
-            observe=lambda:diagnostic_resource_rows(m), driver_scope=d)
-    elif diagnostic_resources._ACTIVE is None or not any(diagnostic_resources._ACTIVE.host.values()):
-        # Down retains ownership/source guards but must not acquire a diagnostic
-        # driver lock or validate corrupt quotas before exact-owned cleanup.
-        diagnostic_resources.configure()
+    if resource_limits and 'dependencyReuse' in m:
+        require(isinstance(m['dependencyReuse'],dict),'M7_DEPENDENCY_REUSE_RECORD_REQUIRED')
     return d, m
 
 
 def compose(d, *args, file=None, input=None, timeout=120, wait_for_primer=None, rows=None):
-    if diagnostic_resources._ACTIVE is not None:
-        args=list(args);i=0
-        while i<len(args) and args[i]=='--profile':i+=2
-        if args[i:i+1] in (['up'],['run'],['create']):
-            require(not any(str(x).startswith('--pull=') or x=='--build' for x in args),'M7_DIAGNOSTIC_PULL_POLICY_CHANGED')
-            if '--pull' in args:
-                n=args.index('--pull');require(args.count('--pull')==1 and args[n+1:n+2]==['never'],'M7_DIAGNOSTIC_PULL_POLICY_CHANGED')
-            else:args[i+1:i+1]=['--pull','never']
     argv=compose_prefix(d)+[str(x) for x in args]
-    if diagnostic_resources._ACTIVE is not None:
-        try:
-            diagnostic_resources.before_compose(args, document(Path(d)/'frozen.compose.json'),
-                document(Path(d)/'owner.json').get('cpuPrecisionPreflight'))
-        except RuntimeError as error:
-            resource_cpu_failure(error)
-            raise
     return command(argv, file=file, input=input, timeout=timeout, wait_for_primer=wait_for_primer, **({'rows':rows} if rows is not None else {}))
 
 
@@ -546,8 +519,7 @@ def attach(args):
     require(not static_selection or getattr(args,'runtime_owner',None),'M7_STATIC_ATTACH_OWNER_REQUIRED')
     require(not commissioning_wal.option(args) and getattr(args,'tenant_readiness',None) is None,'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     stream_topology.ack_option(args)
-    require(not selected_resources_profile(args) and getattr(args,'api_cause_observation','off')=='off' and not getattr(args,'generator_dependencies',None),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
-    diagnostic_resources.configure()
+    require(getattr(args,'api_cause_observation','off')=='off' and not getattr(args,'generator_dependencies',None),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     # Bind only instrumentation metadata to the runtime owner's exact existing
     # fixture. Never deploy, restart, install, relabel or assume cleanup custody.
     require(not getattr(args,'fixture_project',None),'M7_ATTACH_USE_EXISTING_PROJECT')
@@ -585,7 +557,6 @@ def attach(args):
         if static_selection:
             require(m.get('staticBuildReceiptSha256') == runtime.get('staticBuildReceiptSha256'),
                     'M7_STATIC_ATTACH_RUNTIME_MISMATCH')
-        if 'diagnosticResources' in runtime:m['diagnosticResources']=runtime['diagnosticResources']
         commissioning_wal.inherit(args,m,runtime,runtime_directory)
     from run_configuration import from_manifest
     m['runConfiguration']=from_manifest(m)
@@ -623,8 +594,6 @@ def attach(args):
             m['generator']=attachment_generator(target,source,dependencies,m,getattr(args,'runtime_owner',None))
             if m['generator'].get('runtimeOwner'):
                 runtime=document(args.runtime_owner)
-                if 'diagnosticResources' in runtime:m['diagnosticResources']=runtime['diagnosticResources']
-                if 'edgeWorkerBudget' in runtime:m['edgeWorkerBudget']=runtime['edgeWorkerBudget']
             require(from_manifest(m)==m['runConfiguration'],'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
             candidates=[file for file in (state/'primer/tenants.json',state/'ops/tenants.json') if file.exists()]
             projections=[tenant_projection(document(file),m['tenants']) for file in candidates]
@@ -732,40 +701,10 @@ def unused_project_namespace(project):
         require(not any(name.startswith(project+'_') for name in names),'M7_PROJECT_NAMESPACE_EXISTS')
 
 
-def resource_cpu_failure(error):
-    if re.fullmatch(r'M7_DIAGNOSTIC_RESOURCE_CPU_UNREPRESENTABLE:services\.[a-z0-9-]+\.millicpus',str(error)):
-        print(json.dumps({'kind':'resource-cpu-preflight','verdict':'FAIL','code':str(error),
-                          'diagnostic':error.diagnostic},sort_keys=True,allow_nan=False),flush=True)
-
-
-def resource_cpu_preflight(selected, read=None, *, roles=None, observation=None):
-    try:
-        return diagnostic_resources.fresh_cpu_preflight(selected,read,roles=roles,observation=observation)
-    except RuntimeError as error:
-        resource_cpu_failure(error)
-        raise
-
-
-def selected_resources_profile(args, *, inspect_runtime=False):
-    named=getattr(args,'diagnostic_resource_profile',None)
-    explicit=getattr(args,'diagnostic_resource_allocation',None)
-    require(named is None or explicit is None,'M7_DIAGNOSTIC_RESOURCE_SELECTION_AMBIGUOUS')
-    selected=diagnostic_resources.selection(explicit if explicit is not None else named)
-    if inspect_runtime:
-        # Observe early; the rendered deployment plan later binds the actual
-        # actor scope. Merely carrying an ops template does not execute it.
-        args.diagnostic_cpu_preflight=resource_cpu_preflight(selected,
-            lambda argv:command(argv,phase='resource-cpu-preflight'),roles=())
-    return selected
-
-
 def prepare(args):
     if args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery' and getattr(args,'backend_subnet',None) and getattr(args,'edge_subnet',None):
         from run_configuration import validate_prepare
         validate_prepare(args)
-    selected=selected_resources_profile(args,inspect_runtime=True)
-    require(not selected or args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery','M7_DIAGNOSTIC_RESOURCE_DISCOVERY_ONLY')
-    require(not selected or getattr(args,'generator_dependencies',None),'M7_DIAGNOSTIC_DEPENDENCIES_REQUIRED')
     options=prepare_primer_options(args)
     extended_primer=primer_options.requires_extended(options)
     if extended_primer:
@@ -774,7 +713,6 @@ def prepare(args):
         # before arming that driver, without borrowing any runtime one-off.
         commit(args.deploy_repo,args.deploy_commit)
         args.image_input_preflight=prepare_image_inputs(args)
-    diagnostic_resources.configure(selected, driver_scope=Path(args.directory).resolve())
     commissioning_wal.option(args)
     fixture_project(args,'0'*32)
     ack_budget=stream_topology.ack_option(args)
@@ -836,8 +774,6 @@ def prepare_staged(args,target,pinned):
          "deployRepository": str(Path(args.deploy_repo).resolve()), "instrument": pinned, "image": args.image,
          "tenants": args.tenants, "replicas": args.replicas, "port": port(), "quietLoad": args.quiet_load,
          "freeze": str(Path(args.freeze).resolve()), "profile":args.profile,"cadence":cadence_options(args),"completionContract":getattr(args,"completion_contract",None),"jwtSetupConcurrency":jwt_setup_concurrency(getattr(args,"jwt_setup_concurrency",1), getattr(args,"run_purpose","acceptance")=="discovery")}
-    cpu_preflight=getattr(args,'diagnostic_cpu_preflight',None)
-    if cpu_preflight and cpu_preflight.get('verdict')!='NOT_APPLICABLE':m['cpuPrecisionPreflight']=cpu_preflight
     m.update(static_topology.option(args))
     if getattr(args,'namespace_preflight',None):m['namespacePreflight']=args.namespace_preflight
     if getattr(args,'dependency_qualification',None) is not None:m['dependencyReuse']=args.dependency_qualification
@@ -879,20 +815,8 @@ def prepare_staged(args,target,pinned):
     # the owned lockfile context before invoking it, not after bootstrap.
     setup_generator(target,m)
     env = runtime_env({**preparation_environment(m),**({"NS_PGSTREAM":"1","NS_POSTGRES_IMAGE":args.postgres_image} if args.profile=="pgstream-sample" else {})})
-    edge_budget=diagnostic_resources.edge_worker_budget(selected_resources_profile(args))
-    if edge_budget is not None:
-        explicit_edge=edge_budget['source']=='explicit-resource-allocation-v1'
-        # The source renderer keeps its reference validation. An authored
-        # allocation projects only the two existing mounted numeric fields.
-        env['NS_EDGE_WORKER_PROCESSES']='1' if explicit_edge else str(edge_budget['workerProcesses'])
-        if explicit_edge:env['NS_EDGE_WORKER_CONNECTIONS']='16384'
     networks=["--backend-subnet",args.backend_subnet,"--edge-subnet",args.edge_subnet] if getattr(args,"backend_subnet",None) else []
     command(["node", overlay / "prepare.js", "--state", target / "state", "--port", str(m["port"]), "--project", m["project"],*networks], cwd=overlay,env=env,phase="product-prepare")
-    if edge_budget is not None:
-        edge_file=target/'state/edge/nginx.conf'
-        if explicit_edge:edge_file.write_text(project_edge_workers(edge_file.read_text(),edge_budget))
-        verify_edge_workers(edge_file.read_text(),edge_budget)
-        m['edgeWorkerBudget']={**edge_budget,'configurationSha256':digest(edge_file)}
     # Keep the source binding path stable: guards and optional controller digests
     # refer to this exact .env. Compose also reads the private cell copy.
     shutil.copyfile(overlay / ".env", target / "env")
@@ -933,31 +857,12 @@ def prepare_staged(args,target,pinned):
     commissioning_wal.install(config,m)
     pg["command"].extend(["-c", "shared_preload_libraries=pg_stat_statements", "-c", "pg_stat_statements.track=top", "-c", "track_io_timing=on"])
     require(not any("shared_preload_libraries" in str(x) for x in pg["command"][:-6]), "M7_POSTGRES_PRELOAD_ALREADY_SELECTED")
-    selected_resources=selected_resources_profile(args)
-    config=diagnostic_resources.overlay(config,selected_resources)
-    if isinstance(selected_resources,dict):
-        observation=resource_cpu_preflight(selected_resources,roles=(),
-            observation=getattr(args,'diagnostic_cpu_preflight',None))
-        if observation.get('runtimePrecision')=='runc-systemd-whole-percent-v1':
-            planned=deployment_plan(config,pgstream=m.get('profile')=='pgstream-sample',
-                primer_concurrency_value=m.get('primerConcurrency',1),platform_verification=bool(m.get('platformStartup')),primer_max_tenants=m.get('primerMaxTenants'))
-            roles=set().union(*(diagnostic_resources.compose_actor_roles(argv,config)
-                                for _,kind,argv in planned if kind=='compose'))
-            observation=resource_cpu_preflight(selected_resources,roles=roles,observation=observation)
-        m['cpuPrecisionPreflight']=observation
     api_cause.install(config,target,m,getattr(args,'api_cause_observation','off')=='on')
     m['servingInstances'] = role_instances.roster(config,m['replicas'])
     if m.get('runPurpose') == 'discovery':
-        if selected_resources is None:
-            config, removed = diagnostic_resources.uncapped_compose(config)
-            write(target/'compose-limits-projection.json', {'removedReferenceFields': removed})
-        m['composeLimitMode'] = diagnostic_resources.compose_limit_mode(config, selected_resources)
-    if selected_resources is not None or m.get('runPurpose') == 'discovery':
+        config, removed = uncapped_compose(config)
+        write(target/'compose-limits-projection.json', {'removedReferenceFields': removed})
         config=seal_diagnostic_images(config,m)
-    record=diagnostic_resources.selected_record(config,selected_resources)
-    if record is not None:
-        m['diagnosticResources']=record
-        diagnostic_resources._ACTIVE.observe=lambda:diagnostic_resource_rows(m)
     write(target / "frozen.compose.json", config)
     m["prepared"] = True
     m['environmentSha256']=digest(target/'env')
@@ -987,11 +892,6 @@ def verify(d, m, teardown=False):
         require(reference.get('appImageId')==m['imageId'] and source.get('protocol')==primer_options.PROTOCOL
                 and source.get('options')==chosen,
                 'M7_PRIMER_OPTION_IMAGE_SOURCE_CHANGED')
-    if m.get('composeLimitMode') == 'uncapped-services':
-        diagnostic_resources.compose_limit_mode(document(d/'frozen.compose.json'), None)
-    if m.get('edgeWorkerBudget'):
-        edge_file=d/'state/edge/nginx.conf'
-        verify_edge_workers(edge_file.read_text(),m['edgeWorkerBudget'])
     stream_topology.verify_config(m,document(d/"frozen.compose.json"))
     if m.get('pgstreamNotifierAckWire') and not teardown:
         stream_topology.verify_ack_budget(d,m,document(d/'frozen.compose.json')['services']['pgstream']['volumes'])
@@ -1281,10 +1181,6 @@ def attachment_generator(d,source,root,m,owner_file=None):
                     'M7_ATTACH_RUNTIME_DEPENDENCY_COPY_CHANGED')
         binding={'ownerFile':str(owner_file.resolve()),'ownerFileSha256':digest(owner_file),'owner':runtime['owner'],
                  'instrument':runtime['instrument'],'generatorProvenanceSha256':digest(provenance)}
-    if runtime and runtime.get('diagnosticResources'):
-        require(m.get('diagnosticResources')==runtime['diagnosticResources'],'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
-        diagnostic_resources.configure(runtime['diagnosticResources']['profile'],document(d/'frozen.compose.json'),
-            runtime['diagnosticResources'],observe=lambda:diagnostic_resource_rows(m), driver_scope=d)
     tools=generator_tools();client=generator_client(d,tools)
     contexts={'generator':dependency_context(root,root/'node_modules',['socket.io-client','pg','js-yaml']),
               'source':dependency_context(source,root/'node_modules',['pg','js-yaml'])}
@@ -1328,7 +1224,6 @@ def setup_generator(d,m):
                 package_bytes=package,lock_bytes=lock_bytes)
             client=generator_client(d,tools)
     else:
-        require(diagnostic_resources._ACTIVE is None,'M7_DIAGNOSTIC_DEPENDENCIES_REQUIRED')
         root.mkdir(mode=0o700)
         (root/'package.json').write_bytes(package);(root/'package-lock.json').write_bytes(lock_bytes)
         (root/'.npmrc').write_text('');(root/'.npmrc').chmod(0o600)
@@ -1513,10 +1408,6 @@ def deploy(d, m):
         stream_topology.verify_ack_budget(d,m,streams[0]['Mounts'])
         write(d/'producer-ack-budget.json',{**m['pgstreamNotifierAckWire'], 'ownedMountVerified': True})
     profile_provenance.runtime_environment(resources(m),m["diagnostics"],config,pgstream=m.get("profile")=="pgstream-sample")
-    if m.get('composeLimitMode') == 'uncapped-services':
-        rows = diagnostic_resources.uncapped_readback(diagnostic_resource_rows(m), config['services'])
-        write(d/'compose-limits-readback.json', {'mode': m['composeLimitMode'], 'services': rows,
-              'scope': 'owned Compose services; host-level constraints and contention may still apply'})
     m["restartRoles"]=service_roster(config)
     write(d/"owner.json",m);write(d/"deployment.json",{"stages":stages,"pair":m["pair"],"imageId":m["imageId"]})
 
@@ -1754,9 +1645,6 @@ def sampling(d, out):
     log = (out / "sampler.log").open("wb")
     env = runtime_env({"M7_SAMPLE_OWNER": m["owner"]}) if (
         m.get("profile") == "pgstream-sample" and m.get("runPurpose") == "discovery") else runtime_env()
-    import driver_memory
-    if out.name == 'load' and driver_memory.selected(m):
-        env['M7_SAMPLE_DRIVER_MEMORY'] = '1'
     process = subprocess.Popen([str(BASE / "probes/sample.sh"), m["project"], str((d / "env").resolve()), str((d / "frozen.compose.json").resolve()), str(empty.resolve()), str(out.resolve()),str(m.get("cadence",{}).get("samplerIntervalSeconds",2))], cwd=d.resolve(),env=env, stdout=log, stderr=log, start_new_session=True)
     job=out/"sampler-job.json";job_record(job,process,m["owner"],group=True)
     before = time.monotonic()
@@ -2119,40 +2007,6 @@ def preflight(d,m,k6_image,oneoff=None):
     return sample_preflight(d,m,k6_id,**({'oneoff':oneoff}if oneoff else{}))
 
 
-def verify_edge_workers(text, budget):
-    workers=re.findall(r'^\s*worker_processes\s+([^;]+);',text,re.M)
-    connections=re.findall(r'worker_connections\s+([^;]+);',text)
-    nofile=re.findall(r'^\s*worker_rlimit_nofile\s+([^;]+);',text,re.M)
-    require(workers==[str(budget['workerProcesses'])] and connections==[str(budget['workerConnections'])] and nofile==[str(diagnostic_resources.EDGE_NOFILE)],'M7_EDGE_WORKER_CONFIGURATION')
-    return {'workerProcesses':int(workers[0]),'workerConnections':int(connections[0])}
-
-
-def project_edge_workers(text, budget):
-    """Project an explicit allocation into exact source-rendered numeric fields.
-
-    The known source-rendered baseline and descriptor budget must match before
-    replacement. All admission, trust and route bytes remain source output.
-    """
-    require(budget.get('source')=='explicit-resource-allocation-v1','M7_EDGE_PROJECTION_SELECTION')
-    verify_edge_workers(text,{'workerProcesses':1,'workerConnections':16384})
-    text=re.sub(r'(^\s*worker_processes\s+)[^;]+;',lambda match:match[1]+str(budget['workerProcesses'])+';',text,flags=re.M)
-    text=re.sub(r'(worker_connections\s+)[^;]+;',lambda match:match[1]+str(budget['workerConnections'])+';',text)
-    verify_edge_workers(text,budget)
-    return text
-
-
-def edge_runtime(d,m):
-    budget=m.get('edgeWorkerBudget')
-    if budget is None:return None
-    require({key:budget[key] for key in ('workerProcesses','workerConnections','nginxMillicpus','source')}==diagnostic_resources.edge_worker_budget(m['diagnosticResources']['profile']),'M7_EDGE_WORKER_BUDGET_CHANGED')
-    rows=[row for row in resources(m,False) if row['Config']['Labels'].get('com.docker.compose.service')=='nginx']
-    require(len(rows)==1,'M7_EDGE_RUNTIME_ROSTER')
-    row=rows[0]
-    text=command(['docker','exec',row['Id'],'nginx','-T'])
-    observed=verify_edge_workers(text,budget)
-    return {'status':'PASS','containerId':row['Id'],'source':'exact-owned-nginx-T','configurationSha256':hashlib.sha256(text.encode()).hexdigest(),**observed}
-
-
 def sample_preflight(d,m,k6_id,oneoff=None):
     # New setup attempts preserve deployment and all failed collector artifacts.
     # No timed phase or counter reset exists until these reads succeed.
@@ -2161,8 +2015,6 @@ def sample_preflight(d,m,k6_id,oneoff=None):
     with private_commands(attempt/'commands'):
         try:
             status['collectorFiles']=collection_segments.preflight(d,m)
-            edge=edge_runtime(d,m)
-            if edge is not None:write(attempt/'edge-worker-runtime.json',edge)
             if m.get('pgstreamTopology')==stream_topology.EXTERNAL:
                 stream_topology.verify_config(m,document(d/'frozen.compose.json'))
                 stream_topology.external_runtime(diagnostic_resource_rows(m),m)
@@ -2173,9 +2025,9 @@ def sample_preflight(d,m,k6_id,oneoff=None):
             sql_attribution.statements(attempt/'readability-pg-statements.tsv')
             snapshots=document(attempt/'readability-cgroups.json')['roles']
             stream_topology.readable_processes(snapshots,m)
-            version=(lambda argv,**kw:oneoff('k6-version',argv,**kw)if oneoff else command(argv,**kw))(bounded_k6_argv(['docker','run','--rm','--network','none','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],k6_id,'version']),timeout=30)
+            version=(lambda argv,**kw:oneoff('k6-version',argv,**kw)if oneoff else command(argv,**kw))((['docker','run','--rm','--network','none','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],k6_id,'version']),timeout=30)
             require('k6' in version.lower(),'M7_SAMPLE_LOADGEN_CONTEXT')
-            help_text=(lambda argv,**kw:oneoff('k6-help',argv,**kw)if oneoff else command(argv,**kw))(bounded_k6_argv(['docker','run','--rm','--network','none','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],k6_id,'run','--help']),timeout=30)
+            help_text=(lambda argv,**kw:oneoff('k6-help',argv,**kw)if oneoff else command(argv,**kw))((['docker','run','--rm','--network','none','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],k6_id,'run','--help']),timeout=30)
             require('--summary-export' in help_text,'M7_SAMPLE_LOADGEN_EXPORT')
             write(attempt/'loadgen.json',{'imageId':k6_id,'version':version})
             with sampling(d,attempt):time.sleep(2*m['cadence'].get('samplerIntervalSeconds',2)+2)
@@ -2244,7 +2096,7 @@ def run_cell_load(d, m, k6_id, completion, sql_roles, runid, out, accepted):
     psql(d, "SELECT pg_stat_statements_reset();");phase_snapshot(d, out, "before-prime")
     probe_log = (out / "probe.log").open("wb")
     with sampling(d, out):
-        probe_process = diagnostic_resources.popen(subprocess.Popen, [m["generator"]["tools"]["node"]["path"], str(d / "probe.js"), "--base", "http://127.0.0.1:" + str(m["port"]), "--tenants", str(d / "tenants.private.json"), "--compose", spec,
+        probe_process = subprocess.Popen([m["generator"]["tools"]["node"]["path"], str(d / "probe.js"), "--base", "http://127.0.0.1:" + str(m["port"]), "--tenants", str(d / "tenants.private.json"), "--compose", spec,
             "--runid", runid, "--clients", str(viewer_plan.total(m)), "--per", str(m["cadence"].get("socketsPerTenant",2)), *viewer_plan.setup_args(m["cadence"]), "--window", str(m["cadence"]["loadSeconds"]), "--probeEvery", str(m["cadence"].get("probeEveryMs",3000)), "--restart", "1" if m["cadence"].get("restart",True) else "0", "--evalTimeout", "900", "--out", str(out / "probe.json"), "--signal", str(out / ".window")], env=probe_env, stdout=probe_log, stderr=subprocess.STDOUT)
         job_record(out/"probe-job.json",probe_process,m["owner"])
         try:
@@ -2257,10 +2109,11 @@ def run_cell_load(d, m, k6_id, completion, sql_roles, runid, out, accepted):
             psql(d, "SELECT pg_stat_statements_reset();");phase_snapshot(d, out, "before")
             monitor = loadgen_process(d, probe_process);monitor.__enter__()
             with observe_progress(d,m,out,'load') as load_progress, (out / "k6.log").open("wb") as output:
+                roster = k6_tenants(d, m)
                 command(["docker", "run", "--rm", "--name", m["project"] + "-k6", "--label", OWNER + "=" + m["owner"], "--label", "com.docker.compose.project=" + m["project"], "--label", "com.docker.compose.service=k6",
-                    "--network", "host", "-u", str(os.getuid()) + ":" + str(os.getgid()), "-v", str(d / "k6") + ":/scripts:ro", "-v", str(out) + ":/out", "-v", str(d / "tenants.private.json") + ":/tenants.private.json:ro",
+                    "--network", "host", "-u", str(os.getuid()) + ":" + str(os.getgid()), "-v", str(d / "k6") + ":/scripts:ro", "-v", str(out) + ":/out", "-v", str(roster) + ":/tenants.private.json:ro",
                     "-e", "BASE_URL=http://127.0.0.1:" + str(m["port"]), "-e", "TENANTS_FILE=/tenants.private.json", "-e", "RUN_ID=" + runid,
-                    "-e", "RUN_START=" + str(int(time.time()*1000)), "-e", "DURATION=" + str(m["cadence"]["loadSeconds"]), "-e", "ACCEL="+str(m["cadence"]["accel"]), "-e", "HOT_FACTOR="+str(m["cadence"]["hotFactor"]), "-e", jwt_setup_env(m),
+                    "-e", "RUN_START=" + str(int(time.time()*1000)), "-e", "DURATION=" + str(m["cadence"]["loadSeconds"]), "-e", "ACCEL="+str(m["cadence"]["accel"]), "-e", "HOT_FACTOR="+str(m["cadence"]["hotFactor"]),
                     *(["-e","OFFERED_RPS="+str(m["cadence"]["offeredRps"])] if "offeredRps" in m["cadence"] else []), "-e", "SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status", k6_id, "run", "--quiet", "--summary-export", "/out/k6-summary.json", "/scripts/workload.js"], file=output, timeout=m["cadence"]["loadSeconds"]+600)
                 windows = {'drainStartedMonoNs':time.monotonic_ns(),'drainSeconds':m['cadence'].get('drainSeconds',1500)}
                 if accepted is not None:
@@ -2338,7 +2191,7 @@ def diagnose(d,m):
     failure=None;client_exit=None
     try:
         with (out/"diagnostic.log").open("wb") as log:
-            process=diagnostic_resources.popen(subprocess.Popen, [m["generator"]["tools"]["node"]["path"],str(HERE/"diagnostic.cjs"),str(d),str(scope["trafficSeconds"])],env=env,stdout=log,stderr=subprocess.STDOUT)
+            process=subprocess.Popen([m["generator"]["tools"]["node"]["path"],str(HERE/"diagnostic.cjs"),str(d),str(scope["trafficSeconds"])],env=env,stdout=log,stderr=subprocess.STDOUT)
             job=out/"diagnostic-job.json";job_record(job,process,m["owner"])
             try:
                 try:client_exit=process.wait(timeout=scope["trafficSeconds"]+15)
@@ -2364,9 +2217,7 @@ def diagnose(d,m):
 
 
 def down(d,m):
-    token=_CLEANUP_NODE_LIMIT.set('diagnosticResources' in m)
-    try:return _down(d,m)
-    finally:_CLEANUP_NODE_LIMIT.reset(token)
+    return _down(d,m)
 
 
 
@@ -2378,9 +2229,6 @@ def _down(d, m):
     try:terminal_snapshot(d,m)
     except Exception as error:
         write(d/'terminal-capture-unavailable.json',{'status':'UNMEASURED','type':type(error).__name__})
-    import driver_memory
-    if driver_memory.selected(m) and (d / 'load' / driver_memory.CID).is_file():
-        driver_memory.cleanup(sys.modules[__name__],m,d/'load',document(d/'loadgen-image.json')['k6'])
     if m.get('attached'):
         write(d/'instrument-jobs-stopped.json',{'runtimeResources':'UNCHANGED','cleanupOwner':'runtime owner'});return
     if m.get("prepared"):
@@ -2429,8 +2277,6 @@ def parser():
     prep.add_argument("--diagnostics-interval-ms",type=int,default=5000)
     prep.add_argument('--measurement-mode',choices=('accepted','unaccepted'),default='accepted')
     prep.add_argument('--run-id');prep.add_argument('--image-id');prep.add_argument('--maximum-run-minutes',type=int,default=180)
-    prep.add_argument('--diagnostic-resource-profile',choices=diagnostic_resources.PROFILES)
-    prep.add_argument('--diagnostic-resource-allocation',type=json.loads,help='Explicit finite JSON service/driver allocation and ceiling; exclusive with named profile')
     prep.add_argument('--generator-dependencies')
     prep.add_argument('--generator-dependency-receipt')
     prep.add_argument('--generator-dependency-receipt-sha256')
@@ -2508,7 +2354,6 @@ def main():
     if args.command == "verify":
         verify_source(d, m);verify(d, m);image(m);print("M7_PAIR_AND_INSTRUMENT_PINNED")
     elif args.command == "build":
-        require(not m.get("diagnosticResources"),"M7_DIAGNOSTIC_RESOURCE_BUILD_REFUSED")
         frozen(m,"build");experiment_host(d,m,"build-before");verify_source(d,m);verify(d,m)
         overlay = d / "core/deploy/multitenant"
         command(["node", overlay / "build.js"], cwd=overlay, timeout=1800)

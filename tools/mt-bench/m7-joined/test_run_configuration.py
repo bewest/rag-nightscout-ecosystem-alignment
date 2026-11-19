@@ -95,13 +95,10 @@ class Configuration(unittest.TestCase):
                 c.receipt_scope(m,{**r,'sourceAcceptance':{'status':status}},'run')
 
     def test_actual_runner_refuses_tamper_before_output_guard_or_effects(self):
-        for key,value in (('load-seconds',31),('core-commit','0'*40),('logical-polling-clients',5),
-                          ('diagnostic-resource-profile',a.diagnostic_resources.EXTERNAL_NAME),('tenant-readiness','all')):
+        for key,value in (('load-seconds',31),('core-commit','0'*40),('logical-polling-clients',5),('tenant-readiness','all')):
             with self.subTest(key=key),tempfile.TemporaryDirectory() as tmp:
                 cfg=config();m,r=packet(cfg);root=Path(tmp);receipt=root/'receipt.json';a.write(receipt,r)
                 cfg['prepare']['receipt']=str(receipt);cfg['prepare'][key]=value
-                if key=='diagnostic-resource-profile':
-                    cfg['prepare'].update({'pgstream-topology':'external-service-v1','generator-dependencies':'/synthetic'})
                 file=root/'run.json';a.write(file,cfg);target=root/'never-created'
                 with patch.object(runner,'arm_window') as guard,patch.object(runner,'stage') as effects:
                     with self.assertRaisesRegex(RuntimeError,'CONFIGURATION_MISMATCH|LIMIT_INVALID|SOURCE_MISMATCH'):runner.prepare(file,target)
@@ -119,8 +116,7 @@ class Configuration(unittest.TestCase):
         # overflow remains invalid instead of the former 10000/80000 examples.
         for changes in ({'tenants':2**32},{'replicas':2},{'logical-polling-clients':2**32},
                         {'offered-rps':float('inf')},{'probe-every-ms':0},
-                        {'backend-subnet':'10.247.237.0/24'},{'sampler-interval':61},
-                        {'diagnostic-resource-profile':a.diagnostic_resources.EXTERNAL_NAME}):
+                        {'backend-subnet':'10.247.237.0/24'},{'sampler-interval':61}):
             cfg=config();cfg['prepare'].update(changes)
             with self.subTest(changes=changes),self.assertRaises((RuntimeError,ValueError)):runner.validate_config(cfg)
         cfg=config();cfg['workSeconds']=cfg['prepare']['load-seconds']
@@ -197,19 +193,6 @@ class Controls(unittest.TestCase):
             self.assertTrue((root/'never-created/config.json').is_file())
             import shutil
             shutil.rmtree(root/'never-created');criterion()
-
-    def test_prepared_resource_mirror_refuses_before_deploy(self):
-        cfg=config();cfg['prepare'].update({'diagnostic-resource-profile':a.diagnostic_resources.EXTERNAL_NAME,
-            'pgstream-topology':'external-service-v1','generator-dependencies':'/synthetic'})
-        m,r=packet(cfg)
-        m.update(diagnostics=m['runConfiguration']['diagnostics'],prepared=True,postgresImageId=m['runConfiguration']['postgresImageId'],
-                 pgstreamTopology='external-service-v1',diagnosticResources={'profile':a.diagnostic_resources.EXTERNAL_NAME})
-        with tempfile.TemporaryDirectory() as tmp:
-            receipt=Path(tmp)/'receipt.json';a.write(receipt,r);m['freeze']=str(receipt)
-            a.frozen(m,'deploy')
-            m['diagnosticResources']['profile']=a.diagnostic_resources.QUALIFICATION_NAME
-            with self.assertRaisesRegex(RuntimeError,'CONFIGURATION_MISMATCH'):a.frozen(m,'deploy')
-            m['diagnosticResources']['profile']=a.diagnostic_resources.EXTERNAL_NAME;a.frozen(m,'deploy')
 
 class Namespace(unittest.TestCase):
     def test_actual_daemon_network_projection_refuses_overlap(self):

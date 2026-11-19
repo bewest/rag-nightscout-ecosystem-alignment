@@ -29,7 +29,7 @@ from auto_catalog import auto_catalog
 TIERS = ('smoke', 'discovery', 'acceptance')
 GENERATED_RECEIPT = 'configuration-receipt.json'
 TO_COMPLETION = 'local-owned-to-completion'
-STRUCTURED_OPTIONS = {'viewer-setup', 'diagnostic-resource-allocation', 'driver-plan', 'opportunity-observation', 'drain-observation'}
+STRUCTURED_OPTIONS = {'viewer-setup', 'driver-plan', 'opportunity-observation', 'drain-observation'}
 SMOKE_DEFAULTS = {
     'tenants': 8, 'replicas': 1, 'load-seconds': 60, 'warmup-seconds': 5,
     'idle-seconds': 5, 'probe-every-ms': 10000, 'sockets-per-tenant': 1,
@@ -81,8 +81,7 @@ def tier_plan(config):
                                'origin': 'authored; a finite cleanup is always required'},
             'drainSeconds': {'value': effective.get('cadence', {}).get('drainSeconds'),
                              'origin': 'authored' if 'drainSeconds' in effective.get('cadence', {}) else 'run work deadline'}},
-        'resourceOrigin': ('configured diagnostic allocation' if effective['resources'] else
-                           'uncapped Compose services; host limits may apply'),
+        'resourceOrigin': 'uncapped Compose services; host limits may apply',
         'coverage': {
             'clinical': 'selected write witnesses',
             'wholePopulationClinicalTails': 'UNMEASURED',
@@ -543,12 +542,9 @@ def generated_control(root, d, m):
     This is a real Node execution, before I/O; the normal run then exercises
     the same bytes with the canonical caller/environment.
     """
-    a.diagnostic_resources.configure(m.get('diagnosticResources',{}).get('profile'), driver_scope=d)
-    try:
-        with a.diagnostic_resources.command([m['generator']['tools']['node']['path'],str(d/'probe.js')],a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies')})) as (argv,env):
-            with (root/'generated-control.private.log').open('xb') as output:
-                result=subprocess.run(argv,env=env,stdout=output,stderr=subprocess.STDOUT,timeout=10)
-    finally:a.diagnostic_resources.configure()
+    argv=[m['generator']['tools']['node']['path'],str(d/'probe.js')]
+    with (root/'generated-control.private.log').open('xb') as output:
+        result=subprocess.run(argv,env=a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies')}),stdout=output,stderr=subprocess.STDOUT,timeout=10)
     text = (root / 'generated-control.private.log').read_text()
     require(result.returncode != 0 and 'ERR_INVALID_URL' in text, 'M7_RUNNER_GENERATED_CONTROL_VACUOUS')
     write(root / 'generated-control.json', {'status': 'EXPECTED_FAILURE', 'returncode': result.returncode,
@@ -655,7 +651,7 @@ SESSION_VARIABLE_OPTIONS = frozenset(('freeze', 'receipt', 'warmup-seconds', 'id
     'logical-polling-clients', 'viewer-setup', 'workload-mix', 'workload-scale', 'sampler-interval', 'quiet-load', 'jwt-setup-concurrency',
     'evaluator-catchup', 'evaluator-opportunities', 'opportunity-observation', 'restart-during-load-after-seconds', 'driver-shards', 'driver-vu-diagnostic', 'driver-plan'))
 SESSION_PREPARE_ONLY = frozenset(('fixture-project', 'backend-subnet', 'edge-subnet', 'commissioning-slot-wal-mib', 'tenant-readiness',
-    'diagnostic-resource-profile', 'diagnostic-resource-allocation', 'generator-dependencies', 'generator-dependency-receipt',
+    'generator-dependencies', 'generator-dependency-receipt',
     'generator-dependency-receipt-sha256', 'generator-dependency-preparation',
     'generator-dependency-preparation-sha256', 'generator-dependency-preparation-head'))
 
@@ -672,7 +668,7 @@ def session_start(config_file, directory):
         value = {'version':1, 'owner':state['owner'], 'startedAt':state['startedAt'],
             'stopWorkAt':state['stopWorkAt'], 'cleanupAt':state['cleanupAt'],
             'runtimeOwnerSha256':a.digest(d/'owner.json'), 'runtimeOwner':m['owner'],
-            'resourceCeiling':m.get('diagnosticResources'), 'cleanupRunner':str(Path(__file__).resolve())}
+            'cleanupRunner':str(Path(__file__).resolve())}
         with custody(root):
             execution_window(root,config)
             write(root/'session.json', value)
@@ -693,8 +689,7 @@ def session_access(root, owner):
     d = root/'fixture'
     require(a.digest(d/'owner.json') == session['runtimeOwnerSha256'], 'M7_SESSION_RUNTIME_CHANGED')
     m = a.document(d/'owner.json')
-    require(not m.get('attached') and m['owner'] == session['runtimeOwner']
-            and m.get('diagnosticResources') == session['resourceCeiling'], 'M7_SESSION_RUNTIME_CHANGED')
+    require(not m.get('attached') and m['owner'] == session['runtimeOwner'], 'M7_SESSION_RUNTIME_CHANGED')
     return session, d, m
 
 
@@ -728,16 +723,9 @@ def session_observe(directory, owner, name, config_file, history_file=None):
         write(ob/'history.json', reuse)
         failure = None
         try:
-            try:
-                with a.command_deadline(session['stopWorkAt']):
-                    resources = session['resourceCeiling']
-                    if resources is not None:
-                        a.diagnostic_resources.configure(resources['profile'],
-                            a.document(d/'frozen.compose.json'), resources,
-                            observe=lambda:a.diagnostic_resource_rows(m), driver_scope=d)
-                    a.verify(d,m);a.image(m)
-                    write(ob/'runtime-before.json',a.resources(m))
-            finally:a.diagnostic_resources.configure()
+            with a.command_deadline(session['stopWorkAt']):
+                a.verify(d,m);a.image(m)
+                write(ob/'runtime-before.json',a.resources(m))
             materialize_tier_receipt(ob, config, prepared_argv)
             argv = ['attach','--directory',str(ob/'fixture')]
             # Reuse the validated tier defaults and JSON serialization for the

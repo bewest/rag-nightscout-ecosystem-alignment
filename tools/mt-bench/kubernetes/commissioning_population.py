@@ -22,7 +22,7 @@ BASE = {
 }
 RECEIPT_MODULES = {'frozen.py': HERE/'frozen.py', **{
     name: M7/name for name in ('population_ceiling.py', 'primer_options.py',
-                              'workload_inputs.py', 'contract.py', 'diagnostic_resources.py')}}
+                              'workload_inputs.py', 'contract.py')}}
 
 
 def sha(path):

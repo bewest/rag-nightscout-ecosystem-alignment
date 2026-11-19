@@ -112,9 +112,12 @@ case "$cmd" in
       > "$out/fanout.log" 2>&1 &
     probe=$!
     echo "load_start=$(date +%s.%N)" >> "$out/phases.txt"
-    docker run --rm --network host -u "$(id -u):$(id -g)" -v "$here/k6:/scripts:ro" -v "$out:/out" \
-      -e BASE_URL="$base" -e TENANTS_FILE=/out/tenants.private.json -e RUN_ID="$runid" -e RUN_START="$(( $(date +%s) * 1000 - 86400000 ))" \
+    # Each tenant's JWT is exchanged once before k6 starts; k6 loads the file once (SharedArray).
+    python3 "$here/../m7-joined/jwt_tenants.py" "$out/tenants.private.json" "$base" "${JWT_SETUP_CONCURRENCY:-1}" "$out/k6-tenants.private.json"
+    docker run --rm --network host -u "$(id -u):$(id -g)" -v "$(cd "$here/../capacity/k6" && pwd):/scripts:ro" -v "$out:/out" \
+      -e BASE_URL="$base" -e TENANTS_FILE=/out/k6-tenants.private.json -e RUN_ID="$runid" -e RUN_START="$(( $(date +%s) * 1000 - 86400000 ))" \
       -e DURATION="$BENCH_DURATION" -e ACCEL="$BENCH_ACCEL" -e HOT_FACTOR="$BENCH_HOT_FACTOR" \
+      -e SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status \
       "$K6_IMAGE" run --quiet --summary-export /out/k6-summary.json /scripts/workload.js > "$out/k6.log" 2>&1 || echo "k6 exit $?" >> "$out/k6.log"
     echo "load_end=$(date +%s.%N)" >> "$out/phases.txt"
     pgss_snapshot "$out" load
@@ -125,7 +128,7 @@ case "$cmd" in
     "$here/oracle/oracle.sh" "$project" "$dir/env" "$mt/compose.yaml" "$here/compose.bench.yaml" "$out" > "$out/oracle.txt" || true
     "$here/oracle/disk.sh" "$project" "$dir/env" "$mt/compose.yaml" "$here/compose.bench.yaml" "$out" > "$out/disk.txt" || true
     host_label "$out/host-after.txt"
-    rm -f "$out/tenants.private.json"
+    rm -f "$out/tenants.private.json" "$out/k6-tenants.private.json"
     node "$here/summarize.js" "$out" "$N" > "$out/summary.json"
     cat "$out/oracle.txt"
     ;;

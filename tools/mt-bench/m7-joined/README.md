@@ -683,6 +683,8 @@ boundary evidence; the integrator owns the final joined runtime acceptance.
 
 ### Authored resource and nginx allocations
 
+**Retired 2026-11-19:** the `diagnostic-resource-profile` and `diagnostic-resource-allocation` options were deleted; Compose services always run uncapped and the host's `MemAvailable` is recorded once at run entry (`run-before-host.json`). The text below is historical.
+
 `--diagnostic-resource-allocation` accepts one exact version-1 JSON allocation
 with `services`, `driver`, `ceiling` and `edge` fields. It replaces reference
 CPU/memory sizing when preparing a fresh fixture. Named profiles retain their
@@ -802,6 +804,8 @@ The existing [restriction policy](../../../docs/30-design/tenancy/deployment-and
 separates these instrument boundaries from application and acceptance claims.
 
 ### Named qualification profile
+
+**Retired 2026-11-19:** the `diagnostic-resource-profile` and `diagnostic-resource-allocation` options were deleted; Compose services always run uncapped and the host's `MemAvailable` is recorded once at run entry (`run-before-host.json`). The text below is historical.
 
 `--diagnostic-resource-profile local-qualification-external-pgstream-6cpu-10g-v1`
 selects one proposed allocation for local synthetic qualification with

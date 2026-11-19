@@ -8,7 +8,6 @@ from unittest.mock import patch
 
 import adapter
 from contract import discovery_authorization
-import diagnostic_resources as resources
 import runner
 import stream_topology as stream
 import tier_smoke
@@ -75,37 +74,13 @@ class TierWorkflow(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'FROZEN_ACCEPTANCE_REQUIRED'):
                 runner.validate_config(value)
 
-    def test_native_resource_mode_distinguishes_optional_service_caps(self):
-        config_value = {'services': {'nginx': {}}}
-        initial = copy.deepcopy(config_value)
-        self.assertIs(resources.overlay(config_value, None), config_value)
-        self.assertEqual(resources.compose_limit_mode(config_value, None), 'uncapped-services')
-        self.assertEqual(config_value, initial)
-        with self.assertRaisesRegex(RuntimeError, 'IMPLICIT_SERVICE_LIMIT:nginx'):
-            resources.compose_limit_mode({'services': {'nginx': {'cpus': 2}}}, None)
-        keys = (*resources.NATIVE_CPU_LIMITS, *resources.NATIVE_MEMORY_LIMITS)
-        row = {'Id': 'synthetic', 'HostConfig': dict.fromkeys(keys, 0),
-               'Config': {'Labels': {'com.docker.compose.service': 'nginx'}}}
-        self.assertEqual(resources.uncapped_readback([row], config_value['services'])[0]['limits']['Memory'], 0)
-        row['HostConfig']['Memory'] = 1024
-        with self.assertRaisesRegex(RuntimeError, 'UNEXPECTED_NATIVE_SERVICE_LIMIT:nginx'):
-            resources.uncapped_readback([row], config_value['services'])
-        row['HostConfig']['Memory'] = 0
-        self.assertEqual(len(resources.uncapped_readback([row], config_value['services'])), 1)
-
     def test_uncapped_projection_removes_reference_cpu_and_memory_limits(self):
         config_value = {'services': {'evaluator': {'cpus': 1, 'mem_limit': '1073741824', 'deploy': {
             'resources': {'limits': {'memory': '1g', 'pids': 500}, 'reservations': {'cpus': '0.25'}}}}}}
-        original = copy.deepcopy(config_value)
-        projected, removed = resources.uncapped_compose(config_value)
-        self.assertEqual(config_value, original)
+        projected, removed = adapter.uncapped_compose(config_value)
         self.assertEqual(removed['evaluator'], ['cpus', 'mem_limit', 'deploy.resources.limits.memory',
                                                'deploy.resources.reservations.cpus'])
         self.assertEqual(projected['services']['evaluator']['deploy']['resources']['limits'], {'pids': 500})
-        self.assertEqual(resources.compose_limit_mode(projected, None), 'uncapped-services')
-        projected['services']['evaluator']['deploy']['resources']['reservations']['memory'] = '1g'
-        with self.assertRaisesRegex(RuntimeError, 'IMPLICIT_SERVICE_LIMIT:evaluator'):
-            resources.compose_limit_mode(projected, None)
 
     def test_ack_budget_is_receipt_bound_to_local_external_discovery(self):
         value = config()

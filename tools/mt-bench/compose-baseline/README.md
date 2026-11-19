@@ -8,7 +8,7 @@ limits. Results: [`reports/tenancy/bench-baseline-2026-11-10/`](../../../reports
 
 | measurement | instrument | file in the run directory |
 |---|---|---|
-| p50/p95/p99 latency per client shape, failure rate, dropped iterations | k6 (`k6/workload.js`, `grafana/k6:1.3.0`) | `k6-summary.json`, `k6.log` |
+| p50/p95/p99 latency per client shape, failure rate, dropped iterations | k6 (`../capacity/k6/workload.js`, `grafana/k6:1.3.0`) | `k6-summary.json`, `k6.log` |
 | socket fanout: write sent to `dataUpdate` received, hot tenant and cold tenants | `probes/fanout.js` (socket.io-client from the core lockfile) | `fanout.json` |
 | reconnect recovery after a realtime restart: stock client, then a retrying client | `probes/fanout.js` | `fanout.json` `recovery` |
 | CPU and RSS per role, idle window and load window | `docker stats` every 2 s (`probes/sample.sh`) | `docker-stats.tsv` |
@@ -67,14 +67,16 @@ its own volumes; `teardown` removes the volumes and the private state and keeps 
 
 ### Another base URL (Kubernetes binding)
 
-`k6/workload.js` and `probes/fanout.js` take the base URL and a tenants file
-(`[{id, host, token}]`, data tokens, private) and nothing else; Host selects the tenant. Against a
-deployment the harness did not create:
+`../capacity/k6/workload.js` and `probes/fanout.js` take the base URL and a tenants file
+(`[{id, host, token}]`, data tokens, private) and nothing else; Host selects the tenant. k6 reads
+each tenant's JWT from the file, so exchange them first. Against a deployment the harness did not create:
 
 ```bash
-docker run --rm --network host -v $PWD/tools/mt-bench/compose-baseline/k6:/scripts:ro -v $OUT:/out \
-  -e BASE_URL=https://bench.example.test -e TENANTS_FILE=/out/tenants.private.json -e RUN_ID=bench-$(date +%s) \
+python3 tools/mt-bench/m7-joined/jwt_tenants.py $OUT/tenants.private.json https://bench.example.test 1 $OUT/k6-tenants.private.json
+docker run --rm --network host -v $PWD/tools/mt-bench/capacity/k6:/scripts:ro -v $OUT:/out \
+  -e BASE_URL=https://bench.example.test -e TENANTS_FILE=/out/k6-tenants.private.json -e RUN_ID=bench-$(date +%s) \
   -e RUN_START=$(( $(date +%s) * 1000 - 86400000 )) -e DURATION=300 -e ACCEL=1 -e HOT_FACTOR=10 \
+  -e SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status \
   grafana/k6:1.3.0 run --summary-export /out/k6-summary.json /scripts/workload.js
 NODE_PATH=$NS_BENCH_CORE/node_modules SKIP_RECONNECT=1 node tools/mt-bench/compose-baseline/probes/fanout.js \
   --base https://bench.example.test --tenants $OUT/tenants.private.json --runid <same RUN_ID> --duration 300 --out $OUT/fanout.json

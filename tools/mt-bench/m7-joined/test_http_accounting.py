@@ -46,7 +46,6 @@ class HttpAccounting(unittest.TestCase):
         self.assertEqual(value['sourceReconciliation'],'PASS')
         self.assertEqual(value['scenario'],{'attempts':119,'completed':119})
         self.assertEqual(observed['wireCalls'],119)
-        self.assertEqual(value['setup']['attempts'],0)
         for shape,row in value['shapes'].items():
             if shape=='jwt_setup':continue
             self.assertEqual(row['statusCodes'],{'200':1,'201':1,'204':1,'301':1,'400':1,'401':1,'403':1,'404':1,'409':1,'429':1,'500':1,'502':1,'503':1,'504':1,'599':1,'0':2})
@@ -73,14 +72,6 @@ class HttpAccounting(unittest.TestCase):
         self.assertEqual(result['sourceCounts']['scenario_transport_failures'], 'UNMEASURED')
         self.assertEqual(result['offeredWorkVerdict'], 'UNMEASURED')
 
-    def test_first_setup_refusal_keeps_all_dispatched_response_accounting(self):
-        value=assess(self.observe('batch')['metrics'])
-        self.assertEqual(value['setup']['attempts'],2)
-        self.assertEqual(value['setup']['completed'],2)
-        self.assertEqual(value['setup']['statusCodes'],{'200':1,'503':1})
-        self.assertEqual(value['scenario']['attempts'],0)
-        self.assertEqual(value['httpVerdict'],'FAIL')
-
     def test_missing_or_tampered_data_cannot_pass(self):
         self.assertEqual(assess({})['httpVerdict'],'UNMEASURED')
         for mode in ('missing-status','missing-category'):
@@ -97,7 +88,7 @@ class HttpAccounting(unittest.TestCase):
 
     def test_histogram_metadata_has_no_per_vu_or_tenant_product(self):
         normal=self.observe();vu=self.observe('vu');broken=self.observe('per-vu')
-        self.assertEqual(normal['thresholds'],4073)
+        self.assertEqual(normal['thresholds'],3565)
         self.assertEqual(vu['thresholds'],0)
         self.assertEqual(normal['counterObjects'],vu['counterObjects'])
         self.assertLess(normal['counterObjects'],20)

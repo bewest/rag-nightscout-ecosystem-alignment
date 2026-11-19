@@ -543,6 +543,10 @@ def execute(d, c, objects, client, load=False, recovery=False):
                 k.write(out/'setup-window.json', {'configuredSeconds': settings['setupSeconds'],
                         'remainingSecondsAtDriverLaunch': setup, 'setupUntilUnixMs': int(prime_until * 1000)})
             ordinary = ordinary_driver_inputs(c, tenants, out, env)
+            # Each tenant's JWT is exchanged once here, before k6 starts; k6 loads the file once.
+            import jwt_tenants
+            ordinary = jwt_tenants.attach(ordinary, c['baseUrl'], settings.get('jwtSetupConcurrency', 1))
+            env['TENANTS_FILE'] = str(jwt_tenants.write(out / 'k6-tenants.private.json', ordinary))
             load_process_started = time.time()
             if 'driverPlan' in settings:
                 if c.get('nativeLoad') is not None:
@@ -679,9 +683,8 @@ def accepted_writes(out, c, values, metrics=None):
     # Use the original count reducer, including missing ACK and uncertainty rules.
     ordinary = workload_runtime.ordinary_roster(c, tenants, k.need)
     if out.name in ('commission', 'recovery'):
-        metrics = {'writes_ok': {'count': 0}}
+        metrics = {'writes_ok': {'count': 0}, 'writes_uncertain': {'count': 0}}
         metrics.update({'writes_ok{kind:' + kind + '}': {'count': 0} for kind in ('entries', 'devicestatus', 'treatments')})
-        metrics.update({name + '{tenant:' + t['id'] + '}': {'count': 0} for t in ordinary for name in ('writes_ok', 'writes_uncertain')})
     else:
         k.need((out / 'k6-summary.json').is_file(), 'ACCEPTED_WRITE_UNMEASURED', 'UNMEASURED')
         if metrics is None:
@@ -696,7 +699,7 @@ def accepted_writes(out, c, values, metrics=None):
                                                ordinary_ids=[row['id'] for row in ordinary],
                                                probe_ledger=c.get('workload', {}).get('probeLedger'))
     k.need(known, 'ACCEPTED_WRITE_UNMEASURED', 'UNMEASURED')
-    k.need(counts.get('uncertain') == 0 and all(row['accepted'] == row['stored'] for row in counts['rows']),
+    k.need(counts.get('uncertain') == 0 and counts.get('accepted') == counts.get('stored'),
            'WORKLOAD_WRITE_UNCERTAIN', 'UNMEASURED')
     ledger = k.document(out / 'probe-accounting.json')
     k.need(sum(r['accepted'] for r in ledger['byTenant'].values()) > 0 and all(r['uncertain'] == r['refused'] == r['pending'] == 0 for r in ledger['byTenant'].values()), 'ACCEPTED_WRITE_UNMEASURED', 'UNMEASURED')

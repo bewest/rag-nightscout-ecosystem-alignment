@@ -75,7 +75,7 @@ class Discovery(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'HARD_FAILURE'):d.check_discovery(result)
 
     def test_count_bounds_preserve_ambiguous_writes_but_reject_corruption(self):
-        metrics={'writes_ok':{'count':1},'writes_ok{tenant:a}':{'count':1},'writes_uncertain{tenant:a}':{'count':1},'writes_ok{kind:entries}':{'count':1}}
+        metrics={'writes_ok':{'count':1},'writes_uncertain':{'count':1},'writes_ok{kind:entries}':{'count':1}}
         self.assertEqual(oracle({'a':{'entries':2}},metrics,{},[{'id':'a'}],allow_empty=True)['verdict'],'GREEN')
         self.assertEqual(oracle({'a':{'entries':3}},metrics,{},[{'id':'a'}],allow_empty=True)['verdict'],'RED')
         with self.assertRaisesRegex(RuntimeError,'TENANT_SCOPE'):oracle({'foreign':{}},metrics,{},[{'id':'a'}],allow_empty=True)
@@ -106,7 +106,7 @@ class Discovery(unittest.TestCase):
         def ctx(*args):yield
         def observed(*args):events.append('load');raise p.Refused('M7_EVALUATOR_PROGRESS_NOT_OBSERVED')
         with contextlib.ExitStack() as stack:
-            for name in ('psql','job_record','stop_job'):stack.enter_context(patch.object(a,name))
+            for name in ('psql','job_record','stop_job','k6_tenants'):stack.enter_context(patch.object(a,name))
             stack.enter_context(patch.object(a,'quiet'));stack.enter_context(patch.object(a,'progress_services',return_value=['evaluator']));stack.enter_context(patch.object(a,'progress_attribution',return_value={}))
             stack.enter_context(patch.object(a,'sampling',ctx));stack.enter_context(patch.object(a,'loadgen_process',ctx));stack.enter_context(patch.object(a,'assert_owned',side_effect=lambda *args:events.append('custody')))
             stack.enter_context(patch.object(a,'phase_snapshot',side_effect=lambda d,o,name:events.append(name)));stack.enter_context(patch.object(a.subprocess,'Popen',side_effect=popen));stack.enter_context(patch.object(d,'observed_load',side_effect=observed))
@@ -124,7 +124,7 @@ class Discovery(unittest.TestCase):
         def command(argv,**kwargs):
             events.append('k6');a.write(folder/'load/k6-summary.json',{'metrics':{}})
         with contextlib.ExitStack() as stack:
-            for name in ('psql','job_record','stop_job','quiet','assert_owned','phase_snapshot'):stack.enter_context(patch.object(a,name))
+            for name in ('psql','job_record','stop_job','quiet','assert_owned','phase_snapshot','k6_tenants'):stack.enter_context(patch.object(a,name))
             stack.enter_context(patch.object(a,'progress_services',return_value=['evaluator']));stack.enter_context(patch.object(a,'progress_attribution',return_value={}))
             for name in ('sampling','loadgen_process','observe_progress'):stack.enter_context(patch.object(a,name,ctx))
             stack.enter_context(patch.object(a.subprocess,'Popen',return_value=Process()));stack.enter_context(patch.object(a,'command',side_effect=command));stack.enter_context(patch.object(a,'stored',return_value={}))
@@ -166,7 +166,7 @@ class Discovery(unittest.TestCase):
             events.append('k6 joined')
             a.write(folder/'load/k6-summary.json',{'metrics':{}})
         with contextlib.ExitStack() as stack:
-            for name in ('psql','job_record','stop_job','quiet','assert_owned','phase_snapshot'):
+            for name in ('psql','job_record','stop_job','quiet','assert_owned','phase_snapshot','k6_tenants'):
                 stack.enter_context(patch.object(a,name))
             for name in ('sampling','loadgen_process'):
                 stack.enter_context(patch.object(a,name,side_effect=lambda *args:contextlib.nullcontext()))
@@ -216,7 +216,7 @@ class Discovery(unittest.TestCase):
         corrupt=True
         folder,m=self.setup();m.update(project='owned',port=1234,restartRoles=['api'],generator={'tools':{'node':{'path':'node'}}})
         a.write(folder/'deploy-before-host.json',{});a.write(folder/'tenants.private.json',[{'id':'a'},{'id':'b'}]);events=[]
-        metrics={'writes_ok':{'count':2},'writes_ok{tenant:a}':{'count':1},'writes_ok{tenant:b}':{'count':1},'writes_uncertain{tenant:a}':{'count':0},'writes_uncertain{tenant:b}':{'count':0},'writes_ok{kind:entries}':{'count':2},'writes_ok{kind:devicestatus}':{'count':0},'writes_ok{kind:treatments}':{'count':0}}
+        metrics={'writes_ok':{'count':2},'writes_uncertain':{'count':0},'writes_ok{kind:entries}':{'count':2},'writes_ok{kind:devicestatus}':{'count':0},'writes_ok{kind:treatments}':{'count':0}}
         class Process:
             pid=12345;returncode=0
             def poll(self):return None
@@ -231,7 +231,7 @@ class Discovery(unittest.TestCase):
         @contextlib.contextmanager
         def ctx(*args):yield
         with contextlib.ExitStack() as stack:
-            for name in ('frozen','quiet','verify','image','verify_generator','readiness','psql','phase_snapshot','job_record','stop_job','assert_owned'):stack.enter_context(patch.object(a,name))
+            for name in ('frozen','quiet','verify','image','verify_generator','readiness','psql','phase_snapshot','job_record','stop_job','assert_owned','k6_tenants'):stack.enter_context(patch.object(a,name))
             stack.enter_context(patch.object(a.time,'sleep'));stack.enter_context(patch.object(a,'command',side_effect=command));stack.enter_context(patch.object(a,'progress_services',return_value=['evaluator']));stack.enter_context(patch.object(a,'progress_attribution',return_value={}))
             for name in ('sampling','loadgen_process','observe_progress'):stack.enter_context(patch.object(a,name,ctx))
             stack.enter_context(patch.object(a.subprocess,'Popen',side_effect=popen));stack.enter_context(patch.object(a,'stored',side_effect=stored));stack.enter_context(patch('reduce.measurements',side_effect=reduced))
@@ -267,7 +267,7 @@ class Discovery(unittest.TestCase):
         with patch.object(a,'stored',return_value={'a':{'entries':5}}):
             value,known=d.count_observation(a,folder,out,'synthetic',{})
             self.assertFalse(known);self.assertEqual(value['verdict'],'UNMEASURED')
-            with self.assertRaisesRegex(RuntimeError,'WRONG_DATA'):d.count_observation(a,folder,out,'synthetic',{'writes_ok{tenant:a}':{'count':1},'writes_uncertain{tenant:a}':{'count':0}})
+            with self.assertRaisesRegex(RuntimeError,'WRONG_DATA'):d.count_observation(a,folder,out,'synthetic',{'writes_ok':{'count':1},'writes_uncertain':{'count':0}})
         with patch.object(a,'stored',return_value={'foreign':{'entries':1}}):
             with self.assertRaisesRegex(RuntimeError,'TENANT_SCOPE'):d.count_observation(a,folder,out,'synthetic',{})
 
