@@ -1,196 +1,23 @@
-"""Explicit adaptation of a tracked prior probe, never a serving-source mount."""
+"""Stage the joined clinical probe and its selected platform transport."""
 import hashlib
 from pathlib import Path
-from contract import DISCOVERY_MAX_WORKERS, require
+import shutil
+
+HELPERS = ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs','probe-accounting.cjs',
+           'completed-oracle.cjs','native-observation.cjs','client-delivery.cjs','durable-lag.cjs','clinical-timing.cjs')
 
 
-def generate(root, target, *, public_traffic_only=False):
-    baseline = Path(root) / "tools/mt-bench/capacity/probe.js"
-    source = baseline.read_text()
-    old = "const roles = ['api', 'realtime', 'evaluator', 'tenant-admin'];"
-    require(source.count(old) == 1, "M7_PROBE_ROLE_ANCHOR_CHANGED")
-    source = source.replace(old, "const roles = JSON.parse(process.env.M7_RESTART_ROLES); if (!Array.isArray(roles) || !roles.length) throw new Error('M7_RESTART_ROLES_REQUIRED');")
-    restart = "const restartDone = new Promise(resolve => execFile('docker', [...composeArgs, 'restart', ...roles], () => resolve(Date.now() - r0)));"
-    require(source.count(restart)==1, "M7_PROBE_RESTART_ANCHOR_CHANGED")
-    source = source.replace(restart, "const restartDone = require('./restart.cjs').restart({composeArgs,roles,at:r0}).then(value=>{restart.containerStarts=value.starts;return value.commandMs;});")
-    before_restart = "    const restartIso = new Date().toISOString(); const r0 = Date.now();"
-    require(source.count(before_restart)==1,"M7_PROBE_RESTART_TIME_ANCHOR_CHANGED")
-    source=source.replace(before_restart,r'''    const evaluatorServices=JSON.parse(process.env.M7_EVALUATOR_SERVICES||'null');
-    if(!Array.isArray(evaluatorServices)||!evaluatorServices.length||evaluatorServices.length>WORKER_LIMIT)throw Error('M7_EVALUATOR_PROGRESS_INSTANCE_BOUND');
-    const recoveryObserve=spec=>new Promise((resolve,reject)=>{
-      const child=execFile(process.env.M7_PROGRESS_PYTHON, [path.join(__dirname,'evaluator_recovery.py')], {encoding:'utf8',timeout:920000,maxBuffer:1048576},(error,stdout)=>{
-        let value;try{value=JSON.parse(stdout);}catch{return reject(Error('M7_EVALUATOR_RECOVERY_UNAVAILABLE'));}
-        if(error||!value)return reject(Error(value.code||'M7_EVALUATOR_RECOVERY_UNAVAILABLE'));resolve(value);
-      });
-      child.stdin.end(JSON.stringify({...spec,attribution:JSON.parse(process.env.M7_PROGRESS_ATTRIBUTION),composeArgs,services:evaluatorServices,ids:tenants.map(t=>t.id)}));
-    });
-    const recoveryBaseline=path.join(signalDir,'evaluator-recovery-baseline.private.json');
-    const baselineObservation=await recoveryObserve({mode:'baseline',path:recoveryBaseline});
-    const restartIso = new Date().toISOString(); const r0 = Date.now();'''.replace('WORKER_LIMIT',str(DISCOVERY_MAX_WORKERS)))
-    start = source.index("    const gap = (async () => {")
-    end = source.index("    // Edge after the role restart:", start)
-    source = source[:start] + r'''    const gap = (async () => {
-      await restartDone;
-      while(Date.now()-r0<EVAL_TIMEOUT && evaluatorServices.some(role=>restart.healthyMs[role]==null))await sleep(1000);
-      restart.runtimeAcquisitionObservation=await recoveryObserve({mode:'recovery',baseline:recoveryBaseline,path:path.join(signalDir,'evaluator-recovery.private.json'),deadlineMs:r0+EVAL_TIMEOUT});
-      restart.runtimeAcquisitionObservation.baselineObservation=baselineObservation;
-      log('runtimeAcquisitionObservation',restart.runtimeAcquisitionObservation);
-    })();
-''' + source[end:]
-    marker = "  out.window = { ms:"
-    require(source.count(marker) == 1, "M7_PROBE_WINDOW_ANCHOR_CHANGED")
-    source = source.replace(marker, "  out.window = { hotTenantWriteToFrameMs: stats([...pending].filter(([key])=>key.startsWith(tenants[0].id+':')).flatMap(([,value])=>value.latencies)), coldTenantWriteToFrameMs: stats([...pending].filter(([key])=>!key.startsWith(tenants[0].id+':')).flatMap(([,value])=>value.latencies)), ms:")
-    prime = "  fs.writeFileSync(args.signal, String(Date.now()));"
-    require(source.count(prime)==1, "M7_PROBE_PRIME_ANCHOR_CHANGED")
-    source = source.replace(prime, "  fs.writeFileSync(path.join(signalDir,'prime.json'),JSON.stringify(out.prime)); if(out.prime.primed!==tenants.length*PER)throw new Error('M7_ESTABLISHED_SOCKETS_INCOMPLETE');\n" + prime)
-    # Preserve the transport error at the discovery SQL boundary. An empty
-    # successful result still means the witness has not appeared yet.
-    source=source.replace("sql => new Promise(resolve => execFile", "sql => new Promise((resolve,reject) => execFile")
-    source=source.replace("(err, stdout) => resolve(err ? '' : stdout)",
-                          "(err, stdout) => err && discovery && completionSource ? reject(Error('M7_PROBE_SQL_OBSERVATION_UNAVAILABLE')) : resolve(err ? '' : stdout)")
-    # A single shared probe container must not issue docker commands itself:
-    # the runner supplies a narrowly scoped Docker CLI through a host process.
-    # Probe executes on the host with npm dependencies from an owned extraction
-    # of this exact image (runner records the image and dependency archive hash).
-    from probe_discovery import adapt
-    source=adapt(source)
-    setup_anchor="  const jwts = new Array(tenants.length);"
-    require(source.count(setup_anchor)==1,'M7_PROBE_SETUP_ANCHOR_CHANGED')
-    source=source.replace(setup_anchor,"""  const setupSeconds=Number(args.setupSeconds??300),setupStartedMono=performance.now();
-  if(!Number.isSafeInteger(setupSeconds)||!Number.isSafeInteger(setupSeconds*1000)||setupSeconds<=0)throw Error('M7_PHASE_WINDOW_INVALID:setupSeconds');
-"""+setup_anchor)
-    setup_wait='Date.now() - t0 < 300000'
-    require(source.count(setup_wait)==1,'M7_PROBE_SETUP_ANCHOR_CHANGED')
-    # Retain the legacy default branch's literal for existing Kubernetes
-    # materializers; an explicit clock includes exchanges before socket opens.
-    source=source.replace(setup_wait,'(args.setupSeconds===undefined ? '+setup_wait+' : performance.now()-setupStartedMono<setupSeconds*1000)')
-    source=source.replace("{ encoding: 'utf8', maxBuffer: 64 << 20 }", "{ encoding: 'utf8', timeout:5000, maxBuffer:64 << 20 }")
-    # The first pgstream sample joins an actual stored marker, durable completion,
-    # the evaluator-produced frame and already-connected client identity/content.
-    source=source.replace("const { io } = require('socket.io-client');", "const { io } = require(process.env.M7_GENERATOR_ROOT?path.join(process.env.M7_GENERATOR_ROOT,'node_modules/socket.io-client'):'socket.io-client');")
-    source=source.replace("const signalDir = path.dirname(args.signal);", "const completionSource=process.env.M7_COMPLETION_SOURCE?JSON.parse(process.env.M7_COMPLETION_SOURCE):null;\nconst completionOracle=completionSource?require('./completed-oracle.cjs'):null;const lag=require('./durable-lag.cjs');const timing=completionSource?require('./clinical-timing.cjs'):null;const oracleCost={queries:0,bytes:0,elapsedMs:0,missing:0,durablePendingPeak:0};\nconst signalDir = path.dirname(args.signal);")
-    source=source.replace("const p = { sent: Date.now(),", "const p = { sentMono:performance.now(), sent: Date.now(),")
-    source=source.replace("const e = { tenant: t.id,", "const e = { clientProofVersion:2, expectedSockets:sockets.flatMap((s,i)=>s.index===tenants.indexOf(t)?[i]:[]), date, sentMono:p.sentMono, tenant: t.id,")
-    source=source.replace("    for (const sgv of frame?.sgvs || []) {", "    for (const sgv of frame?.sgvs || []) { const proof=pending.get(t.id+':'+sgv.mills);if(proof&&completionSource){proof.clientFrames??=new Map();if(!proof.clientFrames.has(s))proof.clientFrames.set(s,{atMono:performance.now(),socket:sockets.indexOf(s),connects:s.connects,transportId:s.socket.id,sgv:{_id:String(sgv._id),mills:sgv.mills,mgdl:sgv.mgdl}});}")
-    if not public_traffic_only:
-        source=source.replace("clientProofVersion:2", "clientProofVersion:3")
-        source=source.replace("const req = http.request({ host: base.hostname, port: base.port, method,",
-                              "const requestStart=performance.now(); const req = http.request({ host: base.hostname, port: base.port, method,")
-        source=source.replace("res => { let b = '';", "res => { const responseMono=performance.now(),responseAt=Date.now(); let b = '';")
-        source=source.replace("status: res.statusCode, body: b", "status: res.statusCode, body: b, responseMono, responseAt, requestStart")
-        source=source.replace("e.acked = Date.now();", "e.acked = r.responseAt; e.acceptedMono=r.responseMono; e.sentMono=r.requestStart;")
-    start=source.index("    while (polling || evalPending.some(")
-    end=source.index("      if (open.length)",start)
-    source=source[:start]+"""    for (;;) {
-      const open=evalPending.filter(e=>e.evaluatedAt===null &&
-        (completionSource?timing.shouldPoll(e):Date.now()-e.sent<120000));
-      if(!polling&&!open.length)break;
-"""+source[end:]
-    source=source.replace("      if (open.length) {", """      if(open.length && completionSource){
-        const ids=[...new Set(open.map(e=>e.tenant))];
-        oracleCost.durablePendingPeak=Math.max(oracleCost.durablePendingPeak,open.filter(e=>e.acked!==null&&!e.durableObservation).length);
-        const queryStart=performance.now();
-        const query=completionOracle.query(completionSource,ids,args.runid);
-        let raw;
-        try { raw=await psqlAsync(query); }
-        catch(error) {
-          if(!discovery || error.message!=='M7_PROBE_SQL_OBSERVATION_UNAVAILABLE')throw error;
-          out.sqlObserverFailure={verdict:'UNMEASURED',code:error.message};
-          timing.checkpoint(signalDir,evalPending,pending);
-          return;
-        }
-        const queryEnd=performance.now();oracleCost.queries++;oracleCost.bytes+=Buffer.byteLength(raw);oracleCost.elapsedMs+=queryEnd-queryStart;if(!raw)oracleCost.missing++;
-        const rows=new Map(raw.split('\\n').filter(Boolean).map(line=>{const row=JSON.parse(line);return [row.tenant,row];}));
-        const foreign=[...rows.keys()].some(id=>!ids.includes(id));
-        for(const e of open){
-          if(foreign){e.hardClinical='M7_COMPLETION_FOREIGN_TENANT';continue;}
-          e.lastQueryStartMono=queryStart;
-          const row=rows.get(e.tenant);if(!row)continue;
-          if(e.stamp===null)e.stamp=row.stamp;
-          if(completionSource.native&&!e.nativeTarget){try{e.nativeTarget=require('./native-observation.cjs').snapshot(row,completionSource);}catch{}}
-          const proof=pending.get(e.tenant+':'+e.date);
-          const durable=completionOracle.assessDurable(row,e,completionSource);
-          lag.observe(e,durable,queryStart,queryEnd);
-          const result=completionOracle.assess(row,e,[...(proof?.clientFrames?.values()||[])],PER,completionSource);
-          e.completion=result;
-          timing.observe(e,result,queryStart);
-          if(e.completion.ready){e.evaluatedAt=Date.now();evalLatencies.push(e.evaluatedAt-e.sent);}
-        }
-        timing.checkpoint(signalDir,evalPending,pending);
-      }else if (open.length) {""")
-    source=source.replace("const e = { tenant: t.id, sent: p.sent,", "const e = { tenant: t.id, date, sent: p.sent,")
-    source=source.replace("    await sleep(PROBE);", "    if(completionSource){const until=Date.now()+PROBE;while(Date.now()<until&&!fs.existsSync(path.join(signalDir,'.restart')))await sleep(Math.min(1000,until-Date.now()));}else await sleep(PROBE);")
-    source=source.replace("  fs.writeFileSync(args.out, JSON.stringify(out, null, 2)", """  if(completionSource){oracleCost.observationEndMono=performance.now();
-    for(const e of evalPending){
-      const frames=[...(pending.get(e.tenant+':'+e.date)?.clientFrames?.values()||[])];
-      e.clinicalTiming=timing.assess(e,frames);
-      e.completion={...e.completion,ready:e.clinicalTiming.delivered,
-        code:e.clinicalTiming.observationProblem,assessedCode:e.semantic?.code,clinicalTiming:e.clinicalTiming};
-    }
-    out.durableOutputObservation=lag.summary(evalPending,pending,oracleCost,timing);
-    const clinicalTiming=timing.summary(evalPending);
-    out.completedOutput={rosterTenants:tenants.length,witnessTenants:[...new Set(evalPending.map(e=>e.tenant))],
-      clinicalTiming,witnessTenantCount:new Set(evalPending.map(e=>e.tenant)).size,
-      ...(out.sqlObserverFailure?{observerFailure:out.sqlObserverFailure}:{}),
-      witnesses:evalPending.map(e=>({tenant:e.tenant,date:e.date,stamp:e.stamp,acceptedAt:e.acked,requestToAcceptanceMs:e.clinicalTiming.requestToAcceptanceMs,requestStartedAt:e.sent,...e.completion})),
-      probeCadenceMs:PROBE,scope:'sampled stored/output/client witnesses and selected BG-now mean; witnessTenants is the exercised subset, not all-roster clinical equivalence; uploader separate from ordinary k6 workload; any planned restart is qualified by its separate receipt'};
-    for(const s of sockets)s.socket.close();
-  }
-  fs.writeFileSync(args.out, JSON.stringify(out, null, 2)""")
-    # Close admissions on observer loss. For restart runs, the controller
-    # still owns the phase transition; an early probe exit cannot trigger it.
-    source=source.replace("  while (!fs.existsSync(path.join(signalDir, '.restart'))) {",
-                          "  while (!out.sqlObserverFailure && !fs.existsSync(path.join(signalDir, '.restart')) && (args.maxWrites===undefined || k<Number(args.maxWrites))) {")
-    restart_block = "  if (args.restart === '1') {"
-    source=source.replace(restart_block, restart_block+"\n    if(out.sqlObserverFailure){out.failure=out.sqlObserverFailure;} else {")
-    source=source.replace("    out.restart = restart;\n  }", "    out.restart = restart;\n    }\n  }")
-    source=source.replace("  process.exit(0);", "  process.exit(out.sqlObserverFailure && args.restart==='1' ? 1 : 0);")
-    source=source.replace("  savePartial();\n  log('window'", "  if(out.sqlObserverFailure)out.window.evaluationMissedWithin120s=null;\n  savePartial();\n  log('window'")
-    # Quotient/remainder preserves tenant-major order for legacy per-tenant load.
-    def viewers_change(old,new):
-        nonlocal source
-        require(source.count(old)==1,'M7_VIEWER_PROBE_ANCHOR_CHANGED')
-        source=source.replace(old,new)
-    viewers_change("tenants.length*PER", "TOTAL")
-    viewers_change("const EVAL_TIMEOUT =", "const TOTAL=Number(args.clients??tenants.length*PER);if(!Number.isSafeInteger(TOTAL)||TOTAL<0||TOTAL>0xffffffff||!tenants.length||new Set(tenants.map(t=>t.id)).size!==tenants.length)throw Error('M7_VIEWER_TOTAL_RANGE');const viewers=tenants.map((_,i)=>Math.floor(TOTAL/tenants.length)+(i<TOTAL%tenants.length?1:0));\nconst EVAL_TIMEOUT =")
-    viewers_change("k < PER;", "k < viewers[i];")
-    viewers_change("jwts[i] = await exchange(tenants[i]);", "jwts[i] = viewers[i]?await exchange(tenants[i]):null;")
-    viewers_change("expected: PER", "expected: viewers[i]")
-    viewers_change("[...pending.values()].length * PER", "[...pending.values()].reduce((n,p)=>n+p.expected,0)")
-    viewers_change("],PER,completionSource)", "],viewers[tenants.findIndex(t=>t.id===e.tenant)],completionSource)")
-    viewers_change("out.completedOutput={rosterTenants", "out.completedOutput={clientFrames:{verdict:out.window.expectedFrames===0?'NOT_EXERCISED':evalPending.every(e=>e.completion?.ready)?'PASS':'UNMEASURED'},rosterTenants")
-    viewers_change("  log('prime', out.prime);", "  out.viewerBindings=sockets.map((s,socket)=>({socket,tenant:tenants[s.index].id}));\n  log('prime', out.prime);")
-    # Keep the stock polling path for the historical public
-    # calibration actors. Current runners explicitly select the viewer scenario.
-    viewers_change("const sockets = [], reasons = {}, pending = new Map();",
-                   Path(__file__).with_name('viewer-setup.cjs').read_text() +
-                   "\nconst viewerSetup = args.viewerSetup ? JSON.parse(args.viewerSetup) : null;\n"
-                   "const sockets = [], reasons = {}, pending = new Map();")
-    viewers_change("transports: ['polling'], agent,",
-                   "transports: viewerSetup?.transport === 'websocket-first' ? ['websocket','polling'] : ['polling'], "
-                   "tryAllTransports: true, agent,")
-    viewers_change("  const jwts = new Array(tenants.length);\n  let next = 0;",
-                   "  let t0 = Date.now();\n  if (viewerSetup) { await primeViewers(out,viewerSetup); } else {\n"
-                   "  const jwts = new Array(tenants.length);\n  let next = 0;")
-    viewers_change("  const t0 = Date.now();", "  t0 = Date.now();")
-    viewers_change("  out.prime = { sockets:", "  }\n  out.prime = { sockets:")
-    viewers_change("const r1 = Date.now(); retrying = true;",
-                   "const r1 = Date.now(); retrying = !viewerSetup;\n"
-                   "    if(viewerSetup) restart.retryPolicy = {opensPerSecond:viewerSetup.opensPerSecond};")
-    viewers_change("    for (const s of sockets) if (!s.connected) s.socket.connect();", """
-    for (const s of sockets) {
-      if (s.connected) continue;
-      if (viewerSetup && Date.now() - r1 >= RECOVERY) break;
-      s.socket.connect();
-      if (viewerSetup) await sleep(Math.min(Math.ceil(1000/viewerSetup.opensPerSecond),
-                                            Math.max(0,r1+RECOVERY-Date.now())));
-    }""")
-    target = Path(target)
-    target.write_text(source)
-    helpers={}
-    for name in ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs','probe-accounting.cjs','completed-oracle.cjs','native-observation.cjs','client-delivery.cjs','durable-lag.cjs',*(['clinical-timing.cjs'] if not public_traffic_only else [])):
-        data=Path(__file__).with_name(name).read_bytes();target.with_name(name).write_bytes(data)
-        helpers[name]=hashlib.sha256(data).hexdigest()
-    return {"baseline": str(baseline.relative_to(root)), "baselineSha256": hashlib.sha256(baseline.read_bytes()).hexdigest(),
-            "adaptedSha256": hashlib.sha256(target.read_bytes()).hexdigest(), "recoveryHelpers": helpers,
-            "changes": ["actual explicit replica restart roster", "bounded v2 exact-instance fresh-owned-window recovery with changed runtime proof", "separate hot/cold tenant write-to-frame distributions", "reject failed or unobserved container restart"]}
+def generate(root, target, *, transport=None):
+    root, target = Path(root), Path(target)
+    directory = root/'tools/mt-bench/m7-joined'
+    program = directory/'joined-probe.cjs'
+    selected = Path(transport) if transport else directory/'probe-compose.cjs'
+    shutil.copyfile(program, target)
+    helpers = {}
+    for source, name in [(selected, 'probe-transport.cjs'), *((directory/name, name) for name in HELPERS)]:
+        destination = target.with_name(name)
+        shutil.copyfile(source, destination)
+        helpers[name] = hashlib.sha256(destination.read_bytes()).hexdigest()
+    digest = hashlib.sha256(target.read_bytes()).hexdigest()
+    return {'baseline':str(program.relative_to(root)), 'baselineSha256':digest,
+            'adaptedSha256':digest, 'recoveryHelpers':helpers}

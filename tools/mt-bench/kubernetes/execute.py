@@ -528,20 +528,19 @@ def execute(d, c, objects, client, load=False, recovery=False):
             # A native k6 already in an operator-owned finite resource scope.
             # No Docker network/volume assumption or new driver Pod is introduced.
             env.update(BASE_URL=c['baseUrl'], TENANTS_FILE=c['tenantsFile'], RUN_ID=runid, RUN_START=str(int(time.time() * 1000)),
-                       DURATION=str(settings['loadSeconds']), ACCEL='1', HOT_FACTOR=str(settings.get('hotFactor', 1)), JWT_SETUP_CONCURRENCY=str(settings.get('jwtSetupConcurrency', 1)),
+                       DURATION=str(settings['loadSeconds']), ACCEL='1', HOT_FACTOR=str(settings.get('hotFactor', 1)),
                        SHAPES='w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status')
             if 'setupSeconds' in settings:
                 prime_until = min(time.time() + setup, work_until)
                 setup = min(setup, int(k.deadline(c)))
                 k.need(setup > 0, 'SETUP_WINDOW_EXHAUSTED', 'UNMEASURED')
-                env['M7_SETUP_SECONDS'] = str(setup)
-                env['M7_SETUP_UNTIL_MS'] = str(int(prime_until * 1000))
                 k.write(out/'setup-window.json', {'configuredSeconds': settings['setupSeconds'],
                         'remainingSecondsAtDriverLaunch': setup, 'setupUntilUnixMs': int(prime_until * 1000)})
             ordinary = ordinary_driver_inputs(c, tenants, out, env)
             # Each tenant's JWT is exchanged once here, before k6 starts; k6 loads the file once.
             import jwt_tenants
-            ordinary = jwt_tenants.attach(ordinary, c['baseUrl'], settings.get('jwtSetupConcurrency', 1))
+            ordinary = jwt_tenants.attach(ordinary, c['baseUrl'], settings.get('jwtSetupConcurrency', 1),
+                                         deadline=min(time.time()+setup, work_until))
             env['TENANTS_FILE'] = str(jwt_tenants.write(out / 'k6-tenants.private.json', ordinary))
             load_process_started = time.time()
             if 'driverPlan' in settings:

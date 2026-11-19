@@ -42,7 +42,7 @@ class NumericContract(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             output=profile.dry(p,Path(tmp)/'dry')
             dry=json.loads(output.read_text())
-            self.assertEqual((dry['environment']['HOT_FACTOR'],dry['environment']['JWT_SETUP_CONCURRENCY']),('32','128'))
+            self.assertEqual((dry['environment']['HOT_FACTOR'],dry['profile']['workload']['jwtSetupConcurrency']),('32',128))
             self.assertEqual(len(json.loads((output.parent/'tenants.json').read_text())),12001)
             self.assertEqual(dry['runtime'],'NOT_RUN')
         m=test_toolchain.Toolchain().manifest();m['profile']=copy.deepcopy(p);m['profile'].pop('referencePins')
@@ -71,9 +71,8 @@ class NumericContract(unittest.TestCase):
         for hot in (11,32):
             workload_runtime.validate({**w,'hotFactor':hot},k.need,12001)
         env=workload_runtime.environment(w,{},k.need)
-        self.assertEqual(env['JWT_SETUP_CONCURRENCY'],'128')
-        with self.assertRaisesRegex(k.Refused,'WORKLOAD_ENVIRONMENT_CONFLICT'):
-            workload_runtime.environment(w,{'JWT_SETUP_CONCURRENCY':'1'},k.need)
+        self.assertNotIn('JWT_SETUP_CONCURRENCY',env)
+        self.assertNotIn('JWT_SETUP_CONCURRENCY',workload_runtime.environment(w,{'JWT_SETUP_CONCURRENCY':'1'},k.need))
         for field,bad,code in [('logicalPollingClients',True,'WORKLOAD_VIEWERS'),
             ('loadSeconds',float('inf'),'WORKLOAD_LOAD_SECONDS'),
             ('hotFactor',0,'WORKLOAD_HOT_FACTOR'),('jwtSetupConcurrency',True,'WORKLOAD_JWT_SETUP_CONCURRENCY'),

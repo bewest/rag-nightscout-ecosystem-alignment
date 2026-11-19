@@ -235,8 +235,8 @@ class NativeLoad(unittest.TestCase):
                     n.assess_join(d, out, c, {'actual': 'objects'}, 'actual-client')
                 full.assert_called_once_with(d, out, c, {'actual': 'objects'}, 'actual-client')
                 self.assertFalse((out/'probe.json').exists())
-            (out/'k6-summary.json').write_text('{"metrics":{}}')
-            with patch.object(k, 'active_baseline', return_value=baseline), patch.object(execute, 'assess_stage') as full:
+            replaced = {'namespace': {'uid': 'different-namespace'}}
+            with patch.object(k, 'active_baseline', return_value=replaced), patch.object(execute, 'assess_stage') as full:
                 with self.assertRaisesRegex(k.Refused, 'ASSESSMENT_BINDING'):
                     n.assess_join(d, out, c, {}, None)
                 full.assert_not_called()

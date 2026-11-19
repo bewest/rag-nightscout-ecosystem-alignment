@@ -24,7 +24,7 @@ async function exercise({durableAt, frameAt, prior=false, unavailable=false, for
   const frames = new Map();
   const result = () => now >= durableAt ? {ready:true, storedId:'entry', storedSgv:100} :
     {ready:false, code:'M7_COMPLETION_PENDING'};
-  const context = {Date:{now:()=>now}, performance:{now:()=>now}, polling:false,
+  const context = {transport:{}, Date:{now:()=>now}, performance:{now:()=>now}, polling:false,
     evalPending:[witness], evalMissed:[], evalLatencies:[], out:{}, completionSource:{}, timing, lag,
     signalDir:directory, discovery:true, args:{runid:'synthetic'}, Buffer, Math, Map, Set,
     oracleCost:{queries:0, bytes:0, elapsedMs:0, missing:0, durablePendingPeak:0},

@@ -259,7 +259,7 @@ def candidate_pin(inventory, binding):
     return pin
 
 
-def prepare(manifest_path, instance, out, *, await_primer=False):
+def prepare(manifest_path, instance, out, *, await_primer=False, existing_fixture=False):
     m = k.document(manifest_path)
     p = workload(m)
     k.need(m.get('primerLocation') or await_primer or primer_options.from_profile(p,k.need) is None,
@@ -328,6 +328,12 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
         measured = k.completion_source(c, docs['evaluator'], docs['realtime'], **({'native_receipt':docs['nativeReceipt']} if 'nativeReceipt' in docs else {}))
         k.need(c.get('completion', measured) == measured, 'COMPLETION_SOURCE_CHANGED')
         c['completion'] = measured
+    if existing_fixture:
+        import fixture
+        k.need(c.get('storageMode')=='existing-claim' and inventory['results']['primer'].get('claim'),
+               'FIXTURE_CLAIM_REQUIRED')
+        fixture.existing(c,inventory,objects,out.resolve().with_name(out.name+'-fixture'),
+                         k.timestamp(c['deadlines']['workUntil']))
     if await_primer and c.get('primerLocation'):
         pass  # Offline preparation precedes the first fixture; live preparation receives its DATA roster.
     elif await_primer:
@@ -481,7 +487,9 @@ def main():
         if name == 'launch':
             command.add_argument('--prepare-only', action='store_true', help='capture or check the case without starting actors')
         if name == 'prepare':
-            command.add_argument('--await-primer', action='store_true', help='bind DATA credentials after verified in-Pod priming')
+            inputs = command.add_mutually_exclusive_group()
+            inputs.add_argument('--await-primer', action='store_true', help='prepare the packet before commissioning')
+            inputs.add_argument('--existing-fixture', action='store_true', help='read a commissioned, operator-owned fixture with existing claims')
         if name == 'run':
             command.add_argument('--matrix', type=Path)
     standard = commands.add_parser('standard', help='Prepare a fresh scheduler-placed discovery case offline')
@@ -505,7 +513,7 @@ def main():
     if a.action == 'describe':
         return profile.describe(workload(k.document(a.manifest)))
     if a.action == 'prepare':
-        return prepare(a.manifest, k.document(a.instance), a.output.resolve(), await_primer=a.await_primer)
+        return prepare(a.manifest, k.document(a.instance), a.output.resolve(), await_primer=a.await_primer, existing_fixture=a.existing_fixture)
     return run(a.packet, a.allocation, a.sha256, k.document(a.matrix) if a.matrix else None)
 
 

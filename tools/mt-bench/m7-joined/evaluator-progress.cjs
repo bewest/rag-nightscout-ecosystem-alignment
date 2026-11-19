@@ -10,24 +10,17 @@
   // deadline is still checked between RPC pages and by its bounded exec.
   const watchdog=setTimeout(()=>process.exit(1),Math.min(selected+1000,2147483647));
   try {
-    const values=require('./deploy/multitenant/service-environment').read();
-    // Read the same pure pool contract without loading evaluator execution/settings.
-    const partition=require('./lib/pool-membership/config').fromEnvironment('evaluator',values);
+    const current = require('node:fs').existsSync('./lib/server/serve/deployment-settings.js');
+    const values = current ? process.env : require('./deploy/multitenant/service-environment').read();
     const keys=['NS_SERVE_INTERNAL_HOST','NS_SERVE_INTERNAL_PORT','NS_SERVE_INTERNAL_SOCKET','NS_SERVE_INTERNAL_SHUTDOWN_TIMEOUT_MS','XDG_RUNTIME_DIR'];
     const environment=Object.fromEntries(keys.filter(key=>Object.hasOwn(values,key)).map(key=>[key,values[key]]));
-    let selfOrdinal=partition.partitioned?partition.ordinal:0;
-    let selfMode=partition.partitioned?'partitioned':'standalone',selfCount;
-    if(values.NS_PGSTREAM_EVALUATOR_SLICE!==undefined){
-      const raw=require('./lib/server/serve/config-file').read(values.MULTITENANT_EVALUATOR_CONFIG,{source:values,label:'MULTITENANT_EVALUATOR_CONFIG',Type:Error});
-      const selected=require('./lib/pgstream/assigned-worker').processProfile(values.NS_PGSTREAM_EVALUATOR_SLICE,JSON.parse(raw).pgstream.receiver);
-      selfOrdinal=selected.ordinal;selfCount=selected.count;selfMode='static';
-    }
     const own=require('./lib/server/internal-api/listener-config').resolve(['evaluator'],environment);
     const client=require('./lib/server/internal-api/clients').evaluatorInspection(own.peer('evaluator',{maxBytes:1048576,timeoutMs:5000}));
     for(let offset=0;offset<M7_PROGRESS_IDS.length;offset+=128){
       if(Date.now()>=deadline||++queries>M7_PROGRESS_QUERY_BUDGET)throw Error('M7_EVALUATOR_PROGRESS_BUDGET');
       const selected=M7_PROGRESS_IDS.slice(offset,offset+128);
       const view=await client.inspectEvaluator({tenants:selected});
+      const { ordinal: selfOrdinal, mode: selfMode, count: selfCount } = view.configured;
       const line=JSON.stringify({selected,view,selfOrdinal,selfMode,...(selfCount===undefined?{}:{selfCount}),observedAt:Date.now()})+'\n';
       bytes+=Buffer.byteLength(line);
       if(bytes>M7_PROGRESS_BYTE_BUDGET)throw Error('M7_EVALUATOR_PROGRESS_BUDGET');

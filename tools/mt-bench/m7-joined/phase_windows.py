@@ -73,20 +73,6 @@ def remaining(window, phase, now_ns):
     return left
 
 
-def k6_setup(argv, image, seconds, until_ms):
-    """The same container environment reaches unsharded and sharded drivers."""
-    seconds = math.floor(seconds)
-    require(seconds > 0, 'M7_PHASE_WINDOW_EXHAUSTED:setup')
-    require(type(until_ms) is int and 0<until_ms<=2**53-1,'M7_PHASE_WINDOW_INVALID:setupUntilUnixMs')
-    require(argv[:2] == ['docker', 'run'] and argv.count(image) == 1,
-            'M7_PHASE_WINDOW_DRIVER_ARGV')
-    at = argv.index(image)
-    require(not any(str(value).startswith(('M7_SETUP_SECONDS=','M7_SETUP_UNTIL_MS=')) for value in argv[:at]),
-            'M7_PHASE_WINDOW_DRIVER_CONFLICT')
-    return [*argv[:at], '-e', 'M7_SETUP_SECONDS=' + str(seconds),
-            '-e','M7_SETUP_UNTIL_MS='+str(until_ms), *argv[at:]]
-
-
 def drain_seconds(manifest, window, now_ns, default=60):
     values = selection(manifest.get('cadence', {}))
     if 'drainSeconds' not in values:

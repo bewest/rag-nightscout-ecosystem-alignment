@@ -13,8 +13,8 @@ class SqlObservationDiagnostics(unittest.TestCase):
             root = Path(area)
             probe = root / 'probe.cjs'
             k.generate_probe(probe)
-            source = probe.read_text()
-            bridge = source[source.index('const psqlAsync ='):source.index('const pct =')]
+            source = (root/'probe-transport.cjs').read_text()
+            bridge = source[source.index('const psqlAsync ='):source.index('  return {psqlAsync, frames:')]
             harness = r'''
 const fs=require('node:fs'),path=require('node:path');
 const {performance}=require('node:perf_hooks');

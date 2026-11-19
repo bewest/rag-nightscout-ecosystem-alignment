@@ -106,9 +106,10 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
                  'postgres': postgres['reference'], 'postgresImageId': postgres['imageId'],
                  'coreCommit': app['core'], 'deployCommit': app['deploy']}
     alignment = k.instrument()['commit']
+    binding_head = subprocess.check_output(['git','-C',binding,'rev-parse','HEAD'],text=True,timeout=15).strip()
     retired = ('nativeLoad', 'profile', 'sourceReceipt', 'buildReceipt', 'postgresImageId', 'candidate', 'alignmentCommit')
     intent = {key: value for key, value in prior.items() if key not in retired}
-    intent.update(profile=profile, candidate=candidate, alignmentCommit=alignment, bindingCommit=app['deploy'])
+    intent.update(profile=profile, candidate=candidate, alignmentCommit=alignment, bindingCommit=binding_head)
     source = frozen.source(intent)
     # Carry forward only the platform setup allowance, independently of the selected load duration.
     setup_allowance = env['workDeadlineSeconds'] - prior['profile']['phases']['workSeconds']
@@ -166,7 +167,7 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
         'trialEnvelope':{'placementMode':'scheduler','resourceAccounting':'requests-v1'},'experiment':{'runId':run_id,
         'namespace':namespace,'renderSha256':k.digest(output/'render.json'),'experimentSha256':k.digest(output/'intent.json')},
         'identity':{'alignmentCommit':alignment,'candidate':candidate}})
-    selected_control = {key:control[key] for key in ('version','toolsDirectory','k6','readonlyGuard','observerScript','pullSecretCommand') if key in control}
+    selected_control = {key:control[key] for key in ('version','toolsDirectory','k6','readonlyGuard','pullSecretCommand') if key in control}
     selected_control.update(caseDirectory=str(output),bindingDirectory=str(binding),instrumentDirectory=str(k.ROOT),
                             schedulerPlacement=True,coreRepository=str(core),runTemplate=lc.ref(output/'native-run-template.json'),
                             candidate=candidate,alignmentCommit=alignment,nativeLimits=control['nativeLimits'],

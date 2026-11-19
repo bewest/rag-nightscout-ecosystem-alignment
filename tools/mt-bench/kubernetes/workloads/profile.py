@@ -167,7 +167,6 @@ def dry(p, target):
                'token': 'synthetic-loopback-only'} for i in range(n)]
     write(target / 'tenants.json', roster)
     env = {'DURATION': str(p['workload']['loadSeconds']), 'ACCEL': '1', 'HOT_FACTOR': str(p['workload'].get('hotFactor', 1)),
-           'JWT_SETUP_CONCURRENCY': str(p['workload'].get('jwtSetupConcurrency', 1)),
            'SHAPES': ','.join(SHAPES), 'RUN_ID': 'synthetic-profile-dry',
            'RUN_START': '1800000000000', 'TENANTS_FILE': str(target / 'tenants.json')}
     env = workload_runtime.environment(p['workload'], env, need)

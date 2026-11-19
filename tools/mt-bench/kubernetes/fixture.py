@@ -46,19 +46,26 @@ def controller_roster(kubectl, image, core, state, count, concurrency, cutoff):
         adapter.write(config, dict(version=1, adminOrigin=admin, apiOrigin=api, ownerConsumer=consumer))
         client = ['docker', 'run', '--rm', '--pull=never', '--network=host', '--user', f'{os.getuid()}:{os.getgid()}',
                   '--mount', 'type=bind,src='+str(state)+',dst=/run/ns-primer', '--workdir', '/opt/app',
-                  '--entrypoint', 'node', image, 'deploy/multitenant/prime.js']
+                  '--entrypoint', 'node']
         for args in (['provision', '--tenant-count', str(count)], ['prime', '--concurrency', str(concurrency)]):
             seconds = cutoff - time.time()
             if seconds <= 0:
                 raise RuntimeError('K8S_FIXTURE_DEADLINE')
-            with (state/(args[0]+'.log')).open('xb') as log:
-                subprocess.run([*client, *args], stdout=log, stderr=log, check=True, timeout=seconds)
+            cidfile = state/(args[0]+'.cid')
+            try:
+                with (state/(args[0]+'.log')).open('xb') as log:
+                    subprocess.run([*client,'--cidfile',cidfile,image,'deploy/multitenant/prime.js',*args],
+                                   stdout=log, stderr=log, check=True, timeout=seconds)
+            finally:
+                if cidfile.is_file():
+                    cid = cidfile.read_text().strip()
+                    if re.fullmatch('[0-9a-f]{64}', cid):
+                        subprocess.run(['docker','rm','--force',cid], capture_output=True, timeout=12)
     return tenant_projection(json.loads((state/'tenants.json').read_bytes()), count)
 
 
 def claim_roster(kubectl, spec, inventory, state, count, cutoff):
     """Mount the existing results claim read-only. Transfer only DATA projection through exec."""
-    import adapter
     state.mkdir(mode=0o700, parents=True, exist_ok=False)
     info = inventory['results']['primer']
     claim = info.get('claim')
@@ -89,8 +96,48 @@ def claim_roster(kubectl, spec, inventory, state, count, cutoff):
         rows = json.loads(run(['exec','fixture-reader','--','node','-e',js]).stdout)
         if len(rows) != count:
             raise RuntimeError('K8S_FIXTURE_ROSTER_CHANGED')
-        return rows
+        claims = inventory['storage'].get('claims', {})
+        parts = ('postgres','vault','provisionState','primerResults')
+        reuse = 'UNMEASURED'
+        if all(claims.get(part) for part in parts):
+            response = json.loads(run(['get','pvc',*(claims[part] for part in parts),'-o','json']).stdout)
+            volumes = response['items']
+            if len(volumes) == len(parts) and all(v.get('status',{}).get('phase') == 'Bound' and
+                    (v['spec'].get('dataSource') or {}).get('kind') in ('VolumeSnapshot','PersistentVolumeClaim') for v in volumes):
+                reuse = 'reused'
+        return rows, reuse
     finally:
         # The ordinary namespace cleanup also owns this read-only client.
-        subprocess.run([*kubectl,'delete','pod','fixture-reader','--ignore-not-found','--wait=false'],
-                       timeout=10, capture_output=True)
+        subprocess.run([*kubectl,'delete','pod','fixture-reader','--ignore-not-found','--wait','--timeout=15s'],
+                       timeout=18, capture_output=True)
+
+
+def completion(kubectl, roles, pair, image, instrument):
+    import commissioning_context
+    script = (Path(__file__).resolve().parents[1]/'m7-joined/settings-context.cjs').read_bytes()
+    def sample(role):
+        target = roles[role]
+        return json.loads(subprocess.check_output(
+            [*kubectl, 'exec', '-i', target['workload'], '-c', target['container'], '--', 'node', '-', role],
+            input=script, timeout=30))
+    return commissioning_context.completion(sample('evaluator'),sample('realtime'),pair,image,instrument)
+
+
+def existing(c, inventory, objects, directory, cutoff):
+    """Read a commissioned fixture supplied by the operator without owning its lifecycle."""
+    import kube_adapter as k
+    kubectl = [c['kubectl'], '--context', c['context'], '-n', c['namespace']]
+    def namespace():
+        raw = subprocess.check_output([*kubectl,'get','namespace',c['namespace'],'-o','json'],timeout=15)
+        ns = json.loads(raw)['metadata']
+        k.need(ns.get('labels',{}).get('nightscout.org/run-id') == c['runId'], 'FIXTURE_NAMESPACE_OWNER')
+        return ns['uid']
+    uid = namespace()
+    primer = objects['Job/primer']
+    rows, reuse = claim_roster(kubectl,primer,inventory,directory,c['tenants'],cutoff)
+    observed = completion(kubectl,c['roles'],c['pins']['pair'],c['pins']['appImageId'],c['pins']['instrument'])
+    k.need(namespace() == uid, 'FIXTURE_NAMESPACE_CHANGED')
+    path = directory/'data-roster.private.json'
+    k.write(path,rows)
+    k.write(directory/'fixture.json',{'namespaceUid':uid,'location':'claim','reuse':reuse,'tenants':len(rows)})
+    c.update(tenantsFile=str(path),completion=observed,primerLocation='claim')
