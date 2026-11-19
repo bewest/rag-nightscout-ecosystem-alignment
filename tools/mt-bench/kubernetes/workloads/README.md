@@ -23,7 +23,7 @@ reserve no resource and add no capacity gate.
 | C2 `lib/tenant-connector/config.js:40`, `runtime.js:73` | Connector defaults: five-minute successful-poll cadence, 15-second scheduling cycle, 150-second retry delay. Poll eligibility and records actually returned are distinct from a write per tenant every poll. These profiles do not start connectors. |
 | C2 `lib/client/index.js:1165` and `1166`; original `capacity/probe.js:61` | Stock display and alarm namespaces use Socket.IO polling transport. A connected stock viewer is not one REST request per clock tick. The M7 probe opens the data namespace; it does not prove the separate alarm-namespace journey. |
 | `m7-joined/workload.py:27` and `kubernetes/execute.py:223` | Explicit offeredRps rescales the selected mix; adapter fixes HOT_FACTOR=1, ACCEL=1 and all seven shapes. Integer rate bounds are 1–100 requests/s. The override, not ACCEL alone, defines actual cadence. |
-| `m7-joined/viewer_plan.py:10`, `capacity/probe.js:8`, `m7-joined/probe.py:125` | logicalPollingClients is total stock viewers assigned in roster order. Probe writes have their own global round-robin cadence. Ordinary REST reads are driven by k6 independently of viewers. |
+| `m7-joined/viewer_plan.py:10`, `capacity/probe.js:8`, `m7-joined/probe.py:125` | logicalPollingClients is the total number of Socket.IO viewers assigned in roster order. Probe writes have their own global round-robin cadence. Ordinary REST reads are driven by k6 independently of viewers. |
 | C2 `lib/server/serve/evaluator-consumers.js:78`, `:124`, `:197` | Pending/refused/repeating clinical work, persisted attempts and due intents require separate observations. An idle interval with no known opportunity proves no timer progress. |
 
 For the implemented equal-weight roster, let `N` be ordinary eligible tenants,
@@ -39,7 +39,7 @@ work. Startup and finite scheduling boundaries can add one iteration per shape;
 ## Concrete proposed profiles
 
 The three original aggregate profiles retain two provisioned/ordinary-eligible synthetic tenants and four
-stock viewers. They seed no additional history, synthesize no alarm or reconnect
+Socket.IO viewers. They seed no additional history, synthesize no alarm or reconnect
 flood, and request no restart. Existing provisioner history and retention must be
 read back; they are not assumed empty or production-sized.
 
@@ -83,6 +83,14 @@ window plus 600 seconds cleanup. A shorter diagnostic may declare a shorter
 ordinary window and phase budget, retaining all actual observation limits.
 The adapter supports 1..86,400 seconds within the real deadline and the stock
 probe ledger's attempt bound; it does not extend an entered grant.
+
+The ordinary viewer opens at a configured rate and prefers WebSocket.
+`workload.viewerSetup` takes `opensPerSecond`, `stallSeconds`,
+`transport` (`websocket-first` or `polling`) and `scenario` (`ordinary` or
+`simultaneous-reconnect`). The reconnect scenario first primes the ramped cohort,
+then reconnects it together and requires fresh frames. Commission and recovery
+use the stock polling transport. The probe records effective settings and
+actual transport counts for each connection phase.
 
 The viewer planner assigns quotient/remainder counts in roster order, including
 zero-viewer tenants. Storage checks cover all roster writers. Clinical witnesses

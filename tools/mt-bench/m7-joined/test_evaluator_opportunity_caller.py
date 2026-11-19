@@ -39,8 +39,9 @@ class Caller(unittest.TestCase):
                              'identity':'7'*64,'digest':'8'*64,'revision':str(revision),'generation':None,'enabled':True,'arrayBounds':True,'bodyMetadataAbsent':True}}
         return d,out,m,row
 
-    def exercise(self,*,stale=False,missing=False,health=False,initial=False,malformed=False,phase="load",timing=False):
+    def exercise(self,*,stale=False,missing=False,health=False,initial=False,malformed=False,phase="load",timing=False,allocation=None):
         d,out,m,row=self.fixture();sql_calls=[];rpc_calls=[]
+        if allocation is not None:m['cadence']['opportunityObservation']=allocation
         m['cadence']['idleSeconds']=0
         due=int(time.time()*1000)-1000
         def sql(directory,query,database,**kwargs):
@@ -218,6 +219,23 @@ class Caller(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'PROFILE_UNSUPPORTED'):
             a.select_opportunities(argparse.Namespace(evaluator_opportunities='wrong-contract'),m)
         with self.assertRaisesRegex(RuntimeError,'PROFILE_UNSUPPORTED'):a.select_opportunities(argparse.Namespace(evaluator_opportunities=o.CONTRACT),{'profile':'capacity'})
+
+    def test_frozen_observer_budget_verified_independently_and_legacy_artifacts_keep_original_bound(self):
+        selected = {'sqlMaxBytes': 26214400, 'roundSeconds': 90}
+        _,out,_,_,error,_,_ = self.exercise(allocation=selected)
+        self.assertIsNone(error)
+        proof = a.document(out/'evaluator-progress.json')
+        self.assertEqual(proof['opportunityBudget'], o.round_budget(2, selected))
+        self.assertEqual(o.verify(proof,2,['evaluator'],BINDING,opportunity_budget=selected)['verdict'],'PASS')
+        with self.assertRaisesRegex(p.Refused,'BUDGET_CHANGED'):
+            o.verify(proof,2,['evaluator'],BINDING)
+        del proof['opportunityBudget']
+        with self.assertRaisesRegex(p.Refused,'BUDGET_CHANGED'):
+            o.verify(proof,2,['evaluator'],BINDING,opportunity_budget=selected)
+        self.assertEqual(o.verify(proof,2,['evaluator'],BINDING)['verdict'],'PASS')
+        proof['durableCollectorCost']['rounds'][0]['rawSqlBytes'] = o.ROUND_BYTES + 1
+        with self.assertRaisesRegex(p.Refused,'BYTE_BOUND'):
+            o.verify(proof,2,['evaluator'],BINDING)
 
     def test_actual_capture_byte_and_deadline_bounds_refuse_before_decoding_or_querying(self):
         d,_,m,_=self.fixture();collector=a.opportunity_collector(d,m,[A,B])

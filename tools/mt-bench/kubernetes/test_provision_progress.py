@@ -119,6 +119,41 @@ class ProvisionProgress(unittest.TestCase):
             launch()
         self.assertEqual(clock.now, 6)
 
+    def test_running_role_and_platform_job_renew_only_on_forward_milestones(self):
+        for name in ('pgstream','provision'):
+            for wedged in (True,False):
+                with self.subTest(name=name,wedged=wedged):
+                    clock=SimpleNamespace(now=0)
+                    clock.time=clock.monotonic=lambda:clock.now
+                    clock.sleep=lambda n:setattr(clock,'now',clock.now+n)
+                    records={}
+                    def pods(_):
+                        elapsed=min(clock.now,4) if wedged else clock.now
+                        status={'conditions':[],'initContainerStatuses':[]}
+                        if elapsed>=4:status['conditions'].append({'type':'PodScheduled','status':'True'})
+                        if elapsed>=8:status['initContainerStatuses'].append({'state':{'terminated':{'exitCode':0}}})
+                        if elapsed>=12:status['conditions'].append({'type':'Ready','status':'True'})
+                        return [{'metadata':{'labels':{'nightscout.org/run-id':'run'}},'status':status}]
+                    target=scope(time=clock,work=24,phase_cutoff=None,rid='run',owned=lambda:None,
+                        pods=pods,step=lambda *_:None,summary=lambda _:{'uid':'pod','containers':[]},
+                        producer_startup=producer_startup,application_topology=application_topology,
+                        intent={},frozen=frozen,put=lambda n,v:records.update({n:v}))
+                    if wedged:
+                        with self.assertRaisesRegex(RuntimeError,'READINESS_STALLED_'+name):
+                            target['ready']('owned',name,6)
+                        self.assertEqual(clock.now,10)
+                    else:
+                        self.assertIsNotNone(target['ready']('owned',name,6))
+                        self.assertEqual(clock.now,12)
+                    self.assertEqual(records['startup-window-'+name+'.json']['workUntilEpochSeconds'],24)
+
+    def test_sealed_reason_requires_initialized_and_sealed_in_returned_health(self):
+        for health, expected in (({'initialized':True,'sealed':True},True),
+                                 ({'data':{'initialized':True,'sealed':True}},True),
+                                 ({'initialized':False,'sealed':True},False),
+                                 ({'initialized':True,'sealed':False},False), ({},False)):
+            self.assertEqual(producer_startup.vault_sealed(health),expected)
+
     def test_user_cancellation_interrupts_probe(self):
         launch, clock, _ = self.attempt(probe_error='CONTROLLER_SIGNAL_15')
         with self.assertRaisesRegex(RuntimeError, 'CONTROLLER_SIGNAL_15'):

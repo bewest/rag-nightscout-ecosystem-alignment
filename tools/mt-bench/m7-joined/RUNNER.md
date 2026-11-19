@@ -841,13 +841,11 @@ detected. Two point folders compare only when both use the same explicit
 allocation (`M7_UNITS_PROFILE_MISMATCH`, `M7_UNITS_PROFILE_NOT_EXPLICIT`) and the
 same workload (`M7_UNITS_WORKLOAD_MISMATCH`).
 
-The same reduction summarizes probe witnesses: accepted, durable-observed,
-120-second deadline misses (no ready observation within the budget, plus later
-observations), durable upper-bound and matched-frame distributions. A p95 from
+The same reduction reports accepted probe writes, first durable observations,
+matched frames and clinical deadline misses. A p95 from
 fewer than 30 accepted witnesses is reported with `p95Qualified: false`. Set
 `probe-every-ms` to 10000 for a 310-second window to write about 31 witnesses,
-about 0.1 extra request/s; each witness keeps its own 120-second observation
-budget after the window.
+about 0.1 extra request/s. Each witness retains its own acceptance timestamp.
 
 `driver-shards` (two through the selected tenant count, default unsharded) runs that many k6 processes inside the
 one admitted k6 container, with the same native limits, labels and cleanup. Each
@@ -1280,9 +1278,29 @@ versus observed limits before comparing operating points.
 
 ### Phase clocks and local discovery to completion
 
-`setup-seconds` covers stock-client priming and the ordinary driver's JWT
-exchanges. `drain-seconds` governs the post-writer probe and fixed-target
-observer. It leaves the selected per-write clinical deadline at 120 seconds.
+`viewer-setup` selects the Socket.IO connection scenario. The ordinary driver
+opens at most 50 viewers per second by default. It tries WebSocket first and
+permits polling fallback. For example, `{"opensPerSecond":20,"stallSeconds":90}`
+selects a slower ramp. Setup advances on successful tenant JWT exchanges,
+first connections and first data frames for distinct viewers. A lack of
+progress for the selected interval (default 300 seconds) stops viewer setup.
+The operator's overall work deadline still applies. Select
+`{"transport":"polling"}` for stock display transport compatibility.
+`{"scenario":"simultaneous-reconnect"}` ramps and primes the full cohort,
+disconnects it, then reconnects all its viewers together before ordinary
+traffic. The probe records actual initial and reconnect frame coverage and
+transport counts under `viewerSetup`.
+
+`setup-seconds` covers the ordinary k6 driver's JWT exchanges. `drain-seconds` governs the post-writer probe and fixed-target
+observer. Local and Kubernetes probes measure 120 seconds from the later of HTTP
+acknowledgement and evaluator warmth for that tenant. Independent owner inspection
+brackets the transition between the last zero-acquisition read and the first ready
+owner with a credited acquisition. A deadline inside that uncertainty interval can
+leave the verdict UNMEASURED. The outcome includes per-tenant warm intervals and
+coverage, acceptance-to-durable and acceptance-to-frame delays, nominal deadline
+misses before warmth, and witnesses censored by the remaining drain clock. Terminal
+zero lifetime acquisitions on the observed owner fail the never-warm criterion.
+Earlier packets retain the clinical verdict of their own instrument.
 Use `plan` to inspect their values and the work they cover. Set these limits
 from observed phase timings and keep their evidence with the experiment.
 Deployment priming is a separate provisioning stage. A traffic window names
@@ -1359,14 +1377,32 @@ and 64 MiB. Select `--evaluator-progress-budget` with `maxQueriesPerPhase` and
 tenants across eight workers need 1,896 queries. Each retained observation uses
 the selected query and byte budget. Exhausted capture stays `UNMEASURED`.
 
+The local durable opportunity observer collects a SQL snapshot before each of
+the three evaluator inspections. Each round reserves at least 16 MiB and 20 s,
+scaling to 4 KiB per tenant and one second per 64-tenant SQL batch. These
+defaults allow headroom over the R4c incomplete prefix. For an explicitly
+bounded scenario set `prepare.opportunity-observation` to an object with
+`sqlMaxBytes`, `roundSeconds`, or both. The phase receipt records the requested
+and effective values and the actual query count, SQL bytes and observer cost.
+The work cutoff still applies. `drainObservation` selects the separate
+post-writer fixed-target observation budget.
+
+
 `--startup-windows` accepts optional `composeReadySeconds`, `stageSeconds` and
 `evaluatorReadySeconds` for fresh Compose discovery. A shared experiment places
 the same object in `profile.phases.startupWindows.compose`. Plans show the
 selected values and their reference defaults. During provisioning and DATA
 priming, `stageSeconds` is the maximum inactivity between increases in the
 number of tenants saved to the respective checkpoint. Each stage records its
-last completed count. The owner's overall work cutoff still applies. Other
-stages use the lesser of their selected window and remaining authorized work.
+last completed count. The verified-serving binding starts the Vault process,
+waits for PostgreSQL, runs platform bootstrap and verification, then starts
+all serving roles in one Compose invocation before tenant provision and prime.
+`composeReadySeconds` measures time without a new service startup milestone.
+`evaluatorReadySeconds` measures time without a newly observed warm tenant.
+The owner's overall work cutoff clips each wait. During DATA priming,
+`primeSlotWal` records the observed slot setting, active flag, retained bytes
+and sample coverage. A failed slot read remains visible in the unavailable
+count.
 An explicit evaluator window or progress budget derives the readiness capture
 allowance from the effective window, roster, and per-round byte bound. Each
 discovery attempt allows a second capture to confirm readiness. The result

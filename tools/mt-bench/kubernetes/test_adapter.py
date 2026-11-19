@@ -345,7 +345,7 @@ class Adapter(unittest.TestCase):
             self.assertIn('rawRow:e.rawRow',source)
             native=subprocess.run(['node',str(HERE/'probe.test.cjs'),str(target)],capture_output=True,text=True,timeout=15)
             self.assertEqual(native.returncode,0,native.stderr)
-            for mode in ('sql-unavailable', 'restored'):
+            for mode in ('sql-unavailable', 'restored', 'warm'):
                 result = subprocess.run(['node', str(HERE/'probe.test.cjs'), str(target), mode],
                                         capture_output=True, text=True, timeout=15)
                 self.assertEqual(result.returncode, 0, result.stderr)

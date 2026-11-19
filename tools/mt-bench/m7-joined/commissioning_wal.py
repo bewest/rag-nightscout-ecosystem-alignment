@@ -112,7 +112,7 @@ def install(config, manifest):
         return
     require(not manifest.get('attached'), 'M7_COMMISSIONING_SLOT_WAL_LOCAL_DIAGNOSTIC_ONLY')
     command, index = command_setting(config)
-    require(command[index] == SETTING + '=256MB', 'M7_COMMISSIONING_SLOT_WAL_BASELINE_CHANGED')
+    require(command[index] in (SETTING + '=256MB', SETTING + '=-1'), 'M7_COMMISSIONING_SLOT_WAL_BASELINE_CHANGED')
     command[index] = SETTING + '=' + str(selected[FIELD]) + 'MB'
     verify(config, manifest)
 
@@ -150,7 +150,9 @@ def verify_source(a,manifest,core_repo,deploy_repo):
     require(manifest.get('tenantReadiness') in ('serve','all'),'M7_PLATFORM_STARTUP_READINESS_REQUIRED')
     import hashlib
     files={name:a.command(['git','-C',deploy_repo,'show',manifest['pair']['deploy']+':'+name],binary=True)for name in SOURCE_FILES}
-    require(b'max_slot_wal_keep_size=256MB' in files[SOURCE_FILES[-1]],'M7_COMMISSIONING_SLOT_WAL_BASELINE_CHANGED')
+    source = files[SOURCE_FILES[-1]]
+    require(any(token in source for token in (b'max_slot_wal_keep_size=256MB', b'max_slot_wal_keep_size=-1')),
+            'M7_COMMISSIONING_SLOT_WAL_BASELINE_CHANGED')
     return {'selection':{**selection,'tenantReadiness':manifest['tenantReadiness']},
             'files':{name:hashlib.sha256(text).hexdigest()for name,text in files.items()}}
 
@@ -169,3 +171,38 @@ def runtime(a,d,manifest,phase):
             'scope':'actual selected PostgreSQL setting only; finite slot allowance is not a total WAL/disk quota'}
     a.write(d/('commissioning-wal-'+phase+'.json'),result)
     return result
+
+
+SLOT_QUERY = """SELECT current_setting('max_slot_wal_keep_size'), active,
+    pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn)::bigint
+    FROM pg_replication_slots WHERE slot_name='nsdemo_pgstream' AND slot_type='logical'
+    AND database=current_database();"""
+
+
+def sampler(read, result, *, now=None):
+    """Read the live slot while the tenant primer runs. Retain aggregates only."""
+    import time
+    import subprocess
+    now = now or time.monotonic
+    next_read = 0
+    record = {'status':'UNMEASURED', 'samples':0, 'unavailable':0}
+    result['primeSlotWal'] = record
+
+    def sample():
+        nonlocal next_read
+        started = now()
+        if started < next_read:
+            return
+        next_read = started + 5
+        try:
+            setting, active, amount = read(SLOT_QUERY).strip().split('\t')
+            if active not in ('t','f') or not amount.isdigit():
+                raise ValueError
+            amount = int(amount)
+        except (OSError, RuntimeError, ValueError, subprocess.SubprocessError):
+            record['unavailable'] += 1
+            return
+        record.update(status='OBSERVED', setting=setting, lastActive=(active == 't'),
+                      lastRetainedBytes=amount, maxRetainedBytes=max(amount, record.get('maxRetainedBytes',0)))
+        record['samples'] += 1
+    return sample

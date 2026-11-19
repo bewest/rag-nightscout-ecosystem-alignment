@@ -13,6 +13,7 @@ import time
 
 import kube_adapter as k
 from contract import tenant_projection
+import commissioning_wal
 import primer_storage
 import primer_options
 from primer_progress import ProgressWindow
@@ -37,6 +38,16 @@ def storage_readback(c, client, target):
            value.get('configBytes')==receipt['configBytes'] and value.get('configSha256')==receipt['configSha256'],
            'PRIMER_STORAGE_READBACK_CHANGED')
     return value
+
+
+def client_state_volume(expected_job, job, mount_path):
+    def read(job):
+        volume, = (v['emptyDir'] for v in k.template(job)['spec']['volumes'] if v['name']=='client-state')
+        return {'medium':volume.get('medium') or 'disk', 'sizeLimit':volume.get('sizeLimit')}
+    expected, actual = read(expected_job), read(job)
+    if expected == {'medium':'disk', 'sizeLimit':None}:
+        k.need(actual==expected, 'PRIMER_STORAGE_READBACK_CHANGED')
+    return {'mountPath':mount_path, **actual}
 
 
 def require_roster(d, c, baseline):
@@ -64,12 +75,14 @@ def require_roster(d, c, baseline):
     return pods[0]
 
 
-async def run_actor(command, cutoff, seconds, total, result):
+async def run_actor(command, cutoff, seconds, total, result, sample=None):
     """Watch the durable count across kubectl, including a silent or wedged exec."""
     window = ProgressWindow(seconds)
     first = True
     result['completedTenants'] = None
     native = None
+    slot_sample = None
+    sampled_at = None
 
     def remaining():
         if cutoff <= time.time():
@@ -101,6 +114,14 @@ async def run_actor(command, cutoff, seconds, total, result):
             else:
                 window.observe(count)
             result['completedTenants'] = window.completed
+            # Observe WAL in parallel so a slow SQL read cannot hold the
+            # progress/timeout loop. The terminal observe() rechecks identities.
+            if (sample and count < total and (slot_sample is None or slot_sample.done())
+                    and (sampled_at is None or time.monotonic()-sampled_at >= 5)):
+                if slot_sample is not None:
+                    await slot_sample
+                sampled_at = time.monotonic()
+                slot_sample = asyncio.create_task(asyncio.to_thread(sample))
         timeout = remaining()
         code = await asyncio.wait_for(actor.wait(), timeout)
         return native, code
@@ -114,6 +135,8 @@ async def run_actor(command, cutoff, seconds, total, result):
             except ProcessLookupError:
                 pass
             await actor.communicate()
+        if slot_sample is not None:
+            await slot_sample
 
 
 def prime(directory, output, concurrency=None, max_tenants=None):
@@ -193,9 +216,7 @@ def prime_owned(d, c, objects, output, split, declared, selected):
                    str(selected.get('concurrency',primer_options.DEFAULT_CONCURRENCY))]
         if split:
             args = ['--verified-serving', *context, *options, str(selected.get('maxTenants', c['tenants']))]
-            volumes = k.template(job)['spec']['volumes']
-            volume, = (v['emptyDir'] for v in volumes if v['name']=='client-state')
-            result['stateVolume'] = {'mountPath':where, 'sizeLimit':volume['sizeLimit']}
+            result['stateVolume'] = client_state_volume(objects['Job/primer'], job, where)
             result['requiredActiveTenants'] = c['tenants']
         else:
             proof = private_file('verified.json')
@@ -216,7 +237,12 @@ def prime_owned(d, c, objects, output, split, declared, selected):
                    '--request-timeout='+str(max(1, int(remaining)+1))+'s',
                    'exec', '-i', target, '-c', 'done', '--', 'env', 'NS_PRIMER_STALL_SECONDS='+str(seconds), 'node', '-', *args]
         try:
-            native, exit_code = asyncio.run(run_actor(command, cutoff, seconds, c['tenants'], result))
+            sample=None
+            if split:
+                pg, container=k.selected_pod(c,before,'postgres')
+                sample=commissioning_wal.sampler(
+                    lambda query:k.postgres_read(client,pg,container,query,timeout=3),result)
+            native, exit_code = asyncio.run(run_actor(command, cutoff, seconds, c['tenants'], result, sample))
         except (OSError, ValueError):
             raise k.Refused('K8S_PRIMER_EXEC_OUTCOME_UNMEASURED', 'UNMEASURED') from None
         k.need(isinstance(native, dict) and set(native) <= {

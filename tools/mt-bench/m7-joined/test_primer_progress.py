@@ -82,6 +82,29 @@ for count in range(1, 6):
             self.assertEqual(stage['completedTenants'], 0)
             self.assertGreater(wait.window.remaining(), 50)
 
+    def test_role_milestones_keep_real_wait_alive_and_stalled_role_refuses(self):
+        roles = ['api','evaluator']
+        for advance in (False, True):
+            with self.subTest(advance=advance), tempfile.TemporaryDirectory() as tmp:
+                d=Path(tmp);stage={};start=time.monotonic()
+                def ps(*argv, **kwargs):
+                    self.assertEqual(argv[-2:],tuple(roles))
+                    index=int((time.monotonic()-start)/0.20) if advance else 0
+                    api=('running' if index>0 else 'created','healthy' if index>1 else '')
+                    other=('running' if index>2 else 'created','healthy' if index>3 else '')
+                    return 'api|%s|%s\nevaluator|%s|%s\n'%(*api,*other)
+                wait=adapter.ComposeProgressWait(0.55,'M7_ROLE_READINESS_STALLED',
+                    lambda:adapter.compose_role_progress(d,roles,stage,0.55))
+                with patch.object(adapter,'compose',side_effect=ps), (d/'up.log').open('wb') as log:
+                    child=[sys.executable,'-c','import time;time.sleep(1.0)']
+                    if advance:
+                        adapter.command(child,file=log,wait_for_primer=wait)
+                        self.assertEqual(stage['roleProgress'],{'api':3,'evaluator':3})
+                    else:
+                        with self.assertRaisesRegex(RuntimeError,'M7_ROLE_READINESS_STALLED'):
+                            adapter.command(child,file=log,wait_for_primer=wait)
+                        self.assertLess(time.monotonic()-start,1.0)
+
     def test_compose_runner_uses_stage_seconds_as_inactivity_with_outer_work_bound(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

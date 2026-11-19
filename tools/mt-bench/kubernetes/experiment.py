@@ -123,8 +123,15 @@ def materialize(manifest, binding_repo, deploy_repo, out):
     archive = git(binding_repo, 'archive', manifest['bindingCommit'], 'bindings/kubernetes')
     with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
         schema = 'bindings/kubernetes/inputs.schema.json'
-        inputs = json.load(tar.extractfile(schema)) if schema in tar.getnames() else {}
-    split = inputs.get('properties', {}).get('primerStorage', {}).get('type') == 'string'
+        supported = json.load(tar.extractfile('bindings/kubernetes/assets/source-contract.json'))
+        if 'verificationJob' in supported:
+            k.need(supported['verificationJob']=='verification','CANDIDATE_VERIFICATION_JOB_CHANGED')
+            split=True
+        else:
+            # Earlier split bindings predate verificationJob and declare this
+            # legacy input in their frozen schema. Keep those sources runnable.
+            inputs = json.load(tar.extractfile(schema)) if schema in tar.getnames() else {}
+            split = inputs.get('properties', {}).get('primerStorage', {}).get('type') == 'string'
     if split:
         k.need(population_ceiling.FIELD not in selected, 'POPULATION_CEILING_UNSUPPORTED_BY_BINDING')
         k.need(frozen.PRIMER_STORAGE not in selected, 'USE_BINDING_PRIMER_STORAGE_INPUT')
@@ -169,6 +176,8 @@ def materialize(manifest, binding_repo, deploy_repo, out):
                     '--compose', Path(deploy_repo).resolve()/'bindings/compose',
                     '--image', selected['localImageId']], check=True)
     measured = k.document(asset)
+    if 'verificationJob' in supported:
+        k.need(measured.get('verificationJob')==supported['verificationJob'],'CANDIDATE_VERIFICATION_JOB_CHANGED')
     if split:
         k.need(all(measured[key] == selected[key] for key in ('coreCommit', 'deployCommit', 'localImageId')),
                'CANDIDATE_SOURCE_IMAGE_CHANGED')

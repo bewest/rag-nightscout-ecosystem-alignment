@@ -112,7 +112,7 @@ function assess(row,witness,clients,expected,config){
  if(Math.abs(bg.mean-mean)>1e-9||bg.mills!==last.mills||bg.last!==last.mgdl)return no('M7_COMPLETION_BG_NOW');
  const client=require('./client-delivery.cjs').assess(clients,expected,doc,expected===0?{}:witness);
  if(!client.ready)return {...no('M7_COMPLETION_CLIENT'),clientFailure:client.code};
- return {ready:true,...(coverage?{nativeCoverage:coverage.coverage,completedInputFloor:coverage.completedInputFloor,outputInputFloor:coverage.outputInputFloor}:{}),tenant:row.tenant,storedId:doc._id,completedClock:state.completed.clock,observedClock:state.observed.clock,outputRevision:output.outputRevision,contentDigest:output.contentDigest,clients:clients.length,bgNowMean:bg.mean,clinicalScope:'BG-now selected-bucket mean/last consistency; remaining clinical properties unassessed'};
+ return {ready:true,...(coverage?{nativeCoverage:coverage.coverage,completedInputFloor:coverage.completedInputFloor,outputInputFloor:coverage.outputInputFloor}:{}),tenant:row.tenant,storedId:doc._id,storedSgv:doc.sgv,completedClock:state.completed.clock,observedClock:state.observed.clock,outputRevision:output.outputRevision,contentDigest:output.contentDigest,clients:clients.length,bgNowMean:bg.mean,clinicalScope:'BG-now selected-bucket mean/last consistency; remaining clinical properties unassessed'};
 }
 // Read-only work metadata for the NEXT opportunity assessor. Reuse the exact
 // typed vector/output fences, with an exact admission-only empty output case.

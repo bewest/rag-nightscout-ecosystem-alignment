@@ -128,6 +128,11 @@ class NativeFiles(unittest.TestCase):
     def test_gzip_roster_preserves_seven_shape_scheduling_csv_and_existing_reducer(self):
         self.real_scheduling_control('gzip-v1')
 
+    @unittest.skipUnless(os.environ.get('NS_NATIVE_K6_IMAGE_BINARY') and os.environ.get('NS_NATIVE_IMAGE_BUSYBOX')
+                         and os.environ.get('NS_NATIVE_IMAGE_LOADER'), 'selected image binaries required')
+    def test_private_data_reaches_original_k6_and_reducer(self):
+        self.real_scheduling_control('fixture-data-v1')
+
     def real_scheduling_control(self, input_codec):
         class Handler(BaseHTTPRequestHandler):
             def log_message(self, *_): pass
@@ -171,8 +176,9 @@ class NativeFiles(unittest.TestCase):
                             main = value['spec']['template']['spec']['containers'][0]
                             selected = {row['name']:row['value'] for row in main['env']}
                             selected.update(BASE_URL='http://127.0.0.1:'+str(server.server_port),
-                                            TENANTS_FILE=str((roster if input_codec == 'gzip-v1' else inputs)/'tenants.json'))
+                                            TENANTS_FILE=str((roster if input_codec != 'raw-v1' else inputs)/'tenants.json'))
                             command = main['command'][2].replace('/usr/bin/k6', os.environ['NS_NATIVE_K6_IMAGE_BINARY'])
+                            command = command.replace('/roster/', str(roster)+'/')
                             command = command.replace('/out/', str(output)+'/').replace('/inputs/', str(inputs)+'/')
                             # Disable the local REST listener; the fixture only needs its loopback HTTP server.
                             command = command.replace('--address=127.0.0.1:0', '--address=')
@@ -183,6 +189,21 @@ class NativeFiles(unittest.TestCase):
                         value = copy.deepcopy(value); value['metadata']['uid'] = 'owned-job'
                         return json.dumps(value)
                     if args[0] == 'exec':
+                        if args[1] == '-i':
+                            if args != ['exec', '-i', 'k6-owned', '-c', 'artifact-exporter', '--', 'node',
+                                        '/inputs/native-fixture-data.cjs', 'owned-pod']:
+                                raise AssertionError('unexpected private input destination')
+                            if 'tenants.json' in self.created[0]['stringData'] or 'data' in self.created[0]:
+                                raise AssertionError('roster in Secret')
+                            # Stand-in for the image fixture seed. Use the actual receiver.
+                            code = """const fs=require('fs'),rows=JSON.parse(process.argv[1]);
+                            const demo={tenantIds:()=>rows.map(r=>r.id),tenantAlias:i=>rows[i].host};
+                            console.log(require(process.argv[2]).install(demo,require(process.argv[3]),
+                              JSON.parse(fs.readFileSync(0)),process.argv[4]));"""
+                            public = [{key: row[key] for key in ('id','host')} for row in TENANTS]
+                            return subprocess.run([node, '-e', code, json.dumps(public), inputs/'native-fixture-data.cjs',
+                                inputs/'fixture-data.json', roster], input=kw['data'], check=True,
+                                capture_output=True).stdout
                         mode = args[args.index('--')+3:]
                         result = subprocess.run([node, exporter_script, *mode], env=env,
                                                 capture_output=True, timeout=kw.get('timeout', 10))

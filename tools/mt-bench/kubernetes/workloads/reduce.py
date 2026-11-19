@@ -68,9 +68,11 @@ def witness_coverage(probe, ledger):
     verdict = 'PASS' if ready == expected and expected else 'FAIL' if expected else 'UNMEASURED'
     if c.get('verdict') == 'FAIL':
         verdict = 'FAIL'
+    elif c.get('clinicalTiming', {}).get('contract') == 'clinical-deadline-from-warm-v1' and c.get('verdict') == 'UNMEASURED':
+        verdict = 'UNMEASURED'
     elif unavailable and c.get('verdict') == 'UNMEASURED' and not detail['notReadyCodes'].get('M7_COMPLETION_DEADLINE'):
         verdict = 'UNMEASURED'
-    return {**detail, 'verdict': verdict,
+    return {**detail, **({'clinicalTiming':c['clinicalTiming']} if 'clinicalTiming' in c else {}), 'verdict': verdict,
             'code': 'K8S_LOAD_WITNESS_COVERAGE_COMPLETE' if ready == expected and expected else 'K8S_LOAD_WITNESS_NOT_COMPLETE',
             'acceptedProbeWrites': expected, 'recordedReady': ready,
             'witnessTenants': len(set(t for t, _ in actual)),
@@ -310,6 +312,8 @@ def reduce_stage(stage, output, fixture=None):
             result['selectedClinicalCoverage'] = witness_coverage(probe, ledger)
         except (RuntimeError, TypeError, KeyError, ValueError):
             result['selectedClinicalCoverage'] = {'verdict':'FAIL', 'code':'K8S_LOAD_CLINICAL_INPUT_INVALID'}
+    if probe.get('viewerSetup'):
+        result['viewerSetup'] = probe['viewerSetup']
     clients = (summary or {}).get('cadence', {}).get('logicalPollingClients')
     if clients is None and run_config:
         clients = run_config.get('workload', {}).get('logicalPollingClients')
@@ -393,7 +397,7 @@ def reduce_stage(stage, output, fixture=None):
     probe_failure = observed('probe-exit.json') or probe.get('failure') or probe.get('sqlObserverFailure')
     if isinstance(probe_failure, dict):
         result['probeFailure'] = {key: probe_failure[key] for key in ('verdict','code','returncode') if key in probe_failure}
-    sampled = outcome_gate.sampled_oracle(probe.get('completedOutput'))
+    sampled = outcome_gate.sampled_oracle(probe.get('completedOutput') or capture(stage/'clinical-witnesses-partial.json', {}))
     result['clinical'] = assessment.get('clinical') or {
         'verdict': 'FAIL' if sampled['verdict'] == 'FAIL' else 'UNMEASURED',
         'recordedSampledOracle': sampled, 'semanticAssessment': 'UNMEASURED'}

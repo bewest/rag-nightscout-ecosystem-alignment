@@ -107,6 +107,54 @@ class PlatformStartupSelection(unittest.TestCase):
         self.assertLess(names.index('apis'),names.index('prime'))
         self.assertLess(names.index('prime'),names.index('remaining-roles'))
 
+    def test_verified_serving_starts_all_roles_together_before_tenant_provision(self):
+        services={name:{'command':['node',name]} for name in ('api','realtime','evaluator','tenant-admin')}
+        services.update(pgstream={'command':adapter.stream_topology.EXTERNAL_COMMAND},
+                        bootstrap={'environment':{}}, primer={'environment':{'NS_DEMO_TENANTS':'8'}})
+        stages=adapter.deployment_plan({'services':services},pgstream=True,platform_verification=True)
+        argv={name:args for name,_,args in stages}
+        self.assertNotIn('remaining-roles', argv)
+        self.assertNotIn('--wait', argv['vault-start'])
+        self.assertNotIn('vault', argv['infrastructure'])
+        self.assertEqual(list(argv), ['vault-start','infrastructure','bootstrap','admin-feed','platform-verify',
+                                     'serving','provision','commission','prime','publish-primer'])
+        self.assertEqual(set(argv['serving'][argv['serving'].index('--wait-timeout')+2:]),
+                         {'api','realtime','evaluator','tenant-admin','pgstream','ui','nginx'})
+
+    def test_runner_invokes_serving_before_durable_provision_with_inactivity_waits(self):
+        services={name:{'command':['node',name]} for name in ('api','realtime','evaluator','tenant-admin')}
+        services.update(pgstream={'command':adapter.stream_topology.EXTERNAL_COMMAND},
+                        bootstrap={'environment':{}},primer={'environment':{'NS_DEMO_TENANTS':'8'}})
+        calls=[]
+        with tempfile.TemporaryDirectory() as tmp, contextlib.ExitStack() as stack:
+            root=Path(tmp)
+            adapter.write(root/'frozen.compose.json',{'services':services})
+            adapter.write(root/'state/bootstrap/layout.json',{'namespaces':{
+                kind:'nsdemo_'+kind for kind in ('entries','devicestatus','treatments','clock','eval_checkpoint')}})
+            m={'generator':{'servingImageId':'synthetic'},'profile':'pgstream-sample','tenants':8,
+               'platformStartup':{'readiness':'serve'},'diagnostics':{}}
+            for name in ('frozen','experiment_host','verify','verify_generator','psql'):
+                stack.enter_context(patch.object(adapter,name))
+            stack.enter_context(patch.object(adapter,'image',return_value='synthetic'))
+            stack.enter_context(patch.object(adapter.profile_provenance,'identity',return_value={}))
+            stack.enter_context(patch.object(adapter.profile_provenance,'state_environment'))
+            stack.enter_context(patch.object(adapter.stream_topology,'install_ack_budget',return_value=None))
+            def invoke(_, *args, **kwargs):
+                stage=adapter.document(root/'deployment-stages.json')[-1]['name']
+                calls.append(stage)
+                if stage=='provision':
+                    self.assertIsInstance(kwargs['wait_for_primer'],adapter.ComposePrimerWait)
+                    raise RuntimeError('M7_CONTROL_PROVISION_SELECTED')
+                if stage=='serving':
+                    self.assertIsInstance(kwargs['wait_for_primer'],adapter.ComposeProgressWait)
+                    self.assertNotIn('--wait-timeout',args)
+                    self.assertTrue({'api','realtime','evaluator','pgstream'} <= set(args))
+            stack.enter_context(patch.object(adapter,'compose',side_effect=invoke))
+            with self.assertRaisesRegex(RuntimeError,'M7_CONTROL_PROVISION_SELECTED'):
+                adapter.deploy(root,m)
+            self.assertEqual(calls,['vault-start','infrastructure','bootstrap','admin-feed',
+                                    'platform-verify','serving','provision'])
+
     def test_selection_requires_new_source_and_explicit_hashed_readiness(self):
         from copy import deepcopy
         with tempfile.TemporaryDirectory() as tmp:
