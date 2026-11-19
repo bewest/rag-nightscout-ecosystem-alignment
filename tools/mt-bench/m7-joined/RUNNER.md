@@ -1133,6 +1133,14 @@ factor-one sensor cadence separately from a uniform rate bracket. This selector
 authorizes no run, expense or capacity. Select a justified bracket in a fresh
 configuration/receipt; never change an entered run.
 
+To vary ordinary writes independently, set `writeRateScale` in the configured
+`driverPlan` for `realistic-v1`. Its positive finite multiplier applies to SGV,
+device-status and treatment writes on top of the selected `workloadScale`.
+The default is one. A plan with `workloadScale` one and `writeRateScale` two
+doubles the three write rates with the four read intervals held at baseline.
+Viewer count and the probe-write interval remain separate workload inputs.
+Compose and Kubernetes report the rounded rates per shape.
+
 ### Startup selection in a reused session
 
 A session attachment inherits the original `commissioningSlotWalMiB`,

@@ -14,6 +14,7 @@ import workload_inputs
 from http_accounting import assess as http_assess
 from node_observation import log_events
 from statement_units import SHAPES
+from workload import MAX_TIME_UNIT_MS, REALISTIC_MIX, realistic_cycle_ms
 
 MODES = ('trace-v1', 'preallocated-v1', 'configured-v1')
 SCRIPT = 'k6-vu-driver.js'
@@ -190,7 +191,7 @@ def integer(value, low, high):
 
 def configuration(value, cadence):
     require(isinstance(value, dict) and set(value) <= {
-        'version', 'observer', 'scenarios', 'maxAggregateVUs', 'maxTraceBytes', 'maxTraceRows'}
+        'version', 'observer', 'scenarios', 'maxAggregateVUs', 'maxTraceBytes', 'maxTraceRows', 'writeRateScale'}
         and value.get('version') == 1 and type(value['version']) is int
         and value.get('observer') in ('summary-v1', 'scheduling-v1'), 'M7_DRIVER_CONFIGURATION')
     require(workload_inputs.seconds(cadence.get('loadSeconds')), 'M7_DRIVER_CONFIGURATION_WINDOW')
@@ -198,6 +199,9 @@ def configuration(value, cadence):
     rows = value.get('scenarios')
     require(isinstance(rows, dict) and 1 <= len(rows) <= len(SHAPES) and set(rows) <= set(SHAPES),
             'M7_DRIVER_SCENARIOS')
+    if 'writeRateScale' in value:
+        require(cadence.get('workloadMix') == REALISTIC_MIX, 'M7_WORKLOAD_SCALE_CONFIGURATION')
+        realistic_cycle_ms(cadence.get('workloadScale', 1), value['writeRateScale'])
     if cadence.get('workloadMix'):
         require(set(rows) == set(SHAPES), 'M7_DRIVER_REALISTIC_SHAPES')
     result = dict(value, maxTraceBytes=value.get('maxTraceBytes', MAX_TRACE_BYTES),
@@ -230,9 +234,9 @@ def configuration(value, cadence):
 
 def expected_plans(m):
     """Independent projection of existing workload math and configured overrides."""
-    from workload import REALISTIC_CADENCE_MS, MAX_TIME_UNIT_MS
     import driver_shards
     c = m['cadence']; cfg = configuration(c['driverPlan'], c)
+    realistic = realistic_cycle_ms(c.get('workloadScale', 1), cfg.get('writeRateScale', 1)) if c.get('workloadMix') else None
     count = m['tenants']; hot = c.get('hotFactor', 10); n = c.get('driverShards', 1)
     require(workload_inputs.population_fits(count, hot)
             and workload_inputs.shard_count(n, count), 'M7_DRIVER_CONFIGURATION_POPULATION')
@@ -250,8 +254,8 @@ def expected_plans(m):
         weight = shard['weight']
         for name, r in cfg['scenarios'].items():
             rate = WEIGHTS[name] * weight
-            if c.get('workloadMix'):
-                unit = math.floor(REALISTIC_CADENCE_MS[name] * WEIGHTS[name] / c.get('workloadScale', 1) + .5)
+            if realistic is not None:
+                unit = realistic[name]
             elif shard['offeredRps'] is not None:
                 unit = math.floor(sum(WEIGHTS[k] for k in cfg['scenarios']) * weight * 1000 / shard['offeredRps'] + .5)
             else:

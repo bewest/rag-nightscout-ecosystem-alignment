@@ -100,7 +100,7 @@ def environment(w, inherited, need):
 
 def rates(w, n):
     if 'workloadMix' in w:
-        cycles = realistic_cycle_ms(w.get('workloadScale',1))
+        cycles = realistic_cycle_ms(w.get('workloadScale', 1), w.get('driverPlan', {}).get('writeRateScale', 1))
     else:
         cycle = workload_inputs.aggregate_cycle_ms(n, w.get('hotFactor', 1), w['offeredRps'])
         cycles = dict.fromkeys(SHAPES, cycle)
