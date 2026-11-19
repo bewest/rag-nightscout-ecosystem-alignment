@@ -9,9 +9,11 @@ import json
 import math
 from pathlib import Path
 import re
+import subprocess
 import time
 
 import kube_adapter as k
+import scheduling
 import workload_runtime
 
 FILES = {'k6.log': 8 * 1024**2, 'k6-native.log': 8 * 1024**2,
@@ -129,11 +131,18 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
     k.need(out.name == 'load', 'NATIVE_LOAD_CONFIGURED_OUTPUT_DIRECTORY')
     ns, uid = c['namespace'], receipt['namespaceUid']
     until = clock.monotonic() + min(receipt['activeDeadlineSeconds'], k.deadline(c))
+    last_placement = None
+    next_event_read = 0
     def remaining():
         if failures:
             raise failures[0]
-        seconds = min(until - clock.monotonic(), k.deadline(c))
-        k.need(seconds > 0, 'NATIVE_LOAD_EXPORT_DEADLINE', 'UNMEASURED')
+        try:
+            seconds = min(until - clock.monotonic(), k.deadline(c))
+            k.need(seconds > 0, 'NATIVE_LOAD_EXPORT_DEADLINE', 'UNMEASURED')
+        except k.Refused:
+            if last_placement == 'Unschedulable':
+                raise k.Refused('K8S_POD_UNSCHEDULABLE', 'UNMEASURED') from None
+            raise
         return seconds
     def check_namespace():
         n._identity(c, kube.json(['get', 'namespace', ns], timeout=min(20, remaining())), uid)
@@ -161,6 +170,21 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
             if pod is not None:
                 k.need(row['metadata']['uid'] == pod['metadata']['uid'], 'NATIVE_LOAD_POD_REPLACED')
             pod = row
+            placement = scheduling.outcome(row)
+            retry_event = placement['placement'] == 'Unschedulable' and clock.monotonic() >= next_event_read
+            if placement['placement'] != last_placement or retry_event:
+                last_placement = placement['placement']
+                if last_placement == 'Unschedulable':
+                    try:
+                        events = kube.json(['get','events','--field-selector','involvedObject.uid='+placement['uid']+',reason=FailedScheduling'],
+                                           namespace=ns, timeout=min(5,remaining()))
+                        placement['events'] = scheduling.failed_events(row, events)
+                    except (RuntimeError, ValueError, OSError, subprocess.SubprocessError):
+                        placement['events'] = None
+                    next_event_read = math.inf if placement['events'] else clock.monotonic()+5
+                else:
+                    next_event_read = 0
+                k.write(out/'k6-scheduling.json', placement)
             states = {s['name']: s for s in row.get('status', {}).get('containerStatuses', [])}
             k.need(all(s.get('restartCount', 0) == 0 for s in states.values()), 'NATIVE_LOAD_ACTOR_RESTARTED')
             known=receipt.setdefault('actorContainers',{})

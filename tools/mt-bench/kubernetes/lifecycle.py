@@ -13,6 +13,7 @@ import producer_startup
 import application_topology
 import candidate
 import run_cleanup
+import scheduling
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
 from auto_catalog import auto_catalog
 from primer_progress import ProgressWindow
@@ -171,12 +172,16 @@ def ready(label,typ,timeout,convergence=None,primer_job=None):
         unavailable=False
     stable=producer_startup.StableReady(convergence['stableReadySeconds'] if convergence else 0)
     failures={}
+    placements = {}
     try:
         with progress.bound_reads():
             while time.time()<until and progress.remaining()>0:
                 owned()
                 found=pods(label)
                 if any(x['metadata']['labels'].get('nightscout.org/run-id')!=rid for x in found):raise RuntimeError('FOREIGN_POD')
+                placements = {p['metadata']['uid']: scheduling.outcome(p) for p in found}
+                if found:
+                    put('placement-'+typ+'.json', list(placements.values()))
                 ready_pod=None
                 identity=None
                 for pod in found:
@@ -244,6 +249,8 @@ def ready(label,typ,timeout,convergence=None,primer_job=None):
             raise
         if primer_job is not None:
             unavailable=True
+    if any(p['placement'] == 'Unschedulable' for p in placements.values()):
+        raise RuntimeError('K8S_POD_UNSCHEDULABLE')
     if primer_job is not None and time.time()<outer:
         raise RuntimeError('PRIMER_PROVISION_PROGRESS_UNMEASURED' if unavailable else 'PRIMER_PROVISION_STALLED')
     if application_topology.readiness_signal(intent,typ,frozen.require) and time.time()<work:
@@ -360,16 +367,8 @@ def execpod(pod,container,args,seconds=None):
                    timeout=waits['execSeconds'] if seconds is None else seconds,private=True)
     assert get('pod',nm)['metadata']['uid']==uid
     return result
-raw=Path(cfg['snapshotDirectory']);src=read(raw/'capture.json')
-assert dt.datetime.now(dt.timezone.utc).timestamp()-dt.datetime.fromisoformat(src['capturedAt']).timestamp()<300,'REFRESH_BEFORE_ENTRY'
 pre=read(d/'preflight.json');assert pre['commissioning']=='PREFLIGHT_ONLY'
 scheduler = cfg.get('schedulerPlacement', False)
-if not scheduler:
-    selected=pre['trialEnvelope']['placementEnvelopes']
-    if len(selected)>1:assert all(v['trialFits'] for v in pre['workers'])
-    else:
-        ordered=[n['metadata']['name'] for n in read(raw/'nodes.json')['items']]
-        assert pre['workers'][ordered.index(e['targetNode'])]['trialFits']
 assert pre['experiment']['renderSha256']==hashlib.sha256((d/'render.json').read_bytes()).hexdigest()
 assert get('namespace',ns,False) is None
 trust=objects('cluster-trust')[0]; tn=trust['metadata']['name']
@@ -512,6 +511,19 @@ finally:
     cleaning=True
     rpc=[tool/'kubectl','--context',ctx,'--request-timeout=170s']  # `delete --wait` holds one request
     cleanup_errors=[]
+    try:
+        if nsuid and current != 'create-namespace':
+            owned()
+            remaining_pods = pods('nightscout.org/run-id='+rid)
+            rows = [scheduling.outcome(pod) for pod in remaining_pods]
+            for pod, row in zip(remaining_pods, rows):
+                if row['placement'] == 'Unschedulable':
+                    events = json.loads(k(['get','events','-n',ns,'--field-selector',
+                                           'involvedObject.uid='+row['uid']+',reason=FailedScheduling','-o','json']))
+                    row['events'] = scheduling.failed_events(pod, events)
+            put('scheduling.json', rows)
+    except (OSError, RuntimeError, ValueError, AssertionError, subprocess.SubprocessError) as error:
+        put('scheduling-unavailable.json', {'status':'UNMEASURED','reason':type(error).__name__})
     if nsuid or trustuid:
         try:
             result=run_cleanup.cleanup(lambda argv:command(rpc+argv,timeout=min(150,max(1,cleanup-time.time()-2))).decode(),ns,rid)

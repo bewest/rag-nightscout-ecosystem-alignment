@@ -77,7 +77,7 @@ def helper_directory(config):
 def fixture_config(path, capture=False):
     c=read(path)
     need(c.get('version')==1 and set(c)<=FIELDS, 'CONFIGURATION')
-    for key in ('caseDirectory','instrumentDirectory','bindingDirectory','toolsDirectory','snapshotDirectory','coreRepository'):
+    for key in ('caseDirectory','instrumentDirectory','bindingDirectory','toolsDirectory','coreRepository'):
         need(Path(c[key]).is_absolute() and Path(c[key]).is_dir(), 'DIRECTORY')
     for key in ('k6','readonlyGuard','observerScript'):
         need(Path(c[key]).is_absolute() and Path(c[key]).is_file(), 'TOOL')
@@ -187,8 +187,6 @@ def fixture_config(path, capture=False):
     files += [Path(c[key]) for key in ('k6','readonlyGuard','observerScript')]
     files += [Path(c['toolsDirectory'])/'kubectl']
     files += [Path(__file__).with_name(n) for n in ('lifecycle_config.py','lifecycle.py','attach.py')]
-    if scheduler:
-        files.append(Path(__file__).with_name('scheduler_placement.py'))
     if capture:
         from experiment import workload
         workload(m)

@@ -503,7 +503,16 @@ def main():
             command.add_argument('--await-primer', action='store_true', help='bind DATA credentials after verified in-Pod priming')
         if name == 'run':
             command.add_argument('--matrix', type=Path)
+    standard = commands.add_parser('standard', help='Prepare a fresh scheduler-placed discovery case offline')
+    for field in ('template_case','package','profile','output'):
+        standard.add_argument(field, type=Path)
+    standard.add_argument('--binding', type=Path, help='Captured deploy binding (defaults to PACKAGE/binding)')
+    standard.add_argument('--core', type=Path, help='Frozen core checkout (defaults to the template checkout)')
+    standard.add_argument('--reserved-worker-taint', metavar='KEY=VALUE', help='Tolerate the reserved worker for this run')
     a = parser.parse_args()
+    if a.action == 'standard':
+        import standard_case
+        return standard_case.prepare(a.template_case,a.package,a.profile,a.output,a.binding,a.core,a.reserved_worker_taint)
     if a.action == 'launch':
         return launch(a.config, a.prepare_only)
     if a.action == 'binding':

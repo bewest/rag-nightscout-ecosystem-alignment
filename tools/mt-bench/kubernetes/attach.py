@@ -97,19 +97,9 @@ try:
     assert actor==cfg['observer']['hostId']
     mode=cfg.get('resourceAccounting','limits-v1')
     assert mode in ('limits-v1','requests-v1') and pre['trialEnvelope'].get('resourceAccounting','limits-v1')==mode,'RESOURCE_ACCOUNTING_MISMATCH'
-    group='requests' if mode=='requests-v1' else 'limits'
-    if control.get('schedulerPlacement'):
-        from scheduler_placement import confirm
-        placement = confirm(packet, control['bindingDirectory'])
-        write(live/'scheduler-placement.json', placement)
-        if not placement['fits']:
-            raise RuntimeError('K8S_SCHEDULER_FIT_REFUSED')
-        nodes = placement['nodeCeilings']
-    else:
-        nodes={node:{'millicpus':round(total[group]['cpu']*1000),'memoryBytes':int(total[group]['memory']),'ephemeralBytes':int(total[group]['ephemeral-storage'])} for node,total in pre['trialEnvelope']['placementEnvelopes'].items()}
     grant={'version':1,'status':'RELEASED','existingCapacityOnly':True,'context':cfg['context'],**cfg['deadlines'],
            'resourceAccounting':mode,
-           'preflight':ref(d/'preflight.json'),'experimentSha256':sha(d/'intent.json'),'nodeCeilings':nodes,
+           'preflight':ref(d/'preflight.json'),'experimentSha256':sha(d/'intent.json'),'placementMode':'scheduler',
            'actorCeilings':{actor:profile['proposedEnvelope']['nativeLimits']},
            'fixtures':[{'runId':e['runId'],'namespace':ns,'namespaceUid':uid,'runSha256':sha(packet/'run.json')}]}
     write(live/'grant.json',grant)

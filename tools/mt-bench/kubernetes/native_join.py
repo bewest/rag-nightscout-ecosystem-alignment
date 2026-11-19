@@ -91,16 +91,23 @@ def selected(c):
     if value is None:
         return None
     k.need(c.get('tier','discovery') == 'discovery' and isinstance(value,dict)
-           and set(value) - {'inputCodec'} == {'version','mode','image','shellContract','resources','exporterResources',
-                             'nodeName','deadlineSeconds','imagePullSecrets'}
+           and set(value) - {'inputCodec','nodeName','tolerations','waiterResources'} == {'version','mode','image','shellContract','resources','exporterResources',
+                             'deadlineSeconds','imagePullSecrets'}
            and value.get('version') == 1 and value.get('mode') == 'job-v1', 'NATIVE_LOAD_SELECTION')
     import native_input
     k.need(value.get('inputCodec', 'raw-v1') in native_input.CODECS, 'NATIVE_LOAD_INPUT_CODEC')
-    k.need(isinstance(value['nodeName'],str) and k.NAME.fullmatch(value['nodeName'])
+    k.need(('nodeName' not in value or isinstance(value['nodeName'],str) and k.NAME.fullmatch(value['nodeName']))
            and type(value['deadlineSeconds']) is int and value['deadlineSeconds'] > 1
            and isinstance(value['imagePullSecrets'],list)
            and all(isinstance(row,dict) and set(row)=={'name'} and k.NAME.fullmatch(row['name'])
                    for row in value['imagePullSecrets']), 'NATIVE_LOAD_PLACEMENT')
+    if 'tolerations' in value:
+        tolerations = value['tolerations']
+        k.need(isinstance(tolerations,list) and len(tolerations) == 1
+               and isinstance(tolerations[0],dict) and set(tolerations[0]) == {'key','value','effect','operator'}
+               and tolerations[0]['effect'] == 'NoSchedule' and tolerations[0]['operator'] == 'Equal'
+               and all(isinstance(tolerations[0][key],str) and tolerations[0][key] for key in ('key','value')),
+               'NATIVE_LOAD_TOLERATION')
     k.need('driverPlan' in c['workload'], 'NATIVE_LOAD_CONFIGURED_DRIVER_REQUIRED')
     native_load.selection(c)
     window=c['workload']
@@ -118,7 +125,7 @@ def base_job(c):
     waiter = {'name':'wait-for-jobs','image':c['pins']['appImage'],'imagePullPolicy':'IfNotPresent',
               'command':['node','-e',(k.HERE/'native-wait-jobs.cjs').read_text(),*waiting_jobs(c)],
               'env':[{'name':'NS_WAIT_DEADLINE_SECONDS','value':str(s['deadlineSeconds'])}],
-              'resources':copy.deepcopy(s['exporterResources']), 'securityContext':hardened,
+              'resources':copy.deepcopy(s.get('waiterResources', s['exporterResources'])), 'securityContext':hardened,
               'volumeMounts':[{'name':'kube-api','mountPath':'/var/run/secrets/kubernetes.io/serviceaccount','readOnly':True}]}
     return {'apiVersion':'batch/v1','kind':'Job','metadata':{'name':'k6','namespace':c['namespace'],'labels':labels},
             'spec':{'backoffLimit':0,'parallelism':1,'completions':1,'podReplacementPolicy':'Failed',
@@ -127,7 +134,8 @@ def base_job(c):
                         'restartPolicy':'Never','automountServiceAccountToken':False,'enableServiceLinks':False,
                         'terminationGracePeriodSeconds':5,
                         'serviceAccountName':ACCOUNT,'imagePullSecrets':copy.deepcopy(s['imagePullSecrets']),
-                        'nodeSelector':{'kubernetes.io/hostname':s['nodeName']},
+                        **({'nodeSelector':{'kubernetes.io/hostname':s['nodeName']}} if 'nodeName' in s else {}),
+                        **({'tolerations':s['tolerations']} if 'tolerations' in s else {}),
                         'securityContext':{'fsGroup':1000,'seccompProfile':{'type':'RuntimeDefault'}},
                         'initContainers':[waiter], 'containers':[{'name':'k6','image':s['image'],
                             'imagePullPolicy':'IfNotPresent','args':['run','/inputs/workload.js'],
@@ -179,13 +187,15 @@ def validate(c, inventory, objects):
         return
     for expected in declarations(c):
         k.need(objects.get(k.key(expected))==expected,'NATIVE_LOAD_DECLARATION_CHANGED:'+k.key(expected))
+    quotas=[obj for obj in objects.values() if obj['kind']=='ResourceQuota']
+    if not quotas:
+        return
     totals={name:0 for name in ('millicpus','memoryBytes','ephemeralBytes')}; count=0
     for obj in objects.values():
         if obj['kind'] in k.WORKLOADS:
             count+=1
             amount=k.resource_budget.pod_budget(k.template(obj)['spec'],'requests-v1',k.need)
             for name in totals:totals[name]+=amount[name]
-    quotas=[obj for obj in objects.values() if obj['kind']=='ResourceQuota']
     k.need(len(quotas)==1,'NATIVE_LOAD_QUOTA_REQUIRED')
     hard=quotas[0]['spec']['hard']
     k.need(k.resource_budget.quantity(hard.get('requests.cpu',0),True,k.need)>=totals['millicpus']
@@ -196,7 +206,7 @@ def validate(c, inventory, objects):
 def reserve(c, objects):
     s=selected(c)
     if s is None:return None
-    return s['nodeName'],k.resource_budget.pod_budget(k.template(objects[JOB])['spec'],k.resource_accounting(c),k.need)
+    return s.get('nodeName'),k.resource_budget.pod_budget(k.template(objects[JOB])['spec'],k.resource_accounting(c),k.need)
 
 
 def test_pod(c, parent, pod, controller_uid=None):
@@ -207,7 +217,7 @@ def test_pod(c, parent, pod, controller_uid=None):
            'NATIVE_LOAD_POD_LABELS_CHANGED')
     wanted=k.template(parent)['spec']; actual,_=k.admission_projection(wanted,pod['spec'])
     k.need(k.subset(wanted,actual),'NATIVE_LOAD_POD_CHANGED')
-    k.need(not pod['spec'].get('nodeName') or pod['spec']['nodeName']==c[FIELD]['nodeName'],
+    k.need(not c[FIELD].get('nodeName') or not pod['spec'].get('nodeName') or pod['spec']['nodeName']==c[FIELD]['nodeName'],
            'NATIVE_LOAD_PLACEMENT_CHANGED')
     states=pod.get('status',{}).get('containerStatuses',[])+pod.get('status',{}).get('initContainerStatuses',[])
     k.need(all(row.get('restartCount',0)==0 for row in states),'NATIVE_LOAD_ACTOR_RESTARTED')
@@ -303,7 +313,7 @@ def prepare_case(case, selection):
 
     Append only the declared test Job/RBAC, adjust its exact quota/envelope,
     and invalidate old preparation status. No cluster/image/source operation.
-    The normal lifecycle capture and fresh scheduler fit remain mandatory.
+    Kubernetes schedules the load Pod after submission.
     """
     import experiment
     import frozen
@@ -342,14 +352,16 @@ def prepare_case(case, selection):
     extra=declarations(c);declared={k.key(obj):obj for obj in extra}
     before=k.manifests(render)
     k.need(not (set(declared)&{k.key(obj) for obj in before}), 'NATIVE_LOAD_RESOURCE_EXISTS')
-    quota,= [obj for obj in before if obj['kind']=='ResourceQuota']
+    quotas = [obj for obj in before if obj['kind']=='ResourceQuota']
+    k.need(len(quotas)<=1, 'NATIVE_LOAD_QUOTA_REQUIRED')
     request=k.resource_budget.pod_budget(k.template(declared[JOB])['spec'],'requests-v1',k.need)
-    hard=quota['spec']['hard']
-    hard['requests.cpu']=str(k.resource_budget.quantity(hard['requests.cpu'],True,k.need)+request['millicpus'])+'m'
-    hard['requests.memory']=str(k.resource_budget.quantity(hard['requests.memory'],False,k.need)+request['memoryBytes'])
-    hard['pods']=str(int(hard['pods'])+1)
-    # Mutate the quota object in the original render; every application workload
-    # stays byte-for-byte unchanged. New resources live only in foundation.
+    # Older cases can explicitly budget the namespace. The standard run has
+    # no namespace quota, so a replacement Pod can also reach the scheduler.
+    if quotas:
+        hard=quotas[0]['spec']['hard']
+        hard['requests.cpu']=str(k.resource_budget.quantity(hard['requests.cpu'],True,k.need)+request['millicpus'])+'m'
+        hard['requests.memory']=str(k.resource_budget.quantity(hard['requests.memory'],False,k.need)+request['memoryBytes'])
+        hard['pods']=str(int(hard['pods'])+1)
     render['nativeLoadResources']=extra
     inventory[FIELD]=copy.deepcopy(selection);manifest[FIELD]=copy.deepcopy(selection);template[FIELD]=copy.deepcopy(selection)
     for name,value in request.items():
@@ -358,8 +370,8 @@ def prepare_case(case, selection):
         manifest['profile']['proposedEnvelope']['clusterLimits'][field]+=value
     foundation=k.document(case/'stages/foundation.json');foundation['items']+=extra
     for obj in foundation['items']:
-        if obj['kind']=='ResourceQuota' and obj['metadata']['name']==quota['metadata']['name']:
-            obj['spec']=copy.deepcopy(quota['spec'])
+        if obj['kind']=='ResourceQuota' and quotas and obj['metadata']['name']==quotas[0]['metadata']['name']:
+            obj['spec']=copy.deepcopy(quotas[0]['spec'])
     objects={k.key(obj):obj for obj in k.manifests(render)}
     validate(c,inventory,objects);application_topology.validate(c,inventory,objects,k.need)
     with tempfile.TemporaryDirectory() as scratch:
@@ -373,12 +385,12 @@ def prepare_case(case, selection):
     k.write(case/'lifecycle-input.json',control)
     pre=k.document(case/'preflight.json')
     pre['experiment'].update(experimentSha256=k.digest(case/'intent.json'),renderSha256=k.digest(case/'render.json'))
-    pre['nativeLoad']={'selection':selection,'requestedInputCodec':requested_codec,'reservedPodRequests':request,'nodeName':selection['nodeName'],
-                       'liveFit':'UNMEASURED_REQUIRED_AT_ENTRY','jobSha256':k.hashed(declared[JOB])}
+    pre['nativeLoad']={'selection':selection,'requestedInputCodec':requested_codec,'reservedPodRequests':request,'nodeName':selection.get('nodeName'),
+                       'liveFit':'AWAITING_SCHEDULER','jobSha256':k.hashed(declared[JOB])}
     k.write(case/'preflight.json',pre)
     result={'configuration':'STRUCTURAL_PASS','nativeLoad':pre['nativeLoad'],'checks':checks,
             'sourceAcceptance':source['sourceAcceptance'],'capacityAcceptance':'NOT_GRANTED',
-            'next':'Fresh lifecycle capture and current scheduler fit; no actor created'}
+            'next':'Lifecycle capture, then submit to the scheduler; no actor created'}
     k.write(case/'pre-entry-prepare.json',result)
     return result
 
