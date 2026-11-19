@@ -599,8 +599,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
         midpoint.join(timeout=min(60, k.deadline(c)))
         if midpoint_failure:
             raise midpoint_failure[0]
-        k.need(not midpoint.is_alive() and ((out / 'progress-midpoint.json').is_file() or
-               (out / 'progress-midpoint-signal.json').is_file()), 'MIDPOINT_UNMEASURED', 'UNMEASURED')
+        # A missing or refused midpoint is retained evidence (progress-midpoint-failure.json), not a stop.
         k.write(out / 'after.json', k.observe(c, objects, client, baseline, measure_actors=load and c.get('nativeLoad') is not None))
         k.write(out / 'window.json', {'startedAt': started, 'endedAt': writers_ended, 'loadStartedAt': load_started,
                                      'loadEndedAt': load_ended, 'loadProcessStartedAt': load_process_started,

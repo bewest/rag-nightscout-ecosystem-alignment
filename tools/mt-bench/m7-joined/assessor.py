@@ -6,8 +6,11 @@ A run fails only on four product properties:
 * clinical       an accepted input's durable clinical output (or a viewer frame
                  carrying it) arrived 120 s or more after acceptance, or the
                  output is missing at end of drain;
-* isolation      a tenant read another tenant's data or an authorization
-                 probe across tenants was allowed;
+* isolation      a tenant read another tenant's data, or an authorization
+                 breach: a request admitted without the permission at
+                 admission time. A request admitted before a concurrent
+                 revocation is not a breach (decision
+                 `credential-rotation-next-request`, Amendment 1);
 * datastore      the datastore was unhealthy (not ready, restarted, or did not
                  answer the end-of-run readback).
 
@@ -28,7 +31,9 @@ collectors alike (`collect` reads a retained load folder of either layout):
                                                                     it absent; atDrain is DURABLE, MISSING or
                                                                     UNKNOWN
   {"event":"frame",    "tenant","viewerTenant","key","acceptedToFrameMs"}  frame a viewer received
-  {"event":"access",   "principal","target","allowed"}             cross-tenant authorization probe
+  {"event":"access",   "principal","target","allowed",
+                       "admittedAtMs"?,"revokedAtMs"?}             authorization probe; the principal holds the
+                                                                    permission for its own tenant until revokedAtMs
   {"event":"datastore","healthy","source"}                          datastore health observation
   {"event":"readback", "what":"storage"|"output","writer"}          the collector read that source for
                                                                     every accepted input of that writer
@@ -62,6 +67,16 @@ def _stats(values):
         return None
     pick = lambda q: values[min(len(values)-1, int(q*len(values)))]
     return {'n': len(values), 'p50': pick(.5), 'p95': pick(.95), 'max': values[-1]}
+
+
+def permitted_at_admission(r):
+    """Authorization is checked once, at admission. Another tenant's data is
+    never permitted; one's own is permitted unless the revocation took effect
+    at or before admission. Without both times the request is not a breach."""
+    if r['principal'] != r['target']:
+        return False
+    admitted, revoked = r.get('admittedAtMs'), r.get('revokedAtMs')
+    return not (_number(admitted) and _number(revoked) and admitted >= revoked)
 
 
 def assess(events, ids=(), *, deadline_ms=DEADLINE_MS, figures=None):
@@ -134,8 +149,8 @@ def assess(events, ids=(), *, deadline_ms=DEADLINE_MS, figures=None):
         if r['viewerTenant'] != r['tenant']:
             breaches['FOREIGN_FRAME'] += 1
     for r in by['access']:
-        if r['principal'] != r['target'] and r['allowed'] is True:
-            breaches['CROSS_TENANT_ACCESS'] += 1
+        if r['allowed'] is True and not permitted_at_admission(r):
+            breaches['CROSS_TENANT_ACCESS' if r['principal'] != r['target'] else 'ADMITTED_AFTER_REVOCATION'] += 1
     if ids:
         foreign = {r['tenant'] for r in by['stored'] if r['tenant'] not in ids}
         if foreign:

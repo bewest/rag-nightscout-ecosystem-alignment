@@ -89,6 +89,14 @@ class Properties(unittest.TestCase):
         denied = base + [{'event': 'access', 'principal': A, 'target': B, 'allowed': False}]
         self.assertEqual(assessor.assess(denied, [A, B])['verdict'], 'PASS')
 
+    def test_authorization_is_judged_at_admission(self):
+        base = run(A) + READ
+        own = {'event': 'access', 'principal': A, 'target': A, 'allowed': True, 'revokedAtMs': 1000}
+        concurrent = base + [{**own, 'admittedAtMs': 999}]
+        self.assertEqual(assessor.assess(concurrent, [A])['components']['isolation']['verdict'], 'PASS')
+        after = base + [{**own, 'admittedAtMs': 1000}]
+        self.assertEqual(assessor.assess(after, [A])['components']['isolation']['codes'], ['ADMITTED_AFTER_REVOCATION'])
+
     def test_unhealthy_datastore_fails(self):
         events = run() + READ + [{'event': 'datastore', 'source': 'synthetic', 'healthy': False}]
         self.assertEqual(assessor.assess(events, [A])['components']['datastore']['verdict'], 'FAIL')
