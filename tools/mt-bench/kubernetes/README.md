@@ -780,3 +780,35 @@ protection blocks an adequately provisioned experiment, bring the maintainer one
 concrete temporary allocation/exclusive-use proposal with its owner, duration,
 disruption, measurement, cleanup and restoration. Ordinary parameter choices
 within existing authority need no new approval. Do not change an entered fixture.
+
+`native_load.py` is a bounded evidence adapter for lane K's existing rendered
+k6 Job and `fanout.Kube` client interface. `package()` keeps the rendered image,
+placement, resources and init ordering, selects `http://edge:<port>`, and supplies
+an immutable synthetic input Secret. `run()` creates each Job/Secret once,
+retains raw stdout before decoding, checks namespace/Job/Pod identity and exit
+custody, and emits the existing `k6.log` and `k6-summary.json` reducer inputs.
+Its appended `handleSummary` exports k6's actual counters/trends in framed
+chunks; it changes no workload function and includes no JWT setup data.
+
+This adapter is an integration component. The existing `execute.py` transport
+selection and its workload census/fit admission are not changed by it. The
+controller, probe, SQL, completed clinical output, frames and native fixed-target
+catch-up collectors still run on the workstation. `assess_join()` verifies the
+capture/run/script bindings and calls the unchanged `execute.assess_stage()`;
+Job completion alone leaves the outcome gate UNMEASURED. The 120-second clinical
+contract and accepted-versus-stored accounting remain required. All-writer
+post-stop WAL/ACK coverage stays UNMEASURED. Owned namespace and cluster-trust
+cleanup remain the operating owner's responsibility; Job TTL is insufficient.
+
+At this boundary, all `driverPlan` selections and multiple shards explicitly
+refuse before a Kubernetes read or actor creation. In particular,
+`driverPlan.observer=scheduling-v1` reports that exact unsupported field: its
+bounded raw scheduling CSV and per-operation percentiles cannot be replaced by
+the summary transport. A native configured-driver join must preserve the
+existing wrapper, environment, raw-file bounds and accounting reducer.
+
+Focused offline controls: `python3 -B -m unittest -v test_native_load` from this
+directory. Set `NS_NATIVE_K6_TEST_BINARY` to an existing pinned local k6 binary
+to execute the real summary/event export control; it opens no network listener.
+These controls qualify the adapter boundary, not Kubernetes/application behavior
+or capacity.
