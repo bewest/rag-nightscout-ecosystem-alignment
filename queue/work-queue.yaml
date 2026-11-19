@@ -25769,7 +25769,7 @@ items:
       - docs/30-design/tenancy/runtime-topology.md
       - docs/30-design/tenancy/deployment-bindings-and-public-names.md
       - reports/tenancy/internal-service-api-2026-11-09/README.md
-      - reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/test-all-and-browser.txt
+      - docs/archive/tenancy/execution-log-2026-11-03-to-2026-11-13.md#dc795bd1-acceptance
     notes: >
       2026-11-10 reconciliation: source implementation exists and is incorporated
       in the joined dc795bd1 candidate; its recorded regression/browser/corpus/OIDC
