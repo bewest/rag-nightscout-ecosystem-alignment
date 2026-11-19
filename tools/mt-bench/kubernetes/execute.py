@@ -522,7 +522,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
     if c.get('nativeLoad') is not None:
         readback['localScope'] = 'workstation controller/probe/observer only; Kubernetes load Pod resources and runtime custody are separate'
         readback['declaredLoadPod'] = {key:c['nativeLoad'][key] for key in
-                                      ('nodeName','image','resources','exporterResources')}
+                                      ('nodeName','image','resources','exporterResources') if key in c['nativeLoad']}
     out.mkdir(mode=0o700)
     k.write(out / 'before.json', before)
     k.write(out / 'driver.json', readback)

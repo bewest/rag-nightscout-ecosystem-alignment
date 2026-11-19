@@ -598,20 +598,38 @@ the existing `cohortReadySeconds` serving window; an elapsed readiness window
 inside the work deadline produces a role-specific UNMEASURED signal. Clinical
 completion, authority and isolation gates retain their existing requirements.
 
-For a scheduler-placed fixture, set `schedulerPlacement` in the lifecycle
-configuration and record `placementMode` as `scheduler` in the bound preflight
-envelope. Use the binding's `placement` and `placementByWorkload` inputs for
-native affinity, spread preferences and any existing-worker restrictions.
-The four serving roles can use preferred anti-affinity on their existing
-component and run labels. Their private Services stay stable across workers.
-Use digest-pinned images with the fixture's private pull credential.
+### Standard discovery runs
 
-The lifecycle records the scheduler's Pod conditions. Before ordinary traffic,
-the attachment retains the actual Pod UIDs and assigned nodes in
-`scheduler-placement.json`. The deploy fit check uses current node usage
-and a complete Pod request census. Bound fixture Pods already count toward
-that census. The finite grant follows the observed placement and the normal
-roster checks reject changes before traffic.
+Select a completed discovery case as the read-only template for tools, credentials
+and deployment topology. Supply the frozen package (source/build/delivery
+receipts), its captured deploy binding, a workload profile and a fresh case
+directory. Each point uses the same entrypoint and the same deploy request
+defaults, including the k6 Job. The directory basename identifies the run.
+
+```bash
+python3 -B "$K/experiment.py" standard "$TEMPLATE_CASE" "$PACKAGE" "$PROFILE" "$CASE" --binding "$BINDING"
+python3 -B "$K/experiment.py" describe "$CASE/intent.json"
+python3 -B "$K/experiment.py" launch "$CASE/lifecycle-bound.json"
+```
+
+The first command prepares and checks the run offline. An error leaves its
+partial output and reason in a sibling `*.failed-*/prepare-error.json`. The
+same case name can then be retried. The binding defaults to `$PACKAGE/binding`.
+Use `--core` to select the checkout for a new frozen core revision. The runtime
+creates unpinned Pods. Add `--reserved-worker-taint KEY=VALUE` to the first
+command to allow the existing reserved worker to participate. Kubernetes assigns
+the nodes and the runner records Pod UID, assigned node, Pending conditions and
+observed FailedScheduling events. `K8S_POD_UNSCHEDULABLE` reports the observed
+placement refusal when the readiness window expires.
+
+Change `population.provisionedTenants` and `population.ordinaryRosterTenants`
+in the profile to vary population. For realistic-v1, keeping `workloadScale`
+constant keeps per-tenant cadence constant. To compare populations at the same
+aggregate rate, multiply `workload.workloadScale` by the ratio of the old to
+new ordinary roster size, and hold `workload.logicalPollingClients` fixed. To step
+the rate at fixed population, change that scale, or use
+`workload.driverPlan.writeRateScale` for writes alone. The describe command
+prints the seven offered rates for the selected point.
 
 Current P platform receipts select `platformVerification: "startup-v2"` in both
 the source contract and candidate inventory. Their role rows contain exactly
@@ -634,12 +652,12 @@ commissioner or binding control does not qualify a runtime configuration.
 
 ### Placement and fit
 
-Runs rely on Kubernetes for placement and fit: authored requests, the namespace
-ResourceQuota and LimitRange, and the scheduler. The per-run owned-worker,
+Kubernetes places standard runs using each Pod’s declared requests. A standard
+case creates no namespace ResourceQuota or LimitRange. The per-run owned-worker,
 provision/serving phase-fit, node-memory and private provision-source proofs were
 removed on 2026-11-18 under decision
 [k8s-platform-proofs-to-deploy](../../../docs/30-design/tenancy/multitenancy-decisions.md#k8s-platform-proofs-to-deploy);
-the one fit check and image publication belong to nightscout-deploy. Reserving a
+the standalone fit report and image publication belong to nightscout-deploy. Reserving a
 worker follows [reserved-k8s-worker](../../../docs/30-design/tenancy/multitenancy-decisions.md#reserved-k8s-worker).
 `commissioning-accounting.patch` still carries an opt-in `resourcePhasePlan` hunk
 for the operator's commissioner; do not select it, because its `phase_fit` module
@@ -818,8 +836,7 @@ another source or changes PENDING to PASS.
 Launch a freshly commissioned case with its lifecycle input. The input names
 the selected alignment checkout in `instrumentDirectory`, the current
 `caseDirectory` (intent, environment, inventory, render, preflight and stages),
-and the operator's binding, run template, snapshot, tools, delivery and finite
-allocation. All paths come from these inputs. Set `instrumentDirectory` once.
+and the operator's binding, run template, tools, delivery and controller allocation. All paths come from these inputs. Set `instrumentDirectory` once.
 Capture records the runtime digest. An explicit `instrumentSha256` pins a
 particular runtime. Test source edits leave that digest stable.
 
@@ -831,8 +848,7 @@ For offline preparation, add `--prepare-only`. This writes
 `$CASE/lifecycle-bound.json` with exclusive creation. Pass the bound file to
 the same command to enter it, or add `--prepare-only` again to check it. The
 selected checkout performs capture, lifecycle, native-scope attach, packet
-preparation and scheduler readback. The operating owner supplies current fit
-and custody at entry. The controller keeps the existing UID-conditioned
+preparation and scheduler readback. The operating owner supplies custody at entry. The controller keeps the existing UID-conditioned
 cleanup on failure.
 
 When the stock probe's SQL transport fails, `sql-observation-failure.json`
@@ -926,8 +942,8 @@ For a **fresh, uncaptured prepared case**, run `python3 -B native_join.py
 /absolute/case /absolute/selection.json`, then the normal lifecycle capture and
 fresh entry checks. Selection requires `version: 1`, `mode: "job-v1"`, immutable
 k6 `image`, measured `shellContract`, explicit `resources` and
-`exporterResources`, existing `nodeName`, `deadlineSeconds`, and
-`imagePullSecrets`. No resource default is chosen. The Job deadline must cover
+`exporterResources`, `deadlineSeconds`, and `imagePullSecrets`. An authored `nodeName` is optional
+for legacy pinned cases. The standard command selects deploy defaults. The Job deadline must cover
 the authored setup, load, graceful stop and export margin, and still fit the
 remaining work budget at launch.
 
@@ -952,8 +968,7 @@ The offline preparer appends only a suspended test Job and namespace-local
 waiter RBAC. It keeps every application workload unchanged, adjusts the exact
 Pod request/quota/envelope, and runs the original application binding checks
 beside the test Job's own exact declaration checks. Do not install the lane K
-serving stack or change the application tuple. The complete test Pod is added
-prospectively to the existing node fit check before its creation is enabled.
+serving stack or change the application tuple. Kubernetes places the complete test Pod when the Job is released.
 
 `execute.execute()` retains the concurrent stock probe and midpoint observer.
 Only the opted-in configured-load call goes to the native Job; its original

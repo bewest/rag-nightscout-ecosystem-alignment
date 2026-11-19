@@ -35,7 +35,8 @@ def node_requests(objects, baseline, accounting, config=None):
     if config is not None and config.get('nativeLoad') is not None:
         import native_join
         node, request = native_join.reserve(config, objects)
-        add(nodes.setdefault(node,dict.fromkeys(DIMS,0)),request)
+        if node is not None:
+            add(nodes.setdefault(node,dict.fromkeys(DIMS,0)),request)
         accounted.add(native_join.JOB)
     pods = list(baseline['pods'].values())
     finished = baseline.get('completedPrimer')
@@ -123,8 +124,9 @@ def allocation(value, entries):
             add(total, actor['resources'])
     k.need(sorted(rows, key=lambda r: r.get('runId', '')) == sorted(expected, key=lambda r: r['runId']),
            'MATRIX_ALLOCATION_IDENTITY_CHANGED')
-    for name, usage in nodes.items():
-        ceiling(usage, a.get('nodeCeilings', {}).get(name), 'MATRIX_NODE_HEADROOM_EXCEEDED')
+    if a.get('placementMode') != 'scheduler':  # Historical explicit per-node allocations
+        for name, usage in nodes.items():
+            ceiling(usage, a.get('nodeCeilings', {}).get(name), 'MATRIX_NODE_HEADROOM_EXCEEDED')
     for name, usage in actors.items():
         ceiling(usage, a.get('actorCeilings', {}).get(name), 'MATRIX_ACTOR_HEADROOM_EXCEEDED')
     return a, {'nodes': nodes, 'nativeActors': actors, 'resourceAccounting':accounting,

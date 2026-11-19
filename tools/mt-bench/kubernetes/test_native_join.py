@@ -419,33 +419,17 @@ class NativeJoin(unittest.TestCase):
                       failures=failures,**options)
             self.assertFalse(never_started.patches)
 
-    def test_scheduler_fit_adds_suspended_test_pod_before_any_actor_starts(self):
-        import scheduler_placement as placement
-        from types import SimpleNamespace
-        c,inventory,render,client=fixture();objects=k.validate(c,inventory,render)
-        c['driver']['node']='/synthetic/node'
-        before=k.observe(c,objects,client)
-        node,need=j.reserve(c,objects)
-        responses=iter([b'{"items":[]}',json.dumps({'items':[{'metadata':{'name':node,
-                          'labels':{'kubernetes.io/hostname':node}}}]}).encode(),
-                        (node+' 10m 1% 50Mi 1%\n').encode()])
-        native=SimpleNamespace(call=lambda _:next(responses))
-        with patch.object(placement.k,'load',return_value=('packet',c,objects)), \
-             patch.object(placement.k,'active_baseline',return_value=before), \
-             patch.object(placement.k,'observe',return_value=before), \
-             patch.object(placement.matrix,'identity'), \
-             patch.object(placement.matrix,'node_requests',return_value={node:need}), \
-             patch.object(placement.subprocess,'run') as run:
-            # Remove bound application Pods only from this mocked fit snapshot;
-            # the actual census test above independently preserves them.
-            run.return_value.stdout='[{"fits":false}]'
-            current=dict(before,pods={})
-            placement.k.observe.return_value=current
-            result=placement.confirm('packet','/binding',native)
-        value=json.loads(run.call_args.kwargs['input'])
-        self.assertEqual(value['incremental'][node],{'cpu':need['millicpus']/1000,'memory':need['memoryBytes']})
-        self.assertFalse(result['fits'])
-        self.assertEqual(result['nodeCeilings'],{node:need})
+    def test_unpinned_load_job_keeps_requests(self):
+        c, inventory, render, client = fixture()
+        selected = c['nativeLoad']
+        selected.pop('nodeName')
+        job = j.base_job(c)
+        spec = job['spec']['template']['spec']
+        self.assertNotIn('nodeSelector', spec)
+        self.assertNotIn('nodeName', spec)
+        self.assertEqual(spec['containers'][0]['resources'], selected['resources'])
+        selected['tolerations'] = [{'key':'dedicated','value':'nightscout','operator':'Equal','effect':'NoSchedule'}]
+        self.assertEqual(j.base_job(c)['spec']['template']['spec']['tolerations'],selected['tolerations'])
 
 
 if __name__=='__main__':unittest.main()
