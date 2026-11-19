@@ -17,6 +17,27 @@ import primer_options
 
 
 class Frozen(unittest.TestCase):
+    def test_split_candidate_pin_uses_hashed_binding_and_refuses_contract_tamper(self):
+        package = self.root/'bindings/kubernetes/assets'
+        package.mkdir(parents=True)
+        asset = package/'source-contract.json'
+        contract = {'platformVerification':'startup-v4','sourceAcceptance':'PENDING',
+                    'nativeCatalogueSha256':'1'*64,'localImageId':self.image}
+        k.write(asset, contract)
+        receipt = self.ref('binding.json', {'sourceContractSha256':k.digest(asset),
+                                           'files':{'assets/source-contract.json':k.digest(asset)}})
+        inventory = {'workloads':{'verification':{}}}
+        pin = experiment.candidate_pin(inventory, receipt)
+        self.assertEqual(pin['verificationJob'], 'verification')
+        self.assertEqual(pin['imageConfigId'], self.image)
+        self.assertEqual(pin['platformVerification'], 'startup-v4')
+        k.write(asset, dict(contract, localImageId='sha256:'+'0'*64))
+        with self.assertRaisesRegex(k.Refused, 'CANDIDATE_SOURCE_IMAGE_CHANGED'):
+            experiment.candidate_pin(inventory, receipt)
+        k.write(asset, contract)
+        self.assertEqual(experiment.candidate_pin(inventory, receipt), pin)
+        self.assertEqual(experiment.candidate_pin({'candidateContract':pin}, {}), pin)
+
     def setUp(self):
         scratch = tempfile.TemporaryDirectory()
         self.addCleanup(scratch.cleanup)

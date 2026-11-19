@@ -202,6 +202,31 @@ def render_checks(instance):
     return [row['name'] for row in rows]
 
 
+def candidate_pin(inventory, binding_reference):
+    """Resolve the same immutable candidate contract for pre-entry and prepare.
+
+    Split inventories project only source identity; the materialized binding
+    receipt, rather than a retired inventory field, holds the full contract.
+    """
+    if 'verification' not in inventory.get('workloads', {}):
+        return inventory['candidateContract']
+    receipt = frozen.read_ref(binding_reference)
+    asset = Path(binding_reference['path']).parent/'bindings/kubernetes/assets/source-contract.json'
+    k.need(k.digest(asset) == receipt['sourceContractSha256'] ==
+           receipt['files']['assets/source-contract.json'], 'CANDIDATE_SOURCE_IMAGE_CHANGED')
+    source_contract = k.document(asset)
+    k.need(source_contract['platformVerification'] in k.candidate.STARTUP_PROTOCOLS,
+           'VERIFIED_SERVING_BINDING_OPTIONS')
+    pin = {key: source_contract[key] for key in
+           ('platformVerification', 'sourceAcceptance', 'nativeCatalogueSha256')}
+    pin.update({key:source_contract[key] for key in
+                (primer_options.FIELD, primer_options.PROTOCOL_FIELD, frozen.ACK_BUDGET)
+                if key in source_contract})
+    pin.update(verificationJob='verification', imageConfigId=source_contract['localImageId'],
+               sourceContractSha256=receipt['sourceContractSha256'])
+    return pin
+
+
 def prepare(manifest_path, instance, out, *, await_primer=False):
     m = k.document(manifest_path)
     p = workload(m)
@@ -221,30 +246,17 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
            'DELIVERY_IMAGE_CHANGED')
     selected = frozen.source(m)
     split = 'verification' in inventory.get('workloads', {})
+    selected_candidate = candidate_pin(inventory, instance['bindingReceipt'])
     if split:
-        receipt = frozen.read_ref(instance['bindingReceipt'])
         asset = Path(instance['bindingReceipt']['path']).parent/'bindings/kubernetes/assets/source-contract.json'
-        k.need(k.digest(asset) == receipt['sourceContractSha256'] ==
-               receipt['files']['assets/source-contract.json'], 'CANDIDATE_SOURCE_IMAGE_CHANGED')
-        source_contract = k.document(asset)
-        k.need(source_contract['platformVerification'] in k.candidate.STARTUP_PROTOCOLS and
-               frozen.PRIMER_STORAGE not in selected and population_ceiling.FIELD not in selected,
+        k.need(frozen.PRIMER_STORAGE not in selected and population_ceiling.FIELD not in selected,
                'VERIFIED_SERVING_BINDING_OPTIONS')
-        candidate_pin = {key: source_contract[key] for key in
-                         ('platformVerification', 'sourceAcceptance', 'nativeCatalogueSha256')}
-        candidate_pin.update({key:source_contract[key] for key in
-                              (primer_options.FIELD, primer_options.PROTOCOL_FIELD, frozen.ACK_BUDGET)
-                              if key in source_contract})
-        candidate_pin.update(verificationJob='verification', imageConfigId=source_contract['localImageId'],
-                             sourceContractSha256=receipt['sourceContractSha256'])
-    else:
-        candidate_pin = inventory['candidateContract']
     pins = dict(pair=dict(core=selected['coreCommit'], deploy=selected['deployCommit']),
                 bindingCommit=m['bindingCommit'], instrument=k.instrument()['sha256'],
                 appImage=delivery['app'], appImageId=delivery['appImageId'],
                 postgresImage=delivery['postgres'], postgresImageId=delivery['postgresImageId'],
                 inventorySha256=k.digest(instance['inventory']), renderSha256=k.digest(instance['render']),
-                candidate=candidate_pin)
+                candidate=selected_candidate)
     k.need(config.get('pins', pins) == pins, 'INSTANCE_PINS_CHANGED')
     tier = m.get('tier', 'discovery')
     k.need(config.get('tier', tier) == tier, 'INSTANCE_TIER_CHANGED')

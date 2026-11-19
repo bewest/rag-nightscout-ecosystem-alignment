@@ -255,11 +255,10 @@ def start_serving(split):
         verify_database(verification['metadata']['uid'],
                         min(waits['platformVerifySeconds'], verification['spec']['activeDeadlineSeconds']))
         install('serving')
+        workload_ready('serving')
     install('primer')
     pobj = release_job('primer')
-    if split:
-        workload_ready('serving')
-    else:
+    if not split:
         primer_seconds=min(waits['primerReadySeconds'],pobj['spec']['activeDeadlineSeconds'])
         with startup_window('primer',primer_seconds):
             primer=ready('job-name=primer','primer',primer_seconds)

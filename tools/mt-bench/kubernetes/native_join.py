@@ -13,10 +13,61 @@ import time
 import kube_adapter as k
 import native_load
 import workload
+import candidate
 
 FIELD = 'nativeLoad'
 JOB = 'Job/k6'
 ACCOUNT = 'native-load-waiter'
+
+
+def waiting_jobs(c):
+    # In the split binding, primer readiness only proves client export is ready;
+    # the independent verification Job must have completed as well.
+    return ['provision', 'verification', 'primer:ready'] if candidate.verified_serving(c) else ['provision', 'primer:ready']
+
+
+def has_mask(value):
+    if isinstance(value, dict):
+        return any(has_mask(row) for row in value.values())
+    if isinstance(value, list):
+        return any(has_mask(row) for row in value)
+    return value == '<redacted>'
+
+
+def exact_spec(c, client, observed, namespace_uid, *, cleanup=False):
+    """Read only an owned native Job/Pod when the guard masks its references.
+
+    This returns private bytes to the existing strict declaration checks; a
+    masked Secret name or projected key is never accepted as matching evidence.
+    No Secret data, list of private objects or unrelated workload is read.
+    """
+    if not has_mask(observed.get('spec', {})):
+        return observed
+    k.need(selected(c) is not None, 'NATIVE_LOAD_SELECTION')
+    k.owned(c, observed)
+    kind, name = observed['kind'], observed['metadata']['name']
+    parent = None
+    if kind == 'Pod':
+        parent = k.controller(observed)
+        k.need(parent.get('kind') == 'Job' and parent.get('name') == 'k6', 'NATIVE_LOAD_POD_CONTROLLER')
+    else:
+        k.need(kind == 'Job' and name == 'k6', 'NATIVE_LOAD_UNACCOUNTED_JOB')
+    def namespace():
+        native_load._identity(c, client.get('namespace', c['namespace'], cleanup), namespace_uid)
+    namespace()
+    raw = client.call(['get', kind, name, '-o', 'json'], read=False, cleanup=cleanup, output_limit=512*1024)
+    try:
+        actual = json.loads(raw)
+    except (ValueError, TypeError):
+        raise k.Refused('K8S_NATIVE_LOAD_SPEC_UNMEASURED', 'UNMEASURED') from None
+    k.owned(c, actual)
+    k.need(k.key(actual) == k.key(observed) and
+           actual['metadata']['uid'] == observed['metadata']['uid'], 'NATIVE_LOAD_ACTOR_REPLACED')
+    if parent is not None:
+        k.need(k.controller(actual) == parent, 'NATIVE_LOAD_POD_CONTROLLER')
+    k.need(not has_mask(actual.get('spec', {})), 'NATIVE_LOAD_SPEC_UNMEASURED', 'UNMEASURED')
+    namespace()
+    return actual
 
 
 def selected(c):
@@ -50,7 +101,7 @@ def base_job(c):
     hardened = {'runAsUser':1000,'runAsGroup':1000,'runAsNonRoot':True,
                 'readOnlyRootFilesystem':True,'allowPrivilegeEscalation':False,'capabilities':{'drop':['ALL']}}
     waiter = {'name':'wait-for-jobs','image':c['pins']['appImage'],'imagePullPolicy':'IfNotPresent',
-              'command':['node','-e',(k.HERE/'native-wait-jobs.cjs').read_text(),'provision','primer:ready'],
+              'command':['node','-e',(k.HERE/'native-wait-jobs.cjs').read_text(),*waiting_jobs(c)],
               'env':[{'name':'NS_WAIT_DEADLINE_SECONDS','value':str(s['deadlineSeconds'])}],
               'resources':copy.deepcopy(s['exporterResources']), 'securityContext':hardened,
               'volumeMounts':[{'name':'kube-api','mountPath':'/var/run/secrets/kubernetes.io/serviceaccount','readOnly':True}]}
@@ -91,7 +142,8 @@ def declarations(c):
     return [job,
         {'apiVersion':'v1','kind':'ServiceAccount','metadata':dict(meta,name=ACCOUNT),'automountServiceAccountToken':False},
         {'apiVersion':'rbac.authorization.k8s.io/v1','kind':'Role','metadata':dict(meta,name=ACCOUNT),
-         'rules':[{'apiGroups':['batch'],'resources':['jobs'],'resourceNames':['provision','primer'],'verbs':['get']}]},
+         'rules':[{'apiGroups':['batch'],'resources':['jobs'],
+                   'resourceNames':[name.split(':')[0] for name in waiting_jobs(c)],'verbs':['get']}]},
         {'apiVersion':'rbac.authorization.k8s.io/v1','kind':'RoleBinding','metadata':dict(meta,name=ACCOUNT),
          'roleRef':{'apiGroup':'rbac.authorization.k8s.io','kind':'Role','name':ACCOUNT},
          'subjects':[{'kind':'ServiceAccount','name':ACCOUNT,'namespace':c['namespace']}]}]
@@ -157,14 +209,25 @@ def test_pod(c, parent, pod, controller_uid=None):
 
 class Kube:
     """Use the existing pinned/guarded adapter client, including binary exec."""
-    def __init__(self,c,client):self.c,self.client=c,client
+    def __init__(self,c,client):self.c,self.client,self.namespace_uid=c,client,None
     def call(self,args,*,data=None,timeout=20,namespace=None,cleanup=False):
         k.need(namespace in (None,self.c['namespace']),'NATIVE_LOAD_NAMESPACE_CHANGED')
         raw=data.encode() if isinstance(data,str) else data
         maximum=max(32*1024**2,self.c['workload']['driverPlan'].get('maxTraceBytes',64*1024**2))
         return self.client.call(args,data=raw,read=args[0] in ('get','logs','top'),cleanup=cleanup,
                                 output_limit=maximum,timeout=timeout)
-    def json(self,args,**kw):return json.loads(self.call([*args,'-o','json'],**kw))
+    def json(self,args,**kw):
+        value=json.loads(self.call([*args,'-o','json'],**kw))
+        if args[:2] == ['get','namespace']:
+            self.namespace_uid=native_load._identity(self.c,value,self.namespace_uid)
+        elif args[:2] in (['get','job'], ['get','pods']):
+            if self.namespace_uid is None:
+                self.namespace_uid=native_load._identity(self.c,self.client.get('namespace',self.c['namespace'],kw.get('cleanup',False)))
+            if 'items' in value:
+                value=dict(value,items=[exact_spec(self.c,self.client,row,self.namespace_uid,cleanup=kw.get('cleanup',False)) for row in value['items']])
+            else:
+                value=exact_spec(self.c,self.client,value,self.namespace_uid,cleanup=kw.get('cleanup',False))
+        return value
 
 
 def cancel(kube,c,receipt,out,*,clock=time):
@@ -242,6 +305,11 @@ def prepare_case(case, selection):
     preparing['pins']={'appImage':delivery['app'],'appImageId':delivery['appImageId'],
                    'pair':{'core':source['coreCommit'],'deploy':source['deployCommit']},
                    'bindingCommit':manifest['bindingCommit'],'instrument':k.instrument()['sha256']}
+    if 'verification' in inventory.get('workloads', {}):
+        # Match normal experiment.prepare's protocol selection, without copying
+        # mutable candidate receipts into the run template. Full pins are bound
+        # and checked by the normal preparer before entry.
+        preparing['pins']['candidate']={'verificationJob':'verification'}
     c=experiment.profile.bind(experiment.workload(manifest),preparing)
     c.update(tier=manifest.get('tier','discovery'),nativeLoad=selection,
              applicationTopology=application_topology.selection(manifest,k.need))
