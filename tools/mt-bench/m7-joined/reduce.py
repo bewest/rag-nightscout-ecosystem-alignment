@@ -104,106 +104,170 @@ def availability(before, after, rows, manifest, sampled):
     return criteria
 
 
+def statement_costs(folder, tenants, seconds=None):
+    try:
+        first, last = (pg(folder/(side + '-pg-role.tsv')) for side in ('before', 'after'))
+    except (OSError, ValueError):
+        return None
+    costs = {role: {key: value[key]-first.get(role, {}).get(key, 0) for key in value}
+             for role, value in last.items()}
+    if seconds is not None:
+        for value in costs.values():
+            value["callsPerTenantMinute"] = value["calls"] / tenants / seconds * 60
+            value["executionMsPerTenantMinute"] = value["executionMs"] / tenants / seconds * 60
+    return costs
+
+
+def phase_samples(path, start, end):
+    if not path.is_file():
+        return []
+    try:
+        with path.open() as stream:
+            return [row for row in csv.DictReader(stream, delimiter='\t') if start <= float(row['t']) <= end]
+    except (OSError, ValueError, KeyError, csv.Error):
+        return []
+
+
+def phase_measurements(directory, manifest, name):
+    complete = True
+    folder = directory / name
+    before = json.loads((folder / "before-cgroups.json").read_text())
+    after = json.loads((folder / "after-cgroups.json").read_text())
+    seconds = after["at"] - before["at"]
+    require(math.isfinite(seconds) and seconds > 0,"M7_WINDOW_INVALID")
+    rows, load_generators = {}, {}
+    if 'serviceCoverage' in before or 'serviceCoverage' in after:
+        complete = complete and before.get('serviceCoverage',{}).get('status') == 'MEASURED' and after.get('serviceCoverage',{}).get('status') == 'MEASURED'
+
+    for role in sorted(set(before["roles"]) | set(after["roles"])):
+        value = after["roles"].get(role, {})
+        first = before["roles"].get(role, {})
+        if role == "k6":
+            load_generators[role] = {"source": "docker-stats-window", "processRssKiBAfter": value.get("processRssKiB", "UNMEASURED"), "snapshotCpu": "UNMEASURED"}
+            continue
+        # A restart resets CPU counters; identify this rather than subtract
+        # counters from different containers/process lifetimes.
+        if not value or not first or value.get("unavailable") or first.get("unavailable") or value.get("id") != first.get("id"):
+            rows[role] = {"measurement": "NO-MEASUREMENT"};complete = False;continue
+        def cgroup(raw):
+            cpu = int(re.search(r"^usage_usec (\d+)$",raw,re.M)[1])
+            anon = int(re.search(r"^anon (\d+)$",raw,re.M)[1])
+            current = [int(line) for line in raw.splitlines() if line.isdigit()][0]
+            return cpu, anon, current
+        try:
+            a, b = cgroup(first["cgroup"]), cgroup(value["cgroup"])
+        except (KeyError, TypeError, ValueError, IndexError):
+            rows[role] = {'measurement':'NO-MEASUREMENT', 'reason':'invalid-cgroup-counters'}
+            complete = False
+            continue
+        rss=value.get("processRssKiB","")
+        complete = complete and rss_available(rss)
+        delta = b[0] - a[0]
+        complete = complete and delta >= 0
+        try:
+            peak = memory_peak_observation(first, value)
+        except RuntimeError as error:
+            peak = {'status':'FAIL', 'reason':str(error)}
+            complete = False
+        rows[role] = {"cpuUsecDelta": delta if delta >= 0 else None, "cpuCoresMean": delta / 1e6 / seconds if delta >= 0 else None,
+                      "memoryObservation":peak, "resourceLimits":value.get("resourceLimits",{"status":"UNMEASURED"}), **({"instance":value["instance"]} if "instance" in value else {}), "counterReset": delta < 0, "processRssKiBAfter": value.get("processRssKiB"), "anonBytesAfter": b[1], "memoryCurrentBytesAfter": b[2]}
+    # Container totals include both evaluator Node and its pgstream child.
+    # Keep process identity/start time when subtracting their own counters.
+    for role,value in rows.items():
+        initial=before['roles'].get(role,{}).get('hostProcesses',{})
+        final=after['roles'].get(role,{}).get('hostProcesses',{})
+        try:
+            processes=process_deltas(initial,final,seconds)
+        except (TypeError, KeyError, RuntimeError) as error:
+            value['processObservation'] = {'status':'FAIL', 'reason': str(error) if isinstance(error, RuntimeError) else 'invalid-process-counters'}
+            complete = False
+            continue
+        if initial or final:value['processes']=processes
+    if manifest.get('profile')=='pgstream-sample':
+        for role,components in stream_topology.expected_processes(manifest).items():
+            processes=rows.get(role,{}).get('processes',{})
+            complete=complete and all(any(p.get('component',p['name'])==component and 'cpuSeconds' in p for p in processes.values()) for component in components)
+    if name != "idle-disabled":
+        samples = phase_samples(folder/'docker-stats.tsv', before['at'], after['at'])
+        complete = complete and len(samples) > 0
+        for sample in samples:
+            role = sample["container"].removeprefix(manifest["project"] + "-").removesuffix("-1")
+            if role == "k6":
+                row = load_generators.setdefault(role, {"source": "docker-stats-window", "processRssKiBAfter": "UNMEASURED", "snapshotCpu": "UNMEASURED"})
+            else:
+                if role not in rows:
+                    rows[role] = {"measurement": "NO-MEASUREMENT", "reason": "serving-snapshot-missing"};complete = False
+                row = rows[role]
+            try:
+                cpu, resident = float(sample["cpu_pct"].rstrip('%')), memory(sample["mem"].split("/")[0])
+            except (KeyError, ValueError, AttributeError, RuntimeError):
+                row['invalidSamples'] = row.get('invalidSamples', 0) + 1
+                complete = False
+                continue
+            row.setdefault("cpuPctSamples", []).append(cpu)
+            row.setdefault("dockerMemoryBytesSamples", []).append(resident)
+        for row in list(rows.values()) + list(load_generators.values()):
+            values = row.pop("cpuPctSamples", [])
+            resident = row.pop("dockerMemoryBytesSamples", [])
+            row.update({"sampleCount": len(values), "cpuPctMean": sum(values)/len(values) if values else None,
+                        "cpuPctMax": max(values) if values else None, "dockerMemoryBytesMax": max(resident) if resident else None})
+        complete = complete and all(row.get("sampleCount",0)>0 for row in rows.values())
+        activity = phase_samples(folder/'pg-activity.tsv', before['at'], after['at'])
+        complete = complete and len(activity) > 0
+        wait = {}
+        for row in activity:
+            key = (row["role"], row["state"], row["wait_event_type"], row["wait_event"])
+            wait[key] = wait.get(key, 0) + int(row["n"])
+        pg_waits = [{"role":key[0],"state":key[1],"type":key[2],"event":key[3],"backendObservations":value} for key,value in wait.items()]
+    else:
+        pg_waits = None
+    costs = statement_costs(folder, manifest['tenants'], seconds)
+    have_statements = costs is not None
+    complete = complete and have_statements
+    for value in rows.values():
+        cores=value.get("cpuCoresMean")
+        value["cpuMsPerTenantMinute"]=cores*60000/manifest["tenants"] if cores is not None else None
+        value["anonBytesPerTenant"]=value["anonBytesAfter"]/manifest["tenants"] if value.get("anonBytesAfter") is not None else None
+    window = {"seconds":seconds,"roles":rows,"loadGenerators":load_generators,"pgStatements":costs if have_statements else None,"pgWaits":pg_waits}
+    window['availability'] = availability(before, after, rows, manifest, name != 'idle-disabled')
+    if name != "idle-disabled":
+        window['availability']['pgActivity'] = {'status': 'MEASURED' if activity else 'UNMEASURED', 'required': True,
+                                                      **({} if activity else {'reason': 'missing-in-window-pg-activity'})}
+        window["pgLockSampling"] = reduce_pg_waits(
+            folder, manifest.get("owner"), before["at"], after["at"])
+    window['availability']['pgStatements'] = {'status': 'MEASURED' if have_statements else 'UNMEASURED',
+                                               'required': True}
+    return window, complete
+
+
 def measurements(directory, manifest):
     windows = {}
     complete = True
     for name in ("idle-disabled", "idle", "load"):
-        folder = directory / name
-        before = json.loads((folder / "before-cgroups.json").read_text())
-        after = json.loads((folder / "after-cgroups.json").read_text())
-        seconds = after["at"] - before["at"]
-        require(math.isfinite(seconds) and seconds > 0,"M7_WINDOW_INVALID")
-        rows, load_generators = {}, {}
-        if 'serviceCoverage' in before or 'serviceCoverage' in after:
-            complete = complete and before.get('serviceCoverage',{}).get('status') == 'MEASURED' and after.get('serviceCoverage',{}).get('status') == 'MEASURED'
-
-        for role in sorted(set(before["roles"]) | set(after["roles"])):
-            value = after["roles"].get(role, {})
-            first = before["roles"].get(role, {})
-            if role == "k6":
-                load_generators[role] = {"source": "docker-stats-window", "processRssKiBAfter": value.get("processRssKiB", "UNMEASURED"), "snapshotCpu": "UNMEASURED"}
-                continue
-            # A restart resets CPU counters; identify this rather than subtract
-            # counters from different containers/process lifetimes.
-            if not value or not first or value.get("unavailable") or first.get("unavailable") or value.get("id") != first.get("id"):
-                rows[role] = {"measurement": "NO-MEASUREMENT"};complete = False;continue
-            def cgroup(raw):
-                cpu = int(re.search(r"^usage_usec (\d+)$",raw,re.M)[1])
-                anon = int(re.search(r"^anon (\d+)$",raw,re.M)[1])
-                current = [int(line) for line in raw.splitlines() if line.isdigit()][0]
-                return cpu, anon, current
-            a, b = cgroup(first["cgroup"]), cgroup(value["cgroup"])
-            rss=value.get("processRssKiB","")
-            complete = complete and rss_available(rss)
-            delta = b[0] - a[0]
-            complete = complete and delta >= 0
-            rows[role] = {"cpuUsecDelta": delta if delta >= 0 else None, "cpuCoresMean": delta / 1e6 / seconds if delta >= 0 else None,
-                          "memoryObservation":memory_peak_observation(first,value), "resourceLimits":value.get("resourceLimits",{"status":"UNMEASURED"}), **({"instance":value["instance"]} if "instance" in value else {}), "counterReset": delta < 0, "processRssKiBAfter": value.get("processRssKiB"), "anonBytesAfter": b[1], "memoryCurrentBytesAfter": b[2]}
-        # Container totals include both evaluator Node and its pgstream child.
-        # Keep process identity/start time when subtracting their own counters.
-        for role,value in rows.items():
-            initial=before['roles'].get(role,{}).get('hostProcesses',{})
-            final=after['roles'].get(role,{}).get('hostProcesses',{})
-            processes=process_deltas(initial,final,seconds)
-            if initial or final:value['processes']=processes
-        if manifest.get('profile')=='pgstream-sample':
-            for role,components in stream_topology.expected_processes(manifest).items():
-                processes=rows.get(role,{}).get('processes',{})
-                complete=complete and all(any(p.get('component',p['name'])==component and 'cpuSeconds' in p for p in processes.values()) for component in components)
-        if name != "idle-disabled":
-            with (folder / "docker-stats.tsv").open() as source:
-                samples = [r for r in csv.DictReader(source, delimiter="\t") if before["at"] <= float(r["t"]) <= after["at"]]
-            complete = complete and len(samples) > 0
-            for sample in samples:
-                role = sample["container"].removeprefix(manifest["project"] + "-").removesuffix("-1")
-                if role == "k6":
-                    row = load_generators.setdefault(role, {"source": "docker-stats-window", "processRssKiBAfter": "UNMEASURED", "snapshotCpu": "UNMEASURED"})
-                else:
-                    if role not in rows:
-                        rows[role] = {"measurement": "NO-MEASUREMENT", "reason": "serving-snapshot-missing"};complete = False
-                    row = rows[role]
-                row.setdefault("cpuPctSamples", []).append(float(sample["cpu_pct"].rstrip('%')))
-                row.setdefault("dockerMemoryBytesSamples", []).append(memory(sample["mem"].split("/")[0]))
-            for row in list(rows.values()) + list(load_generators.values()):
-                values = row.pop("cpuPctSamples", [])
-                resident = row.pop("dockerMemoryBytesSamples", [])
-                row.update({"sampleCount": len(values), "cpuPctMean": sum(values)/len(values) if values else None,
-                            "cpuPctMax": max(values) if values else None, "dockerMemoryBytesMax": max(resident) if resident else None})
-            complete = complete and all(row.get("sampleCount",0)>0 for row in rows.values())
-            with (folder / "pg-activity.tsv").open() as source:
-                activity = [r for r in csv.DictReader(source, delimiter="\t") if before["at"] <= float(r["t"]) <= after["at"]]
-            complete = complete and len(activity) > 0
-            wait = {}
-            for row in activity:
-                key = (row["role"], row["state"], row["wait_event_type"], row["wait_event"])
-                wait[key] = wait.get(key, 0) + int(row["n"])
-            pg_waits = [{"role":key[0],"state":key[1],"type":key[2],"event":key[3],"backendObservations":value} for key,value in wait.items()]
-        else:
-            pg_waits = None
-        first, last = pg(folder / "before-pg-role.tsv"), pg(folder / "after-pg-role.tsv")
-        costs = {role: {key: value[key]-first.get(role, {}).get(key,0) for key in value} for role,value in last.items()}
-        for value in costs.values():
-            value["callsPerTenantMinute"] = value["calls"] / manifest["tenants"] / seconds * 60
-            value["executionMsPerTenantMinute"] = value["executionMs"] / manifest["tenants"] / seconds * 60
-        for value in rows.values():
-            cores=value.get("cpuCoresMean")
-            value["cpuMsPerTenantMinute"]=cores*60000/manifest["tenants"] if cores is not None else None
-            value["anonBytesPerTenant"]=value["anonBytesAfter"]/manifest["tenants"] if value.get("anonBytesAfter") is not None else None
-        windows[name] = {"seconds":seconds,"roles":rows,"loadGenerators":load_generators,"pgStatements":costs,"pgWaits":pg_waits}
-        windows[name]['availability'] = availability(before, after, rows, manifest, name != 'idle-disabled')
-        if name != "idle-disabled":
-            windows[name]['availability']['pgActivity'] = {'status': 'MEASURED' if activity else 'UNMEASURED', 'required': True,
-                                                          **({} if activity else {'reason': 'missing-in-window-pg-activity'})}
-            windows[name]["pgLockSampling"] = reduce_pg_waits(
-                folder, manifest.get("owner"), before["at"], after["at"])
-    raw_summary = json.loads((directory / "load/k6-summary.json").read_text())
-    raw = raw_summary["metrics"]
+        try:
+            window, observed = phase_measurements(directory, manifest, name)
+        except (OSError, ValueError, RuntimeError, TypeError, IndexError, KeyError) as error:
+            code = str(error) if re.fullmatch(r'M7_[A-Z_]+', str(error)) else 'M7_WINDOW_INPUT_UNAVAILABLE'
+            window = {'availability': {'window': {'status': 'UNMEASURED', 'required': True, 'reason': code}},
+                      'pgStatements': statement_costs(directory/name, manifest['tenants'])}
+            observed = False
+        windows[name] = window
+        complete = complete and observed
+    try:
+        raw_summary = json.loads((directory / "load/k6-summary.json").read_text())
+        raw = raw_summary["metrics"]
+        if not isinstance(raw, dict):
+            raise ValueError("invalid metrics")
+    except (OSError, ValueError, TypeError, KeyError):
+        raw_summary, raw = {}, {}
     shard_statistics = raw_summary.get("m7DriverShards")
     shapes = {}
     for key,value in raw.items():
         match = re.fullmatch(r"http_req_duration\{shape:(\w+)\}",key)
-        if match:
+        if match and isinstance(value, dict):
             data=value.get("values",value)
+            if not isinstance(data, dict):
+                continue
             shapes[match[1]] = {"p50":data.get("med"),"p95":data.get("p(95)"),"p99":data.get("p(99)"),"count":data.get("count")}
             if isinstance(shard_statistics, dict):
                 ranges = shard_statistics.get('quantileBounds')
@@ -211,7 +275,9 @@ def measurements(directory, manifest):
                     shardPercentileRange=ranges.get(key) if isinstance(ranges, dict) else None,
                     percentileScope='Retained shard statistic/range; pooled percentile not established by summary-only reduction.')
     for name,row in shapes.items():
-        failure=raw.get('http_req_failed{shape:'+name+'}',{});failure=failure.get('values',failure)
+        failure=raw.get('http_req_failed{shape:'+name+'}',{})
+        failure=failure.get('values',failure) if isinstance(failure, dict) else {}
+        if not isinstance(failure, dict):failure={}
         row['failureRate']=failure.get('rate',failure.get('value'))
         row['failureMetricRaw']=failure or None
     complete = complete and len(shapes)==7 and all(value["count"] and all(value[k] is not None for k in ("p50","p95","p99")) for value in shapes.values())

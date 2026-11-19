@@ -421,7 +421,43 @@ def partial(root):
     elif 'jwt-setup-start' in names and 'jwt-setup-end' not in names:phase = 'JWT_SETUP_INCOMPLETE'
     native = retained('summary.json')
     probe = retained('load/probe.json')
-    return {'artifacts': artifacts, 'trafficPhase': phase, 'scenarioAttempts': count,
+    # Older partial runs may predate the final file-only reduction.
+    observations = native.copy()
+    if native.get('kind') == 'm7-joined-discovery-cell' and 'measurements' not in native and (d/'load').is_dir():
+        import discovery
+        for key, value in discovery.retained_results(a, d, retained('owner.json') or native, native).items():
+            observations.setdefault(key, value)
+    import outcome_gate
+    gate = retained('load/outcome-gate.json')
+    counts = native.get('oracleFindings') or native.get('oracle') or retained('load/oracle-findings.json')
+    catchup = gate.get('components', {}).get('catchup') or {'verdict':'UNMEASURED'}
+    measured = observations.get('measurements') or {}
+    window = (measured.get('windows') or {}).get('load') or {}
+    http = native.get('httpAccounting') or retained('load/http-accounting.json')
+    if not http and metrics:
+        import http_accounting
+        try:
+            http = http_accounting.assess(metrics)
+        except (ValueError, TypeError, AttributeError):
+            unreadable.append('load/k6-summary.json')
+    clinical = outcome_gate.sampled_oracle(observations.get('completedOutput') or probe.get('completedOutput'))
+    details = {'http': http or {'verdict':'UNMEASURED'}, 'rateOffer': native.get('rateOffer'),
+               'storedWrites': outcome_gate.storage(counts), 'selectedClinical': clinical,
+               'evaluatorProgress': observations.get('evaluatorProgress', {}).get('load') or
+                                    native.get('strictChecks', {}).get('load', {'verdict':'UNMEASURED'}),
+               'frames': observations.get('viewerFrames') or {'verdict':'UNMEASURED'}, 'catchup': catchup,
+               'outcomeGate': gate.get('verdict', 'UNMEASURED'),
+               'components': window or {'verdict':'UNMEASURED'}}
+    if probe.get('window'):
+        details['frameCounts'] = {key: probe['window'].get(key) for key in ('expectedFrames', 'deliveredFrames')}
+    if native.get('clinicalVerdict'):
+        details['clinicalVerdict'] = native['clinicalVerdict']
+    if counts.get('rows'):
+        for key in ('accepted', 'stored', 'uncertain', 'probeStored'):
+            values = [row.get(key) for row in counts['rows'] if isinstance(row, dict)]
+            if len(values) == len(counts['rows']) and all(type(value) is int and value >= 0 for value in values):
+                details['storedWrites'][key] = sum(values)
+    return {'observations': details, 'artifacts': artifacts, 'trafficPhase': phase, 'scenarioAttempts': count,
             'workloadEvents': events, 'adapterStatus': native.get('status', 'UNMEASURED'),
             'processes': native.get('processes', {}), 'strictChecks': native.get('strictChecks', {}),
             'durableOutputObservation': probe.get('durableOutputObservation', {'status':'UNMEASURED'}),

@@ -103,7 +103,7 @@ class Collector:
                                    timeout=remaining, response_sink=sink)
             if not path.exists():_private(path, raw)
             return raw
-        return idle.round_view(['evaluator'], self.ids, fetch, allow_unavailable=True, policy=policy), policy
+        return idle.round_view(['evaluator'], self.ids, fetch, allow_unavailable=True, allow_clinical_stall=True, policy=policy), policy
 
     def __call__(self, timeout):
         index = self.round
@@ -211,7 +211,7 @@ def run(d, out, c, objects, client, ids, *, writers_joined_ns, drain_started, co
             def fetch(timeout):
                 snapshot, cost = reader(timeout)
                 try:
-                    o.all_roster([reference, reference, reader.last_view], ids, 'load', policy=reader.policy)
+                    o.all_roster([reference, reference, reader.last_view], ids, 'load', allow_clinical_stall=True, policy=reader.policy)
                 except p.Refused as error:
                     error.drainCapture = {'snapshot': snapshot, 'cost': cost}
                     raise

@@ -303,7 +303,7 @@ def catchup(value, ids, *, config=None):
         return {'verdict': 'UNMEASURED', 'codes': ['M7_OUTCOME_CATCHUP_NOT_CAPTURED']}
     rows = value['byTenant']
     codes, counts = set(), {}
-    if set(rows) != set(ids):
+    if not ids or set(rows) != set(ids):
         codes.add('M7_OUTCOME_CATCHUP_COVERAGE')
     observed_ms = None
     if type(value.get('endNs')) is int and type(value.get('writerStoppedNs')) is int:
@@ -495,7 +495,11 @@ def http_latency(directory):
 
 def _document(path):
     path = Path(path)
-    return json.loads(path.read_text()) if path.is_file() else None
+    try:
+        value = json.loads(path.read_text())
+        return value if isinstance(value, dict) else None
+    except (OSError, ValueError):
+        return None
 
 
 def load_point(folder, name, service='evaluator'):

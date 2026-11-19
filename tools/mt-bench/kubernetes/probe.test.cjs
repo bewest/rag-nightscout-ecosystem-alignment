@@ -4,6 +4,7 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http=require('node:http'),assert=require('node:assert/strict'),{EventEmitter}=require('node:events'),{createHash}=require('node:crypto'),{createRequire}=require('node:module');
 (async()=>{
  const target=path.resolve(process.argv[2]),d=path.dirname(target),realRequire=createRequire(target),o=realRequire('./completed-oracle.cjs');
+ const unavailable=process.argv[3]==='sql-unavailable';
  const ids=['11111111-1111-4111-8111-111111111111','22222222-2222-4222-8222-222222222222'];
  const tenants=ids.map((id,i)=>({id,host:(i?'b':'a')+'.example.test',token:'synthetic-'+i}));
  const binding={kind:'evaluator-work-v2',pair:{core:'1'.repeat(40),deploy:'2'.repeat(40)},imageId:'sha256:'+'3'.repeat(64),instrument:'4'.repeat(64)};
@@ -31,7 +32,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http
  };
  fs.writeFileSync(path.join(d,'tenants.json'),JSON.stringify(tenants));
  const argv=['node',target,'--base','http://127.0.0.1:'+server.address().port,'--tenants',path.join(d,'tenants.json'),'--runid','synthetic-pipeline','--per','1','--clients','2','--open','0','--probeEvery','1','--maxWrites','2','--restart','0','--out',path.join(d,'probe.json'),'--signal',path.join(d,'.window')];
- const child={execFile(exe,args,opts,callback){assert.equal(exe,'synthetic-python');assert.equal(args[1],'sql');queries++;return {stdin:{end(query){assert(query.startsWith('SELECT '));setImmediate(()=>callback(null,ids.map(row).filter(Boolean).map(r=>JSON.stringify(r)).join('\n')));}}};}};
+ const child={execFile(exe,args,opts,callback){assert.equal(exe,'synthetic-python');assert.equal(args[1],'sql');queries++;return {stdin:{end(query){assert(query.startsWith('SELECT '));if(unavailable){setImmediate(()=>callback(Object.assign(Error('observer unavailable'),{code:1}),'',''));return;}setImmediate(()=>callback(null,ids.map(row).filter(Boolean).map(r=>JSON.stringify(r)).join('\n')));}}};}};
  let watchdog;
  try{
    await new Promise((resolve,reject)=>{
@@ -42,6 +43,18 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http
      vm.runInNewContext(fs.readFileSync(target,'utf8'),context,{filename:target});
    });
    const probe=JSON.parse(fs.readFileSync(path.join(d,'probe.json'))),ledger=JSON.parse(fs.readFileSync(path.join(d,'probe-accounting.json')));
+   if(process.argv[4]){
+     fs.writeFileSync(process.argv[4],JSON.stringify({config,stored:Object.fromEntries([...stored].map(([id,docs])=>[id,{probe:docs.length}]))}));
+   }
+   if(unavailable){
+     assert.equal(probe.completedOutput.verdict,'UNMEASURED');
+     assert.equal(probe.completedOutput.observerFailure.code,'M7_PROBE_SQL_OBSERVATION_UNAVAILABLE');
+     assert.equal(ledger.admissionsClosed,true);assert(ledger.attempts>0);
+     assert.equal(probe.window.writes.ok,ledger.attempts);assert.equal(probe.window.deliveredFrames,ledger.attempts);
+     assert.equal(probe.window.evaluationMissedWithin120s,null);
+     console.log(JSON.stringify({clinical:probe.completedOutput.verdict,attempts:ledger.attempts,frames:probe.window.deliveredFrames,queries}));
+     return;
+   }
    assert.equal(probe.completedOutput.verdict,'PASS');assert.equal(probe.completedOutput.witnesses.length,2);assert.equal(ledger.attempts,2);assert.equal(probe.window.deliveredFrames,2);assert(queries>0);
    process.argv[2]=path.join(__dirname,'../m7-joined/completed-oracle.cjs');const {assess}=require('./claims.cjs');
    assert.equal(assess({completion:config,probe,tenants,clients:2}).verdict,'PASS');

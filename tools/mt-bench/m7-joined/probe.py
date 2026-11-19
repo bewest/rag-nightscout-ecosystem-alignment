@@ -43,6 +43,11 @@ def generate(root, target, *, serial_exchange=False):
     prime = "  fs.writeFileSync(args.signal, String(Date.now()));"
     require(source.count(prime)==1, "M7_PROBE_PRIME_ANCHOR_CHANGED")
     source = source.replace(prime, "  fs.writeFileSync(path.join(signalDir,'prime.json'),JSON.stringify(out.prime)); if(out.prime.primed!==tenants.length*PER)throw new Error('M7_ESTABLISHED_SOCKETS_INCOMPLETE');\n" + prime)
+    # Preserve the transport error at the discovery SQL boundary. An empty
+    # successful result still means the witness has not appeared yet.
+    source=source.replace("sql => new Promise(resolve => execFile", "sql => new Promise((resolve,reject) => execFile")
+    source=source.replace("(err, stdout) => resolve(err ? '' : stdout)",
+                          "(err, stdout) => err && discovery && completionSource ? reject(Error('M7_PROBE_SQL_OBSERVATION_UNAVAILABLE')) : resolve(err ? '' : stdout)")
     # A single shared probe container must not issue docker commands itself:
     # the runner supplies a narrowly scoped Docker CLI through a host process.
     # Probe executes on the host with npm dependencies from an owned extraction
@@ -71,7 +76,18 @@ def generate(root, target, *, serial_exchange=False):
         const ids=[...new Set(open.map(e=>e.tenant))];
         oracleCost.durablePendingPeak=Math.max(oracleCost.durablePendingPeak,open.filter(e=>e.acked!==null&&!e.durableObservation).length);
         const queryStart=performance.now();
-        const raw=await psqlAsync(completionOracle.query(completionSource,ids,args.runid));
+        const query=completionOracle.query(completionSource,ids,args.runid);
+        let raw;
+        try { raw=await psqlAsync(query); }
+        catch(error) {
+          if(!discovery || error.message!=='M7_PROBE_SQL_OBSERVATION_UNAVAILABLE')throw error;
+          out.sqlObserverFailure={verdict:'UNMEASURED',code:error.message};
+          for(const witness of evalPending){
+            if(witness.evaluatedAt===null && queryStart-witness.sentMono>=120000)
+              witness.completion={...witness.completion,ready:false,code:'M7_COMPLETION_DEADLINE'};
+          }
+          return;
+        }
         const queryEnd=performance.now();oracleCost.queries++;oracleCost.bytes+=Buffer.byteLength(raw);oracleCost.elapsedMs+=queryEnd-queryStart;if(!raw)oracleCost.missing++;
         const rows=new Map(raw.split('\\n').filter(Boolean).map(line=>{const row=JSON.parse(line);return [row.tenant,row];}));
         for(const e of open){
@@ -91,8 +107,29 @@ def generate(root, target, *, serial_exchange=False):
       }else if (open.length) {""")
     source=source.replace("const e = { tenant: t.id, sent: p.sent,", "const e = { tenant: t.id, date, sent: p.sent,")
     source=source.replace("    await sleep(PROBE);", "    if(completionSource){const until=Date.now()+PROBE;while(Date.now()<until&&!fs.existsSync(path.join(signalDir,'.restart')))await sleep(Math.min(1000,until-Date.now()));}else await sleep(PROBE);")
-    source=source.replace("  fs.writeFileSync(args.out, JSON.stringify(out, null, 2)", "  if(completionSource){oracleCost.observationEndMono=performance.now();out.durableOutputObservation=lag.summary(evalPending,pending,oracleCost);out.completedOutput={rosterTenants:tenants.length,witnessTenants:[...new Set(evalPending.map(e=>e.tenant))],witnessTenantCount:new Set(evalPending.map(e=>e.tenant)).size,verdict:evalPending.length>0&&evalPending.every(e=>e.completion?.ready)&&writes.failed===0?'PASS':'FAIL',witnesses:evalPending.map(e=>({tenant:e.tenant,date:e.date,stamp:e.stamp,requestStartedAt:e.sent,...e.completion})),probeCadenceMs:PROBE,scope:'sampled stored/output/client witnesses and selected BG-now mean; witnessTenants is the exercised subset, not all-roster clinical equivalence; uploader separate from ordinary k6 workload; any planned restart is qualified by its separate receipt'};for(const s of sockets)s.socket.close();}\n  fs.writeFileSync(args.out, JSON.stringify(out, null, 2)")
-    source=source.replace("  while (!fs.existsSync(path.join(signalDir, '.restart'))) {", "  while (!fs.existsSync(path.join(signalDir, '.restart')) && (args.maxWrites===undefined || k<Number(args.maxWrites))) {")
+    source=source.replace("  fs.writeFileSync(args.out, JSON.stringify(out, null, 2)", """  if(completionSource){oracleCost.observationEndMono=performance.now();
+    out.durableOutputObservation=lag.summary(evalPending,pending,oracleCost);
+    let verdict='FAIL';
+    if(evalPending.length && evalPending.every(e=>e.completion?.ready) && writes.failed===0)verdict='PASS';
+    else if(out.sqlObserverFailure && writes.failed===0 && !evalPending.some(e=>e.completion?.code==='M7_COMPLETION_DEADLINE'))
+      verdict='UNMEASURED';
+    out.completedOutput={rosterTenants:tenants.length,witnessTenants:[...new Set(evalPending.map(e=>e.tenant))],
+      witnessTenantCount:new Set(evalPending.map(e=>e.tenant)).size,verdict,
+      ...(out.sqlObserverFailure?{observerFailure:out.sqlObserverFailure}:{}),
+      witnesses:evalPending.map(e=>({tenant:e.tenant,date:e.date,stamp:e.stamp,requestStartedAt:e.sent,...e.completion})),
+      probeCadenceMs:PROBE,scope:'sampled stored/output/client witnesses and selected BG-now mean; witnessTenants is the exercised subset, not all-roster clinical equivalence; uploader separate from ordinary k6 workload; any planned restart is qualified by its separate receipt'};
+    for(const s of sockets)s.socket.close();
+  }
+  fs.writeFileSync(args.out, JSON.stringify(out, null, 2)""")
+    # Close admissions on observer loss. For restart runs, the controller
+    # still owns the phase transition; an early probe exit cannot trigger it.
+    source=source.replace("  while (!fs.existsSync(path.join(signalDir, '.restart'))) {",
+                          "  while (!out.sqlObserverFailure && !fs.existsSync(path.join(signalDir, '.restart')) && (args.maxWrites===undefined || k<Number(args.maxWrites))) {")
+    restart_block = "  if (args.restart === '1') {"
+    source=source.replace(restart_block, restart_block+"\n    if(out.sqlObserverFailure){out.failure=out.sqlObserverFailure;} else {")
+    source=source.replace("    out.restart = restart;\n  }", "    out.restart = restart;\n    }\n  }")
+    source=source.replace("  process.exit(0);", "  process.exit(out.sqlObserverFailure && args.restart==='1' ? 1 : 0);")
+    source=source.replace("  savePartial();\n  log('window'", "  if(out.sqlObserverFailure)out.window.evaluationMissedWithin120s=null;\n  savePartial();\n  log('window'")
     if serial_exchange:
         stock="async function exchange (t) {"
         require(source.count(stock)==1,'M7_SERIAL_EXCHANGE_STOCK_ANCHOR')
