@@ -60,7 +60,7 @@ def native_resource_observation(out, initial):
         try:values[name]=(root/name).read_text().strip()
         except OSError:values[name]='UNMEASURED'
     k.write(Path(out)/'native-resources-final.json',dict(localCgroup=current,readback=values,
-        scope='combined native driver/controller/observer cgroup lifetime peak; no split or phase peak inferred'))
+        scope=initial.get('localScope','combined native driver/controller/observer cgroup lifetime peak; no split or phase peak inferred')))
 
 
 def finite_scope(c, limits):
@@ -499,6 +499,10 @@ def execute(d, c, objects, client, load=False, recovery=False):
     baseline = k.active_baseline(d)
     before = k.observe(c, objects, client, baseline)
     readback = actor(c)
+    if c.get('nativeLoad') is not None:
+        readback['localScope'] = 'workstation controller/probe/observer only; Kubernetes load Pod resources and runtime custody are separate'
+        readback['declaredLoadPod'] = {key:c['nativeLoad'][key] for key in
+                                      ('nodeName','image','resources','exporterResources')}
     out.mkdir(mode=0o700)
     k.write(out / 'before.json', before)
     k.write(out / 'driver.json', readback)
@@ -625,6 +629,9 @@ def execute(d, c, objects, client, load=False, recovery=False):
         k.write(out / 'window.json', {'startedAt': started, 'endedAt': time.time(), 'loadStartedAt': load_started,
                                      'loadEndedAt': load_ended, 'loadProcessStartedAt': load_process_started,
                                      'loadProcessEndedAt': load_process_ended,
+                                     'driverTransport': 'in-cluster-k6-service' if c.get('nativeLoad') is not None else 'workstation-native-k6',
+                                     'loadProcessBoundary': 'Job invocation through bounded artifact custody; writer container times retained in native-load.json'
+                                         if c.get('nativeLoad') is not None else 'local native process lifetime',
                                      'loadWindowBasis': 'first ordinary scenario request through configured duration capped at native exit; JWT setup and final drain excluded',
                                      'runId': runid, 'pins': c['pins'],
                                      'context': c['context'], 'namespaceUid': baseline['namespace']['uid']})

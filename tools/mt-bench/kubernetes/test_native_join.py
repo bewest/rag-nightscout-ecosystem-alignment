@@ -214,6 +214,9 @@ class NativeJoin(unittest.TestCase):
             self.assertEqual(result['verdict'],'OBSERVED');local.assert_not_called()
             self.assertEqual(events,['probe-start','native-load','probe-joined','catchup','terminal-progress','full-assessor'])
             self.assertEqual(midpoints,['observed'])
+            self.assertIn('controller/probe/observer',k.document(out/'driver.json')['localScope'])
+            self.assertEqual(k.document(out/'driver.json')['declaredLoadPod']['image'],c['nativeLoad']['image'])
+            self.assertEqual(k.document(out/'window.json')['driverTransport'],'in-cluster-k6-service')
 
     def test_full_native_load_midpoint_path_stops_writer_and_preserves_failure(self):
         from test_native_load import TENANTS, SCRIPT
