@@ -187,16 +187,16 @@ def ready(label,typ,timeout,convergence=None,primer_job=None):
         unavailable=False
     stable=producer_startup.StableReady(convergence['stableReadySeconds'] if convergence else 0)
     failures={}
-    placements = {}
+    placements = []
     try:
         with progress.bound_reads():
             while time.time()<until and progress.remaining()>0:
                 owned()
                 found=pods(label)
                 if any(x['metadata']['labels'].get('nightscout.org/run-id')!=rid for x in found):raise RuntimeError('FOREIGN_POD')
-                placements = {p['metadata']['uid']: scheduling.outcome(p) for p in found}
+                placements = [scheduling.outcome(p) for p in found]
                 if found:
-                    put('placement-'+typ+'.json', list(placements.values()))
+                    put('placement-'+typ+'.json', placements)
                 ready_pod=None
                 identity=None
                 for pod in found:
@@ -264,7 +264,7 @@ def ready(label,typ,timeout,convergence=None,primer_job=None):
             raise
         if primer_job is not None:
             unavailable=True
-    if any(p['placement'] == 'Unschedulable' for p in placements.values()):
+    if any(p['placement'] == 'Unschedulable' for p in placements):
         raise RuntimeError('K8S_POD_UNSCHEDULABLE')
     if primer_job is not None and time.time()<outer:
         raise RuntimeError('PRIMER_PROVISION_PROGRESS_UNMEASURED' if unavailable else 'PRIMER_PROVISION_STALLED')
