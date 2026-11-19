@@ -505,6 +505,40 @@ class Adapter(unittest.TestCase):
                 with self.assertRaisesRegex(k.Refused,'FIXTURE_FANOUT_COLLISION'):execute.matrix_plan(value)
                 configs[1][1]['namespace']='synthetic-1';execute.matrix_plan(value)
 
+    def test_projection_keeps_only_authored_tolerations_and_exact_default_evictions(self):
+        reserved = {'key':'nightscout.org/reserved','operator':'Equal','value':'run','effect':'NoSchedule'}
+        default = {'key':'node.kubernetes.io/not-ready', 'effect':'NoExecute',
+                   'operator':'Exists','tolerationSeconds':300}
+        unreachable = dict(default, key='node.kubernetes.io/unreachable')
+        spec = dict(self.render[1]['spec']['template']['spec'], tolerations=[reserved])
+        for rows, matches in (([reserved, default, unreachable], True),
+                              ([reserved], True), ([default, unreachable], False),
+                              ([dict(reserved,value='peer'),default,unreachable], False),
+                              ([reserved,dict(default,tolerationSeconds=0)], False),
+                              ([reserved,default,default], False),
+                              ([reserved,dict(default,key='foreign')], False)):
+            with self.subTest(rows=rows):
+                actual = dict(spec, tolerations=rows)
+                visible,_ = k.admission_projection(spec, actual)
+                self.assertEqual(k.subset(spec, visible), matches)
+                self.assertEqual(actual['tolerations'], rows)
+
+    def test_owned_pod_observation_with_reserved_and_default_tolerations(self):
+        parent = 'StatefulSet/cohort'
+        reserved = {'key':'nightscout.org/reserved','value':'run','effect':'NoSchedule','operator':'Equal'}
+        defaults = [{'key':'node.kubernetes.io/'+key,'operator':'Exists','effect':'NoExecute','tolerationSeconds':300}
+                    for key in ('not-ready','unreachable')]
+        for obj in (self.objects[parent], self.client.objects[parent]):
+            k.template(obj)['spec']['tolerations'] = [reserved]
+        pod = self.client.pods[0]
+        pod['spec']['tolerations'] = [reserved, *defaults]
+        self.assertEqual(self.green()['pods'][pod['metadata']['name']]['uid'], pod['metadata']['uid'])
+        pod['spec']['tolerations'][0] = dict(reserved, value='foreign')
+        with self.assertRaisesRegex(k.Refused, 'K8S_POD_SPEC_CHANGED'):
+            self.green()
+        pod['spec']['tolerations'][0] = reserved
+        self.green()
+
     def test_projection_permits_only_default_service_account_admission(self):
         spec=self.render[1]['spec']['template']['spec'];actual=copy.deepcopy(spec)
         actual['volumes']=[{'name':'kube-api-access-synthetic','projected':{'sources':[{'serviceAccountToken':{'path':'token'}}]}}]

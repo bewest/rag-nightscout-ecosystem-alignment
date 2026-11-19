@@ -183,8 +183,17 @@ def subset(expected, actual):
 
 
 def admission_projection(expected, actual):
-    """Permit only Kubernetes' default projected service-account volume."""
+    """Compare declared Pod fields after canonical resource and admission defaults."""
     value = resource_budget.readback_projection(expected, actual, need)
+    if 'tolerations' in expected:
+        # DefaultTolerationSeconds appends these exact evictions to a Pod while
+        # its controller template retains the authored list. Preserve all other
+        # observed entries for the caller's exact list comparison.
+        observed = value.get('tolerations', [])
+        for key in ('node.kubernetes.io/not-ready', 'node.kubernetes.io/unreachable'):
+            default = {'key':key, 'operator':'Exists', 'effect':'NoExecute', 'tolerationSeconds':300}
+            if default not in expected['tolerations'] and default in observed:
+                observed.remove(default)
     declared = {v['name'] for v in expected.get('volumes', [])}
     extra = [v for v in value.get('volumes', []) if v['name'] not in declared]
     admitted = []

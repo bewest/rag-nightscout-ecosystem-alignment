@@ -653,7 +653,9 @@ commissioner or binding control does not qualify a runtime configuration.
 ### Placement and fit
 
 Kubernetes places standard runs using each Pod’s declared requests. A standard
-case creates no namespace ResourceQuota or LimitRange. The per-run owned-worker,
+namespace quota accounts for the rendered requests and Pod count, with room
+for each controller to overlap a replacement. A LimitRange supplies omitted
+container requests. Explicit requests and Pod placement remain with Kubernetes. The per-run owned-worker,
 provision/serving phase-fit, node-memory and private provision-source proofs were
 removed on 2026-11-18 under decision
 [k8s-platform-proofs-to-deploy](../../../docs/30-design/tenancy/multitenancy-decisions.md#k8s-platform-proofs-to-deploy);
