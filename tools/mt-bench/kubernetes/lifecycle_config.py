@@ -17,7 +17,7 @@ FIELDS = {'version','caseDirectory','instrumentDirectory','alignmentCommit','can
           'toolsDirectory','snapshotDirectory','cacheAbsence','runTemplate','coreRepository',
           'k6','readonlyGuard','observerScript','nativeLimits','primerConcurrency','edgePort','pullSecretCommand','inputs',
           'startupWindowPreflight','primerOptionsPreflight',
-          'populationCeilingPreflight','schedulerPlacement','capturedSourceCommit'}
+          'populationCeilingPreflight','schedulerPlacement','capturedSourceCommit','fixture'}
 STAGES = ('namespace','cluster-trust','foundation','stores','provision','private-admin','primer','serving')
 
 def stages_for(inventory):
@@ -92,6 +92,10 @@ def fixture_config(path, capture=False):
              all(isinstance(x,str) and x and '\x00' not in x for x in c['pullSecretCommand']), 'PULL_COMMAND')
     scheduler = c.get('schedulerPlacement', False)
     need(type(scheduler) is bool, 'SCHEDULER_PLACEMENT')
+    if 'fixture' in c:
+        reuse = c['fixture']
+        need(isinstance(reuse,dict) and reuse.get('mode') in ('seed','restore') and Path(reuse.get('directory','')).is_absolute()
+             and (Path(c['caseDirectory'])/'stages/fixture-claims.json').is_file(), 'FIXTURE')
     files=[reference(c['runTemplate'])]
     if not scheduler:
         files.append(reference(c['cacheAbsence']))

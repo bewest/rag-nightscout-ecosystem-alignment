@@ -15,6 +15,7 @@ import subprocess
 import time
 
 import experiment
+import fixture_copy
 import frozen
 import kube_adapter as k
 import lifecycle_config as lc
@@ -35,7 +36,7 @@ def resolve_image(reference, inspect=None):
 
 
 def prepare(template_case, binding, profile_path, output, *, app_image, postgres_image=None,
-            namespace_prefix=NAMESPACE_PREFIX, core=None, taint=None, inspect=None):
+            namespace_prefix=NAMESPACE_PREFIX, core=None, taint=None, inspect=None, fixture=None):
     output = output.resolve()
     inputs = (template_case, binding)
     k.need(all(not output.is_relative_to(path.resolve()) for path in inputs),
@@ -46,7 +47,7 @@ def prepare(template_case, binding, profile_path, output, *, app_image, postgres
         raise k.Refused('K8S_STANDARD_CASE_EXISTS','UNMEASURED') from None
     try:
         return _materialize(template_case,binding,profile_path,output,core,taint,
-                            app_image,postgres_image,namespace_prefix,inspect)
+                            app_image,postgres_image,namespace_prefix,inspect,fixture)
     except Exception as error:
         failed = output.with_name(output.name+'.failed-'+str(time.time_ns()))
         output.rename(failed)
@@ -63,7 +64,7 @@ def prepare(template_case, binding, profile_path, output, *, app_image, postgres
 
 
 def _materialize(template_case, binding, profile_path, output, core, taint,
-                 app_image, postgres_image, namespace_prefix, inspect):
+                 app_image, postgres_image, namespace_prefix, inspect, fixture=None):
     template_case = template_case.resolve()
     binding = binding.resolve()
     output = output.resolve()
@@ -82,6 +83,9 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     env = k.document(template_case/'environment.json')
     storage = binding_inputs['storage']
     k.need(storage['mode'] in ('disposable', 'existing-claim'), 'STANDARD_CASE_STORAGE')
+    if fixture:
+        # Reuse selected: operator-approved claims replace disposable storage.
+        binding_inputs['storage'] = storage = fixture_copy.storage(storage)
     run['storageMode'] = storage['mode']
     selection = run.pop('nativeLoad')
     resources = k.document(binding/'bindings/kubernetes/lib/ns/typical-requests.json')
@@ -151,6 +155,13 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     (output/'stages').mkdir()
     for stage,items in stages.items():
         k.write(output/'stages'/(stage+'.json'),{'apiVersion':'v1','kind':'List','items':items})
+    if fixture:
+        library = binding/'bindings/kubernetes/lib'
+        k.write(output/'stages/fixture-claims.json',
+                fixture_copy.render(jsonnet,library,namespace,run_id,fixture,tenants,candidate['postgres']))
+        if fixture['mode'] == 'seed':
+            k.write(output/'stages/fixture-snapshots.json',
+                    fixture_copy.snapshot_objects(jsonnet,library,namespace,run_id,fixture))
 
     k.write(output/'intent.json',intent)
     env.update(namespace=namespace,runId=run_id,images=images,tenantCount=tenants,sourceCommit=source['coreCommit'],
@@ -172,6 +183,8 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
                             schedulerPlacement=True,coreRepository=str(core),runTemplate=lc.ref(output/'native-run-template.json'),
                             candidate=candidate,alignmentCommit=alignment,nativeLimits=control['nativeLimits'],
                             primerConcurrency=phases.get('primerOptions',{}).get('concurrency',control['primerConcurrency']))
+    if fixture:
+        selected_control['fixture'] = fixture
     k.write(output/'lifecycle-input.json',selected_control)
     native_join.prepare_case(output,selection)
     instance = {'config':str(output/'native-run-template.json'),'render':str(output/'render.json'),
