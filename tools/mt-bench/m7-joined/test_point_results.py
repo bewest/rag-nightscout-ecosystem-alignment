@@ -48,6 +48,48 @@ class StandardPoint(unittest.TestCase):
             self.assertEqual(value['cleanup']['status'], 'DEFERRED_TO_SESSION_CLOSE')
             self.assertFalse((root.parent/'result.json').exists())
 
+    def test_comparison_uses_all_shards_and_time_weights_shorter_executors(self):
+        with TemporaryDirectory() as temp:
+            root = Path(temp)
+            load = root/'load'
+            load.mkdir()
+            points.write(root/'run.json', {'tenants': 30, 'ordinaryRosterTenants': 10})
+            scenarios = {'read': {'perSecond': 4, 'durationSeconds': 10}, 'write': {'perSecond': 2, 'durationSeconds': 5}}
+            shards = [{'plan': {'shardCount': 2, 'shardIndex': index, 'scenarios': scenarios},
+                       'byScenario': {'read': {'steadyCompletions': 36}, 'write': {'steadyCompletions': 9}}}
+                      for index in range(2)]
+            summary = {'kind': 'm7-configured-driver-accounting', 'population': 10,
+                       'cadence': {'loadSeconds': 10, 'logicalPollingClients': 0},
+                       'configuration': {'scenarios': scenarios}, 'shards': shards,
+                       'totals': {'offered': 100.0, 'steadyCompletions': 90, 'completed': 107, 'issued': 109}}
+            latencies = {'verdict': 'MEASURED', 'perShard': [{'read': {'p(95)': 11}}, {'read': {'p(95)': 13}}]}
+            for driver, path in [('driver-vu-assessment.json', 'outcome-gate.json'), ('driver-accounting.json', 'result.json')]:
+                with self.subTest(driver=driver):
+                    points.write(load/driver, summary)
+                    points.write(load/path, {'httpLatencyAllShards': latencies})
+                    report = points.load_report(load, {})
+                    self.assertEqual([report[key] for key in ('provisionedTenants', 'ordinaryTenants', 'selectedViewers')], [30, 10, 0])
+                    rate = report['ordinaryRate']
+                    self.assertEqual([rate[k] for k in ('windowSeconds', 'targetRps', 'achievedRps')], [10, 10, 9])
+                    self.assertEqual(report['httpLatencyAllShardsMs'], latencies)
+                    (load/driver).unlink()
+                    (load/path).unlink()
+            points.write(load/'native-load.json', {'writerContinuity': 'UNMEASURED'})
+            points.write(load/'driver-accounting.json', summary)
+            points.write(load/'result.json', {'httpLatencyAllShards': latencies})
+            report = points.load_report(load, {})
+            self.assertEqual(report['ordinaryRate']['targetRps'], 10)
+            self.assertEqual(report['ordinaryRate']['achievedRps'], 'UNMEASURED')
+            self.assertEqual(report['httpLatencyAllShardsMs'], 'UNMEASURED')
+            (load/'native-load.json').unlink()
+            del summary['totals']['steadyCompletions']
+            points.write(load/'driver-accounting.json', summary)
+            self.assertEqual(points.load_report(load, {})['ordinaryRate']['achievedRps'], 'UNMEASURED')
+            summary['kind'] = 'm7-configured-driver-partial'
+            points.write(load/'driver-accounting.json', summary)
+            rate = points.load_report(load, {})['ordinaryRate']
+            self.assertEqual((rate['targetRps'], rate['achievedRps']), ('UNMEASURED', 'UNMEASURED'))
+
     def test_native_failure_and_unconfirmed_host_unit(self):
         with TemporaryDirectory() as temp:
             root = Path(temp)/'point'
