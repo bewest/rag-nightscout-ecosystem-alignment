@@ -752,6 +752,32 @@ def stored(d, c, objects, runid, client=None):
     return values
 
 
+def probe_sql_bridge():
+    """Retain bounded failure metadata without SQL, argv or child output."""
+    return r"""const psqlAsync = sql => new Promise((resolve,reject)=>{
+  const began=performance.now();
+  const child=execFile(process.env.K8S_PYTHON,[process.env.K8S_ADAPTER,'sql',process.env.K8S_RUN_DIRECTORY],
+    {encoding:'utf8',timeout:60000,maxBuffer:32<<20},(err,stdout,stderr)=>{
+      if(!err)return resolve(stdout);
+      const nodeErrorCode=typeof err.code==='string'&&/^ERR_[A-Z_]{1,80}$/.test(err.code)?err.code:null;
+      const value={version:1,verdict:'UNMEASURED',code:'M7_PROBE_SQL_OBSERVATION_UNAVAILABLE',
+        reason:nodeErrorCode==='ERR_CHILD_PROCESS_STDIO_MAXBUFFER'?'OUTPUT_BOUND':err.killed?'TIMEOUT':'CHILD_EXIT',
+        exitCode:Number.isInteger(err.code)?err.code:null,nodeErrorCode,
+        signal:typeof err.signal==='string'&&/^[A-Z0-9]{1,24}$/.test(err.signal)?err.signal:null,
+        timeoutMs:60000,wallMs:performance.now()-began,
+        stdoutBytes:Buffer.byteLength(stdout||''),stderrBytes:Buffer.byteLength(stderr||''),
+        childReportedCodes:[...new Set((stderr||'').match(/\b(?:K8S|M7)_[A-Z_]{1,88}\b/g)||[])].slice(0,16)};
+      // The first transport failure is evidence; later callbacks cannot replace it.
+      // A diagnostic write failure must never turn the failed read into success.
+      try{fs.writeFileSync(path.join(signalDir,'sql-observation-failure.json'),
+        JSON.stringify(value)+'\n',{mode:0o600,flag:'wx'});}catch{}
+      reject(Error(value.code));
+    });
+  child.stdin.end(sql);
+});
+"""
+
+
 def generate_probe(target):
     result = probe.generate(ROOT, target)
     source = Path(target).read_text()
@@ -760,7 +786,7 @@ def generate_probe(target):
     source = source.replace(old, "if(args.restart!=='0'||!process.env.M7_COMPLETION_SOURCE)throw Error('K8S_PROBE_BOUNDARY');")
     start = source.index('const psqlAsync =')
     end = source.index('const pct =', start)
-    source = source[:start] + "const psqlAsync = sql => new Promise((resolve,reject)=>{const child=execFile(process.env.K8S_PYTHON,[process.env.K8S_ADAPTER,'sql',process.env.K8S_RUN_DIRECTORY],{encoding:'utf8',timeout:60000,maxBuffer:32<<20},(err,stdout)=>err?reject(Error('K8S_SQL_OBSERVATION_LOST')):resolve(stdout));child.stdin.end(sql);});\n" + source[end:]
+    source = source[:start] + probe_sql_bridge() + source[end:]
     # Do not emulate Docker health/restart. Kubernetes role restart is a distinct
     # operator command while the ordinary stock probe remains connected.
     start = source.index("  if (args.restart === '1') {")

@@ -755,6 +755,13 @@ UID-conditioned namespace/trust cleanup. Snapshot freshness and actual fit are
 still checked at entry. No case-name list or inherited tiny allocation is used.
 The operating owner supplies aggregate host/cluster admission and live custody.
 
+When the stock probe's SQL transport fails, `sql-observation-failure.json`
+retains the first child's exit/timeout/output-bound classification, reported
+error codes, byte counts and elapsed time. It excludes SQL, command arguments
+and raw output. The read still fails as UNMEASURED; the 60-second transport
+bound and 120-second clinical deadline are unchanged. Keep a waiting setup
+Job's native lifetime long enough for the phases that still inspect it.
+
 `jobs.py` consumes the deployment repository's registered job CLI and renderer
 from its selected tool commit. `plan` emits that actual contract for bootstrap,
 provision, prime, platform verification or offline verification-plan. It keeps
