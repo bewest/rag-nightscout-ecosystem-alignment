@@ -26,7 +26,7 @@ class StandardPoint(unittest.TestCase):
     def test_failure_after_prepare_has_terminal_result(self):
         with TemporaryDirectory() as temp:
             root = Path(temp)/'point'
-            def prepared(config, raw, one_shot):
+            def prepared(config, raw, one_shot, candidate=None):
                 raw.mkdir()
                 points.write(raw/'result.json', {'status':'PREPARED', 'phase':'prepare'})
                 return raw
@@ -48,6 +48,21 @@ class StandardPoint(unittest.TestCase):
             self.assertEqual(value['measurements']['offeredWork'], 'UNMEASURED')
             self.assertEqual(value['cleanup']['status'], 'DEFERRED_TO_SESSION_CLOSE')
             self.assertFalse((root.parent/'result.json').exists())
+
+    def test_candidate_is_a_run_parameter_replacing_any_pinned_tuple(self):
+        stale = {'version': 1, 'prepare': {'image': 'sha256:'+'1'*64, 'image-id': 'sha256:'+'1'*64,
+                                           'core-commit': 'a'*40, 'deploy-commit': 'b'*40, 'tenants': 8}}
+        inspect = [{'Id': 'sha256:'+'2'*64, 'RepoDigests': ['registry.test/ns@sha256:'+'3'*64],
+                    'Config': {'Labels': {'org.opencontainers.image.revision': 'c'*40, 'org.nightscout.deploy.revision': 'd'*40}}}]
+        import json
+        with patch.object(runner.a, 'command', return_value=json.dumps(inspect)) as command:
+            config, candidate = runner.with_candidate(stale, 'candidate:tag')
+        command.assert_called_once_with(['docker', 'image', 'inspect', 'candidate:tag'])
+        self.assertEqual({k: config['prepare'][k] for k in runner.CANDIDATE_OPTIONS},
+                         {'image': 'sha256:'+'2'*64, 'image-id': 'sha256:'+'2'*64, 'core-commit': 'c'*40, 'deploy-commit': 'd'*40})
+        self.assertEqual((config['prepare']['tenants'], candidate['repoDigests']), (8, ['registry.test/ns@sha256:'+'3'*64]))
+        with patch.dict('os.environ', {}, clear=True):
+            self.assertEqual(runner.with_candidate(stale), (stale, None))
 
     def test_rate_from_k6_counts_beside_configured_target(self):
         with TemporaryDirectory() as temp:

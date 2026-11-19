@@ -958,16 +958,22 @@ the existing runner configuration. Existing version 1 configurations that
 omit `tier` retain their receipt-based workflow.
 
 ```bash
-python3 tools/mt-bench/m7-joined/runner.py plan /absolute/private/config.json
+python3 tools/mt-bench/m7-joined/runner.py plan /absolute/private/config.json --candidate <image>
 python3 tools/mt-bench/m7-joined/runner.py run /absolute/private/config.json \
-  /mnt/data/nightscout-workspace/artifacts/<lane>/<new-run>
+  /mnt/data/nightscout-workspace/artifacts/<lane>/<new-run> --candidate <image>
 ```
 
+The candidate is a run parameter, not part of the configuration: `--candidate`
+(or `M7_CANDIDATE_IMAGE`) names a local image reference, and the runner sets
+`image`, `image-id`, `core-commit` and `deploy-commit` from its digest and its
+`org.opencontainers.image.revision` / `org.nightscout.deploy.revision` labels,
+replacing anything the configuration carried. `candidate.json` beside the
+retained `config.json` records the reference, digest and registry digests.
+Run identity is the alignment commit, that digest and the run configuration.
+
 `plan` prints authored keys, applied defaults, effective cadence, resource
-mode, and source admission. It starts no services. Tiered runs check source
-worktree heads and cleanliness and inspect the actual image before starting a
-fixture. Supply an existing immutable application image and its exact core
-and deployment heads. For smoke and discovery, omit `prepare.receipt` to
+mode, and source admission. It starts no services. Tiered runs inspect the
+actual image before starting a fixture. For smoke and discovery, omit `prepare.receipt` to
 have the runner bind the verified source and authored finite plan into a
 private PENDING receipt. Supply the frozen source acceptance receipt for the
 acceptance tier. The runner preserves input failures and automatically indexes

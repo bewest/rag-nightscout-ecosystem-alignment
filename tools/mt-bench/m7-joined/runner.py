@@ -113,6 +113,32 @@ def clean_source_preflight(parsed):
 
 
 
+CANDIDATE_OPTIONS = ('image', 'image-id', 'core-commit', 'deploy-commit')
+
+
+def with_candidate(config, reference=None):
+    """The candidate image is a run parameter, never a pinned tuple in the config.
+
+    `--candidate` (or M7_CANDIDATE_IMAGE) names a local image reference. Its
+    digest and its labelled core/deploy revisions replace whatever the config
+    carried, and are recorded as the run's identity with the run configuration.
+    """
+    reference = reference or os.environ.get('M7_CANDIDATE_IMAGE')
+    if not reference:
+        return config, None
+    spec = json.loads(a.command(['docker', 'image', 'inspect', reference]))[0]
+    labels = (spec.get('Config') or {}).get('Labels') or {}
+    candidate = {'reference': reference, 'imageId': spec['Id'], 'repoDigests': spec.get('RepoDigests') or [],
+                 'core': labels.get('org.opencontainers.image.revision'),
+                 'deploy': labels.get('org.nightscout.deploy.revision')}
+    require(all(isinstance(candidate[k], str) and re.fullmatch(r'[0-9a-f]{40}', candidate[k]) for k in ('core', 'deploy')),
+            'M7_CANDIDATE_LABELS')
+    prepare = {k: v for k, v in config['prepare'].items() if k not in CANDIDATE_OPTIONS}
+    prepare.update({'image': spec['Id'], 'image-id': spec['Id'],
+                    'core-commit': candidate['core'], 'deploy-commit': candidate['deploy']})
+    return {**config, 'prepare': prepare}, candidate
+
+
 def write(path, value):
     path = Path(path)
     temp = path.with_name(path.name + '.partial-' + str(os.getpid()))
@@ -232,8 +258,8 @@ def materialize_tier_receipt(directory, config, argv):
             break
 
 
-def prepare(config_file, directory, *, one_shot=False):
-    config = a.document(config_file)
+def prepare(config_file, directory, *, one_shot=False, candidate=None):
+    config, selected = with_candidate(a.document(config_file), candidate)
     tier = config.get('tier')
     if tier is None:
         _, argv = validate_config(config)
@@ -242,6 +268,8 @@ def prepare(config_file, directory, *, one_shot=False):
     require(not root.exists(), 'M7_RUNNER_OUTPUT_EXISTS')
     root.mkdir(mode=0o700, parents=True)
     write(root / 'config.json', config)
+    if selected is not None:
+        write(root / 'candidate.json', selected)
     entry_memory = point_results.available_memory()
     write(root / 'result.json', {'version': 1, 'memAvailableAtEntryBytes': entry_memory, 'status': 'PREPARING', 'phase': 'prepare', 'capacityAcceptance': 'NOT_GRANTED'})
     phase = 'configuration'
@@ -794,15 +822,19 @@ def main():
     sub = parser.add_subparsers(dest='action', required=True)
     sub.add_parser('identity')
     project=sub.add_parser('project');project.add_argument('config');project.add_argument('--source-acceptance')
+    candidate_help = 'Candidate image reference (default $M7_CANDIDATE_IMAGE); sets image, image-id and the labelled core/deploy commits'
+    project.add_argument('--candidate', help=candidate_help)
     for mode in ('prepare', 'run'):
         prep = sub.add_parser(mode)
         prep.add_argument('config')
         prep.add_argument('directory')
+        prep.add_argument('--candidate', help=candidate_help)
         if mode == 'run':
             prep.add_argument('--standard-case', action='store_true',
                               help='Create a fresh case with result.json, cleanup.json and raw/')
     plan = sub.add_parser('plan')
     plan.add_argument('config')
+    plan.add_argument('--candidate', help=candidate_help)
     for name in ('execute', 'rehearse', 'result', 'down', '_guard'):
         sub.add_parser(name).add_argument('directory')
     start = sub.add_parser('session-start');start.add_argument('config');start.add_argument('directory')
@@ -818,7 +850,7 @@ def main():
     if args.action == 'session-close':return session_close(args.directory,args.owner)
     if args.action == 'project':
         import run_configuration as rc
-        config=a.document(args.config)
+        config,_=with_candidate(a.document(args.config),args.candidate)
         acceptance=a.document(args.source_acceptance) if args.source_acceptance else None
         value=rc.resolve(config,acceptance)
         return print(json.dumps(value,indent=2))
@@ -826,16 +858,16 @@ def main():
         identity = a.instrument()
         return print(json.dumps({'helperHead': identity['commit'], 'helperInstrument': identity['sha256']}, indent=2))
     if args.action == 'plan':
-        return print(json.dumps(tier_plan(a.document(args.config)), indent=2))
+        return print(json.dumps(tier_plan(with_candidate(a.document(args.config), args.candidate)[0]), indent=2))
     if args.action in ('prepare', 'run'):
         directory = Path(args.directory).resolve()
         if not getattr(args, 'standard_case', False):
-            root = prepare(args.config, directory, one_shot=args.action == 'run')
+            root = prepare(args.config, directory, one_shot=args.action == 'run', candidate=args.candidate)
             return execute(root) if args.action == 'run' else root
         directory.mkdir(mode=0o700, parents=True, exist_ok=False)
         raw = directory / 'raw'
         try:
-            return execute(prepare(args.config, raw, one_shot=True))
+            return execute(prepare(args.config, raw, one_shot=True, candidate=args.candidate))
         except BaseException as error:
             if not raw.exists():
                 raw.mkdir(mode=0o700)
