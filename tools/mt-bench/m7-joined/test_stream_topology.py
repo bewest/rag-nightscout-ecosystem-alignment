@@ -61,13 +61,12 @@ class Topology(unittest.TestCase):
         t.verify_source(EXTERNAL,schema)
         with self.assertRaisesRegex(RuntimeError,'EXTERNAL_SOURCE_REQUIRED'):t.verify_source(EXTERNAL,{'properties':{}})
 
-    def test_native_schema_missing_wrong_generation_recovery_and_unknown_property_refuse(self):
+    def test_native_schema_missing_wrong_generation_and_recovery_refuse(self):
         original=source_schema();green=lambda:t.verify_source(EXTERNAL,original)
         green()
         cases=[
             ('missing generation',lambda v:v['properties'].pop('generation'),'EXTERNAL_SOURCE'),
             ('missing recovery',lambda v:v['properties'].pop('recovery'),'EXTERNAL_SOURCE'),
-            ('unknown property',lambda v:v['properties'].update(oldAlternative={}),'EXTERNAL_SOURCE'),
             ('wrong generation domain',lambda v:v['properties']['generation'].update(pattern='^[a-f0-9]{64}$'),'NATIVE_SOURCE'),
             ('unbounded transaction',lambda v:v['properties']['transactionRows'].pop('maximum'),'NATIVE_SOURCE'),
             ('missing recovery field',lambda v:v['properties']['recovery']['required'].remove('connectionEnv'),'NATIVE_RECOVERY'),
@@ -85,6 +84,9 @@ class Topology(unittest.TestCase):
         annotated=copy.deepcopy(original)
         for key in ('transactionRows','generation','recovery'):annotated['properties']['pgstream']['properties'][key]['description']='annotation only'
         t.verify_source(EXTERNAL,annotated)
+        extended=copy.deepcopy(original)
+        extended['properties']['pgstream']['properties']['startupTransport']={'type':'object'}
+        t.verify_source(EXTERNAL,extended)
         old=copy.deepcopy(original);pgstream=old['properties']['pgstream']
         for key in ('transactionRows','generation','recovery'):pgstream['properties'].pop(key)
         pgstream.pop('dependentRequired')
@@ -114,6 +116,21 @@ class Topology(unittest.TestCase):
         broken=copy.deepcopy(schema);broken['properties']['pgstream']['properties']['generation']['pattern']='.*'
         with self.assertRaisesRegex(RuntimeError,'NATIVE_SOURCE_REQUIRED'):t.verify_source(EXTERNAL,broken)
         t.verify_source(EXTERNAL,schema)
+
+    @unittest.skipUnless(os.environ.get('M7_NATIVE_CORE_REPO') and os.environ.get('M7_NATIVE_CORE_COMMIT'),'exact selected Git source required')
+    def test_selected_shipping_parser_owns_optional_startup_transport_and_native_refusals(self):
+        repo=os.environ['M7_NATIVE_CORE_REPO'];head=os.environ['M7_NATIVE_CORE_COMMIT']
+        self.assertEqual(subprocess.check_output(['git','-C',repo,'rev-parse','HEAD'],text=True).strip(),head)
+        subprocess.run(['git','-C',repo,'diff','--quiet','HEAD','--','lib/pgstream/config.js'],check=True)
+        code="""const assert=require('node:assert/strict'),parse=require(process.argv[1]+'/lib/pgstream/config').parse;
+        const value={receiver:{url:'http://evaluator:19913/',trust:'network',bindHost:'0.0.0.0',maxBytes:16777216,timeoutMs:5000},slot:'synthetic_slot',streamRole:'synthetic_stream',bounds:{stepMs:5000,recoveryMs:30000,pendingMs:30000},transactionRows:10000,generation:'a'.repeat(32),recovery:{connectionEnv:'NS_SYNTHETIC_PG',timeoutMs:30000,maxQueued:1024},startupTransport:{timeoutMs:30000,retryIntervalMs:500}};
+        const green=()=>assert.deepEqual(parse(value).startupTransport,value.startupTransport);green();
+        for(const mutate of [x=>x.startupTransport.retryIntervalMs=30001,x=>x.generation='foreign',x=>x.recovery.maxQueued=1025,x=>delete x.transactionRows,x=>x.unsupported=true]){
+          const bad=structuredClone(value);mutate(bad);assert.throws(()=>parse(bad));green();
+        }
+        console.log('SHIPPING_PARSER_OPTIONAL_NATIVE_RED_RESTORED');"""
+        result=subprocess.run(['node','-e',code,repo],check=True,capture_output=True,text=True,timeout=15)
+        self.assertIn('SHIPPING_PARSER_OPTIONAL_NATIVE_RED_RESTORED',result.stdout)
 
     def test_process_container_and_image_birth(self):
         old={'evaluator':{'hostProcesses':{'1':{'name':'node'},'2':{'name':'pgstream'}}}}

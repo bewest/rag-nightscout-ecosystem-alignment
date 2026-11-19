@@ -244,7 +244,7 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
     k.need(c['storageMode'] == 'disposable', 'EXPERIMENT_STORAGE')
     if 'roleDocuments' in instance:
         docs = instance['roleDocuments']
-        measured = k.completion_source(c, docs['evaluator'], docs['realtime'])
+        measured = k.completion_source(c, docs['evaluator'], docs['realtime'], **({'native_receipt':docs['nativeReceipt']} if 'nativeReceipt' in docs else {}))
         k.need(c.get('completion', measured) == measured, 'COMPLETION_SOURCE_CHANGED')
         c['completion'] = measured
     if await_primer:

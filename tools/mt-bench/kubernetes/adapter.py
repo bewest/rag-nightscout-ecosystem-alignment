@@ -820,10 +820,11 @@ def cleanup_plan(c, observation, current):
             'absence': 'Read exact target; only Kubernetes Status reason=NotFound/code=404 proves absence. Command errors and Terminating do not.', 'cleanupUntil': c['deadlines']['cleanupUntil']}
 
 
-def completion_source(c, evaluator_config, realtime_config):
+def completion_source(c, evaluator_config, realtime_config, native_receipt=None):
     binding = {'kind': 'evaluator-work-v2', 'pair': c['pins']['pair'], 'imageId': c['pins']['appImageId'], 'instrument': c['pins']['instrument']}
-    code = "const fs=require('fs'),o=require(process.argv[1]);const v=JSON.parse(fs.readFileSync(0,'utf8'));console.log(JSON.stringify(o.source(v.evaluator,v.realtime,v.binding)));"
-    result = subprocess.run([c['driver']['node'], '-e', code, str(M7 / 'completed-oracle.cjs')], input=json.dumps({'evaluator': document(evaluator_config), 'realtime': document(realtime_config), 'binding': binding}).encode(), capture_output=True, timeout=10)
+    need(native_receipt is not None or c['pins'].get('candidate',{}).get('platformVerification')!='startup-v3', 'COMPLETION_RECEIPT_REQUIRED')
+    code = "const fs=require('fs'),o=require(process.argv[1]);const v=JSON.parse(fs.readFileSync(0,'utf8'));console.log(JSON.stringify(o.source(v.evaluator,v.realtime,v.binding,v.receipt)));"
+    result = subprocess.run([c['driver']['node'], '-e', code, str(M7 / 'completed-oracle.cjs')], input=json.dumps({'evaluator': document(evaluator_config), 'realtime': document(realtime_config), 'binding': binding, **({'receipt':document(native_receipt)} if native_receipt is not None else {})}).encode(), capture_output=True, timeout=10)
     need(result.returncode == 0, 'COMPLETION_SOURCE_REFUSED')
     return json.loads(result.stdout)
 
@@ -835,6 +836,7 @@ def main():
     p = sub.add_parser('completion-source')
     for arg in ('config', 'evaluator_config', 'realtime_config'):
         p.add_argument(arg)
+    p.add_argument('--native-receipt')
     p = sub.add_parser('tenant-projection')
     p.add_argument('primer_result')
     p.add_argument('count', type=int)
@@ -871,7 +873,7 @@ def main():
         return tenant_projection(document(args.primer_result), args.count)
     if args.command == 'completion-source':
         c = document(args.config)
-        return completion_source(c, args.evaluator_config, args.realtime_config)
+        return completion_source(c, args.evaluator_config, args.realtime_config, native_receipt=args.native_receipt)
     if args.command == 'prepare':
         return prepare(args.config, args.inventory, args.render, args.directory)
     if args.command == 'matrix-plan':

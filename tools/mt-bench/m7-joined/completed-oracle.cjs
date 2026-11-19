@@ -24,14 +24,14 @@ function binding(value){
  return value;
 }
 function prepare(config){const owned=plain(config);binding(owned.binding);if(!!owned.native!==!!owned.binding.nativeConfigurationSha256)fail('M7_COMPLETION_NATIVE_BINDING');if(owned.native)native.validateConfig(owned);selection(owned);freeze(owned);return owned;}
-function source(evaluator,realtime,selected){
+function source(evaluator,realtime,selected,receipt){
  if(evaluator?.selectedIntake!==undefined||realtime?.intakeProfile!==undefined)fail('M7_COMPLETION_SELECTED_PROFILE_RETIRED');
  binding(selected);
  const ns=evaluator?.postgres?.namespaces,completed=realtime?.completedOutput;
  if(!evaluator?.pgstream||!ns||!['clock','checkpoint','entries'].every(key=>NAME.test(ns[key]))||!/^evaluator-[A-Za-z0-9_-]{1,100}$/.test(evaluator.consumer)||completed?.namespace!==ns.checkpoint||completed?.consumer!==evaluator.consumer)fail('M7_COMPLETION_SOURCE');
  const config={clock:ns.clock,checkpoint:ns.checkpoint,entries:ns.entries,consumer:evaluator.consumer+'-completed',kind:selected.kind,binding:selected};
 
- const n=native.source(evaluator,realtime);if(n){config.native=n;config.binding={...config.binding,nativeConfigurationSha256:native.hash(n)};return prepare(config);}
+ const n=native.source(evaluator,realtime,receipt);if(n){config.native=n;config.binding={...config.binding,nativeConfigurationSha256:native.hash(n)};return prepare(config);}
  return config;
 }
 function query(config,ids,marker,progress=false){
@@ -55,10 +55,11 @@ function query(config,ids,marker,progress=false){
 const version=value=>typeof value==='string'&&/^(0|[1-9][0-9]*)$/.test(value);
 const exact=value=>version(value)&&value.length<=19&&BigInt(value)<=9223372036854775807n;
 function contractDigest(config){
+ // A captured receipt comes from the selected image's shipping factory, with
+ // its configuration and provisioning digest checked before any row is read.
+ if(config.native?.receipt)return config.native.receipt.contractDigest;
  const fields=[config.kind,config.checkpoint,config.consumer.replace(/-completed$/,'')];
- // Source lib/tenant-lifecycle/native-selection binds the native receipt to
- // intake-profile's lifecycle codec/domain. Legacy clock receipts keep their
- // original three-field contract; a row never supplies its expected digest.
+ // Historical native captures predate source receipts and retain their codec.
  if(config.native)fields.push('canonical-maintenance-active-plus2-v1','positive-int8-complete-pair-max-4611686018427387902-v1');
  return createHash('sha256').update(JSON.stringify(fields)).digest('hex');
 }

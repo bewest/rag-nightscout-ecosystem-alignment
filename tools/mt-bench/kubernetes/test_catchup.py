@@ -19,7 +19,7 @@ import kube_adapter as k
 import catchup
 import evaluator_progress as p
 import outcome_gate as g
-from test_adapter import A, B, fixture
+from test_adapter import A, B, fixture, iso
 from test_preload import page
 
 IDS = sorted([A, B])
@@ -65,7 +65,8 @@ class Catchup(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
 
-    def stage(self, fake, *, accounting=True, joined_ago=200, drain=4, module=catchup):
+    def stage(self, fake, *, accounting=True, joined_ago=200, drain=4, round_seconds=None,
+              work_seconds=None, module=catchup):
         d = Path(self.tmp.name) / ('run-%d' % len(list(Path(self.tmp.name).iterdir())))
         out = d / 'load'
         out.mkdir(parents=True)
@@ -74,6 +75,10 @@ class Catchup(unittest.TestCase):
                    'instrument':c['pins']['instrument']}
         c.update(tenants=2, completion={'kind':'evaluator-work-v2', 'binding':binding},
                  workload={'drainSeconds':drain, 'drainObservation':{'intervalSeconds':1}})
+        if round_seconds is not None:
+            c['workload']['drainObservation']['roundSeconds'] = round_seconds
+        if work_seconds is not None:
+            c['deadlines']['workUntil'] = iso(time.time() + work_seconds)
         c['driver'] = {**c.get('driver', {}), 'node':'/inert/node'}
         (out / 'runid').write_text('synthetic-run')
         if accounting:
@@ -91,6 +96,31 @@ class Catchup(unittest.TestCase):
             value = module.run(d, out, c, {}, client, IDS, writers_joined_ns=time.monotonic_ns() - joined_ago * 10**9,
                                drain_started=time.time(), collector=collector)
         return out, value
+
+    def timed_stage(self, *, round_seconds=60, drain=60, work_seconds=120, module=catchup):
+        """A real collector round with 25 synthetic seconds of SQL transport."""
+        import evaluator_catchup as shared
+        clock = SimpleNamespace(wall=time.time(), mono=time.monotonic())
+        fake = Fake()
+        read = fake.postgres_read
+        def postgres_read(*args):
+            raw = read(*args)
+            clock.wall += 25
+            clock.mono += 25
+            return raw
+        fake.postgres_read = postgres_read
+        observe = shared.observe
+        def bounded_observe(*args, **kwargs):
+            return observe(*args, **kwargs, monotonic_ns=lambda:int(clock.mono * 10**9),
+                           sleep=lambda _:self.fail('completed capture must not sleep'))
+        with patch.object(time, 'time', side_effect=lambda:clock.wall), \
+             patch.object(time, 'time_ns', side_effect=lambda:int(clock.wall * 10**9)), \
+             patch.object(time, 'monotonic', side_effect=lambda:clock.mono), \
+             patch.object(time, 'monotonic_ns', side_effect=lambda:int(clock.mono * 10**9)), \
+             patch.object(time, 'sleep', side_effect=AssertionError('inert capture must not sleep')), \
+             patch.object(shared, 'observe', side_effect=bounded_observe):
+            return self.stage(fake, joined_ago=5, drain=drain, round_seconds=round_seconds,
+                              work_seconds=work_seconds, module=module)
 
     def gate(self, out):
         return g.catchup(k.document(out / 'evaluator-catchup.json'), IDS)
@@ -129,6 +159,31 @@ class Catchup(unittest.TestCase):
         self.assertEqual((value['verdict'], value['code']), ('UNMEASURED', 'M7_DRAIN_DEADLINE'))
         self.assertFalse((out / 'catchup').exists(), 'no read before the window check')
 
+    def test_configured_long_round_reaches_storage_and_outcome_gate(self):
+        out, value = self.timed_stage()
+        self.assertEqual(value['verdict'], 'PASS', value.get('code'))
+        self.assertEqual(value['observationWindow']['collectorPolicy']['roundSeconds'], 60)
+        self.assertEqual(value['boundaryCost']['wallSeconds'], 25)
+        self.assertEqual(value['observationWindow']['selectedClinicalDeadlineSeconds'], 120)
+        self.assertEqual(self.gate(out)['verdict'], 'PASS')
+
+    def test_shorter_selected_round_still_refuses_slow_collection(self):
+        out, value = self.timed_stage(round_seconds=20)
+        self.assertEqual((value['verdict'], value['code']),
+                         ('UNMEASURED', 'K8S_CATCHUP_ROUND_DEADLINE'))
+        self.assertEqual(value['observationWindow']['collectorPolicy']['roundSeconds'], 20)
+        self.assertTrue((out / 'catchup' / 'round-0000-sql.private.jsonl').is_file())
+
+    def test_long_selected_round_cannot_extend_outer_drain_or_work_window(self):
+        for limits in ({'drain':10}, {'work_seconds':10}):
+            with self.subTest(**limits):
+                _, value = self.timed_stage(**limits)
+                self.assertEqual((value['verdict'], value['code']),
+                                 ('UNMEASURED', 'K8S_CATCHUP_ROUND_DEADLINE'))
+                self.assertAlmostEqual(value['observationWindow']['effectiveSeconds'], 10, places=5)
+                self.assertEqual(value['observationWindow']['collectorPolicy']['roundSeconds'], 60)
+                self.assertEqual(value['observationWindow']['selectedClinicalDeadlineSeconds'], 120)
+
 
 # ------------------------------------------------------------ break-it controls
 
@@ -163,6 +218,23 @@ class BreakIt(unittest.TestCase):
             return case.stage(kwargs.pop('fake'), module=module, **kwargs), case
         finally:
             pass
+
+    def test_configured_round_budget_control(self):
+        broken = ablated(catchup, '        deadline = time.monotonic() + timeout\n',
+                         '        deadline = time.monotonic() + min(timeout, self.o.ROUND_SECONDS)\n')
+        def criterion(module):
+            case = Catchup('test_configured_long_round_reaches_storage_and_outcome_gate')
+            case.setUp()
+            try:
+                _, value = case.timed_stage(module=module)
+                if module is broken:
+                    self.assertEqual((value['verdict'], value['code']),
+                                     ('UNMEASURED', 'K8S_CATCHUP_ROUND_DEADLINE'))
+                    self.assertEqual(value['observationWindow']['collectorPolicy']['roundSeconds'], 60)
+                return value['verdict'] == 'PASS'
+            finally:
+                case.tmp.cleanup()
+        self.check('configured-round-budget', criterion, module=broken)
 
     def test_stuck_tenant_control(self):
         import evaluator_catchup

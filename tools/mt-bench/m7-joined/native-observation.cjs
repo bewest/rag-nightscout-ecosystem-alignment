@@ -7,14 +7,22 @@ const hash=x=>createHash('sha256').update(canonical(x)).digest('hex');
 const name=x=>typeof x==='string'&&/^[a-z][a-z0-9_]{0,62}$/.test(x)&&!x.startsWith('pg_')&&!['public','information_schema'].includes(x);
 const exact=x=>typeof x==='string'&&/^(0|[1-9][0-9]*)$/.test(x)&&x.length<=19&&BigInt(x)<=9223372036854775807n;
 const position=x=>{if(typeof x!=='string'||! /^[0-9a-f]{1,8}\/[0-9a-f]{1,8}$/i.test(x))throw Error('M7_COMPLETION_NATIVE_POSITION');const [a,b]=x.split('/');return (BigInt('0x'+a)<<32n)+BigInt('0x'+b);};
-function source(e,r){
+function receipt(n,c,value){
+ if(!value||Object.keys(value).sort().join(',')!=='contractDigest,evaluatorConfigSha256,kind,realtimeConfigSha256,selection'||value.kind!=='native-receipt-contract-v1'||! /^[a-f0-9]{64}$/.test(value.contractDigest)||value.evaluatorConfigSha256!==n.evaluatorConfigSha256||value.realtimeConfigSha256!==n.realtimeConfigSha256)throw Error('M7_COMPLETION_NATIVE_RECEIPT');
+ if(value.selection!==null){const s=value.selection,b=s?.binding;if(!s||Object.keys(s).sort().join(',')!=='binding,selectionDigest'||! /^[a-f0-9]{64}$/.test(s.selectionDigest)||!b||Object.keys(b).sort().join(',')!=='consumer,generation,lifecycleNamespace,namespace,source'||b.namespace!==c.checkpoint||b.consumer!==n.inputConsumer||b.lifecycleNamespace!==n.lifecycle||b.generation!==n.generation||b.source?.slot!==n.slot)throw Error('M7_COMPLETION_NATIVE_RECEIPT');}
+ return value;
+}
+function source(e,r,selected){
  if(!e?.pgstream?.generation&&!e?.pgstream?.recovery)return null;
  if(!/^[a-f0-9]{32}$/.test(e.pgstream.generation)||!e.pgstream.recovery||!name(e.pgstream.slot)||!name(e.trustedWorker?.activity)||!/^evaluator-[A-Za-z0-9_-]{1,100}$/.test(e.consumer)||e.selectedIntake||r.intakeProfile)throw Error('M7_COMPLETION_NATIVE_SOURCE');
- return {kind:'compact-native-v1',inputConsumer:e.consumer,lifecycle:e.trustedWorker.activity,slot:e.pgstream.slot,generation:e.pgstream.generation,evaluatorConfigSha256:hash(e),realtimeConfigSha256:hash(r)};
+ const n={kind:'compact-native-v1',inputConsumer:e.consumer,lifecycle:e.trustedWorker.activity,slot:e.pgstream.slot,generation:e.pgstream.generation,evaluatorConfigSha256:hash(e),realtimeConfigSha256:hash(r)};
+ if(selected!==undefined)n.receipt=receipt(n,{checkpoint:e.postgres?.namespaces?.checkpoint},selected);
+ return n;
 }
 function validateConfig(c){
  const n=c.native;
- if(!n||Object.keys(n).sort().join(',')!=='evaluatorConfigSha256,generation,inputConsumer,kind,lifecycle,realtimeConfigSha256,slot'||n.kind!=='compact-native-v1'||c.kind!=='evaluator-work-v2'||!/^evaluator-[A-Za-z0-9_-]{1,100}$/.test(n.inputConsumer)||n.inputConsumer+'-completed'!==c.consumer||!name(n.lifecycle)||!name(n.slot)||! /^[a-f0-9]{32}$/.test(n.generation)||![n.evaluatorConfigSha256,n.realtimeConfigSha256].every(x=>typeof x==='string'&&/^[a-f0-9]{64}$/.test(x))||c.binding.nativeConfigurationSha256!==hash(n))throw Error('M7_COMPLETION_NATIVE_BINDING');
+ if(!n||Object.keys(n).sort().join(',')!==(n.receipt===undefined?'evaluatorConfigSha256,generation,inputConsumer,kind,lifecycle,realtimeConfigSha256,slot':'evaluatorConfigSha256,generation,inputConsumer,kind,lifecycle,realtimeConfigSha256,receipt,slot')||n.kind!=='compact-native-v1'||c.kind!=='evaluator-work-v2'||!/^evaluator-[A-Za-z0-9_-]{1,100}$/.test(n.inputConsumer)||n.inputConsumer+'-completed'!==c.consumer||!name(n.lifecycle)||!name(n.slot)||! /^[a-f0-9]{32}$/.test(n.generation)||![n.evaluatorConfigSha256,n.realtimeConfigSha256].every(x=>typeof x==='string'&&/^[a-f0-9]{64}$/.test(x))||c.binding.nativeConfigurationSha256!==hash(n))throw Error('M7_COMPLETION_NATIVE_BINDING');
+ if(n.receipt!==undefined)receipt(n,c,n.receipt);
  return n;
 }
 function fields(c){
@@ -27,6 +35,7 @@ function snapshot(row,c){
  if(!v||v.kind!=='clinical-stream-v2'||v.compact!==true||!exact(v.inputFloor)||!exact(v.persistedFloor)||BigInt(v.inputFloor)>BigInt(Number.MAX_SAFE_INTEGER)||v.inputFloor!==v.persistedFloor||!exact(v.currentRestore)||BigInt(v.currentRestore)<1n||!['active','suspended'].includes(v.phase))throw Error('M7_COMPLETION_NATIVE_STATE');
  if(s===null||s===undefined)throw Error('M7_COMPLETION_NATIVE_INVALIDATED');
  if(s.generation!==n.generation+':'+v.currentRestore||canonical(s.source_identity)!==canonical(v.actualSource))throw Error('M7_COMPLETION_NATIVE_SOURCE');
+ if(n.receipt?.selection&&canonical(n.receipt.selection.binding.source)!==canonical(v.actualSource))throw Error('M7_COMPLETION_NATIVE_SOURCE');
  const a=s.source_identity;
  if(!a||Object.keys(a).sort().join(',')!=='database,slot,system_id,timeline'||!exact(a.system_id)||!Number.isSafeInteger(a.timeline)||a.timeline<1||typeof a.database!=='string'||!a.database||a.slot!==n.slot)throw Error('M7_COMPLETION_NATIVE_SOURCE');
  position(s.snapshot_position);if(s.accepted_position!==null)position(s.accepted_position);
