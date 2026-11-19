@@ -94,6 +94,8 @@ def fixture_config(path, capture=False):
     need(all(limits[k]<=m['profile']['proposedEnvelope']['nativeLimits'][k] for k in limits), 'ALLOCATION_EXCEEDED')
     template=read(c['runTemplate']['path'])
     inventory=read(d/'inventory.json')
+    need(m.get('nativeLoad') == template.get('nativeLoad') == inventory.get('nativeLoad'),
+         'NATIVE_LOAD_SELECTION_CHANGED')
     application_topology.bind(m,template,inventory,need)
     mode=template.get('resourceAccounting','limits-v1')
     need(mode in ('limits-v1','requests-v1') and mode==e.get('resourceAccounting','limits-v1') and

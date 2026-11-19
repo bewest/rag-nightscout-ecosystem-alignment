@@ -40,7 +40,8 @@ def validate(config, inventory, objects, need):
         need(config['roles'].get(role) == target, 'APPLICATION_ROLE_TOPOLOGY:' + role)
     need(config['roles'].get('pgstream') == {'workload': 'Deployment/pgstream', 'container': 'pgstream'},
          'APPLICATION_ROLE_TOPOLOGY:pgstream')
-    rendered = [obj for obj in objects.values() if obj['kind'] in ('Deployment', 'StatefulSet', 'Job')]
+    rendered = [obj for obj in objects.values() if obj['kind'] in ('Deployment', 'StatefulSet', 'Job')
+                and not (config.get('nativeLoad') is not None and obj['kind']=='Job' and obj['metadata']['name']=='k6')]
     workloads = {obj['metadata']['name']: obj for obj in rendered}
     need(len(rendered) == len(SEPARATE_WORKLOADS) and set(workloads) == set(SEPARATE_WORKLOADS),
          'APPLICATION_WORKLOAD_ROSTER')

@@ -25,6 +25,13 @@ def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
+def job_spec_matches(wanted, actual):
+    value=copy.deepcopy(actual)
+    value['template']['spec']=k.resource_budget.readback_projection(
+        wanted['template']['spec'],value['template']['spec'],k.need)
+    return k.subset(wanted,value)
+
+
 def private(path, raw):
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     with os.fdopen(fd, 'wb') as stream:
@@ -118,7 +125,7 @@ def decode(raw, runid, source_sha):
 
 
 def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seconds,
-            exporter_resources=None, shell_contract=None):
+            exporter_resources=None, shell_contract=None, planning=False):
     """Adapt the existing lane K Job. The caller must account the returned Pod.
 
     This does not render a second deployment or alter application resources.
@@ -131,13 +138,14 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
     k.need(type(seconds) is int and seconds > 0 and type(run_start_ms) is int
            and run_start_ms > 0 and type(setup_seconds) is int and setup_seconds > 0,
            'NATIVE_LOAD_WINDOW')
-    k.need(seconds <= k.deadline(c) and setup_seconds < seconds, 'NATIVE_LOAD_WORK_DEADLINE')
-    k.need(isinstance(tenants, list) and len(tenants) == c['tenants']
+    k.need((planning or seconds <= k.deadline(c)) and setup_seconds < seconds, 'NATIVE_LOAD_WORK_DEADLINE')
+    k.need(planning or isinstance(tenants, list) and len(tenants) == c['tenants']
            and len({t['id'] for t in tenants}) == len(tenants)
            and all(isinstance(t.get('host'), str) and t['host'].endswith('.test')
                    and isinstance(t.get('token'), str) and t['token'] for t in tenants),
            'SYNTHETIC_TENANTS_REQUIRED')
-    k.evaluator_progress.validate_ids([t['id'] for t in tenants])
+    if not planning:
+        k.evaluator_progress.validate_ids([t['id'] for t in tenants])
     k.need(job.get('kind') == 'Job' and job.get('apiVersion') == 'batch/v1'
            and job['metadata']['name'] == 'k6' and job['metadata']['namespace'] == c['namespace'],
            'NATIVE_LOAD_JOB_SCOPE')
@@ -226,7 +234,7 @@ def _identity(c, ns, uid=None):
 
 def _terminal(c, wanted, job, pods):
     k.owned(c, job)
-    k.need(k.subset(wanted['spec'], job['spec']), 'NATIVE_LOAD_JOB_CHANGED')
+    k.need(job_spec_matches(wanted['spec'], job['spec']), 'NATIVE_LOAD_JOB_CHANGED')
     rows = pods['items']
     k.need(len(rows) == 1, 'NATIVE_LOAD_POD_CENSUS', 'UNMEASURED')
     pod = rows[0]
@@ -252,7 +260,7 @@ def _terminal(c, wanted, job, pods):
                  'complete': complete}
 
 
-def run(kube, c, job, script, tenants, out, **options):
+def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, **options):
     """Use fanout.Kube's existing call/json interface; no parallel orchestrator.
 
     The caller owns admission, init Job dependencies, readiness and cleanup.
@@ -270,19 +278,51 @@ def run(kube, c, job, script, tenants, out, **options):
     uid = _identity(c, kube.json(['get', 'namespace', ns]))
     receipt.update(namespaceUid=uid)
     k.write(out / 'native-load.json', receipt)
+    def close_after_failure(error):
+        if predeclared is None:
+            return
+        import native_join
+        first=out/'native-first-failure.json'
+        if not first.exists():
+            k.write(first,{'code':str(error),'verdict':getattr(error,'verdict','UNMEASURED')})
+        try:
+            native_join.cancel(kube,c,receipt,out)
+        except Exception as secondary:
+            k.write(out/'native-cancel-failure.json',{'code':str(secondary),
+                    'verdict':'UNMEASURED','writersStopped':'UNMEASURED','firstFailure':str(error)})
     # Preflight above has completed before these first actor mutations.
     kube.call(['create', '-f', '-'], data=json.dumps(secret), namespace=ns)
-    created = kube.call(['create', '-f', '-', '-o', 'json'], data=json.dumps(wanted), namespace=ns)
-    created = json.loads(created)
+    if predeclared is None:
+        created = kube.call(['create', '-f', '-', '-o', 'json'], data=json.dumps(wanted), namespace=ns)
+        created = json.loads(created)
+    else:
+        created = kube.json(['get', 'job', 'k6'], namespace=ns)
+        expected = dict(wanted['spec'], suspend=True)
+        k.need(created['metadata']['uid'] == predeclared['uid'] and
+               job_spec_matches(expected, created['spec']), 'NATIVE_LOAD_PREDECLARATION_CHANGED')
+        patch = [{'op':'test','path':'/metadata/uid','value':predeclared['uid']},
+                 {'op':'test','path':'/spec/suspend','value':True},
+                 {'op':'replace','path':'/spec/suspend','value':False}]
+        receipt['jobUid']=predeclared['uid'];k.write(out/'native-load.json',receipt)
+        try:
+            kube.call(['patch','job','k6','--type=json','-p',json.dumps(patch)], namespace=ns)
+        except Exception as error:
+            close_after_failure(error)
+            raise
+        created['spec']['suspend'] = False
     k.owned(c, created)
     k.need(created.get('kind') == 'Job' and created['metadata'].get('name') == 'k6'
            and isinstance(created['metadata'].get('uid'), str) and created['metadata']['uid']
-           and k.subset(wanted['spec'], created['spec']), 'NATIVE_LOAD_CREATE_IDENTITY')
+           and job_spec_matches(wanted['spec'], created['spec']), 'NATIVE_LOAD_CREATE_IDENTITY')
     receipt['jobUid'] = created['metadata']['uid']
     k.write(out / 'native-load.json', receipt)
     if receipt.get('captureMode') == 'owned-exec-files':
         import native_files
-        return native_files.capture(kube, c, wanted, out, receipt)
+        try:
+            return native_files.capture(kube, c, wanted, out, receipt, failures=failures)
+        except Exception as error:
+            close_after_failure(error)
+            raise
     seconds = options['seconds']
     wait_error = None
     try:

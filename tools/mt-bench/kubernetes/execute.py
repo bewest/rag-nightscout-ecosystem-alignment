@@ -583,7 +583,12 @@ def execute(d, c, objects, client, load=False, recovery=False):
                         'remainingSecondsAtDriverLaunch': setup, 'setupUntilUnixMs': int(prime_until * 1000)})
             load_process_started = time.time()
             if 'driverPlan' in settings:
-                accounting = configured_load(d, out, c, env, setup)
+                if c.get('nativeLoad') is not None:
+                    import native_join
+                    native_join.run(d,out,c,objects,client,tenants,runid=runid,setup=setup,failures=midpoint_failure)
+                    accounting = k.document(out/'driver-accounting.json')
+                else:
+                    accounting = configured_load(d, out, c, env, setup)
                 load_process_ended = time.time()
                 phases = [s['phases'] for s in accounting['shards']]
                 k.need(all('scheduleStartMs' in p and 'scheduleEndMs' in p for p in phases),
@@ -629,6 +634,9 @@ def execute(d, c, objects, client, load=False, recovery=False):
             catchup.run(d, out, c, objects, client, [row['id'] for row in tenants],
                         writers_joined_ns=writers_joined_ns, drain_started=drain_started)
         terminal_progress(d, out, c, objects, client, runid, load, baseline['namespace']['uid'])
+        if load and c.get('nativeLoad') is not None:
+            import native_load
+            return native_load.assess_join(d,out,c,objects,client)
         return assess_stage(d, out, c, objects, client)
     except Exception as error:
         k.write(out / 'failure.json', {'verdict': getattr(error, 'verdict', 'UNMEASURED'), 'code': str(error) if str(error) == 'EVALUATOR_SCOPE_UNSAFE' or str(error).startswith(('K8S_', 'M7_')) else 'K8S_STAGE_FAILED', 'capacityAcceptance': 'NOT_GRANTED'})

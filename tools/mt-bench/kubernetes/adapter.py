@@ -246,6 +246,8 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
         need(c.get('edgeConfiguration')==edge,'EDGE_CONFIGURATION_CHANGED')
     by_key = {key(x): x for x in objs}
     need(len(by_key) == len(objs), 'DUPLICATE_RESOURCE')
+    import native_join
+    native_join.validate(c, inventory, by_key)
     application_topology.validate(c, inventory, by_key, need)
     ns = by_key.get('Namespace/' + c['namespace'])
     need(ns is not None and ns['metadata'].get('labels', {}).get(c['ownerLabel']) == c['runId'], 'NAMESPACE_OWNERSHIP')
@@ -309,7 +311,7 @@ class Client:
         self.c, self.run = c, run
 
     def call(self, args, *, data=None, read=True, cleanup=False, output_limit=32*1024*1024,
-             response_sink=None):
+             response_sink=None, timeout=None):
         c = self.c
         deadline(c, cleanup)
         need(Path(c['kubectl']).is_absolute() and Path(c['kubectl']).is_file() and Path(c['kubectl']).name == 'kubectl', 'PINNED_KUBECTL_REQUIRED')
@@ -323,7 +325,7 @@ class Client:
         need(Path(shutil.which('kubectl', path=env['PATH']) or '/missing').resolve() == Path(c['kubectl']).resolve(), 'PINNED_KUBECTL_REQUIRED')
         try:
             result = self.run(argv, input=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                              timeout=min(20, deadline(c, cleanup)), check=False, env=env)
+                              timeout=min(20 if timeout is None else timeout, deadline(c, cleanup)), check=False, env=env)
         except (OSError, subprocess.TimeoutExpired):
             raise Refused('K8S_OBSERVATION_LOST', 'UNMEASURED')
         def bounded_response():
@@ -498,11 +500,14 @@ def capture_bootstrap_map(d, c, objects, namespace_uid, client):
 
 
 def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=None, serving_sql=False):
+    import native_join
     ns = client.get('namespace', c['namespace'], cleanup)
     need(ns['metadata']['name'] == c['namespace'] and ns['metadata'].get('labels', {}).get(c['ownerLabel']) == c['runId'], 'FOREIGN_NAMESPACE')
     result = {'context': c['context'], 'runId': c['runId'], 'namespace': meta(ns), 'pins': copy.deepcopy(c['pins']),
               'observedAt': time.time(), 'objects': {}, 'pods': {}, 'driver': c['driver'], 'observer': c['observer'],
               'storageMode': c['storageMode'], 'capacityAcceptance': 'NOT_GRANTED'}
+    if native_join.selected(c) is not None:
+        result['testActors'] = {}
     if serving_sql:
         need(baseline is not None and not cleanup and restarted_role is None, 'SERVING_BASELINE_REQUIRED')
         need(not ns['metadata'].get('deletionTimestamp'), 'NAMESPACE_TERMINATING')
@@ -538,6 +543,11 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             visible_object = actual
         expected_visible = visible(expected, visible_object)
         if actual['kind'] in WORKLOADS:
+            if name == native_join.JOB:
+                selected_spec = dict(expected['spec'], suspend=actual['spec'].get('suspend'))
+                need(type(actual['spec'].get('suspend')) is bool and native_join.native_load.job_spec_matches(selected_spec, actual['spec']),
+                     'NATIVE_LOAD_JOB_CHANGED')
+                result['nativeLoadSuspended'] = actual['spec']['suspend']
             replica_scope(actual)
             helper_annotations(expected['metadata'], actual['metadata'])
             helper_annotations(template(expected)['metadata'], template(actual)['metadata'])
@@ -551,6 +561,8 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             if name=='ConfigMap/edge-nginx' and c.get('edgeConfiguration'):
                 edge_configuration.readback(expected,actual,need)
             need(subset(expected_visible.get('data', {}), actual.get('data', {})), 'CONFIGMAP_CHANGED')
+        elif c.get('nativeLoad') is not None and expected['metadata']['name'] == native_join.ACCOUNT:
+            need(subset(expected_visible, actual), 'NATIVE_LOAD_RBAC_CHANGED')
         result['objects'][name] = meta(actual)
         result['objects'][name]['maskedPaths'] = masked
         if name=='ConfigMap/edge-nginx' and c.get('edgeConfiguration'):
@@ -572,6 +584,10 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         parent = result['objects'].get(name)
         need(parent is not None and parent['uid'] == ref['uid'], 'POD_CONTROLLER')
         expected = template(by_key[name])['spec']
+        if name == native_join.JOB:
+            result['testActors'][pod['metadata']['name']] = native_join.test_pod(c, by_key[name], pod, parent['uid'])
+            need(len(result['testActors']) <= 1, 'NATIVE_LOAD_POD_CENSUS')
+            continue
         helper_annotations(template(by_key[name])['metadata'], pod['metadata'])
         helper_pod(expected, pod['spec'])
         readback, admitted = admission_projection(expected, pod['spec'])

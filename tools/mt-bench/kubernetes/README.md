@@ -790,9 +790,8 @@ custody, and emits the existing `k6.log` and `k6-summary.json` reducer inputs.
 Its appended `handleSummary` exports k6's actual counters/trends in framed
 chunks; it changes no workload function and includes no JWT setup data.
 
-This adapter is an integration component. The existing `execute.py` transport
-selection and its workload census/fit admission are not changed by it. The
-controller, probe, SQL, completed clinical output, frames and native fixed-target
+`native_join.py` adds an opt-in `nativeLoad` selection to the existing execution,
+census and fit path. The controller, probe, SQL, completed clinical output, frames and native fixed-target
 catch-up collectors still run on the workstation. `assess_join()` verifies the
 capture/run/script bindings and calls the unchanged `execute.assess_stage()`;
 Job completion alone leaves the outcome gate UNMEASURED. The 120-second clinical
@@ -817,26 +816,44 @@ file's exact length/hash and acknowledged the manifest, or the finite Job and
 exporter deadlines expire. Raw CSV never depends on kubelet log retention.
 The exporter contributes its explicit requests/limits to Pod fit and quota.
 
-At the integration call site, retain `execute.execute()`'s concurrent stock
-probe and midpoint observer. Replace only the selected `configured_load()`
-invocation with `native_load.run(...)`, using the existing rendered **test Job
-only**, current generated workload, exact roster, run marker and remaining
-absolute setup/work budget. Its `driver-accounting.json` supplies the same
-schedule start/end markers. Keep the probe restart signal, both-writer join,
-120-second per-write observer, all-tenant fixed-target catch-up and full
-`assess_stage()` path. `assess_join()` adds capture/run/script/hash checks.
-Do not install the lane K serving stack or change the application tuple.
+For a **fresh, uncaptured prepared case**, run `python3 -B native_join.py
+/absolute/case /absolute/selection.json`, then the normal lifecycle capture and
+fresh entry checks. Selection requires `version: 1`, `mode: "job-v1"`, immutable
+k6 `image`, measured `shellContract`, explicit `resources` and
+`exporterResources`, existing `nodeName`, `deadlineSeconds`, and
+`imagePullSecrets`. No resource default is chosen. The Job deadline must cover
+the authored setup, load, graceful stop and export margin, and still fit the
+remaining work budget at launch. A large roster that exceeds the bounded input
+Secret explicitly refuses; 10,000-tenant input transport is not qualified.
 
-Before enabling that call site, the operating owner must admit the whole test
-Pod (k6 plus exporter plus original init peak) into requests/placement/quota,
-declare its exact Job/Pod in the adapter census, and preserve namespace UID,
-Job creation UID, no retry/replacement and required hard-midpoint stop behavior.
-The current workstation controller's midpoint callback is not wired to stop
-this Job. Reuse the Job waiter's namespace-local `jobs/get` RBAC only for the
-init container; the exporter needs no Kubernetes API permission. Keep owned
-namespace/trust cleanup even after Job completion.
+The offline preparer appends only a suspended test Job and namespace-local
+waiter RBAC. It keeps every application workload unchanged, adjusts the exact
+Pod request/quota/envelope, and runs the original application binding checks
+beside the test Job's own exact declaration checks. Do not install the lane K
+serving stack or change the application tuple. The complete test Pod is added
+prospectively to the existing node fit check before its creation is enabled.
 
-Focused offline controls: `python3 -B -m unittest -v test_native_load test_native_files` from this
+`execute.execute()` retains the concurrent stock probe and midpoint observer.
+Only the opted-in configured-load call goes to the native Job; its original
+wrapper/accounting supplies schedule start/end markers. The declared suspended
+Job UID is atomically tested before release. A hard midpoint failure atomically
+tests that UID and suspends the Job, then observes the k6 writer terminate (or
+the original owned Pod disappear) before returning. An unobserved stop stays
+UNMEASURED and retains the original failure. No failed workload is replayed.
+Job backoff is zero, replacement waits for Failed, and test Pods have a finite
+termination grace. Runtime application Pod and container identities stay strict;
+only the exact declared test Job has a separate dynamic census.
+
+The probe restart signal, both-writer join, 120-second per-write observer,
+all-tenant fixed-target catch-up and full `assess_stage()` path stay in their
+original order. `assess_join()` adds capture/run/script/hash checks. The init
+waiter alone gets `jobs/get` for `provision` and `primer` in its namespace; the
+exporter receives no Kubernetes API permission. Setup actor lifetimes still
+belong to the current binding and must cover the complete owned point. Keep
+owned namespace/trust cleanup even after Job completion. Fresh native live
+compatibility and capacity qualification remain UNMEASURED.
+
+Focused offline controls: `python3 -B -m unittest -v test_native_load test_native_files test_native_join` from this
 directory. Set `NS_NATIVE_K6_TEST_BINARY` to an existing pinned local k6 binary
 to execute the real summary/event export control; it opens no network listener.
 Set `NS_NATIVE_K6_IMAGE_BINARY`, `NS_NATIVE_IMAGE_BUSYBOX` and

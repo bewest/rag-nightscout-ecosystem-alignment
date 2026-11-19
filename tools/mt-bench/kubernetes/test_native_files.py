@@ -26,7 +26,7 @@ from test_native_load import control, TENANTS, OPTIONS
 
 def configured():
     c, job = control()
-    c['workload'].update(loadSeconds=2, offeredRps=28, driverPlan=dict(version=1,
+    c['workload'].update(loadSeconds=2, setupSeconds=5, offeredRps=28, driverPlan=dict(version=1,
         observer='scheduling-v1', maxAggregateVUs=56, maxTraceBytes=4*1024**2, maxTraceRows=100000,
         scenarios={shape: dict(preAllocatedVUs=4, maxVUs=8, gracefulStopSeconds=1)
                    for shape in workload_runtime.SHAPES}))

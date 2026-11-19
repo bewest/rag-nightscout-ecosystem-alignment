@@ -49,11 +49,13 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
                             'native-artifacts.cjs': (k.HERE / 'native-artifacts.cjs').read_text(),
                             'export.json': json.dumps(config)}
     env = {row['name']: row['value'] for row in container['env']}
+    launch = {name: env.pop(name) for name in ('RUN_START','M7_SETUP_SECONDS','M7_SETUP_UNTIL_MS')}
+    secret['stringData']['launch.env'] = ''.join('export '+name+'='+value+'\n' for name,value in sorted(launch.items()))
     env.update(driver.configured_environment(manifest))
     container['env'] = [{'name': name, 'value': value} for name, value in sorted(env.items())]
     output = '--out csv=/out/k6-scheduling.csv.gz ' if cfg['observer'] == 'scheduling-v1' else ''
     # Shell only supervises its own test child; no workload mutation is retried.
-    command = ('umask 077\n'
+    command = ('umask 077\n. /inputs/launch.env || exit 78\n'
                f'ulimit -f {limit // 512} || exit 78\n'
                '/bin/cat /proc/self/limits > /out/file-limits.txt || exit 78\n'
                '/usr/bin/k6 run --quiet --no-usage-report --address=127.0.0.1:0 '
@@ -87,7 +89,7 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
     return job, secret, receipt
 
 
-def capture(kube, c, wanted, out, receipt, *, clock=time):
+def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None):
     """Writer exit -> bounded exec read/hash -> ack -> Job completion.
 
     No terminal-log artifact fallback, upload service or indefinitely waiting
@@ -100,6 +102,8 @@ def capture(kube, c, wanted, out, receipt, *, clock=time):
     ns, uid = c['namespace'], receipt['namespaceUid']
     until = clock.monotonic() + min(receipt['activeDeadlineSeconds'], k.deadline(c))
     def remaining():
+        if failures:
+            raise failures[0]
         seconds = min(until - clock.monotonic(), k.deadline(c))
         k.need(seconds > 0, 'NATIVE_LOAD_EXPORT_DEADLINE', 'UNMEASURED')
         return seconds
@@ -111,7 +115,7 @@ def capture(kube, c, wanted, out, receipt, *, clock=time):
         return current['items'][0] if current['items'] else None
     job = kube.json(['get', 'job', 'k6'], namespace=ns, timeout=min(20, remaining()))
     k.owned(c, job)
-    k.need(job['metadata']['uid'] == receipt['jobUid'] and k.subset(wanted['spec'], job['spec']),
+    k.need(job['metadata']['uid'] == receipt['jobUid'] and n.job_spec_matches(wanted['spec'], job['spec']),
            'NATIVE_LOAD_JOB_CHANGED')
     pod = None
     while True:
@@ -129,6 +133,14 @@ def capture(kube, c, wanted, out, receipt, *, clock=time):
             pod = row
             states = {s['name']: s for s in row.get('status', {}).get('containerStatuses', [])}
             k.need(all(s.get('restartCount', 0) == 0 for s in states.values()), 'NATIVE_LOAD_ACTOR_RESTARTED')
+            known=receipt.setdefault('actorContainers',{})
+            for actor,state in states.items():
+                identity=state.get('containerID')
+                if identity:
+                    k.need(actor not in known or known[actor]==identity,'NATIVE_LOAD_ACTOR_REPLACED')
+                    known[actor]=identity
+            receipt['podUid']=row['metadata']['uid']
+            k.write(out/'native-load.json',receipt)
             if states.get('k6', {}).get('state', {}).get('terminated') is not None:
                 break
         clock.sleep(min(.5, remaining()))

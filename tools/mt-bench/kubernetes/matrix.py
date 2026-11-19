@@ -28,10 +28,15 @@ def ceiling(total, limits, code):
                for n in total), code)
 
 
-def node_requests(objects, baseline, accounting):
+def node_requests(objects, baseline, accounting, config=None):
     """Take one budget per rendered workload at its observed node."""
     nodes = {}
     accounted = set()
+    if config is not None and config.get('nativeLoad') is not None:
+        import native_join
+        node, request = native_join.reserve(config, objects)
+        add(nodes.setdefault(node,dict.fromkeys(DIMS,0)),request)
+        accounted.add(native_join.JOB)
     for pod in baseline['pods'].values():
         workload = pod['workload']
         k.need(workload in objects and workload not in accounted, 'MATRIX_WORKLOAD_CENSUS')
@@ -92,7 +97,7 @@ def allocation(value, entries):
                'MATRIX_FIXTURE_DEADLINE_EXCEEDS_ALLOCATION')
         expected.append({'runId': c['runId'], 'namespace': c['namespace'],
                          'namespaceUid': baseline['namespace']['uid'], 'runSha256': k.digest(d / 'run.json')})
-        for node, request in node_requests(objects, baseline, accounting).items():
+        for node, request in node_requests(objects, baseline, accounting, c).items():
             add(nodes.setdefault(node, dict.fromkeys(DIMS, 0)), request)
         for role in ('driver', 'observer'):
             actor = c[role]

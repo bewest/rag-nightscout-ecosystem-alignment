@@ -176,7 +176,11 @@ def render_checks(instance):
     package = Path(instance['bindingReceipt']['path']).parent / 'bindings/kubernetes'
     check = """const fs=require('node:fs'),check=require(process.argv[1]);
       const read=path=>JSON.parse(fs.readFileSync(path));
-      console.log(JSON.stringify(check.checks(check.manifests(read(process.argv[2])),read(process.argv[3]))));"""
+      const inventory=read(process.argv[3]);let all=check.manifests(read(process.argv[2]));
+      // The opt-in test Job has its own exact declaration/census validation.
+      // The original binding checks still see every application resource.
+      if(inventory.nativeLoad)all=all.filter(m=>!(m.kind==='Job'&&m.metadata.name==='k6'));
+      console.log(JSON.stringify(check.checks(all,inventory)));"""
     raw = subprocess.check_output(['node', '-e', check, package/'check/invariants.js',
                                    instance['render'], instance['inventory']], timeout=30)
     rows = json.loads(raw)
@@ -193,6 +197,8 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
            'PRIMER_OPTIONS_AWAIT_PRIMER_REQUIRED')
     config = k.document(instance['config'])
     inventory = k.document(instance['inventory'])
+    k.need(m.get('nativeLoad') == config.get('nativeLoad') == inventory.get('nativeLoad'),
+           'NATIVE_LOAD_SELECTION_CHANGED')
     config = dict(config, **application_topology.bind(m, config, inventory, k.need))
     render = k.document(instance['render'])
     population_ceiling.check_render(m,inventory,k.manifests(render),k.need)
@@ -229,6 +235,8 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
         c['producerAckReadback'] = frozen.read_ref(instance['producerAckReadback'])
     else:
         k.need('producerAckReadback' not in instance, 'PGSTREAM_ACK_READBACK_UNDECLARED')
+    if c.get('nativeLoad') is not None:
+        c['nativeLoadCustodyFile']=str(out.resolve()/'load/native-load.json')
     objects = k.validate(c, inventory, render)
     frozen.check_bootstrap_render(m, objects.values())
     k.need(all(pins['candidate'].get(key) == selected.get(key) for key in
@@ -275,6 +283,9 @@ def admitted_entries(d, c, objects, group):
     for path, config, rendered in members:
         baseline = k.active_baseline(path)
         current = k.observe(config, rendered, k.Client(config), baseline)
+        if config.get('nativeLoad') is not None:
+            k.need(current.get('nativeLoadSuspended') is True and not current.get('testActors'),
+                   'NATIVE_LOAD_EARLY_STARTED')
         matrix.identity(config, baseline, current)
         entries.append((path, config, rendered, current))
     return entries
