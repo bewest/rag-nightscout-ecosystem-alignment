@@ -54,10 +54,10 @@ class PhaseWindows(unittest.TestCase):
             with self.assertRaisesRegex(AssertionError,'AUTHORED_PROBE_SETUP_NOT_APPLIED'):criterion()
             file.write_text(source);criterion()
 
-    def launch_window(self,outer_seconds):
+    def launch_window(self,outer_seconds,shards=1):
         fixture=discovery_fixtures.Discovery();self.addCleanup(fixture.doCleanups);folder,m=fixture.setup()
         m.update(project='owned',port=1234,restartRoles=['api'],generator={'tools':{'node':{'path':'node'}}})
-        m['cadence'].update(setupSeconds=900,drainSeconds=600)
+        m['cadence'].update(setupSeconds=900,drainSeconds=600,driverShards=shards)
         a.write(folder/'tenants.private.json',[{'id':'a'},{'id':'b'}])
         now=[0];calls={};record=d.Record(a,folder,m)
         class Process:
@@ -76,7 +76,7 @@ class PhaseWindows(unittest.TestCase):
                 stack.enter_context(patch.object(a,name))
             for name in ('sampling','loadgen_process','observe_progress'):
                 stack.enter_context(patch.object(a,name,ctx))
-            stack.enter_context(patch.object(a,'k6_tenants'))
+            stack.enter_context(patch('jwt_tenants.exchange',side_effect=lambda base,row,timeout: 'synthetic-'+row['id']))
             stack.enter_context(patch.object(a,'progress_services',return_value=['evaluator']))
             stack.enter_context(patch.object(a,'progress_attribution',return_value={}))
             stack.enter_context(patch.object(a.subprocess,'Popen',side_effect=popen))
@@ -85,6 +85,24 @@ class PhaseWindows(unittest.TestCase):
             stack.enter_context(patch.object(d.time,'monotonic_ns',side_effect=lambda:now[0]))
             with a.command_deadline(a.time.time()+outer_seconds):d.discovery_load(a,folder,m,'k6',record)
         return calls,m,a.document(folder/'load/phase-windows.json')
+
+    def test_k6_mounts_the_exchanged_roster_for_each_driver(self):
+        for shards in (1, 2):
+            with self.subTest(shards=shards):
+                calls, _, _ = self.launch_window(2000, shards)
+                argv = calls['k6']
+                mounts = {}
+                for flag, spec in zip(argv, argv[1:]):
+                    if flag == '-v':
+                        source, target = spec.split(':', 1)
+                        mounts[target] = Path(source)
+                if shards == 1:
+                    files = [mounts['/tenants.private.json:ro']]
+                else:
+                    files = [mounts['/shards:ro'] / ('tenants-%d.private.json' % i) for i in range(shards)]
+                rows = [row for file in files for row in a.document(file)]
+                self.assertEqual([(row['id'], row.get('jwt')) for row in rows],
+                                 [('a', 'synthetic-a'), ('b', 'synthetic-b')])
 
     def test_real_discovery_launch_separates_viewer_progress_driver_setup_and_drain(self):
         calls,m,captured=self.launch_window(2000)
