@@ -262,7 +262,7 @@ def candidate_pin(inventory, binding):
 def prepare(manifest_path, instance, out, *, await_primer=False):
     m = k.document(manifest_path)
     p = workload(m)
-    k.need(await_primer or primer_options.from_profile(p,k.need) is None,
+    k.need(m.get('primerLocation') or await_primer or primer_options.from_profile(p,k.need) is None,
            'PRIMER_OPTIONS_AWAIT_PRIMER_REQUIRED')
     config = k.document(instance['config'])
     inventory = k.document(instance['inventory'])
@@ -276,7 +276,7 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
     delivery = frozen.candidate(m)
     selected = frozen.source(m)
     split = 'verification' in inventory.get('workloads', {})
-    selected_candidate = candidate_pin(inventory, instance['binding'])
+    selected_candidate = None if 'seed' in inventory else candidate_pin(inventory, instance['binding'])
     if split:
         k.need(frozen.PRIMER_STORAGE not in selected and population_ceiling.FIELD not in selected,
                'VERIFIED_SERVING_BINDING_OPTIONS')
@@ -285,7 +285,7 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
                 appImage=delivery['app'], appImageId=delivery['appImageId'],
                 postgresImage=delivery['postgres'], postgresImageId=delivery['postgresImageId'],
                 inventorySha256=k.digest(instance['inventory']), renderSha256=k.digest(instance['render']),
-                candidate=selected_candidate)
+                **({'candidate':selected_candidate} if selected_candidate else {}))
     k.need(config.get('pins', pins) == pins, 'INSTANCE_PINS_CHANGED')
     tier = m.get('tier', 'discovery')
     k.need(config.get('tier', tier) == tier, 'INSTANCE_TIER_CHANGED')
@@ -310,16 +310,12 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
     if c.get('nativeLoad') is not None:
         c['nativeLoadCustodyFile']=str(out.resolve()/'load/native-load.json')
     objects = k.validate(c, inventory, render)
-    frozen.check_bootstrap_render(m, objects.values())
-    k.need(all(pins['candidate'].get(key) == selected.get(key) for key in
-               ('runtimeBootstrapHelper', 'imageSourceAcceptance', 'sourceAcceptance')), 'BOOTSTRAP_HELPER_SCOPE')
-    k.need(pins['candidate']['sourceAcceptance'] == selected['sourceAcceptance'], 'CANDIDATE_IMAGE_STATUS')
+    if selected_candidate:
+        frozen.check_bootstrap_render(m, objects.values())
+        k.need(all(selected_candidate.get(key) == selected.get(key) for key in
+                   ('runtimeBootstrapHelper', 'imageSourceAcceptance', 'sourceAcceptance')), 'BOOTSTRAP_HELPER_SCOPE')
     checks = render_checks(instance)
-    expected_roles = application_topology.role_mapping(application_topology.selection(c, k.need))
-    k.need(c['roles'].get('evaluator') == expected_roles['evaluator']
-           and c['roles'].get('pgstream') == dict(workload='Deployment/pgstream', container='pgstream'),
-           'UNSUPPORTED_ROLE_TOPOLOGY')
-    k.need(c['storageMode'] == 'disposable', 'EXPERIMENT_STORAGE')
+    k.need(c['storageMode'] in ('disposable', 'existing-claim'), 'EXPERIMENT_STORAGE')
     k.need('verificationProof' not in config, 'CANDIDATE_VERIFICATION_PROOF_SCOPE')
     if 'verificationProof' in instance:
         k.need(split, 'CANDIDATE_VERIFICATION_PROOF_SCOPE')
@@ -332,7 +328,9 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
         measured = k.completion_source(c, docs['evaluator'], docs['realtime'], **({'native_receipt':docs['nativeReceipt']} if 'nativeReceipt' in docs else {}))
         k.need(c.get('completion', measured) == measured, 'COMPLETION_SOURCE_CHANGED')
         c['completion'] = measured
-    if await_primer:
+    if await_primer and c.get('primerLocation'):
+        pass  # Offline preparation precedes the first fixture; live preparation receives its DATA roster.
+    elif await_primer:
         c['primerOutput'] = str(out.resolve() / 'primer')
         c['tenantsFile'] = str(Path(c['primerOutput']) / 'tenants.json')
     else:

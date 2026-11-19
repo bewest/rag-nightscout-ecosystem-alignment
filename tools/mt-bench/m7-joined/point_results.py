@@ -133,7 +133,7 @@ def publish_compose(root, result, cleanup=None):
     load = root/'fixture'/'load'
     result['measurements'] = load_report(load, read(load/'http-accounting.json'))
     result.setdefault('memAvailableAtEntryBytes', read(root/'execution.json').get('memAvailableAtEntryBytes'))
-    if result.get('runtime') == 'REUSED':
+    if result.get('runtime') == 'REUSED' or (root/'fixture'/'fixture-restore.json').is_file():
         result['fixtureReuse'] = 'reused'
     elif (root/'fixture'/'deployment.json').is_file():
         result['fixtureReuse'] = 'fresh'
@@ -162,7 +162,7 @@ def publish_native(case, *, mem_available_at_entry_bytes=None):
     result['memoryObservationHost'] = 'local Kubernetes controller'
     fresh = (read(runtime/'custody.json').get('namespaceUid')
              and read(case/'native-run-template.json').get('storageMode') == 'disposable')
-    result['fixtureReuse'] = 'fresh' if fresh else 'UNMEASURED'
+    result['fixtureReuse'] = read(runtime/'fixture.json').get('reuse', 'fresh' if fresh else 'UNMEASURED')
     absence = read(runtime/'absence.json')
     cleanup_failure = read(runtime/'cleanup-failure.json')
     forward = read(runtime/'forward-closed.json')

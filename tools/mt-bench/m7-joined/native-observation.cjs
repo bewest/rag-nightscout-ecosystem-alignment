@@ -16,7 +16,13 @@ function source(e,r,selected){
  if(!e?.pgstream?.generation&&!e?.pgstream?.recovery)return null;
  if(!/^[a-f0-9]{32}$/.test(e.pgstream.generation)||!e.pgstream.recovery||!name(e.pgstream.slot)||!name(e.trustedWorker?.activity)||!/^evaluator-[A-Za-z0-9_-]{1,100}$/.test(e.consumer)||e.selectedIntake||r.intakeProfile)throw Error('M7_COMPLETION_NATIVE_SOURCE');
  const n={kind:'compact-native-v1',inputConsumer:e.consumer,lifecycle:e.trustedWorker.activity,slot:e.pgstream.slot,generation:e.pgstream.generation,evaluatorConfigSha256:hash(e),realtimeConfigSha256:hash(r)};
- if(selected!==undefined)n.receipt=receipt(n,{checkpoint:e.postgres?.namespaces?.checkpoint},selected);
+ // Current deployments derive the checkpoint contract in core. The row holds
+ // the live database identity, which snapshot() compares to PostgreSQL.
+ if(e.contractDigest!==undefined){
+   if(!/^[a-f0-9]{64}$/.test(e.contractDigest))throw Error('M7_COMPLETION_NATIVE_RECEIPT');
+   n.receipt={kind:'native-receipt-contract-v1',contractDigest:e.contractDigest,
+     evaluatorConfigSha256:n.evaluatorConfigSha256,realtimeConfigSha256:n.realtimeConfigSha256,selection:null};
+ }else if(selected!==undefined)n.receipt=receipt(n,{checkpoint:e.postgres?.namespaces?.checkpoint},selected);
  return n;
 }
 function validateConfig(c){

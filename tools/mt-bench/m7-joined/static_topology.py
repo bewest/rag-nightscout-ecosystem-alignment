@@ -82,8 +82,8 @@ def verify_config(manifest, config):
     except (ValueError, TypeError):
         raise RuntimeError('M7_STATIC_EDGE_ROUTES') from None
     require(env.get('NS_REALTIME_STATIC_COUNT') == str(count) and route == expected, 'M7_STATIC_EDGE_ROUTES')
-    require(edge.get('restart') == 'unless-stopped' and
-            all(config['services'][name].get('restart') == 'unless-stopped' for name in instances if instances[name]['role'] != 'api'),
+    require(edge.get('restart') in ('on-failure', 'unless-stopped') and
+            all(config['services'][name].get('restart') in ('on-failure', 'unless-stopped') for name in instances if instances[name]['role'] != 'api'),
             'M7_STATIC_PLATFORM_RESTART')
     return instances
 

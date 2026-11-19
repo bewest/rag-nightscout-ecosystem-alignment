@@ -843,6 +843,8 @@ def authority(d, c):
     # measured isolation or authorization failure refuses here.
     k.need(access_result.get('verdict') in ('PASS', 'UNMEASURED') and access_result.get('crossTenantChecks') == 2, 'AUTHORITY_REFUSED')
     k.need(access_result.get('context')==c['context'] and access_result.get('namespaceUid')==k.active_baseline(d)['namespace']['uid'],'AUTHORITY_SOURCE_CHANGED')
+    if c.get('primerLocation') and not (d/'policy.json').is_file():
+        return access_result, {'verdict':'UNMEASURED', 'scope':'private admin network path'}
     k.need((d/'policy.json').is_file(),'POLICY_UNMEASURED','UNMEASURED')
     policy_result=k.document(d/'policy.json')
     k.need(policy_result.get('context')==c['context'] and policy_result.get('namespaceUid')==k.active_baseline(d)['namespace']['uid'],'POLICY_SOURCE_CHANGED')

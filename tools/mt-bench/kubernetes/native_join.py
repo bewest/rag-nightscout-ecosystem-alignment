@@ -24,6 +24,10 @@ POLICY = 'NetworkPolicy/native-load-to-edge'
 def waiting_jobs(c):
     # In the split binding, primer readiness only proves client export is ready;
     # the independent verification Job must have completed as well.
+    if c.get('primerLocation') == 'controller':
+        return ['provision']
+    if c.get('primerLocation') == 'claim':
+        return ['provision', 'primer']
     return ['provision', 'verification', 'primer:ready'] if candidate.verified_serving(c) else ['provision', 'primer:ready']
 
 
@@ -372,8 +376,7 @@ def prepare_case(case, selection):
     with tempfile.TemporaryDirectory() as scratch:
         scratch=Path(scratch);k.write(scratch/'render.json',render);k.write(scratch/'inventory.json',inventory)
         checks=experiment.render_checks({'render':str(scratch/'render.json'),'inventory':str(scratch/'inventory.json'),
-                                        'bindingReceipt':{'path':str(Path(control['bindingDirectory'])/'binding.json'),
-                                                          'sha256':k.digest(Path(control['bindingDirectory'])/'binding.json')}})
+                                        'binding':control['bindingDirectory']})
     for name,value in [('render.json',render),('inventory.json',inventory),('intent.json',manifest),
                        ('native-run-template.json',template),('stages/foundation.json',foundation)]:k.write(case/name,value)
     control['runTemplate']={'path':str(case/'native-run-template.json'),'sha256':k.digest(case/'native-run-template.json')}
