@@ -12,6 +12,16 @@ import test_generator_setup
 
 
 class DiagnosticOptions(unittest.TestCase):
+    def setUp(self):
+        # These synthetic callsites exercise the real lease and flock logic in
+        # a private namespace, independent of entered workload drivers.
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        lock = patch('experiment_batch.global_lock_path',
+                     return_value=Path(directory.name) / 'driver.lock')
+        lock.start()
+        self.addCleanup(lock.stop)
+
     def tearDown(self):
         r.configure()
 
