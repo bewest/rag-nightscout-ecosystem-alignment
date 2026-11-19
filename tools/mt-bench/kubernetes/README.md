@@ -539,13 +539,18 @@ In request mode, the binding removes reference per-container limits. A deliberat
 `resources.<role>.limits` override supplies exactly those optional limits; it does
 not inherit additional reference caps. Positive CPU, memory and ephemeral-storage
 requests remain necessary for this instrument's scheduling calculation. Each
-supplied limit must cover its corresponding request. Actual Pod readback preserves
-the complete resources object: injected LimitRange caps and changed requests
-remain refusals.
+supplied limit must cover its corresponding request. Actual Pod readback records
+the returned resources and overhead, including LimitRange defaults. Kubernetes
+quota, LimitRange and the scheduler enforce those resources; the adapter compares
+the rest of the Pod spec independently.
 
-Readback compares exact quantity values, so API normalization such as `0.5` CPU
-to `500m` or `0.5Gi` memory to `512Mi` is accepted. Observations retain the raw
-returned values. Added limits and real quantity changes still refuse.
+Namespace ResourceQuota readback compares exact numeric CPU, memory and
+ephemeral-storage quantities, including their `requests.*` and `limits.*` forms.
+For example, `4194304000` bytes and the API's canonical `4194304k` are equal.
+Scheduling round-up is not used for this comparison: even a fractional budget
+change refuses. Hard-map keys, pod counts, scopes and other fields remain exact;
+unknown dimensions and masked values have no inferred equality. Resource
+readback refusals retain only the safe resource kind/name beside the code.
 
 Use a **new** copy of the released commissioner source with
 [`commissioning-accounting.patch`](commissioning-accounting.patch). The patch

@@ -9,6 +9,45 @@ import matrix
 
 
 class ResourceBudget(unittest.TestCase):
+    def test_quota_canonical_quantity_preserves_exact_budget_and_readback_context(self):
+        c, inventory, rendered, client = fixture()
+        quota = {'apiVersion':'v1','kind':'ResourceQuota',
+                 'metadata':{'name':'run-quota','namespace':c['namespace'], 'labels':{c['ownerLabel']:c['runId']}},
+                 'spec':{'hard':{'requests.cpu':'2385m','requests.memory':'4194304000','pods':'17'}}}
+        rendered.append(quota)
+        admitted = copy.deepcopy(quota)
+        admitted['metadata'].update(uid='quota-uid',resourceVersion='10')
+        admitted['spec']['hard']['requests.memory'] = '4194304k'
+        client.objects['ResourceQuota/run-quota'] = admitted
+        objects = k.validate(c, inventory, rendered)
+        # Exact admitted spelling from the retained server dry-run; no actor.
+        baseline = k.observe(c, objects, client)
+        admitted['spec']['hard']['requests.cpu'] = '2.385'
+        k.observe(c, objects, client, baseline)
+        original = copy.deepcopy(admitted['spec'])
+        broken = [
+            {'hard':dict(original['hard'], **{'requests.memory':'4194303999'})},
+            {'hard':dict(original['hard'], **{'requests.memory':'4194304001'})},
+            {'hard':dict(original['hard'], **{'requests.memory':'4194303999.9'})},
+            {'hard':dict(original['hard'], **{'requests.cpu':'2.3849'})},
+            {'hard':dict(original['hard'], **{'requests.memory':'<redacted>'})},
+            {'hard':{key:value for key,value in original['hard'].items() if key!='pods'}},
+            {'hard':dict(original['hard'], **{'requests.storage':'1Gi'})},
+            dict(original, scopes=['BestEffort']),
+        ]
+        for spec in broken:
+            with self.subTest(spec=spec):
+                admitted['spec'] = spec
+                with self.assertRaisesRegex(k.Refused, r'^K8S_RESOURCE_READBACK_CHANGED:ResourceQuota\.run-quota$') as refused:
+                    k.observe(c, objects, client, baseline)
+                self.assertEqual(k.failure_evidence(refused.exception), {
+                    'verdict':'FAIL', 'code':'K8S_RESOURCE_READBACK_CHANGED:ResourceQuota.run-quota',
+                    'capacityAcceptance':'NOT_GRANTED'})
+                admitted['spec'] = copy.deepcopy(original)
+                k.observe(c, objects, client, baseline)
+        self.assertEqual(quota['spec']['hard']['requests.memory'], '4194304000')
+        self.assertEqual(admitted['spec'], original)
+
     def requests_fixture(self):
         c, inv, rendered, client = fixture()
         c['resourceAccounting'] = inv['resourceAccounting'] = r.REQUESTS
