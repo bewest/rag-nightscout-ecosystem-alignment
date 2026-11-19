@@ -208,7 +208,6 @@ def run_load(a,d,m,k6_id,record,oneoff,out,runid,completion,accepted):
                 def work():
                     with (out/'k6.log').open('wb') as output:
                         def launch():
-                            argv=k6_command(a,d,m,k6_id,runid)
                             timeout=a.discovery_seconds(m,m['cadence']['loadSeconds']+600)
                             if 'setupSeconds' in windows:
                                 # The controller exchanges JWTs before starting the measured driver.
@@ -219,6 +218,7 @@ def run_load(a,d,m,k6_id,record,oneoff,out,runid,completion,accepted):
                                 grace=max((row.get('gracefulStopSeconds',30) for row in m['cadence'].get('driverPlan',{}).get('scenarios',{}).values()),default=30)
                                 timeout=a.remaining_seconds(m['cadence']['loadSeconds']+grace+5)
                             a.k6_tenants(d,m,windows.get('setupUntilUnixMs',0)/1000 or None)
+                            argv=k6_command(a,d,m,k6_id,runid)
                             return (oneoff('k6-load',argv,file=output,timeout=timeout) if oneoff
                                     else a.command(argv,file=output,timeout=timeout))
                         record.process('k6',launch)
