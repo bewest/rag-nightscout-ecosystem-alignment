@@ -531,11 +531,17 @@ def rate_offer(m):
     if m['cadence'].get('workloadMix') == REALISTIC_MIX:
         scale = m['cadence'].get('workloadScale', 1)
         weights = {shape: 5 if shape == 'r_sgv' else 1 for shape in REALISTIC_CADENCE_MS}
-        units = realistic_cycle_ms(scale)
+        plan = m['cadence'].get('driverPlan', {})
+        write_scale = plan.get('writeRateScale', 1)
+        units = realistic_cycle_ms(scale, write_scale)
+        interpretation = 'sensor-cadence' if scale == 1 else 'uniform-rate-bracket'
+        if write_scale != 1:
+            interpretation = 'write-rate-bracket'
         rates = {shape: m['tenants'] * weights[shape] * 1000 / units[shape] for shape in units}
         return {'workloadMix': REALISTIC_MIX, 'workloadScale': scale,
-                'workloadInterpretation': 'sensor-cadence' if scale == 1 else 'uniform-rate-bracket',
-                'sensorCadence': scale == 1, 'requestedScenarioRps': None,
+                **({'writeRateScale': write_scale} if 'writeRateScale' in plan else {}),
+                'workloadInterpretation': interpretation,
+                'sensorCadence': scale == 1 and write_scale == 1, 'requestedScenarioRps': None,
                 'effectiveScenarioRps': sum(rates.values()),
                 'perTenantIntervalMs': {shape: units[shape] / weights[shape] for shape in units},
                 'scenarioTimeUnitMs': units, 'scenarioRpsByShape': rates,

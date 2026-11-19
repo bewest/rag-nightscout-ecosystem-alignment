@@ -5,12 +5,15 @@ from types import SimpleNamespace
 import adapter,discovery,driver_shards,workload
 
 JS=r'''
-const fs=require('fs'),vm=require('vm');const [script,count,mix,scale,offered]=process.argv.slice(1);
+const fs=require('fs'),vm=require('vm');const [script,count,mix,scale,offered,plan]=process.argv.slice(1);
 const env={ACCEL:'1',HOT_FACTOR:'1',DURATION:'1800',SHAPES:'w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status'};
 if(mix!=='-')env.M7_WORKLOAD_MIX=mix;if(scale!=='-')env.M7_WORKLOAD_SCALE=scale;if(offered!=='-')env.OFFERED_RPS=offered;
-const context={__ENV:env,SharedArray:function(_,fn){return fn();},open:()=>JSON.stringify(Array.from({length:Number(count)},(_,id)=>({id}))),Counter:class{}};
+if (plan) Object.assign(env,{M7_DRIVER_VU_DIAGNOSTIC:'configured-v1',M7_DRIVER_PLAN:plan,RUN_START:'0'});
+const context={__ENV:env,exec:{scenario:{iterationInTest:Number(count)}},console:{log(){}}, SharedArray:function(_,fn){return fn();},open:()=>JSON.stringify(Array.from({length:Number(count)},(_,id)=>({id}))),Counter:class{}};
 const text=fs.readFileSync(script,'utf8').replace(/^import .*;$/gm,'').replace(/^export /gm,'');
-console.log(JSON.stringify(vm.runInNewContext(text+'\noptions.scenarios;',context)));
+const result = plan ? `({scenarios:options.scenarios, stamps:Object.fromEntries(
+  Object.keys(options.scenarios).map(name=>{exec.scenario.name=name; return [name,stamp()];}))})` : 'options.scenarios';
+console.log(JSON.stringify(vm.runInNewContext(text+'\n'+result,context)));
 '''
 
 class WorkloadScale(unittest.TestCase):
@@ -42,6 +45,48 @@ class WorkloadScale(unittest.TestCase):
    self.assertNotEqual(old.returncode,0);self.assertIn('M7_WORKLOAD_SCALE_CONFIGURATION',old.stderr)
    p.write_text(original);self.assertEqual(options(1000,.1)['w_sgv']['timeUnit'],'3000000ms')
    self.assertEqual(options(1000),options(1000,1))
+
+ def test_configured_write_scale_matches_actual_k6_options_and_payload_clock(self):
+  import sys
+  sys.path.append(str(adapter.HERE.parent/'kubernetes'))
+  import workload_runtime as kube
+  import driver_vu_diagnostic as driver
+
+  shapes=workload.REALISTIC_CADENCE_MS
+  plan={'version':1, 'observer':'summary-v1','maxAggregateVUs':28,
+        'scenarios':{shape:{'preAllocatedVUs':2,'maxVUs':4} for shape in shapes}}
+  w={'loadSeconds':120,'workloadMix':'realistic-v1','workloadScale':1,
+     'logicalPollingClients':16,'probeEveryMs':30000}
+  with tempfile.TemporaryDirectory() as tmp:
+   script=Path(tmp)/'workload.js'
+   workload.generate(adapter.ROOT,script)
+   for n in (1000,3000):
+    for uniform,write in ((1,1),(1,2),(2,.5),(.5,3)):
+     cadence=w | {'workloadScale':uniform,'driverPlan':plan | {'writeRateScale':write}}
+     kube.validate(cadence,adapter.require,tenants=n)
+     manifest={'tenants':n,'cadence':cadence}
+     environment=driver.configured_environment(manifest)
+     received=json.loads(subprocess.check_output(['node','-e',JS,str(script),str(n),'realistic-v1',
+                   str(uniform),'-',environment['M7_DRIVER_PLAN']],text=True))
+     cycles,rates=kube.rates(cadence,n)
+     offer=adapter.rate_offer(manifest)
+     self.assertEqual(offer['sensorCadence'],uniform==1 and write==1)
+     self.assertEqual(rates,offer['scenarioRpsByShape'])
+     projected,=driver.expected_plans(manifest)
+     for shape,interval in shapes.items():
+      factor=write if shape.startswith('w_') else 1
+      weight=driver.WEIGHTS[shape]
+      expected=math.floor(interval*weight/uniform/factor+.5)
+      self.assertEqual(cycles[shape],expected)
+      self.assertEqual(received['stamps'][shape],expected)
+      self.assertEqual(received['scenarios'][shape]['timeUnit'],str(expected)+'ms')
+      self.assertEqual(projected['scenarios'][shape]['timeUnit'],str(expected)+'ms')
+   for bad in [0,-1,False,'2',float('inf'),1e-20,1e20]:
+    with self.assertRaises(RuntimeError):
+     kube.validate(w | {'driverPlan':plan | {'writeRateScale':bad}},adapter.require,tenants=1000)
+   with self.assertRaises(RuntimeError):
+    kube.validate({'loadSeconds':120,'offeredRps':10,'logicalPollingClients':16,'probeEveryMs':30000,
+                   'driverPlan':plan | {'writeRateScale':2}},adapter.require,tenants=1000)
 
  def test_local_and_kubernetes_share_multiplier_units_and_refuse_true_bounds(self):
   import sys

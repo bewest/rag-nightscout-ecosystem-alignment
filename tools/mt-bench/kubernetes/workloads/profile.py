@@ -109,7 +109,7 @@ def describe(p):
             'setupJwtExchanges': n, 'stockViewers': w['logicalPollingClients'],
             'probeWritesPerSecondWhileOpen': 1000 / w['probeEveryMs'],
             'probeWrites': 'observed independently; initial write and drain can extend the nominal window',
-            'limits': ['realistic-v1 scale1 preserves per-shape sensor cadence; aggregate profiles retain their authored rate',
+            'limits': ['realistic-v1 uses sensor cadence when both the uniform and write factors are one; aggregate profiles retain their authored rate',
                        'HTTP logical pollers are not a configured population; shape rates define offered REST',
                        'all ordinary roster tenants are eligible; actual changed/witness sets are observed',
                        'hotFactor weights the first roster tenant; no extra history seeding, alarm synthesis or reconnect burst is executed'],
