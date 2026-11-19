@@ -433,6 +433,53 @@ class Adapter(unittest.TestCase):
             with self.assertRaisesRegex(k.Refused,'ACCEPTED_WRITE_UNMEASURED'):criterion()
             k.write(out/'probe-accounting.json',ledger);criterion()
 
+    def test_subset_storage_in_stage_and_retained_report(self):
+        from workloads.reduce import reduce_stage
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            out = root / 'load'
+            out.mkdir()
+            run_id = 'synthetic-subset'
+            (out / 'runid').write_text(run_id)
+            # The first roster entry drives ordinary load even when IDs sort differently.
+            roster = [{'id': tenant, 'host':'fixture.test', 'token':'synthetic'} for tenant in (B, A)]
+            k.write(root / 'tenants.json', roster)
+            config = {'tenantsFile':str(root / 'tenants.json'), 'tenants':2, 'ordinaryRosterTenants':1}
+            k.write(root / 'run.json', config)
+            metrics = {'writes_ok':{'count':1}, 'writes_ok{kind:entries}':{'count':1},
+                       'writes_ok{kind:devicestatus}':{'count':0}, 'writes_ok{kind:treatments}':{'count':0},
+                       f'writes_ok{{tenant:{B}}}':{'count':1}, f'writes_uncertain{{tenant:{B}}}':{'count':0}}
+            ledger = {'version':2, 'kind':'m7-discovery-probe-accounting', 'runId':run_id, 'roster':[B,A],
+                      'admissionsClosed':True, 'attempts':1,
+                      'byTenant':{A:{'attempts':1,'accepted':1,'uncertain':0,'refused':0,'pending':0}}}
+            k.write(out / 'probe-accounting.json', ledger)
+            values = {A:{'probe':1}, B:{'entries':1}}
+
+            def report(case):
+                k.write(out / 'k6-summary.json', {'metrics':metrics})
+                k.write(out / 'stored-counts.json', values)
+                return reduce_stage(out, root / case)['stored']
+
+            self.assertEqual(report('full-read')['verdict'], 'PASS')
+            counts = execute.accepted_writes(out, config, values)
+            self.assertEqual([(row['tenant'], row['ordinarySelected']) for row in counts['rows']], [(A,False), (B,True)])
+            del metrics[f'writes_uncertain{{tenant:{B}}}']
+            self.assertEqual(report('missing-selected')['verdict'], 'UNMEASURED')
+            with self.assertRaisesRegex(k.Refused, 'ACCEPTED_WRITE_UNMEASURED'):
+                execute.accepted_writes(out, config, values)
+            values[A]['entries'] = values[B].pop('entries')
+            self.assertEqual(report('misplaced')['verdict'], 'FAIL')
+            with self.assertRaisesRegex(RuntimeError, 'M7_DISCOVERY_WRONG_DATA') as error:
+                execute.accepted_writes(out, config, values)
+            self.assertIn({'kind':'unselected-workload-write', 'tenant':A}, error.exception.oracleFindings['failures'])
+            values[B]['entries'] = values[A].pop('entries')
+            metrics[f'writes_uncertain{{tenant:{B}}}'] = {'count':0}
+            metrics['writes_uncertain'] = {'count':1}
+            self.assertEqual(report('unattributed-uncertainty')['verdict'], 'FAIL')
+            metrics['writes_uncertain'] = {'count':0}
+            self.assertEqual(report('restored')['verdict'], 'PASS')
+            self.assertEqual(execute.accepted_writes(out, config, values)['verdict'], 'GREEN')
+
     def test_matrix_collision_headroom_and_restore(self):
         with tempfile.TemporaryDirectory() as name:
             d=Path(name)

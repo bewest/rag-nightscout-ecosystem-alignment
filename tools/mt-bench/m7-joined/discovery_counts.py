@@ -48,23 +48,34 @@ def probe_metadata(a,out,runid,expected,*,probe_ledger=None):
         require(all(acks.get(t,0)==rows.get(t,{}).get('accepted',0) for t in expected),'M7_PROBE_COUNTS_ACK_MISMATCH')
     return value,acks
 
-def observe(a,d,out,runid,metrics,*,probe_ledger=None):
+def observe(a,d,out,runid,metrics,*,probe_ledger=None,ordinary_ids=None):
     # Caller has revalidated ownership/source before the existing single SQL.
-    tenants=a.document(d/'tenants.private.json');expected={r['id'] for r in tenants}
     findings={'verdict':'UNMEASURED','code':'M7_DISCOVERY_COUNTS_MISSING','failures':[],'failureCount':0,'probeCountProof':'UNMEASURED'}
     def fail(code):
         findings.update(verdict='RED',code=code)
         a.write(out/'oracle-findings.json',findings)
         error=RuntimeError(code);error.verdict='FAIL';error.oracleFindings=findings;raise error
     try:
+        tenants = a.document(d/'tenants.private.json')
+        expected = {row['id'] for row in tenants}
+        require(expected and len(expected) == len(tenants), 'M7_ORACLE_TENANT_SCOPE')
+        ordinary = expected if ordinary_ids is None else set(ordinary_ids)
+        require(ordinary and ordinary <= expected and (ordinary_ids is None or len(ordinary) == len(ordinary_ids)),
+                'M7_DISCOVERY_ORDINARY_ROSTER')
         ledger,legacy=probe_metadata(a,out,runid,expected,probe_ledger=probe_ledger)
         require(isinstance(metrics,dict),'M7_DISCOVERY_COUNTER_INVALID')
-        required=['writes_ok']+['writes_ok{kind:'+kind+'}' for kind in ('entries','devicestatus','treatments')]+[name+'{tenant:'+tenant+'}' for tenant in sorted(expected) for name in ('writes_ok','writes_uncertain')]
-        counts={key:counter(metrics,key) for key in required}
+        domains = dict.fromkeys(('entries', 'devicestatus', 'treatments'), 0)
+        required = ['writes_ok', *(f'writes_ok{{kind:{kind}}}' for kind in domains)]
+        required.extend(f'{name}{{tenant:{tenant}}}' for tenant in sorted(ordinary)
+                        for name in ('writes_ok', 'writes_uncertain'))
+        counts = {key: counter(metrics, key) for key in required}
+        tagged = (key for key in metrics if key.startswith(('writes_ok{tenant:', 'writes_uncertain{tenant:')))
+        require(all(key in counts for key in tagged), 'M7_DISCOVERY_ORDINARY_COUNTER_SCOPE')
+        reported_uncertain = counter(metrics, 'writes_uncertain')
         # Validate malformed present counters before opening the SQL client.
         values=a.stored(d,runid);a.write(out/'stored-counts.json',values)
         require(isinstance(values,dict) and set(values)<=expected,'M7_ORACLE_TENANT_SCOPE')
-        missing=[key for key,value in counts.items() if value is None];uncertain_total=0;all_uncertain=True;domains={k:0 for k in ('entries','devicestatus','treatments')};rows=[]
+        missing=[key for key,value in counts.items() if value is None];uncertain_total=0;all_uncertain=True;rows=[]
         complete=ledger is not None and ledger['admissionsClosed'] and all(r['pending']==0 for r in ledger['byTenant'].values())
         findings['probeCountProof']='KNOWN' if complete else 'UNMEASURED'
         findings['probeAccounting']={'version':2 if ledger else None,'admissionsClosed':ledger['admissionsClosed'] if ledger else None,'attempts':ledger['attempts'] if ledger else None,'pending':sum(r['pending'] for r in ledger['byTenant'].values()) if ledger else None}
@@ -76,24 +87,41 @@ def observe(a,d,out,runid,metrics,*,probe_ledger=None):
             value=values.get(tenant,{})
             require(isinstance(value,dict) and set(value)<=set(domains)|{'probe'} and all(type(n) is int and n>=0 for n in value.values()),'M7_ORACLE_COUNTS_INVALID')
             ok='writes_ok{tenant:'+tenant+'}';uncertain='writes_uncertain{tenant:'+tenant+'}'
-            absent=[key for key in (ok,uncertain) if counts[key] is None]
-            accepted=counts[ok];ambiguous=counts[uncertain]
+            # No ordinary writes are expected on an inactive tenant.
+            # Every selected counter still has to be measured, including zero.
+            accepted, ambiguous = (counts[ok], counts[uncertain]) if tenant in ordinary else (0, 0)
+            absent = accepted is None or ambiguous is None
             if ambiguous is not None:uncertain_total+=ambiguous
             else:all_uncertain=False
             stored=sum(value.get(kind,0) for kind in domains)
-            if not absent and not accepted<=stored<=accepted+ambiguous:violation('workload-count-bound',tenant)
+            if not absent and not accepted <= stored <= accepted + ambiguous:
+                violation('workload-count-bound' if tenant in ordinary else 'unselected-workload-write', tenant)
             probe=value.get('probe',0);pr=ledger['byTenant'].get(tenant,{k:0 for k in FIELDS}) if ledger else None
             if pr is not None:
                 if not pr['accepted']<=probe<=pr['accepted']+pr['uncertain']+pr['pending']:violation('probe-count-bound',tenant)
             elif legacy is not None and probe<legacy.get(tenant,0):violation('probe-ack-missing',tenant)
-            rows.append({'tenant':tenant,'accepted':accepted,'stored':stored,'uncertain':ambiguous,'probeStored':probe,'probeAccepted':pr['accepted'] if pr else legacy.get(tenant,0) if legacy is not None else None,'probeUncertain':pr['uncertain'] if pr else None,'probePending':pr['pending'] if pr else None,'probeRefused':pr['refused'] if pr else None,'match':not absent and complete and accepted<=stored<=accepted+ambiguous and pr['accepted']<=probe<=pr['accepted']+pr['uncertain']})
+            rows.append({
+                'tenant': tenant, 'ordinarySelected': tenant in ordinary,
+                'accepted': accepted, 'stored': stored, 'uncertain': ambiguous,
+                'probeStored': probe,
+                'probeAccepted': pr['accepted'] if pr else legacy.get(tenant, 0) if legacy is not None else None,
+                'probeUncertain': pr['uncertain'] if pr else None,
+                'probePending': pr['pending'] if pr else None,
+                'probeRefused': pr['refused'] if pr else None,
+                'match': not absent and complete and accepted <= stored <= accepted + ambiguous
+                         and pr['accepted'] <= probe <= pr['accepted'] + pr['uncertain'],
+            })
             for kind in domains:domains[kind]+=value.get(kind,0)
         for kind,count in domains.items():
             key='writes_ok{kind:'+kind+'}'
             if counts[key] is not None and all_uncertain and not counts[key]<=count<=counts[key]+uncertain_total:violation('domain-count-bound:'+kind)
         # A present aggregate must equal all available tenant ACKs. Missing data
         # does not authorize fabricating zeros, even when the stored count is0.
-        if not missing and sum(r['accepted'] for r in rows)!=counts['writes_ok']:violation('client-total-mismatch')
+        if counts['writes_ok'] is not None and all(row['accepted'] is not None for row in rows):
+            if sum(row['accepted'] for row in rows) != counts['writes_ok']:
+                violation('client-total-mismatch')
+        if reported_uncertain is not None and all_uncertain and reported_uncertain != uncertain_total:
+            violation('client-uncertain-total-mismatch')
         findings.update(rows=rows,domains=domains,uncertain=uncertain_total,missingFieldCount=len(missing),missingFields=missing[:64])
         if findings['failureCount']:fail('M7_DISCOVERY_WRONG_DATA')
         if not missing and complete:findings.update(verdict='GREEN',code='M7_DISCOVERY_COUNTS_KNOWN')
