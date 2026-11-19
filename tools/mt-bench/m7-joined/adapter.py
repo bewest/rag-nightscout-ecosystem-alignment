@@ -831,25 +831,29 @@ def prepare_staged(args,target,pinned):
     if snapshot:
         unused_project_namespace(m['project'])
         restored = json.loads(command(['node', overlay/'fixture.js', 'restore', Path(snapshot).resolve(), *destination],
-                                      cwd=overlay, env=env, phase='fixture-restore'))
+                                      cwd=overlay, env={**env, 'NS_DEMO_IMAGE': args.image}, phase='fixture-restore'))
         require(restored['project'] == m['project'] and Path(restored['state']) == target/'state', 'M7_FIXTURE_RESTORE_TARGET')
         m['fixtureRestore'] = restored['snapshot']
         names = [m['project']+'_'+kind for kind in ('postgres-data', 'vault-data')]
         volumes = json.loads(command(['docker','volume','inspect',*names]))
         m['restoredVolumes'] = {row['Name']:row['CreatedAt'] for row in volumes}
         write(target/'owner.json', m)
+        # Refuse a different roster size before ordinary provisioning can grow it.
+        tenant_projection(document(target/'state/primer/tenants.json'), m['tenants'])
         write(target/'fixture-restore.json', restored)
     else:
         command(["node", overlay / "prepare.js", *destination], cwd=overlay, env=env, phase="product-prepare")
-    # Keep the source binding path stable: guards and optional controller digests
-    # refer to this exact .env. Compose also reads the private cell copy.
-    shutil.copyfile(overlay / ".env", target / "env")
-    with (target / "env").open("a") as output:
-        output.write("NS_DEMO_IMAGE=" + args.image + "\nNS_DEMO_TENANTS=" + str(args.tenants) + "\nNS_API_REPLICAS=" + str(args.replicas) + "\n")
-    if args.profile=="pgstream-sample":
-        with (target/"env").open("a") as output:output.write("NS_POSTGRES_IMAGE="+args.postgres_image+"\n")
-        m["postgresImageId"]=args.postgres_image
-    shutil.copyfile(target / "env", overlay / ".env")
+    # The deployment snapshot reader requires a single assignment per key.
+    settings = {'NS_DEMO_IMAGE': args.image, 'NS_DEMO_TENANTS': str(args.tenants),
+                'NS_API_REPLICAS': str(args.replicas)}
+    if args.profile == 'pgstream-sample':
+        settings['NS_POSTGRES_IMAGE'] = args.postgres_image
+        m['postgresImageId'] = args.postgres_image
+    binding_env = overlay/'.env'
+    lines = [line for line in binding_env.read_text().splitlines() if line.partition('=')[0] not in settings]
+    lines.extend(key + '=' + value for key, value in settings.items())
+    binding_env.write_text('\n'.join(lines) + '\n')
+    shutil.copy(binding_env, target/'env')
     source_files = [overlay / "compose.yaml", *sorted((target / "state").glob("compose.*.yaml"))]
     base_args = ["docker", "compose", "-p", m["project"], "--env-file", target / "env"]
     for file in source_files:

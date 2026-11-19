@@ -185,9 +185,18 @@ class Sample(unittest.TestCase):
         self.assertEqual(config['services']['postgres']['image'],'sha256:postgres')
         self.assertEqual(config['services']['evaluator']['image'],'sha256:app')
     def test_prepare_uses_selected_project_pgstream_and_stable_source_env(self):
+        self.check_prepared_fixture()
+
+    def test_restore_uses_selected_image_and_complete_population(self):
+        self.check_prepared_fixture(restored_count=4)
+        self.check_prepared_fixture(restored_count=2)
+
+    def check_prepared_fixture(self, restored_count=None):
         with tempfile.TemporaryDirectory() as temp:
             d=Path(temp);calls=[]
             args=SimpleNamespace(core_repo='core',deploy_repo='deploy',core_commit='a'*40,deploy_commit='b'*40,image='sha256:'+'c'*64,postgres_image='sha256:'+'d'*64,tenants=4,replicas=1,quiet_load=3,freeze=str(d/'freeze.json'),profile='pgstream-sample',backend_subnet='10.221.0.0/28',edge_subnet='10.221.1.0/28',fixture_project='ns-rest-joined-baseline')
+            if restored_count is not None:
+                args.fixture_snapshot = str(d/'source-snapshot')
             def git(repo,*argv):
                 if argv[:2]==('worktree','add'):(d/'core/deploy/multitenant').mkdir(parents=True)
                 return ''
@@ -197,18 +206,41 @@ class Sample(unittest.TestCase):
                     for name in ('compose.yaml','commission-restore.js','publish-primer.js'):(overlay/name).write_text('synthetic')
                     return ''
                 if argv[0]=='node':
-                    calls.append((argv,options));(d/'core/deploy/multitenant/.env').write_text('SYNTHETIC=1\n');return ''
+                    calls.append((argv,options))
+                    (d/'core/deploy/multitenant/.env').write_text('SYNTHETIC=1\nNS_API_REPLICAS=1\n')
+                    if argv[1].name == 'fixture.js':
+                        self.assertEqual(options['env'].get('NS_DEMO_IMAGE'), args.image)
+                        primer = d/'state/primer'
+                        primer.mkdir(parents=True)
+                        rows = [{'id':f'00000000-0000-4000-8000-{i:012d}', 'host':f't{i}.test',
+                                 'dataToken':'synthetic'} for i in range(restored_count)]
+                        a.write(primer/'tenants.json', {'version':1, 'tenants':rows})
+                        a.write(primer/'primed.json', {'state':'synthetic-data-primed', 'tenants':restored_count})
+                        return json.dumps({'snapshot':{'version':1}, 'state':str(d/'state'), 'project':args.fixture_project})
+                    return ''
                 if argv[0]=='docker':
+                    if argv[1:3] == ['volume','inspect']:
+                        return json.dumps([{'Name':name,'CreatedAt':'synthetic'} for name in argv[3:]])
                     if argv[1] in ('network','volume'):return ''
                     names=['postgres','vault','admin','primer','feed-reader','api','realtime','evaluator','tenant-admin','ui','nginx']
                     return json.dumps({'services':{name:{'command':['postgres']if name=='postgres'else['node','entrypoint.js',name],'image':args.postgres_image if name=='postgres'else args.image}for name in names}})
                 return b''
             with patch.object(a,'setup_generator') as generator,patch.object(a,'port',return_value=12345),patch.object(a,'git',side_effect=git),patch.object(a,'command',side_effect=command),patch.object(a,'inventory',return_value={}),patch.object(a,'host_identity',return_value='host'),patch.object(a,'resources',return_value=[]):
+                if restored_count is not None and restored_count != args.tenants:
+                    with self.assertRaisesRegex(RuntimeError, 'M7_PRIMER_COUNT'):
+                        a.prepare_staged(args,d,{'sha256':'e'*64})
+                    self.assertEqual(len(a.document(d/'owner.json')['restoredVolumes']), 2)
+                    self.assertFalse((d/'fixture-restore.json').exists())
+                    return
                 a.prepare_staged(args,d,{'sha256':'e'*64})
             generator.assert_called_once()
             argv,options=calls[0]
             self.assertIn('--project',argv);self.assertEqual(argv[argv.index('--backend-subnet')+1],args.backend_subnet);self.assertEqual(argv[argv.index('--edge-subnet')+1],args.edge_subnet);self.assertEqual(options['env']['NS_PGSTREAM'],'1')
             self.assertEqual((d/'env').read_bytes(),(d/'core/deploy/multitenant/.env').read_bytes())
+            lines = (d/'env').read_text().splitlines()
+            self.assertEqual(len({line.split('=',1)[0] for line in lines}), len(lines))
+            self.assertIn('NS_API_REPLICAS=1', lines)
+            self.assertIn('SYNTHETIC=1', lines)
             self.assertEqual(a.document(d/'owner.json')['project'],args.fixture_project)
             self.assertEqual(argv[argv.index('--project')+1],args.fixture_project)
             self.assertEqual(a.document(d/'frozen.compose.json')['services']['postgres']['image'],args.postgres_image)
