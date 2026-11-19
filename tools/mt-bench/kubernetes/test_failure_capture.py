@@ -62,7 +62,7 @@ export default function () {
 
 
 class FailureCapture(unittest.TestCase):
-    def trial(self, fail, signal=False):
+    def trial(self, fail, signal=False, module=execute):
         """fail: a hard midpoint (untyped failed completion) stops the driver.
         signal: a not-ready midpoint without a hard reason is recorded; the run continues."""
         capture = os.environ.get('K8S_TEST_CAPTURE_DIR')
@@ -117,19 +117,23 @@ class FailureCapture(unittest.TestCase):
                 captures.append(value)
                 return SimpleNamespace(returncode=0, stdout=value, stderr=b'')
             client = k.Client(c, run=run_rpc)
-            with patch.object(k.candidate, 'require'), patch.object(execute, 'actor', return_value={}), \
+            import catchup
+            with patch.object(catchup, 'run', return_value={'verdict':'PASS'}) as collected, \
+                 patch.object(k.candidate, 'require'), patch.object(module, 'actor', return_value={}), \
                  patch.object(k, 'active_baseline', return_value=baseline), \
                  patch.object(k, 'observe', return_value=baseline), \
                  patch.object(k.shutil, 'which', return_value=str(tool)), \
                  patch.dict('os.environ', {'K6_NO_USAGE_REPORT':'true', 'K6_ADDRESS':'127.0.0.1:0'}), \
-                 patch.object(execute, 'assess_stage', return_value={'verdict':'OBSERVED'}) as assess:
+                 patch.object(module, 'assess_stage', return_value={'verdict':'OBSERVED'}) as assess:
                 if fail:
                     with self.assertRaisesRegex(k.evaluator_progress.Refused, 'M7_EVALUATOR_PROGRESS_ERROR'):
-                        execute.execute(d, c, objects, client, load=True)
+                        module.execute(d, c, objects, client, load=True)
                     assess.assert_not_called()
                 else:
-                    self.assertEqual(execute.execute(d, c, objects, client, load=True)['verdict'], 'OBSERVED')
+                    self.assertEqual(module.execute(d, c, objects, client, load=True)['verdict'], 'OBSERVED')
                     assess.assert_called_once()
+                    collected.assert_called_once()
+                    self.assertEqual(k.document(out/'drain.json')['requestedSeconds'], 120)
 
             raw = out/'progress-midpoint.private.jsonl'
             self.assertTrue(raw.is_file(), 'typed midpoint response bytes were lost')
@@ -225,3 +229,15 @@ class FailureCapture(unittest.TestCase):
 
     def test_healthy_midpoint_capture_runs_during_delayed_driver_setup(self):
         self.trial(fail=False)
+
+    def test_omitted_drain_still_collects_red_then_restored(self):
+        import types
+        source = Path(execute.__file__).read_text()
+        needle = "        if load:\n            # All-tenant fixed-floor catch-up"
+        self.assertEqual(source.count(needle), 1)
+        broken = types.ModuleType('missing_catchup')
+        broken.__file__ = execute.__file__
+        exec(compile(source.replace(needle, "        if load and 'drainSeconds' in settings:\n            # All-tenant fixed-floor catch-up"), execute.__file__, 'exec'), broken.__dict__)
+        with self.assertRaises(AssertionError): self.trial(fail=False, module=broken)
+        self.trial(fail=False)
+        print('KUBERNETES_CATCHUP missing default selection RED; RESTORED_GREEN')

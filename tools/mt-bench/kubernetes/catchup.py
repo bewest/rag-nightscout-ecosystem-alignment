@@ -149,14 +149,13 @@ def run(d, out, c, objects, client, ids, *, writers_joined_ns, drain_started, co
              'authorityScope': 'sampled runtime generation/health, restore generation and observed control vectors; direct current authority not yet observed is NO-INSTRUMENT'}
     try:
         settings = c['workload']
-        k.need('drainSeconds' in settings, 'CATCHUP_DRAIN_REQUIRED', 'UNMEASURED')
         import discovery_counts
         accounting, _ = discovery_counts.probe_metadata(SimpleNamespace(document=k.document), out,
                                                         (out / 'runid').read_text().strip(), set(ids),
                                                         probe_ledger=settings.get('probeLedger'))
         p.need(accounting is not None and accounting['admissionsClosed'] is True
                and all(row['pending'] == 0 for row in accounting['byTenant'].values()), 'M7_DRAIN_PROBE_PENDING')
-        requested = settings['drainSeconds'] - (time.time() - drain_started)
+        requested = settings.get('drainSeconds', 120) - (time.time() - drain_started)
         seconds = min(requested, k.deadline(c))
         value['observationWindow'] = {'requestedRemainingSeconds': requested, 'effectiveSeconds': seconds,
                                       'selectedClinicalDeadlineSeconds': 120,

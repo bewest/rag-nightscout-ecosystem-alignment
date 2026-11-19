@@ -514,7 +514,9 @@ def cadence_options(args):
     observation = getattr(args, 'drain_observation', None)
     if observation is not None:
         require(args.profile == 'pgstream-sample' and args.run_purpose == 'discovery'
-                and 'drainSeconds' in value and args.evaluator_catchup == 'fixed-target-v1',
+                and 'drainSeconds' in value
+                and (args.evaluator_catchup == 'fixed-target-v1' or
+                     args.evaluator_catchup is None and getattr(args, 'completion_contract', None) == 'evaluator-work-v2'),
                 'M7_DRAIN_OBSERVATION_SCOPE')
         value['drainObservation'] = observation
     phase_windows.selection(value)

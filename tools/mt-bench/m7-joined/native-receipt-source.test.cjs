@@ -50,7 +50,8 @@ test('foreign and malformed actual declarations or provisioning plans refuse',{s
 });
 test('current typed reader rejects legacy and foreign row contracts then restores',{skip:!root},()=>{
  const f=fixture();
- for(const digest of [original.row.typed.contractDigest,'9'.repeat(64),'invalid']){
+ const legacy=require('node:crypto').createHash('sha256').update(JSON.stringify(['evaluator-work-v2',f.config.checkpoint,f.config.native.inputConsumer])).digest('hex');
+ for(const digest of [legacy,'9'.repeat(64),'invalid']){
   const bad=copy(f.row);bad.typed.contractDigest=digest;
   assert.equal(oracle.assess(bad,f.witness,f.clients,2,f.config).code,'M7_COMPLETION_TYPED_STATE');
   assert.throws(()=>oracle.progressSnapshot([bad],f.config,[bad.tenant]),/M7_COMPLETION_TYPED_STATE/);

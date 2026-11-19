@@ -169,6 +169,11 @@ def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns
 
 def select(args, manifest):
     selected = getattr(args, 'evaluator_catchup', None)
+    if selected is None and (manifest.get('profile') == 'pgstream-sample'
+            and manifest.get('runPurpose') == 'discovery'
+            and manifest.get('completionContract') == 'evaluator-work-v2'
+            and manifest.get('cadence', {}).get('restart') is False):
+        selected = 'fixed-target-v1'
     if selected is None: return
     p.need(selected == 'fixed-target-v1' and manifest.get('evaluatorOpportunities') == o.CONTRACT
            and manifest.get('profile') == 'pgstream-sample' and manifest.get('runPurpose') == 'discovery'

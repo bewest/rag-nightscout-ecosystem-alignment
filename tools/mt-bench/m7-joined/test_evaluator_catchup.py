@@ -278,3 +278,26 @@ class NativeCatchup(unittest.TestCase):
 
 
 if __name__ == '__main__': unittest.main()
+
+
+class AutomaticSelection(unittest.TestCase):
+    def criterion(self, module):
+        from types import SimpleNamespace
+        manifest = dict(profile='pgstream-sample', runPurpose='discovery',
+                        completionContract='evaluator-work-v2', evaluatorOpportunities='received-input-v1',
+                        cadence={'restart':False})
+        module.select(SimpleNamespace(evaluator_catchup=None), manifest)
+        self.assertEqual(manifest.get('evaluatorCatchup'), 'fixed-target-v1')
+
+    def test_omitted_selection_red_then_restored(self):
+        import types
+        from pathlib import Path
+        self.criterion(c)
+        source = Path(c.__file__).read_text()
+        needle = "    if selected is None and (manifest.get('profile') == 'pgstream-sample'"
+        self.assertEqual(source.count(needle), 1)
+        broken = types.ModuleType('missing_selection')
+        exec(compile(source.replace(needle, "    if False and (manifest.get('profile') == 'pgstream-sample'"), c.__file__, 'exec'), broken.__dict__)
+        with self.assertRaises(AssertionError): self.criterion(broken)
+        self.criterion(c)
+        print('AUTOMATIC_CATCHUP missing selection RED; RESTORED_GREEN')

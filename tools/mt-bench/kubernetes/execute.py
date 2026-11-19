@@ -337,7 +337,7 @@ def gate_mode(c):
     value.setdefault('midpointStop', 'hard')
     value.setdefault('catchup', True)
     k.need(set(value) <= {'midpointStop', 'deadlineMs', 'catchup'} and value['midpointStop'] in ('hard', 'never')
-           and type(value['catchup']) is bool, 'OUTCOME_GATE_CONFIGURATION')
+           and value['catchup'] is True, 'OUTCOME_GATE_CONFIGURATION')
     return value
 
 
@@ -487,6 +487,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
     k.need(not out.exists(), 'STAGE_OUTPUT_EXISTS')
     if load:
         k.need('k6' in c['driver'] and 'k6Sha256' in c['driver'],'LOAD_INPUTS_REQUIRED','UNMEASURED')
+    gate_mode(c)  # the outcome gate always requires fixed-target catch-up
     settings = workload_runtime.validate(c['workload'], k.need, c['tenants'])
     env = workload_runtime.environment(settings, environment(c, d), k.need)
     completion(c)
@@ -596,9 +597,9 @@ def execute(d, c, objects, client, load=False, recovery=False):
                 load_started, load_ended = ordinary_load_window(c, out / 'k6.log', load_process_started, load_process_ended)
             (out / '.restart').touch()
             drain_started = time.time()
-        if load and 'drainSeconds' in settings:
+        if load:
             # The inherited oracle has a 120 s per-write lookback. Keep that scope explicit.
-            requested = settings['drainSeconds']
+            requested = settings.get('drainSeconds', 120)
             k.write(out / 'drain.json', {'requestedSeconds': requested, 'perWriteCollectorLimitSeconds': 120,
                     'maximumObservableSeconds': min(requested, 120),
                     'scope': 'PARTIAL' if requested > 120 else 'BOUNDED', 'allWriterDrain': 'UNMEASURED'})
@@ -622,7 +623,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
                                      'loadWindowBasis': 'first ordinary scenario request through configured duration capped at native exit; JWT setup and final drain excluded',
                                      'runId': runid, 'pins': c['pins'],
                                      'context': c['context'], 'namespaceUid': baseline['namespace']['uid']})
-        if load and 'drainSeconds' in settings and gate_mode(c)['catchup']:
+        if load:
             # All-tenant fixed-floor catch-up: storage floor vs completed evaluation.
             import catchup
             catchup.run(d, out, c, objects, client, [row['id'] for row in tenants],
