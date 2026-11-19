@@ -72,6 +72,8 @@ try:
               'bindingReceipt':ref(Path(control['bindingDirectory'])/'binding.json'),'delivery':control['delivery'],
               'roleDocuments':{role:str(live/(role+'-config.private.json')) for role in ('evaluator','realtime')}}
     instance['roleDocuments']['nativeReceipt']=str(live/'native-receipt-source.private.json')
+    if (live/'platform-verification.json').exists():
+        instance['verificationProof']=ref(live/'platform-verification.json')
     if 'pgstreamNotifierAckTimeoutMs' in m:
         instance['producerAckReadback']=ref(live/'producer-ack-readback.json')
     if 'primerStorage' in m:

@@ -58,6 +58,7 @@ def require_roster(d, c, baseline):
 def prime(directory, output, concurrency=None, max_tenants=None):
     d, c, objects = k.load(directory)
     k.need('candidate' in c['pins'], 'PRIMER_INPUT')
+    split = k.candidate.verified_serving(c)
     declared=c.get(primer_options.FIELD)
     supplied={key:value for key,value in (('concurrency',concurrency),('maxTenants',max_tenants)) if value is not None}
     if supplied:primer_options.selection(supplied,k.need)
@@ -95,11 +96,9 @@ def prime(directory, output, concurrency=None, max_tenants=None):
                [s.get('outcome') for s in policy['observations']] == ['connected', 'timeout', 'connected'] and
                all(s.get('podUid') == pod['uid'] and s.get('containerId') == result['containerId']
                    for s in policy['observations'][::2]), 'PRIMER_POLICY_CHANGED')
+        where = '/run/ns-client' if split else '/run/ns-primer'
         def private_file(name):
-            return client.call(['exec', target, '-c', 'done', '--', 'cat', '/run/ns-primer/'+name], read=False)
-        proof = private_file('verified.json')
-        k.need(json.loads(proof) == k.document(d/'candidate-verification.json')['proof'], 'PRIMER_PROOF_CHANGED')
-        contract = objects['ConfigMap/provision-scripts']['data']['source-contract.json'].encode()
+            return client.call(['exec', target, '-c', 'done', '--', 'cat', where+'/'+name], read=False)
         job = client.get('Job', 'primer')
         k.need(job['metadata']['uid'] == result['jobUid'] and job['status'].get('active') == 1 and
                not any(row.get('status') == 'True' and row.get('type') in ('Failed','Complete')
@@ -111,10 +110,21 @@ def prime(directory, output, concurrency=None, max_tenants=None):
             k.need(k.workload_inputs.seconds(seconds),'DATA_PRIMER_WINDOW')
             cutoff=min(cutoff,time.time()+seconds)
             result['selectedDataPrimerSeconds']=seconds
-        args = [c['namespace'], c['runId'], hashlib.sha256(contract).hexdigest(),
-                hashlib.sha256(proof).hexdigest(), str(int(cutoff*1000)), str(c['tenants']),
-                str(selected.get('concurrency',primer_options.DEFAULT_CONCURRENCY))]
-        if 'maxTenants' in selected:args.append(str(selected['maxTenants']))
+        context = [c['namespace'], c['runId']]
+        options = [str(int(cutoff*1000)), str(c['tenants']),
+                   str(selected.get('concurrency',primer_options.DEFAULT_CONCURRENCY))]
+        if split:
+            args = ['--verified-serving', *context, *options, str(selected.get('maxTenants', c['tenants']))]
+            volumes = k.template(job)['spec']['volumes']
+            volume, = (v['emptyDir'] for v in volumes if v['name']=='client-state')
+            result['stateVolume'] = {'mountPath':where, 'sizeLimit':volume['sizeLimit']}
+            result['requiredActiveTenants'] = c['tenants']
+        else:
+            proof = private_file('verified.json')
+            k.need(json.loads(proof) == k.document(d/'candidate-verification.json')['proof'], 'PRIMER_PROOF_CHANGED')
+            contract = objects['ConfigMap/provision-scripts']['data']['source-contract.json'].encode()
+            args = [*context, hashlib.sha256(contract).hexdigest(), hashlib.sha256(proof).hexdigest(), *options]
+            if 'maxTenants' in selected:args.append(str(selected['maxTenants']))
         result['cutoffEpochMs'] = int(cutoff*1000)
         remaining = cutoff - time.time()
         k.need(remaining > 0, 'PRIMER_DEADLINE', 'UNMEASURED')
@@ -142,6 +152,8 @@ def prime(directory, output, concurrency=None, max_tenants=None):
             'error','errorClass','requestClass','notReady','connectionCause','responseError',
             'state','tenants','remaining'}, 'PRIMER_EXEC_OUTCOME_UNMEASURED', 'UNMEASURED')
         result.update(sourceResult=native, actorExitCode=actor.returncode)
+        if split:
+            result['observedActiveTenants'] = native.get('tenants')
         if primer_storage.FIELD in c:
             try:
                 result['stateVolume']['after']=storage_readback(c, client, target)
@@ -149,8 +161,10 @@ def prime(directory, output, concurrency=None, max_tenants=None):
                 result['stateVolume']['after']={'status':error.verdict, 'code':str(error)}
             except (ValueError, KeyError, OSError, TypeError):
                 result['stateVolume']['after']={'status':'UNMEASURED'}
+        partial = native.get('state') == 'synthetic-data-prime-partial'
         k.need(actor.returncode == 0 and native == {'state': 'synthetic-data-primed', 'tenants': c['tenants']},
-               'PRIMER_INCOMPLETE', 'UNMEASURED' if native.get('state') == 'synthetic-data-prime-partial' else 'FAIL')
+               'PRIMER_ACTIVE_COVERAGE_INCOMPLETE' if split and partial else 'PRIMER_INCOMPLETE',
+               'UNMEASURED' if partial else 'FAIL')
         if primer_storage.FIELD in c:
             k.need(result['stateVolume']['after'].get('status')!='FAIL', 'PRIMER_STORAGE_READBACK_CHANGED')
         projected = tenant_projection(json.loads(private_file('tenants.json')), c['tenants'])

@@ -1094,10 +1094,17 @@ def application_database(d):
 def primer_counts(d,m):
     """Read independent custody and database counts before workers or load start."""
     state=d/"state/primer"
-    seed=document(state/"config.json")["seed"]
-    expected={row["id"] for row in seed}
-    require(len(seed)==len(expected)==m["tenants"],"M7_PRIMER_SEED_COUNT")
     issued=document(state/"provisioned.json")
+    seed=document(state/"config.json").get("seed")
+    if seed is None:
+        require(verified_serving(document(d/"frozen.compose.json")), "M7_PRIMER_SEED_COUNT")
+        module=d/"core/deploy/multitenant/demo-tenants.js"
+        expected=set(json.loads(command(["node", "-e", "console.log(JSON.stringify(require(process.argv[1]).tenantIds(Number(process.argv[2]))))",
+                                         module, str(m["tenants"])])))
+    else:
+        expected={row["id"] for row in seed}
+        require(len(seed)==len(expected), "M7_PRIMER_SEED_COUNT")
+    require(len(expected)==m["tenants"],"M7_PRIMER_SEED_COUNT")
     accepted=document(state/"tenants.json")
     tenant_projection(accepted,m["tenants"])
     complete=document(state/"primed.json")
@@ -1113,7 +1120,7 @@ def primer_counts(d,m):
         require(tenant not in stored,"M7_PRIMER_DATABASE_DUPLICATE_GROUP")
         stored[tenant]=int(count)
     ok=set(stored)==expected and all(count==1 for count in stored.values())
-    result={"verdict":"PASS" if ok else "FAIL","requestedTenants":len(seed),"provisionedTenants":len(issued),
+    result={"verdict":"PASS" if ok else "FAIL","requestedTenants":len(expected),"provisionedTenants":len(issued),
             "acceptedAndSavedTenants":len(accepted["tenants"]),"persistedTenants":len(stored),
             "persistedEntries":sum(stored.values()),"perTenantEntries":stored,
             "scope":"PRIVATE synthetic commissioning only; accepted means HTTP success plus saved custody; SQL is independent"}
@@ -1152,12 +1159,13 @@ def platform_startup_config(config,d,m,readiness=None,verify=False):
 def deployment_plan(config,pgstream=False,primer_concurrency_value=1,platform_verification=False,compose_ready_seconds=1200,*,primer_max_tenants=None):
     selected={'concurrency':primer_concurrency_value}
     if primer_max_tenants is not None:selected['maxTenants']=primer_max_tenants
+    elif verified_serving(config):selected['maxTenants']=int(config['services']['primer']['environment']['NS_DEMO_TENANTS'])
     prime_options=primer_options.argv(primer_options.selection(selected,primer_need))
     roster=service_roster(config)
     apis=[name for name in roster if config["services"][name]["command"][-1]=="api"]
     remaining=[name for name in roster if name not in apis]
     start=["up","-d","--no-build","--pull","never","--wait","--wait-timeout",str(compose_ready_seconds)]
-    return [
+    plan = [
         ("infrastructure","compose",[*start,"postgres","vault"]),
         ("bootstrap","compose",["--profile","ops","run","--rm","bootstrap"]),
         ("admin-feed","compose",[*start,"admin",*(["feed-reader"] if not pgstream else [])]),
@@ -1168,6 +1176,22 @@ def deployment_plan(config,pgstream=False,primer_concurrency_value=1,platform_ve
         ("prime","compose",["--profile","ops","run","--rm","--no-deps","primer","node","deploy/multitenant/prime.js","prime",*prime_options]),
         ("publish-primer","local",["publish-primer.js"]),
         ("remaining-roles","compose",[*start,*remaining,"ui","nginx"])]
+    if verified_serving(config):
+        require(platform_verification, 'M7_PLATFORM_STARTUP_CAPABILITY_MISSING')
+        stages = {row[0]: row for row in plan}
+        commission = stages['commission'][2]
+        commission[commission.index('bootstrap'):commission.index('bootstrap')] = [
+            '--env=NS_DEMO_TENANTS='+config['services']['primer']['environment']['NS_DEMO_TENANTS']]
+        return [stages[name] for name in ('infrastructure', 'bootstrap', 'admin-feed', 'platform-verify',
+                                          'apis', 'remaining-roles', 'provision', 'commission', 'prime', 'publish-primer')]
+    return plan
+
+
+def verified_serving(config):
+    services = config['services']
+    return ('NS_DEMO_TENANTS' in services.get('primer', {}).get('environment', {}) and
+            'NS_DEMO_TENANTS' not in services.get('bootstrap', {}).get('environment', {}))
+
 
 
 def generator_tools():
@@ -1460,7 +1484,7 @@ def deploy(d, m):
                             **({'timeout':timeout} if 'stageSeconds' in authored else {}))
                 else:compose(d,*args,file=output,timeout=timeout)
             if name=="commission" and m.get("vaultRefusalControl"):vault_control(d,m,"deny")
-            if name=="prime" and m.get("primerConcurrency",1)!=1:primer_counts(d,m)
+            if name=="prime" and (verified_serving(config) or m.get("primerConcurrency",1)!=1):primer_counts(d,m)
             if name=="infrastructure":psql(d,"CREATE EXTENSION IF NOT EXISTS pg_stat_statements;")
             if name=="bootstrap":
                 ack_wire=stream_topology.install_ack_budget(d,m,config)
@@ -2509,7 +2533,7 @@ def parser():
                       help='Opt-in finite pre-load source convergence before unchanged normal readiness; local owned-to-completion discovery only')
     prep.add_argument('--preload-convergence-interval-seconds', type=int,
                       help='Interval between original strict pre-load source snapshots')
-    prep.add_argument('--preload-readiness', choices=('require-all',),
+    prep.add_argument('--preload-readiness', choices=('signal', 'require-all'),
                       help='Opt in to refusing traffic until every tenant is ready; omitted, convergence is a recorded signal')
     prep.add_argument("--tenant-readiness",choices=("serve","all"),help="Explicit selected platform startup readiness, bound into the receipt and serving environment")
     prep.add_argument("--primer-concurrency",type=int,default=1,help="Native DATA primer worker limit; default serial")

@@ -173,7 +173,13 @@ def _options(action,options):
  allowed={'up':{'-d','--no-deps','--no-build','--force-recreate','--wait','--pull','never','--wait-timeout'},'create':{'--no-build','--no-deps','--pull','never'},'run':{'--rm','--no-deps','--pull','never'}}
  options=[str(x)for x in options];i=0
  while i<len(options):
-  value=options[i];require(value in allowed[action]and value!='never','M7_BINDING_COMPOSE_OPTION_REFUSED')
+  value=options[i]
+  if action=='run' and value.startswith('--env=NS_DEMO_TENANTS='):
+   count=value.removeprefix('--env=NS_DEMO_TENANTS=')
+   require(re.fullmatch('[1-9][0-9]{0,15}',count) and workload_inputs.tenants(int(count)),
+           'M7_BINDING_COMPOSE_OPTION_REFUSED')
+   i+=1;continue
+  require(value in allowed[action]and value!='never','M7_BINDING_COMPOSE_OPTION_REFUSED')
   if value in('--pull','--wait-timeout'):
    require(i+1<len(options),'M7_BINDING_COMPOSE_OPTION_REFUSED');argument=options[i+1];require(argument=='never'if value=='--pull'else re.fullmatch(r'[0-9]{1,10}',argument)and workload_inputs.seconds(int(argument)),'M7_BINDING_COMPOSE_OPTION_REFUSED');i+=2
   else:i+=1

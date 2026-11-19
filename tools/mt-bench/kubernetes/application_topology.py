@@ -42,9 +42,12 @@ def validate(config, inventory, objects, need):
          'APPLICATION_ROLE_TOPOLOGY:pgstream')
     rendered = [obj for obj in objects.values() if obj['kind'] in ('Deployment', 'StatefulSet', 'Job')]
     workloads = {obj['metadata']['name']: obj for obj in rendered}
-    need(len(rendered) == len(SEPARATE_WORKLOADS) and set(workloads) == set(SEPARATE_WORKLOADS),
+    expected = dict(SEPARATE_WORKLOADS)
+    if 'verification' in inventory.get('workloads', {}):
+        expected['verification'] = 'Job'
+    need(len(rendered) == len(expected) and set(workloads) == set(expected),
          'APPLICATION_WORKLOAD_ROSTER')
-    for name, kind in SEPARATE_WORKLOADS.items():
+    for name, kind in expected.items():
         obj = workloads[name]
         need(obj['kind'] == kind, 'APPLICATION_WORKLOAD_KIND:' + name)
         if name not in ROLES:
