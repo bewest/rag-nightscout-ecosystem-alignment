@@ -5,6 +5,7 @@ import os
 import ipaddress
 from pathlib import Path
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 from types import SimpleNamespace
@@ -174,15 +175,45 @@ class NativeJoin(unittest.TestCase):
                           failures=[k.Refused('M7_OUTCOME_MIDPOINT_HARD','FAIL')])
 
     def test_opt_in_execute_keeps_original_probe_writer_join_and_oracle_order(self):
-        import ast
-        source=(k.HERE/'execute.py').read_text();tree=ast.parse(source)
-        node=next(row for row in tree.body if isinstance(row,ast.FunctionDef) and row.name=='execute')
-        calls=[(row.lineno,ast.unparse(row.func)) for row in ast.walk(node) if isinstance(row,ast.Call)]
-        line=lambda name:min(row[0] for row in calls if row[1]==name)
-        self.assertLess(line('subprocess.Popen'),line('native_join.run'))
-        self.assertLess(line('native_join.run'),line('wait_observed'))
-        self.assertLess(line('wait_observed'),line('catchup.run'))
-        self.assertLess(line('catchup.run'),line('native_load.assess_join'))
+        # Exercise the real controller flow with admitted synthetic boundaries;
+        # clinical correctness itself is covered by the unchanged oracle suite.
+        from test_native_load import TENANTS
+        c,_,_,_=fixture();c['completion']={};c['baseUrl']='http://127.0.0.1:18080'
+        c['tenantsFile']='/synthetic/tenants.json'
+        c['driver'].update(node='/synthetic/node',dependencies='/synthetic/deps',
+                           k6='/synthetic/k6',k6Sha256='9'*64)
+        events=[];midpoints=[];baseline={'namespace':{'uid':'owned-ns'}}
+        with tempfile.TemporaryDirectory() as scratch:
+            d=Path(scratch);out=d/'load'
+            for name in ('probe.cjs','workload.js'):(d/name).write_bytes(b'synthetic-source')
+            k.write(d/'packet.json',{'probe':{'kubernetesSha256':k.digest(d/'probe.cjs')},
+                                    'workload':{'adaptedSha256':k.digest(d/'workload.js')}})
+            def spawn(*_,**__):
+                events.append('probe-start');(out/'.window').touch()
+                return SimpleNamespace(returncode=0,poll=lambda:0)
+            def collect(d,out,c,objects,client,name,**kw):
+                k.write(out/(name+'.json'),{});return {}
+            def native(*_,**__):
+                self.assertTrue((out/'.window').exists());events.append('native-load')
+                at=int(time.time()*1000)
+                k.write(out/'driver-accounting.json',{'shards':[{'phases':{'scheduleStartMs':at-1,'scheduleEndMs':at}}]})
+            def joined(*_):events.append('probe-joined');time.sleep(1.05)
+            def assess(*_):events.append('full-assessor');return {'verdict':'OBSERVED'}
+            with (patch.object(k.candidate,'require'),patch.object(k,'active_baseline',return_value=baseline),
+                  patch.object(k,'observe',return_value=baseline),patch.object(execute,'actor',return_value={}),
+                  patch.object(execute,'completion'),patch.object(execute,'roster',return_value=TENANTS),
+                  patch('preload.run',return_value=None),patch.object(execute,'retained_progress',side_effect=collect),
+                  patch.object(execute,'midpoint_signal',side_effect=lambda *_:midpoints.append('observed') or {'action':'continue'}),
+                  patch.object(execute.subprocess,'Popen',side_effect=spawn),patch.object(j,'run',side_effect=native),
+                  patch.object(execute,'configured_load') as local,
+                  patch.object(execute,'wait_observed',side_effect=joined),patch.object(execute,'stop_process'),
+                  patch.object(execute,'stop_evidence'),patch('catchup.run',side_effect=lambda *a,**kw:events.append('catchup')),
+                  patch.object(execute,'terminal_progress',side_effect=lambda *_:events.append('terminal-progress')),
+                  patch.object(n,'assess_join',side_effect=assess)):
+                result=execute.execute(d,c,{},None,load=True)
+            self.assertEqual(result['verdict'],'OBSERVED');local.assert_not_called()
+            self.assertEqual(events,['probe-start','native-load','probe-joined','catchup','terminal-progress','full-assessor'])
+            self.assertEqual(midpoints,['observed'])
 
     def test_full_native_load_midpoint_path_stops_writer_and_preserves_failure(self):
         from test_native_load import TENANTS, SCRIPT
