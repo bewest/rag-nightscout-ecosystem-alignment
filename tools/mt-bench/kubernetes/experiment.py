@@ -500,12 +500,23 @@ def main():
     standard.add_argument('--namespace-prefix', default='ns-synth-', help='Namespace name prefix; ownership is the run-id label')
     standard.add_argument('--core', type=Path, help='Core checkout for the driver (defaults to the template checkout)')
     standard.add_argument('--reserved-worker-taint', metavar='KEY=VALUE', help='Tolerate the reserved worker for this run')
+    reuse = standard.add_mutually_exclusive_group()
+    reuse.add_argument('--fixture-seed', type=Path, metavar='NEW_DIR', help='seed a CSI snapshot fixture; its private record goes to this new directory; no traffic')
+    reuse.add_argument('--fixture-restore', type=Path, metavar='DIR', help='restore the CSI snapshot fixture recorded in DIR into the fresh namespace')
+    standard.add_argument('--storage-class', default='do-block-storage', help='StorageClass for seeded fixture claims')
+    standard.add_argument('--snapshot-class', default='do-block-storage', help='VolumeSnapshotClass for a seed')
+    standard.add_argument('--fixture-postgres-size', help='PostgreSQL claim size for a seed (default 1Gi)')
     a = parser.parse_args()
     if a.action == 'standard':
         import standard_case
+        import fixture_copy
+        chosen = None
+        if a.fixture_seed or a.fixture_restore:
+            chosen = fixture_copy.selection('seed' if a.fixture_seed else 'restore', a.fixture_seed or a.fixture_restore,
+                                            a.storage_class, a.snapshot_class, a.fixture_postgres_size)
         return standard_case.prepare(a.template_case,a.binding,a.profile,a.output,app_image=a.app_image,
                                      postgres_image=a.postgres_image,namespace_prefix=a.namespace_prefix,
-                                     core=a.core,taint=a.reserved_worker_taint)
+                                     core=a.core,taint=a.reserved_worker_taint,fixture=chosen)
     if a.action == 'launch':
         return launch(a.config, a.prepare_only)
     if a.action == 'binding':

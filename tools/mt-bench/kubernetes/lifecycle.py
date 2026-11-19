@@ -13,6 +13,7 @@ import application_topology
 import candidate
 import run_cleanup
 import scheduling
+import fixture_copy
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
 from auto_catalog import auto_catalog
 import point_results
@@ -266,6 +267,7 @@ def execpod(pod,container,args,seconds=None):
     assert get('pod',nm)['metadata']['uid']==uid
     return result
 pre=read(d/'preflight.json');assert pre['commissioning']=='PREFLIGHT_ONLY'
+reuse=cfg.get('fixture')
 scheduler = cfg.get('schedulerPlacement', False)
 assert get('namespace',ns,False) is None
 trust=objects('cluster-trust')[0]; tn=trust['metadata']['name']
@@ -298,7 +300,14 @@ try:
     step('seed stores')
     secret_script=Path(cfg['bindingDirectory'])/'bindings/kubernetes/scripts/secrets.sh'
     with startup_window('secret-seed',waits['secretSeedSeconds']):
-        command(['bash',secret_script,'seed',ns,e['images']['app']],timeout=waits['secretSeedSeconds'],private=True)
+        if reuse and reuse['mode']=='restore':
+            # The copied PostgreSQL, Vault and roster need the Secrets they were seeded with.
+            fixture_copy.import_secrets(lambda a,b=None:k(a,b,private=True),ns,rid,reuse['directory'])
+        else:
+            command(['bash',secret_script,'seed',ns,e['images']['app']],timeout=waits['secretSeedSeconds'],private=True)
+    if reuse:
+        step('fixture claims');owned()
+        uids.extend(fixture_copy.create(k,ns,objects('fixture-claims')));put('created.json',uids)
     install('stores')
     install('provision')
     # Vault becomes Ready after the provision Job initializes it. The app
@@ -313,6 +322,17 @@ try:
     install('primer')
     if intent['primerLocation']=='claim':
         wait_job('primer', waits['primerReadySeconds'])
+    if reuse and reuse['mode']=='seed':
+        # A seed run ends here: stop every writer, snapshot the four claims, keep the Secrets.
+        step('stop writers');owned()
+        fixture_copy.quiesce(k,ns,rid,work)
+        step('capture fixture');owned()
+        put('fixture-capture.json',fixture_copy.capture(k,ns,rid,reuse,read(d/'stages/fixture-snapshots.json'),
+            {'tenants':e['tenantCount'],'appImage':e['images']['app'],'postgresImage':e['images']['postgres'],
+             'coreCommit':cfg['candidate']['coreCommit'],'deployCommit':cfg['candidate']['deployCommit'],
+             'alignmentCommit':cfg['alignmentCommit']},work))
+        step('fixture captured')
+        raise SystemExit(0)
     step('attach released runtime')
     limits=cfg['nativeLimits']
     native_scope = 'ns-' + rid + '-native.scope'
@@ -366,7 +386,8 @@ finally:
         put('scheduling-unavailable.json', {'status':'UNMEASURED','reason':type(error).__name__})
     if nsuid or trustuid:
         try:
-            result=run_cleanup.cleanup(lambda argv:command(rpc+argv,timeout=min(150,max(1,cleanup-time.time()-2))).decode(),ns,rid)
+            result=run_cleanup.cleanup(lambda argv:command(rpc+argv,timeout=min(150,max(1,cleanup-time.time()-2))).decode(),ns,rid,
+                                       scoped=run_cleanup.FIXTURE_SCOPED if reuse else run_cleanup.CLUSTER_SCOPED)
             put('absence.json',{**result,'namespaceUid':nsuid,'trustUid':trustuid,'verifiedAt':timestamp()})
         except run_cleanup.CleanupFailed as error:cleanup_errors.append({'scope':'absence','code':'K8S_CLEANUP_LEFTOVER','leftovers':error.leftovers})
         except Exception as error:cleanup_errors.append({'scope':'cleanup','code':type(error).__name__})
