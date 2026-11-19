@@ -486,3 +486,10 @@ Updates from 2026-11-03 to 2026-11-13 are archived unchanged in [execution-log-2
 | Accepted-input observer | Fixed on local alignment `33a9c4befb`, which joins `ab32d643e1` to the qualification harness. **Reproduced** by offline differential replay through both Compose and Kubernetes. Each produced the same 20 events and timing verdicts before and after. Per replay, timing-state allocations fell from 19 to 5 and snapshot-position parses from 17 to 11. Deferring observation until an ACK log appeared incorrectly reclassified three late inputs as on time in the negative control. The SQL polling interval and independent final storage census are preserved. |
 
 Both repositories use local branch `codex/k1-followon-20261119`. The entered paired campaign retains its frozen image and helper for comparison. Live qualification of the follow-on and the K=1 capacity ceiling remain open. Retained evidence identifier `k1-followon-20261119`. Local handoff `HANDOFF-k1-observer-registry-review-20261119.md`.
+
+### Update — proposed K=1 capacity study (2026-11-19)
+
+| Scope | Evidence and next owner |
+|---|---|
+| Proposed after the paired handback | The [testing plan](k1-capacity-test-plan-2026-11-19.md) separates tenant count, ordinary request rate, write cadence and viewer fanout. The existing coordinator owns qualification and resource handback. The proposed campaign owner brackets the first constraint against the historical 120, 180 and 240 req/s points and reports product outcomes at the achieved load. |
+| Offline preparation | **Reproduced** with the selected Compose planner and Kubernetes workload validator. The supplemental inputs cover the missing 1,000-tenant 3× comparison, the historical rate range, a conditional 300 req/s point and an 8/8 driver comparison. These are workload settings. Live performance on them is unmeasured. Retained evidence `k1-capacity-study-20261119`. Lane detail and source selection in `/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-k1-capacity-study-20261119.md` (local). |
