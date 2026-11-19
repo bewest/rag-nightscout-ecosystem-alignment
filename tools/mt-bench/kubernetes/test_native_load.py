@@ -68,6 +68,8 @@ class Kube:
         self.calls.append(args)
         if args[0] == 'create':
             self.created.append(json.loads(kw['data']))
+            value = copy.deepcopy(self.created[-1]); value['metadata']['uid'] = 'owned-job'
+            return json.dumps(value)
         if args[0] == 'wait' and self.failure == 'wait':
             raise RuntimeError('synthetic wait failure')
         return self.log if args[0] == 'logs' else ''
@@ -135,17 +137,18 @@ class NativeLoad(unittest.TestCase):
         self.assertEqual(receipt['outcomeGate'], 'UNMEASURED')
         self.assertEqual(receipt['capacityAcceptance'], 'NOT_GRANTED')
 
-    def test_actual_selected_scheduling_plan_refuses_before_reads_or_actor_creation(self):
+    def test_configured_plan_requires_explicit_exporter_admission_before_actor_creation(self):
         c, job = control()
         c['workload']['driverPlan'] = dict(version=1, observer='scheduling-v1', maxAggregateVUs=7,
             scenarios={shape: dict(preAllocatedVUs=1, maxVUs=1) for shape in workload_runtime.SHAPES})
         kube = Kube(c)
         with tempfile.TemporaryDirectory() as out:
-            with self.assertRaisesRegex(k.Refused, r'UNSUPPORTED:driverPlan.observer=scheduling-v1'):
+            with self.assertRaisesRegex(k.Refused, 'EXPORTER_RESOURCES_REQUIRED'):
                 n.run(kube, c, job, SCRIPT, TENANTS, out, **OPTIONS)
         self.assertEqual(kube.calls, [])
-        c['workload']['driverPlan']['observer'] = 'summary-v1'
-        with self.assertRaisesRegex(k.Refused, 'UNSUPPORTED:driverPlan$'):
+        c['workload']['driverShards'] = 2
+        c['workload']['driverPlan']['maxAggregateVUs'] = 14
+        with self.assertRaisesRegex(k.Refused, 'UNSUPPORTED:driverShards'):
             n.selection(c)
 
     def test_replay_authority_environment_and_deadline_controls_restore(self):

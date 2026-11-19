@@ -800,15 +800,48 @@ contract and accepted-versus-stored accounting remain required. All-writer
 post-stop WAL/ACK coverage stays UNMEASURED. Owned namespace and cluster-trust
 cleanup remain the operating owner's responsibility; Job TTL is insufficient.
 
-At this boundary, all `driverPlan` selections and multiple shards explicitly
-refuse before a Kubernetes read or actor creation. In particular,
-`driverPlan.observer=scheduling-v1` reports that exact unsupported field: its
-bounded raw scheduling CSV and per-operation percentiles cannot be replaced by
-the summary transport. A native configured-driver join must preserve the
-existing wrapper, environment, raw-file bounds and accounting reducer.
+One-shard `driverPlan` selections preserve the existing `k6-vu-driver.js`,
+`configured_environment()` and `driver.retain()` accounting. `scheduling-v1`
+retains the original gzipped raw CSV, including the original byte/row bounds;
+`summary-v1` selects its existing summary contract. Multiple shards refuse
+before a Kubernetes read or actor creation.
 
-Focused offline controls: `python3 -B -m unittest -v test_native_load` from this
+The configured path requires explicit `exporter_resources` and a measured
+`shell_contract` bound to the selected k6 manifest digest (Alpine `/bin/sh`,
+`/usr/bin/k6`, 512-byte file-limit blocks, retained evidence hash). The shell's
+hard file limit is independently read back from `/proc/self/limits`. A test-only
+Node exporter uses the selected application image's builtins and receives only
+the synthetic inputs and shared artifact volume, with no API token or runtime
+credentials. It holds the Pod until an owned exec reader has verified each
+file's exact length/hash and acknowledged the manifest, or the finite Job and
+exporter deadlines expire. Raw CSV never depends on kubelet log retention.
+The exporter contributes its explicit requests/limits to Pod fit and quota.
+
+At the integration call site, retain `execute.execute()`'s concurrent stock
+probe and midpoint observer. Replace only the selected `configured_load()`
+invocation with `native_load.run(...)`, using the existing rendered **test Job
+only**, current generated workload, exact roster, run marker and remaining
+absolute setup/work budget. Its `driver-accounting.json` supplies the same
+schedule start/end markers. Keep the probe restart signal, both-writer join,
+120-second per-write observer, all-tenant fixed-target catch-up and full
+`assess_stage()` path. `assess_join()` adds capture/run/script/hash checks.
+Do not install the lane K serving stack or change the application tuple.
+
+Before enabling that call site, the operating owner must admit the whole test
+Pod (k6 plus exporter plus original init peak) into requests/placement/quota,
+declare its exact Job/Pod in the adapter census, and preserve namespace UID,
+Job creation UID, no retry/replacement and required hard-midpoint stop behavior.
+The current workstation controller's midpoint callback is not wired to stop
+this Job. Reuse the Job waiter's namespace-local `jobs/get` RBAC only for the
+init container; the exporter needs no Kubernetes API permission. Keep owned
+namespace/trust cleanup even after Job completion.
+
+Focused offline controls: `python3 -B -m unittest -v test_native_load test_native_files` from this
 directory. Set `NS_NATIVE_K6_TEST_BINARY` to an existing pinned local k6 binary
 to execute the real summary/event export control; it opens no network listener.
+Set `NS_NATIVE_K6_IMAGE_BINARY`, `NS_NATIVE_IMAGE_BUSYBOX` and
+`NS_NATIVE_IMAGE_LOADER` to the inspected cached image's extracted binaries for
+the real configured-wrapper/CSV and hard-file-limit controls. The former uses a
+synthetic loopback HTTP fixture and the original accounting reducer.
 These controls qualify the adapter boundary, not Kubernetes/application behavior
 or capacity.

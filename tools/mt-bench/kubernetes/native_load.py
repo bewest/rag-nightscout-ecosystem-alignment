@@ -34,19 +34,11 @@ def private(path, raw):
 def selection(c):
     """Unsupported evidence modes refuse before even a Kubernetes read.
 
-    scheduling-v1 needs the bounded raw CSV; summary output cannot substitute
-    for its per-operation samples. Sharding also needs the existing reducers.
+    scheduling-v1 uses native_files' bounded raw CSV channel; summary output
+    cannot substitute for its per-operation samples. Multiple shards still
+    require a separate custody/accounting join and explicitly refuse.
     """
     w = workload_runtime.validate(c['workload'], k.need, c['tenants'])
-    if 'driverPlan' in w:
-        cfg = w['driverPlan']
-        k.need(cfg['observer'] != 'scheduling-v1',
-               'NATIVE_LOAD_UNSUPPORTED:driverPlan.observer=scheduling-v1', 'UNMEASURED')
-        k.need(w.get('driverShards', 1) == 1,
-               'NATIVE_LOAD_UNSUPPORTED:driverShards', 'UNMEASURED')
-        # configured_load must also retain driver-plans/accounting. Until that
-        # join exists, do not substitute the default workload for any plan.
-        k.need(False, 'NATIVE_LOAD_UNSUPPORTED:driverPlan', 'UNMEASURED')
     k.need(w.get('driverShards', 1) == 1, 'NATIVE_LOAD_UNSUPPORTED:driverShards', 'UNMEASURED')
     return w
 
@@ -125,7 +117,8 @@ def decode(raw, runid, source_sha):
     return ''.join(events).encode(), summary
 
 
-def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seconds):
+def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seconds,
+            exporter_resources=None, shell_contract=None):
     """Adapt the existing lane K Job. The caller must account the returned Pod.
 
     This does not render a second deployment or alter application resources.
@@ -185,6 +178,7 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
                RUN_START=str(run_start_ms), DURATION=str(w['loadSeconds']), ACCEL='1',
                HOT_FACTOR=str(w.get('hotFactor', 1)), JWT_SETUP_CONCURRENCY=str(w.get('jwtSetupConcurrency', 1)),
                M7_SETUP_SECONDS=str(setup_seconds),
+               M7_SETUP_UNTIL_MS=str(run_start_ms + setup_seconds * 1000),
                SHAPES=','.join(workload_runtime.SHAPES))
     k.need(all(name in ('BASE_URL', 'TENANTS_FILE', 'RUN_ID') or env.get(name) == value
                for name, value in original_env.items()), 'NATIVE_LOAD_ENVIRONMENT_CONFLICT')
@@ -215,6 +209,10 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
                'remaining': ['local probe/controller/SQL/clinical/frame/native-catch-up collectors',
                              'declared load-actor census and resource-fit integration',
                              'all-writer post-stop WAL/ACK coverage UNMEASURED']}
+    if 'driverPlan' in w:
+        import native_files
+        return native_files.decorate(c, rendered, inputs, receipt, script,
+                                     exporter_resources=exporter_resources, shell_contract=shell_contract)
     return rendered, inputs, receipt
 
 
@@ -249,7 +247,9 @@ def _terminal(c, wanted, job, pods):
     return pod, {'jobUid': job['metadata']['uid'], 'podUid': pod['metadata']['uid'],
                  'containerId': states.get('k6', {}).get('containerID'),
                  'imageId': states.get('k6', {}).get('imageID'),
-                 'terminal': terminal, 'exitCode': ended.get('exitCode'), 'complete': complete}
+                 'terminal': terminal, 'exitCode': ended.get('exitCode'),
+                 'startedAt': ended.get('startedAt'), 'finishedAt': ended.get('finishedAt'),
+                 'complete': complete}
 
 
 def run(kube, c, job, script, tenants, out, **options):
@@ -264,6 +264,7 @@ def run(kube, c, job, script, tenants, out, **options):
     k.need(out.is_dir() and not any((out / name).exists() for name in
            ('native-load.json', 'k6-native.log', 'k6.log', 'k6-summary.json', 'k6-process.json')),
            'NATIVE_LOAD_OUTPUT_EXISTS')
+    k.need('driverPlan' not in c['workload'] or out.name == 'load', 'NATIVE_LOAD_CONFIGURED_OUTPUT_DIRECTORY')
     k.write(out / 'native-load.json', receipt)
     ns = c['namespace']
     uid = _identity(c, kube.json(['get', 'namespace', ns]))
@@ -271,7 +272,17 @@ def run(kube, c, job, script, tenants, out, **options):
     k.write(out / 'native-load.json', receipt)
     # Preflight above has completed before these first actor mutations.
     kube.call(['create', '-f', '-'], data=json.dumps(secret), namespace=ns)
-    kube.call(['create', '-f', '-'], data=json.dumps(wanted), namespace=ns)
+    created = kube.call(['create', '-f', '-', '-o', 'json'], data=json.dumps(wanted), namespace=ns)
+    created = json.loads(created)
+    k.owned(c, created)
+    k.need(created.get('kind') == 'Job' and created['metadata'].get('name') == 'k6'
+           and isinstance(created['metadata'].get('uid'), str) and created['metadata']['uid']
+           and k.subset(wanted['spec'], created['spec']), 'NATIVE_LOAD_CREATE_IDENTITY')
+    receipt['jobUid'] = created['metadata']['uid']
+    k.write(out / 'native-load.json', receipt)
+    if receipt.get('captureMode') == 'owned-exec-files':
+        import native_files
+        return native_files.capture(kube, c, wanted, out, receipt)
     seconds = options['seconds']
     wait_error = None
     try:
@@ -281,6 +292,7 @@ def run(kube, c, job, script, tenants, out, **options):
         # Retain failed/partial native evidence before returning the refusal.
         wait_error = type(error).__name__
     job_readback = kube.json(['get', 'job', 'k6'], namespace=ns)
+    k.need(job_readback['metadata']['uid'] == receipt['jobUid'], 'NATIVE_LOAD_ACTOR_REPLACED')
     pod, process = _terminal(c, wanted, job_readback,
                              kube.json(['get', 'pods', '-l', 'job-name=k6'], namespace=ns))
     process['waitError'] = wait_error
@@ -324,8 +336,17 @@ def assess_join(d, out, c, objects, client):
            and receipt['summarySha256'] == k.digest(out / 'k6-summary.json'),
            'NATIVE_LOAD_ASSESSMENT_BINDING')
     source = (d / 'workload.js').read_bytes()
-    k.need(receipt['sourceSha256'] == sha(source)
-           == k.document(d / 'packet.json')['workload']['adaptedSha256']
-           and receipt['adaptedSha256'] == sha(summary_script(source, runid)),
+    packet = k.document(d / 'packet.json')['workload']
+    k.need(receipt['sourceSha256'] == sha(source) == packet['adaptedSha256'],
            'NATIVE_LOAD_ASSESSMENT_SCRIPT_CHANGED')
+    if 'driverPlan' in c['workload']:
+        import driver_vu_diagnostic as driver
+        k.need(receipt.get('captureMode') == 'owned-exec-files'
+               and receipt['driverWrapperSha256'] == k.digest(d / driver.SCRIPT) == packet['driverWrapperSha256']
+               and receipt['artifactExporterSha256'] == k.digest(k.HERE / 'native-artifacts.cjs')
+               and all(k.digest(out / name) == digest for name, digest in receipt['artifactSha256'].items()),
+               'NATIVE_LOAD_ASSESSMENT_ARTIFACT_CHANGED')
+    else:
+        k.need(receipt['adaptedSha256'] == sha(summary_script(source, runid)),
+               'NATIVE_LOAD_ASSESSMENT_SCRIPT_CHANGED')
     return execute.assess_stage(d, out, c, objects, client)
