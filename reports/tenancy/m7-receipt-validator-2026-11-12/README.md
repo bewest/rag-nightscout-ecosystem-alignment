@@ -2,7 +2,7 @@
 
 Reproduced on exact alignment source `142e301b745ddc7b2a60fbc1ed5db032eeb00b46`, original history after `7d468fc24455cf2a221bb92e02406a88c6aab50c`, based on `d8ad514b82a4f114fb450da2750db70ffcc172da`. This is a local recorded-evidence capability, not application acceptance or a capacity measurement. No production PASS receipt or expectation was created.
 
-The [validator](../../../tools/queue/gates/m7_joined_receipt.py), [focused controls](../../../tools/queue/gates/test_m7_joined_receipt.py), and [integration contract](../../../tools/queue/gates/m7_joined_receipt.md) implement the complete local capability. [Source attribution](source.json) pins exact bytes and Python version. Queue, release and decision files are untouched.
+The validator (`tools/queue/gates/m7_joined_receipt.py`, retired 2026-11-19; last at `88288834f7`), focused controls (`tools/queue/gates/test_m7_joined_receipt.py`, retired 2026-11-19; last at `88288834f7`), and integration contract (`tools/queue/gates/m7_joined_receipt.md`, retired 2026-11-19; last at `88288834f7`) implement the complete local capability. [Source attribution](source.json) pins exact bytes and Python version. Queue, release and decision files are untouched.
 
 ## Reproduced checks
 
