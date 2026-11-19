@@ -51,7 +51,6 @@ import role_instances
 import static_topology
 import dependency_reuse
 import collection_segments
-import vault_refusal
 import workload_inputs
 import primer_options
 from primer_progress import ComposePrimerWait, ComposeProgressWait, ProgressWindow
@@ -563,7 +562,7 @@ def attach(args):
     require(not commissioning_wal.option(args) and getattr(args,'tenant_readiness',None) is None,'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     stream_topology.ack_option(args)
     require(not api_warm_cause.option(args),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
-    require(not selected_resources_profile(args) and getattr(args,'api_cause_observation','off')=='off' and not getattr(args,'generator_dependencies',None) and not getattr(args,'vault_refusal_control',None),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
+    require(not selected_resources_profile(args) and getattr(args,'api_cause_observation','off')=='off' and not getattr(args,'generator_dependencies',None),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     diagnostic_resources.configure()
     # Bind only instrumentation metadata to the runtime owner's exact existing
     # fixture. Never deploy, restart, install, relabel or assume cleanup custody.
@@ -788,7 +787,6 @@ def prepare(args):
     selected=selected_resources_profile(args,inspect_runtime=True)
     require(not selected or args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery','M7_DIAGNOSTIC_RESOURCE_DISCOVERY_ONLY')
     require(not selected or getattr(args,'generator_dependencies',None),'M7_DIAGNOSTIC_DEPENDENCIES_REQUIRED')
-    require(not getattr(args,'vault_refusal_control',None) or selected,'M7_VAULT_CONTROL_RESOURCE_PROFILE_REQUIRED')
     local_observer = bool(node_observation.option(args) or api_warm_cause.option(args))
     require(not local_observer or (selected and document(args.freeze).get('version')==2),
             'M7_LOCAL_OBSERVER_RECEIPT')
@@ -869,7 +867,6 @@ def prepare_staged(args,target,pinned):
     if cpu_preflight and cpu_preflight.get('verdict')!='NOT_APPLICABLE':m['cpuPrecisionPreflight']=cpu_preflight
     m.update(static_topology.option(args))
     if getattr(args,'namespace_preflight',None):m['namespacePreflight']=args.namespace_preflight
-    if getattr(args,'vault_refusal_control',None):m['vaultRefusalControl']=args.vault_refusal_control
     if getattr(args,'dependency_qualification',None) is not None:m['dependencyReuse']=args.dependency_qualification
     selection=serial_exchange_selection(args)
     if selection is not None:m['serialExchangeDiagnostic']=selection
@@ -1438,28 +1435,6 @@ def pin_service_images(config, app_image):
         if 'build' in spec and name!='postgres':spec['image']=app_image
 
 
-def vault_control(d,m,action):
-    require(m.get('vaultRefusalControl')=='api-policy-deny-v1' and not m.get('attached'),'M7_VAULT_CONTROL_NOT_SELECTED')
-    verify(d,m)
-    config=document(d/'frozen.compose.json')
-    rows=diagnostic_resource_rows(m)
-    diagnostic_resources._ACTIVE.containers() if diagnostic_resources._ACTIVE is not None else None
-    vault=[row for row in rows if row['Config']['Labels'].get('com.docker.compose.service')=='vault']
-    require(len(vault)==1 and vault[0]['Image']==config['services']['vault']['image'] and vault[0]['State'].get('Running') is True,'M7_VAULT_CONTROL_NATIVE_CUSTODY')
-    if action=='deny':
-        require(not any(row['Config']['Labels'].get('com.docker.compose.service','').startswith('api') for row in rows),'M7_VAULT_CONTROL_API_ALREADY_BORN')
-        write(d/'vault-refusal/intent.json',{'owner':m['owner'],'project':m['project'],'pair':m['pair'],'beforeFirstApi':True})
-    value=vault_refusal.apply(d,m,action,lambda argv,**kw:compose(d,*argv,**kw))
-    write(d/('vault-refusal/'+action+'.json'),value)
-    original=d/'state/bootstrap/m7-api-vault-policy.original.private.json'
-    retained=d/'vault-refusal/original.private.json'
-    if original.is_file():
-        if retained.exists():require(retained.read_bytes()==original.read_bytes(),'M7_VAULT_CONTROL_ORIGINAL_CHANGED')
-        else:shutil.copyfile(original,retained);retained.chmod(0o600)
-    return value
-
-
-
 def platform_failure_observation(d):
     # The GET reads the admin operation's durable last_diagnostic. It runs once
     # on failure, within the current work deadline and without retrying the POST.
@@ -1585,7 +1560,6 @@ def deploy(d, m):
                 elif waiter:
                     compose(d,*args,file=output,timeout=timeout,wait_for_primer=waiter)
                 else:compose(d,*args,file=output,timeout=timeout)
-            if name=="commission" and m.get("vaultRefusalControl"):vault_control(d,m,"deny")
             if name=="prime" and (verified_serving(config) or m.get("primerConcurrency",1)!=1):primer_counts(d,m)
             if name=="infrastructure":psql(d,"CREATE EXTENSION IF NOT EXISTS pg_stat_statements;")
             if name=="bootstrap":
@@ -1604,7 +1578,6 @@ def deploy(d, m):
                 for name in service_roster(config):
                     file=d/"state"/name/"env.json"
                     if file.exists():require(not document(file).get("MULTITENANT_REALTIME_PLACEMENT"),"M7_SHARDED_RESTART_HELPER_REQUIRED")
-    if m.get("vaultRefusalControl"):vault_control(d,m,"auth-check")
     candidates=[file for file in (d/"state/primer/tenants.json",d/"state/ops/tenants.json") if file.exists()]
     require(candidates,"M7_PRIMER_OUTPUT_MISSING")
     projections=[tenant_projection(document(file),m["tenants"]) for file in candidates]
@@ -2590,16 +2563,7 @@ def diagnose(d,m):
 
 def down(d,m):
     token=_CLEANUP_NODE_LIMIT.set('diagnosticResources' in m)
-    restore_error=None
-    try:
-        if m.get('vaultRefusalControl') and (d/'state/bootstrap/m7-api-vault-policy.original.private.json').is_file():
-            try:vault_control(d,m,'restore')
-            except BaseException as error:
-                restore_error=error
-                write(d/'vault-refusal/restore-failure.json',{'code':'M7_VAULT_CONTROL_RESTORE_FAILED','type':type(error).__name__})
-        try:return _down(d,m)
-        finally:
-            if restore_error is not None and sys.exc_info()[0] is None:raise restore_error
+    try:return _down(d,m)
     finally:_CLEANUP_NODE_LIMIT.reset(token)
 
 
@@ -2667,7 +2631,6 @@ def parser():
     prep.add_argument("--diagnostics-interval-ms",type=int,default=5000)
     prep.add_argument('--measurement-mode',choices=('accepted','unaccepted'),default='accepted')
     prep.add_argument('--run-id');prep.add_argument('--image-id');prep.add_argument('--maximum-run-minutes',type=int,default=180)
-    prep.add_argument('--vault-refusal-control',choices=('api-policy-deny-v1',))
     prep.add_argument('--diagnostic-resource-profile',choices=diagnostic_resources.PROFILES)
     prep.add_argument('--diagnostic-resource-allocation',type=json.loads,help='Explicit finite JSON service/driver allocation and ceiling; exclusive with named profile')
     prep.add_argument('--generator-dependencies')
@@ -2709,7 +2672,7 @@ def parser():
     attached.add_argument('--compose',action='append',required=True,help='Existing source Compose files, in original order')
     attached.add_argument('--dependencies-root',help='Explicit runtime-owned lockfile installation root; defaults to the source root')
     attached.add_argument('--runtime-owner',help='Canonical preparation owner.json to bind the explicit source/dependency roots and generator provenance')
-    for cmd in ("verify", "build", "deploy", "run", "preflight", "diagnose", "control", "down", "host-identity", "vault-check", "source-preflight"):
+    for cmd in ("verify", "build", "deploy", "run", "preflight", "diagnose", "control", "down", "host-identity", "source-preflight"):
         own = sub.add_parser(cmd);own.add_argument("directory")
         if cmd in ("run","preflight"):own.add_argument("--k6-image", required=True)
         if cmd in ("deploy","preflight","run"):own.add_argument("--work-deadline",type=float,help="Existing runner absolute work cutoff; never starts a new window")
@@ -2771,7 +2734,6 @@ def main():
         with command_deadline(until):run(d,m,args.k6_image)
     elif args.command == "diagnose":diagnose(d,m)
     elif args.command == "control":control(d, m)
-    elif args.command == "vault-check":vault_control(d,m,"auth-check")
     elif args.command == "down":down(d, m)
 
 if __name__ == "__main__":

@@ -166,8 +166,6 @@ def validate_config(config):
             and type(config['cleanupSeconds']) is int and 30 <= config['cleanupSeconds'] <=
             (workload_inputs.MAX_SECONDS if tier == 'discovery' else 3600),
             'M7_RUNNER_FINITE_LIMIT')
-    require(not local_to_completion or not os.environ.get('M7_BATCH_RESERVATION'),
-            'M7_RUNNER_TO_COMPLETION_REQUIRES_ONE_SHOT')
     options = config['prepare']
     require(isinstance(options, dict) and 'directory' not in options and 'fixture-project' in options
             and 'backend-subnet' in options and 'edge-subnet' in options, 'M7_RUNNER_PREPARE_CONFIG')
@@ -331,9 +329,6 @@ def _cleanup(root, reason):
             if not value.get('completed'):
                 stop_stage(job, value['owner'])
         state=a.document(root/'execution.json') if (root/'execution.json').exists() else {}
-        if state.get('producer')=='vault-component-v1':
-            import vault_component
-            vault_component.cleanup_resources(root)
         if (root/'session.json').exists():stop_session_collectors(root)
         fixture = root / 'fixture'
         if (fixture / 'owner.json').exists():
@@ -589,9 +584,6 @@ def arm_window(root,config):
     if work is None:
         state.update(mode=TO_COMPLETION, controller=controller_identity(os.getpid())[0],
                      cleanupSeconds=cleanup_seconds)
-    if config.get('producer')=='vault-component-v1':state['producer']=config['producer']
-    if os.environ.get('M7_BATCH_RESERVATION'):
-        require(state['cleanupAt']<=a.document(os.environ['M7_BATCH_RESERVATION'])['cleanupAt'],'M7_BATCH_CELL_DEADLINE')
     write(root/'execution.json',state)
     with (root/'guard.private.log').open('xb') as output:
         guardian=subprocess.Popen([sys.executable,'-B',str(Path(__file__).resolve()),'_guard',str(root)],stdout=output,stderr=subprocess.STDOUT,start_new_session=True)
@@ -635,7 +627,6 @@ def execute(directory, rehearsal=False):
         # Essential source/runtime/instrument checks stay in adapter preflight.
         optional_preflight(root, d)
         stage(root, 'run', ['run', str(d), '--k6-image', config['k6Image']])
-        if m.get('vaultRefusalControl'):stage(root,'vault-check',['vault-check',str(d)])
         if config.get('tier') == 'smoke':
             from tier_smoke import assess
             assess(root, config.get('smokeBaseline'))
@@ -814,140 +805,11 @@ def session_close(directory, owner):
     return subprocess.run([sys.executable,'-B',original,'down',str(root)],check=True)
 
 
-def local_batch_allocation(config):
-    """Use the adapter's resource selection for planning and configuration help."""
-    import experiment_batch as batch
-    options = config['prepare']
-    explicit = options.get('diagnostic-resource-allocation')
-    selected = a.selected_resources_profile(argparse.Namespace(
-        diagnostic_resource_profile=options.get('diagnostic-resource-profile'),
-        diagnostic_resource_allocation=json.loads(explicit) if isinstance(explicit,str) else explicit))
-    return selected, batch.local_resource_plan(selected)
-
-
-def local_batch_plan(spec, payload_root):
-    import experiment_batch as batch
-    planned=batch.plan(spec)
-    allowlist=batch.verify_payload(spec,payload_root)
-    env=spec['envelope']
-    # The envelope is the caller's explicit aggregate allocation. Each cell
-    # still reserves its complete enforced producer maximum below.
-    batch.need(env['hourlyMicrousd']==env['totalMicrousd']==0,'LOCAL_MONEY')
-    axes=env['workload']
-    for cell in spec['cells']:
-        batch.need(cell['target']=={'kind':'local'},'LOCAL_TARGET')
-        if cell['config'].get('producer')=='vault-component-v1':
-            import vault_component
-            cell_plan=vault_component.plan(cell,spec,payload_root,allowlist)
-            next(c for c in planned['cells'] if c['id']==cell['id'])['allocationBreakdown']=cell_plan
-            continue
-        config=cell['config'];validate_config(config);options=config['prepare']
-        selected, allocation = local_batch_allocation(config)
-        batch.check_local_reservation(cell['resources'], allocation['resources'])
-        next(c for c in planned['cells'] if c['id']==cell['id'])['allocationBreakdown']=allocation['allocationBreakdown']
-        receipt=Path(options.get('receipt',''))
-        batch.need(receipt.is_absolute() and receipt.is_relative_to(Path(payload_root).resolve()),'RECEIPT_ALLOWLIST')
-        batch.need(str(receipt.relative_to(Path(payload_root).resolve())) in allowlist,'RECEIPT_ALLOWLIST')
-        batch.need(options.get('core-commit')==spec['payload']['source']['core'] and
-                   options.get('deploy-commit')==spec['payload']['source']['deploy'],'SOURCE_CHANGED')
-        batch.need(options.get('image-id')==options.get('image')==spec['payload']['image'],'IMAGE_CHANGED')
-        external=options.get('pgstream-topology','colocated-v1')=='external-service-v1'
-        batch.need(external==a.diagnostic_resources.external_selection(selected),'LOCAL_TOPOLOGY_PROFILE')
-        batch.need(options.get('fixture-project')==cell['namespace'] and cell['subnets']==[options.get('backend-subnet'),options.get('edge-subnet')], 'ISOLATION_CHANGED')
-        batch.need(cell['ports']==[], 'LOCAL_PORTS_UNSUPPORTED')
-        batch.need(config['workSeconds']==cell['workSeconds'] and config['cleanupSeconds']==cell['cleanupSeconds'] and options.get('offered-rps')==cell['offeredRps'],'WORKLOAD_CHANGED')
-        values={'tenants':options.get('tenants'),'offeredRps':cell['offeredRps'],
-                'durationSeconds':options.get('load-seconds'),'probeEveryMs':options.get('probe-every-ms',1000),
-                'hotFactor':options.get('hot-factor',1)}
-        for key,value in values.items():
-            batch.need(batch.number(value) and axes[key][0]<=value<=axes[key][1],'WORKLOAD_OUTSIDE_ENVELOPE')
-        # Ordinary runner only; fault profiles must first gain a typed adapter.
-        batch.need(not axes['faultCases'], 'LOCAL_FAULT_UNSUPPORTED')
-    return planned
-
-
-def batch_run(spec_file, directory, payload_root):
-    import experiment_batch as batch
-    spec=a.document(spec_file);planned=local_batch_plan(spec,payload_root)
-    cancelled=False
-    def cancel(signum, frame):
-        nonlocal cancelled
-        cancelled=True
-    old={s:signal.signal(s,cancel) for s in (signal.SIGINT,signal.SIGTERM)}
-    try:
-        with batch.local_custody(directory,spec) as ledger:
-            root=ledger.directory
-            write(root/'batch.json',spec)
-            write(root/'batch-payload.json',{'root':str(Path(payload_root).resolve()),'specSha256':batch.digest(spec)})
-            write(root/'batch-plan.json',planned)
-            def perform(cell,ticket):
-                # Each cell is a process. Adapter process-global state is never
-                # shared by concurrent cells in coordinator threads.
-                ticket_file=root/(cell['id']+'.ticket.json');batch.write(ticket_file,ticket)
-                config_file=root/(cell['id']+'.config.json');write(config_file,cell['config'])
-                child_env={**os.environ,'M7_BATCH_RESERVATION':str(ticket_file)}
-                point=root/cell['id']
-                with (root/(cell['id']+'.private.log')).open('xb') as output:
-                    child=subprocess.Popen([sys.executable,'-B',str(HERE/'runner.py'),'_batch-cell',str(config_file),str(point)],env=child_env,stdout=output,stderr=subprocess.STDOUT,start_new_session=True)
-                    a.job_record(root/(cell['id']+'.job.json'),child,ticket['nonce'],group=True)
-                    # Existing independent guard owns finite effects/cleanup.
-                    # Reserve remains if child or guard cannot prove absence.
-                    try:child.wait(timeout=cell['workSeconds']+cell['cleanupSeconds']+20)
-                    except subprocess.TimeoutExpired:
-                        stop_stage(root/(cell['id']+'.job.json'),ticket['nonce'])
-                        child.wait(timeout=12)
-                result=a.document(point/'result.json') if (point/'result.json').exists() else {'status':'FAILED_PARTIAL'}
-                require((point/'cleanup.json').exists() and a.document(point/'cleanup.json')['status']=='ABSENT','M7_BATCH_ABSENCE_REQUIRED')
-                until=time.monotonic()+10
-                while guard_alive(point) and time.monotonic()<until:time.sleep(.05)
-                require(not guard_alive(point),'M7_BATCH_GUARD_PENDING')
-                require(not batch.group_members(child.pid),'M7_BATCH_CELL_GROUP_REMAINS')
-                if (point/'guard-job.json').exists():
-                    require(not batch.group_members(a.document(point/'guard-job.json')['pid']),'M7_BATCH_GUARD_GROUP_REMAINS')
-                lock=root/(cell['id']+'.heap.lock')
-                if lock.exists():
-                    with lock.open('r+') as stream:
-                        fcntl.flock(stream,fcntl.LOCK_EX|fcntl.LOCK_NB)
-                        require(not stream.read(),'M7_BATCH_HEAP_STALE')
-                return result,{'status':'ABSENT','id':ticket['id'],'nonce':ticket['nonce']}
-            result=batch.schedule(spec,ledger,perform,lambda:cancelled,
-                changed=lambda:local_batch_plan(spec,payload_root))
-            write(root/'batch-result.json',result)
-            return result
-    finally:
-        for signum,handler in old.items():signal.signal(signum,handler)
-
-
-def batch_cell(config, directory):
-    # Private entrypoint: no arbitrary lock bypass without aggregate custody.
-    from experiment_batch import child_lock, read
-    require(child_lock() is not None,'M7_BATCH_TICKET_REQUIRED')
-    ticket=read(os.environ['M7_BATCH_RESERVATION'])
-    limits=a.document(config)
-    require(time.time()+limits['workSeconds']+limits['cleanupSeconds']<=ticket['cleanupAt'],
-            'M7_BATCH_CELL_DEADLINE')
-    root=Path(directory).resolve()
-    try:
-        if limits.get('producer')=='vault-component-v1':
-            import vault_component
-            return vault_component.execute(config,root)
-        prepare(config,root)
-        return execute(root)
-    finally:
-        if (root/'execution.json').exists() and not (root/'cleanup.json').exists():
-            cleanup(root,'BATCH_CELL_EXIT')
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='action', required=True)
     sub.add_parser('identity')
-    sub.add_parser('batch-resources', help='Explain the selected local cell reservation without starting actors').add_argument('config')
     project=sub.add_parser('project');project.add_argument('config');project.add_argument('--remote-overlay');project.add_argument('--source-acceptance')
-    for mode in ('batch-plan','batch-run'):
-        command=sub.add_parser(mode);command.add_argument('config');command.add_argument('--payload-root',required=True)
-        if mode=='batch-run':command.add_argument('directory')
-    cell=sub.add_parser('_batch-cell');cell.add_argument('config');cell.add_argument('directory')
     for mode in ('prepare', 'run'):
         prep = sub.add_parser(mode)
         prep.add_argument('config')
@@ -957,7 +819,7 @@ def main():
                               help='Create a fresh case with result.json, cleanup.json and raw/')
     plan = sub.add_parser('plan')
     plan.add_argument('config')
-    for name in ('execute', 'rehearse', 'result', 'down', '_guard', 'batch-result'):
+    for name in ('execute', 'rehearse', 'result', 'down', '_guard'):
         sub.add_parser(name).add_argument('directory')
     start = sub.add_parser('session-start');start.add_argument('config');start.add_argument('directory')
     observe = sub.add_parser('session-observe');observe.add_argument('directory');observe.add_argument('--owner',required=True)
@@ -976,21 +838,6 @@ def main():
         acceptance=a.document(args.source_acceptance) if args.source_acceptance else None
         value=rc.remote_projection(config,a.document(args.remote_overlay),acceptance) if args.remote_overlay else rc.resolve(config,acceptance)
         return print(json.dumps(value,indent=2))
-    if args.action == 'batch-result':
-        root=Path(args.directory).resolve();spec=a.document(root/'batch.json')
-        retained=a.document(root/'batch-result.json') if (root/'batch-result.json').exists() else {'batch':spec['id'],'cells':{},'capacityAcceptance':'NOT_GRANTED'}
-        for cell in spec['cells']:
-            file=root/cell['id']/'result.json'
-            if file.exists():retained['cells'][cell['id']]=a.document(file)
-            elif cell['id'] not in retained['cells']:retained['cells'][cell['id']]={'status':'UNMEASURED'}
-        return print(json.dumps(retained,indent=2))
-    if args.action == '_batch-cell':return batch_cell(args.config,args.directory)
-    if args.action == 'batch-resources':
-        config, _ = load_config(args.config)
-        return print(json.dumps(local_batch_allocation(config)[1], indent=2))
-    if args.action == 'batch-plan':
-        return print(json.dumps(local_batch_plan(a.document(args.config),args.payload_root),indent=2))
-    if args.action == 'batch-run':return batch_run(args.config,args.directory,args.payload_root)
     if args.action == 'identity':
         identity = a.instrument()
         return print(json.dumps({'helperHead': identity['commit'], 'helperInstrument': identity['sha256']}, indent=2))
