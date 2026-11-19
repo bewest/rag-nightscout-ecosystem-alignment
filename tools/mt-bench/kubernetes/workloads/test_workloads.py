@@ -32,10 +32,6 @@ class Coverage(unittest.TestCase):
         observer['workload']['drainObservation']=selected
         self.assertEqual(profiles.bind(p,observer)['workload']['drainObservation'],selected)
         del p['workload']['drainObservation']
-        oversized = copy.deepcopy(config)
-        oversized['driver']['resources']['millicpus'] = 10000
-        with self.assertRaisesRegex(ValueError, 'K8S_LOAD_ACTOR_PLAN_EXCEEDS_PROFILE'):
-            profiles.bind(p, oversized)
         smaller = copy.deepcopy(config)
         for role in ('driver', 'observer'):
             smaller[role]['resources'] = {'millicpus': 100, 'memoryBytes': 128 * 1024**2}

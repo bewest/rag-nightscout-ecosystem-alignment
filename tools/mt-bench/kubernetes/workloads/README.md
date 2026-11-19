@@ -99,16 +99,9 @@ client observations. Zero viewers records client delivery NOT_EXERCISED.
 The bounded raw frame recorder refuses overflow; a longer or larger run does
 not silently turn lost frame evidence into a pass.
 
-Each original aggregate JSON contains a **proposed**, unadmitted cluster limit of 1.8 CPU,
-3 GiB memory, 3.25 GiB ephemeral storage and 2 GiB image-cache reserve; these are
-the existing tiny binding/preflight input envelope, not measured sizing. Actual
-per-role/init/sidecar budgets, node headroom, quota, image delivery and namespace
-custody remain in the commissioning inventory. Proposed combined native
-driver/observer upper bounds are 1.2 CPU and 1.25 GiB, compatible with the current
-commissioning scope control; smaller bounded plans are allowed and no minimum
-sizing is inferred. The existing adapter verifies the
-actual finite actor scope and resource inventory. A declaration cannot grant a
-window; shared-node contention and native actor contention remain recorded.
+Workload profiles carry no resource envelope. Kubernetes requests come from the
+render; the scheduler decides placement (decisions `generous-run-resources`,
+`requests-typical-scheduler-decides`).
 
 Small/stress reserve a 900-second work window and representative-mix 1,200
 seconds, followed by 600 seconds for exact owned cleanup. These bounds include

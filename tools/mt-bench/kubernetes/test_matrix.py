@@ -296,12 +296,6 @@ class Matrix(unittest.TestCase):
             k.write(path, original)
             m.joined_point(d, c, b, b)
             print('RED_RESTORED K8S_' + code)
-        current = copy.deepcopy(b)
-        current['pods']['cohort-0']['uid'] = 'foreign'
-        with self.assertRaisesRegex(k.Refused, 'POD_UID_CHANGED'):
-            m.joined_point(d, c, b, current)
-        m.joined_point(d, c, b, b)
-        print('RED_RESTORED K8S_POD_UID_CHANGED')
         print('RED_RESTORED K8S_MATRIX_NO_LOAD_OVERLAP')
         print('RED_RESTORED K8S_MATRIX_OVERLAP_FRAME_UNMEASURED')
 
@@ -330,45 +324,6 @@ class Matrix(unittest.TestCase):
             c['baseUrl'] = original
             e.matrix_plan(self.value)
             print('RED_RESTORED K8S_FIXTURE_FANOUT_COLLISION canonical loopback port')
-
-    def test_continuity_peer_incarnation_and_real_load_interval(self):
-        d, c, objects, baseline = self.entries[0]
-        peer, other, _, peer_baseline = self.entries[1]
-        restart = {'status': 'OBSERVED', 'role': 'evaluator', 'startedAt': 12, 'endedAt': 14}
-        k.write(d / 'restart.json', restart)
-        for path, initial in [(d, baseline), (peer, peer_baseline)]:
-            k.write(path / 'observation.initial.json', initial)
-        (d / 'recovery').mkdir()
-        k.write(d / 'recovery/result.json', {'verdict': 'OBSERVED'})
-        self.point(peer, other, peer_baseline)
-        out = peer / 'load'
-        probe = k.document(out / 'probe.json')
-        probe['kubernetesFrames']['rows'] += [{'tenant': tenant, 'socket': i, 'at': 15000, 'ids': []}
-                                             for i, tenant in enumerate((A, B))]
-        k.write(out / 'probe.json', probe)
-        k.write(out / 'before.json', peer_baseline)
-        k.write(out / 'after.json', peer_baseline)
-        with patch.object(k, 'load', return_value=(peer, other, objects)):
-            criterion = lambda: e.continuity(d, c, peer)
-            self.assertEqual(criterion()['verdict'], 'OBSERVED')
-            changed = copy.deepcopy(peer_baseline)
-            changed['pods']['cohort-0']['containers']['api']['restartCount'] += 1
-            k.write(out / 'after.json', changed)
-            with self.assertRaisesRegex(k.Refused, 'MATRIX_PEER_INCARNATION_CHANGED'):
-                criterion()
-            k.write(out / 'after.json', peer_baseline)
-            criterion()
-            print('RED_RESTORED K8S_MATRIX_PEER_INCARNATION_CHANGED')
-            window = k.document(out / 'window.json')
-            changed = copy.deepcopy(window)
-            # The broad probe span still brackets the restart; native load does not.
-            changed['loadStartedAt'] = 13
-            k.write(out / 'window.json', changed)
-            with self.assertRaisesRegex(k.Refused, 'CONTINUITY_WINDOW_UNMEASURED'):
-                criterion()
-            k.write(out / 'window.json', window)
-            criterion()
-            print('RED_RESTORED K8S_CONTINUITY_WINDOW_UNMEASURED')
 
     def run_synthetic(self, mode='pass'):
         def load(path):

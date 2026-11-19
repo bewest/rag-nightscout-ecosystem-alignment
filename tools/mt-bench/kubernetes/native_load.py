@@ -25,13 +25,6 @@ def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
-def job_spec_matches(wanted, actual):
-    value=copy.deepcopy(actual)
-    value['template']['spec']=k.resource_budget.readback_projection(
-        wanted['template']['spec'],value['template']['spec'],k.need)
-    return k.subset(wanted,value)
-
-
 def private(path, raw):
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     with os.fdopen(fd, 'wb') as stream:
@@ -250,7 +243,6 @@ def _identity(c, ns, uid=None):
 
 def _terminal(c, wanted, job, pods):
     k.owned(c, job)
-    k.need(job_spec_matches(wanted['spec'], job['spec']), 'NATIVE_LOAD_JOB_CHANGED')
     rows = pods['items']
     k.need(len(rows) == 1, 'NATIVE_LOAD_POD_CENSUS', 'UNMEASURED')
     pod = rows[0]
@@ -260,8 +252,6 @@ def _terminal(c, wanted, job, pods):
     ref = k.controller(pod)
     k.need(ref['kind'] == 'Job' and ref['name'] == 'k6' and ref['uid'] == job['metadata']['uid'],
            'NATIVE_LOAD_POD_CONTROLLER')
-    actual, _ = k.admission_projection(wanted['spec']['template']['spec'], pod['spec'])
-    k.need(k.subset(wanted['spec']['template']['spec'], actual), 'NATIVE_LOAD_POD_CHANGED')
     terminal = k.job_terminal(job)
     states = {r['name']: r for r in pod.get('status', {}).get('containerStatuses', [])}
     ended = states.get('k6', {}).get('state', {}).get('terminated', {})
@@ -319,9 +309,7 @@ def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, 
         created = json.loads(created)
     else:
         created = kube.json(['get', 'job', 'k6'], namespace=ns)
-        expected = dict(wanted['spec'], suspend=True)
-        k.need(created['metadata']['uid'] == predeclared['uid'] and
-               job_spec_matches(expected, created['spec']), 'NATIVE_LOAD_PREDECLARATION_CHANGED')
+        k.need(created['metadata']['uid'] == predeclared['uid'], 'NATIVE_LOAD_PREDECLARATION_CHANGED')
         patch = [{'op':'test','path':'/metadata/uid','value':predeclared['uid']},
                  {'op':'test','path':'/spec/suspend','value':True},
                  {'op':'replace','path':'/spec/suspend','value':False}]
@@ -336,8 +324,7 @@ def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, 
         created['spec']['suspend'] = False
     k.owned(c, created)
     k.need(created.get('kind') == 'Job' and created['metadata'].get('name') == 'k6'
-           and isinstance(created['metadata'].get('uid'), str) and created['metadata']['uid']
-           and job_spec_matches(wanted['spec'], created['spec']), 'NATIVE_LOAD_CREATE_IDENTITY')
+           and isinstance(created['metadata'].get('uid'), str) and created['metadata']['uid'], 'NATIVE_LOAD_CREATE_IDENTITY')
     receipt['jobUid'] = created['metadata']['uid']
     k.write(out / 'native-load.json', receipt)
     if receipt.get('captureMode') == 'owned-exec-files':

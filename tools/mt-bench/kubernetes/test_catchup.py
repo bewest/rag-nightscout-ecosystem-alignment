@@ -62,20 +62,16 @@ class AcceptedInputTransport(unittest.TestCase):
             statuses = {s['name']:s for p in client.pods for s in p['status']['containerStatuses']}
             statuses['api']['containerID'] = 'replacement-api'
             self.assertEqual(sample('SELECT 1', 5), 'sample')
-            original = statuses['postgres']['containerID']
-            sql.side_effect = lambda *_, **__: statuses['postgres'].update(containerID='replacement-postgres')
-            with self.assertRaisesRegex(k.Refused, 'CONTAINER_INCARNATION_CHANGED') as stopped:
-                sample('SELECT 1', 5)
-            self.assertEqual(stopped.exception.verdict, 'UNMEASURED')
-            statuses['postgres']['containerID'] = original
-            sql.side_effect = None
+            # A PostgreSQL container restart is a recorded figure, not a refusal
+            # (decision four-product-failures); an unhealthy datastore fails on its own.
+            statuses['postgres']['containerID'] = 'replacement-postgres'
             self.assertEqual(sample('SELECT 1', 5), 'sample')
             postgres = next(p for p in client.pods if p['status']['containerStatuses'][0]['name'] == 'postgres')
             postgres['metadata']['labels'][c['ownerLabel']] = 'peer'
             with self.assertRaisesRegex(k.Refused, 'PEER_RESOURCE_REFUSED') as foreign:
                 sample('SELECT 1', 5)
             self.assertEqual(foreign.exception.verdict, 'FAIL')
-            self.assertEqual(sql.call_count, 3)
+            self.assertEqual(sql.call_count, 2)
 
     def test_failed_read_still_checks_identity(self):
         fetch, check, _ = self.reader(k.Refused('K8S_OBSERVATION_LOST', 'UNMEASURED'))

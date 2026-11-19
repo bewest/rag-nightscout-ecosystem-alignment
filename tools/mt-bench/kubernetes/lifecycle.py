@@ -101,6 +101,14 @@ def install(stage):
     step(stage);owned()
     for obj in objects(stage):
         assert obj['metadata']['namespace']==ns
+        if obj['kind']=='Job':
+            # Jobs start when their stage is applied; the primer's deadline is the
+            # remaining work window. No observer suspend/deadline patching.
+            obj=dict(obj,spec=dict(obj['spec'],suspend=False))
+            if obj['metadata']['name']=='primer':
+                left=int(work-time.time())
+                if left<=0:raise RuntimeError('PRIMER_WORK_DEADLINE')
+                obj['spec']['activeDeadlineSeconds']=left
         made=create(obj)
         uids.append({'kind':made['kind'],'name':made['metadata']['name'],'uid':made['metadata']['uid']})
         put('created.json',uids)
@@ -292,18 +300,7 @@ def workload_ready(stage):
         ready(','.join(k+'='+v for k,v in sel.items()),nm,seconds,convergence)
 def release_job(name):
     owned()
-    job = get('job', name)
-    uid, = (row['uid'] for row in uids if row['kind']=='Job' and row['name']==name)
-    assert job['metadata']['uid']==uid and job['spec']['suspend'] is True, 'JOB_OWNERSHIP_CHANGED'
-    patch=[{'op':'test','path':'/metadata/uid','value':uid},
-           {'op':'test','path':'/spec/suspend','value':True}]
-    if name=='primer':
-        left=int(work-time.time())
-        if left<=0:
-            raise RuntimeError('PRIMER_WORK_DEADLINE')
-        patch.append({'op':'replace','path':'/spec/activeDeadlineSeconds','value':left})
-    patch.append({'op':'replace','path':'/spec/suspend','value':False})
-    return json.loads(k(['patch','job',name,'-n',ns,'--type=json','-o','json','-p',json.dumps(patch)]))
+    return get('job', name)
 
 
 def verify_database(job_uid, seconds):

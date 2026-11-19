@@ -112,7 +112,6 @@ def fixture_config(path, capture=False):
     need(pre.get('commissioning')=='PREFLIGHT_ONLY' and pre['experiment']['renderSha256']==sha(d/'render.json'), 'PREFLIGHT')
     need(scheduler == (pre.get('trialEnvelope', {}).get('placementMode') == 'scheduler'),
          'SCHEDULER_PREFLIGHT_CHANGED')
-    need(all(limits[k]<=m['profile']['proposedEnvelope']['nativeLimits'][k] for k in limits), 'ALLOCATION_EXCEEDED')
     template=read(c['runTemplate']['path'])
     inventory=read(d/'inventory.json')
     need(m.get('nativeLoad') == template.get('nativeLoad') == inventory.get('nativeLoad'),

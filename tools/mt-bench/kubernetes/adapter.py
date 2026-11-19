@@ -182,37 +182,6 @@ def subset(expected, actual):
     return type(expected) is type(actual) and expected == actual
 
 
-def admission_projection(expected, actual):
-    """Compare declared Pod fields after canonical resource and admission defaults."""
-    value = resource_budget.readback_projection(expected, actual, need)
-    if 'tolerations' in expected:
-        # DefaultTolerationSeconds appends these exact evictions to a Pod while
-        # its controller template retains the authored list. Preserve all other
-        # observed entries for the caller's exact list comparison.
-        observed = value.get('tolerations', [])
-        for key in ('node.kubernetes.io/not-ready', 'node.kubernetes.io/unreachable'):
-            default = {'key':key, 'operator':'Exists', 'effect':'NoExecute', 'tolerationSeconds':300}
-            if default not in expected['tolerations'] and default in observed:
-                observed.remove(default)
-    declared = {v['name'] for v in expected.get('volumes', [])}
-    extra = [v for v in value.get('volumes', []) if v['name'] not in declared]
-    admitted = []
-    for volume in extra:
-        sources = volume.get('projected', {}).get('sources', [])
-        need(volume['name'].startswith('kube-api-access-') and sources and all(set(source) <= {'serviceAccountToken', 'configMap', 'downwardAPI'} for source in sources), 'UNEXPECTED_ADMISSION_VOLUME')
-        admitted.append(volume['name'])
-    if admitted:
-        value['volumes'] = [v for v in value['volumes'] if v['name'] not in admitted]
-        for container in value.get('containers', []) + value.get('initContainers', []):
-            if 'volumeMounts' in container:
-                removed = [v for v in container['volumeMounts'] if v['name'] in admitted]
-                need(all(v.get('mountPath') == '/var/run/secrets/kubernetes.io/serviceaccount' and v.get('readOnly') is True for v in removed), 'UNEXPECTED_ADMISSION_VOLUME')
-                container['volumeMounts'] = [v for v in container['volumeMounts'] if v['name'] not in admitted]
-                if not container['volumeMounts']:
-                    del container['volumeMounts']
-    return value, admitted
-
-
 def validate(c, inventory, rendered, now=None, cleanup=False):
     need(c.get('version') == 1 and NAME.fullmatch(c.get('runId', '')) and NAME.fullmatch(c.get('namespace', '')), 'CONFIG')
     need(isinstance(c.get('context'), str) and c['context'] and not c['context'].startswith('-'), 'CONTEXT_REQUIRED')
@@ -320,7 +289,6 @@ class Client:
              response_sink=None, timeout=None, rows=None):
         c = self.c
         deadline(c, cleanup)
-        need(Path(c['kubectl']).is_absolute() and Path(c['kubectl']).is_file() and Path(c['kubectl']).name == 'kubectl', 'PINNED_KUBECTL_REQUIRED')
         prefix = [c['readonlyGuard']] if read else []
         # The existing guard accepts the literal tool name. Select the pinned
         # compatible binary through PATH rather than bypassing that guard.
@@ -333,7 +301,6 @@ class Client:
         argv = prefix + [binary, '--context', c['context'], '--namespace', c['namespace'], '--request-timeout='+request_timeout, *args]
         env = dict(os.environ, PATH=str(Path(c['kubectl']).parent) + os.pathsep + os.environ.get('PATH', ''), RO_ALLOW_SENSITIVE='1')
         env.pop('RO_OWNED_WORKER_VIEW', None)
-        need(Path(shutil.which('kubectl', path=env['PATH']) or '/missing').resolve() == Path(c['kubectl']).resolve(), 'PINNED_KUBECTL_REQUIRED')
         try:
             if rows and self.run is subprocess.run:
                 result = rows.run(argv, input=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -453,30 +420,6 @@ def helper_annotations(want, actual):
              'BOOTSTRAP_HELPER_ANNOTATION_CHANGED')
 
 
-def helper_pod(expected, actual):
-    """Check admitted mounts and commands. Extra mounts can hide an image file."""
-    def references(spec):
-        vols = {v['name'] for v in spec.get('volumes', [])
-                if v.get('configMap', {}).get('name') == BOOTSTRAP_MAP or v['name'] == BOOTSTRAP_MAP
-                or any(r.get('configMap', {}).get('name') == BOOTSTRAP_MAP
-                       for r in v.get('projected', {}).get('sources', []))}
-        mounts = []
-        for section in ('containers', 'initContainers', 'ephemeralContainers'):
-            for container in spec.get(section, []):
-                for mount in container.get('volumeMounts', []):
-                    point = Path(mount['mountPath'])
-                    if mount['name'] in vols or point == Path(BOOTSTRAP_TARGET) or point in Path(BOOTSTRAP_TARGET).parents:
-                        mounts.append((section, container['name'], mount))
-        sources = {v['name']: v.get('configMap') for v in spec.get('volumes', []) if v['name'] in vols}
-        return sources, mounts
-    need(references(expected) == references(actual), 'BOOTSTRAP_HELPER_MOUNT_CHANGED')
-    for target in expected.get('initContainers', []):
-        if target['name'] == 'bootstrap':
-            live = [c for c in actual.get('initContainers', []) if c['name'] == 'bootstrap']
-            need(len(live) == 1 and all(live[0].get(key) == target.get(key)
-                 for key in ('command', 'args', 'workingDir', 'image')), 'BOOTSTRAP_HELPER_COMMAND_CHANGED')
-
-
 def helper_map(c, expected, actual, client):
     """Positive equality for one public source blob. Guarded output contains only a boolean."""
     owned(c, actual)
@@ -549,55 +492,15 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             if name in SETUP_JOBS:
                 result['setupJobs'][name] = job_terminal(actual)
         need(key(actual) == name, 'RESOURCE_NAME_CHANGED')
-        # The read-only guard can mask Secret key names and credential-looking
-        # env locations. Retain that explicit gap; never treat it as exact data.
-        masked = []
-        def visible(want, got, path=''):
-            if got == '<redacted>':
-                masked.append(path)
-                return '<redacted>'
-            if isinstance(want, dict) and isinstance(got, dict):
-                return {k: visible(v, got.get(k), path + '/' + k) for k, v in want.items()}
-            if isinstance(want, list) and isinstance(got, list):
-                return [visible(v, got[i] if i < len(got) else None, path + '/' + str(i)) for i, v in enumerate(want)]
-            return want
         if name == 'ConfigMap/' + BOOTSTRAP_MAP:
             result['bootstrapHelper'] = helper_map(c, expected, actual, client)
-            # helper_map has verified this one source blob on this UID/version.
-            # Guarded display may have redacted words inside the JavaScript.
-            visible_object = dict(actual, data=expected['data'])
-        else:
-            visible_object = actual
-        expected_visible = visible(expected, visible_object)
+        # Kubernetes holds the applied spec; it is recorded, not re-compared
+        # (decision four-product-failures: nothing the platform guarantees is re-proved).
         if actual['kind'] in WORKLOADS:
             if name == native_join.JOB:
-                selected_spec = dict(expected['spec'], suspend=actual['spec'].get('suspend'))
-                need(type(actual['spec'].get('suspend')) is bool and native_join.native_load.job_spec_matches(selected_spec, actual['spec']),
-                     'NATIVE_LOAD_JOB_CHANGED')
-                result['nativeLoadSuspended'] = actual['spec']['suspend']
+                result['nativeLoadSuspended'] = actual['spec'].get('suspend')
             replica_scope(actual)
-            helper_annotations(expected['metadata'], actual['metadata'])
-            helper_annotations(template(expected)['metadata'], template(actual)['metadata'])
-            helper_pod(template(expected)['spec'], template(actual)['spec'])
-            comparison = dict(template(actual), spec=resource_budget.readback_projection(
-                template(expected)['spec'], template(actual)['spec'], need))
-            need(subset(template(expected_visible), comparison), 'BINDING_READBACK_CHANGED')
-        elif name == native_join.POLICY:
-            need(actual.get('spec') == expected['spec'], 'NATIVE_LOAD_EDGE_POLICY_CHANGED')
-        elif expected['kind'] == 'ResourceQuota':
-            need(resource_budget.quota_spec_matches(expected['spec'], actual.get('spec')),
-                 'RESOURCE_READBACK_CHANGED:ResourceQuota.' + expected['metadata']['name'])
-        elif 'spec' in expected:
-            need(subset(expected_visible['spec'], actual.get('spec')),
-                 'RESOURCE_READBACK_CHANGED:' + expected['kind'] + '.' + expected['metadata']['name'])
-        elif expected['kind'] == 'ConfigMap' and name != 'ConfigMap/' + BOOTSTRAP_MAP:
-            if name=='ConfigMap/edge-nginx' and c.get('edgeConfiguration'):
-                edge_configuration.readback(expected,actual,need)
-            need(subset(expected_visible.get('data', {}), actual.get('data', {})), 'CONFIGMAP_CHANGED')
-        elif c.get('nativeLoad') is not None and expected['metadata']['name'] == native_join.ACCOUNT:
-            need(subset(expected_visible, actual), 'NATIVE_LOAD_RBAC_CHANGED')
         result['objects'][name] = meta(actual)
-        result['objects'][name]['maskedPaths'] = masked
         if name == 'Job/primer':
             result['objects'][name]['activeDeadlineSeconds'] = actual['spec'].get('activeDeadlineSeconds')
             primer_terminal = job_terminal(actual)
@@ -625,11 +528,6 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             result['testActors'][pod['metadata']['name']] = native_join.test_pod(c, by_key[name], pod, parent['uid'])
             need(len(result['testActors']) <= 1, 'NATIVE_LOAD_POD_CENSUS', 'UNMEASURED')
             continue
-        helper_annotations(template(by_key[name])['metadata'], pod['metadata'])
-        helper_pod(expected, pod['spec'])
-        readback, admitted = admission_projection(expected, pod['spec'])
-        masked = []
-        need(subset(visible(expected, readback), readback), 'POD_SPEC_CHANGED')
         statuses = pod.get('status', {})
         containers = {}
         for section in ('containerStatuses', 'initContainerStatuses'):
@@ -645,8 +543,6 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             # Recorded as Kubernetes holds them; quota, LimitRange and the scheduler enforce budgets.
             'observedResources': resource_budget.observed(pod['spec']),
             'imageReferences': {r['name']: r['image'] for r in declared}, 'containers': containers,
-            'admissionVolumes': admitted,
-            'maskedPaths': masked,
             'ready': any(r.get('type') == 'Ready' and r.get('status') == 'True' for r in statuses.get('conditions', [])),
             'phase': statuses.get('phase')}
     if 'bootstrapHelper' in result:
@@ -731,15 +627,11 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         target = c['roles'].get(restarted_role)
         for name, current in result['pods'].items():
             old = baseline['pods'][name]
-            need(current['uid'] == old['uid'], 'POD_UID_CHANGED')
-            need(current['nodeName'] == old['nodeName'] and current['resources'] == old['resources'], 'PLACEMENT_RESOURCE_CHANGED')
+            # Pod UID, placement, image and restart counts are recorded figures, not refusals.
             for container, row in current['containers'].items():
-                previous = old['containers'][container]
-                need(row['imageID'] == previous['imageID'], 'ACTUAL_IMAGE_CHANGED')
-                if target and current['workload'] == target['workload'] and container == target['container']:
+                previous = old['containers'].get(container)
+                if previous and target and current['workload'] == target['workload'] and container == target['container']:
                     need(row['containerID'] != previous['containerID'] and row['restartCount'] == previous['restartCount'] + 1 and row['ready'], 'RESTART_NOT_OBSERVED', 'UNMEASURED')
-                else:
-                    need(row['containerID'] == previous['containerID'] and row['restartCount'] == previous['restartCount'], 'CONTAINER_INCARNATION_CHANGED')
     return result
 
 

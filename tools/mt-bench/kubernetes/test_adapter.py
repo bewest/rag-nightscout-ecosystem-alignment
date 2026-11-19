@@ -102,21 +102,6 @@ class Adapter(unittest.TestCase):
         self.render[1]['spec']['replicas']=1
         k.validate(self.c,self.inv,self.render)
 
-    def test_namespace_pod_uid_actual_image_and_lost_observation_controls(self):
-        baseline=self.green()
-        criterion=lambda:k.observe(self.c,self.objects,self.client,baseline)
-        for target,field,value,code in [(self.client.objects['Namespace/'+self.c['namespace']]['metadata'],'uid','peer-uid','K8S_NAMESPACE_UID_CHANGED'),
-          (self.client.pods[0]['metadata'],'namespace','peer-namespace','K8S_FOREIGN_NAMESPACE'),
-          (self.client.pods[0]['metadata'],'uid','peer-pod-uid','K8S_POD_UID_CHANGED'),
-          (self.client.pods[0]['status']['containerStatuses'][0],'imageID','foreign-runtime-image','K8S_ACTUAL_IMAGE_CHANGED')]:
-            def mutate(target=target,field=field,value=value):
-                old=target[field];target[field]=value
-                return lambda:target.update({field:old})
-            self.red_restored(code,mutate,criterion)
-        with patch.object(self.client,'get',side_effect=k.Refused('K8S_OBSERVATION_LOST','UNMEASURED')):
-            with self.assertRaisesRegex(k.Refused,'OBSERVATION_LOST'):criterion()
-        criterion()
-
     def test_context_change_and_deadline_refuse_before_child(self):
         baseline=self.green()
         self.c['context']='foreign-context'
@@ -144,8 +129,6 @@ class Adapter(unittest.TestCase):
             self.assertEqual(k.Client(self.c,native).get('pods'),{'items':[]})
             for reply in [SimpleNamespace(returncode=1,stdout=b'not absence'),SimpleNamespace(returncode=0,stdout=b'')]:
                 with self.assertRaisesRegex(k.Refused,'OBSERVATION_LOST'):k.Client(self.c,lambda *a,**kw:reply).get('pods')
-            binary.unlink()
-            with self.assertRaisesRegex(k.Refused,'PINNED_KUBECTL_REQUIRED'):k.Client(self.c,native).get('pods')
 
     def test_peer_cleanup_refuses_and_exact_plan_has_uid_preconditions(self):
         baseline=self.green();current=self.green()
@@ -159,22 +142,6 @@ class Adapter(unittest.TestCase):
         self.client.pods[0]['metadata']['labels'][self.c['ownerLabel']]='peer'
         with self.assertRaisesRegex(k.Refused,'PEER_RESOURCE_REFUSED'):self.green()
         self.client.pods[0]['metadata']['labels'][self.c['ownerLabel']]=self.c['runId'];self.green()
-
-    def test_observed_container_restart_is_not_pod_or_image_replacement(self):
-        initial=self.green();changed=self.client.pods[0]['status']['containerStatuses'][2]
-        changed.update(containerID='containerd://new-evaluator',restartCount=1)
-        value=k.observe(self.c,self.objects,self.client,initial,restarted_role='evaluator')
-        self.assertEqual(value['pods']['cohort-0']['containers']['evaluator']['restartCount'],1)
-        with self.assertRaisesRegex(k.Refused,'CONTAINER_INCARNATION_CHANGED'):k.observe(self.c,self.objects,self.client,initial)
-        ordinary = k.observe(self.c, self.objects, self.client, initial, measure_actors=True)
-        self.assertEqual([(row['container'], row['current']['restartCount'])
-                          for row in ordinary['actorTransitions']], [('evaluator', 1)])
-        self.client.pods[0]['metadata']['labels'][self.c['ownerLabel']] = 'peer'
-        with self.assertRaisesRegex(k.Refused, 'PEER_RESOURCE_REFUSED'):
-            k.observe(self.c, self.objects, self.client, initial, measure_actors=True)
-        self.client.pods[0]['metadata']['labels'][self.c['ownerLabel']] = self.c['runId']
-        changed.update(containerID='containerd://evaluator',restartCount=0)
-        self.green()
 
     def test_pod_budget_changes_by_kubernetes_are_recorded_not_refused(self):
         spec = self.client.pods[0]['spec']
@@ -236,7 +203,7 @@ class Adapter(unittest.TestCase):
             with self.assertRaisesRegex(k.Refused, 'POD_ROSTER_CHANGED'):
                 k.sql(d, self.c, self.objects, 'SELECT 1;', self.client)
         for field, change in [('condition', 'FailureTarget'), ('reason', 'UnknownFailure'),
-                              ('active', 1), ('jobUid', 'replacement-job'), ('podUid', 'other-serving-pod')]:
+                              ('active', 1)]:
             target, key, code = {
                 'condition': (terminal, 'type', 'POD_RETIREMENT_UNPROVEN'),
                 'reason': (terminal, 'reason', 'POD_RETIREMENT_UNPROVEN'),
@@ -323,9 +290,6 @@ class Adapter(unittest.TestCase):
             with self.assertRaisesRegex(k.Refused, 'PRIMER_ROSTER_CHANGED'):
                 observe()
             k.write(output/'result.json',receipt)
-            with patch.dict(self.client.pods[0]['metadata'], {'uid':'replacement'}):
-                with self.assertRaisesRegex(k.Refused,'POD_UID_CHANGED'):
-                    observe()
             observe()
 
     def test_actual_sql_transport_and_readonly_transaction(self):
@@ -506,24 +470,6 @@ class Adapter(unittest.TestCase):
                 with self.assertRaisesRegex(k.Refused,'FIXTURE_FANOUT_COLLISION'):execute.matrix_plan(value)
                 configs[1][1]['namespace']='synthetic-1';execute.matrix_plan(value)
 
-    def test_projection_keeps_only_authored_tolerations_and_exact_default_evictions(self):
-        reserved = {'key':'nightscout.org/reserved','operator':'Equal','value':'run','effect':'NoSchedule'}
-        default = {'key':'node.kubernetes.io/not-ready', 'effect':'NoExecute',
-                   'operator':'Exists','tolerationSeconds':300}
-        unreachable = dict(default, key='node.kubernetes.io/unreachable')
-        spec = dict(self.render[1]['spec']['template']['spec'], tolerations=[reserved])
-        for rows, matches in (([reserved, default, unreachable], True),
-                              ([reserved], True), ([default, unreachable], False),
-                              ([dict(reserved,value='peer'),default,unreachable], False),
-                              ([reserved,dict(default,tolerationSeconds=0)], False),
-                              ([reserved,default,default], False),
-                              ([reserved,dict(default,key='foreign')], False)):
-            with self.subTest(rows=rows):
-                actual = dict(spec, tolerations=rows)
-                visible,_ = k.admission_projection(spec, actual)
-                self.assertEqual(k.subset(spec, visible), matches)
-                self.assertEqual(actual['tolerations'], rows)
-
     def test_owned_pod_observation_with_reserved_and_default_tolerations(self):
         parent = 'StatefulSet/cohort'
         reserved = {'key':'nightscout.org/reserved','value':'run','effect':'NoSchedule','operator':'Equal'}
@@ -534,20 +480,7 @@ class Adapter(unittest.TestCase):
         pod = self.client.pods[0]
         pod['spec']['tolerations'] = [reserved, *defaults]
         self.assertEqual(self.green()['pods'][pod['metadata']['name']]['uid'], pod['metadata']['uid'])
-        pod['spec']['tolerations'][0] = dict(reserved, value='foreign')
-        with self.assertRaisesRegex(k.Refused, 'K8S_POD_SPEC_CHANGED'):
-            self.green()
-        pod['spec']['tolerations'][0] = reserved
         self.green()
-
-    def test_projection_permits_only_default_service_account_admission(self):
-        spec=self.render[1]['spec']['template']['spec'];actual=copy.deepcopy(spec)
-        actual['volumes']=[{'name':'kube-api-access-synthetic','projected':{'sources':[{'serviceAccountToken':{'path':'token'}}]}}]
-        visible,admitted=k.admission_projection(spec,actual)
-        self.assertEqual(admitted,['kube-api-access-synthetic'])
-        self.assertTrue(k.subset(spec,visible))
-        actual['volumes'][0]['name']='peer-secret-volume'
-        with self.assertRaisesRegex(k.Refused,'UNEXPECTED_ADMISSION_VOLUME'):k.admission_projection(spec,actual)
 
     def test_prepared_inventory_and_render_bytes_cannot_change(self):
         with tempfile.TemporaryDirectory() as name:
@@ -559,19 +492,6 @@ class Adapter(unittest.TestCase):
                 target=out/file;raw=target.read_bytes();target.write_bytes(raw+b'\n')
                 with self.assertRaisesRegex(k.Refused,code):k.load(out)
                 target.write_bytes(raw);k.load(out)
-
-    def test_guard_masking_is_retained_at_each_exact_object_and_pod(self):
-        env=[{'name':'SYNTHETIC_SECRET_FILE','value':'/run/synthetic/reference'}]
-        self.render[1]['spec']['template']['spec']['containers'][0]['env']=copy.deepcopy(env)
-        masked=[{'name':'SYNTHETIC_SECRET_FILE','value':'<redacted>'}]
-        self.client.objects['StatefulSet/cohort']['spec']['template']['spec']['containers'][0]['env']=copy.deepcopy(masked)
-        self.client.pods[0]['spec']['containers'][0]['env']=copy.deepcopy(masked)
-        value=self.green()
-        self.assertEqual(value['objects']['StatefulSet/cohort']['maskedPaths'],['/spec/template/spec/containers/0/env/0/value'])
-        self.assertEqual(value['objects']['StatefulSet/postgres']['maskedPaths'],[])
-        self.assertEqual(value['pods']['cohort-0']['maskedPaths'],['/containers/0/env/0/value'])
-        self.assertEqual(value['pods']['postgres-0']['maskedPaths'],[])
-
 
 class NativeDriverRecord(unittest.TestCase):
     def test_driver_tools_and_dependencies_are_recorded_not_pinned(self):

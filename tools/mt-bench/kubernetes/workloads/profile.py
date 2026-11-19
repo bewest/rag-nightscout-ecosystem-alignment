@@ -65,8 +65,6 @@ def validate(p):
          work >= w.get('setupSeconds', 310) + w['loadSeconds'] + w.get('drainSeconds', 120) + 5,
          'WORK_WINDOW')
     need(workload_runtime.workload_inputs.seconds(p['phases']['cleanupSeconds']), 'CLEANUP_WINDOW')
-    for group in ('clusterLimits', 'nativeLimits'):
-        need(all(type(x) is int and x > 0 for x in p['proposedEnvelope'][group].values()), 'RESOURCE_ENVELOPE')
     need(p['capacityAcceptance'] == 'NOT_GRANTED', 'NO_CAPACITY_GRANT')
     return p
 
@@ -118,12 +116,6 @@ def bind(p, config):
     need(config['pins']['pair'] == {k: p['referencePins'][k] for k in ('core', 'deploy')} and
          config['pins']['bindingCommit'] == p['referencePins']['bindingCommit'], 'SOURCE_PROFILE_MISMATCH')
     need(config['tenants'] == p['population']['provisionedTenants'], 'CONFIG_ROSTER')
-    # This does not acquire resources. Compare the existing planned actor envelope.
-    native = p['proposedEnvelope']['nativeLimits']
-    actors = [config[k]['resources'] for k in ('driver', 'observer')]
-    need(all(type(r[k]) is int and r[k] > 0 for r in actors for k in ('millicpus', 'memoryBytes')) and
-         sum(r['millicpus'] for r in actors) <= native['millicpus'] and
-         sum(r['memoryBytes'] for r in actors) <= native['memoryBytes'], 'ACTOR_PLAN_EXCEEDS_PROFILE')
     from datetime import datetime
     cutoff = lambda v: datetime.fromisoformat(v.replace('Z', '+00:00')).timestamp()
     remaining = cutoff(config['deadlines']['workUntil']) - __import__('time').time()

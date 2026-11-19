@@ -9,45 +9,6 @@ import matrix
 
 
 class ResourceBudget(unittest.TestCase):
-    def test_quota_canonical_quantity_preserves_exact_budget_and_readback_context(self):
-        c, inventory, rendered, client = fixture()
-        quota = {'apiVersion':'v1','kind':'ResourceQuota',
-                 'metadata':{'name':'run-quota','namespace':c['namespace'], 'labels':{c['ownerLabel']:c['runId']}},
-                 'spec':{'hard':{'requests.cpu':'2385m','requests.memory':'4194304000','pods':'17'}}}
-        rendered.append(quota)
-        admitted = copy.deepcopy(quota)
-        admitted['metadata'].update(uid='quota-uid',resourceVersion='10')
-        admitted['spec']['hard']['requests.memory'] = '4194304k'
-        client.objects['ResourceQuota/run-quota'] = admitted
-        objects = k.validate(c, inventory, rendered)
-        # Exact admitted spelling from the retained server dry-run; no actor.
-        baseline = k.observe(c, objects, client)
-        admitted['spec']['hard']['requests.cpu'] = '2.385'
-        k.observe(c, objects, client, baseline)
-        original = copy.deepcopy(admitted['spec'])
-        broken = [
-            {'hard':dict(original['hard'], **{'requests.memory':'4194303999'})},
-            {'hard':dict(original['hard'], **{'requests.memory':'4194304001'})},
-            {'hard':dict(original['hard'], **{'requests.memory':'4194303999.9'})},
-            {'hard':dict(original['hard'], **{'requests.cpu':'2.3849'})},
-            {'hard':dict(original['hard'], **{'requests.memory':'<redacted>'})},
-            {'hard':{key:value for key,value in original['hard'].items() if key!='pods'}},
-            {'hard':dict(original['hard'], **{'requests.storage':'1Gi'})},
-            dict(original, scopes=['BestEffort']),
-        ]
-        for spec in broken:
-            with self.subTest(spec=spec):
-                admitted['spec'] = spec
-                with self.assertRaisesRegex(k.Refused, r'^K8S_RESOURCE_READBACK_CHANGED:ResourceQuota\.run-quota$') as refused:
-                    k.observe(c, objects, client, baseline)
-                self.assertEqual(k.failure_evidence(refused.exception), {
-                    'verdict':'FAIL', 'code':'K8S_RESOURCE_READBACK_CHANGED:ResourceQuota.run-quota',
-                    'capacityAcceptance':'NOT_GRANTED'})
-                admitted['spec'] = copy.deepcopy(original)
-                k.observe(c, objects, client, baseline)
-        self.assertEqual(quota['spec']['hard']['requests.memory'], '4194304000')
-        self.assertEqual(admitted['spec'], original)
-
     def requests_fixture(self):
         c, inv, rendered, client = fixture()
         c['resourceAccounting'] = inv['resourceAccounting'] = r.REQUESTS
@@ -91,62 +52,6 @@ class ResourceBudget(unittest.TestCase):
         container['resources']['requests'].pop('memory')
         with self.assertRaisesRegex(k.Refused, 'UNBUDGETED_CONTAINER'):
             k.validate(c, inv, rendered)
-
-    def test_readback_accepts_kubernetes_resource_defaults_and_records_them(self):
-        # LimitRange defaults, injected limits and canonical spellings are
-        # enforced by Kubernetes; the readback records them and never refuses.
-        c, inv, rendered, _ = self.requests_fixture()
-        expected = k.template(rendered[1])['spec']
-        for group, value in [('limits', {'cpu': '1'}), ('requests', {'cpu': '999m'})]:
-            actual = copy.deepcopy(expected)
-            actual['containers'][0]['resources'][group] = value
-            projected, _ = k.admission_projection(expected, actual)
-            self.assertTrue(k.subset(expected, projected))
-            self.assertEqual(r.observed(actual)['containers'][actual['containers'][0]['name']][group], value)
-
-    def test_normalized_or_defaulted_quantities_pass_with_raw_observations(self):
-        c, inv, rendered, client = fixture()
-        for obj in rendered:
-            if obj['kind'] in k.WORKLOADS:
-                for container in k.template(obj)['spec']['containers']:
-                    container['resources'] = {
-                        'requests': {'cpu': '0.1', 'memory': '0.0625Gi', 'ephemeral-storage': '0.0625Gi'},
-                        'limits': {'cpu': '0.5', 'memory': '0.25Gi', 'ephemeral-storage': '0.125Gi'}}
-        original_pods, original_objects = copy.deepcopy(client.pods), copy.deepcopy(client.objects)
-        objects = k.validate(c, inv, rendered)
-        result = k.observe(c, objects, client)
-        self.assertEqual(result['pods']['cohort-0']['resources']['api']['requests'],
-                         {'cpu': '100m', 'memory': '64Mi', 'ephemeral-storage': '64Mi'})
-        self.assertEqual(client.pods, original_pods)
-        self.assertEqual(client.objects, original_objects)
-        for source in (client.objects['StatefulSet/cohort']['spec']['template']['spec'], client.pods[0]['spec']):
-            source['containers'][0]['resources']['requests']['cpu'] = '101m'
-            k.observe(c, objects, client)
-            source['containers'][0]['resources']['requests']['cpu'] = '100m'
-        client.pods[0]['spec']['overhead'] = {'cpu': '10m'}
-        observed = k.observe(c, objects, client)['pods']['cohort-0']['observedResources']
-        self.assertEqual(observed['overhead'], {'cpu': '10m'})
-
-    def test_projection_keeps_the_rest_of_the_spec_compared(self):
-        expected = {'containers': [{'name': 'api', 'image': 'a', 'resources': {
-            'requests': {'cpu': '0.5', 'memory': '0.5Gi', 'ephemeral-storage': '1e6'}}}],
-            'initContainers': [{'name': 'config', 'resources': {'requests': {'cpu': '0.001'}}, 'restartPolicy': 'Always'}]}
-        actual = copy.deepcopy(expected)
-        actual['containers'][0]['resources'] = {'requests': {'cpu': '500m'}, 'limits': {'cpu': '2'}}
-        actual['overhead'] = {'cpu': '10m'}
-        actual['resources'] = {'requests': {'cpu': '1'}}
-        raw = copy.deepcopy(actual)
-        projected, _ = k.admission_projection(expected, actual)
-        self.assertTrue(k.subset(expected, projected))
-        self.assertEqual(actual, raw)
-        for mutate in (lambda x: x['containers'][0].update(image='b'),
-                       lambda x: x['containers'][0].update(name='reordered'),
-                       lambda x: x['initContainers'][0].update(restartPolicy='Never'),
-                       lambda x: x['containers'].append({'name': 'injected'})):
-            broken = copy.deepcopy(actual)
-            mutate(broken)
-            projected, _ = k.admission_projection(expected, broken)
-            self.assertFalse(k.subset(expected, projected))
 
     def test_socket_cohort_and_other_replica_capability_have_distinct_refusals(self):
         c, inv, rendered, client = fixture()

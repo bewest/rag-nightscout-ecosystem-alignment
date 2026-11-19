@@ -428,7 +428,6 @@ prepared `run.json` hash and exact namespace UID must match the allocation.
 | `preflight: {path, sha256}` | Exact private commissioning `PREFLIGHT_ONLY` result with offline checks `PASS`; commissioning owns snapshot freshness |
 | `fixtures: [{runId, namespace, namespaceUid, runSha256}]` | Exact full fixture roster; no adoption or omitted peer |
 | `nodeCeilings: {nodeName: {millicpus, memoryBytes, ephemeralBytes}}` | This batch's allowed container limits on each existing worker, after peer allowances |
-| `actorCeilings: {hostId: {millicpus, memoryBytes}}` | This batch's combined native driver/observer allocation per host |
 
 For each resource dimension the planner compares each init phase, including
 its already-running sidecars, with the combined steady-state containers. It

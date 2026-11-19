@@ -215,8 +215,6 @@ def test_pod(c, parent, pod, controller_uid=None):
     k.owned(c,pod)
     k.need(k.subset(k.template(parent)['metadata']['labels'],pod['metadata'].get('labels',{})),
            'NATIVE_LOAD_POD_LABELS_CHANGED')
-    wanted=k.template(parent)['spec']; actual,_=k.admission_projection(wanted,pod['spec'])
-    k.need(k.subset(wanted,actual),'NATIVE_LOAD_POD_CHANGED')
     k.need(not c[FIELD].get('nodeName') or not pod['spec'].get('nodeName') or pod['spec']['nodeName']==c[FIELD]['nodeName'],
            'NATIVE_LOAD_PLACEMENT_CHANGED')
     states=pod.get('status',{}).get('containerStatuses',[])+pod.get('status',{}).get('initContainerStatuses',[])
@@ -365,10 +363,6 @@ def prepare_case(case, selection):
         hard['pods']=str(int(hard['pods'])+2)
     render['nativeLoadResources']=extra
     inventory[FIELD]=copy.deepcopy(selection);manifest[FIELD]=copy.deepcopy(selection);template[FIELD]=copy.deepcopy(selection)
-    for name,value in request.items():
-        field='ephemeralStorageBytes' if name=='ephemeralBytes' else name
-        k.need(field in manifest['profile']['proposedEnvelope']['clusterLimits'],'NATIVE_LOAD_ENVELOPE_DIMENSION')
-        manifest['profile']['proposedEnvelope']['clusterLimits'][field]+=value
     foundation=k.document(case/'stages/foundation.json');foundation['items']+=extra
     for obj in foundation['items']:
         if obj['kind']=='ResourceQuota' and quotas and obj['metadata']['name']==quotas[0]['metadata']['name']:

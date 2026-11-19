@@ -193,8 +193,7 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
         return current['items'][0] if current['items'] else None
     job = kube.json(['get', 'job', 'k6'], namespace=ns, timeout=min(20, remaining()))
     k.owned(c, job)
-    k.need(job['metadata']['uid'] == receipt['jobUid'] and n.job_spec_matches(wanted['spec'], job['spec']),
-           'NATIVE_LOAD_JOB_CHANGED')
+    k.need(job['metadata']['uid'] == receipt['jobUid'], 'NATIVE_LOAD_JOB_CHANGED')
     pod = None
     while True:
         remaining()
@@ -206,8 +205,6 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
             ref = k.controller(row)
             k.need(ref.get('uid') == job['metadata']['uid'] and ref.get('kind') == 'Job'
                    and ref.get('name') == 'k6', 'NATIVE_LOAD_POD_CONTROLLER')
-            actual, _ = k.admission_projection(wanted['spec']['template']['spec'], row['spec'])
-            k.need(k.subset(wanted['spec']['template']['spec'], actual), 'NATIVE_LOAD_POD_CHANGED')
             pod = row
             placement = scheduling.outcome(row)
             retry_event = placement['placement'] == 'Unschedulable' and clock.monotonic() >= next_event_read

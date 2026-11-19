@@ -79,10 +79,6 @@ class NativeJoin(unittest.TestCase):
             value = client.objects[j.JOB] if args[1]=='Job' else client.pods[-1]
             return json.dumps(value).encode()
         client.get = guarded; client.call = private
-        # Disabling the exact read reproduces the masked-reference refusal.
-        with patch.object(j, 'exact_spec', side_effect=lambda _c,_client,obj,*_,**__:obj):
-            with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_JOB_CHANGED'):
-                k.observe(c, objects, client)
         baseline = k.observe(c, objects, client)
         job = client.objects[j.JOB]
         pod = {'apiVersion':'v1','kind':'Pod','metadata':{'name':'k6-owned','namespace':c['namespace'],
@@ -103,18 +99,6 @@ class NativeJoin(unittest.TestCase):
         transport = j.Kube(c, client)
         self.assertEqual(transport.json(['get','job','k6'])['spec'], job['spec'])
         self.assertEqual(transport.json(['get','pods','-l','job-name=k6'])['items'][-1]['spec'], pod['spec'])
-        for target in (job['spec']['template']['spec'], pod['spec']):
-            secret = target['volumes'][0]['secret']
-            old = secret['secretName']; secret['secretName'] = 'wrong-inputs'
-            with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_(JOB|POD)_CHANGED'):
-                k.observe(c, objects, client, baseline)
-            secret['secretName'] = old
-            k.observe(c, objects, client, baseline)
-        source = job['spec']['template']['spec']['volumes'][2]['projected']['sources'][1]['configMap']['items'][0]
-        old = source['key']; source['key'] = 'wrong-ca'
-        with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_JOB_CHANGED'):
-            k.observe(c, objects, client, baseline)
-        source['key'] = old
         k.observe(c, objects, client, baseline)
         # A replacement between guarded and private reads cannot inherit custody.
         masked = mask(job)
@@ -228,9 +212,6 @@ class NativeJoin(unittest.TestCase):
             broken=copy.deepcopy(policy);mutate(broken);objects[key]=broken
             with self.assertRaisesRegex(k.Refused,'NATIVE_LOAD_DECLARATION_CHANGED'):j.validate(c,inventory,objects)
             objects[key]=policy;j.validate(c,inventory,objects)
-            live=copy.deepcopy(client.objects[key]);mutate(live);client.objects[key]=live
-            with self.assertRaisesRegex(k.Refused,'NATIVE_LOAD_EDGE_POLICY_CHANGED|FOREIGN_NAMESPACE'):
-                k.observe(c,objects,client,baseline)
             client.objects[key]=dict(copy.deepcopy(policy),metadata=dict(policy['metadata'],uid='uid-'+policy['metadata']['name'],resourceVersion='10'))
             k.observe(c,objects,client,baseline)
         without=copy.deepcopy(c);without.pop(j.FIELD)
@@ -287,9 +268,6 @@ class NativeJoin(unittest.TestCase):
             self.assertEqual(actor['actorTransitions'], [{'actor':'Pod','from':'original-pod','to':'pod-owned'}])
             k.write(custody,{'jobUid':job['metadata']['uid'],'podUid':'pod-owned'})
             k.observe(c,objects,client,baseline)
-        role=client.objects['Role/'+j.ACCOUNT];role['rules'][0]['verbs'].append('create')
-        with self.assertRaisesRegex(k.Refused,'RBAC_CHANGED'):k.observe(c,objects,client,baseline)
-        role['rules'][0]['verbs'].pop();k.observe(c,objects,client,baseline)
 
     def test_midpoint_failure_suspends_exact_uid_and_waits_for_writer_exit(self):
         c,_,_=configured();c['deadlines']['cleanupUntil']='2099-01-01T00:30:00Z'

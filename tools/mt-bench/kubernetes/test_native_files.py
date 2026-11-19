@@ -58,8 +58,6 @@ class NativeFiles(unittest.TestCase):
         changes = [
             ('job', ('metadata', 'uid'), 'different-job', 'JOB_CHANGED'),
             ('pod', ('metadata', 'ownerReferences', 0, 'uid'), 'peer', 'POD_CONTROLLER'),
-            ('pod', ('spec', 'containers', 0, 'image'), 'changed-image', 'POD_CHANGED'),
-            ('pod', ('spec', 'containers', 0, 'command'), ['false'], 'POD_CHANGED'),
             ('pod', ('spec', 'containers', 0, 'resources', 'requests', 'memory'), '1Gi', 'RESOURCES_CHANGED'),
             ('job', ('spec', 'template', 'spec', 'containers', 0, 'resources', 'requests', 'cpu'), '2', 'RESOURCES_CHANGED'),
             ('pod', ('status', 'containerStatuses', 1, 'state', 'terminated', 'exitCode'), 8, 'EXPORTER_FAILED'),

@@ -97,7 +97,6 @@ try:
     grant={'version':1,'status':'RELEASED','existingCapacityOnly':True,'context':cfg['context'],**cfg['deadlines'],
            'resourceAccounting':mode,
            'preflight':ref(d/'preflight.json'),'experimentSha256':sha(d/'intent.json'),'placementMode':'scheduler',
-           'actorCeilings':{actor:profile['proposedEnvelope']['nativeLimits']},
            'fixtures':[{'runId':e['runId'],'namespace':ns,'namespaceUid':uid,'runSha256':sha(packet/'run.json')}]}
     write(live/'grant.json',grant)
     execute('load',exp+['run',packet,live/'grant.json',sha(live/'grant.json')],until-time.time())

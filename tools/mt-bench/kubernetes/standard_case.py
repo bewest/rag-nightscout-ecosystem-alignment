@@ -107,21 +107,7 @@ def _materialize(template_case, package, profile_path, output, binding, core, ta
         k.write(output/(name+'.json'),json.loads(data))
     rendered = k.document(output/'render.json')
     inventory = k.document(output/'inventory.json')
-    objects = k.manifests(rendered)
-    totals = dict.fromkeys(('millicpus','memoryBytes','ephemeralBytes'),0)
-    for obj in objects:
-        if obj['kind'] in k.WORKLOADS:
-            amount = k.resource_budget.pod_budget(k.template(obj)['spec'],'requests-v1',k.need)
-            count = obj['spec'].get('replicas',obj['spec'].get('parallelism',1))
-            for dimension in totals:
-                totals[dimension] += amount[dimension] * count
-    # This wire format also serves older callers. Populate it from this render and
-    # the controller's configured host scope. Historical envelope values are unused.
-    profile['proposedEnvelope'] = {
-        'clusterLimits': {'millicpus':totals['millicpus'], 'memoryBytes':totals['memoryBytes'],
-                          'ephemeralStorageBytes':totals['ephemeralBytes']},
-        'nativeLimits':control['nativeLimits'],
-    }
+    profile.pop('proposedEnvelope', None)
     stages = {name:[] for name in lc.stages_for(inventory)}
     prior_stages = {k.key(obj):stage for stage in stages for obj in
                     k.document(template_case/'stages'/(stage+'.json'))['items'] if obj['kind'] in k.WORKLOADS}
