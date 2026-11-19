@@ -2070,8 +2070,6 @@
       
         
       
-        
-      
     
     
     
@@ -2253,34 +2251,6 @@
     
   
     Dependabot config
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="deploy-tree-home-docs-operator-readme-20261110.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deploy tree home docs operator readme 20261110
   
 
     
@@ -4440,7 +4410,7 @@
 
 
 
-<p><em>Living document, last changed 2026-11-11 at <code>772149400</code>.</em></p>
+<p><em>Living document, last changed 2026-11-18 at <code>4264afbad</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -4479,7 +4449,7 @@ serve-then-warm readiness</strong></p>
 </tr>
 <tr>
 <td>claimed state</td>
-<td><code>ready-to-push</code> — a claim; <code>make queue-status ID=MT-PERF-DB</code> is the measurement</td>
+<td><code>in-flight-upstream</code> — a claim; <code>make queue-status ID=MT-PERF-DB</code> is the measurement</td>
 </tr>
 <tr>
 <td>semver</td>
@@ -4511,7 +4481,14 @@ readiness with an all-tenants flag.</p>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
 <p>2026-11-10: 1,000 tenants start (baseline failed at 100). Resumed for
-readiness-serve-then-warm and admission-epoch-everywhere.</p>
+readiness-serve-then-warm and admission-epoch-everywhere. 2026-11-18 (groom,
+reproduced): branch head 471e51a9 is an ancestor of draft PR #8898 head
+6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore
+candidate, core bbc99a85 (<code>git merge-base --is-ancestor</code> in externals/cgm-
+remote-monitor-official). The commits are already on #8898, so the next step
+is no longer a human push: ready-to-push -&gt; in-flight-upstream. The gate's
+"frozen-head acceptance at the next #8898 batch join" is now the one campaign
+on the frozen candidate (decision restore-candidate-frozen).</p>
 <hr />
 <h2 id="before-you-approve">Before you approve<a class="headerlink" href="#before-you-approve" title="Permanent link">&para;</a></h2>
 <ul class="task-list">

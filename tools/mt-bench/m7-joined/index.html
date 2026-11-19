@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/m7-joined/index.html">
       
       
-        <link rel="prev" href="../external-generator/index.html">
+        <link rel="prev" href="../kubernetes/workloads/index.html">
       
       
         <link rel="next" href="DIAGNOSTIC-SEAM.html">
@@ -1753,6 +1753,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1927,6 +1931,70 @@
                 
   
   
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../kubernetes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    kubernetes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -1963,7 +2031,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9_5" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -1985,14 +2053,14 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_8_9_4" id="__nav_8_9_4_label" tabindex="0">
+              <label class="md-nav__link md-nav__link--active" for="__nav_8_9_5" id="__nav_8_9_5_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_9_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_8_9_4">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_9_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8_9_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2625,6 +2693,64 @@
     
   
     rls-poc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../run-catalog/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    run-catalog/
   
 
     
@@ -4192,10 +4318,43 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#authored-resource-and-nginx-allocations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authored resource and nginx allocations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#named-qualification-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Named qualification profile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#sparse-discovery-count-control" class="md-nav__link">
     <span class="md-ellipsis">
       
         Sparse discovery count control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selected-admin-verified-startup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Selected admin-verified startup
       
     </span>
   </a>
@@ -4225,7 +4384,7 @@
 
 
 <h1 id="joined-m7-capacity-adapter">Joined M7 capacity adapter<a class="headerlink" href="#joined-m7-capacity-adapter" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-16 at <code>c9142e079</code>.</em></p>
+<p><em>Living document, last changed 2026-11-18 at <code>82536ec44</code>.</em></p>
 <p>This prepares the <strong>next</strong> measurement; it does not establish a capacity result.
 The prior capacity record and authorization/allocation profiles retain their own
 source scope. No prior working-tree lib mount or bootstrap patch is reused here.
@@ -4270,13 +4429,21 @@ A separate synthetic correctness uploader writes every 300 seconds. Its stored
 ID/glucose, durable completed versions/rows/frame and already-connected stock
 clients must agree. All workload writes also pass the independent count oracle
 and row-mutation control. No worker restart campaign runs in this sample. The selected startup and runtime
-roster omit the retired legacy feed-reader; pgstream runs inside evaluator.</p>
+roster omit the retired legacy feed-reader. The default colocated topology runs
+pgstream inside evaluator; explicit <code>external-service-v1</code> keeps a separate native
+producer service. Record the actual selected topology in comparisons.</p>
 <p>Source helpers resolve only the cell-owned lockfile dependency tree; evaluator
 and realtime image processes independently check <code>/opt/app</code> pg resolution before
 load. Per-process CPU-counter bookends and RSS distinguish evaluator Node from its
 pgstream child; process replacement/missing data is UNMEASURED.
-<code>sql-attribution.json</code> separates the configured pgstream role from adapter
-roles using full private statement bookends. The frozen PostgreSQL command preloads pg_stat_statements, enables top-level
+<code>sql-attribution.json</code> uses full private statement bookends for disjoint SQL-role
+buckets. A native recovery connection may use the configured pgstream role on
+the evaluator database. That role has a separate <code>shared</code> bucket, counted once;
+the exclusive pgstream bucket and the split between processes are UNMEASURED.
+The observer checks the selected recovery environment and database endpoint,
+rejects other overlapping identities, and retains actual per-role SQL totals.
+Historical disjoint-role captures retain their original two-bucket shape.
+The frozen PostgreSQL command preloads pg_stat_statements, enables top-level
 statement capture and I/O timing. Deploy creates the extension only in maintenance
 database postgres after infrastructure startup; an already-running server without
 the preload requires owner-controlled restart/recreation. Statement execution time is not
@@ -4673,11 +4840,48 @@ clock, settings, policy, activity, lifecycle, bootstrap. Its assessor checks row
 kind, work version, contract digest, array bounds/order, exact bigint range,
 output revision precision and metadata ownership before the existing stored
 write, BG-now and stock-client frame checks. It performs no duplicate writes.</p>
+<p>Current native configurations select the compact-input reader from the actual
+<code>pgstream.generation</code> and recovery configuration. One SELECT binds input source
+identity and restore generation, recoverable WAL positions, the local input floor,
+completed clinical coverage, pending/due work, output metadata and raw-tail head/base.
+The public history stamp is observed separately. Clinical completion can advance
+while an unchanged output keeps its original captured input floor and revision.
+Explicit lifecycle invalidation may reset the snapshot position to <code>0/0</code>; accepted
+commit positions retain their own source, generation and coverage fences.
+Native opportunity assessment and fixed-target drain use captured accepted-input
+floors, metadata and due work. New accepted input invalidates a frozen quiet
+target; pending work cannot pass. The drain declares <code>writerIntakeCoverage</code>
+UNMEASURED because this port has no post-writer WAL high-watermark together with
+the configured-slot acknowledgement fence. Public history does not supply that
+proof. Historical non-native readers retain their original target semantics.
+The reader checks the actual stored marker, BG-now result and stock callback;
+metadata alone does not qualify clinical equivalence or raw delivery.</p>
+<p>The unqualified selected-intake/profile reader and its mechanism-only control
+are removed. Original v1/v2 readers remain for historical source fixtures and
+retained baseline reproduction. A native configuration cannot fall back to them
+when its source/restore/coverage proof is missing.</p>
+<p>Client delivery is per logical viewer. Reconnection alone does not refute a valid
+callback. New captures retain the exact expected viewer slots, observed transport
+incarnation, connection count, SGV identity/time/value and a single-probe monotonic
+request-to-callback deadline. Missing, duplicate, foreign, wrong-value or late
+callbacks refuse. The historical hold4000 failure stays unchanged: retained
+callbacks show timely stored-ID delivery, but omit connection counts and full
+callback values needed to identify its strict-predicate rejection.</p>
+<p><code>--api-cause-observation on</code> installs a source-hash-bound private admission/exchange
+observer only for a setup diagnostic. Its bounded code/SQLSTATE counts carry no
+request body, error message or credential. File-I/O overhead is unmeasured; keep
+it outside an unmatched operating comparison. <code>api_cause.prepare_stages</code> prepares
+the fixed 0/4000/8000-viewer, 50-opens/second setup discriminator with sequential
+no-retry exchange checks. Its callback availability does not establish clinical
+or stored-frame equivalence. Runtime source-access captures use the existing
+<code>source-access-v1</code> private inspection port; M5's timer-only control checks actual
+snapshot/catalogue/data acquisition, with an unchanged checkpoint as no substitute.</p>
 <p>Focused offline controls (no SQL/runtime execution):</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/completed-oracle-control.cjs
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/completed-oracle-v2-control.cjs
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nb">cd</span><span class="w"> </span>tools/mt-bench/m7-joined
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>test_cost_companion<span class="w"> </span>test_realtime_costs<span class="w"> </span>test_pgstream_sample
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>node<span class="w"> </span>--test<span class="w"> </span>tools/mt-bench/m7-joined/native-observation.test.cjs<span class="w"> </span>tools/mt-bench/m7-joined/client-delivery.test.cjs
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nb">cd</span><span class="w"> </span>tools/mt-bench/m7-joined
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>test_cost_companion<span class="w"> </span>test_realtime_costs<span class="w"> </span>test_pgstream_sample
 </code></pre></div>
 <p>SQL shape controls and synthetic rows do not qualify the generated SELECT on
 PostgreSQL. The runtime owner must qualify it against each paired fresh fixture
@@ -4960,6 +5164,117 @@ boundaries, not native SQL cost or a capacity ceiling.</p>
 identity and checksum beside the capture. These controls preserve source-level
 boundary evidence; the integrator owns the final joined runtime acceptance.</p>
 <h2 id="single-host-qualification-allocation">Single-host qualification allocation<a class="headerlink" href="#single-host-qualification-allocation" title="Permanent link">&para;</a></h2>
+<h3 id="authored-resource-and-nginx-allocations">Authored resource and nginx allocations<a class="headerlink" href="#authored-resource-and-nginx-allocations" title="Permanent link">&para;</a></h3>
+<p><code>--diagnostic-resource-allocation</code> accepts one exact version-1 JSON allocation
+with <code>services</code>, <code>driver</code>, <code>ceiling</code> and <code>edge</code> fields. It replaces reference
+CPU/memory sizing when preparing a fresh fixture. Named profiles retain their
+exact sizes. The service roster must match the rendered fixture, including its
+existing supported role names and ordinal range. There is no separate 32-service,
+64-CPU or 128-GiB reference ceiling for an authored allocation. Every selected
+role, declared bootstrap/primer overlap and standalone driver still counts
+against the authored aggregate ceiling. Remote receiving helpers additionally
+check the actual declared SUT and driver host inventories independently.</p>
+<p>Fresh authored service allocations use integer <code>cpu_quota</code> and <code>cpu_period</code>
+fields. Compose's float32 <code>cpus</code> field can round a selected value, and its native
+conversion can lose precision even when config JSON looks unchanged. The integer
+path preserves integer quota/period through Compose; native runtime precision
+requires a separate check. Native readback requires zero
+<code>NanoCpus</code>, exact quota/period and no alternate CPU limiter. Named profiles and
+entered legacy explicit fixtures keep their existing <code>cpus</code>/<code>NanoCpus</code> path;
+standalone Docker <code>--cpus</code> keeps its exact decimal CLI path. The frozen config
+selects the mechanism, so legacy records are not migrated during an entered run.</p>
+<p>Each new service record includes <code>cpuEnforcement</code> with quota and period in
+microseconds. Fresh ordinary allocations keep a 100,000-microsecond period.
+Values from 1 through 9 millicpu use 1,000,000 microseconds to meet Linux's
+minimum 1,000-microsecond quota, where the runtime can represent that average.
+Very large fresh values use a 1,000-microsecond period before quota exceeds
+9,223,372,036,854 microseconds: runc 1.3.3's systemd conversion multiplies signed
+quota by 1,000,000 before division. These recorded period changes preserve the
+selected CPU average but change scheduling granularity. Entered quota records
+keep their frozen period; validation and census never select a new one.
+The Linux 6.18 source defines <code>max_bw_runtime_us=MAX_BW</code>, with
+<code>BW_SHIFT=20</code> and <code>MAX_BW=(1&lt;&lt;(64-BW_SHIFT))-1</code>; at a 1,000-microsecond period,
+that necessary service maximum is 17,592,186,044,415 millicpu. This read-derived
+kernel representation bound is separate from host fit and actual kernel
+admission. The <a href="https://github.com/torvalds/linux/blob/v6.18/kernel/sched/core.c">kernel validation</a>
+and <a href="https://github.com/torvalds/linux/blob/v6.18/kernel/sched/sched.h">bandwidth representation</a>
+own those limits. Docker also validates the
+<a href="https://github.com/moby/moby/blob/docker-v29.1.3/daemon/daemon_unix.go">period and minimum quota</a>
+and carries explicit quota/period directly into its OCI CPU resources.</p>
+<p>Actual fresh preparation reads the selected daemon's cgroup driver/version,
+default runtime and reported runc version before resource leases or fixture
+effects. This early observation does not qualify every template role. After
+source rendering, the existing deployment stages and their transitive Compose
+dependencies select the actual execution roles for precision qualification,
+before any container command. An ops profile alone does not make a role active:
+bootstrap and primer run in these stages; unused demo/operator templates may
+remain dormant. All authored roles still count against the aggregate ledger.
+The confirmed systemd/cgroup-v2 path with runc <code>1.3.3</code> or
+<code>1.3.3-0ubuntu1~24.04.3</code> rounds CPU bandwidth up to whole percent units. Its
+<a href="https://github.com/opencontainers/runc/blob/v1.3.3/vendor/github.com/opencontainers/cgroups/systemd/common.go#L264-L297">runc conversion</a>
+therefore represents service CPU only in multiples of 10 millicpu. It also
+requires quota times 1,000,000 to fit signed int64. Preparation refuses an
+affected field with its requested value, runtime and representation reason;
+the stable CLI code retains the field suffix, and a bounded JSON diagnostic
+reaches the runner's retained private preparation output. It never rounds the
+selection. For example, 65.001 CPU is unsupported on this
+path while 65.01 CPU is representable. A different period cannot change that
+ratio precision. Retained native controls observed 65.01 CPU for the requested
+65.001 CPU at both 100-ms and 1-second periods, despite exact HostConfig values;
+both strict failures and owned cleanup remain recorded under the lane's
+overflow-disk evidence. This is a runtime capability, not a reference CPU cap.</p>
+<p>Pure configuration/receipt plans never query the daemon. Missing inventory,
+other drivers and unqualified runtime versions retain runtime precision as
+<code>UNMEASURED</code>; they do not acquire this runtime-specific restriction or a native
+pass. A fresh explicit owner's <code>cpuPrecisionPreflight</code> records <code>qualifiedRoles</code>
+and <code>deferredRoles</code>, the execution-scoped <code>PASS</code> or <code>UNMEASURED</code>, and the
+classified runtime when available. A deferred role keeps its exact authored
+allocation and remains unqualified. The existing Compose actor admission guard
+checks requested targets, dependencies and already active quota roles before
+each actor command, including later activation of a dormant template. Existing
+<code>--no-deps</code> selections retain their dependency semantics; read-only commands and
+exact-owned cleanup remain available after refusal.
+Named profiles, entered legacy fixtures and standalone <code>--cpus</code> keep
+their existing paths. Exact native admission/readback remains required.</p>
+<p>Standalone driver CPU must fit Docker's signed-64-bit <code>NanoCpus</code> field; service
+and driver memory must fit its signed-64-bit byte fields. The current memory-unit
+contract starts at one MiB. Native engine and kernel admission and exact quota
+readback remain required. An accepted numeric JSON allocation does not reserve
+CPUs, enlarge host inventory or establish memory headroom. Docker's
+<a href="https://docs.docker.com/reference/api/engine/version/v1.40/">container resource API</a>
+defines the native field representations.</p>
+<p>An authored <code>edge</code> selects independent positive integer <code>workerProcesses</code> and
+<code>workerConnections</code>. The helper first runs the pinned deployment renderer with
+its existing reference worker settings. It then projects only those two unique
+numeric directives into the owned mounted nginx config, before capturing its
+digest. All routing, public Host handling, header trust and handshake admission
+bytes remain source-rendered. An unexpected baseline, duplicate directive or
+changed descriptor budget refuses. Named-profile output remains unchanged.
+The existing runtime <code>nginx -T</code> readback must match the selected numeric values
+and the retained <code>worker_rlimit_nofile 65536</code> directive.</p>
+<p>The Linux nginx implementation has a total process-table bound of 1,024 child
+slots, shared by workers, optional cache helpers and overlapping generations
+during reload. This is a necessary implementation maximum, not a promise of
+1,024 available worker slots or evidence that those workers started. The
+<a href="https://github.com/nginx/nginx/blob/master/src/os/unix/ngx_process.h">process table</a>
+and <a href="https://github.com/nginx/nginx/blob/master/src/os/unix/ngx_process_cycle.c">worker/helper/reload paths</a>
+own that read-derived boundary. Actual process births, cgroup PID limits and
+effective OS descriptor limits need observation in the selected environment.
+Configured <code>workerConnections</code> cannot exceed the retained actor's 65,536-file
+descriptor directive and Compose <code>nginx.ulimits.nofile</code> hard limit. A larger request reports
+<code>ALLOCATION_EDGE_DESCRIPTOR_LIMIT</code>; extending it requires an explicit descriptor
+budget, mounted-config and Compose-ulimit projection, and effective descriptor readback. Connections
+include upstream connections and consume descriptors for other work too, so the
+configured value does not prove a client capacity. See nginx's
+<a href="https://nginx.org/en/docs/ngx_core_module.html#worker_connections">connection and descriptor directives</a>.</p>
+<p>The Python remote receiver uses the same explicit numeric contract and retains
+physical-host fit. Older remote controllers can still lack explicit allocation
+support or retain their own reference validation. Their precise source guard
+must be extended by the controller owner before using those values through that
+controller; local rendering and receiver controls do not establish a remote run.
+The existing <a href="../../../docs/30-design/tenancy/deployment-and-rig-testing.html#configurable-limits-and-restrictions">restriction policy</a>
+separates these instrument boundaries from application and acceptance claims.</p>
+<h3 id="named-qualification-profile">Named qualification profile<a class="headerlink" href="#named-qualification-profile" title="Permanent link">&para;</a></h3>
 <p><code>--diagnostic-resource-profile local-qualification-external-pgstream-6cpu-10g-v1</code>
 selects one proposed allocation for local synthetic qualification with
 <code>external-service-v1</code>. It is not a measured supported envelope. Keep tenant
@@ -5028,6 +5343,35 @@ observations beside the control result. No-op corruption or failed restoration
 refuses. Strict/default acceptance keeps its requirement for a write from every
 tenant. This change applies to future helper runs; it does not qualify or relabel
 an earlier point whose control was not run.</p>
+<h3 id="selected-admin-verified-startup">Selected admin-verified startup<a class="headerlink" href="#selected-admin-verified-startup" title="Permanent link">&para;</a></h3>
+<p>New deployment pins that contain <code>platform-startup.js</code> require an explicit
+<code>--tenant-readiness serve</code> or <code>--tenant-readiness all</code>. The resolved configuration,
+diagnostic receipt and frozen serving environments carry that selection. The
+<code>platform-verify</code> job calls the private admin API after commission and before API
+launch. Its process receives no database or Vault credential. Older deployment
+pins keep their original stage sequence.</p>
+<p>For a bounded local startup experiment, select <code>--api-warm-cause startup-v1</code>
+with the existing discovery receipt and resource allocation. It supports small
+fixtures before a 10,000-tenant point. This source-bound observer samples actual
+API process heap use, V8 heap ceiling, cgroup memory ceiling/current use and safe
+startup counts once per second, retaining the first samples and a bounded recent
+window. It adds file I/O and count-sampling overhead; it is not a matched CPU
+baseline. No tenant identifier, credential, request body or glucose value is
+emitted. <code>warm-v1</code> keeps its original 10,000-tenant refusal-correlation scope.</p>
+<p><code>deployment-stages.json</code> records each entry before effects and its elapsed time,
+verdict and safe first error in <code>finally</code>, including a throwing primer. New
+<code>startup-primer-boundary.json</code> keeps the exact API birth, process exit and Docker
+health state, latest startup counts, actual memory ceilings, typed primer error,
+and first useful response/completed primer events before cleanup. The raw bounded
+samples survive in <code>startup-samples.private.json</code>; failure log tails are private.
+Missing, stale, foreign or replaced-process observations remain UNMEASURED. A
+collector failure preserves the original primer failure. A failed primer starts
+no remaining roles or ordinary load.</p>
+<p>API process readiness, first useful tenant response, completed primer and remaining
+role readiness are separate stages. A warm primer proves neither cold evaluator
+recovery nor steady load. Pending and future-due recovery without new input needs
+its own clinical control; capacity remains ungranted until the integration owner
+qualifies the selected source and operating point.</p>
 
 
 

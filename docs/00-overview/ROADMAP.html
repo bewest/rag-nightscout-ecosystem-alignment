@@ -2416,7 +2416,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
+<p><em>Living document, last changed 2026-11-18 at <code>4264afbad</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -2899,7 +2899,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td style="text-align: right;">1</td>
 <td><code>MT-POOL-PRIMITIVE</code></td>
 <td>Shared pool-membership primitive (pool kind, member count, ordinal, ring slice)</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -3088,7 +3088,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td style="text-align: right;">2</td>
 <td><code>MT-CONNECTOR-REVERSE</code></td>
 <td>M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site in</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>MT-POOL-PRIMITIVE</code></td>
 </tr>
 <tr>
@@ -3207,7 +3207,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td style="text-align: right;">4</td>
 <td><code>DEPLOY-TREE-HOME</code></td>
 <td>Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture;</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-progress</code></td>
 <td><code>MT-M6B-JOIN</code></td>
 </tr>
 <tr>
@@ -3263,21 +3263,21 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td style="text-align: right;">5</td>
 <td><code>MT-PERF-DB</code></td>
 <td>Restore-fence epoch admission, bounded startup warm, pool configuration, serve-t</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>MT-EVALUATOR-PARTITION</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">5</td>
 <td><code>MT-PERF-EVALUATOR</code></td>
 <td>Evaluator works on change: per-member change query and due-time timers replace t</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>MT-EVALUATOR-PARTITION</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">5</td>
 <td><code>MT-PERF-REALTIME</code></td>
 <td>Realtime publishes on change; event-driven authorization; queued connects under</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>MT-EVALUATOR-PARTITION</code></td>
 </tr>
 <tr>
@@ -3298,7 +3298,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td style="text-align: right;">6</td>
 <td><code>MT-EVAL-COST</code></td>
 <td>Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept work</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>MT-PERF-EVALUATOR</code></td>
 </tr>
 </tbody>

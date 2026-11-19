@@ -1,0 +1,5005 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/kubernetes/index.html">
+      
+      
+        <link rel="prev" href="../external-generator/index.html">
+      
+      
+        <link rel="next" href="node-memory-proof.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Kubernetes boundary for the M7 synthetic instrument - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#kubernetes-boundary-for-the-m7-synthetic-instrument" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Kubernetes boundary for the M7 synthetic instrument
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tools/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../aaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../aid-autoresearch/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aid-autoresearch/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../animations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    animations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../cgmencode/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgmencode/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../diagrams/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    diagrams/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../kotlin-nightscout-tests/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    kotlin-nightscout-tests/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../lab/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    lab/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mt-bench/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_9" id="__nav_8_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    mt-bench/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../compose-baseline/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    compose-baseline/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../external-generator/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-generator/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link md-nav__link--active">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    kubernetes/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link md-nav__link--active" for="__nav_8_9_4" id="__nav_8_9_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_9_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8_9_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    kubernetes/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="node-memory-proof.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Node memory proof, without admission
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="population-ceiling-commissioning.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Private commissioning population selection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="workloads/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    workloads/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-joined/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-joined/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../mongo-iso-poc/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mongo-iso-poc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../mongo-views-poc/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mongo-views-poc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../native-admission/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    native-admission/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../native-clinical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    native-clinical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nrg-resolution-poc/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nrg-resolution-poc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../postgrest-poc/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    postgrest-poc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remote-pgstream/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remote-pgstream/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../rls-poc/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rls-poc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../run-catalog/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    run-catalog/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../rust/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rust/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tagged-admission/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tagged-admission/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../ns2parquet/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../nsprobe/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nsprobe/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../nsschema/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nsschema/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../qc/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    qc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    queue/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../review/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    review/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../seam/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    seam/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    site/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../structure-diagrams/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    structure-diagrams/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../swift-nightscout-tests/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    swift-nightscout-tests/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-harness/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-harness/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#frozen-image-experiments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frozen-image experiments
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scheduling-requests-and-optional-service-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scheduling requests and optional service limits
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scheduling requests and optional service limits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#explicitly-owned-worker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicitly owned worker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#provision-and-serving-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provision and serving phases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#one-intent-for-compose-and-kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One intent for Compose and Kubernetes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="kubernetes-boundary-for-the-m7-synthetic-instrument">Kubernetes boundary for the M7 synthetic instrument<a class="headerlink" href="#kubernetes-boundary-for-the-m7-synthetic-instrument" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-11-18 at <code>3fc041c0e</code>.</em></p>
+<p>This adapter prepares and observes one independently owned Kubernetes fixture.
+It reuses the <a href="../m7-joined/RUNNER.html">existing M7 workload, stock client and oracles</a>.
+Preparation and offline controls start no services. An operator or explicitly
+authorized experiment owner executes on the private environment's finite
+capacity, image delivery and trust allocation. Rendered resources do not grant
+correctness or capacity acceptance.</p>
+<p>The shipping application remains a secondary display for CGM and pump data.
+Run only synthetic tenants on independent state. A failed clinical, authority or
+tenant isolation check stops qualification. Preserve uncertain writes and raw
+evidence; do not retry a mutation to make a result green.</p>
+<h2 id="frozen-image-experiments">Frozen-image experiments<a class="headerlink" href="#frozen-image-experiments" title="Permanent link">&para;</a></h2>
+<p>Use <code>experiment.py</code> to select an immutable source-owner receipt, materialize its
+binding, and prepare a new packet for each allocation. A manifest remains stable
+across namespaces, UIDs and deadlines. Its <code>profile</code> uses the existing workload
+profile format with the source selection supplied by the manifest. For example,
+the following selects an explicit candidate and a 1,000-tenant realistic profile.
+The input paths are absolute. Obtain the receipt digests from the releasing owners.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">K</span><span class="o">=</span>tools/mt-bench/kubernetes
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>jq<span class="w"> </span>-n<span class="w"> </span>--slurpfile<span class="w"> </span>p<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/workloads/realistic-1000.json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>--arg<span class="w"> </span><span class="nb">source</span><span class="w"> </span><span class="s2">"</span><span class="nv">$SOURCE_RECEIPT</span><span class="s2">"</span><span class="w"> </span>--arg<span class="w"> </span>ss<span class="w"> </span><span class="s2">"</span><span class="nv">$SOURCE_RECEIPT_SHA256</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>--arg<span class="w"> </span>build<span class="w"> </span><span class="s2">"</span><span class="nv">$BUILD_RECEIPT</span><span class="s2">"</span><span class="w"> </span>--arg<span class="w"> </span>bs<span class="w"> </span><span class="s2">"</span><span class="nv">$BUILD_RECEIPT_SHA256</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span>--arg<span class="w"> </span>binding<span class="w"> </span><span class="s2">"</span><span class="nv">$BINDING_COMMIT</span><span class="s2">"</span><span class="w"> </span>--arg<span class="w"> </span>pg<span class="w"> </span><span class="s2">"</span><span class="nv">$POSTGRES_CONFIG_ID</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="s1">'{version:1,kind:"k8s-frozen-experiment",sourceReceipt:{path:$source,sha256:$ss},</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="s1">    buildReceipt:{path:$build,sha256:$bs},bindingCommit:$binding,postgresImageId:$pg,</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="s1">    profile:($p[0] | del(.referencePins) | .workload.setupSeconds=360 |</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="s1">             .workload.drainSeconds=180)}'</span><span class="w"> </span>&gt;<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_MANIFEST</span><span class="s2">"</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>describe<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_MANIFEST</span><span class="s2">"</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>binding<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_MANIFEST</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$BINDING_REPO</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$IMAGE_DEPLOY_REPO</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_BINDING</span><span class="s2">"</span>
+</code></pre></div>
+<p>The binder exports the selected Git tree into a fresh directory, runs the
+original image constructor with its read-only filesystem and disabled network,
+and compares installed deployment bytes, role commands, SQL identities and
+native catalogue against the supported single-cohort binding. The generated
+<code>bindings/kubernetes/assets/source-contract.json</code> carries the measured producer,
+image, source and owner receipt. <code>binding.json</code> identifies every materialized
+file. A changed deployment protocol or catalogue requires a compatibility review.
+An unknown commit with compatible measured inputs follows the same path. The
+source receipt may carry a bounded diagnostic PENDING or joined source PASS.</p>
+<p>The execution owner renders the package with its private commissioning overlay.
+The accompanying private patch is supplied in the local release packet. Apply
+it to a clean copy of the indicated private base and install this release's
+<code>frozen.py</code> beside <code>preflight.py</code>. Set <code>experimentManifest</code> and
+<code>experimentBindingReceipt</code> in the environment to the respective
+<code>{"path":"…","sha256":"…"}</code> references. The existing context, trust, node
+placement, quota, headroom, cost and UID-conditioned cleanup checks apply.
+Private admin verification precedes serving roles.</p>
+<p>The optional <code>bootstrapHelper</code> manifest entry selects the reviewed deploy source
+commit and SHA-256 of <code>bootstrap.js</code>. The constructor verifies the original
+image file, extracts the corrected file from Git and installs it in an immutable
+ConfigMap. Only the provision Job's bootstrap init container mounts the file.
+The package labels the effective diagnostic instance PENDING and retains the
+base image's own source acceptance. For an early readback after foundation
+creation, run <code>adapter.py bootstrap-map PACKET NAMESPACE_UID</code> against the
+commissioner's recorded UID. Initial observation checks the same ConfigMap,
+Job, actual Pod and bootstrap container. When the read guard masks words in
+this public file, kubectl compares its known source, UID and resource version
+locally and emits a Boolean. A missing or changed readback stops the check.</p>
+<p>For a discovery fixture with an external producer, the optional manifest field
+<code>pgstreamNotifierAckTimeoutMs</code> selects a positive acknowledgment budget in
+milliseconds. The publisher projects the one field from the private bootstrap
+wire file before creating <code>ns-config-pgstream</code>. The selected package, source
+wire hash, effective wire hash and live producer incarnation are bound into
+the run. The controller verifies the wire hash in the owned Pod before native
+attachment. The producer binary, retry cadence, and clinical observation
+windows keep their selected source behavior.</p>
+<p>Supply the existing runtime config, inventory, render, and two independently
+pinned receipts as a fresh instance file in this form.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">"config"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/owned/instance/runtime.json"</span><span class="p">,</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">"inventory"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/owned/instance/inventory.json"</span><span class="p">,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">"render"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/owned/instance/render.json"</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">"bindingReceipt"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/owned/binding/binding.json"</span><span class="p">,</span><span class="w"> </span><span class="nt">"sha256"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;binding receipt SHA256&gt;"</span><span class="p">},</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">"delivery"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/owned/instance/delivery.json"</span><span class="p">,</span><span class="w"> </span><span class="nt">"sha256"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;delivery receipt SHA256&gt;"</span><span class="p">},</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="nt">"roleDocuments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"evaluator"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/owned/private/evaluator-config.json"</span><span class="p">,</span><span class="w"> </span><span class="nt">"realtime"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/owned/private/realtime-config.json"</span><span class="p">}</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">}</span>
+</code></pre></div>
+<p>Delivery includes the existing <code>app</code>, <code>postgres</code>, config IDs, source tuple and
+cost fields, plus <code>registryManifests.app</code> and <code>.postgres</code> pointing to the raw
+single-platform registry response bytes. Select the platform manifest before
+using a multi-platform index. The runner hashes those bytes and reads each
+config descriptor. Runtime Pod readback checks the independent mapping again.
+Private role document inputs select the completion oracle. An already measured
+matching <code>completion</code> projection can also be supplied in the config. Supply
+the expected settings fingerprint, owned loopback port, projected synthetic
+roster and finite native tools, dependencies and limits as in the adapter guide.
+The runner derives pins and checks any previously supplied pins for equality.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>prepare<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_MANIFEST</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$INSTANCE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span><span class="w"> </span>--await-primer
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/adapter.py"</span><span class="w"> </span>observe<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/adapter.py"</span><span class="w"> </span>candidate-proof<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/adapter.py"</span><span class="w"> </span>policy<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/primer.py"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">/primer"</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1"># Start the authorized loopback forward before the access check.</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/adapter.py"</span><span class="w"> </span>access<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>run<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$RELEASED_ALLOCATION</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$ALLOCATION_SHA256</span><span class="s2">"</span>
+</code></pre></div>
+<p>With <code>--await-primer</code>, prepare the packet before DATA credentials exist. The
+primer runs the image's checked source module inside the original verified
+waiting Pod and uses its private admin and DATA Services. It bounds execution
+by the earlier of the packet and Job deadlines. Set the Job's finite
+<code>provisionDeadlineSeconds</code> at commissioning to cover setup and waiting.
+<code>--concurrency N</code> selects the source implementation's bounded concurrency.
+For fresh discovery, set <code>profile.phases.primerOptions</code> with <code>concurrency</code> and
+optionally <code>maxTenants</code>. For example, <code>{"concurrency":64,"maxTenants":20000}</code>
+selects up to 64 workers for a chunk of up to 20,000 pending tenants. The source
+starts no more workers than the pending chunk contains. With the extended
+source, both fields accept positive JavaScript safe integers. The defaults are
+one worker and 10,000 pending tenants per invocation. The image constructor
+checks the pinned parser and exact bytes before binding the selection. Legacy
+images refuse options beyond their supported range before resource creation.
+The waiting actor takes the bound selection automatically. Explicit arguments
+must match it. A partial DATA result stays incomplete and keeps its custody.
+Fresh discovery can also select <code>profile.population.maxTenants</code>, projected to
+the binding's <code>populationCeiling</code> and bootstrap's <code>NS_DEMO_POPULATION_CEILING</code>.
+Omission retains 10,000. An explicit selection requires the exact source
+protocol, image constructor and binding compatibility map, including a lower
+ceiling. Rendered inventory, the bootstrap environment and owned-container
+private-config readback must agree. Registry pages, LRU caches, file/Secret/IPC
+bytes, resources and clocks retain their independent contracts.</p>
+<p>Population and primer chunk sizing are separate. A 10,001 fresh seed with the
+default 10,000 pending-tenant chunk reports <code>PARTIAL_CHUNK_BUDGET</code> in
+<code>populationCommissioning</code>. Set <code>profile.phases.primerOptions.maxTenants</code> to
+10,001 for one-invocation coverage budget. The effective chunk is exposed;
+the helper does not rewrite it. Constructor success grants no DATA completion
+or operating capacity, and incomplete DATA continues to refuse traffic.
+The successful receipt binds the privately exported DATA roster to the run,
+namespace, Job, Pod and container. Access and load verify this receipt.
+Preserve the source lock and uncertain-write journal after an interrupted
+request. Commissioning owns acknowledgement of the waiting Job. A previously
+source-projected roster still uses the original prepare command.</p>
+<p>For fresh discovery, <code>primerStorage</code> can select <code>stateMiB</code> and <code>secretCodec</code>
+in the experiment manifest. For example, <code>{"stateMiB":32,"secretCodec":"gzip-v1"}</code>
+selects a 32 MiB primer state volume and lossless transport of the primer
+configuration. <code>raw-v1</code> uses the source bytes directly. The materialized
+publisher checks the exact data size of every role Secret before publication.
+The primer installer checks the original config's byte count and SHA-256, then
+restores its private file. The actor verifies the mounted state volume and
+config digest before writing and records filesystem size and usage when
+available. The source retains its original atomic writes and uncertainty journal.</p>
+<p>Set <code>profile.phases.cohortReadySeconds</code> in a fresh intent to give the serving
+cohort StatefulSet an explicit Pod Ready window. The controller uses the time
+remaining on its original work deadline if that deadline comes first. The
+legacy window is 300 seconds. The lifecycle verifies the hashed intent before
+entry and records the selected window and effective deadline at the wait.</p>
+<p>Fresh intent also accepts positive integer seconds in
+<code>profile.phases.startupWindows.kubernetes</code>. Set <code>workloadReadySeconds</code> for
+other unselected workload waits, or <code>primerReadySeconds</code> and <code>dataPrimerSeconds</code>
+for the primer Job and DATA actor. <code>roleExportSeconds</code>, <code>platformVerifySeconds</code>,
+<code>secretSeedSeconds</code>, <code>secretPublishSeconds</code> and <code>jobCompleteSeconds</code> cover the
+separate bootstrap handoffs. <code>requestSeconds</code>, <code>commandSeconds</code> and <code>execSeconds</code>
+control individual controller calls. The lifecycle records the chosen values,
+their reference defaults and native Pod probe and Job deadline settings at
+preflight. Each wait is clipped to its original work deadline. The DATA actor
+also honors the existing owned Job deadline. Native Pod probes and clinical
+completion continue to use their existing predicates and clocks.</p>
+<p>Set optional <code>workload.evaluatorProgressBudget</code> with <code>maxQueriesPerPhase</code> and
+<code>maxBytesPerPhase</code> to select a different three-round evaluator capture budget.
+The packet retains the exact policy and keeps an exhausted capture <code>UNMEASURED</code>.</p>
+<p>For a fresh discovery workload, opt into an observation phase before ordinary
+traffic with <code>profile.phases.preloadConvergence</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span><span class="nt">"contract"</span><span class="p">:</span><span class="s2">"strict-preload-convergence-v1"</span><span class="p">,</span><span class="nt">"seconds"</span><span class="p">:</span><span class="mi">1800</span><span class="p">,</span><span class="nt">"intervalSeconds"</span><span class="p">:</span><span class="mi">15</span><span class="p">}</span>
+</code></pre></div>
+<p>Include this selected time in <code>profile.phases.workSeconds</code>. The phase observes
+the real source without dispatching work, retains every strict sample and saves
+exact source bytes privately before decoding. It requires two complete strict
+whole-cohort ready views with completed acquisition credit, then runs the normal
+initial strict check fresh before creating the driver. The selected phase,
+original work, cleanup and active Job cutoffs bound all observations. A late
+response cannot admit traffic. The packet records the effective window, stop
+reason, raw bytes, capture policy, source identities and command bound.</p>
+<p>Historical failed-completion counts remain visible and prevent a qualification
+pass. Unchanged valid historical counts can admit execution; an increase,
+decrease, reset, poison, unknown source code or identity change refuses it.
+This phase does not change the later clinical or load assessment. Omit the
+selection to retain immediate initial readiness behavior; that check now also
+retains its raw response and bounded refusal evidence.</p>
+<p>Set <code>profile.phases.accessSetupSeconds</code> to give the first and last selected
+socket witnesses an explicit warm-up window. The native client connects to
+both exact hosts without credentials first. It may retry HTTP 403 while it
+waits for a positive connection and records each host's attempts and elapsed
+time. Expired setup and persistent refusal stop access. The runner then
+checks both own-token exchanges, both cross-tenant refusals, and the full
+connected zero-foreign-frame observation. The access window has its own
+budget and remains within the fixture's entered work cutoff.</p>
+<p>For an independent database observation within the original work deadline, run
+<code>adapter.py observe-sql PACKET NEW_DIRECTORY</code>. It counts the source primer's
+stored seed rows and distinct tenants, checks the candidate database epoch and
+requires the original Ready PostgreSQL Pod. Setup Pod retirement requires the
+original Job UID, recognized terminal condition and original Pod controller
+identity. Before/after captures retain serving Pod UIDs, Job failure and last
+observed exit codes. Missing exits stay UNMEASURED. Full workload admission
+still checks the complete census and all existing workload evidence.</p>
+<p>Use the existing matrix allocation schema for a single fixture. Include
+<code>experimentSha256</code>, the SHA256 of the original manifest. Its preflight must
+bind the same run, namespace, manifest and render. The allocation binds the
+observed namespace UID, exact run file, absolute deadlines, node and native
+limits. Each attempt owns its result directory. For concurrent fixtures, use
+<code>adapter.py matrix-run</code> and a single aggregate grant. Its
+<code>experimentPreflights</code> object maps each experiment run ID to the corresponding
+commissioning preflight reference. The matrix checks aggregate fit and records
+each fixture's independent outcome.</p>
+<p>Change <code>population</code>, <code>logicalPollingClients</code>, <code>workloadScale</code>, <code>loadSeconds</code>,
+<code>setupSeconds</code> and <code>drainSeconds</code> in the stable workload definition to select
+another point. The explicit setup allowance covers viewer priming and the
+remaining native JWT setup. The entered absolute work cutoff bounds both.
+<code>drainSeconds</code> bounds the final wait. The inherited probe checks an individual
+write for up to 120 seconds. A longer requested drain records PARTIAL. A
+shorter run can end at its declared cutoff with an incomplete ledger.
+All-writer clinical drain requires its own observation. The frame recorder
+retains its explicit overflow refusal.</p>
+<p>Read <code>experiment/result.json</code>, <code>load/failure.json</code> when present, and
+<code>experiment/observations/reduction.json</code> before fixture cleanup. These retain
+first failure, offered work, stored writes, selected clinical witnesses, frames
+and unavailable observations separately. Capacity remains NOT_GRANTED.</p>
+<p>The strict midpoint read is scheduled from the stock probe's <code>.window</code> signal.
+Native JWT setup can still be in progress when this read runs. A refusal retains
+the bounded private evaluator response when available, along with source and
+runtime binding for the capture. k6 phase markers stream to <code>load/k6.log</code> or
+<code>load/k6-shard-&lt;index&gt;.log</code> while the driver runs. After an early stop the
+reduction reports the markers it observed and whether a terminal summary
+exists. Terminal totals stay UNMEASURED when the summary is missing.</p>
+<table>
+<thead>
+<tr>
+<th>Existing Docker assumption</th>
+<th>Kubernetes boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compose project/container census</td>
+<td>Explicit context, run label, namespace UID, workload/ReplicaSet owner chain, Pod UID and container incarnation</td>
+</tr>
+<tr>
+<td><code>docker exec</code> SQL</td>
+<td>Fixed PostgreSQL container, read-only transaction, exact source/Pod checks before and after</td>
+</tr>
+<tr>
+<td>Docker process inspection</td>
+<td>The same <code>evaluator-progress.cjs</code> and Python assessor through bounded container exec</td>
+</tr>
+<tr>
+<td>Docker host-network k6 and dependency mounts</td>
+<td>Existing native k6 and source-matched owned stock-client dependencies; no install or new driver Pod</td>
+</tr>
+<tr>
+<td>Docker restart/health timestamps</td>
+<td>Separate exact Node-role restart, container ID/restart-count readback and unchanged other incarnations; no Docker health-time equivalence</td>
+</tr>
+<tr>
+<td>Compose project deletion</td>
+<td>Inspectable exact-object DELETE bodies with server-side UID preconditions; no selector deletion</td>
+</tr>
+</tbody>
+</table>
+<p><code>claims.cjs</code> reruns <code>completed-oracle.cjs</code> over raw independent SQL rows and actual
+stock-client observations. This proves the existing selected BG-now bucket
+mean/last, typed durable output, stored row and client frame properties for the
+witness subset. It does not establish all clinical properties. The original
+<code>discovery_counts</code> and <code>viewer_plan</code> reducers retain missing ACK/uncertainty and
+viewer semantics. Cross-tenant stock-frame checks cover the witnessed synthetic
+stored IDs; the separate read/socket refusal probe covers swapped credentials.
+Neither supplies an unmeasured NetworkPolicy enforcement claim.</p>
+<p>Prepare private inputs from the immutable binding export. <code>pins</code> binds the core
+and image deployment commits, the separate binding commit, render/inventory
+SHA256s, pullable application manifest reference, application image config ID
+and this adapter's content instrument. A local image config ID is not a registry
+manifest digest. Runtime observations preserve Kubernetes <code>imageID</code> separately;
+the environment owner must establish its image/source mapping.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>identity
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/check_export.py<span class="w"> </span>/absolute/binding-export<span class="w"> </span>/absolute/new/offline-join
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>prepare<span class="w"> </span>/absolute/private/run.json<span class="w"> </span>/absolute/private/inventory.json<span class="w"> </span>/absolute/private/render.json<span class="w"> </span>/absolute/new/run
+</code></pre></div>
+<p>For the C3 candidate, carry the exported inventory's <code>candidateContract</code> into
+<code>pins.candidate</code> and add the commissioned <code>postgresImage</code> and <code>postgresImageId</code>.
+The adapter checks the rendered source contract and the actual kubelet app and
+PostgreSQL image identities. After live <code>observe</code> and while the same primer
+container is still waiting, run <code>candidate-proof RUN</code>. This captures the private
+admin verification receipt from the owned Pod and compares its native PostgreSQL
+source against a read-only observation of the selected database and logical
+slot. Capture this before running <code>policy</code>, <code>access</code> or workload phases.</p>
+<p>An optional third <code>check_export.py</code> argument selects Lane E's immutable
+environment export directory. The join verifies its render/inventory hashes
+and the same binding archive/commit, then checks that exact storage/access
+profile offline. Private values remain in its local output; no live claim follows.</p>
+<p><code>check_export.py</code> verifies the package archive and joins the real exported
+inventory/render to an offline packet. Its generated operator input is <strong>HELD</strong>:
+the context, dependency/access/source mapping and private commissioning exports
+still need the private environment's actual values. It grants no live execution.
+Outputs on this workstation belong under the overflow disk's artifact directory.</p>
+<p>A scale diagnostic uses the existing <code>load</code> phase and matches <code>run.json</code>'s
+population to the rendered provision Job. The <code>commission</code> phase remains a
+two-tenant check. The <code>access</code> phase checks the first and last tenant of a
+larger roster with the same pairwise transport oracle and records both witness
+identities. The existing load and frame reports measure their own exercised
+rosters. A frozen diagnostic can have pending source acceptance.</p>
+<p>The run input has these fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>version</code>, <code>runId</code>, <code>namespace</code>, <code>context</code>, <code>ownerLabel</code></td>
+<td>Version 1, exact inventory ownership label and explicit context; no current-context fallback</td>
+</tr>
+<tr>
+<td><code>pins</code></td>
+<td><code>pair.{core,deploy}</code>, <code>bindingCommit</code>, <code>appImage</code>, <code>appImageId</code>, <code>renderSha256</code>, <code>inventorySha256</code>, <code>instrument</code></td>
+</tr>
+<tr>
+<td><code>kubectl</code>, <code>readonlyGuard</code></td>
+<td>Absolute compatible client and existing private <code>ops/bin/ro</code> paths</td>
+</tr>
+<tr>
+<td><code>deadlines</code></td>
+<td>Absolute UTC <code>workUntil</code> and <code>cleanupUntil</code>; cleanup follows work within the finite shared duration representation and the actual released allocation</td>
+</tr>
+<tr>
+<td><code>roles</code></td>
+<td>Role to <code>{workload: "StatefulSet/cohort", container: "evaluator"}</code>; derives from actual inventory</td>
+</tr>
+<tr>
+<td><code>storageMode</code></td>
+<td><code>disposable</code> or admitted <code>existing-claim</code>; never creates a PVC</td>
+</tr>
+<tr>
+<td><code>driver</code>, <code>observer</code></td>
+<td>Actual <code>hostId</code>, <code>sharedHost: true</code>, planned <code>resources.{millicpus,memoryBytes}</code>; native actors execute on the same host</td>
+</tr>
+<tr>
+<td><code>driver</code> runtime fields</td>
+<td>Native <code>node</code>/<code>k6</code> paths and <code>nodeSha256</code>/<code>k6Sha256</code>; <code>coreRepository</code> for exact source Git blobs, <code>dependencies</code>, source <code>packageSha256</code>/<code>lockSha256</code>, existing <code>dependency_reuse.tree()</code> result as <code>nodeModules</code></td>
+</tr>
+<tr>
+<td><code>tenants</code>, <code>tenantsFile</code></td>
+<td>Synthetic roster count and private projection; commissioning requires two <code>.test</code> tenant hosts</td>
+</tr>
+<tr>
+<td><code>completion</code></td>
+<td>Source projection from the original completed-output oracle, with this instrument binding</td>
+</tr>
+<tr>
+<td><code>baseUrl</code></td>
+<td>Existing operator-owned loopback forward to the exact edge Pod; tenant alias Host headers stay intact</td>
+</tr>
+<tr>
+<td><code>workload</code></td>
+<td><code>loadSeconds</code> is a positive integer within k6's duration representation and the actual work deadline. Select positive finite <code>offeredRps</code> or <code>workloadMix: "realistic-v1"</code> with optional positive finite <code>workloadScale</code> (default 1). Rounded scenario time units must be representable by k6. <code>logicalPollingClients</code> is independent of tenant count and must fit a JavaScript array. <code>probeEveryMs</code> must fit the Node timer range and the probe budget. Optional <code>probeLedger</code> selects <code>maxWrites</code> and <code>maxBytes</code>. Optional <code>hotFactor</code> plus the rest of the roster must fit the generated array, and realistic-v1 requires 1</td>
+</tr>
+<tr>
+<td><code>settingsFingerprint</code></td>
+<td>Existing source-derived settings fingerprint for native load</td>
+</tr>
+</tbody>
+</table>
+<p>For sequential workload points on one admitted fixture, prepare a new packet
+directory with a distinct <code>workload.pointId</code> (1..31 lower-case letters, digits
+or hyphens, starting and ending with a letter/digit). This adds a distinct
+synthetic write marker to each stage. Keep the same source/rendered fixture and
+exact UIDs, obtain the finite point allocation, and capture a fresh initial
+observation. Never edit an entered packet or reuse a point marker with existing
+stored writes. Concurrent fixtures still require separate namespaces/state.</p>
+<p>The original dependency tree hash function rejects escaping links. Preparation
+does not copy or install packages. Runtime requires an existing finite cgroup v2
+scope covering the combined driver and observer budgets, with zero swap. It
+records actual CPU/memory limits and refuses an unbounded, missing or excessive
+readback before traffic. All native children inherit that scope. The operator
+can use an existing delegated scope; the adapter installs no service. Include
+both actors in headroom accounting; a shared host is recorded as shared.</p>
+<p>Source projections read private exports; redirect their output only to private
+files and merge the safe <code>completion</code> object into <code>run.json</code> before preparation:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>completion-source<span class="w"> </span>/absolute/private/run.json<span class="w"> </span>/absolute/private/evaluator/config.json<span class="w"> </span>/absolute/private/realtime/config.json
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>tenant-projection<span class="w"> </span>/absolute/private/provisioned.json<span class="w"> </span><span class="m">2</span>
+</code></pre></div>
+<p>Every command below that contacts Kubernetes or sends synthetic application
+traffic needs the environment owner's concrete finite allocation and explicit
+operator or experiment authorization. The adapter has no apply command. All reads
+use the existing read-only guard with explicit context and sensitive reads
+enabled for the isolated synthetic namespace. It records guard-masked paths;
+their exact values remain UNMEASURED. No credential, connection string or
+private role document belongs in a public commit.</p>
+<ol>
+<li>Complete the private environment preflight/apply/export procedure. Run
+   <code>observe RUN</code> to capture initial exact identities, then <code>forward-plan RUN</code>
+   for the exact owned edge Pod and finite loopback forward command. Before
+   acknowledging the primer's export, run <code>policy RUN</code>: the existing waiting
+   primer <code>done</code> container must connect to admin, cohort API must time out, then
+   primer must connect again. This read-only TCP control creates no actor Pod
+   and uses the current private admin Service/Pod identities. A completed primer
+   cannot supply this control; missing observation remains UNMEASURED.</li>
+<li>Run <code>commission RUN</code>, then <code>access RUN</code>, then <code>assess RUN</code>. Commissioning
+   sends exactly two probe writes and independently checks storage, completion
+   and stock frames. Missing essential evidence refuses qualification.</li>
+<li>For role recovery, first commission a second independent fixture. Run its
+   <code>load PEER_RUN</code> with an explicitly short diagnostic probe cadence while
+   running <code>restart RUN evaluator</code>, then <code>recovery RUN</code>. The restart signals
+   only an exact source-owned Node PID1 inside the selected container; another
+   entrypoint refuses. Run <code>continuity RUN PEER_RUN</code> after both captures finish.
+   Continuity requires peer frames before and after the restart and reports
+   actual frame gaps as signals. It does not invent an availability SLO.</li>
+<li>Only then prepare bounded workload points. <code>matrix-plan MATRIX.json</code> accepts
+   <code>{version:1, fixtures:[absoluteRunDirectories], aggregateCeiling:{millicpus,
+   memoryBytes,ephemeralBytes}}</code>. It refuses colliding namespaces/run ownership/
+   loopback ports or mixed source, sums per-Pod peak resource limits plus
+   driver/observer budgets and prints commands. It compares the core/deployment,
+   binding, manifest/config image and content instrument identities. Each fixture
+   retains one cohort replica and independent state. The plan reserves no cluster
+   capacity. With a released allocation, <code>matrix-run MATRIX.json NEW_OUTPUT</code>
+   launches the existing load commands concurrently, then reruns their original
+   reducers and live identity checks. It requires actual overlapping native load
+   intervals and each declared stock client's frame during the overlap. Failed
+   or incomplete fixtures stay in the result beside successful peer captures;
+   the command exits nonzero for an incomplete matrix. Original raw files remain
+   in each fixture, and controller inputs/logs/result go to <code>NEW_OUTPUT</code>.</li>
+<li>Run <code>cleanup-plan RUN</code> before the cleanup deadline. Inspect each exact UID,
+   then feed each action's <code>stdin</code> to its <code>argv</code> under the same owned authorization. The adapter
+   prints actions and never executes deletes. Foreground deletion and a zero
+   command status are not absence proof: read each target and accept only an
+   exact Kubernetes <code>NotFound</code>/404. Lane E owns remaining Namespace, Secrets,
+   existing claims and cluster-scoped Vault trust cleanup.</li>
+</ol>
+<p>The work deadline bounds local actors through an independent <code>timeout</code> process;
+losing the controller does not extend that cutoff. It does not automatically
+remove cluster objects. The operator retains the cleanup deadline/custody.
+Kubernetes exec has no Pod UID precondition: reads bracket exec, and any changed
+identity refuses qualification. Use namespace-isolated RBAC; do not reuse a name
+or namespace while its operator command is live. Cleanup has server-side UID
+preconditions and refuses a foreign UID or resource roster.</p>
+<p><code>matrix-run</code> adds <code>allocation</code> (absolute private JSON path) and
+<code>allocationSha256</code> to the matrix input. Commissioning exports the following
+finite window from its existing preflight and custody records; this is an input
+to the runner and creates no reservation service. Every fixture must already
+have observed commissioning, authority and private admin policy results. Its
+prepared <code>run.json</code> hash and exact namespace UID must match the allocation.</p>
+<table>
+<thead>
+<tr>
+<th>Allocation field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>version: 1</code>, <code>status: "RELEASED"</code>, <code>existingCapacityOnly: true</code>, <code>context</code></td>
+<td>Explicit commissioning custody on existing workers</td>
+</tr>
+<tr>
+<td><code>workUntil</code>, <code>cleanupUntil</code></td>
+<td>Absolute UTC bounds; each fixture's bounds fit inside this window</td>
+</tr>
+<tr>
+<td><code>preflight: {path, sha256}</code></td>
+<td>Exact private commissioning <code>PREFLIGHT_ONLY</code> result with offline checks <code>PASS</code>; commissioning owns snapshot freshness</td>
+</tr>
+<tr>
+<td><code>fixtures: [{runId, namespace, namespaceUid, runSha256}]</code></td>
+<td>Exact full fixture roster; no adoption or omitted peer</td>
+</tr>
+<tr>
+<td><code>nodeCeilings: {nodeName: {millicpus, memoryBytes, ephemeralBytes}}</code></td>
+<td>This batch's allowed container limits on each existing worker, after peer allowances</td>
+</tr>
+<tr>
+<td><code>actorCeilings: {hostId: {millicpus, memoryBytes}}</code></td>
+<td>This batch's combined native driver/observer allocation per host</td>
+</tr>
+</tbody>
+</table>
+<p>For each resource dimension the planner compares each init phase, including
+its already-running sidecars, with the combined steady-state containers. It
+adds Pod overhead to that peak, then sums Pods at their observed placements. Native driver/observer budgets
+are counted for every fixture even if they share a finite cgroup. Actor readback
+still enforces each fixture's combined finite CPU/memory scope with zero swap;
+sharing a scope can throttle workers and is recorded as contention. Native
+artifact disk enforcement remains with the commissioning allocation/runner host;
+it is not claimed from a Kubernetes ephemeral-storage limit.</p>
+<p><code>load/window.json</code> preserves native process start/end separately from ordinary
+demand. It reuses the original first-scenario-iteration witness and configured
+scenario duration, capped at native exit; JWT setup and final drain are excluded
+from the concurrency interval. Missing ordinary demand refuses that claim.
+The join records client counts per tenant, offered rate, probe
+cadence and hot-factor distribution, raw durable/client freshness signals and
+observed per-client frame gaps. The original M7 semantic oracles independently
+check accepted/stored writes, selected clinical outputs and witnessed frame
+isolation. Uncertain ordinary writes refuse dependent qualification while the
+original uncertainty evidence is retained. These measurements supply no
+availability SLO or capacity promotion. The continuity join also requires
+unchanged peer Pod/container incarnations and a native load interval spanning
+the exact role restart; probe setup time alone cannot establish continuity.</p>
+<p>Load assessment also joins the original M7 HTTP accounting, offered-work and
+settings-fingerprint reducers. Every selected scenario and JWT setup must have
+observed attempts, settled expected responses, source-counter reconciliation,
+no dropped work and an observed matching source-derived settings fingerprint.
+Missing evidence refuses its dependent load qualification. The independent
+storage, clinical and frame checks remain required; HTTP counters alone cannot
+establish those outcomes. Raw functional findings survive at
+<code>load/load-functional.json</code>, including failures.</p>
+<p>Database/Vault Pod-replacement recovery is UNMEASURED for disposable storage.
+An admitted unshared persistent claim and separate recovery evidence are required
+before making that claim. Role-container restart does not establish backing-store
+Pod durability. Source acceptance and comprehensive application acceptance remain
+with the joined candidate's existing owner. Performance is reported separately
+from correctness, and capacity acceptance stays <code>NOT_GRANTED</code> throughout.</p>
+<p>Focused controls, using synthetic API replies and loopback/fake process boundaries:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/mt-bench/kubernetes<span class="w"> </span>-p<span class="w"> </span><span class="s1">'test_*.py'</span><span class="w"> </span>-v
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>node<span class="w"> </span>tools/mt-bench/kubernetes/claims.test.cjs
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>node<span class="w"> </span>tools/mt-bench/kubernetes/access.test.cjs
+</code></pre></div>
+<p>The <a href="workloads/index.html">workload profiles</a> bind both aggregate commissioning
+and realistic per-shape demand through this same prepare/load/assess path.
+<code>realistic-v1</code> reuses the released M7 generator: sensor/status ingestion and SGV
+reads every 300 seconds, treatment writes every 1,800 seconds, and other reads
+every 900 seconds. Scale 1 preserves those per-tenant cadences; scale 2 doubles
+all ordinary shape rates without changing roster or viewers. An aggregate
+<code>offeredRps</code> or conflicting ambient selector refuses before actors start.</p>
+<p>Sparse viewers use the original quotient/remainder assignment in roster order.
+Every writer tenant retains independent accepted/stored count checks, including
+tenants with no viewer. Every accepted probe requires its distinct retained
+clinical witness. Client evidence is required for the declared viewer assignment;
+zero viewers is explicitly NOT_EXERCISED for client frames. Selected clinical
+probe outcomes and evaluator progress do not qualify ordinary all-writer intake,
+due work or fixed-target drain. The operating collector owner retains that work.
+<code>load/k6.log</code> contains structured event witnesses; <code>k6-native.log</code> preserves the
+full terminal summary separately so its size cannot displace the demand marker.</p>
+<h2 id="scheduling-requests-and-optional-service-limits">Scheduling requests and optional service limits<a class="headerlink" href="#scheduling-requests-and-optional-service-limits" title="Permanent link">&para;</a></h2>
+<p>For a fresh discovery fixture, select <code>"resourceAccounting":"requests-v1"</code>
+in the commissioning environment, binding overrides and runtime template. Use
+the same value in a matrix specification and its allocation grant. Inventory,
+preflight and lifecycle validation check this selection before expensive setup.
+Existing inputs that omit it retain <code>limits-v1</code> accounting and capped behavior.</p>
+<p>In request mode, the binding removes reference per-container limits. A deliberate
+<code>resources.&lt;role&gt;.limits</code> override supplies exactly those optional limits; it does
+not inherit additional reference caps. Positive CPU, memory and ephemeral-storage
+requests remain necessary for this instrument's scheduling calculation. Each
+supplied limit must cover its corresponding request. Actual Pod readback preserves
+the complete resources object: injected LimitRange caps and changed requests
+remain refusals.</p>
+<p>Readback compares exact quantity values, so API normalization such as <code>0.5</code> CPU
+to <code>500m</code> or <code>0.5Gi</code> memory to <code>512Mi</code> is accepted. Observations retain the raw
+returned values. Added limits and real quantity changes still refuse.</p>
+<p>Use a <strong>new</strong> copy of the released commissioner source with
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c134b329a04eaeb3a5536c54b98146c8f5605eef/tools/mt-bench/kubernetes/commissioning-accounting.patch"><code>commissioning-accounting.patch</code></a>. The patch
+header identifies the base source hash; retained instruments are unchanged. From
+the new staging directory containing <code>bin/preflight.py</code>, apply the patch with
+<code>git apply /absolute/helper/tools/mt-bench/kubernetes/commissioning-accounting.patch</code>.
+Select request accounting in its environment. Its namespace quota covers requests
+and existing no-provider-resource boundaries; <code>limits.*</code> quotas or LimitRange
+defaults that force hidden limits are refused. The preflight retains both requests
+and limits, with <code>null</code> for an unbounded limit dimension, and a separate <code>accounted</code>
+vector. Attachment uses the selected vector for its grant.</p>
+<p>The planner and commissioner use init/steady peaks, restartable sidecars and Pod
+overhead for either mode. Request accounting tests scheduling fit; it is not a hard
+upper bound on use, a quiet-worker reservation or capacity acceptance. Capture
+actual memory, throttling, OOM/restarts and contention during the run. Native
+driver/observer cgroups and owned deadlines/cleanup retain their separate bounds.
+Pod-level resource budgets need their own instrument extension and refuse explicitly.</p>
+<p>The shared-socket cohort stays at one Pod. Other multi-Pod workloads currently
+refuse <code>WORKLOAD_REPLICA_CENSUS_UNSUPPORTED</code>, because role selection and the
+observed Pod census need an explicit topology extension. This is distinct from
+the cohort's socket-sharing requirement.</p>
+<p>Focused controls use real scratch Jsonnet renders and patched commissioner code:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nv">K8S_BINDING_SOURCE</span><span class="o">=</span>/absolute/deployment-repository<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nv">K8S_COMMISSIONING_SOURCE</span><span class="o">=</span>/absolute/released/staging/ops/staging-k8s/bin<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/mt-bench/kubernetes
+</code></pre></div>
+<p>The external-fixture controls report a skip when their source is absent. A skipped
+commissioner or binding control does not qualify a runtime configuration.</p>
+<h3 id="explicitly-owned-worker">Explicitly owned worker<a class="headerlink" href="#explicitly-owned-worker" title="Permanent link">&para;</a></h3>
+<p>The optional <code>ownedWorkerPlacement</code> contract tests placement on one separately
+acquired DigitalOcean Kubernetes worker. Select it only after a complete
+earlier provider and Kubernetes inventory establishes that the pool and Node
+are new. Prepare a private proof with the guard's named Node read, a fresh
+whole-cluster Node/Pod census, the provider cluster and pool responses, and the
+exact infrastructure Pod/controller identities reviewed for this fixture. The
+provider evidence must explicitly report <code>auto_scale: false</code> and one worker.
+An omitted flag leaves fixed-pool custody unmeasured.</p>
+<p>Use a fresh copy of the exact phase-patched private commissioner and its fixture
+constructor with the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c134b329a04eaeb3a5536c54b98146c8f5605eef/tools/mt-bench/kubernetes/commissioning-owned-worker.patch">owned-worker patch</a>.
+Copy <code>owned_worker.py</code> and <code>owned_worker_view.py</code> from this same instrument into
+the new commissioner's <code>ops/staging-k8s/bin/</code>. The patch paths are relative to a
+directory containing <code>ops/</code> and the retained <code>prepare-private-case.py</code>. The
+focused control verifies the original file hashes before applying the patch.</p>
+<p>The constructor's <code>--owned-worker-placement</code> consumes the private selection by
+file. It binds the selected node name and lane label and authors one
+<code>Equal/NoSchedule</code> toleration per workload. Preflight joins cluster, pool,
+provider node and Kubernetes Node UID, checks the taint and workload templates,
+and then evaluates the existing resource fit. <code>collect.py --owned-worker-node
+NODE</code> retains the scoped, projected Node read beside its ordinary inventory.
+The lifecycle uses the guard at stage entry and immediately before each
+workload create. Runtime observations verify the same placement.
+Its selected read mode emits placement and ownership fields only. A wrong UID,
+label, taint, cordon, foreign or missing Pod, incomplete census, or unmeasured
+provider proof refuses admission. The lifecycle keeps namespace UID cleanup
+available when a worker check fails.</p>
+<p>The taint constrains ordinary scheduling. Pods with direct node bindings or
+wildcard tolerations can still appear, so each check uses the full worker Pod
+roster. Placement evidence is bounded to the times it was observed. Provider
+acquisition, image delivery, and managed-worker integration have separate
+custody and verification. This tool issues read commands and retains no
+capacity acceptance.</p>
+<h3 id="provision-and-serving-phases">Provision and serving phases<a class="headerlink" href="#provision-and-serving-phases" title="Permanent link">&para;</a></h3>
+<p>The existing lifecycle publishes provisioned Secrets and waits for the provision
+Job to complete before it creates admin, primer or serving workloads. A fresh
+commissioning environment can select
+<code>"resourcePhasePlan":{"contract":"provision-before-serving-v1"}</code> to account
+that ordering. Omission retains the full simultaneous-envelope calculation.</p>
+<p>The selected plan preserves full namespace quota, per-role requests, Pod slots
+and the native allocation grant. Preflight separately reports the per-node
+provision and serving peaks used for fit, including retained memory-backed
+<code>emptyDir</code> bytes as memory and disk-backed <code>emptyDir</code> bytes as local storage.
+Possible disk file-cache residency is a separate sensitivity, not an additional
+pinned-memory quota. Existing worker reserves, sampled usage and pressure checks
+remain in force. A snapshot establishes neither a reservation nor future use.</p>
+<p>The contract supports the rendered single provision Job with one completion,
+one parallel Pod, no retries and no restartable sidecars. Lifecycle binding
+checks the complete stage partition, resource projection and publisher/controller
+hashes. The phase hash also binds the complete authored Pod templates: executable,
+image, arguments, environment, source volumes, mounts and security settings.
+Live source comparison normalizes explicit API defaults and equivalent resource
+quantities, then requires the authored source. Server UID/version/controller
+metadata and the existing service-account projection retain their separate rules.
+Before later resources are created, the controller retains an exact
+namespace/Job/Pod/container receipt: Complete Job, succeeded Pod, all declared
+containers terminated successfully with no restarts. Every later install and
+runtime observation checks that receipt. A replaced, running, failed, terminating
+or overlapping provision actor refuses. Absence alone is insufficient; a retained
+terminal proof can outlive its exact Pod while the same Job remains complete.
+Existing downstream Pod-roster checks still apply.</p>
+<p>Runtime display reads remain redacted. The selected phase captures a private
+0600 source scope during attach and uses <code>phase_source_private.py</code> to compare
+the current raw source in memory. This fixed port can only GET the bound
+namespace, <code>Job/provision</code> and the captured provision Pod. Its output contains
+typed results, identities and hashes. A nonce and pre/post identity checks bind
+each proof to the current guarded whole-namespace observation. Missing tools or
+unavailable evidence refuse as <code>UNMEASURED</code>; observed source, identity or proof
+changes refuse as <code>FAIL</code>. Redaction never acts as a source wildcard. The retained
+terminal receipt still permits verified Pod garbage collection with the same
+Complete Job and no other provision owner Pod.</p>
+<p>Lifecycle configuration captures and checks the helper and existing tool hashes
+before actors. Keep the runtime helper with its frozen instrument; the private
+commissioner below still requires only its two named modules. The port retains
+the existing per-GET timeout and original phase/work deadlines. It adds six
+private GETs and three guarded reads per observation; SQL brackets each read
+with two observations. <code>test_phase_source_private.py</code> uses a retained raw pair,
+the exact display redactor and inert API transport to check this boundary. Its
+timing measures fixture overhead, not cluster latency.</p>
+<p>Copy <code>phase_fit.py</code> and <code>resource_budget.py</code> from the same frozen helper into the
+new commissioner's <code>bin/</code> directory. The complete
+<code>commissioning-accounting.patch</code> includes this opt-in path for its declared base.
+The separate <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c134b329a04eaeb3a5536c54b98146c8f5605eef/tools/mt-bench/kubernetes/commissioning-phase-fit.patch">phase-only patch</a> targets the exact
+already-patched operator base identified in its header and preserves that base's
+volume and diagnostic guards. Use one applicable patch on a fresh source copy;
+retain the original. <code>test_phase_fit.py</code> and the selected commissioner controls
+exercise the stage, fit, terminal proof and changed-input boundaries without
+cluster actors.</p>
+<h2 id="one-intent-for-compose-and-kubernetes">One intent for Compose and Kubernetes<a class="headerlink" href="#one-intent-for-compose-and-kubernetes" title="Permanent link">&para;</a></h2>
+<p><code>toolchain.py</code> projects a version 1 <code>multitenant-experiment</code> into the existing
+Compose runner or Kubernetes experiment contract. It starts no actor. Immutable
+<code>application</code> receipt references and optional <code>deploymentJobs</code> identify source,
+application image and helper image separately. <code>profile</code> owns workload and finite
+phase intent. <code>topology</code> owns requested role counts. <code>local</code> holds the existing
+Compose resource/observer defaults. A fresh instance supplies paths, network
+identity, custody and actual deadlines. A second copy of a derived source or
+workload value is refused.</p>
+<p>The common intent recognizes discovery API counts 1–16 and evaluator/realtime
+worker counts 1–8. Compose projects the selected supported counts into its normal
+source-bound static receipt and exact service roster. Native Kubernetes execution
+still supports the existing K1/API1 external-producer binding. A different role
+topology reports <code>KUBERNETES_TOPOLOGY_UNSUPPORTED</code>; admitting its numeric intent
+does not implement a multi-Pod runtime or grant capacity acceptance.</p>
+<p>The optional <code>kubernetes.edge</code> block selects Kubernetes-only nginx
+<code>workerProcesses</code> and <code>workerConnections</code>. Either field can be selected
+independently. Omission keeps the exact source <code>auto</code>/<code>1024</code> bytes and adds no
+edge selection to the inventory. The Kubernetes projection emits
+<code>binding-inputs.json</code>, an edge overlay for the fresh binding constructor's
+inputs, and carries the same selection in <code>manifest.json</code>. Merge that overlay
+with the fresh instance's other constructor inputs using <code>std.mergePatch</code> before
+calling <code>ns.new</code>. Preparation requires the manifest, inventory and rendered
+ConfigMap to agree; forgetting the overlay refuses instead of ignoring it.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">{</span><span class="nt">"kubernetes"</span><span class="p">:{</span><span class="nt">"edge"</span><span class="p">:{</span><span class="nt">"workerProcesses"</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="nt">"workerConnections"</span><span class="p">:</span><span class="mi">8192</span><span class="p">}}}</span>
+</code></pre></div>
+<p>The same common intent can retain its independent <code>local</code> settings. Compose
+projection records <code>kubernetes.edge</code> as <code>notApplicable</code> and leaves local resource
+mode and nginx selection unchanged. Existing local explicit-allocation <code>edge</code>
+settings keep their own contract; a Kubernetes setting adds no local CPU or
+memory cap.</p>
+<p>The binding changes only the two unique known directives from the exact
+<code>assets/nginx.conf</code> source. Its original source hash remains required. The
+inventory records requested and effective values and the inherited descriptor
+limit as <code>INHERITED_OS_UNMEASURED</code>. The prepared packet binds the full rendered
+config hash; selected-edge observation requires exact ConfigMap data and records
+its observed hash. Masked config data stays UNMEASURED. Routing, trusted Host and
+header handling remain source bytes.</p>
+<p>Worker counts use the Linux nginx process-table maximum of 1,024 total child
+slots. Workers, cache helpers and overlapping reload generations share those
+slots, so this necessary bound does not prove that the requested workers start.
+The <a href="https://github.com/nginx/nginx/blob/master/src/os/unix/ngx_process.h">Unix process table</a>
+and <a href="https://github.com/nginx/nginx/blob/master/src/os/unix/ngx_process_cycle.c">worker lifecycle</a>
+define that read-derived boundary. Connection counts use positive exact
+integers within Jsonnet's binary64 carrier. Kubernetes supplies no ulimit field
+here, and this source asset has no <code>worker_rlimit_nofile</code>; effective OS file
+descriptor limits, worker births and connection capacity need observations in
+the selected environment. The local Compose descriptor budget is not inherited
+by this binding. nginx documents the
+<a href="https://nginx.org/en/docs/ngx_core_module.html#worker_connections">connection/descriptor relationship</a>.
+These settings configure a fresh fixture and do not qualify a capacity result
+or change edge replicas, socket topology, source images or an entered run.</p>
+<p>Use <code>examples.py --help</code> to generate 500, 1,000, 3,000 and 10,000 inputs from actual
+selected receipts, an existing local configuration and an explicit prospective
+envelope. Population, sparse/full viewers, realistic rate multiplier, duration,
+setup/drain/work/cleanup, per-scenario VUs and driver shards are arguments. The
+examples use 900 seconds each for setup and drain. They select a 60,000 ms
+producer acknowledgment budget unless the input already selects one. Use
+<code>--ack-timeout-ms</code> to select a different value. The generator prints these
+values beside the output path. Actual allocations and qualification remain
+with the execution owner.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nv">K</span><span class="o">=</span>tools/mt-bench/kubernetes
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/examples.py"</span><span class="w"> </span>--application<span class="w"> </span><span class="s2">"</span><span class="nv">$SELECTED_APPLICATION</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">  </span>--local-config<span class="w"> </span><span class="s2">"</span><span class="nv">$LOCAL_CONFIG</span><span class="s2">"</span><span class="w"> </span>--envelope<span class="w"> </span><span class="s2">"</span><span class="nv">$PROSPECTIVE_ENVELOPE</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">  </span>--output<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_EXAMPLES</span><span class="s2">"</span><span class="w"> </span>--driver-shards<span class="w"> </span><span class="m">2</span><span class="w"> </span>--full-viewers
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/toolchain.py"</span><span class="w"> </span>compose<span class="w"> </span><span class="s2">"</span><span class="nv">$INTENT</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$FRESH_LOCAL_INSTANCE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PROJECTION</span><span class="s2">"</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/toolchain.py"</span><span class="w"> </span>kubernetes<span class="w"> </span><span class="s2">"</span><span class="nv">$INTENT</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$FRESH_INSTANCE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PROJECTION</span><span class="s2">"</span>
+</code></pre></div>
+<p>The Compose projection emits the normal <code>config.json</code> and existing diagnostic
+receipt template. The execution owner binds its fresh receipt and uses the
+existing <code>runner.py</code>. Kubernetes emits <code>manifest.json</code> for <code>experiment.py</code>.
+Historical direct configurations remain supported. The C3 Kubernetes-only
+<code>bootstrapHelper</code> override refuses on Compose; select the local source owner's
+own compatible diagnostic image receipt there. A projection never substitutes
+another source or changes PENDING to PASS.</p>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Integrated scope and limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fixed topology</td>
+<td>Compose preserves the released K1/API1 and K2/API2 structural checks, actual mounted-file/roster/ordinal checks and finite per-instance accounting. Native K2 scaling remains UNMEASURED. Kubernetes supports the existing K1/API1 external-producer binding; another role topology explicitly refuses.</td>
+</tr>
+<tr>
+<td>Configured driver</td>
+<td>Both transports reuse the same generator, seven-shape wrapper, roster splitter and scenario/shard/phase reducer. Kubernetes runs each native k6 process inside the admitted combined native scope and bounded file/subprocess limits. Missing shard custody, changed VUs/plan and missing/dropped work cannot become a complete pass. Independent valid shard rows survive in partial reduction.</td>
+</tr>
+<tr>
+<td>Percentiles</td>
+<td>Summary merging preserves counts and shard statistics. Pooled percentiles remain UNMEASURED without an adequate merged sample definition.</td>
+</tr>
+<tr>
+<td>Observation</td>
+<td>Per-write clinical/client proof retains its strict 120-second contract. A longer finite drain is admitted and reported PARTIAL for that observer. Accepted/stored ordinary writes, witnesses, frames and independent rows retain their own results. No all-writer clinical drain is inferred.</td>
+</tr>
+<tr>
+<td>Resource capture</td>
+<td>Native driver/controller/observer cgroup CPU, memory/events and lifetime peak are captured before scope exit. Stage controller retains all surviving init/steady container states and resources before exact UID cleanup. Missing/retired counters remain UNMEASURED; independent cluster sampling is still needed for actual init/steady phase peaks.</td>
+</tr>
+</tbody>
+</table>
+<p><code>lifecycle_config.py capture INPUT NEW_BOUND</code> freezes a prepared instance's
+files, exact released instrument, source, tools, binding, native allocation and
+controller bytes. <code>check NEW_BOUND</code> rechecks them. <code>lifecycle.py NEW_BOUND</code>
+executes the existing stage order, calls <code>attach.py</code> under the configured finite
+native scope and records the first classified failure before independent
+UID-conditioned namespace/trust cleanup. Snapshot freshness and actual fit are
+still checked at entry. No case-name list or inherited tiny allocation is used.
+The operating owner supplies aggregate host/cluster admission and live custody.</p>
+<p><code>jobs.py</code> consumes the deployment repository's registered job CLI and renderer
+from its selected tool commit. <code>plan</code> emits that actual contract for bootstrap,
+provision, prime, platform verification or offline verification-plan. It keeps
+helper and serving image identities separate, projects command-specific inputs,
+uses pre-existing Kubernetes claims and never executes a networked job. An API
+job may target another image build of the same measured source/runtime tuple;
+bootstrap requires its exact donor image. Wider source/API compatibility needs
+its own evidence. No image/hash case list is added.</p>
+<p><code>jobs.py offline PLAN_DIRECTORY</code> runs only verification-plan in the selected
+cached tool image, with no network and explicit finite CPU/memory. It checks the
+actual capability/source response and every projected input before checking the
+selected namespace/roles. Networked helper integration, registry image delivery,
+provision/prime/verify transport and their uncertain-write custody stay with the
+operating owner and remain UNMEASURED until admitted. The original entered
+helper and source acceptance retain their original scope.</p>
+<p>Larger prospective allocations are valid for discovery and qualification.
+Measure actual hardware, competing use and phase overlap before admission; CPU
+maximums do not reserve dedicated processors. Container CPU bursting under a
+common Docker experiment cgroup is unsupported here. When actual shared-host
+protection blocks an adequately provisioned experiment, bring the maintainer one
+concrete temporary allocation/exclusive-use proposal with its owner, duration,
+disruption, measurement, cleanup and restoration. Ordinary parameter choices
+within existing authority need no new approval. Do not change an entered fixture.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+  
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+
+  </body>
+</html>

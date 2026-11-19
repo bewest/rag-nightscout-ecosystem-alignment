@@ -2068,8 +2068,6 @@
       
         
       
-        
-      
     
     
     
@@ -12189,7 +12187,7 @@ consumer id. When two members both work one tenant, each pass sees the other mem
 and is delivered. The per-tenant advisory lock (<code>producer-state.js:10-15</code>) serialises the passes; it
 does not merge them.</p>
 <h3 id="measurement-reproduced-reducer-level">Measurement (reproduced, reducer level)<a class="headerlink" href="#measurement-reproduced-reducer-level" title="Permanent link">&para;</a></h3>
-<p>Probe: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/evaluator-partition-2026-11-10/reduce-probe.cjs"><code>reduce-probe.cjs</code></a> drives the shipping <code>reduce</code> with one synthetic urgent
+<p>Probe: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c134b329a04eaeb3a5536c54b98146c8f5605eef/reports/tenancy/evaluator-partition-2026-11-10/reduce-probe.cjs"><code>reduce-probe.cjs</code></a> drives the shipping <code>reduce</code> with one synthetic urgent
 alarm request, identical content, one pass per second for 10 s, repeat interval 60 s. It counts new
 non-clear alarm effects. Output at <code>1792063a</code>:</p>
 <table>
@@ -12355,7 +12353,7 @@ superseded by this section only where it gives a measurement.</em></p>
 </tr>
 <tr>
 <td>lab harness</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/tools/tenancy/evaluator-partition/run.cjs"><code>tools/tenancy/evaluator-partition/run.cjs</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c134b329a04eaeb3a5536c54b98146c8f5605eef/tools/tenancy/evaluator-partition/run.cjs"><code>tools/tenancy/evaluator-partition/run.cjs</code></a></td>
 </tr>
 </tbody>
 </table>
@@ -12449,7 +12447,7 @@ the pod-index label. <code>NS_EVALUATOR_POOL_MEMBERS</code> has no environment c
 operator sets the count with <code>setPoolMembers</code>. The binding also needs <code>MULTITENANT_POOL_EVALUATOR_PARTITION=on</code>,
 <code>_LEASE_MS</code>, <code>_DATABASE_URL</code> (secret) and <code>_NAMESPACE</code>, plus a <code>pools</code> block and an operator identity on the admin role.</p>
 <h3 id="measurements-reproduced">Measurements (reproduced)<a class="headerlink" href="#measurements-reproduced" title="Permanent link">&para;</a></h3>
-<p>Reducer probe (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/evaluator-partition-2026-11-10/reduce-probe.cjs"><code>reduce-probe.cjs</code></a>, now with a content digest), identical content, 10 passes:</p>
+<p>Reducer probe (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c134b329a04eaeb3a5536c54b98146c8f5605eef/reports/tenancy/evaluator-partition-2026-11-10/reduce-probe.cjs"><code>reduce-probe.cjs</code></a>, now with a content digest), identical content, 10 passes:</p>
 <table>
 <thead>
 <tr>

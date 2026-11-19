@@ -1161,10 +1161,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#maintainer--36-items" class="md-nav__link">
+  <a href="#maintainer--35-items" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Maintainer &mdash; 36 items
+        Maintainer &mdash; 35 items
       
     </span>
   </a>
@@ -2368,10 +2368,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#maintainer--36-items" class="md-nav__link">
+  <a href="#maintainer--35-items" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Maintainer &mdash; 36 items
+        Maintainer &mdash; 35 items
       
     </span>
   </a>
@@ -2462,7 +2462,7 @@
 
 
 <h1 id="work-waiting-on-a-person-what-to-push-decide-or-review">Work waiting on a person: what to push, decide or review<a class="headerlink" href="#work-waiting-on-a-person-what-to-push-decide-or-review" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
+<p><em>Living document, last changed 2026-11-18 at <code>4264afbad</code>.</em></p>
 <p><em>What this is: a record (contributor-facing). Read after the <a href="ROADMAP.html">roadmap</a>; leads to the
 <a href="DEFINITION-OF-DONE.html">definition of done: when a change is ready for the apps that depend on it</a>. The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
@@ -2506,7 +2506,7 @@ every item that was <code>merged-upstream</code> then is <code>released</code>.<
 <h2 id="grouped-by-who-it-waits-for">Grouped by who it waits for<a class="headerlink" href="#grouped-by-who-it-waits-for" title="Permanent link">&para;</a></h2>
 <!-- BEGIN GENERATED: needs-a-human -->
 
-<h3 id="maintainer--36-items">Maintainer &mdash; 36 items<a class="headerlink" href="#maintainer--36-items" title="Permanent link">&para;</a></h3>
+<h3 id="maintainer--35-items">Maintainer &mdash; 35 items<a class="headerlink" href="#maintainer--35-items" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -2560,9 +2560,21 @@ every item that was <code>merged-upstream</code> then is <code>released</code>.<
 <td>&mdash;</td>
 </tr>
 <tr>
+<td><code>MT-CONNECTOR-REVERSE</code></td>
+<td><code>in-flight-upstream</code></td>
+<td>M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site in</td>
+<td>&mdash;</td>
+</tr>
+<tr>
 <td><code>MT-CONSUMER-STALE-RESELECT</code></td>
 <td><code>in-flight-upstream</code></td>
 <td>Alarm consumer survives evaluator timer publications during selection (BF-231)</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td><code>MT-EVAL-COST</code></td>
+<td><code>in-flight-upstream</code></td>
+<td>Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept work</td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -2617,6 +2629,30 @@ every item that was <code>merged-upstream</code> then is <code>released</code>.<
 <td><code>MT-OWNERSHIP-OPS</code></td>
 <td><code>in-flight-upstream</code></td>
 <td>M6b: operator-assisted ownership add, transfer and recovery</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td><code>MT-PERF-DB</code></td>
+<td><code>in-flight-upstream</code></td>
+<td>Restore-fence epoch admission, bounded startup warm, pool configuration, serve-t</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td><code>MT-PERF-EVALUATOR</code></td>
+<td><code>in-flight-upstream</code></td>
+<td>Evaluator works on change: per-member change query and due-time timers replace t</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td><code>MT-PERF-REALTIME</code></td>
+<td><code>in-flight-upstream</code></td>
+<td>Realtime publishes on change; event-driven authorization; queued connects under</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td><code>MT-POOL-PRIMITIVE</code></td>
+<td><code>in-flight-upstream</code></td>
+<td>Shared pool-membership primitive (pool kind, member count, ordinal, ring slice)</td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -2683,48 +2719,6 @@ every item that was <code>merged-upstream</code> then is <code>released</code>.<
 <td><code>MOD-WRITE-VALIDATION-READ</code></td>
 <td><code>needs-decision</code></td>
 <td>Flag stored records that break a write-validation rule on API v3 reads (read-sid</td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td><code>DEPLOY-TREE-HOME</code></td>
-<td><code>ready-to-push</code></td>
-<td>Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture;</td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td><code>MT-CONNECTOR-REVERSE</code></td>
-<td><code>ready-to-push</code></td>
-<td>M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site in</td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td><code>MT-EVAL-COST</code></td>
-<td><code>ready-to-push</code></td>
-<td>Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept work</td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td><code>MT-PERF-DB</code></td>
-<td><code>ready-to-push</code></td>
-<td>Restore-fence epoch admission, bounded startup warm, pool configuration, serve-t</td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td><code>MT-PERF-EVALUATOR</code></td>
-<td><code>ready-to-push</code></td>
-<td>Evaluator works on change: per-member change query and due-time timers replace t</td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td><code>MT-PERF-REALTIME</code></td>
-<td><code>ready-to-push</code></td>
-<td>Realtime publishes on change; event-driven authorization; queued connects under</td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td><code>MT-POOL-PRIMITIVE</code></td>
-<td><code>ready-to-push</code></td>
-<td>Shared pool-membership primitive (pool kind, member count, ordinal, ring slice)</td>
 <td>&mdash;</td>
 </tr>
 <tr>
