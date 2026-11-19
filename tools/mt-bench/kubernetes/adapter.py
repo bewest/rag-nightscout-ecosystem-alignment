@@ -239,7 +239,7 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
         primer = [actor for actor in actors if actor['name'] == 'primer']
         need(len(primer) == 1 and primer[0].get('args') == ['--tenant-count', str(c.get('tenants', 2))],
              'DIAGNOSTIC_TENANTS_CHANGED')
-    elif c.get('tenants', 2) != 2:
+    elif 'seed' not in inventory and c.get('tenants', 2) != 2:
         count = c['tenants']
         provision = by_key.get('Job/provision')
         need(workload_inputs.tenants(count) and count >= 2 and provision is not None, 'DIAGNOSTIC_TENANT_ROSTER')
@@ -274,7 +274,8 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
              all(annotations.get(key) == val for key, val in frozen.HELPER_ANNOTATIONS.items()) and
              hashlib.sha256(visible_helper['data']['bootstrap.js'].encode()).hexdigest() == helper['sha256'],
              'BOOTSTRAP_HELPER_SCOPE')
-    candidate.pins(sys.modules[__name__], c, inventory, by_key)
+    if 'seed' not in inventory:
+        candidate.pins(sys.modules[__name__], c, inventory, by_key)
     return by_key
 
 

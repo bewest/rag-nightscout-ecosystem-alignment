@@ -20,6 +20,8 @@ def selection(document, need):
 
 def bind(manifest, config, inventory, need):
     """Derive the run selection once from intent; require the renderer to agree."""
+    if 'seed' in inventory:
+        return {}
     selected = selection(manifest, need)
     need(selection(inventory, need) == selected, 'APPLICATION_TOPOLOGY_CHANGED')
     need(config.get(FIELD, selected) == selected, 'APPLICATION_TOPOLOGY_CHANGED')
@@ -32,6 +34,8 @@ def role_mapping(profile):
 
 
 def validate(config, inventory, objects, need):
+    if 'seed' in inventory:
+        return  # Workload references come directly from the binding inventory.
     profile = selection(config, need)
     need(selection(inventory, need) == profile, 'APPLICATION_TOPOLOGY_CHANGED')
     if profile == COHORT:
@@ -62,6 +66,8 @@ def validate(config, inventory, objects, need):
 
 
 def serving_workload(document, stage, obj, need):
+    if 'primerLocation' in document:
+        return stage == 'serving' and obj['metadata']['name'] in ROLES
     if stage != 'serving':
         return False
     profile = selection(document, need)
@@ -71,4 +77,6 @@ def serving_workload(document, stage, obj, need):
 
 
 def readiness_signal(document, name, need):
+    if 'primerLocation' in document:
+        return name in ROLES
     return name in ROLES if selection(document, need) == SEPARATE else name == 'cohort'

@@ -55,7 +55,7 @@ def startup_preflight(intent, environment, objects):
         if kind not in ('Job','Deployment','StatefulSet'):
             continue
         spec=obj['spec'];pod=spec['template']['spec']
-        if kind=='Job' and name=='primer' and 'primerReadySeconds' in authored:
+        if 'primerLocation' not in intent and kind=='Job' and name=='primer' and 'primerReadySeconds' in authored:
             values=[env.get('value') for actor in pod.get('initContainers',[]) if actor['name']=='primer'
                     for env in actor.get('env',[]) if env['name']=='NS_PRIMER_STALL_SECONDS']
             need(values==[str(selected['primerReadySeconds'])], 'PRIMER_STALL_WINDOW_CHANGED')
@@ -151,7 +151,9 @@ def fixture_config(path, capture=False):
                           if o['kind']=='Job' and o['metadata']['name']=='verification'], 'VERIFICATION_STAGE')
     startup=startup_preflight(m,e,rendered)
     primer_preflight=None
-    if primer is not None:
+    if primer is not None and 'seed' in inventory:
+        primer_preflight = {'selection': primer}
+    elif primer is not None:
         contract_path=package/'bindings/kubernetes/assets/source-contract.json'
         data=contract_path.read_bytes()
         contract=json.loads(data)

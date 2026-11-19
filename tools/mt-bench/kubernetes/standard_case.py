@@ -80,8 +80,9 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     run = k.document(template_case/'native-run-template.json')
     binding_inputs = k.document(template_case/'binding-inputs.json')
     env = k.document(template_case/'environment.json')
-    k.need(run['storageMode'] == 'disposable' and binding_inputs['storage']['mode'] == 'disposable',
-           'STANDARD_CASE_DISPOSABLE_STORAGE')
+    storage = binding_inputs['storage']
+    k.need(storage['mode'] in ('disposable', 'existing-claim'), 'STANDARD_CASE_STORAGE')
+    run['storageMode'] = storage['mode']
     selection = run.pop('nativeLoad')
     resources = k.document(binding/'bindings/kubernetes/lib/ns/typical-requests.json')
     selection.pop('nodeName', None)
@@ -115,6 +116,8 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     tenants = profile['population']['provisionedTenants']
     images = {'app': candidate['app'], 'postgres': candidate['postgres']}
     binding_inputs.pop('resources', None)
+    binding_inputs.pop('applicationTopology', None)
+    binding_inputs['primerConcurrency'] = phases.get('primerOptions', {}).get('concurrency', control['primerConcurrency'])
     binding_inputs.update(runId=run_id, namespace=namespace, tenantCount=tenants, images=images,
                           placement=placement, placementByWorkload={}, provisionDeadlineSeconds=outer,
                           sourceCommit=source['coreCommit'], imageDeployCommit=source['deployCommit'],
@@ -131,12 +134,18 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     inventory = k.document(output/'inventory.json')
     profile.pop('proposedEnvelope', None)
     stages = {name:[] for name in lc.stages_for(inventory)}
-    prior_stages = {k.key(obj):stage for stage in stages for obj in
-                    k.document(template_case/'stages'/(stage+'.json'))['items'] if obj['kind'] in k.WORKLOADS}
+    workload_stages = {'postgres':'stores', 'vault':'stores', 'provision':'provision',
+                       'admin':'private-admin', 'primer':'primer'}
+    for document in (run, intent):
+        document.pop('applicationTopology', None)
+        document['primerLocation'] = 'claim' if storage.get('claims', {}).get('primerResults') else 'controller'
+    for target in run['roles'].values():
+        name = target['workload'].split('/', 1)[1]
+        target['workload'] = inventory['workloads'][name]['kind'] + '/' + name
     for obj in k.manifests(rendered):
         stage = {'Namespace':'namespace','ClusterRoleBinding':'cluster-trust'}.get(obj['kind'],'foundation')
         if obj['kind'] in k.WORKLOADS:
-            stage = prior_stages[k.key(obj)]
+            stage = workload_stages.get(obj['metadata']['name'], 'serving')
         stages[stage].append(obj)
     (output/'stages').mkdir()
     for stage,items in stages.items():
@@ -150,7 +159,7 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     now = datetime.now(timezone.utc)
     run['driver']['coreRepository'] = str(core)
     run.update(runId=run_id,namespace=namespace,tenants=tenants,workload=traffic,resourceAccounting='requests-v1',
-               tenantsFile=str(output/'runtime/packet/primer/tenants.json'), deadlines={kind:(now+timedelta(seconds=env[seconds])).isoformat().replace('+00:00','Z')
+               tenantsFile=str(output/'runtime/fixture/data-roster.private.json'), deadlines={kind:(now+timedelta(seconds=env[seconds])).isoformat().replace('+00:00','Z')
                for kind,seconds in [('workUntil','workDeadlineSeconds'),('cleanupUntil','cleanupDeadlineSeconds')]})
     k.write(output/'native-run-template.json', run)
     k.write(output/'preflight.json',{'offline':'PASS','commissioning':'PREFLIGHT_ONLY',

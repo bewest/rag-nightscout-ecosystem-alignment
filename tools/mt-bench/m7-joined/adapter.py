@@ -337,7 +337,17 @@ def assert_owned(m):
         ids = command(["docker", kind, "ls", "-q", "--filter", "label=com.docker.compose.project=" + m["project"]]).split()
         if ids:
             for row in json.loads(command(["docker", kind, "inspect", *ids])):
+                if kind == 'volume' and restored_volume(m, row):
+                    continue
                 owned(row, m["owner"])
+
+
+def restored_volume(m, row):
+    labels = row.get('Labels') or {}
+    name = row['Name']
+    return (name in m.get('restoredVolumes', {}) and row['CreatedAt'] == m['restoredVolumes'][name]
+            and labels.get('com.docker.compose.project') == m['project']
+            and name == m['project']+'_'+labels.get('com.docker.compose.volume',''))
 
 
 def inventory(owner):
@@ -642,7 +652,7 @@ def discovery_source_preflight(d,m):
     require(deploy_repo and marker.get('deployCommit')==m['pair']['deploy'] and
             str(Path(deploy_repo).resolve())==str(Path(marker['deployRepository']).resolve()),'M7_DEPLOY_SOURCE_REQUIRED')
     commit(core_repo,m['pair']['core']);commit(deploy_repo,m['pair']['deploy'])
-    if m.get('pgstreamTopology')==stream_topology.EXTERNAL:
+    if m.get('pgstreamTopology')==stream_topology.EXTERNAL and not (d/'core/lib/server/serve/deployment-settings.js').is_file():
         stream_topology.verify_source(m,json.loads(git(core_repo,'show',m['pair']['core']+':lib/server/serve/plan-contract/schema/evaluator.schema.json')))
     image(m)
     pg=json.loads(command(['docker','image','inspect',m['postgresImageId']]))[0]
@@ -650,6 +660,8 @@ def discovery_source_preflight(d,m):
     verify_generator(d,m)
     with private_commands(d/'source-contract-checks'/uuid.uuid4().hex):
         with command_deadline(min(time.time()+120,_COMMAND_DEADLINE.get() or float('inf'))):
+            if (d/'core/lib/server/serve/deployment-settings.js').is_file():
+                return {'source':'rendered-compose', 'services':service_roster(document(d/'frozen.compose.json'))}
             return discovery_source_contract(d,m,core_repo,deploy_repo)
 
 
@@ -731,7 +743,7 @@ def prepare(args):
     require(not target.exists() and not any(p in (".git", "node_modules") for p in target.parts), "M7_TARGET_MUST_BE_NEW")
     for repo in (args.core_repo, args.deploy_repo):
         commit(repo, args.core_commit if repo == args.core_repo else args.deploy_commit)
-    if getattr(args,'pgstream_topology',stream_topology.COLOCATED)==stream_topology.EXTERNAL:
+    if getattr(args,'pgstream_topology',stream_topology.COLOCATED)==stream_topology.EXTERNAL and not git(args.core_repo,'ls-tree','--name-only',args.core_commit,'lib/server/serve/deployment-settings.js'):
         stream_topology.verify_source({'pgstreamTopology':args.pgstream_topology},json.loads(git(args.core_repo,'show',args.core_commit+':lib/server/serve/plan-contract/schema/evaluator.schema.json')))
     static_selection=static_topology.option(args)
     pinned = instrument()
@@ -809,14 +821,26 @@ def prepare_staged(args,target,pinned):
     archive = command(["git", "-C", m['deployRepository'], "archive", args.deploy_commit + ":bindings/compose/multitenant"],binary=True,phase="deploy-archive")
     command(["tar", "-x", "-C", overlay], input=archive)
     write(overlay / ".overlay.json", {"version": 1, "deployRepository": m["deployRepository"], "deployCommit": args.deploy_commit})
-    for name in ("commission-restore.js","publish-primer.js"):
-        require((overlay/name).is_file(),"M7_BINDING_COMMISSION_CAPABILITY_MISSING")
     # Binding preparation imports source modules (including js-yaml). Install
     # the owned lockfile context before invoking it, not after bootstrap.
     setup_generator(target,m)
     env = runtime_env({**preparation_environment(m),**({"NS_PGSTREAM":"1","NS_POSTGRES_IMAGE":args.postgres_image} if args.profile=="pgstream-sample" else {})})
     networks=["--backend-subnet",args.backend_subnet,"--edge-subnet",args.edge_subnet] if getattr(args,"backend_subnet",None) else []
-    command(["node", overlay / "prepare.js", "--state", target / "state", "--port", str(m["port"]), "--project", m["project"],*networks], cwd=overlay,env=env,phase="product-prepare")
+    destination = ["--state", target / "state", "--port", str(m["port"]), "--project", m["project"], *networks]
+    snapshot = getattr(args, 'fixture_snapshot', None)
+    if snapshot:
+        unused_project_namespace(m['project'])
+        restored = json.loads(command(['node', overlay/'fixture.js', 'restore', Path(snapshot).resolve(), *destination],
+                                      cwd=overlay, env=env, phase='fixture-restore'))
+        require(restored['project'] == m['project'] and Path(restored['state']) == target/'state', 'M7_FIXTURE_RESTORE_TARGET')
+        m['fixtureRestore'] = restored['snapshot']
+        names = [m['project']+'_'+kind for kind in ('postgres-data', 'vault-data')]
+        volumes = json.loads(command(['docker','volume','inspect',*names]))
+        m['restoredVolumes'] = {row['Name']:row['CreatedAt'] for row in volumes}
+        write(target/'owner.json', m)
+        write(target/'fixture-restore.json', restored)
+    else:
+        command(["node", overlay / "prepare.js", *destination], cwd=overlay, env=env, phase="product-prepare")
     # Keep the source binding path stable: guards and optional controller digests
     # refer to this exact .env. Compose also reads the private cell copy.
     shutil.copyfile(overlay / ".env", target / "env")
@@ -1059,6 +1083,8 @@ def primer_counts(d,m):
 
 
 def platform_startup_config(config,d,m,readiness=None,verify=False):
+    if native_bootstrap(config):
+        return
     helper=Path(d)/'core/deploy/multitenant/platform-startup.js'
     record=m.get('platformStartup')
     if verify:
@@ -1085,6 +1111,11 @@ def platform_startup_config(config,d,m,readiness=None,verify=False):
     require(set(roles)=={'api','evaluator','realtime'},'M7_PLATFORM_STARTUP_ROLES_REQUIRED')
 
 
+def native_bootstrap(config):
+    dependency = config['services'].get('admin', {}).get('depends_on', {}).get('bootstrap', {})
+    return isinstance(dependency, dict) and dependency.get('condition') == 'service_completed_successfully'
+
+
 def deployment_plan(config,pgstream=False,primer_concurrency_value=1,platform_verification=False,compose_ready_seconds=1200,*,primer_max_tenants=None):
     selected={'concurrency':primer_concurrency_value}
     if primer_max_tenants is not None:selected['maxTenants']=primer_max_tenants
@@ -1094,6 +1125,12 @@ def deployment_plan(config,pgstream=False,primer_concurrency_value=1,platform_ve
     apis=[name for name in roster if config["services"][name]["command"][-1]=="api"]
     remaining=[name for name in roster if name not in apis]
     start=["up","-d","--no-build","--pull","never","--wait","--wait-timeout",str(compose_ready_seconds)]
+    if native_bootstrap(config):
+        primer = ['--profile','ops','run','--rm','--no-deps','primer','node','deploy/multitenant/prime.js']
+        return [('bootstrap','compose',[*start,'admin']),
+                ('serving','compose',[*start,*roster,'ui','nginx']),
+                ('provision','compose',[*primer,'provision']),
+                ('prime','compose',[*primer,'prime',*prime_options])]
     plan = [
         ("infrastructure","compose",[*start,"postgres","vault"]),
         ("bootstrap","compose",["--profile","ops","run","--rm","bootstrap"]),
@@ -1390,10 +1427,15 @@ def deploy(d, m):
                 if ack_wire is not None:
                     m['pgstreamNotifierAckWire']=ack_wire
                     write(d/'producer-ack-budget.json',ack_wire)
-                if m.get('staticTopology'):static_runtime_contract(d,m)
+                if native_bootstrap(config):
+                    psql(d,"CREATE EXTENSION IF NOT EXISTS pg_stat_statements;")
+                elif m.get('staticTopology'):
+                    static_runtime_contract(d,m)
                 m["profileSelection"]=profile_provenance.identity(m["diagnostics"],config)
                 profile_provenance.state_environment(d/"state",config,m["diagnostics"])
                 write(d/"owner.json",m)
+                if native_bootstrap(config):
+                    continue
                 layout=document(d/"state/bootstrap/layout.json")
                 require(all(layout.get("namespaces",{}).get(kind)=="nsdemo_"+kind for kind in ("entries","devicestatus","treatments","clock","eval_checkpoint")),"M7_ORACLE_SCHEMA_CONTRACT_CHANGED")
                 # Raw restart is not a valid controlled-placement replacement.
@@ -1967,6 +2009,20 @@ def static_runtime_contract(d,m):
 
 
 def sample_context(d,m):
+    if (d/'core/lib/server/serve/deployment-settings.js').is_file():
+        import commissioning_context
+        script=(HERE/'settings-context.cjs').read_bytes()
+        roles={}
+        for role in ('evaluator', 'realtime'):
+            name=next((name for name,item in m.get('servingInstances',{}).items() if item['role']==role),role)
+            roles[role]=json.loads(compose(d,'exec','-T','--workdir','/opt/app',name,'node','-',role,input=script))
+        selected=commissioning_context.completion(roles['evaluator'],roles['realtime'],m['pair'],m['imageId'],m['instrument']['sha256'])
+        logins=commissioning_context.sql_logins(roles['evaluator'],roles['realtime'])
+        write(d/'image-dependency-contexts.json',{'source':'serving-role-environment','roles':list(roles)})
+        write(d/'completion-source.json',selected)
+        write(d/'sql-identities.json',logins)
+        return selected,logins
+
     code=(HERE/'execution-context.cjs').read_text()+"\nconst context=module.exports.inspect('/opt/app','/opt/app/node_modules',['pg']);const values=require('/opt/app/deploy/multitenant/service-environment').read();const key=process.argv[2]==='evaluator'?'MULTITENANT_EVALUATOR_CONFIG':'MULTITENANT_REALTIME_CONFIG';const file=values[key];const bytes=require('/opt/app/lib/server/serve/config-file').read(file,{source:process.env,label:key,Type:Error});context.privateConfig={path:file,sha256:crypto.createHash('sha256').update(bytes).digest('hex')};console.log(JSON.stringify(context));"
     config=document(d/'frozen.compose.json')
     if m.get('staticTopology'):
@@ -2241,6 +2297,12 @@ def _down(d, m):
         except Exception:captured={"version":1,"scope":"PRIVATE","error":"capture-failed","complete":False}
         write(d/"role-logs/manifest.json",captured)
         compose(d, "--profile", "ops", "down", "--volumes", "--remove-orphans", timeout=120)
+    elif m.get('restoredVolumes'):
+        # Restore may finish before later preparation fails and writes a Compose file.
+        for name in m['restoredVolumes']:
+            rows = json.loads(command(['docker','volume','inspect',name]))
+            require(len(rows)==1 and restored_volume(m,rows[0]),'M7_RESOURCE_NOT_OWNED')
+            command(['docker','volume','rm',name])
     write(d/'cleanup-absence.json',assert_absent(m))
     core = d / "core"
     if core.exists():
@@ -2268,6 +2330,7 @@ def parser():
     prep.add_argument('--evaluator-progress-budget', type=json.loads, help='Discovery progress phase query and byte budgets')
     prep.add_argument('--evaluator-catchup',choices=('fixed-target-v1',),help='Legacy option accepted for compatibility')
     prep.add_argument('--evaluator-opportunities',choices=('received-input-v1',),help='Legacy option accepted for compatibility')
+    prep.add_argument('--fixture-snapshot',help='Restore this cold deployment fixture into the new local project')
     prep.add_argument('--fixture-project',help='Owner-selected new Compose project; existing containers, volumes or networks refuse')
     for knob in ('warmup-seconds','idle-seconds','load-seconds','setup-seconds','drain-seconds','accel','hot-factor','sampler-interval'):
         prep.add_argument('--'+knob,type=int,help='Explicit pgstream-sample workload knob; retained in manifest')

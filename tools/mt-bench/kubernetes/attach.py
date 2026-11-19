@@ -19,7 +19,7 @@ core=Path(control['coreRepository'])
 cfg['driver']['coreRepository']=str(core)
 k6=Path(control['k6'])
 cfg['driver'].update(k6=str(k6),k6Sha256=sha(k6));cfg['readonlyGuard']=str(Path(control['readonlyGuard']))
-cfg.update(context=e['context'],runId=e['runId'],namespace=ns,tenants=e['tenantCount'],deadlines={k:v.replace('+00:00','Z') for k,v in dl.items()},tenantsFile=str(live/'packet/primer/tenants.json'))
+cfg.update(context=e['context'],runId=e['runId'],namespace=ns,tenants=e['tenantCount'],deadlines={k:v.replace('+00:00','Z') for k,v in dl.items()})
 def execute(label,args,deadline=1800):
     path=live/(label+'.log')
     remaining=min(deadline,until-time.time())
@@ -33,23 +33,6 @@ def execute(label,args,deadline=1800):
         write(live/'attachment-refusal.json',{'stage':label,'exit':result.returncode,'codes':detail})
         raise RuntimeError('ATTACH_'+label)
     return path
-def observe_selected_bootstrap(packet, runtime, namespace_uid, adapter_cmd, execute):
-    pins = read(packet/'run.json')['pins']['candidate']
-    helper = pins.get('runtimeBootstrapHelper')
-    actual = read(runtime/'bootstrap-helper-readback.json')
-    if actual.get('effectiveInstanceAcceptance') != pins['sourceAcceptance']:
-        raise RuntimeError('K8S_BOOTSTRAP_ACCEPTANCE_CHANGED')
-    if helper is None:
-        if actual.get('mode') != 'embedded-image':
-            raise RuntimeError('K8S_BOOTSTRAP_HELPER_UNDECLARED')
-    else:
-        if actual.get('mode') != 'diagnostic-overlay' or actual.get('sha256') != helper['sha256']:
-            raise RuntimeError('K8S_BOOTSTRAP_HELPER_MISSING_OR_CHANGED')
-        execute('bootstrap-map', adapter_cmd+['bootstrap-map', packet, namespace_uid])
-    execute('observe', adapter_cmd+['observe', packet])
-    execute('candidate-proof', adapter_cmd+['candidate-proof', packet])
-    execute('policy', adapter_cmd+['policy', packet])
-
 exp=[sys.executable,'-B',K/'experiment.py'];ad=[sys.executable,'-B',K/'adapter.py']
 obj=read(live/'latest-edge.json');edge=obj['name'];edgeuid=obj['uid']
 kub=[cfg['kubectl'],'--context',cfg['context'],'-n',ns]
@@ -67,24 +50,36 @@ try:
     else:raise RuntimeError('EDGE_FORWARD_UNAVAILABLE')
     assert edge_id()==edgeuid
     cfg['baseUrl']='http://127.0.0.1:'+match[1]
-    write(live/'input.json',cfg)
+    import fixture
+    import kube_adapter as k
+    import commissioning_context
+    private = live/'fixture'
+    location = m['primerLocation']
+    if location == 'claim':
+        inv = read(d/'inventory.json')
+        primer = next(obj for obj in k.manifests(read(d/'render.json')) if k.key(obj)=='Job/primer')
+        tenants = fixture.claim_roster(kub, primer, inv, private, cfg['tenants'], until)
+    else:
+        tenants = fixture.controller_roster(kub, control['candidate']['appImageId'], core, private,
+                                           cfg['tenants'], control['primerConcurrency'], until)
+    cfg['tenantsFile'] = str(private/'data-roster.private.json')
+    write(Path(cfg['tenantsFile']), tenants)
+    write(live/'fixture.json', {'location':location,'reuse':'fresh','tenants':len(tenants)})
     instance={'config':str(live/'input.json'),'inventory':str(d/'inventory.json'),'render':str(d/'render.json'),
-              'binding':control['bindingDirectory'],
-              'roleDocuments':{role:str(live/(role+'-config.private.json')) for role in ('evaluator','realtime')}}
-    instance['roleDocuments']['nativeReceipt']=str(live/'native-receipt-source.private.json')
-    if (live/'platform-verification.json').exists():
-        instance['verificationProof']=ref(live/'platform-verification.json')
-    if 'pgstreamNotifierAckTimeoutMs' in m:
-        instance['producerAckReadback']=ref(live/'producer-ack-readback.json')
-    if 'primerStorage' in m:
-        instance['primerStorageReceipt']=ref(live/'primer-storage-published.json')
+              'binding':control['bindingDirectory']}
     write(live/'instance.json',instance)
-    execute('prepare',exp+['prepare',d/'intent.json',live/'instance.json',packet,'--await-primer'])
-    observe_selected_bootstrap(packet, live, uid, ad, execute)
-    primer_args=[] if control.get('primerOptionsPreflight') else ['--concurrency',str(control['primerConcurrency'])]
-    execute('prime',[sys.executable,'-B',K/'primer.py',packet,packet/'primer',*primer_args],
-            until-time.time())
-    assert read(packet/'primer/result.json')['verdict']=='OBSERVED'
+    def sample(role):
+        target = cfg['roles'][role]
+        script = (K.parent/'m7-joined/settings-context.cjs').read_bytes()
+        return json.loads(subprocess.check_output([*kub, 'exec', '-i', target['workload'], '-c', target['container'],
+                                      '--','node','-',role],input=script,timeout=30))
+    selected = control['candidate']
+    pair = {'core':selected['coreCommit'], 'deploy':selected['deployCommit']}
+    cfg['completion'] = commissioning_context.completion(sample('evaluator'), sample('realtime'), pair,
+                                                          selected['appImageId'], k.instrument()['sha256'])
+    write(live/'input.json',cfg)
+    execute('prepare',exp+['prepare',d/'intent.json',live/'instance.json',packet])
+    execute('observe',ad+['observe',packet])
     # Capture read-only SQL independently of optional client measurements.
     try:execute('sql',ad+['observe-sql',packet,live/'sql'],120)
     except RuntimeError:pass
