@@ -106,6 +106,15 @@ class Properties(unittest.TestCase):
         result = assessor.assess(events, [A])
         self.assertEqual((result['verdict'], result['figures']['malformedEvents']), ('PASS', 4))
 
+    def test_roster_survives_cleanup_as_ids_only(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)/'load'
+            folder.mkdir()
+            self.assertEqual(assessor.roster(folder), [])
+            (folder/'roster.json').write_text(json.dumps([A, 'idle-tenant']))
+            figures = assessor.judge(folder)['figures']
+            self.assertEqual((figures['rosterTenants'], figures['idleTenants']), (2, 2))
+
 
 def replay(source, edit=lambda folder: None):
     with tempfile.TemporaryDirectory() as tmp:

@@ -29,13 +29,15 @@ def available_memory():
     return None
 
 
-def ordinary_rates(summary, seconds, writer_lost):
+def ordinary_rates(summary, seconds, writer_lost, load=None, offer=None):
     """Time-weight configured demand and phase-tagged completions over the authored load window."""
     rates = {'windowSeconds': seconds, 'targetRps': 'UNMEASURED', 'achievedRps': 'UNMEASURED',
              'targetBasis': 'Sum of per-executor target RPS times active seconds, divided by the configured ordinary load window.',
              'achievedBasis': 'Sum of ordinary completions tagged steady by each executor across all shards, divided by that same window. Includes transport failures. Excludes JWT setup and drain.'}
-    if type(seconds) is not int or seconds <= 0 or summary.get('kind') != 'm7-configured-driver-accounting':
+    if type(seconds) is not int or seconds <= 0:
         return rates
+    if summary.get('kind') != 'm7-configured-driver-accounting':
+        return k6_rates(rates, seconds, writer_lost, load, offer)
     # The configured driver already reconciles every shard and weights each
     # scenario's fractional offer by its own authored active duration.
     totals = summary.get('totals')
@@ -46,6 +48,24 @@ def ordinary_rates(summary, seconds, writer_lost):
             rates['targetRps'] = offered / seconds
         if not writer_lost and type(steady) is int and steady >= 0:
             rates['achievedRps'] = steady / seconds
+    return rates
+
+
+def k6_rates(rates, seconds, writer_lost, load, offer):
+    """Without the configured-driver summary: target from the run configuration, achieved from k6 counts."""
+    try:
+        if offer:
+            import adapter
+            rates['targetRps'] = adapter.rate_offer(offer)['effectiveScenarioRps']
+            rates['targetBasis'] = 'Configured scenario arrival rate for this roster and cadence (adapter.rate_offer).'
+    except Exception:
+        pass
+    files = sorted(Path(load).glob('k6-summary-[0-9]*.json')) if load else []
+    files = files or ([Path(load)/'k6-summary.json'] if load else [])
+    counts = [read(path).get('metrics', {}).get('iterations', {}).get('count') for path in files]
+    if files and not writer_lost and all(type(c) is int and c >= 0 for c in counts):
+        rates.update(achievedRps=sum(counts) / seconds, achievedIterations=sum(counts),
+                     achievedBasis='k6 iterations (all scenarios, every shard) divided by the configured load window.')
     return rates
 
 
@@ -86,7 +106,8 @@ def load_report(load, accounting, reduced_gate=None):
                 for shard in shards or [] if isinstance(shard, dict) and isinstance(shard.get('byScenario'), dict)]
     census = [read(load/name).get('actorTransitions', []) for name in ('before.json', 'after.json')]
     report = {'provisionedTenants': provisioned, 'ordinaryTenants': ordinary, 'selectedViewers': viewers,
-              'ordinaryRate': ordinary_rates(summary, cadence.get('loadSeconds', 'UNMEASURED'), lost),
+              'ordinaryRate': ordinary_rates(summary, cadence.get('loadSeconds', 'UNMEASURED'), lost, load,
+                                              {'tenants': ordinary, 'cadence': cadence} if type(ordinary) is int else None),
               'httpLatencyAllShardsMs': latency if isinstance(latency, dict) and not lost else 'UNMEASURED',
               'outcomeGate': gate.get('verdict', 'UNMEASURED'),
               'components': {key: {field: row[field] for field in ('verdict', 'codes', 'witnesses') if field in row}

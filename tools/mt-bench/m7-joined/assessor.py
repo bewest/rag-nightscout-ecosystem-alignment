@@ -350,11 +350,12 @@ def collect(folder):
 
 
 def roster(folder):
-    """Tenant ids from the retained roster, when the fixture kept one."""
-    for path in (Path(folder).parent/'tenants.private.json', Path(folder)/'tenants.private.json'):
+    """Tenant ids: `roster.json` (ids only, kept after cleanup), else a private roster the fixture still holds."""
+    for path in (Path(folder)/'roster.json', Path(folder).parent/'tenants.private.json', Path(folder)/'tenants.private.json'):
         value = _read(path)
         if isinstance(value, list):
-            return [row['id'] for row in value if isinstance(row, dict) and isinstance(row.get('id'), str)]
+            return [row if isinstance(row, str) else row['id'] for row in value
+                    if isinstance(row, str) or isinstance(row, dict) and isinstance(row.get('id'), str)]
     return []
 
 

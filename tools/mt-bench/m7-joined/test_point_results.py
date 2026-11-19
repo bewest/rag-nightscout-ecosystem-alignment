@@ -49,6 +49,20 @@ class StandardPoint(unittest.TestCase):
             self.assertEqual(value['cleanup']['status'], 'DEFERRED_TO_SESSION_CLOSE')
             self.assertFalse((root.parent/'result.json').exists())
 
+    def test_rate_from_k6_counts_beside_configured_target(self):
+        with TemporaryDirectory() as temp:
+            root = Path(temp)
+            load = root/'load'
+            load.mkdir()
+            cadence = {'workloadMix': 'realistic-v1', 'loadSeconds': 120}
+            points.write(root/'owner.json', {'tenants': 1000, 'cadence': cadence})
+            points.write(load/'k6-summary.json', {'metrics': {'iterations': {'count': 1672}}})
+            rate = points.load_report(load, {})['ordinaryRate']
+            self.assertAlmostEqual(rate['targetRps'], 13.889, places=3)
+            self.assertAlmostEqual(rate['achievedRps'], 1672/120)
+            (load/'k6-summary.json').unlink()
+            self.assertEqual(points.load_report(load, {})['ordinaryRate']['achievedRps'], 'UNMEASURED')
+
     def test_comparison_uses_all_shards_and_time_weights_shorter_executors(self):
         with TemporaryDirectory() as temp:
             root = Path(temp)
@@ -89,7 +103,9 @@ class StandardPoint(unittest.TestCase):
             summary['kind'] = 'm7-configured-driver-partial'
             points.write(load/'driver-accounting.json', summary)
             rate = points.load_report(load, {})['ordinaryRate']
-            self.assertEqual((rate['targetRps'], rate['achievedRps']), ('UNMEASURED', 'UNMEASURED'))
+            # A partial summary falls back to the configured target; no k6 counts, so achieved stays UNMEASURED.
+            self.assertEqual(type(rate['targetRps']), float)
+            self.assertEqual(rate['achievedRps'], 'UNMEASURED')
 
     def test_published_sparse_counters_and_export_lifetime(self):
         import http_accounting

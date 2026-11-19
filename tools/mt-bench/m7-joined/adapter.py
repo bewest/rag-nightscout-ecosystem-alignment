@@ -62,7 +62,10 @@ def k6_tenants(d, m):
     """Exchange every tenant's JWT once, before k6 starts (bounded by jwtSetupConcurrency)."""
     import jwt_tenants
     concurrency = jwt_setup_concurrency(m.get("jwtSetupConcurrency", 1), m.get('runPurpose') == 'discovery')
-    rows = jwt_tenants.attach(document(d/"tenants.private.json"), "http://127.0.0.1:" + str(m["port"]), concurrency)
+    roster = document(d/"tenants.private.json")
+    # Ids only (no credentials): the assessor's roster after cleanup removes the private files.
+    write(d/"load"/"roster.json", [row["id"] for row in roster])
+    rows = jwt_tenants.attach(roster, "http://127.0.0.1:" + str(m["port"]), concurrency)
     return jwt_tenants.write(d/"load"/"k6-tenants.private.json", rows)
 
 
@@ -2245,6 +2248,7 @@ def _down(d, m):
     for file in (d / "state", d / "dependencies"):
         if file.exists():shutil.rmtree(file)
     (d / "tenants.private.json").unlink(missing_ok=True)
+    (d / "load" / "k6-tenants.private.json").unlink(missing_ok=True)
 
 
 def parser():
