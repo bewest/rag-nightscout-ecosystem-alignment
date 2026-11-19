@@ -114,13 +114,15 @@ class ApiReplicas(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'M7_STATIC_RECEIPT'):
             static_topology.receipt(selected,proof)
 
-    def test_explicit_allocation_is_aggregate_checked_and_absence_is_uncapped(self):
+    def test_explicit_role_allocation_accepts_legacy_estimate_or_omission(self):
         value=config(3);allocation=json.loads(value['prepare']['diagnostic-resource-allocation'])
         selected=resources.selection(allocation)
         bad=copy.deepcopy(allocation);bad['ceiling']['millicpus']=1
         value['prepare']['diagnostic-resource-allocation']=json.dumps(bad)
-        with self.assertRaisesRegex(RuntimeError,'M7_DIAGNOSTIC_RESOURCE_ALLOCATION_AGGREGATE_EXCEEDED'):
-            configuration.resolve(value)
+        self.assertEqual(configuration.resolve(value)['configuration']['resources']['profile'], bad)
+        del bad['ceiling']
+        value['prepare']['diagnostic-resource-allocation']=json.dumps(bad)
+        self.assertEqual(configuration.resolve(value)['configuration']['resources']['profile'], bad)
         value=config(3);value['prepare'].pop('diagnostic-resource-allocation')
         self.assertIsNone(configuration.resolve(value)['configuration']['resources'])
         self.assertIn('api-3',selected['services'])

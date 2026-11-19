@@ -122,7 +122,7 @@ class ExplicitAllocation(unittest.TestCase):
         self.assertTrue({'bootstrap','primer'}<=set(scoped['qualifiedRoles']))
         self.assertEqual(selected,original)
         self.assertEqual(owner['diagnosticResources']['profile'],original)
-        self.assertEqual(owner['diagnosticResources']['aggregate'],r.plan(config).record()['aggregate'])
+        self.assertNotIn('aggregate', owner['diagnosticResources'])
         for role in scoped['deferredRoles']:
             self.assertEqual((config['services'][role]['cpu_quota'],config['services'][role]['cpu_period']),(12500,100000))
             runtime=r.Runtime(config,owner['diagnosticResources'],lambda:[])
@@ -314,8 +314,10 @@ exec(compile(ast.Module(body=footer.body,type_ignores=[]),a.__file__,'exec'),a._
         self.assertEqual(config['services']['postgres']['cpu_quota'],6500100)
         self.assertEqual(config['services']['postgres']['cpu_period'],100000)
         self.assertEqual(config['services']['postgres']['mem_limit'],129*1024**3)
-        bad=copy.deepcopy(selected);bad['ceiling']['millicpus']=budget.record()['aggregate']['millicpus']-1
-        with self.assertRaisesRegex(RuntimeError,'ALLOCATION_AGGREGATE_EXCEEDED'):r.selection(bad)
+        bad=copy.deepcopy(selected);bad['ceiling']['millicpus']=1
+        self.assertEqual(r.selection(bad), bad)
+        del bad['ceiling']
+        self.assertEqual(r.plan(r.overlay({'services':{role:{} for role in bad['services']}},bad)).profile, bad)
         r.selection(selected)
 
     def test_native_representation_edge_and_aggregate_controls_restore(self):
@@ -328,7 +330,6 @@ exec(compile(ast.Module(body=footer.body,type_ignores=[]),a.__file__,'exec'),a._
             (lambda x:x['edge'].update(workerConnections=True),'ALLOCATION_EDGE'),
             (lambda x:x['edge'].update(workerProcesses=True),'ALLOCATION_EDGE'),
             (lambda x:x['services'].update({'api-17':{'millicpus':1000,'memoryBytes':128*r.MIB}}),'UNKNOWN_ROLE'),
-            (lambda x:x['ceiling'].update(memoryBytes=129*1024**3),'ALLOCATION_AGGREGATE_EXCEEDED'),
         )
         for change,code in controls:
             with self.subTest(code=code):
@@ -377,7 +378,7 @@ exec(compile(ast.Module(body=footer.body,type_ignores=[]),a.__file__,'exec'),a._
     def test_exact_roster_overlap_and_driver_native_quota_controls(self):
         selected=allocation();source={'services':{role:{} for role in ROLES}};config=r.overlay(source,selected);budget=r.plan(config)
         self.assertEqual(source,{'services':{role:{} for role in ROLES}})
-        self.assertEqual(budget.record()['aggregate']['millicpus'],6500)
+        self.assertNotIn('aggregate', budget.record())
         self.assertEqual(budget.record()['standalone']['k6']['millicpus'],2000)
         self.assertEqual(r.edge_worker_budget(selected),{'workerProcesses':1,'workerConnections':16384,'nginxMillicpus':125,'source':'explicit-resource-allocation-v1'})
         rows=[{'State':{'Status':'running'},'Config':{'Labels':{'com.docker.compose.service':role}},'HostConfig':{'NanoCpus':0,'CpuQuota':r.service_cpu_settings(selected['services'][role]['millicpus'])[0],'CpuPeriod':r.service_cpu_settings(selected['services'][role]['millicpus'])[1],'Memory':selected['services'][role]['memoryBytes'],'MemorySwap':selected['services'][role]['memoryBytes']}} for role in ROLES]
@@ -392,7 +393,7 @@ exec(compile(ast.Module(body=footer.body,type_ignores=[]),a.__file__,'exec'),a._
         with self.assertRaisesRegex(RuntimeError,'ALLOCATION_ROSTER_CHANGED'):r.overlay(bad,selected)
         selected['services']['bootstrap']={'millicpus':2000,'memoryBytes':1024**3}
         amended=r.plan(r.overlay(bad,selected));self.assertEqual(amended.record()['services']['bootstrap']['maximumConcurrent'],2)
-        self.assertEqual(amended.record()['aggregate']['millicpus'],10500)
+        self.assertNotIn('aggregate', amended.record())
         selected['services']['postgres']['millicpus']=8000;selected['ceiling']['millicpus']=24000;r.selection(selected)
 
     def test_actual_prepare_records_explicit_workers_and_allocation(self):
@@ -402,7 +403,7 @@ exec(compile(ast.Module(body=footer.body,type_ignores=[]),a.__file__,'exec'),a._
             EdgeWorkers().test_actual_prepare_forwards_and_records_generated_workers()
 
     def test_invalid_missing_unbounded_and_ambiguous_allocations_refuse(self):
-        for change in (lambda x:x['services']['evaluator'].pop('memoryBytes'),lambda x:x['driver'].update(millicpus=0),lambda x:x['services']['pgstream'].update(millicpus=True),lambda x:x['ceiling'].update(millicpus=1000),lambda x:x['ceiling'].update(memoryBytes=10),lambda x:x['edge'].update(workerProcesses='auto'),lambda x:x['services'].update(unknown={'millicpus':1,'memoryBytes':1048576})):
+        for change in (lambda x:x['services']['evaluator'].pop('memoryBytes'),lambda x:x['driver'].update(millicpus=0),lambda x:x['services']['pgstream'].update(millicpus=True),lambda x:x['ceiling'].update(millicpus=0),lambda x:x['ceiling'].update(memoryBytes=10),lambda x:x['edge'].update(workerProcesses='auto'),lambda x:x['services'].update(unknown={'millicpus':1,'memoryBytes':1048576})):
             selected=allocation();change(selected)
             with self.assertRaisesRegex(RuntimeError,'M7_DIAGNOSTIC_RESOURCE_'):r.selection(selected)
         selected=allocation()

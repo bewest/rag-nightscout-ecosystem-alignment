@@ -277,6 +277,9 @@ def reduce_stage(stage, output, fixture=None):
                     or hashlib.sha256(counts.read_bytes()).hexdigest()!=storage_readback.get('countsSha256')
                     or not (stage/'runid').is_file() or (stage/'runid').read_text().strip()!=storage_readback.get('runId')):
                 result['stored'] = {'verdict':'FAIL', 'code':'K8S_STORAGE_READBACK_CHANGED'}
+    actors = capture(stage/'native-load.json', {})
+    if actors.get('writerContinuity') == 'UNMEASURED' and 'stored' not in result:
+        result['stored'] = {'verdict': 'UNMEASURED', 'code': 'K8S_ACCEPTED_WRITE_DENOMINATOR_UNMEASURED'}
     if 'stored' not in result and roster and all((stage / n).exists() for n in ('stored-counts.json', 'runid')):
         facade = SimpleNamespace(document=read, stored=lambda *_: read(stage / 'stored-counts.json'),
                                   write=lambda p, v: write(output / Path(p).name, v))
@@ -426,6 +429,9 @@ def reduce_stage(stage, output, fixture=None):
         gate = section('outcomeGate', lambda: outcome_gate.judge_kubernetes_load(stage, ids, config=execute.gate_config(run_config)))
     result['outcomeGate'] = gate or {'verdict':'UNMEASURED'}
     result.setdefault('offeredWork', {'verdict':'UNMEASURED'})
+    if actors.get('writerContinuity') == 'UNMEASURED':
+        result['offeredWork'] = {'verdict': 'UNMEASURED', 'terminalActor': result['offeredWork']}
+        result['issuedScope'] = 'terminal writer only'
     components = section('componentCounters', lambda: component_counters(stage, result['identityReadback'].get('before.json', {}), files))
     result['componentCounters'] = components or {'verdict':'UNMEASURED'}
     if input_errors:

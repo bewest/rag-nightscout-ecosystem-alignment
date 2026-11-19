@@ -210,18 +210,18 @@ def test_pod(c, parent, pod, controller_uid=None):
     k.need(not pod['spec'].get('nodeName') or pod['spec']['nodeName']==c[FIELD]['nodeName'],
            'NATIVE_LOAD_PLACEMENT_CHANGED')
     states=pod.get('status',{}).get('containerStatuses',[])+pod.get('status',{}).get('initContainerStatuses',[])
-    k.need(all(row.get('restartCount',0)==0 for row in states),'NATIVE_LOAD_ACTOR_RESTARTED')
     custody=Path(c.get('nativeLoadCustodyFile','/missing-native-custody'))
+    observation = {}
     if custody.is_file():
-        value=k.document(custody)
-        parent_uid=controller_uid or parent['metadata'].get('uid')
-        k.need(value.get('jobUid',parent_uid)==parent_uid
-               and value.get('podUid',pod['metadata']['uid'])==pod['metadata']['uid'], 'NATIVE_LOAD_ACTOR_REPLACED')
-        actual={row['name']:row.get('containerID') for row in states}
-        k.need(all(actual.get(name)==identity for name,identity in value.get('actorContainers',{}).items()),
-               'NATIVE_LOAD_ACTOR_REPLACED')
+        prior = k.document(custody)
+        parent_uid = controller_uid or parent['metadata'].get('uid')
+        k.need(prior.get('jobUid', parent_uid) == parent_uid, 'NATIVE_LOAD_JOB_CHANGED')
+        observation = {'podUid': prior.get('podUid'), 'actorContainers': dict(prior.get('actorContainers', {}))}
+        import native_files
+        native_files.observe_actors(observation, pod)
     return {**k.meta(pod),'workload':JOB,'nodeName':pod['spec'].get('nodeName'),
-            'phase':pod.get('status',{}).get('phase'),'states':states}
+            'phase':pod.get('status',{}).get('phase'),'states':states,
+            'actorTransitions':observation.get('actorTransitions', [])}
 
 
 class Kube:
@@ -277,7 +277,6 @@ def cancel(kube,c,receipt,out,*,clock=time):
         for pod in rows:
             k.owned(c,pod);ref=k.controller(pod)
             k.need(ref.get('uid')==uid and ref.get('kind')=='Job','NATIVE_LOAD_POD_CONTROLLER')
-            k.need('podUid' not in receipt or receipt['podUid']==pod['metadata']['uid'],'NATIVE_LOAD_ACTOR_REPLACED')
             states={row['name']:row for row in pod.get('status',{}).get('containerStatuses',[])}
             stopped=stopped and ('terminated' in states.get('k6',{}).get('state',{}))
         if stopped:

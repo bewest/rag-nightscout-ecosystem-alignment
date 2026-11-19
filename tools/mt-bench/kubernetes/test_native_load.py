@@ -202,8 +202,15 @@ class NativeLoad(unittest.TestCase):
             self.assertEqual([r['kind'] for r in kube.created], ['Secret', 'Job'])
             self.assertTrue(all(call[0] != 'apply' for call in kube.calls))
 
-    def test_failed_wait_exit_restart_scope_replacement_and_duplicate_controls(self):
-        for failure, code in [('wait', 'JOB_FAILED'), ('exit', 'JOB_FAILED'), ('restart', 'JOB_FAILED'),
+    def test_restarted_writer_emits_terminal_summary_with_incomplete_continuity(self):
+        c, job = control()
+        with tempfile.TemporaryDirectory() as out:
+            receipt = n.run(Kube(c, failure='restart'), c, job, SCRIPT, TENANTS, out, **OPTIONS)
+            self.assertEqual(receipt['writerContinuity'], 'UNMEASURED')
+            self.assertEqual(receipt['process']['restartCount'], 1)
+
+    def test_failed_wait_exit_scope_replacement_and_duplicate_controls(self):
+        for failure, code in [('wait', 'JOB_FAILED'), ('exit', 'JOB_FAILED'),
                               ('namespace', 'NAMESPACE_CHANGED'), ('replacement', 'POD_REPLACED'),
                               ('foreign', 'POD_CONTROLLER'), ('duplicate', 'POD_CENSUS')]:
             c, job = control(); kube = Kube(c, failure=failure)

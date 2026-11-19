@@ -1471,3 +1471,10 @@ pool diagnostics, component profiles, the query-wrapper bench, `campaign.py`,
 `examples.py` and the workload `qualify.py` and `loopback.py`, and the
 `--population-ceiling` option of the Compose path. The API cause, warm-cause and
 serial-exchange discriminators remain until their last users finish.
+
+For a cold standard point, `runner.py run CONFIG CASE --standard-case` creates
+a fresh directory with `result.json`, `cleanup.json` and `raw/`. The same
+runner performs preparation, execution and cleanup. The result records entry
+MemAvailable and the observed per-shape counts, executor start times and
+product verdicts where available. A missing counter stays unmeasured. Explicit
+per-service settings can omit the former aggregate allocation ceiling.

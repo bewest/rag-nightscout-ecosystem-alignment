@@ -1023,3 +1023,10 @@ runtime. The 10,000-row decoder control imports the original driver/workload and
 checks its original named SharedArray; it issues no HTTP requests or setup.
 These controls qualify the adapter boundary, not Kubernetes/application behavior
 or capacity.
+
+For an isolated standard point, use the existing experiment launcher with
+`caseDirectory=.../RUN_ID/raw/RUN_ID`. The terminal result and cleanup receipt
+are published beside `raw/`. The native receipt includes the namespace,
+labelled cluster trust, host unit and port-forward observations. The load
+report retains scheduling drops, per-executor start times and attributable
+actor transitions alongside the independently judged product components.

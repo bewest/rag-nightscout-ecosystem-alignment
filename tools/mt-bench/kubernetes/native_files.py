@@ -92,11 +92,41 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
     return job, secret, receipt
 
 
+def observe_actors(receipt, pod):
+    """Track each process lifetime within the admitted Job."""
+    uid = pod['metadata']['uid']
+    prior_uid = receipt.get('podUid')
+    actors = receipt.setdefault('actorContainers', {})
+    images = receipt.setdefault('actorImages', {})
+    states = pod.get('status', {}).get('containerStatuses', [])
+    if prior_uid and prior_uid != uid:
+        receipt.setdefault('actorTransitions', []).append({'actor': 'Pod', 'from': prior_uid, 'to': uid})
+        if actors.get('k6'):
+            receipt['writerContinuity'] = 'UNMEASURED'
+        actors.clear()
+        images.clear()
+    receipt['podUid'] = uid
+    for state in states:
+        name, identity = state['name'], state.get('containerID')
+        prior = actors.get(name)
+        if identity and prior and prior != identity:
+            receipt.setdefault('actorTransitions', []).append({'actor': name, 'from': prior, 'to': identity})
+        if name == 'k6' and (state.get('restartCount', 0) or (identity and prior and identity != prior)):
+            receipt['writerContinuity'] = 'UNMEASURED'
+        image = state.get('imageID')
+        if image and images.get(name) and images[name] != image:
+            receipt.setdefault('actorTransitions', []).append({'actor': name, 'fromImage': images[name], 'toImage': image})
+        if image:
+            images[name] = image
+        if identity:
+            actors[name] = identity
+
+
 def terminal_process(c, wanted, job, pod, final_job, final_pod):
-    """Verify the same admitted actors completed the export after acknowledgement."""
+    """Verify terminal execution and record lifetime changes under the same Job."""
     import native_load as n
-    k.need(final_pod is not None and final_job['metadata']['uid'] == job['metadata']['uid']
-           and final_pod['metadata']['uid'] == pod['metadata']['uid'], 'NATIVE_LOAD_ACTOR_REPLACED')
+    k.need(final_job['metadata']['uid'] == job['metadata']['uid'], 'NATIVE_LOAD_JOB_CHANGED')
+    k.need(final_pod is not None, 'NATIVE_LOAD_TERMINAL_POD_MISSING', 'UNMEASURED')
     _, process = n._terminal(c, wanted, final_job, {'items':[final_pod]})
     # Both sides are server readbacks. Preserve the resources admission actually
     # assigned, including its canonical quantities and LimitRange defaults.
@@ -104,16 +134,17 @@ def terminal_process(c, wanted, job, pod, final_job, final_pod):
     k.need(observed(pod['spec']) == observed(final_pod['spec']) and
            observed(job['spec']['template']['spec']) == observed(final_job['spec']['template']['spec']),
            'NATIVE_LOAD_RESOURCES_CHANGED')
-    earlier = {s['name']: s for s in pod.get('status', {}).get('containerStatuses', [])}
     final_states = {s['name']: s for s in final_pod.get('status', {}).get('containerStatuses', [])}
     for name in ('k6', 'artifact-exporter'):
-        for field in ('containerID', 'imageID'):
-            prior = earlier.get(name, {}).get(field)
-            k.need(prior, 'NATIVE_LOAD_ACTOR_IDENTITY_UNMEASURED', 'UNMEASURED')
-            k.need(prior == final_states.get(name, {}).get(field), 'NATIVE_LOAD_ACTOR_REPLACED')
+        state = final_states.get(name, {})
+        k.need(state.get('containerID') and state.get('imageID'), 'NATIVE_LOAD_ACTOR_IDENTITY_UNMEASURED', 'UNMEASURED')
+    history = {}
+    observe_actors(history, pod)
+    observe_actors(history, final_pod)
+    process.update(history)
     exporter = final_states.get('artifact-exporter', {})
-    k.need(exporter.get('state', {}).get('terminated', {}).get('exitCode') == 0
-           and exporter.get('restartCount') == 0, 'NATIVE_LOAD_EXPORTER_FAILED', 'UNMEASURED')
+    k.need(exporter.get('state', {}).get('terminated', {}).get('exitCode') == 0,
+           'NATIVE_LOAD_EXPORTER_FAILED', 'UNMEASURED')
     return process
 
 
@@ -158,20 +189,11 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
                    and ref.get('name') == 'k6', 'NATIVE_LOAD_POD_CONTROLLER')
             actual, _ = k.admission_projection(wanted['spec']['template']['spec'], row['spec'])
             k.need(k.subset(wanted['spec']['template']['spec'], actual), 'NATIVE_LOAD_POD_CHANGED')
-            if pod is not None:
-                k.need(row['metadata']['uid'] == pod['metadata']['uid'], 'NATIVE_LOAD_POD_REPLACED')
             pod = row
             states = {s['name']: s for s in row.get('status', {}).get('containerStatuses', [])}
-            k.need(all(s.get('restartCount', 0) == 0 for s in states.values()), 'NATIVE_LOAD_ACTOR_RESTARTED')
-            known=receipt.setdefault('actorContainers',{})
-            for actor,state in states.items():
-                identity=state.get('containerID')
-                if identity:
-                    k.need(actor not in known or known[actor]==identity,'NATIVE_LOAD_ACTOR_REPLACED')
-                    known[actor]=identity
-            receipt['podUid']=row['metadata']['uid']
+            observe_actors(receipt, row)
             k.write(out/'native-load.json',receipt)
-            if private_data is not None and 'running' in states.get('artifact-exporter', {}).get('state', {}):
+            if private_data is not None and receipt.get('rosterPodUid') != receipt['podUid'] and 'running' in states.get('artifact-exporter', {}).get('state', {}):
                 check_namespace()
                 # Only stdin carries issued credentials. The receiver checks
                 # its downward-API Pod UID and the exact DATA digest.
@@ -182,12 +204,12 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
                 k.need(raw.strip() in (receipt['rosterSha256'], receipt['rosterSha256'].encode()),
                        'NATIVE_LOAD_ROSTER_CHANGED')
                 receipt['rosterDelivered'] = True
+                receipt['rosterPodUid'] = receipt['podUid']
                 k.write(out/'native-load.json', receipt)
-                private_data = None
             if states.get('k6', {}).get('state', {}).get('terminated') is not None:
                 break
         clock.sleep(min(.5, remaining()))
-    k.need(private_data is None, 'NATIVE_LOAD_ROSTER_UNDELIVERED', 'UNMEASURED')
+    k.need(private_data is None or receipt.get('rosterPodUid') == receipt['podUid'], 'NATIVE_LOAD_ROSTER_UNDELIVERED', 'UNMEASURED')
     check_namespace()
     name, pod_uid = pod['metadata']['name'], pod['metadata']['uid']
     command = ['exec', name, '-c', 'artifact-exporter', '--', 'node', '/inputs/native-artifacts.cjs']
@@ -201,7 +223,7 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
         except Exception:
             current = pod_read()
             k.need(current is not None and current['metadata']['uid'] == pod['metadata']['uid'],
-                   'NATIVE_LOAD_POD_REPLACED')
+                   'NATIVE_LOAD_EXPORT_LIFETIME_UNMEASURED', 'UNMEASURED')
             states = {s['name']: s for s in current.get('status', {}).get('containerStatuses', [])}
             k.need('terminated' not in states.get('artifact-exporter', {}).get('state', {}),
                    'NATIVE_LOAD_EXPORTER_FAILED', 'UNMEASURED')
@@ -232,7 +254,7 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
     k.need(match and int(match[1]) == int(match[2]) == receipt['fileLimitBytes'], 'NATIVE_LOAD_FILE_LIMIT_UNPROVEN')
     current = pod_read()
     k.need(current is not None and current['metadata']['uid'] == pod_uid
-           and k.controller(current) == k.controller(pod), 'NATIVE_LOAD_POD_REPLACED')
+           and k.controller(current) == k.controller(pod), 'NATIVE_LOAD_EXPORT_LIFETIME_UNMEASURED', 'UNMEASURED')
     k.need(k.resource_budget.observed(current['spec']) == k.resource_budget.observed(pod['spec']),
            'NATIVE_LOAD_RESOURCES_CHANGED')
     check_namespace()
@@ -244,6 +266,7 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
     # guard. A named Pod display can contain masked fields even at completion.
     final_pod = pod_read()
     process = terminal_process(c, wanted, job, current, final_job, final_pod)
+    observe_actors(receipt, final_pod)
     check_namespace()
     k.write(out / 'k6-process.json', process)
     k.need(process['complete'] and meta.get('exitCode') == 0, 'NATIVE_LOAD_JOB_FAILED', 'UNMEASURED')

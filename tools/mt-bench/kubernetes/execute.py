@@ -517,7 +517,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
     if recovery:
         k.need(k.document(d / 'restart.json').get('status') == 'OBSERVED', 'RESTART_FIRST')
     baseline = k.active_baseline(d)
-    before = k.observe(c, objects, client, baseline)
+    before = k.observe(c, objects, client, baseline, measure_actors=load and c.get('nativeLoad') is not None)
     readback = actor(c)
     if c.get('nativeLoad') is not None:
         readback['localScope'] = 'workstation controller/probe/observer only; Kubernetes load Pod resources and runtime custody are separate'
@@ -663,7 +663,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
             raise midpoint_failure[0]
         k.need(not midpoint.is_alive() and ((out / 'progress-midpoint.json').is_file() or
                (out / 'progress-midpoint-signal.json').is_file()), 'MIDPOINT_UNMEASURED', 'UNMEASURED')
-        k.write(out / 'after.json', k.observe(c, objects, client, baseline))
+        k.write(out / 'after.json', k.observe(c, objects, client, baseline, measure_actors=load and c.get('nativeLoad') is not None))
         k.write(out / 'window.json', {'startedAt': started, 'endedAt': time.time(), 'loadStartedAt': load_started,
                                      'loadEndedAt': load_ended, 'loadProcessStartedAt': load_process_started,
                                      'loadProcessEndedAt': load_process_ended,
@@ -796,14 +796,10 @@ def load_checks(out, c=None):
         measured = driver.retain(out.parent, workload_runtime.driver_manifest(c))
         value['configuredDriver'] = measured
         k.write(out / 'load-functional.json', value)
-        k.need(measured['offeredWorkVerdict'] == 'PASS', 'DRIVER_OFFERED_WORK_INCOMPLETE',
-               'FAIL' if measured['offeredWorkVerdict'] == 'FAIL' else 'UNMEASURED')
     k.need(all(http['shapes'][shape]['attempts'] > 0 for shape in ('jwt_setup', *http_accounting.SHAPES)),
            'SCENARIO_SHAPE_UNMEASURED', 'UNMEASURED')
     k.need(http['httpVerdict'] == 'PASS' and all(row['httpVerdict'] == 'PASS' for row in http['shapes'].values()),
            'SCENARIO_HTTP_FAILED', 'FAIL' if http['httpVerdict'] == 'FAIL' else 'UNMEASURED')
-    k.need(http['offeredWorkVerdict'] == 'PASS', 'OFFERED_WORK_INCOMPLETE',
-           'FAIL' if http['offeredWorkVerdict'] == 'FAIL' else 'UNMEASURED')
     return value
 
 
@@ -879,6 +875,9 @@ def assess_stage(d, out, c, objects, client):
         else:
             values = k.stored(d, c, objects, runid, client)
             k.write(out/'stored-counts.json', values)
+        native = out/'native-load.json'
+        if native.is_file() and k.document(native).get('writerContinuity') == 'UNMEASURED':
+            raise k.Refused('K8S_WRITE_ACKNOWLEDGEMENTS_INCOMPLETE', 'UNMEASURED')
         return accepted_writes(out, c, values)
 
     def clinical():

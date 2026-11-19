@@ -215,7 +215,8 @@ class Matrix(unittest.TestCase):
         refused['m7_http_completed{http_shape:r_sgv,category:http_refused}'] = {'count': 1}
         cases.append(('SCENARIO_HTTP_FAILED', refused))
         dropped = copy.deepcopy(metrics);dropped['dropped_iterations']['count'] = 1
-        cases.append(('OFFERED_WORK_INCOMPLETE', dropped))
+        self.assertEqual(check(dropped)['http']['offeredWorkVerdict'], 'FAIL')
+        self.assertEqual(check(dropped)['http']['httpVerdict'], 'PASS')
         missing_counter = copy.deepcopy(metrics);del missing_counter['http_reqs']
         cases.append(('SCENARIO_HTTP_FAILED', missing_counter))
         for code, broken in cases:

@@ -267,12 +267,12 @@ def _terminal(c, wanted, job, pods):
     ended = states.get('k6', {}).get('state', {}).get('terminated', {})
     complete = bool(terminal and terminal['condition'] == 'Complete'
                     and pod.get('status', {}).get('phase') == 'Succeeded'
-                    and states.get('k6', {}).get('restartCount') == 0
                     and states.get('k6', {}).get('containerID') and states.get('k6', {}).get('imageID')
                     and type(ended.get('exitCode')) is int and ended['exitCode'] == 0)
     return pod, {'jobUid': job['metadata']['uid'], 'podUid': pod['metadata']['uid'],
                  'containerId': states.get('k6', {}).get('containerID'),
                  'imageId': states.get('k6', {}).get('imageID'),
+                 'restartCount': states.get('k6', {}).get('restartCount'),
                  'terminal': terminal, 'exitCode': ended.get('exitCode'),
                  'startedAt': ended.get('startedAt'), 'finishedAt': ended.get('finishedAt'),
                  'complete': complete}
@@ -373,6 +373,8 @@ def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, 
     again = kube.json(['get', 'pod', pod['metadata']['name']], namespace=ns)
     k.need(again['metadata']['uid'] == process['podUid'] and k.controller(again) == k.controller(pod),
            'NATIVE_LOAD_POD_REPLACED')
+    if process.get('restartCount'):
+        receipt['writerContinuity'] = 'UNMEASURED'
     events, summary = decode(raw, receipt['runId'], receipt['sourceSha256'])
     private(out / 'k6.log', events)
     k.write(out / 'k6-summary.json', summary)

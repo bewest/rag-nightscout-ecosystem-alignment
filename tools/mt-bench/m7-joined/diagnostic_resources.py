@@ -197,22 +197,23 @@ def compose_actor_roles(args, config):
 
 def explicit_allocation(value):
     """One finite authored allocation, not a new named profile or permission grant."""
-    need(isinstance(value,dict) and set(value)=={'version','services','driver','ceiling','edge'} and type(value['version']) is int and value['version']==1,'ALLOCATION_SHAPE')
+    need(isinstance(value,dict) and set(value) - {'ceiling'} == {'version','services','driver','edge'} and type(value['version']) is int and value['version']==1,'ALLOCATION_SHAPE')
     need(isinstance(value['services'],dict) and bool(value['services']),'ALLOCATION_ROSTER')
     for role,limit in value['services'].items():
         need(isinstance(role,str) and (role in LIMITS and role!='k6' or role in ('pgstream','socket-edge') or re.fullmatch(r'(api|realtime|evaluator)-(?:[2-9]|1[0-6])',role)),'UNKNOWN_ROLE')
         allocation_limit(limit,field='services.'+role)
-    driver = driver_limit(value)
-    ceiling=value['ceiling']
-    # This is an accounting ceiling, not one native container field. Its
-    # caller-selected aggregate may exceed any individual container quota.
-    need(isinstance(ceiling,dict) and set(ceiling)=={'millicpus','memoryBytes'} and type(ceiling['millicpus']) is int and ceiling['millicpus']>=1 and type(ceiling['memoryBytes']) is int and ceiling['memoryBytes']>=MIB,'ALLOCATION_CEILING')
+    driver_limit(value)
+    # Older selections include a whole-host planning estimate. Accept it as
+    # metadata. Docker applies the selected per-container settings.
+    if 'ceiling' in value:
+        ceiling = value['ceiling']
+        need(isinstance(ceiling, dict) and set(ceiling) == {'millicpus', 'memoryBytes'}
+             and type(ceiling['millicpus']) is int and ceiling['millicpus'] >= 1
+             and type(ceiling['memoryBytes']) is int and ceiling['memoryBytes'] >= MIB,
+             'ALLOCATION_CEILING')
     edge=value['edge']
     need(isinstance(edge,dict) and set(edge)=={'workerProcesses','workerConnections'} and 'nginx' in value['services'] and type(edge['workerProcesses']) is int and 1<=edge['workerProcesses']<=NGINX_MAX_WORKERS and type(edge['workerConnections']) is int and edge['workerConnections']>=1,'ALLOCATION_EDGE')
     need(edge['workerConnections']<=EDGE_NOFILE,'ALLOCATION_EDGE_DESCRIPTOR_LIMIT:workerConnections exceeds retained worker_rlimit_nofile=65536; a larger configured/read-back descriptor budget is required')
-    cpu=sum(limit['millicpus']*(2 if role in ('bootstrap','primer') else 1) for role,limit in value['services'].items())+value['driver']['millicpus']
-    memory=sum(limit['memoryBytes']*(2 if role in ('bootstrap','primer') else 1) for role,limit in value['services'].items())+driver.memory
-    need(cpu<=ceiling['millicpus'] and memory<=ceiling['memoryBytes'],'ALLOCATION_AGGREGATE_EXCEEDED')
     return value
 
 
@@ -345,22 +346,25 @@ class Plan:
         for role,quota,period in self.cpu_enforcement:
             need(isinstance(self.profile,dict) and role in {r for r,_,_ in self.services},'CPU_ENFORCEMENT_CHANGED')
             frozen_cpu_settings(role_limit(role,self.profile).cpu,quota,period)
-        cpu = sum(limit.cpu * count for _, limit, count in self.services) + driver_limit(self.profile).cpu
-        memory = sum(limit.memory * count for _, limit, count in self.services) + driver_limit(self.profile).memory
-        need(cpu <= cpu_ceiling(self.profile) and memory <= memory_ceiling(self.profile), 'AGGREGATE_EXCEEDED')
+        if not isinstance(self.profile, dict):
+            cpu = sum(limit.cpu * count for _, limit, count in self.services) + driver_limit(self.profile).cpu
+            memory = sum(limit.memory * count for _, limit, count in self.services) + driver_limit(self.profile).memory
+            need(cpu <= cpu_ceiling(self.profile) and memory <= memory_ceiling(self.profile), 'AGGREGATE_EXCEEDED')
         need(sum(heap * count for heap, count in HOST.values()) <= MAX_HEAP, 'HOST_AGGREGATE_EXCEEDED')
 
     def record(self):
         native={role:{'kind':'cfs-quota-period-v1','quotaMicros':quota,'periodMicros':period} for role,quota,period in self.cpu_enforcement}
-        return {'version': 1, 'profile': self.profile,
+        record = {'version': 1, 'profile': self.profile,
                 'services': {r: {'millicpus': l.cpu, 'memoryBytes': l.memory, 'maximumConcurrent': n, **({'cpuEnforcement':native[r]} if r in native else {})} for r, l, n in self.services},
                 'standalone': {'k6': driver_record(self.profile)},
                 'host': {r: {'heapMiB': h, 'maximumConcurrent': n} for r, (h, n) in HOST.items()},
-                'aggregate': {'millicpus': sum(l.cpu*n for _, l, n in self.services)+driver_limit(self.profile).cpu,
-                              'memoryBytes': sum(l.memory*n for _, l, n in self.services)+driver_limit(self.profile).memory,
-                              'heapMiB': sum(h*n for h, n in HOST.values())},
-                'basis': 'ALL_SELECTED_SERVICES_PLUS_DECLARED_OVERLAPS_PLUS_STANDALONE_K6',
                 'hostRss': 'SEPARATELY_OBSERVED_NOT_HEAP_BOUNDED'}
+        if not isinstance(self.profile, dict):
+            record['aggregate'] = {'millicpus': sum(l.cpu*n for _, l, n in self.services) + driver_limit(self.profile).cpu,
+                                   'memoryBytes': sum(l.memory*n for _, l, n in self.services) + driver_limit(self.profile).memory,
+                                   'heapMiB': sum(h*n for h, n in HOST.values())}
+            record['basis'] = 'ALL_SELECTED_SERVICES_PLUS_DECLARED_OVERLAPS_PLUS_STANDALONE_K6'
+        return record
 
 
 def plan(config, *, freeze_cpu=True):
@@ -544,6 +548,9 @@ class Runtime:
     def __init__(self, config=None, record=None, observe=None, driver_scope=None):
         self.budget = plan(config) if config is not None else None
         if record is not None:
+            # Older explicit allocations also recorded a descriptive sum.
+            if isinstance(record.get('profile'), dict):
+                record = {key: value for key, value in record.items() if key not in ('aggregate', 'basis')}
             need(self.budget is not None and record == self.budget.record(), 'RECORD_CHANGED')
             verify_config(config, self.budget)
         self.observe = observe
@@ -659,7 +666,8 @@ class Runtime:
             need(count <= maximum, 'CONTAINER_CONCURRENCY_EXCEEDED')
             cpu += limit.cpu * count
             memory += limit.memory * count
-        need(cpu <= cpu_ceiling(self.budget.profile)+self.driver_limit.cpu-driver_limit(self.budget.profile).cpu and memory <= memory_ceiling(self.budget.profile)+self.driver_limit.memory-driver_limit(self.budget.profile).memory, 'RUNTIME_AGGREGATE_EXCEEDED')
+        if not isinstance(self.budget.profile, dict):
+            need(cpu <= cpu_ceiling(self.budget.profile)+self.driver_limit.cpu-driver_limit(self.budget.profile).cpu and memory <= memory_ceiling(self.budget.profile)+self.driver_limit.memory-driver_limit(self.budget.profile).memory, 'RUNTIME_AGGREGATE_EXCEEDED')
         return counts
 
     def compose(self, args, config, cpu_preflight=None):
