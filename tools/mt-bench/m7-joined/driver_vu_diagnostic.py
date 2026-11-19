@@ -389,7 +389,8 @@ def reduce_shard(load, expected, cfg, suffix=''):
                         ('scenario_transport_failures', 'transportFailures'), ('dropped_iterations', 'dropped')):
         require(counter(metrics, metric) == total[key], 'M7_DRIVER_SHARD_RECONCILIATION')
     require(raw['scenario']['completed'] == total['completed'], 'M7_DRIVER_HTTP_RECONCILIATION')
-    phase = {'jwtSetupMs': setup_end - setup_start, 'jwtSetupRequests': raw['setup']['attempts'],
+    # The controller exchanges workload JWTs before k6 starts.
+    phase = {'driverSetupMs': setup_end - setup_start,
              'setupStartMs': setup_start, 'setupEndMs': setup_end, 'drainEndMs': end}
     if starts:
         phase.update(executor_windows(starts, expected['scenarios'], setup_end, end))
@@ -520,7 +521,7 @@ def retain_configured(d, m):
         'pooledPercentiles': 'UNMEASURED; shard percentiles are not pooled quantiles or guaranteed bounds',
         'storage': 'UNMEASURED; use the existing independent oracle', 'clinical': 'UNMEASURED',
         'capacityAcceptance': 'NOT_GRANTED',
-        'scope': 'Constant-arrival scheduling and HTTP accounting only; JWT setup, configured steady windows and drain separate. Warmup/idle belong to the outer runner. No causal diagnosis or capacity promotion.'}
+        'scope': 'Constant-arrival scheduling and HTTP accounting only; driver setup, configured steady windows and drain separate. Warmup/idle belong to the outer runner. No causal diagnosis or capacity promotion.'}
 
 
 def partial_configured(d, m):
