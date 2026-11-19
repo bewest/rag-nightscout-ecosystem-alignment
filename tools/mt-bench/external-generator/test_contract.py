@@ -1,3 +1,5 @@
+import unittest
+raise unittest.SkipTest('NOT-RUNNABLE: tools/mt-bench/external-generator imports harness modules deleted on 2026-11-19; see tools/mt-bench/external-generator/README.md')
 import copy
 import importlib.util
 import io

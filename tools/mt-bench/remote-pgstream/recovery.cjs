@@ -1,4 +1,5 @@
 'use strict';
+throw new Error('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md');
 // The controller's restart can lag the generator arm. Old-connection frames
 // never prove recovery, even if their timestamp is after the arm timestamp.
 function recoveredAfterRestart(socket,arm,at,acknowledged){

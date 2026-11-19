@@ -1,4 +1,5 @@
 """SUT-only selected snapshots/oracles for explicit remote component cases."""
+raise ImportError('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import json,time
 from pathlib import Path
 from component_cases import need,phase_payload,selected,expected_clients,reduce_case

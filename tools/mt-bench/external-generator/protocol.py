@@ -1,4 +1,5 @@
 """Bounded controller-only phase protocol for an isolated external traffic host."""
+raise ImportError('NOT-RUNNABLE: tools/mt-bench/external-generator imports harness modules deleted on 2026-11-19; see tools/mt-bench/external-generator/README.md')
 import hashlib
 import ipaddress
 import json

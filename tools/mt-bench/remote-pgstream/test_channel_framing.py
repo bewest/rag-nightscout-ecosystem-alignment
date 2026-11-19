@@ -1,4 +1,6 @@
 """Local pipe framing diagnosis: fragmentation is valid; EOF/bounds stay fail-closed."""
+import unittest
+raise unittest.SkipTest('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import io,json,os,threading,time,unittest
 from unittest.mock import patch
 import protocol

@@ -121,7 +121,7 @@ class DriverConfiguration(unittest.TestCase):
         args.run_purpose='acceptance'
         with self.assertRaises(RuntimeError):adapter.cadence_options(args)
 
-    def test_runner_receipt_binds_driver_plan_and_remote_projection_refuses(self):
+    def test_runner_receipt_binds_driver_plan(self):
         import run_configuration as rc
         import runner
         cfg=json.loads((Path(adapter.HERE)/'examples/local-rehearsal.json').read_text())
@@ -136,8 +136,6 @@ class DriverConfiguration(unittest.TestCase):
             changed=self.configuration();changed['scenarios']['r_sgv']['maxVUs']=5
             cfg['prepare']['driver-plan']=json.dumps(changed)
             self.assertNotEqual(rc.resolve(cfg)['configurationSha256'],first)
-            with self.assertRaisesRegex(RuntimeError,'M7_LOCAL_OBSERVER_LOCAL_ONLY'):
-                rc.remote_projection(cfg,{})
 
     def test_unsupported_target_and_command_refuse_before_writes(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -1,4 +1,6 @@
 """Narrow remote static K1/N1 plus honest native PENDING admission; no runtime claim."""
+import unittest
+raise unittest.SkipTest('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import copy,hashlib,importlib.util,json,os,subprocess,sys,tempfile,time,unittest
 from pathlib import Path
 from unittest.mock import patch

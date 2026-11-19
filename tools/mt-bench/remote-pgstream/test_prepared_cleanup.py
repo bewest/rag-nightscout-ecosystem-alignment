@@ -1,4 +1,6 @@
 """Offline remote binding lifecycle; adapter host/image calls are explicit seams."""
+import unittest
+raise unittest.SkipTest('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import copy
 import importlib.util
 import json

@@ -1,4 +1,5 @@
 """Generate a public-traffic-only variant of the exact joined stock probe."""
+raise ImportError('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 from pathlib import Path
 import hashlib
 import re

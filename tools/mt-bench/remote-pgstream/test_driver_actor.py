@@ -1,4 +1,6 @@
 """Existing DRIVER supervisor custody controls; every Docker/signal seam mocked."""
+import unittest
+raise unittest.SkipTest('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import copy,datetime,json,subprocess,tempfile,types,unittest
 from pathlib import Path
 from unittest.mock import Mock,patch

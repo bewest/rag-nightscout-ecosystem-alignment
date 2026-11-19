@@ -1,4 +1,5 @@
 """Canonical role stage order with the sealed helper's guards retained."""
+raise ImportError('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'm7-joined'))

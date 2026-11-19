@@ -1,4 +1,5 @@
 """Trusted phase supervisor; traffic children have neither sudo nor Docker access."""
+raise ImportError('NOT-RUNNABLE: tools/mt-bench/external-generator imports harness modules deleted on 2026-11-19; see tools/mt-bench/external-generator/README.md')
 import argparse
 from contextlib import contextmanager
 import hashlib

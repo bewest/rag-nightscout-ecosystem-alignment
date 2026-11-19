@@ -1,4 +1,6 @@
 """Minimum source admission at the actual binding, parser and manifest boundaries."""
+import unittest
+raise unittest.SkipTest('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import copy,sys,tempfile,unittest
 from unittest.mock import patch
 import cell,protocol,transport as t

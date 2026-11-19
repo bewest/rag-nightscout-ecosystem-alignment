@@ -805,7 +805,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='action', required=True)
     sub.add_parser('identity')
-    project=sub.add_parser('project');project.add_argument('config');project.add_argument('--remote-overlay');project.add_argument('--source-acceptance')
+    project=sub.add_parser('project');project.add_argument('config');project.add_argument('--source-acceptance')
     for mode in ('prepare', 'run'):
         prep = sub.add_parser(mode)
         prep.add_argument('config')
@@ -832,7 +832,7 @@ def main():
         import run_configuration as rc
         config=a.document(args.config)
         acceptance=a.document(args.source_acceptance) if args.source_acceptance else None
-        value=rc.remote_projection(config,a.document(args.remote_overlay),acceptance) if args.remote_overlay else rc.resolve(config,acceptance)
+        value=rc.resolve(config,acceptance)
         return print(json.dumps(value,indent=2))
     if args.action == 'identity':
         identity = a.instrument()

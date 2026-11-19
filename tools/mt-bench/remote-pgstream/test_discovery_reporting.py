@@ -1,4 +1,6 @@
 """Actual public accounting/config producer; partial reduction never grants acceptance."""
+import unittest
+raise unittest.SkipTest('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import copy,json,sys,tempfile,unittest,types,os,subprocess,shutil
 from pathlib import Path
 from unittest.mock import patch

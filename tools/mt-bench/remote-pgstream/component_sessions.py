@@ -1,4 +1,5 @@
 """Bounded case dispatch inside the EXISTING SUT/driver sessions and Channel."""
+raise ImportError('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import json,os,subprocess,threading,time
 from pathlib import Path
 from protocol import Channel,write

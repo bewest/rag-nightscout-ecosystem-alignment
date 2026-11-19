@@ -52,7 +52,7 @@ class DemandRecovery(unittest.TestCase):
    with self.assertRaisesRegex(RuntimeError,'POST_OUTPUT'):r.verify_probe(bad,receipt)
   bad=copy.deepcopy(probe);bad['window']['deliveredFrames']=0
   with self.assertRaisesRegex(RuntimeError,'POST_FRAME'):r.verify_probe(bad,receipt)
- def test_actual_config_receipt_and_remote_projection_bind_selection(self):
+ def test_actual_config_receipt_binds_selection(self):
   import test_run_configuration as f
   cfg=f.config();cfg['prepare'].update({'restart-during-load-after-seconds':10,'load-seconds':120,'probe-every-ms':1000,'completion-contract':'evaluator-work-v2'})
   with patch.object(a,'instrument',return_value={'sha256':'d'*64}):
@@ -63,8 +63,6 @@ class DemandRecovery(unittest.TestCase):
    with self.assertRaisesRegex(RuntimeError,'V2_RECEIPT'):f.c.receipt_scope(m,legacy,'run')
    changed=copy.deepcopy(m);changed['cadence']['restartDuringLoadAfterSeconds']=11
    with self.assertRaisesRegex(RuntimeError,'CONFIGURATION'):f.c.receipt_scope(changed,receipt,'run')
-   with self.assertRaisesRegex(RuntimeError,'REMOTE_DEMAND_RECOVERY_LOCAL_ONLY'):
-    f.rc.remote_projection(cfg,f.overlay())
  def baseline_error(self,kind='warming'):
   import evaluator_progress as p
   error=p.Refused('M7_EVALUATOR_PROGRESS_ERROR','UNMEASURED' if kind=='warming' else 'FAIL')
