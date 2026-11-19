@@ -170,7 +170,7 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
         n._identity(c, kube.json(['get', 'namespace', ns], timeout=min(20, remaining())), uid)
     def pod_read():
         current = kube.json(['get', 'pods', '-l', 'job-name=k6'], namespace=ns, timeout=min(20, remaining()))
-        k.need(len(current['items']) <= 1, 'NATIVE_LOAD_POD_CENSUS')
+        k.need(len(current['items']) <= 1, 'NATIVE_LOAD_POD_CENSUS', 'UNMEASURED')
         return current['items'][0] if current['items'] else None
     job = kube.json(['get', 'job', 'k6'], namespace=ns, timeout=min(20, remaining()))
     k.owned(c, job)
