@@ -30,6 +30,7 @@ assert e['runId']==d.name and ns.startswith('ns-synth-'),'INSTANCE_IDENTITY_CHAN
 live=d/'runtime';live.mkdir(mode=0o700,exist_ok=True);assert not any(live.iterdir()),'ENTERED_OUTPUT_EXISTS'
 def put(n,obj):(live/n).write_text(json.dumps(obj,indent=2)+'\n')
 def timestamp():return dt.datetime.now(dt.timezone.utc).isoformat()
+entry_memory = point_results.available_memory()
 
 # Once this case has acquired its empty output directory, refusals before the
 # namespace create also need a terminal result. The entered lifecycle below
@@ -40,7 +41,7 @@ def unentered_failure(kind, error, trace):
         code = str(error)
         put('first-failure.json', {'stage':'pre-entry', 'time':timestamp(),
             'code':code if re.fullmatch(r'[A-Z0-9_]{1,120}', code) else kind.__name__})
-        point_results.publish_native(d)
+        point_results.publish_native(d, mem_available_at_entry_bytes=entry_memory)
     finally:
         sys.__excepthook__(kind, error, trace)
 sys.excepthook = unentered_failure
@@ -563,7 +564,7 @@ finally:
             cleanup_errors.append({'scope':'native-host-unit','code':type(error).__name__})
     if cleanup_errors:
         put('cleanup-failure.json',{'verdict':'FAIL' if any(x['scope']=='absence' for x in cleanup_errors) else 'UNMEASURED','failures':cleanup_errors})
-    point_results.publish_native(d)
+    point_results.publish_native(d, mem_available_at_entry_bytes=entry_memory)
     auto_catalog(d, lambda path, value: path.write_text(json.dumps(value, indent=2) + '\n'))
     if cleanup_errors:
         raise RuntimeError('OWNED_CLEANUP_UNCONFIRMED')

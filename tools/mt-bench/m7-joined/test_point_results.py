@@ -42,8 +42,9 @@ class StandardPoint(unittest.TestCase):
         with TemporaryDirectory() as temp:
             root = Path(temp)/'raw'
             root.mkdir()
-            value = points.publish_compose(root, {'memAvailableAtEntryBytes': 37}, {'status': 'DEFERRED_TO_SESSION_CLOSE'})
+            value = points.publish_compose(root, {'memAvailableAtEntryBytes': 37, 'runtime': 'REUSED'}, {'status': 'DEFERRED_TO_SESSION_CLOSE'})
             self.assertEqual(value['memAvailableAtEntryBytes'], 37)
+            self.assertEqual(value['fixtureReuse'], 'reused')
             self.assertEqual(value['measurements']['offeredWork'], 'UNMEASURED')
             self.assertEqual(value['cleanup']['status'], 'DEFERRED_TO_SESSION_CLOSE')
             self.assertFalse((root.parent/'result.json').exists())
@@ -127,6 +128,7 @@ class StandardPoint(unittest.TestCase):
             points.publish_native(case)
             result = points.read(case/'result.json')
             self.assertEqual(result['firstFailure'], failure)
+            self.assertEqual(result['fixtureReuse'], 'UNMEASURED')
             self.assertEqual(result['measurements']['outcomeGate'], 'FAIL')
             self.assertEqual(result['measurements']['components'], gate['components'])
 
@@ -139,8 +141,13 @@ class StandardPoint(unittest.TestCase):
             for name, value in [('first-failure', {'code': 'K8S_FAIL'}), ('absence', {'absent': True}),
                                 ('native-unit', {'unit': 'ns-point-native.scope'})]:
                 points.write(runtime/(name+'.json'), value)
-            points.publish_native(case)
-            self.assertEqual(points.read(root/'result.json')['firstFailure']['code'], 'K8S_FAIL')
+            points.write(runtime/'custody.json', {'namespaceUid': 'synthetic'})
+            points.write(case/'native-run-template.json', {'storageMode': 'disposable'})
+            points.publish_native(case, mem_available_at_entry_bytes=41)
+            result = points.read(root/'result.json')
+            self.assertEqual(result['firstFailure']['code'], 'K8S_FAIL')
+            self.assertEqual(result['memAvailableAtEntryBytes'], 41)
+            self.assertEqual(result['fixtureReuse'], 'fresh')
             self.assertEqual(points.read(root/'cleanup.json')['status'], 'UNMEASURED')
             self.assertEqual(set(p.name for p in root.iterdir()), {'raw', 'cleanup.json', 'result.json'})
             with self.assertRaises(FileExistsError):

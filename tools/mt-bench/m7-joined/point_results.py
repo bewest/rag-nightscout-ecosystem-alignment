@@ -112,13 +112,19 @@ def publish_compose(root, result, cleanup=None):
     load = root/'fixture'/'load'
     result['measurements'] = load_report(load, read(load/'http-accounting.json'))
     result.setdefault('memAvailableAtEntryBytes', read(root/'execution.json').get('memAvailableAtEntryBytes'))
+    if result.get('runtime') == 'REUSED':
+        result['fixtureReuse'] = 'reused'
+    elif (root/'fixture'/'deployment.json').is_file():
+        result['fixtureReuse'] = 'fresh'
+    else:
+        result['fixtureReuse'] = 'UNMEASURED'
     cleanup = cleanup or result.get('cleanup') or read(root/'cleanup.json') or {'status': 'UNMEASURED'}
     result['cleanup'] = cleanup
     write(root/'result.json', result)
     return result
 
 
-def publish_native(case):
+def publish_native(case, *, mem_available_at_entry_bytes=None):
     case = Path(case)
     runtime = case/'runtime'
     packet = runtime/'packet'
@@ -131,6 +137,11 @@ def publish_native(case):
     result = {'case': case.name, 'stageVerdict': attempt.get('verdict', 'UNMEASURED'),
               'firstFailure': failure, 'measurements': load_report(load, accounting, reduced.get('outcomeGate')),
               'capacityAcceptance': 'NOT_GRANTED'}
+    result['memAvailableAtEntryBytes'] = mem_available_at_entry_bytes
+    result['memoryObservationHost'] = 'local Kubernetes controller'
+    fresh = (read(runtime/'custody.json').get('namespaceUid')
+             and read(case/'native-run-template.json').get('storageMode') == 'disposable')
+    result['fixtureReuse'] = 'fresh' if fresh else 'UNMEASURED'
     absence = read(runtime/'absence.json')
     cleanup_failure = read(runtime/'cleanup-failure.json')
     forward = read(runtime/'forward-closed.json')
