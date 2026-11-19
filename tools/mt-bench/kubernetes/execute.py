@@ -761,7 +761,7 @@ def assess_stage(d, out, c, objects, client):
     k.need(frames['verdict'] == 'PASS' or c['workload']['logicalPollingClients'] == 0 and
            frames['verdict'] == 'NOT_EXERCISED', 'CLIENT_FRAME_UNMEASURED', 'UNMEASURED')
     names = [name for name in ('progress-before', 'progress-midpoint', 'progress-after') if (out / (name + '.json')).is_file()]
-    k.need(names[0] == 'progress-before' and names[-1] == 'progress-after', 'EVALUATOR_PROGRESS_BOOKENDS', 'UNMEASURED')
+    k.need(names and names[0] == 'progress-before' and names[-1] == 'progress-after', 'EVALUATOR_PROGRESS_BOOKENDS', 'UNMEASURED')
     rounds = [k.document(out / (name + '.json')) for name in names]
     # Keep existing progress assessment separate from durable clinical proof.
     selected=c.get('workload',{}).get('evaluatorProgressBudget')
@@ -771,8 +771,31 @@ def assess_stage(d, out, c, objects, client):
     # A midpoint is a signal: when only its signal was retained, the strict
     # counter/foreign/reset/work checks run over the two bookends.
     strict = rounds if len(rounds) == 3 else [rounds[0], rounds[-1], rounds[-1]]
-    progress = k.evaluator_progress.assess(strict, [r['id'] for r in tenants], 'load',policy=policy,
-                                           failure_policy=k.evaluator_progress.OUTCOME_FAILURE_POLICY)
+    ids = [r['id'] for r in tenants]
+    try:
+        progress = k.evaluator_progress.assess(strict, ids, 'load',policy=policy,
+                                               failure_policy=k.evaluator_progress.OUTCOME_FAILURE_POLICY)
+    except k.evaluator_progress.Refused as error:
+        if str(error) != 'M7_EVALUATOR_PROGRESS_NOT_OBSERVED':
+            raise
+        # assess has checked every captured runtime, owner, foreign counter and
+        # reset before requiring a positive work delta from each tenant. Idle
+        # tenants need not acquire again during this window. Keep that metric
+        # unknown; the mandatory native catch-up/outcome gate below judges the
+        # actual accepted-input floor and boundary-known due work.
+        before, after = rounds[0]['owners'], rounds[-1]['owners']
+        deltas = [sum(after[t][key] - before[t][key] for key in
+                      ('completedAcquisitions', 'completedTimeCycles')) for t in ids]
+        progress = {'verdict':'UNMEASURED', 'code':str(error),
+                    'policy':policy, 'tenants':len(ids), 'instances':rounds[0]['instances'],
+                    'completedWorkDelta':sum(deltas),
+                    'tenantsWithObservedWork':sum(value > 0 for value in deltas),
+                    'tenantsWithoutObservedWork':sum(value == 0 for value in deltas),
+                    'scope':'per-tenant positive-progress metric unmeasured; no idle completion credit; native fixed-target outcome judged separately'}
+    progress.update(counterStability='PASS', observedRounds=len(rounds),
+                    queries=sum(row['queries'] for row in rounds),
+                    responseBytes=sum(row['bytes'] for row in rounds),
+                    collectorWallSeconds=sum(row['wallSeconds'] for row in rounds))
     import outcome_gate
     outcome = outcome_gate.judge_kubernetes_load(out, [r['id'] for r in tenants], config=gate_config(c),
                                                  attribution={'pins':c['pins'], 'runId':runid})

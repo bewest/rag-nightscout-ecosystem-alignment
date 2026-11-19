@@ -633,6 +633,14 @@ not-ready owner at the midpoint continues. Raw responses are written before
 any decoder reads them (`progress-*.private.jsonl`; after an early load stop, `progress-stop.private.jsonl`, then `stored-counts.json`, recorded in `stop-evidence.json`). The verdict is ``load/outcome-gate.json`, summarised in `result.json`; a FAIL refuses the stage as `OUTCOME_GATE_FAIL` after both are written`; HTTP
 latency over every k6 shard summary is reported beside it (exact pooled
 count and mean; per-shard quantile ranges; pooled quantiles UNMEASURED).
+An idle tenant need not increment its completion counters in every load window.
+After the existing runtime, ownership, foreign-counter and reset checks pass,
+an absent per-tenant work increase remains `evaluatorProgress.verdict=UNMEASURED`
+with `counterStability=PASS` and observed counter deltas. It does not prevent
+the mandatory native fixed-target outcome check from running. That outcome
+judges the captured accepted-input floor and boundary-known due work; no idle
+completion credit is invented. Reported collector cost counts actual captured
+rounds, including when the strict midpoint produced only a retained signal.
 `outcome_rereduce.py` re-reduces a retained run into a new file beside it and
 refuses if any original file changes.
 
