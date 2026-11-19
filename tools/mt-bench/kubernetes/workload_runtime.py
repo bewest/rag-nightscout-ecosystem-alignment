@@ -17,6 +17,12 @@ def driver_count(c, need):
     return ordinary_count(c['tenants'], c.get('ordinaryRosterTenants', c['tenants']), need)
 
 
+def ordinary_roster(c, tenants, need):
+    """Select the same verified roster prefix for ordinary traffic and its ACKs."""
+    need(c.get('tenants') == len(tenants), 'TENANT_ROSTER')
+    return tenants[:driver_count(c, need)]
+
+
 def validate(w, need, tenants=None):
     need(isinstance(w, dict) and set(w) <= {'loadSeconds', 'offeredRps', 'workloadMix',
          'workloadScale', 'logicalPollingClients', 'probeEveryMs', 'hotFactor', 'pointId', 'setupSeconds', 'drainSeconds',

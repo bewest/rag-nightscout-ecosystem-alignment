@@ -18,6 +18,8 @@ import discovery_counts
 import http_accounting
 from node_observation import log_events
 import viewer_plan
+import workload_runtime
+from contract import require
 
 
 def read(path):
@@ -281,7 +283,12 @@ def reduce_stage(stage, output, fixture=None):
         write(view / 'tenants.private.json', [{'id':row['id']} for row in roster])
         try:
             workload = summary.get('cadence', {}) if summary else (run_config or {}).get('workload', {})
+            ordinary_ids = None
+            if run_config and ('tenants' in run_config or 'ordinaryRosterTenants' in run_config):
+                ordinary = workload_runtime.ordinary_roster(run_config, roster, require)
+                ordinary_ids = [row['id'] for row in ordinary]
             counts, known = discovery_counts.observe(facade, view, stage, (stage / 'runid').read_text().strip(), metrics,
+                                                      ordinary_ids=ordinary_ids,
                                                       probe_ledger=workload.get('probeLedger'))
             result['stored'] = {'verdict': 'PASS' if known and counts['uncertain'] == 0 else 'UNMEASURED',
                                 'accepted': sum(r['accepted'] for r in counts['rows']) if all(r['accepted'] is not None for r in counts['rows']) else None,
@@ -342,7 +349,6 @@ def reduce_stage(stage, output, fixture=None):
     result['backlog'] = {'allWriterIntakeAndCompletion': 'UNMEASURED',
                          'recordedProbe': probe.get('durableOutputObservation', 'UNMEASURED')}
     if run_config and 'driverPlan' in run_config.get('workload', {}):
-        import workload_runtime
         import driver_vu_diagnostic as driver
         m = workload_runtime.driver_manifest(run_config)
         try:

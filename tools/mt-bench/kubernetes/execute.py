@@ -208,7 +208,7 @@ def configured_load(d, out, c, env, setup, ordinary):
 
 def ordinary_driver_inputs(c, tenants, out, env):
     """Project the verified roster only at the k6 boundary."""
-    ordinary = tenants[:workload_runtime.driver_count(c, k.need)]
+    ordinary = workload_runtime.ordinary_roster(c, tenants, k.need)
     if 'driverPlan' not in c['workload'] and len(ordinary) < len(tenants):
         path = out / 'ordinary-tenants.private.json'
         k.write(path, ordinary)
@@ -736,10 +736,11 @@ def accepted_writes(out, c, values, metrics=None):
     tenants = roster(c)
     runid = (out / 'runid').read_text().strip()
     # Use the original count reducer, including missing ACK and uncertainty rules.
+    ordinary = workload_runtime.ordinary_roster(c, tenants, k.need)
     if out.name in ('commission', 'recovery'):
         metrics = {'writes_ok': {'count': 0}}
         metrics.update({'writes_ok{kind:' + kind + '}': {'count': 0} for kind in ('entries', 'devicestatus', 'treatments')})
-        metrics.update({name + '{tenant:' + t['id'] + '}': {'count': 0} for t in tenants for name in ('writes_ok', 'writes_uncertain')})
+        metrics.update({name + '{tenant:' + t['id'] + '}': {'count': 0} for t in ordinary for name in ('writes_ok', 'writes_uncertain')})
     else:
         k.need((out / 'k6-summary.json').is_file(), 'ACCEPTED_WRITE_UNMEASURED', 'UNMEASURED')
         if metrics is None:
@@ -751,6 +752,7 @@ def accepted_writes(out, c, values, metrics=None):
     k.write(view / 'tenants.private.json', [{'id':row['id']} for row in tenants])
     facade = SimpleNamespace(document=k.document, write=k.write, stored=lambda *_: values)
     counts, known = k.discovery_counts.observe(facade, view, out, runid, metrics,
+                                               ordinary_ids=[row['id'] for row in ordinary],
                                                probe_ledger=c.get('workload', {}).get('probeLedger'))
     k.need(known, 'ACCEPTED_WRITE_UNMEASURED', 'UNMEASURED')
     k.need(counts.get('uncertain') == 0 and all(row['accepted'] == row['stored'] for row in counts['rows']),

@@ -69,7 +69,10 @@ from the start of that roster that should receive ordinary k6 traffic. Select
 `workloadScale` for per-tenant cadence. Both host k6 and the optional k6 Job use
 this selection. The stock probe assigns `workload.logicalPollingClients` across
 the full roster. Its probes, access checks and tenant-wide observers can reach
-tenants outside the ordinary subset. Evaluator preload convergence
+tenants outside the ordinary subset. Storage checks require both k6 write counters
+for every selected tenant and query marker-tagged rows across the full database.
+An ordinary row on an unselected tenant fails the check. Probe writes on any
+provisioned tenant reconcile against the separate probe ledger. Evaluator preload convergence
 is a recorded signal by default. Set `readiness: require-all` in the selected
 preload phase to require full convergence in experiments that depend on it.
 
