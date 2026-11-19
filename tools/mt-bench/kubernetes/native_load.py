@@ -45,7 +45,7 @@ def selection(c):
     cannot substitute for its per-operation samples. Multiple shards still
     require a separate custody/accounting join and explicitly refuse.
     """
-    w = workload_runtime.validate(c['workload'], k.need, c['tenants'])
+    w = workload_runtime.validate(c['workload'], k.need, workload_runtime.driver_count(c, k.need))
     k.need(w.get('driverShards', 1) == 1, 'NATIVE_LOAD_UNSUPPORTED:driverShards', 'UNMEASURED')
     return w
 
@@ -141,7 +141,7 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
            and run_start_ms > 0 and type(setup_seconds) is int and setup_seconds > 0,
            'NATIVE_LOAD_WINDOW')
     k.need((planning or seconds <= k.deadline(c)) and setup_seconds < seconds, 'NATIVE_LOAD_WORK_DEADLINE')
-    k.need(planning or isinstance(tenants, list) and len(tenants) == c['tenants']
+    k.need(planning or isinstance(tenants, list) and len(tenants) == workload_runtime.driver_count(c, k.need)
            and len({t['id'] for t in tenants}) == len(tenants)
            and all(isinstance(t.get('host'), str) and t['host'].endswith('.test')
                    and isinstance(t.get('token'), str) and t['token'] for t in tenants),

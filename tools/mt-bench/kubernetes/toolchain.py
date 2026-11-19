@@ -63,6 +63,8 @@ def local(m,instance):
         frozen.require('pgstream-notifier-ack-timeout-ms' not in options, 'DUPLICATE_LOCAL_FACT')
         options['pgstream-notifier-ack-timeout-ms'] = selected[frozen.ACK_BUDGET]
     p=profile.validate(dict(original['profile'],referencePins=dict(core=selected['coreCommit'],deploy=selected['deployCommit'],bindingCommit=original['bindingCommit'])))
+    frozen.require(p['population']['ordinaryRosterTenants'] == p['population']['provisionedTenants'],
+                   'COMPOSE_ORDINARY_ROSTER_SUBSET_UNSUPPORTED')
     w=p['workload'];t=m['topology']
     primer=primer_options.from_profile(p,frozen.require)
     population=population_ceiling.from_profile(p,frozen.require)

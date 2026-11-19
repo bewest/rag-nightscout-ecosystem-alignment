@@ -1197,6 +1197,12 @@ optional counters do not erase retained termination facts or authorize replay.
 
 ## Run tiers and effective settings
 
+For a binding with a separate verified serving sequence, select
+`tenant-readiness: serve` in `prepare` for demand-driven discovery. Private
+admin verification and the serving roles precede the lab client's provisioning
+and DATA preload stages. Ordinary traffic requires DATA credentials for its
+active roster. Primer failures and uncertain writes remain setup evidence.
+
 ### Explicit local pre-load convergence
 
 For a fresh `tier: discovery` run with `workSeconds: null`, the preparation
@@ -1218,14 +1224,13 @@ remains failed; this does not declare its cause benign or allow ordinary work.
 Permanent source errors, failed evaluations, changed ownership/runtime identity,
 counter rewind and incomplete observations refuse the phase.
 
-Only two complete stable whole-cohort strict ready views with completed
-acquisition credit and nonnull completion age close convergence. The existing
-normal readiness check then runs fresh and unchanged. The selected clinical
-120-second deadline, source pending threshold, workload and clinical/storage/
-client oracles remain unchanged. The finite pre-load deadline ends with this
-phase and does not become a whole-run cutoff. Expiry refuses the run and retains
-its source history. Capture budgets scale with the declared duration, interval,
-cohort and source-page bounds; they are observation budgets, not reservations.
+Convergence requires two stable whole-cohort views with completed acquisition
+credit and a recorded completion age. The default `preload-readiness: signal`
+records expiry as `NOT_CONVERGED` and lets the run proceed to its ordinary
+checks. Select `preload-readiness: require-all` when the experiment requires
+whole-cohort convergence before traffic. The clinical deadline and clinical,
+storage and client verdicts have their own checks. Capture budgets scale with
+the configured observation duration, interval, cohort and source-page bounds.
 
 Add `"tier": "smoke"`, `"tier": "discovery"` or `"tier": "acceptance"` to
 the existing runner configuration. Existing version 1 configurations that

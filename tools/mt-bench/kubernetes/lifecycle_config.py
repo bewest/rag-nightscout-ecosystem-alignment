@@ -7,7 +7,7 @@ import re
 import subprocess
 import sys
 from producer_startup import cohort_ready_seconds
-sys.path.append(str(Path(__file__).resolve().parent.parent/'m7-joined'))
+sys.path.insert(1, str(Path(__file__).resolve().parent.parent/'m7-joined'))
 import workload_inputs
 import primer_options
 import population_ceiling
@@ -19,6 +19,12 @@ FIELDS = {'version','caseDirectory','instrumentDirectory','instrumentSha256','bi
           'startupWindowPreflight','primerOptionsPreflight',
           'populationCeilingPreflight','schedulerPlacement','capturedSourceCommit'}
 STAGES = ('namespace','cluster-trust','foundation','stores','provision','private-admin','primer','serving')
+
+def stages_for(inventory):
+    if 'verification' in inventory.get('workloads', {}):
+        return (*STAGES, 'verification')
+    return STAGES
+
 
 def need(ok, code):
     if not ok: raise ValueError('K8S_LIFECYCLE_' + code)
@@ -58,6 +64,12 @@ def startup_preflight(intent, environment, objects):
             'selectedSeconds':selected,'authoredFields':sorted(set(authored)|({'cohortReadySeconds'} if 'cohortReadySeconds' in phases else set())),
             'workDeadlineSeconds':environment['workDeadlineSeconds'],'native':native}
 
+def helper_directory(config):
+    root = Path(config['instrumentDirectory'])
+    need(root.is_absolute(), 'INSTRUMENT_DIRECTORY')
+    return root.resolve() / 'tools/mt-bench/kubernetes'
+
+
 def fixture_config(path, capture=False):
     c=read(path)
     need(c.get('version')==1 and set(c)<=FIELDS, 'CONFIGURATION')
@@ -65,6 +77,11 @@ def fixture_config(path, capture=False):
         need(Path(c[key]).is_absolute() and Path(c[key]).is_dir(), 'DIRECTORY')
     for key in ('k6','readonlyGuard','observerScript'):
         need(Path(c[key]).is_absolute() and Path(c[key]).is_file(), 'TOOL')
+    need(helper_directory(c) == Path(__file__).resolve().parent, 'INSTRUMENT_DIRECTORY_MISMATCH')
+    from kube_adapter import instrument
+    identity = instrument()['sha256']
+    need(c.get('instrumentSha256', identity if capture else None) == identity, 'INSTRUMENT_CHANGED')
+    c['instrumentSha256'] = identity
     limits=c['nativeLimits'];need(set(limits)=={'millicpus','memoryBytes'} and all(type(x)is int and x>0 for x in limits.values()), 'FINITE_NATIVE_LIMITS')
     need(type(c.get('edgePort',8080))is int and 1<=c.get('edgePort',8080)<=65535,'EDGE_PORT')
     if c.get('pullSecretCommand') is not None:
@@ -105,18 +122,19 @@ def fixture_config(path, capture=False):
     need(template['driver']['hostId']==template['observer']['hostId'], 'NATIVE_HOST')
     need(e['workDeadlineSeconds']>0 and e['cleanupDeadlineSeconds']>e['workDeadlineSeconds'] and e['provisionDeadlineSeconds']>0,'DEADLINES')
     # Run identity is the image digest plus this configuration. Source heads,
-    # the instrument hash and input hashes are recorded at capture, not
-    # re-proved at every check.
+    # tools and binding file hashes are recorded at capture.
     package=Path(c['bindingDirectory']);binding=read(package/'binding.json')
     authored_startup=m['profile'].get('phases',{}).get('startupWindows',{}).get('kubernetes',{})
-    if 'pgstreamNotifierAckTimeoutMs' in m or 'primerStorage' in m or 'jobCompleteSeconds' in authored_startup or primer is not None or population is not None:
+    if 'verification' in inventory.get('workloads', {}) or 'pgstreamNotifierAckTimeoutMs' in m or 'primerStorage' in m or 'jobCompleteSeconds' in authored_startup or primer is not None or population is not None:
         files.append(package/'binding.json')
     for name,expected in binding['files'].items():
         p=package/'bindings/kubernetes'/name
         need(p.is_relative_to(package),'BINDING_CHANGED');files.append(p)
     files += [d/(name+'.json') for name in ('environment','intent','inventory','render','preflight')]
     rendered=[]; stage_objects={}
-    for stage in STAGES:
+    stages = stages_for(inventory)
+    split = 'verification' in stages
+    for stage in stages:
         p=d/'stages'/(stage+'.json');files.append(p)
         stage_objects[stage]=read(p)['items']
         for obj in stage_objects[stage]:
@@ -127,6 +145,14 @@ def fixture_config(path, capture=False):
             need(kind!='Service' or obj['spec'].get('type','ClusterIP')=='ClusterIP','NEW_BILLABLE_RESOURCE')
             if scheduler and kind in ('Deployment','StatefulSet','Job'):
                 need(not obj['spec']['template']['spec'].get('nodeName'), 'SCHEDULER_BYPASSED')
+    if split:
+        expected = [o for o in stage_objects['verification'] if o['kind']=='Job' and o['metadata']['name']=='verification']
+        need(len(expected)==len(stage_objects['verification'])==1 and
+             sum(o['kind']=='Job' and o['metadata']['name']=='verification' for o in rendered)==1 and
+             expected[0]['spec'].get('suspend') is True, 'VERIFICATION_STAGE')
+        from kube_adapter import manifests
+        need(expected == [o for o in manifests(read(d/'render.json'))
+                          if o['kind']=='Job' and o['metadata']['name']=='verification'], 'VERIFICATION_STAGE')
     startup=startup_preflight(m,e,rendered)
     primer_preflight=None
     if primer is not None:
@@ -135,7 +161,7 @@ def fixture_config(path, capture=False):
         contract=json.loads(data)
         rendered_proof=[obj['data']['source-contract.json'].encode() for obj in stage_objects['foundation']
                         if obj['kind']=='ConfigMap' and obj['metadata']['name']=='provision-scripts']
-        need(rendered_proof==[data] and binding.get('sourceContractSha256')==sha(contract_path)
+        need((split or rendered_proof==[data]) and binding.get('sourceContractSha256')==sha(contract_path)
              and binding['files'].get('assets/source-contract.json')==sha(contract_path)
              and contract.get(primer_options.FIELD)==primer,'PRIMER_OPTIONS_BINDING_CHANGED')
         protocol=contract.get(primer_options.PROTOCOL_FIELD)
@@ -159,9 +185,12 @@ def fixture_config(path, capture=False):
     files += [Path(__file__).with_name(n) for n in ('lifecycle_config.py','lifecycle.py','attach.py')]
     if scheduler:
         files.append(Path(__file__).with_name('scheduler_placement.py'))
-    expected={str(p.resolve()):sha(p) for p in files}
     if capture:
-        c['inputs']=expected
+        from experiment import workload
+        workload(m)
+        intent_hash = pre['experiment'].get('experimentSha256')
+        need(intent_hash is None or sha(d/'intent.json') == intent_hash, 'EXPERIMENT_CHANGED')
+        c['inputs']={str(p.resolve()):sha(p) for p in files}
         c['capturedSourceCommit']=subprocess.check_output(['git','-C',c['coreRepository'],'rev-parse','HEAD'],text=True).strip()
         c['startupWindowPreflight']=startup
         if primer_preflight is not None:c['primerOptionsPreflight']=primer_preflight
@@ -171,6 +200,8 @@ def fixture_config(path, capture=False):
              'startupWindowPreflight' not in c and not startup['authoredFields'],'STARTUP_PREFLIGHT_CHANGED')
         need(c.get('primerOptionsPreflight')==primer_preflight,'PRIMER_OPTIONS_PREFLIGHT_CHANGED')
         need(c.get('populationCeilingPreflight')==population_preflight,'POPULATION_PREFLIGHT_CHANGED')
+        intent_path = str((d/'intent.json').resolve())
+        need(c['inputs'].get(intent_path) == sha(intent_path), 'EXPERIMENT_CHANGED')
     return c
 
 if __name__=='__main__':

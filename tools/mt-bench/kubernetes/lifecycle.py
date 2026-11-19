@@ -11,11 +11,12 @@ import frozen
 import primer_storage
 import producer_startup
 import application_topology
+import candidate
 import run_cleanup
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
 from auto_catalog import auto_catalog
 cfg=fixture_config(Path(sys.argv[1]))
-d=Path(cfg['caseDirectory']); inst=Path(cfg['instrumentDirectory']); tool=Path(cfg['toolsDirectory'])
+d=Path(cfg['caseDirectory']); tool=Path(cfg['toolsDirectory'])
 read=lambda p:json.loads(p.read_bytes())
 os.umask(0o077);sys.dont_write_bytecode=True
 e=read(d/'environment.json'); ns=e['namespace'];ctx=e['context'];rid=e['runId']
@@ -71,6 +72,8 @@ def owned():
     cur=get('namespace',ns,False)
     assert cur and cur['metadata']['uid']==nsuid and cur['metadata']['labels']['nightscout.org/run-id']==rid
 def objects(stage):return read(d/'stages'/f'{stage}.json')['items']
+split = 'verification' in read(d/'inventory.json').get('workloads', {})
+startup_stages = ('foundation','stores','provision','private-admin','primer','serving') + (('verification',) if split else ())
 def step(stage):
     global current
     current=stage
@@ -193,6 +196,95 @@ def workload_ready(stage):
         seconds=convergence['maxSeconds'] if convergence else timeout
         with startup_window(nm,seconds):
             ready(','.join(k+'='+v for k,v in sel.items()),nm,seconds,convergence)
+def release_job(name):
+    owned()
+    job = get('job', name)
+    uid, = (row['uid'] for row in uids if row['kind']=='Job' and row['name']==name)
+    assert job['metadata']['uid']==uid and job['spec']['suspend'] is True, 'JOB_OWNERSHIP_CHANGED'
+    k(['patch','job',name,'-n',ns,'--type=json','-p',json.dumps([
+        {'op':'test','path':'/metadata/uid','value':uid},
+        {'op':'test','path':'/spec/suspend','value':True},
+        {'op':'replace','path':'/spec/suspend','value':False}])])
+    return job
+
+
+def verify_database(job_uid, seconds):
+    import kube_adapter as adapter
+    with startup_window('platform-verify', seconds) as until:
+        remaining = until-time.time()
+        assert remaining > 1, 'SOURCE_VERIFICATION_JOB_DEADLINE'
+        # Kubernetes owns Job progress. Read its terminal condition and the
+        # selected Pod after the watch, with diagnostic time left in the run.
+        try:
+            command([tool/'kubectl','--context',ctx,'-n',ns,'wait','--for=condition=complete',
+                     'job/verification','--timeout='+str(max(1,int(remaining)))+'s'], timeout=remaining, private=True)
+        except (RuntimeError, subprocess.TimeoutExpired):
+            pass
+    owned()
+    job = get('job','verification')
+    assert job['metadata']['uid']==job_uid, 'JOB_OWNERSHIP_CHANGED'
+    condition = candidate.job_condition(job)
+    witnesses = [p for p in pods('job-name=verification') if
+                 adapter.controller(p)['uid']==job_uid and
+                 p['metadata']['labels'].get('nightscout.org/run-id')==rid]
+    if condition != 'Complete':
+        failures = []
+        for pod in witnesses:
+            for container in summary(pod)['containers']:
+                if container['state'].get('terminated',{}).get('exitCode',0)!=0:
+                    failures.append(failure_codes(pod['metadata']['name'], container['name'], pod['metadata']['uid']))
+        put('platform-failure.json', {'jobUid':job_uid,'condition':condition,'logs':failures})
+        raise RuntimeError('SOURCE_PLATFORM_VERIFICATION_FAILED' if condition=='Failed' else 'SOURCE_VERIFICATION_JOB_DEADLINE')
+    pod, = witnesses
+    name, uid = pod['metadata']['name'], pod['metadata']['uid']
+    done, = (row for row in pod['status']['containerStatuses'] if row['name']=='done')
+    assert done['state'].get('terminated',{}).get('exitCode')==0, 'SOURCE_PLATFORM_VERIFICATION_FAILED'
+    raw = command(rpc+['logs',name,'-n',ns,'-c','done','--limit-bytes=65536'],private=True)
+    require_pod_uid(name,uid)
+    source = read(Path(cfg['bindingDirectory'])/'bindings/kubernetes/assets/source-contract.json')
+    config = {'namespace':ns, 'runId':rid, 'pins':{'candidate':source}}
+    proof = candidate.verification_log(adapter,config,raw)
+    put('platform-verification.json', {'jobUid':job_uid,'podUid':uid,'containerId':done['containerID'],'proof':proof})
+
+
+def start_serving(split):
+    if split:
+        install('verification')
+        verification = release_job('verification')
+        step('platform verification')
+        verify_database(verification['metadata']['uid'],
+                        min(waits['platformVerifySeconds'], verification['spec']['activeDeadlineSeconds']))
+        install('serving')
+    install('primer')
+    pobj = release_job('primer')
+    if split:
+        workload_ready('serving')
+    else:
+        primer_seconds=min(waits['primerReadySeconds'],pobj['spec']['activeDeadlineSeconds'])
+        with startup_window('primer',primer_seconds):
+            primer=ready('job-name=primer','primer',primer_seconds)
+        step('platform verification')
+        # done runs source verification before writing the ready marker.
+        with startup_window('platform-verify',waits['platformVerifySeconds']) as until:
+            while time.time()<until:
+                row=get('pod',primer['metadata']['name'])
+                assert row['metadata']['uid']==primer['metadata']['uid']
+                cons=row['status'].get('containerStatuses',[])
+                if any(c['state'].get('terminated',{}).get('exitCode',0)!=0 for c in cons):
+                    put('platform-failure.json',{'podUid':row['metadata']['uid'],'codes':failure_codes(row['metadata']['name'],'done',row['metadata']['uid'])['codes']})
+                    raise RuntimeError('SOURCE_PLATFORM_VERIFICATION_FAILED')
+                try:
+                    execpod(primer,'done',['test','-s','/run/ns-primer/verified.json'])
+                    break
+                except RuntimeError:time.sleep(min(2,max(0,until-time.time())))
+            else:raise RuntimeError('SOURCE_VERIFICATION_MARKER_DEADLINE')
+        install('serving');workload_ready('serving')
+    if split:
+        primer_seconds = min(waits['primerReadySeconds'], pobj['spec']['activeDeadlineSeconds'])
+        with startup_window('primer', primer_seconds):
+            ready('job-name=primer', 'primer', primer_seconds)
+
+
 def execpod(pod,container,args,seconds=None):
     uid=pod['metadata']['uid']; nm=pod['metadata']['name']
     owned();assert get('pod',nm)['metadata']['uid']==uid
@@ -221,9 +313,11 @@ if frozen.JOB_COMPLETE in selected_source:
     contract, = (row['data']['source-contract.json'] for row in objects('foundation')
                  if row['kind']=='ConfigMap' and row['metadata']['name']=='provision-scripts')
     receipt=(Path(cfg['bindingDirectory'])/'binding.json').resolve()
+    if split:
+        contract = (receipt.parent/'bindings/kubernetes/assets/source-contract.json').read_bytes()
     frozen.rendered_contract(intent,contract,{'path':str(receipt),'sha256':cfg['inputs'][str(receipt)]})
 frozen.check_bootstrap_render(intent, [row for stage in
-    ('foundation','stores','provision','private-admin','primer','serving') for row in objects(stage)])
+    startup_stages for row in objects(stage)])
 primer_storage.check_render(selected_source, objects('primer'))
 nsuid=trustuid=None;events=[];uids=[];current='create-namespace'
 def interrupted(signum, frame):raise RuntimeError('CONTROLLER_SIGNAL_'+str(signum))
@@ -236,7 +330,7 @@ try:
     # Legacy fixtures expect prewarmed images. Scheduler fixtures leave the
     # digest-pinned image pull policy to Kubernetes and the authored manifest.
     if not scheduler:
-        for stage in ('stores','provision','private-admin','primer','serving'):
+        for stage in startup_stages[1:]:
             for obj in objects(stage):
                 spec=obj['spec']['template']['spec']
                 for actor in spec.get('initContainers',[])+spec.get('containers',[]):
@@ -273,10 +367,11 @@ try:
             try:execpod(provision,'done',['test','-f','/state/.ready']);break
             except RuntimeError:time.sleep(min(1,max(0,until-time.time())))
         else:raise RuntimeError('SOURCE_ROLE_EXPORT_NOT_READY')
-        (live/'primer-config.private.json').write_bytes(execpod(provision,'done',['cat','/state/primer/config.json']))
+        if frozen.PRIMER_STORAGE in selected_source:
+            (live/'primer-config.private.json').write_bytes(execpod(provision,'done',['cat','/state/primer/config.json']))
         for role in ('evaluator','realtime'):
             (live/(role+'-config.private.json')).write_bytes(execpod(provision,'done',['cat','/state/'+role+'/config.json']))
-        receipt_code=(inst/'tools/mt-bench/m7-joined/native-receipt-source.cjs').read_text()+"\nconsole.log(JSON.stringify(module.exports.captureFiles('/opt/app','/state')));"
+        receipt_code=(Path(__file__).resolve().parent.parent/'m7-joined/native-receipt-source.cjs').read_text()+"\nconsole.log(JSON.stringify(module.exports.captureFiles('/opt/app','/state')));"
         (live/'native-receipt-source.private.json').write_bytes(execpod(provision,'done',['node','-e',receipt_code]))
     with startup_window('secret-publish',waits['secretPublishSeconds']):
         published=command(['bash',secret_script,'publish',ns,'unused'],timeout=waits['secretPublishSeconds'],private=True)
@@ -293,28 +388,7 @@ try:
         assert ack_wire['effectiveTimeoutMs']==selected_source[frozen.ACK_BUDGET], 'K8S_PGSTREAM_ACK_PUBLISH_CHANGED'
         put('producer-ack-published.json',ack_wire)
     install('private-admin');workload_ready('private-admin')
-    install('primer');pobj=get('job','primer')
-    assert pobj['spec']['suspend'] is True
-    k(['patch','job','primer','-n',ns,'--type=json','-p',json.dumps([{'op':'test','path':'/metadata/uid','value':pobj['metadata']['uid']},{'op':'test','path':'/spec/suspend','value':True},{'op':'replace','path':'/spec/suspend','value':False}])])
-    primer_seconds=min(waits['primerReadySeconds'],pobj['spec']['activeDeadlineSeconds'])
-    with startup_window('primer',primer_seconds):
-        primer=ready('job-name=primer','primer',primer_seconds)
-    step('platform verification')
-    # done runs source verification before writing the ready marker.
-    with startup_window('platform-verify',waits['platformVerifySeconds']) as until:
-        while time.time()<until:
-            row=get('pod',primer['metadata']['name'])
-            assert row['metadata']['uid']==primer['metadata']['uid']
-            cons=row['status'].get('containerStatuses',[])
-            if any(c['state'].get('terminated',{}).get('exitCode',0)!=0 for c in cons):
-                put('platform-failure.json',{'podUid':row['metadata']['uid'],'codes':failure_codes(row['metadata']['name'],'done',row['metadata']['uid'])['codes']})
-                raise RuntimeError('SOURCE_PLATFORM_VERIFICATION_FAILED')
-            try:
-                execpod(primer,'done',['test','-s','/run/ns-primer/verified.json'])
-                break
-            except RuntimeError:time.sleep(min(2,max(0,until-time.time())))
-        else:raise RuntimeError('SOURCE_VERIFICATION_MARKER_DEADLINE')
-    install('serving');workload_ready('serving')
+    start_serving(split)
     if ack_wire is not None:
         latest=read(live/'latest-pgstream.json')
         pod=get('pod',latest['name']);assert pod['metadata']['uid']==latest['uid'], 'POD_OWNERSHIP_CHANGED'
