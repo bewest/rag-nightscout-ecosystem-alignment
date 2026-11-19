@@ -281,7 +281,7 @@ def load(directory, *, resource_limits=True):
         if 'diagnosticResources' in m:require(isinstance(record,dict) and diagnostic_resources.selection(record.get('profile')) is not None,'M7_DIAGNOSTIC_RESOURCE_RECORD_REQUIRED')
         diagnostic_resources.configure(record.get('profile') if record is not None else None,
             document(d/'frozen.compose.json') if record is not None else None,record,
-            observe=lambda:diagnostic_resource_rows(m))
+            observe=lambda:diagnostic_resource_rows(m), driver_scope=d)
     elif diagnostic_resources._ACTIVE is None or not any(diagnostic_resources._ACTIVE.host.values()):
         # Down retains ownership/source guards but must not acquire a diagnostic
         # driver lock or validate corrupt quotas before exact-owned cleanup.
@@ -795,7 +795,7 @@ def prepare(args):
         # before arming that driver, without borrowing any runtime one-off.
         commit(args.deploy_repo,args.deploy_commit)
         args.image_input_preflight=prepare_image_inputs(args)
-    diagnostic_resources.configure(selected)
+    diagnostic_resources.configure(selected, driver_scope=Path(args.directory).resolve())
     commissioning_wal.option(args)
     fixture_project(args,'0'*32)
     ack_budget=stream_topology.ack_option(args)
@@ -1239,7 +1239,7 @@ def attachment_generator(d,source,root,m,owner_file=None):
     if runtime and runtime.get('diagnosticResources'):
         require(m.get('diagnosticResources')==runtime['diagnosticResources'],'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
         diagnostic_resources.configure(runtime['diagnosticResources']['profile'],document(d/'frozen.compose.json'),
-            runtime['diagnosticResources'],observe=lambda:diagnostic_resource_rows(m))
+            runtime['diagnosticResources'],observe=lambda:diagnostic_resource_rows(m), driver_scope=d)
     tools=generator_tools();client=generator_client(d,tools)
     contexts={'generator':dependency_context(root,root/'node_modules',['socket.io-client','pg','js-yaml']),
               'source':dependency_context(source,root/'node_modules',['pg','js-yaml'])}

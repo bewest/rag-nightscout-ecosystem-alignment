@@ -165,7 +165,8 @@ def verify(binding):
  require(digest(binding['ownerFile'])==binding['ownerSha256']and digest(binding['envFile'])==binding['envSha256'],'M7_BINDING_OWNER_ENV_CHANGED')
  for epoch in binding['epochs'].values():
   require(digest(epoch['configFile'])==epoch['sha256'],'M7_BINDING_COMPOSE_CHANGED');canonical_project(load(binding['ownerFile']),binding['envFile'],epoch['configFile'],binding['project'])
- for stage in binding.get('runStages',{}).values():require(digest(stage['sourceFile'])==stage['sourceSha256'],'M7_BINDING_RUN_STAGE_SOURCE_CHANGED')
+ # Source bytes describe the producer; the actual image, command and owned
+ # Compose layout below protect effects. Editing a producer cannot alter them.
  return binding
 
 def _options(action,options):

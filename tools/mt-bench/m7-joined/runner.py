@@ -505,7 +505,7 @@ def generated_control(root, d, m):
     This is a real Node execution, before I/O; the normal run then exercises
     the same bytes with the canonical caller/environment.
     """
-    a.diagnostic_resources.configure(m.get('diagnosticResources',{}).get('profile'))
+    a.diagnostic_resources.configure(m.get('diagnosticResources',{}).get('profile'), driver_scope=d)
     try:
         with a.diagnostic_resources.command([m['generator']['tools']['node']['path'],str(d/'probe.js')],a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies')})) as (argv,env):
             with (root/'generated-control.private.log').open('xb') as output:
@@ -704,7 +704,7 @@ def session_observe(directory, owner, name, config_file, history_file):
                 with a.command_deadline(session['stopWorkAt']):
                     a.diagnostic_resources.configure(session['resourceCeiling']['profile'],
                         a.document(d/'frozen.compose.json'),session['resourceCeiling'],
-                        observe=lambda:a.diagnostic_resource_rows(m))
+                        observe=lambda:a.diagnostic_resource_rows(m), driver_scope=d)
                     a.verify(d,m);a.image(m)
                     write(ob/'runtime-before.json',a.resources(m))
             finally:a.diagnostic_resources.configure()

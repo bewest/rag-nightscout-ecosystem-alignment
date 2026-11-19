@@ -220,7 +220,7 @@ exec(compile(ast.Module(body=footer.body,type_ignores=[]),a.__file__,'exec'),a._
     def test_actual_prepare_observes_runtime_only_and_plans_remain_pure(self):
         selected=supported_allocation();selected['services']['postgres']['millicpus']=65001
         args=SimpleNamespace(profile='pgstream-sample',run_purpose='discovery',backend_subnet=None,
-                             diagnostic_resource_profile=None,diagnostic_resource_allocation=selected,
+                             directory='/synthetic/fixture',diagnostic_resource_profile=None,diagnostic_resource_allocation=selected,
                              generator_dependencies='/synthetic/dependencies')
         with patch.object(a,'command',side_effect=lambda argv,**_:runtime_reader()(argv)) as reads, \
              patch.object(a,'prepare_staged') as effects, \
@@ -518,3 +518,29 @@ exec(compile(ast.Module(body=footer.body,type_ignores=[]),a.__file__,'exec'),a._
         with self.assertRaisesRegex(RuntimeError,'PLAN_CHANGED'):r.verify_config(fresh,budget)
 
 if __name__=='__main__':unittest.main()
+
+
+class FixtureDriverLocks(unittest.TestCase):
+    def criterion(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary)
+            from experiment_batch import global_lock_path
+            with patch('experiment_batch.global_lock_path', return_value=root/'driver.lock'):
+                first=r.Runtime(driver_scope=root/'first')
+                same=r.Runtime(driver_scope=root/'first')
+                independent=r.Runtime(driver_scope=root/'second')
+                try:
+                    first.acquire()
+                    with self.assertRaisesRegex(RuntimeError,'OTHER_DRIVER_ACTIVE'): same.acquire()
+                    independent.acquire()
+                    first.close()
+                    same.acquire()  # restored same-fixture entry after closure
+                finally:
+                    for runtime in (first,same,independent): runtime.close()
+
+    def test_independent_fixtures_overlap_and_same_fixture_refuses_red_restored(self):
+        self.criterion()
+        with patch.object(r.fcntl,'flock',return_value=None):
+            with self.assertRaises(AssertionError): self.criterion()
+        self.criterion()
+        print('FIXTURE_DRIVER_LOCK same-fixture overlap RED; independent fixtures GREEN; RESTORED_GREEN')

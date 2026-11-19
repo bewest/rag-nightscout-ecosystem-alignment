@@ -9,6 +9,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from decimal import Decimal
 import fcntl
+import hashlib
 import os
 import copy
 import json
@@ -503,12 +504,14 @@ def node_argv(argv, env, role='helper'):
 class Runtime:
     """One existing fixture driver process; callers retain cleanup ownership.
 
-    The host driver lock serializes selected CLI processes. Container ownership
+    The driver lock serializes calls for one fixture. Independent fixtures may
+    overlap within their authored allocations; their measurements are contended.
+    Container ownership
     and the sole finite runtime window remain with the existing orchestrator.
     The container census must be fresh, whole-project and identity-qualified by
     the existing caller. It is an admission read, not a new custody mechanism.
     """
-    def __init__(self, config=None, record=None, observe=None):
+    def __init__(self, config=None, record=None, observe=None, driver_scope=None):
         self.budget = plan(config) if config is not None else None
         if record is not None:
             need(self.budget is not None and record == self.budget.record(), 'RECORD_CHANGED')
@@ -519,15 +522,23 @@ class Runtime:
         self.lock = threading.RLock()
         self.host = Counter()
         self.driver_fd = None
+        self.driver_scope = driver_scope
 
     def acquire(self, lock_file=None):
-        # One host-Node driver across CLI processes. A killed driver leaves its
+        # One driver per fixture across CLI processes. A killed driver leaves its
         # nonempty heap-lease marker; a successor refuses until exact-owned
         # orphan cleanup is verified externally. Never expire a lease by time.
         from experiment_batch import child_lock, global_lock_path
         reserved = child_lock()
         need(not (reserved and lock_file), 'BATCH_LOCK_OVERRIDE')
-        path = Path(reserved or lock_file or global_lock_path())
+        scope = self.driver_scope
+        if scope is not None:
+            need(Path(scope).is_absolute(), 'DRIVER_SCOPE_PATH')
+            key = hashlib.sha256(str(Path(scope).resolve()).encode()).hexdigest()[:32]
+            scoped = global_lock_path().with_name(global_lock_path().stem + '-' + key + '.lock')
+        else:
+            scoped = global_lock_path()  # legacy/batch callers keep their original custody
+        path = Path(reserved or lock_file or scoped)
         need(path.is_absolute(), 'DRIVER_LOCK_PATH')
         fd = os.open(path, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
         try:
@@ -657,7 +668,7 @@ class Runtime:
 _ACTIVE = None
 
 
-def configure(selected=None, config=None, record=None, observe=None):
+def configure(selected=None, config=None, record=None, observe=None, driver_scope=None):
     global _ACTIVE
     selection(selected)
     need(_ACTIVE is None or not any(_ACTIVE.host.values()), 'ACTIVE_HOST_LEASES')
@@ -665,7 +676,7 @@ def configure(selected=None, config=None, record=None, observe=None):
         _ACTIVE.close()
     _ACTIVE = None
     if selected is not None:
-        candidate = Runtime(config, record, observe)
+        candidate = Runtime(config, record, observe, driver_scope=driver_scope)
         candidate.acquire()
         _ACTIVE = candidate
     return _ACTIVE
