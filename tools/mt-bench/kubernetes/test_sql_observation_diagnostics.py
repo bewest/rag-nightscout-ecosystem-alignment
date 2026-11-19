@@ -14,6 +14,7 @@ class SqlObservationDiagnostics(unittest.TestCase):
             probe = root / 'probe.cjs'
             k.generate_probe(probe)
             source = probe.read_text()
+            self.assertIn('performance.now()-e.sentMono<120000',source)
             bridge = source[source.index('const psqlAsync ='):source.index('const pct =')]
             harness = r'''
 const fs=require('node:fs'),path=require('node:path');
@@ -51,6 +52,7 @@ const execFile=(program,args,options,callback)=>({stdin:{end(sql){
         self.assertEqual(value['calls'][0]['sql'], 'SELECT 1;')
         self.assertEqual(value['calls'][0]['options']['timeout'], 60000)
         self.assertEqual(value['calls'][0]['options']['maxBuffer'], 32 << 20)
+        self.assertEqual(value['calls'][0]['args'][1], 'clinical-sql')
 
     def test_exit_retains_safe_reason_and_never_raw_stderr(self):
         value = self.run_bridge([{'code': 1, 'killed': False}])

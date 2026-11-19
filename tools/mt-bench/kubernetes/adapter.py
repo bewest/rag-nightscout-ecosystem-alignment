@@ -770,7 +770,7 @@ def probe_sql_bridge():
     """Retain bounded failure metadata without SQL, argv or child output."""
     return r"""const psqlAsync = sql => new Promise((resolve,reject)=>{
   const began=performance.now();
-  const child=execFile(process.env.K8S_PYTHON,[process.env.K8S_ADAPTER,'sql',process.env.K8S_RUN_DIRECTORY],
+  const child=execFile(process.env.K8S_PYTHON,[process.env.K8S_ADAPTER,'clinical-sql',process.env.K8S_RUN_DIRECTORY],
     {encoding:'utf8',timeout:60000,maxBuffer:32<<20},(err,stdout,stderr)=>{
       if(!err)return resolve(stdout);
       const nodeErrorCode=typeof err.code==='string'&&/^ERR_[A-Z_]{1,80}$/.test(err.code)?err.code:null;
@@ -900,7 +900,7 @@ def main():
     p = sub.add_parser('prepare')
     for arg in ('config', 'inventory', 'render', 'directory'):
         p.add_argument(arg)
-    for name in ('observe', 'sql', 'commission', 'recovery', 'access', 'policy', 'load', 'cleanup-plan', 'assess', 'candidate-proof'):
+    for name in ('observe', 'sql', 'clinical-sql', 'commission', 'recovery', 'access', 'policy', 'load', 'cleanup-plan', 'assess', 'candidate-proof'):
         p = sub.add_parser(name)
         p.add_argument('directory')
     p = sub.add_parser('bootstrap-map')
@@ -971,6 +971,10 @@ def main():
         return observation
     if args.command == 'sql':
         sys.stdout.write(sql(d, c, objects, sys.stdin.read(131073), client))
+        return None
+    if args.command == 'clinical-sql':
+        import clinical_sql
+        sys.stdout.write(clinical_sql.read(d, c, objects, sys.stdin.read(131073), client))
         return None
     if args.command == 'cleanup-plan':
         initial = document(d / 'observation.initial.json')

@@ -811,6 +811,24 @@ and raw output. The read still fails as UNMEASURED; the 60-second transport
 bound and 120-second clinical deadline are unchanged. Keep a waiting setup
 Job's native lifetime long enough for the phases that still inspect it.
 
+The generated clinical probe uses `adapter.py clinical-sql DIRECTORY` for its
+read-only SQL bridge. Full instrument, packet, render and configuration
+validation still runs for each child. Each SQL read brackets the exact selected
+PostgreSQL workload, Pod and running container with namespace/owner/UID, source
+image/command, controller, readiness and process-incarnation checks. The strict
+clinical SELECT and oracle retain actual database/system/timeline, native source
+generation, tenant and restore fences. The original query bytes pass unchanged
+inside `BEGIN READ ONLY … ROLLBACK`.
+
+The clinical bracket reads the selected namespace, workload and Pod rather than
+the full UI/setup/native-load roster for every clinical poll. Full campaign
+census and before/after oracles remain at their existing boundaries; the general
+`sql` command retains its full census. A targeted read grants no global-roster
+or capacity claim. Child transport remains 60 seconds, witness completion remains
+120 seconds, and the original work deadline can shorten both observation paths.
+Offline scope, controls and limitations are in the
+[clinical transport record](../../../reports/tenancy/clinical-sql-transport-2026-11-19/README.md).
+
 `jobs.py` consumes the deployment repository's registered job CLI and renderer
 from its selected tool commit. `plan` emits that actual contract for bootstrap,
 provision, prime, platform verification or offline verification-plan. It keeps
