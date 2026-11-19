@@ -199,6 +199,7 @@ def session(directory, spec):
                 '-e', 'BASE_URL=http://' + b['appAddress'] + ':' + str(b['port']), '-e', 'TENANTS_FILE=/tenants.private.json',
                 '-e', 'RUN_ID=' + descriptor['trafficRunId'],
                 '-e', 'RUN_START=' + str(int(time.time() * 1000)), '-e', 'DURATION=300', '-e', 'ACCEL=1', '-e', 'HOT_FACTOR=10',
+                '-e', 'DRIVER_HEADROOM=3.0',  # remote generator default (decision driver-sized-from-offer)
                 '-e', 'SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status',
                 b['k6Image'], 'run', '--quiet', '--summary-export', '/out/k6-summary.json', '/scripts/workload.js']
             with (out / 'k6.log').open('wb') as output:

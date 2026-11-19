@@ -28,8 +28,8 @@ from test_native_load import control, Kube, TENANTS, OPTIONS
 def configured():
     c, job = control()
     c['workload'].update(loadSeconds=2, setupSeconds=5, offeredRps=28, driverPlan=dict(version=1,
-        observer='scheduling-v1', maxAggregateVUs=56, maxTraceBytes=4*1024**2, maxTraceRows=100000,
-        scenarios={shape: dict(preAllocatedVUs=4, maxVUs=8, gracefulStopSeconds=1)
+        observer='scheduling-v1', maxTraceBytes=4*1024**2, maxTraceRows=100000,
+        scenarios={shape: dict(gracefulStopSeconds=1)
                    for shape in workload_runtime.SHAPES}))
     c['roles']['api'] = {'workload': 'Deployment/api', 'container': 'api'}
     resources = copy.deepcopy(job['spec']['template']['spec']['containers'][0]['resources'])
@@ -92,36 +92,34 @@ class NativeFiles(unittest.TestCase):
             f.terminal_process(c, wanted, job, pod, job, None)
         self.assertTrue(f.terminal_process(c, wanted, job, pod, job, pod)['complete'])
 
-    def test_real_exporter_hash_acknowledgement_bounds_and_deadline_controls(self):
+    def test_real_exporter_acknowledgement_bounds_and_deadline_controls(self):
         script = k.HERE/'native-artifacts.cjs'
         with tempfile.TemporaryDirectory() as scratch:
             root = Path(scratch); payload = b'synthetic-private-csv-bytes'
             (root/'sample.gz').write_bytes(payload); (root/'exit-code').write_text('0\n')
-            cfg = dict(seconds=5, runId='synthetic', sourceSha256='1'*64,
-                       driverWrapperSha256='2'*64, files={'sample.gz':128})
+            cfg = dict(seconds=5, runId='synthetic', files={'sample.gz':128})
             (root/'config.json').write_text(json.dumps(cfg))
             env = dict(os.environ, NS_NATIVE_OUTPUT=str(root), NS_NATIVE_EXPORT_CONFIG=str(root/'config.json'))
             hold = subprocess.Popen(['node',script,'hold'],env=env,stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
             try:
                 until = time.monotonic()+3
                 while not (root/'artifacts.json').exists() and time.monotonic()<until: time.sleep(.01)
-                raw = (root/'artifacts.json').read_bytes()
                 def read(*args):
                     return subprocess.run(['node',script,*args],env=env,capture_output=True,timeout=3)
                 self.assertEqual(read('read','sample.gz').stdout,payload)
-                (root/'sample.gz').write_bytes(b'X'*len(payload))
+                (root/'sample.gz').write_bytes(payload+b'X')
                 failed = read('read','sample.gz')
                 self.assertEqual(failed.returncode,78); self.assertEqual(failed.stdout,b'')
-                self.assertIn(b'ARTIFACT_CHANGED',failed.stderr)
+                self.assertIn(b'ARTIFACT_BOUND',failed.stderr)
                 (root/'sample.gz').write_bytes(b'X'*129)
                 oversized = read('read','sample.gz')
                 self.assertEqual(oversized.returncode,78); self.assertEqual(oversized.stdout,b'')
                 self.assertIn(b'ARTIFACT_BOUND',oversized.stderr)
                 (root/'sample.gz').write_bytes(payload)
                 self.assertEqual(read('read','sample.gz').stdout,payload)
-                self.assertEqual(read('ack','0'*64).returncode,78)
+                self.assertEqual(read('ack','peer-run').returncode,78)
                 self.assertIsNone(hold.poll())
-                self.assertEqual(read('ack',n.sha(raw)).returncode,0)
+                self.assertEqual(read('ack','synthetic').returncode,0)
                 self.assertEqual(hold.wait(timeout=3),0)
             finally:
                 if hold.poll() is None: hold.terminate(); hold.wait(timeout=3)
@@ -312,18 +310,18 @@ class NativeFiles(unittest.TestCase):
                 self.assertEqual((stage/'k6-scheduling.csv.gz').read_bytes(),(output/'k6-scheduling.csv.gz').read_bytes())
                 self.assertTrue(gzip.decompress((stage/'k6-scheduling.csv.gz').read_bytes()).startswith(b'metric_name,'))
                 accounting = k.document(stage/'driver-accounting.json')
-                self.assertEqual(accounting['offeredWorkVerdict'],'PASS')
+                self.assertNotIn('offeredWorkVerdict',accounting)
                 self.assertEqual(accounting['httpVerdict'],'PASS')
                 self.assertEqual(len(accounting['shards'][0]['byScenario']),7)
                 # The existing reducer sees the bounded original CSV. Truncation
                 # cannot become a summary-only pass; restore the same bytes.
-                import driver_vu_diagnostic as driver
+                import driver_accounting as driver
                 raw = (stage/'k6-scheduling.csv.gz').read_bytes()
                 (stage/'k6-scheduling.csv.gz').write_bytes(raw[:20])
                 with self.assertRaises((OSError, EOFError, RuntimeError)):
                     driver.retain(root, receipt['driverManifest'])
                 (stage/'k6-scheduling.csv.gz').write_bytes(raw)
-                self.assertEqual(driver.retain(root, receipt['driverManifest'])['offeredWorkVerdict'],'PASS')
+                self.assertEqual(driver.retain(root, receipt['driverManifest'])['httpVerdict'],'PASS')
             finally:
                 kube.close()
 

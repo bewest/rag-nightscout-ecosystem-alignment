@@ -76,8 +76,8 @@ def load_report(load, accounting, reduced_gate=None):
                or read(load/'driver-vu-assessment.json') or {})
     counts = accounting.get('sourceCounts') or {}
     if not summary and accounting.get('offeredWorkVerdict') == 'PASS' and 'iterations' not in counts:
-        # Older HTTP receipts inferred PASS from zero drops alone. Re-read the
-        # retained counters when possible; an old zero can also mean missing.
+        # Retained receipts from before driver-sized-from-offer inferred a verdict from zero
+        # drops alone. Re-read their counters when possible; an old zero can mean missing.
         import http_accounting
         metrics = read(load/'k6-summary.json').get('metrics')
         if isinstance(metrics, dict):
@@ -86,9 +86,8 @@ def load_report(load, accounting, reduced_gate=None):
             except (AttributeError, TypeError, ValueError):
                 metrics = None
         if not isinstance(metrics, dict):
-            accounting = {**accounting, 'offeredWorkVerdict': 'UNMEASURED',
-                          'sourceCounts': {key: value if key == 'dropped_iterations' or value != 0 else 'UNMEASURED'
-                                           for key, value in counts.items()}}
+            accounting = {**accounting, 'sourceCounts': {key: value if key == 'dropped_iterations' or value != 0
+                                                         else 'UNMEASURED' for key, value in counts.items()}}
     source = read(load.parent/'run.json') or read(load.parent/'owner.json')
     cadence = summary.get('cadence') or source.get('cadence') or source.get('workload')
     cadence = cadence if isinstance(cadence, dict) else {}
@@ -113,7 +112,6 @@ def load_report(load, accounting, reduced_gate=None):
               'components': {key: {field: row[field] for field in ('verdict', 'codes', 'witnesses') if field in row}
                              for key, row in components.items() if isinstance(row, dict)},
               'http': accounting.get('httpVerdict', 'UNMEASURED'),
-              'offeredWork': summary.get('offeredWorkVerdict', accounting.get('offeredWorkVerdict', 'UNMEASURED')),
               'counts': summary.get('totals') or accounting.get('sourceCounts') or 'UNMEASURED',
               'byShard': by_shard or 'UNMEASURED',
               'actorTransitions': [event for rows in (*census, actors.get('actorTransitions', [])) for event in rows],
@@ -123,8 +121,7 @@ def load_report(load, accounting, reduced_gate=None):
         report['countsSource'] = actors.get('artifactSource', 'UNMEASURED')
         report['terminalWriter'] = {key: process.get(key) for key in ('jobUid', 'podUid', 'containerId', 'complete')}
     if lost:
-        report.update(capturedWriterOfferedWork=report['offeredWork'], offeredWork='UNMEASURED',
-                      countScope='exported writer only; whole-run counts unmeasured')
+        report.update(countScope='exported writer only; whole-run counts unmeasured')
     return report
 
 

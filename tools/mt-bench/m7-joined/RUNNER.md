@@ -637,127 +637,56 @@ evaluator and delivery counts. The sampling cadence and resource bookends
 define the scope. Missing ticks, duration and causal attribution remain
 unmeasured where the observer cannot establish them.
 
-### Local k6 scheduling diagnostic
+### k6 driver sizing
 
-The historical `trace-v1` and `preallocated-v1` driver selectors use the existing discovery runner
-and session observations. Its bounded scope is `pgstream-sample`, 1,000 tenants,
-one API replica, 180 offered requests/s, 310 traffic seconds, one driver shard,
-and no realistic mix, in-load restart, Node profile or warm-cause observer. The
-remote projection refuses this local selector. Regenerate the normal configuration
-projection and diagnostic receipt for each arm; entered fixtures remain immutable.
-
-Use `trace-v1`, then `preallocated-v1`, then restored `trace-v1` on the same
-selected source, resource allocation and workload schedule. All three arms select
-the same safe system tags and gzip CSV observation. The middle arm distributes
-extra VUs in arrival-rate proportions until at least 620 VUs are preallocated
-in aggregate. It preserves each original scenario budget and `maxVUs`. The
-`driver-vu-plan` setup marker records each scenario's rate, time unit, original
-and selected preallocation, maximum and the aggregate.
-
-`load/k6-scheduling.csv.gz` retains per-scenario elapsed drop/request/response
-counters and gauges. `load/driver-vu-assessment.json` reconciles those counters
-with the existing independent HTTP summary, retains ten-second drop buckets and
-response latency in the same buckets, and keeps HTTP and offered-work verdicts
-separate. Missing or inconsistent trace/plan data is UNMEASURED or refused; it
-does not replace the primary actor failure. The existing independent stored-write,
-clinical opportunity and client-frame oracles remain required. A sampled
-`vus_max` gauge minimum does not establish the initial preallocation.
-
-Reduce the three immutable observation fixture directories after collection:
-
-```bash
-python3 -B tools/mt-bench/m7-joined/driver_vu_diagnostic.py /absolute/new/comparison.json \
-  /absolute/trace-before/fixture /absolute/preallocated/fixture /absolute/trace-restored/fixture
-```
-
-The comparison refuses changed source, image, instrument or cadence, and verifies
-restored scenario budgets. It diagnoses driver scheduling; it grants no capacity
-and does not identify the backend cause of a historical drop. The existing
-`driver-shards` contract and retained 10,000-tenant driver proof are separate.
+Every k6 path (this runner, the Kubernetes native driver and `k6-vu-driver.js`) uses
+`driverVUs` in `capacity/k6/workload.js` ([driver-sized-from-offer](../../../docs/30-design/tenancy/multitenancy-decisions.md#driver-sized-from-offer)).
+Per operation, `preAllocatedVUs = max(2, ceil(rate x 0.25 s x H))` and
+`maxVUs = max(4, ceil(rate x 5 s x H))`, where rate is that operation's offered requests/s.
+The run parameter `driver-headroom` (Kubernetes workload field `driverHeadroom`) sets H; the
+defaults are 1.5 for local Compose, 2 for Kubernetes and 3 for a remote generator. k6 receives it
+as `DRIVER_HEADROOM`. At H=2, realistic-v1 renders 14 preallocated / 144 maximum VUs at 1,000
+tenants and 72 / 1,394 at 10,000 (`test_driver_sizing`). Drops, late starts and issued/completed
+counts are figures by operation; there is no offered-work verdict. The historical `trace-v1` /
+`preallocated-v1` diagnostic and `driver_vu_diagnostic.py` are retired.
 
 #### Configuration-driven driver measurement
 
-For new local experiments, put a JSON string in the existing run configuration's
-`prepare.driver-plan` field. The adapter parses it through `--driver-plan`; it
-selects `configured-v1` automatically. No runner schema or source/image allow-list
-is added. For example, this selects one follower-read scenario at the existing
-`offered-rps`, with a delayed start and finite drain:
+For scheduling windows and the CSV observer, put a JSON string in the run configuration's
+`prepare.driver-plan` field (`--driver-plan`). It selects `k6-vu-driver.js`. VU fields are
+refused: the formula sizes every scenario. For example, one follower-read scenario with a delayed
+start and finite drain:
 
 ```json
 {
   "version": 1,
   "observer": "scheduling-v1",
-  "maxAggregateVUs": 32,
   "maxTraceBytes": 16777216,
   "maxTraceRows": 500000,
   "scenarios": {
-    "r_sgv": {
-      "preAllocatedVUs": 8,
-      "maxVUs": 16,
-      "startTimeSeconds": 2,
-      "durationSeconds": 178,
-      "gracefulStopSeconds": 10
-    }
+    "r_sgv": {"startTimeSeconds": 2, "durationSeconds": 178, "gracefulStopSeconds": 10}
   }
 }
 ```
 
-`load-seconds` bounds every scenario's start plus duration. Omitted start is zero;
-omitted duration is the remaining load window; omitted drain is 30 seconds. VU
-budgets apply **per scenario per driver shard**. `maxAggregateVUs` caps the sum of
-all scenario maxima across all shards, conservatively including non-overlapping
-windows. The existing driver CPU, memory, no-swap, process ownership and cleanup
-allocation remains in force. More VUs do not establish more application capacity.
+`load-seconds` bounds every scenario's start plus duration. Omitted start is zero; omitted duration
+is the remaining load window; omitted drain is 30 seconds. Rates and tenant selection come from the
+workload (`offered-rps`, `hot-factor`, `accel`, or `realistic-v1` with `workload-scale`). Realistic
+mix keeps all seven shapes. Shards use the contiguous roster split and per-shard offered rate; each
+shard sizes its own scenarios. The configured driver is local and Kubernetes only; remote launch
+refuses it.
 
-The supported executor is `constant-arrival-rate`. Rates and tenant selection
-come from the existing workload, `offered-rps`, `hot-factor`, `accel`, or
-`realistic-v1` with its uniform `workload-scale`. A selected subset of the seven
-existing shapes is supported for ordinary rate experiments. Realistic mix keeps
-all seven shapes and its existing equal-tenant cadence. Populations, rates,
-windows, API counts and shard counts do not have a driver-specific case filter;
-the existing source, topology, receipt and resource admission still applies.
-Shards use the existing contiguous roster split and per-shard offered-rate limit.
-The new mode is local only. Remote projection and remote launch refuse it;
-Kubernetes/remote equivalence is UNMEASURED and needs its owning runner's wiring.
-
-`summary-v1` retains bounded per-scenario counters and setup/schedule/drain markers.
-`scheduling-v1` also exports gzip CSV and independently reconciles its counters,
-phase tags and timestamps. The assessment compares the actual emitted k6 plan
-with the manifest-derived plan for **each shard**, checks every exit receipt and
-native summary, and checks the merged counters. Missing shards or plans cannot
-produce a pass. JWT exchanges have separate counts and elapsed time. Starts and
-completions are split at each scenario's scheduled end, so an iteration dispatched
-at the boundary or completed during drain is visible. Compose begins the ordinary observation after setup.
-
-The nominal offered count is `rate * duration / timeUnit`. The planned integer
-range is its ceiling through `floor(nominal) + 1`: at an exact endpoint, k6 can
-race its duration cancellation with one final timer dispatch. The minimum permits
-no missing nominal slot. Every observed scheduled slot is issued or dropped;
-issued requests must reconcile with responses, transport failures and finished
-iterations. Drops, under-delivery, excessive scheduling or incomplete requests
-fail offered-work eligibility independently of HTTP status. The pinned k6 1.3.0
-[executor source](https://github.com/grafana/k6/blob/v1.3.0/lib/executor/constant_arrival_rate.go#L300)
-and the native controls establish this boundary behavior. This is accounting,
-not a throughput target or capacity acceptance gate.
-
-Limits are explicit: 16 KiB configuration, 256 KiB generated workload, 12,800
-aggregate maximum VUs, 10,800-second load horizon, 60-second maximum drain,
-64 MiB per summary and 4 MiB per marker log. CSV defaults to 512 MiB compressed
-per file and five million rows; configuration can lower either bound. The Docker
-file-size limit caps each output file; the reducer also caps decoded bytes at
-16 times the compressed-file allowance and individual lines at 64 KiB. These are
-per-file bounds; shards multiply total retained storage. The existing allocation
-bounds runtime memory/CPU; a configured VU budget is not a memory estimate.
-
-The existing HTTP status, status-body fingerprint, stored-write, clinical and
-client-frame boundaries remain independent. Shard percentiles remain shard
-statistics; pooled percentiles and guaranteed pooled percentile bounds are
-UNMEASURED. The historical comparison and all original verdicts remain unchanged.
-
-Run the focused pure checks and, explicitly, the native qualification:
+`summary-v1` retains per-scenario counters and setup/schedule/drain markers. `scheduling-v1` also
+exports gzip CSV and reconciles its counters, phase tags and timestamps. `load/driver-accounting.json`
+compares the emitted k6 plan's arrival rates and windows with the manifest for each shard, records
+the emitted VU sizing and H, and reports per operation the planned range, issued, completed,
+responses, transport failures, drops and steady/drain starts and completions. The nominal offered
+count is `rate * duration / timeUnit`; the planned range is its ceiling through
+`floor(nominal) + 1` (k6 1.3.0 can dispatch one final iteration at the endpoint). These are figures,
+not a capacity gate. CSV defaults to 512 MiB compressed per file and five million rows.
 
 ```bash
-PYTHONPATH=tools/mt-bench/m7-joined python3 -B -m unittest test_driver_config test_driver_vu_diagnostic test_driver_shards
+PYTHONPATH=tools/mt-bench/m7-joined python3 -B -m unittest test_driver_sizing test_driver_config test_driver_shards
 ```
 
 The native command uses only owned synthetic loopback HTTP targets and the actual
@@ -1063,8 +992,8 @@ Discovery `sockets-per-tenant` also accepts a positive array-representable count
 When an explicit viewer total is absent, tenants times sockets per tenant must
 fit the same total-viewer array bound. A declared total replaces that product.
 Configured driver partitions may exceed the reference sixteen; every partition
-has at least one roster tenant, all share the one declared driver resource
-allocation, and their summed VUs must fit `maxAggregateVUs`. The partitioner
+has at least one roster tenant and all share the one declared driver resource
+allocation; each sizes its own VUs from its offer. The partitioner
 preserves every tenant and the authored aggregate offered rate.
 
 Discovery `cleanupSeconds` replaces the one-hour reference cleanup window.
@@ -1076,8 +1005,7 @@ or cleanup extension to an entered run. Acceptance presets keep their ranges.
 Primer concurrency remains the selected deployment source's explicit 1–32
 contract; extending it requires updating and qualifying that source path.
 
-Configured driver `maxAggregateVUs`, `maxTraceBytes` and `maxTraceRows` replace
-reference budgets. The summed scenario/shard VUs must fit the authored total;
+Configured driver `maxTraceBytes` and `maxTraceRows` replace reference budgets;
 capture byte and row bounds still stop observation and retain partial results.
 The decompressed capture allowance remains sixteen times the authored compressed
 byte budget and must fit an exact integer. Historical fixed diagnostic modes

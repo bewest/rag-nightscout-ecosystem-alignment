@@ -27,7 +27,7 @@ def ordinary_roster(c, tenants, need):
 def validate(w, need, tenants=None):
     need(isinstance(w, dict) and set(w) <= {'loadSeconds', 'offeredRps', 'workloadMix',
          'workloadScale', 'logicalPollingClients', 'viewerSetup', 'probeEveryMs', 'hotFactor', 'pointId', 'setupSeconds', 'drainSeconds',
-         'driverPlan', 'driverShards', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget','drainObservation'}, 'WORKLOAD_FIELDS')
+         'driverPlan', 'driverShards', 'driverHeadroom', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget','drainObservation'}, 'WORKLOAD_FIELDS')
     viewer_plan.setup(w, need)
     need(workload_inputs.seconds(w.get('loadSeconds')), 'WORKLOAD_LOAD_SECONDS')
     need(workload_inputs.polling_clients(w.get('logicalPollingClients')), 'WORKLOAD_VIEWERS')
@@ -62,9 +62,10 @@ def validate(w, need, tenants=None):
         if tenants is not None:
             need(workload_inputs.aggregate_cycle_ms(tenants, w.get('hotFactor', 1), w['offeredRps']) is not None,
                  'WORKLOAD_OFFERED_TIME_UNIT')
+    need('driverHeadroom' not in w or workload_inputs.driver_headroom(w['driverHeadroom']), 'DRIVER_HEADROOM')
     need('driverShards' not in w or 'driverPlan' in w, 'DRIVER_PLAN_REQUIRED')
     if 'driverPlan' in w:
-        import driver_vu_diagnostic as driver
+        import driver_accounting as driver
         need(workload_inputs.shard_count(w.get('driverShards', 1), tenants), 'DRIVER_SHARDS')
         driver.configuration(w['driverPlan'], w)
         need(set(w['driverPlan']['scenarios']) == set(SHAPES), 'DRIVER_SEVEN_SHAPES_REQUIRED')
@@ -73,15 +74,20 @@ def validate(w, need, tenants=None):
 
 def driver_manifest(c):
     """Project the same measured driver contract used by local Compose."""
-    import driver_vu_diagnostic as driver
+    import driver_accounting as driver
     cadence = dict(c['workload'], accel=1, hotFactor=c['workload'].get('hotFactor', 1),
-                   driverVuDiagnostic=driver.CONFIGURED)
+                   driverHeadroom=headroom(c['workload']))
     cadence['driverPlan'] = driver.configuration(cadence['driverPlan'], cadence)
     m = dict(tenants=c.get('ordinaryRosterTenants', c['tenants']), replicas=sum(r == 'api' or r.startswith('api-') for r in c['roles']),
              cadence=cadence, pair=c['pins']['pair'], imageId=c['pins']['appImageId'],
              instrument=c['pins']['instrument'], runPurpose='discovery', transport='kubernetes-native')
     driver.expected_plans(m)
     return m
+
+
+def headroom(w):
+    """Kubernetes default H=2 (decision driver-sized-from-offer); driverHeadroom overrides it."""
+    return w.get('driverHeadroom', workload_inputs.DRIVER_HEADROOM['kubernetes'])
 
 
 def environment(w, inherited, need):
@@ -94,7 +100,7 @@ def environment(w, inherited, need):
         need(key not in inherited or key in selected and inherited[key] == selected[key],
              'WORKLOAD_ENVIRONMENT_CONFLICT')
     env = {key: value for key, value in inherited.items() if key not in SELECTORS and key != 'JWT_SETUP_CONCURRENCY'}
-    env.update(selected)
+    env.update(selected, DRIVER_HEADROOM=repr(float(headroom(w))))
     return env
 
 

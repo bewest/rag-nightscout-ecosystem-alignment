@@ -1,3 +1,4 @@
+import math
 import json
 from pathlib import Path
 import subprocess
@@ -25,7 +26,10 @@ class OfferedRate(unittest.TestCase):
    r=self.observe(3000,target);scenarios=r['options']['scenarios'];total=sum(v['rate']/float(v['timeUnit'][:-2])*1000 for v in scenarios.values())
    self.assertAlmostEqual(total,110 if target=='default' else target,delta=.001)
    self.assertEqual(scenarios['r_sgv']['rate'],5*scenarios['w_sgv']['rate'])
-   self.assertEqual(len(scenarios),7);self.assertTrue(all(v['maxVUs']==800 for v in scenarios.values()))
+   self.assertEqual(len(scenarios),7)
+   for v in scenarios.values():  # driver-sized-from-offer, default H=1.5
+    per=v['rate']*1000/float(v['timeUnit'][:-2])
+    self.assertEqual((v['preAllocatedVUs'],v['maxVUs']),(max(2,math.ceil(per*.25*1.5)),max(4,math.ceil(per*5*1.5))))
    period=float(scenarios['w_sgv']['timeUnit'][:-2]);self.assertEqual(r['calls'][0][0]['date'],1800000000000+period)
    self.assertEqual(r['counts']['scenario_request_attempts'],2);self.assertEqual(r['counts']['scenario_http_responses'],2)
  def test_transport_failure_is_attempt_without_http_response(self):

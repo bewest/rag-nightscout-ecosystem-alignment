@@ -422,7 +422,7 @@ def run(packet, grant_path, expected_digest, group=None):
             try:
                 measurements = reduce.reduce_stage(d/'load', attempt/'observations')
                 outcome['observations'] = {key: measurements[key] for key in
-                    ('http', 'issued', 'offeredWork', 'stored', 'clinical', 'selectedClinicalCoverage', 'delivered',
+                    ('http', 'issued', 'stored', 'clinical', 'selectedClinicalCoverage', 'delivered',
                      'evaluatorProgress', 'catchup', 'outcomeGate', 'componentCounters', 'stopEvidence',
                      'probeFailure', 'stageOutcome') if key in measurements}
                 outcome['reduction'] = 'observations/reduction.json'

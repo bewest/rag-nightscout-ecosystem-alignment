@@ -158,8 +158,8 @@ Output keeps source/placement/actor identity, independent HTTP and stored result
 selected clinical coverage, delivered frames, available stage latency/freshness
 and 10-second scheduling-count curves. Every retained input is checksummed.
 It does not mutate originals. A lost witness fails coverage even if the recorded
-top-level clinical verdict says PASS; dropped iterations fail offered-work
-coverage without erasing accepted/stored/selected-clinical observations. That is
+top-level clinical verdict says PASS; dropped iterations are a figure by
+operation and erase no accepted/stored/selected-clinical observation. That is
 coverage accounting, not a performance SLO or capacity gate.
 
 Capture before-prime, steady/load, drain and recovery bookends separately. For

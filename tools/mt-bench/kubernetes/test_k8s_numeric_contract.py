@@ -97,18 +97,15 @@ class NumericContract(unittest.TestCase):
                 test_matrix.m.allocation(matrix.value,matrix.entries)
         finally:matrix.doCleanups()
 
-    def test_native_configured_partition_plan_is_exact_and_budget_limited(self):
+    def test_native_configured_partition_plan_is_exact(self):
         c,_,_,_=fixture();c['tenants']=12001;c['workload']=self.selected()['workload']
         c['workload'].update(driverShards=32,driverPlan={'version':1,'observer':'summary-v1',
-            'maxAggregateVUs':224,'scenarios':{name:{'preAllocatedVUs':1,'maxVUs':1}
-                                             for name in workload_runtime.SHAPES}})
+            'scenarios':{name:{} for name in workload_runtime.SHAPES}})
         workload_runtime.validate(c['workload'],k.need,c['tenants'])
-        import driver_vu_diagnostic as driver
+        import driver_accounting as driver
         plans=driver.expected_plans(workload_runtime.driver_manifest(c))
         self.assertEqual(len(plans),32);self.assertEqual(sum(p['tenants'] for p in plans),12001)
-        self.assertEqual(sum(p['aggregateMaxVUs'] for p in plans),224)
-        c['workload']['driverPlan']['maxAggregateVUs']=223
-        with self.assertRaisesRegex(RuntimeError,'M7_DRIVER_VU_LIMIT'):workload_runtime.driver_manifest(c)
+        self.assertTrue(all(p['driverHeadroom']==2 for p in plans))
         for bad in (0,True,12002):
             with self.assertRaisesRegex(k.Refused,'DRIVER_SHARDS'):
                 workload_runtime.validate({**c['workload'],'driverShards':bad},k.need,c['tenants'])

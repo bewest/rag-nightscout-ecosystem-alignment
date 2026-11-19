@@ -60,7 +60,7 @@ class Realistic(unittest.TestCase):
             with self.assertRaisesRegex(k.Refused,'WORKLOAD_ENVIRONMENT_CONFLICT'):w.environment(settings,{key:value},k.need)
             w.environment(settings,{},k.need)
         old=dict(loadSeconds=330,offeredRps=18,logicalPollingClients=500,probeEveryMs=300000)
-        self.assertEqual(w.environment(old,{},k.need),{'OFFERED_RPS':'18'})
+        self.assertEqual(w.environment(old,{},k.need),{'OFFERED_RPS':'18','DRIVER_HEADROOM':'2.0'})
         print('RED_RESTORED K8S_WORKLOAD_ENVIRONMENT_CONFLICT; sparse/zero/full assignments')
 
     def test_normal_prepare_rejects_override_before_output_or_actor(self):

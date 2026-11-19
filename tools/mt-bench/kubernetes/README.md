@@ -452,10 +452,11 @@ availability SLO or capacity promotion. The continuity join also requires
 unchanged peer Pod/container incarnations and a native load interval spanning
 the exact role restart; probe setup time alone cannot establish continuity.
 
-Load assessment also joins the original M7 HTTP accounting, offered-work and
+Load assessment also joins the original M7 HTTP accounting and
 settings-fingerprint reducers. Every selected scenario and JWT setup must have
-observed attempts, settled expected responses, source-counter reconciliation,
-no dropped work and an observed matching source-derived settings fingerprint.
+observed attempts, settled expected responses, source-counter reconciliation
+and an observed matching source-derived settings fingerprint. Drops are a figure
+by operation (decision driver-sized-from-offer).
 Missing evidence refuses its dependent load qualification. The independent
 storage, clinical and frame checks remain required; HTTP counters alone cannot
 establish those outcomes. Raw functional findings survive at
@@ -832,8 +833,9 @@ contract and accepted-versus-stored accounting remain required. All-writer
 post-stop WAL/ACK coverage stays UNMEASURED. Owned namespace and cluster-trust
 cleanup remain the operating owner's responsibility; Job TTL is insufficient.
 
-One-shard `driverPlan` selections preserve the existing `k6-vu-driver.js`,
-`configured_environment()` and `driver.retain()` accounting. `scheduling-v1`
+One-shard `driverPlan` selections use `k6-vu-driver.js` and
+`driver_accounting.configured_environment()` / `retain()`. VUs come from the offer with
+`workload.driverHeadroom` (default 2 on Kubernetes). `scheduling-v1`
 retains the original gzipped raw CSV, including the original byte/row bounds;
 `summary-v1` selects its existing summary contract. Multiple shards refuse
 before a Kubernetes read or actor creation.

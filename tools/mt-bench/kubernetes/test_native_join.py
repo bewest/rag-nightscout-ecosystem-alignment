@@ -133,7 +133,7 @@ class NativeJoin(unittest.TestCase):
         self.assertEqual(original,j.declarations(restored))
         plan=next(row['value'] for row in original[0]['spec']['template']['spec']['containers'][0]['env']
                   if row['name']=='M7_DRIVER_PLAN')
-        import driver_vu_diagnostic as driver
+        import driver_accounting as driver
         import workload_runtime
         expected=driver.configured_environment(workload_runtime.driver_manifest(c))['M7_DRIVER_PLAN']
         self.assertEqual(json.loads(plan),json.loads(expected))

@@ -49,11 +49,10 @@ def summary_script(script, runid):
     handleSummary receives k6's own counters/trends. Flatten values into the
     legacy --summary-export shape expected by the unchanged M7 reducers. Never
     include setup_data (JWTs) in the transport. Chunk framing detects truncation,
-    duplication, reordering and cross-run/script substitution before import.
+    duplication, reordering and cross-run substitution before import.
     """
     text = script.decode('utf-8')
     k.need('handleSummary' not in text, 'NATIVE_LOAD_SUMMARY_EXPORT_CONFLICT')
-    identity = sha(script)
     trailer = r'''
 export function handleSummary(data) {
   const metrics = {};
@@ -66,16 +65,16 @@ export function handleSummary(data) {
   if (text.length > 4194304) throw Error('K8S_NATIVE_LOAD_SUMMARY_BOUND');
   const total = Math.ceil(text.length / 8192), rows = [];
   for (let index = 0; index < total; index++) rows.push(JSON.stringify({
-    kind: 'm7-k6-summary-chunk-v1', runId: RUN_MARKER, sourceSha256: SOURCE_HASH,
+    kind: 'm7-k6-summary-chunk-v1', runId: RUN_MARKER,
     index, total, text: text.slice(index * 8192, (index + 1) * 8192)
   }));
   return {stdout: rows.join('\n') + '\n'};
 }
-'''.replace('RUN_MARKER', json.dumps(runid)).replace('SOURCE_HASH', json.dumps(identity))
+'''.replace('RUN_MARKER', json.dumps(runid))
     return script + trailer.encode()
 
 
-def decode(raw, runid, source_sha):
+def decode(raw, runid):
     """Return exact event lines and a complete summary; never infer missing data."""
     k.need(isinstance(raw, bytes) and 0 < len(raw) <= MAX_LOG_BYTES,
            'NATIVE_LOAD_LOG_BOUND', 'UNMEASURED')
@@ -94,8 +93,8 @@ def decode(raw, runid, source_sha):
         if not isinstance(value, dict) or value.get('kind') != KIND:
             events.append(line)
             continue
-        k.need(set(value) == {'kind', 'runId', 'sourceSha256', 'index', 'total', 'text'}
-               and value['runId'] == runid and value['sourceSha256'] == source_sha,
+        k.need(set(value) == {'kind', 'runId', 'index', 'total', 'text'}
+               and value['runId'] == runid,
                'NATIVE_LOAD_SUMMARY_BINDING')
         k.need(type(value['index']) is int and type(value['total']) is int
                and 1 <= value['total'] <= 512 and value['index'] == len(frames)
@@ -212,8 +211,8 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
               'stringData': {'workload.js': wrapped.decode(),
                              **({} if private_input else {'tenants.json': tenant_text})}}
     receipt = {'kind': 'm7-kubernetes-k6-job-v1', 'runId': runid, 'fixtureRunId': c['runId'],
-               'namespace': c['namespace'], 'pins': c['pins'], 'sourceSha256': sha(script),
-               'adaptedSha256': sha(wrapped), 'rosterSha256': sha(tenant_text.encode()),
+               'namespace': c['namespace'], 'pins': c['pins'],
+               'rosterSha256': sha(tenant_text.encode()),
                'jobSha256': k.hashed(rendered), 'workload': w,
                'activeDeadlineSeconds': seconds, 'transport': 'in-cluster-k6-service',
                'outcomeGate': 'UNMEASURED', 'capacityAcceptance': 'NOT_GRANTED',
@@ -366,11 +365,10 @@ def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, 
     receipt['artifactSource'] = {'podUid': process['podUid'], 'writer': origin['writer'], 'transport':'k6-logs'}
     if process.get('restartCount'):
         receipt['writerContinuity'] = 'UNMEASURED'
-    events, summary = decode(raw, receipt['runId'], receipt['sourceSha256'])
+    events, summary = decode(raw, receipt['runId'])
     private(out / 'k6.log', events)
     k.write(out / 'k6-summary.json', summary)
-    receipt.update(process=process, eventsSha256=sha(events),
-                   summarySha256=k.digest(out / 'k6-summary.json'), capture='CAPTURED')
+    receipt.update(process=process, capture='CAPTURED')
     k.write(out / 'native-load.json', receipt)
     k.need(process['complete'] and wait_error is None, 'NATIVE_LOAD_JOB_FAILED', 'UNMEASURED')
     return receipt

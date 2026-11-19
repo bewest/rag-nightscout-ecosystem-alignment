@@ -45,10 +45,10 @@ def control():
 OPTIONS = dict(runid=RUN, seconds=300, run_start_ms=1900000000000, setup_seconds=10)
 
 
-def frames(summary=None, *, runid=RUN, source=None):
+def frames(summary=None, *, runid=RUN):
     payload = json.dumps(summary or {'metrics': {'synthetic_counter': {'count': 2}}})
     parts = [payload[i:i+n.CHUNK_CHARS] for i in range(0, len(payload), n.CHUNK_CHARS)]
-    return [dict(kind=n.KIND, runId=runid, sourceSha256=source or n.sha(SCRIPT),
+    return [dict(kind=n.KIND, runId=runid,
                  index=i, total=len(parts), text=part) for i, part in enumerate(parts)]
 
 
@@ -139,15 +139,14 @@ class NativeLoad(unittest.TestCase):
 
     def test_configured_plan_requires_explicit_exporter_admission_before_actor_creation(self):
         c, job = control()
-        c['workload']['driverPlan'] = dict(version=1, observer='scheduling-v1', maxAggregateVUs=7,
-            scenarios={shape: dict(preAllocatedVUs=1, maxVUs=1) for shape in workload_runtime.SHAPES})
+        c['workload']['driverPlan'] = dict(version=1, observer='scheduling-v1',
+            scenarios={shape: {} for shape in workload_runtime.SHAPES})
         kube = Kube(c)
         with tempfile.TemporaryDirectory() as out:
             with self.assertRaisesRegex(k.Refused, 'EXPORTER_RESOURCES_REQUIRED'):
                 n.run(kube, c, job, SCRIPT, TENANTS, out, **OPTIONS)
         self.assertEqual(kube.calls, [])
         c['workload']['driverShards'] = 2
-        c['workload']['driverPlan']['maxAggregateVUs'] = 14
         with self.assertRaisesRegex(k.Refused, 'UNSUPPORTED:driverShards'):
             n.selection(c)
 
@@ -179,13 +178,13 @@ class NativeLoad(unittest.TestCase):
     def test_framing_and_identity_controls_restore(self):
         metric = {'metrics': {'large': {'count': 1, 'synthetic': 'x' * 20000}}}
         rows = frames(metric)
-        self.assertEqual(n.decode(logs(rows), RUN, n.sha(SCRIPT))[1], metric)
+        self.assertEqual(n.decode(logs(rows), RUN)[1], metric)
         for changed, code in ((rows[:-1], 'INCOMPLETE'), (rows+rows, 'FRAMING'),
                               (list(reversed(rows)), 'FRAMING'), (frames(runid='peer'), 'BINDING'),
-                              (frames(source='0'*64), 'BINDING'), ([], 'INCOMPLETE')):
+                              ([], 'INCOMPLETE')):
             with self.assertRaisesRegex(k.Refused, code):
-                n.decode(logs(changed), RUN, n.sha(SCRIPT))
-            self.assertEqual(n.decode(logs(rows), RUN, n.sha(SCRIPT))[1], metric)
+                n.decode(logs(changed), RUN)
+            self.assertEqual(n.decode(logs(rows), RUN)[1], metric)
 
     def test_complete_job_retains_reducer_inputs_and_still_cannot_claim_product_pass(self):
         c, job = control(); kube = Kube(c)
@@ -225,7 +224,6 @@ class NativeLoad(unittest.TestCase):
         with tempfile.TemporaryDirectory() as scratch:
             d = Path(scratch); out = d/'load'; out.mkdir()
             (d/'workload.js').write_bytes(SCRIPT)
-            k.write(d/'packet.json', {'workload': {'adaptedSha256': n.sha(SCRIPT)}})
             n.run(Kube(c), c, job, SCRIPT, TENANTS, out, **OPTIONS)
             (out/'runid').write_text(RUN)
             baseline = {'namespace': {'uid': 'owned-namespace'}}
@@ -254,7 +252,7 @@ export default function(){count.add(1);console.log(JSON.stringify({event:'scenar
             result = subprocess.run([binary, 'run', '--quiet', '--no-usage-report', '--address=',
                                      '--log-format=json', '--log-output=stdout', str(path)], capture_output=True, timeout=20)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        events, summary = n.decode(result.stdout, RUN, n.sha(script))
+        events, summary = n.decode(result.stdout, RUN)
         self.assertEqual(summary['metrics']['transport_control_count']['count'], 2)
         self.assertEqual(summary['metrics']['transport_control_count']['thresholds']['count==2'], False)
         self.assertIn(b'scenario-first-iteration', events)

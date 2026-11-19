@@ -308,7 +308,7 @@ class Adapter(unittest.TestCase):
     def test_generated_probe_and_workload_actual_callbacks(self):
         with tempfile.TemporaryDirectory() as name:
             target=Path(name)/'probe.cjs';metadata=k.generate_probe(target)
-            self.assertEqual(metadata['kubernetesSha256'],k.digest(target))
+            self.assertNotIn('kubernetesSha256',metadata)
             subprocess.run(['node','--check',str(target)],check=True,capture_output=True)
             value=subprocess.run(['node',str(k.M7/'probe-accounting-control.cjs'),str(target)],capture_output=True,text=True,timeout=5)
             self.assertEqual(value.returncode,0,value.stderr)

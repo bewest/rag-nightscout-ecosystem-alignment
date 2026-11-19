@@ -242,7 +242,7 @@ class Matrix(unittest.TestCase):
         refused['m7_http_completed{http_shape:r_sgv,category:http_refused}'] = {'count': 1}
         cases.append(('SCENARIO_HTTP_FAILED', refused))
         dropped = copy.deepcopy(metrics);dropped['dropped_iterations']['count'] = 1
-        self.assertEqual(check(dropped)['http']['offeredWorkVerdict'], 'UNMEASURED')  # drops are a figure
+        self.assertEqual(check(dropped)['http']['droppedIterations'], 1)  # drops are a figure
         self.assertEqual(check(dropped)['http']['httpVerdict'], 'PASS')
         missing_counter = copy.deepcopy(metrics);del missing_counter['http_reqs']
         cases.append(('SCENARIO_HTTP_FAILED', missing_counter))
@@ -260,7 +260,7 @@ class Matrix(unittest.TestCase):
                   'runId': c['runId'] + '-load'}
         result = {'verdict': 'OBSERVED', 'pins': c['pins'], 'clinical': {'verdict': 'PASS'}, 'frames': {'verdict': 'PASS'},
                   'evaluatorProgress': {'verdict': 'PASS'}, 'storedWrites': {'verdict': 'GREEN', 'uncertain': 0},
-                  'loadFunctionalChecks': {'http': {'httpVerdict': 'PASS', 'offeredWorkVerdict': 'PASS'},
+                  'loadFunctionalChecks': {'http': {'httpVerdict': 'PASS'},
                                            'settingsFingerprint': {'verdict': 'PASS'}}}
         probe = {'viewerBindings': [{'socket': 0, 'tenant': A}, {'socket': 1, 'tenant': B}],
                  'kubernetesFrames': {'overflow': False, 'rows': [

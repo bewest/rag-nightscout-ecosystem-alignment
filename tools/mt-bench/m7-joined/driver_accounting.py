@@ -1,4 +1,8 @@
-"""Explicit local k6 scheduling observations. Both modes use identical CSV tracing."""
+"""Configured k6 driver: scheduling plan, launch environment and per-operation accounting.
+
+VU sizing is computed by workload.js driverVUs (decision driver-sized-from-offer) and read back
+from the driver's own logged plan. Drops, late starts and issued/completed counts are figures by
+operation; there is no offered-work verdict."""
 from collections import Counter, defaultdict
 import csv
 import gzip
@@ -6,181 +10,43 @@ import json
 import math
 from pathlib import Path
 import re
-import sys
 from urllib.parse import parse_qsl
 
 from contract import require
 import workload_inputs
 from http_accounting import assess as http_assess
-from node_observation import log_events
 from statement_units import SHAPES
 from workload import MAX_TIME_UNIT_MS, REALISTIC_MIX, realistic_cycle_ms
 
-MODES = ('trace-v1', 'preallocated-v1', 'configured-v1')
 SCRIPT = 'k6-vu-driver.js'
 COUNTERS = ('dropped_iterations', 'scenario_request_attempts', 'scenario_http_responses', 'scenario_transport_failures')
-MEASURE = {*COUNTERS, 'http_req_duration', 'vus', 'vus_max'}
 MAX_TRACE_BYTES = 512 * 1024 * 1024
 MAX_TRACE_ROWS = 5000000
+VU_FIELDS = ('preAllocatedVUs', 'maxVUs')
 
 
 def selection(args, cadence):
-    mode = getattr(args, 'driver_vu_diagnostic', None)
     configured = getattr(args, 'driver_plan', None)
-    if configured is not None or mode == 'configured-v1':
-        require(mode in (None, 'configured-v1') and args.profile == 'pgstream-sample'
-                and args.run_purpose == 'discovery', 'M7_DRIVER_CONFIGURATION_SCOPE')
-        plan = configuration(configured, cadence)
-        expected_plans({'tenants': args.tenants, 'cadence': cadence | {'driverPlan': plan}})
-        return {'driverVuDiagnostic': 'configured-v1', 'driverPlan': plan}
-    if mode is None:
+    if configured is None:
         return {}
-    require(mode in MODES and args.profile == 'pgstream-sample' and args.run_purpose == 'discovery'
-            and args.replicas == 1 and args.tenants == 1000
-            and cadence.get('offeredRps') == 180 and cadence.get('loadSeconds') == 310
-            and cadence.get('driverShards', 1) == 1 and not cadence.get('workloadMix')
-            and not cadence.get('restartDuringLoadAfterSeconds'),
-            'M7_DRIVER_VU_DIAGNOSTIC_SCOPE')
-    return {'driverVuDiagnostic': mode}
+    require(args.profile == 'pgstream-sample' and args.run_purpose == 'discovery', 'M7_DRIVER_CONFIGURATION_SCOPE')
+    plan = configuration(configured, cadence)
+    expected_plans({'tenants': args.tenants, 'cadence': cadence | {'driverPlan': plan}})
+    return {'driverPlan': plan}
 
 
 def select_command(a, d, m, base):
-    mode = m['cadence'].get('driverVuDiagnostic')
-    if mode is None:
+    if 'driverPlan' not in m['cadence']:
         return base
-    if mode == 'configured-v1':
-        return configured_command(a, d, m, base)
-    require(mode in MODES and not m.get('remoteTransport') and m.get('runPurpose') == 'discovery'
-            and base[-5:] == ['run', '--quiet', '--summary-export', '/out/k6-summary.json', '/scripts/workload.js'],
-            'M7_DRIVER_VU_DIAGNOSTIC_SCOPE')
-    a.assert_owned(m)
-    destination = d / 'k6' / SCRIPT
-    require(not destination.exists(), 'M7_DRIVER_VU_WRAPPER_EXISTS')
-    with destination.open('xb') as output:
-        output.write(Path(__file__).with_name(SCRIPT).read_bytes())
-    return [*base[:-6], '-e', 'M7_DRIVER_VU_DIAGNOSTIC=' + mode,
-            '-e', 'K6_CSV_TIME_FORMAT=unix_milli', base[-6], 'run', '--quiet',
-            '--summary-export', '/out/k6-summary.json', '--out', 'csv=/out/k6-scheduling.csv.gz', '/scripts/' + SCRIPT]
-
-
-def read_plan(path):
-    with Path(path).open('rb') as stream:
-        prefix = stream.read(65536).decode(errors='replace')
-    plans = []
-    for encoded in re.findall(r'\bmsg=("(?:[^"\\]|\\.)*")', prefix):
-        try:
-            value = json.loads(json.loads(encoded))
-        except (TypeError, ValueError):
-            continue
-        if isinstance(value, dict) and value.get('event') == 'driver-vu-plan':
-            plans.append(value)
-    require(len(plans) == 1, 'M7_DRIVER_VU_PLAN')
-    plan = plans[0]
-    require(plan.get('mode') in ('trace-v1', 'preallocated-v1') and set(plan.get('scenarios', {})) == set(SHAPES), 'M7_DRIVER_VU_PLAN')
-    for row in plan['scenarios'].values():
-        require(all(type(row.get(k)) is int and row[k] > 0 for k in ('rate', 'basePreallocatedVUs', 'preallocatedVUs', 'maxVUs'))
-                and row['basePreallocatedVUs'] <= row['preallocatedVUs'] <= row['maxVUs']
-                and isinstance(row.get('timeUnit'), str) and re.fullmatch(r'[1-9][0-9]*ms', row['timeUnit']) is not None
-                and math.isclose(row.get('perSecond', 0), row['rate'] * 1000 / int(row['timeUnit'][:-2])), 'M7_DRIVER_VU_PLAN')
-        require(plan['mode'] != 'trace-v1' or row['basePreallocatedVUs'] == row['preallocatedVUs'], 'M7_DRIVER_VU_PLAN')
-    require(plan.get('aggregatePreallocatedVUs') == sum(row['preallocatedVUs'] for row in plan['scenarios'].values())
-            and plan.get('baseAggregateVUs') == sum(row['basePreallocatedVUs'] for row in plan['scenarios'].values())
-            and plan.get('targetAggregateVUs') == 620
-            and (plan['mode'] != 'preallocated-v1' or plan['aggregatePreallocatedVUs'] >= 620), 'M7_DRIVER_VU_PLAN')
-    return plan
-
-
-def percentile(values, target):
-    return round(sorted(values)[max(0, math.ceil(len(values) * target) - 1)], 3) if values else None
-
-
-def retain(d, m):
-    """Reconcile actual phase CSV with independent workload summary counters."""
-    if m['cadence'].get('driverVuDiagnostic') == 'configured-v1':
-        return retain_configured(d, m)
-    load = d / 'load'
-    plan = read_plan(load / 'k6.log')
-    require(plan['mode'] == m['cadence']['driverVuDiagnostic'], 'M7_DRIVER_VU_PLAN')
-    raw = http_assess(json.loads((load / 'k6-summary.json').read_text())['metrics'])
-    require(raw['sourceReconciliation'] == 'PASS', 'M7_DRIVER_TRACE_HTTP_RECONCILIATION')
-    events = log_events(load / 'k6.log') | log_events(load / 'k6.log', tail=True)
-    start = events['scenario-first-iteration']
-    stop = start + m['cadence']['loadSeconds'] * 1000
-    end = events['scenario-phase-end']
-    require(start < stop <= end + 1000 and end - stop <= 60000, 'M7_DRIVER_TRACE_PHASE')
-    bins = defaultdict(lambda: defaultdict(Counter))
-    latencies = defaultdict(list)
-    gauge = defaultdict(float)
-    totals = Counter({key: 0 for key in COUNTERS})
-    by_shape = {shape: Counter({key: 0 for key in COUNTERS}) for shape in SHAPES}
-    trace = load / 'k6-scheduling.csv.gz'
-    require(0 < trace.stat().st_size <= MAX_TRACE_BYTES, 'M7_DRIVER_TRACE_BOUND')
-    with gzip.open(trace, 'rt', newline='') as source:
-        reader = csv.DictReader(source)
-        require(set(('metric_name', 'timestamp', 'metric_value', 'scenario')) <= set(reader.fieldnames or []), 'M7_DRIVER_TRACE_HEADER')
-        for index, row in enumerate(reader):
-            require(index < MAX_TRACE_ROWS, 'M7_DRIVER_TRACE_BOUND')
-            require(not row.get('url') and not row.get('error'), 'M7_DRIVER_TRACE_SENSITIVE_TAG')
-            metric = row['metric_name']
-            if metric not in MEASURE:
-                continue
-            at, value = float(row['timestamp']), float(row['metric_value'])
-            require(math.isfinite(at) and math.isfinite(value) and value >= 0, 'M7_DRIVER_TRACE_VALUE')
-            if metric in ('vus', 'vus_max'):
-                if start <= at <= stop:
-                    gauge[metric] = max(gauge[metric], value)
-                continue
-            shape = row['scenario']
-            if shape not in SHAPES:
-                require(metric == 'http_req_duration', 'M7_DRIVER_TRACE_SHAPE')
-                continue
-            require(start - 1000 <= at <= end + 1000, 'M7_DRIVER_TRACE_PHASE')
-            bucket = max(0, int(at - start)) // 10000
-            if metric == 'http_req_duration':
-                latencies[(bucket, shape)].append(value)
-            else:
-                require(value.is_integer(), 'M7_DRIVER_TRACE_COUNTER')
-                if metric == 'dropped_iterations':
-                    require(value == 1 and at <= stop + 1000, 'M7_DRIVER_TRACE_DROP')
-                bins[bucket][shape][metric] += int(value)
-                totals[metric] += int(value)
-                by_shape[shape][metric] += int(value)
-    require(all(totals[k] == raw['sourceCounts'][k] for k in COUNTERS), 'M7_DRIVER_TRACE_RECONCILIATION')
-    drops = [{'elapsedSeconds': bucket * 10, 'scenario': shape, 'counts': dict(record),
-              'responseP95MsInSameBucket': percentile(latencies[(bucket, shape)], .95)}
-             for bucket, shapes in sorted(bins.items()) for shape, record in sorted(shapes.items()) if record['dropped_iterations']]
-    return {'version': 1, 'kind': 'm7-driver-vu-diagnostic', 'basis': 'reproduced',
-            'mode': plan['mode'], 'plan': plan, 'pair': m['pair'], 'imageId': m.get('imageId'),
-            'instrument': m['instrument']['sha256'], 'cadence': m['cadence'],
-            'ordinaryStartMs': start, 'scheduledEndMs': stop, 'teardownStartMs': end,
-            'offeredWorkVerdict': raw['offeredWorkVerdict'], 'httpVerdict': raw['httpVerdict'],
-            'tallies': dict(totals), 'byScenario': by_shape, 'gaugePeaksWithinSchedule': dict(gauge),
-            'dropWindows': drops, 'observedScheduleCount': totals['dropped_iterations'] + totals['scenario_request_attempts'],
-            'storage': 'UNMEASURED by this driver instrument; independent oracle remains required',
-            'scope': 'Observed arrival-executor drops and elapsed buckets; scheduler internals and product cause remain unmeasured.'}
-
-
-def compare(points):
-    require(len(points) == 3 and [v['mode'] for v in points] == ['trace-v1', 'preallocated-v1', 'trace-v1'], 'M7_DRIVER_TRACE_PAIR')
-    def identity(v):
-        return {k: v[k] for k in ('pair', 'imageId', 'instrument')} | {'cadence': {k: x for k, x in v['cadence'].items() if k != 'driverVuDiagnostic'}}
-    require(all(identity(v) == identity(points[0]) for v in points), 'M7_DRIVER_TRACE_PAIR')
-    require(points[0]['plan']['scenarios'] == points[2]['plan']['scenarios'], 'M7_DRIVER_TRACE_RESTORATION')
-    for shape, original in points[0]['plan']['scenarios'].items():
-        intervention = points[1]['plan']['scenarios'][shape]
-        require(all(original[k] == intervention[k] for k in ('rate', 'timeUnit', 'perSecond', 'basePreallocatedVUs', 'maxVUs')), 'M7_DRIVER_TRACE_PAIR')
-    return {'version': 1, 'kind': 'm7-driver-vu-comparison', 'points': points,
-            'scope': 'Three attributed diagnostic arms; no capacity grant and no causal product diagnosis.'}
+    return configured_command(a, d, m, base)
 
 
 # Configured plans stay in the existing cadence projection/receipt. These are
 # admission and independent accounting functions, never another payload generator.
-CONFIGURED = 'configured-v1'
 WEIGHTS = dict(zip(SHAPES, (1, 1, 1, 5, 1, 1, 1)))
 MAX_CONFIG_BYTES = 16384
 MAX_GENERATED_BYTES = 262144
 MAX_SUMMARY_BYTES = 64 * 1024 * 1024
-MAX_AGGREGATE_VUS = workload_inputs.MAX_SAFE_INTEGER
 
 
 def integer(value, low, high):
@@ -189,11 +55,10 @@ def integer(value, low, high):
 
 def configuration(value, cadence):
     require(isinstance(value, dict) and set(value) <= {
-        'version', 'observer', 'scenarios', 'maxAggregateVUs', 'maxTraceBytes', 'maxTraceRows', 'writeRateScale'}
+        'version', 'observer', 'scenarios', 'maxTraceBytes', 'maxTraceRows', 'writeRateScale'}
         and value.get('version') == 1 and type(value['version']) is int
         and value.get('observer') in ('summary-v1', 'scheduling-v1'), 'M7_DRIVER_CONFIGURATION')
     require(workload_inputs.seconds(cadence.get('loadSeconds')), 'M7_DRIVER_CONFIGURATION_WINDOW')
-    require(integer(value.get('maxAggregateVUs'), 1, MAX_AGGREGATE_VUS), 'M7_DRIVER_VU_LIMIT')
     rows = value.get('scenarios')
     require(isinstance(rows, dict) and 1 <= len(rows) <= len(SHAPES) and set(rows) <= set(SHAPES),
             'M7_DRIVER_SCENARIOS')
@@ -208,30 +73,27 @@ def configuration(value, cadence):
             and integer(result['maxTraceRows'], 1, workload_inputs.MAX_SAFE_INTEGER), 'M7_DRIVER_TRACE_BOUND')
     normalized = {}
     for name, row in rows.items():
-        require(isinstance(row, dict) and set(row) <= {'preAllocatedVUs', 'maxVUs', 'startTimeSeconds',
+        # preAllocatedVUs/maxVUs are refused: workload.js driverVUs sizes every scenario.
+        require(isinstance(row, dict) and set(row) <= {'startTimeSeconds',
                 'durationSeconds', 'gracefulStopSeconds'}, 'M7_DRIVER_SCENARIO_CONFIGURATION')
         r = dict(row)
         r.setdefault('startTimeSeconds', 0)
         r.setdefault('durationSeconds', cadence['loadSeconds'] - r['startTimeSeconds'] if
                      type(r['startTimeSeconds']) is int else 0)
         r.setdefault('gracefulStopSeconds', 30)
-        require(integer(r.get('preAllocatedVUs'), 1, MAX_AGGREGATE_VUS)
-                and integer(r.get('maxVUs'), r['preAllocatedVUs'], MAX_AGGREGATE_VUS)
-                and integer(r['startTimeSeconds'], 0, cadence['loadSeconds'] - 1)
+        require(integer(r['startTimeSeconds'], 0, cadence['loadSeconds'] - 1)
                 and integer(r['durationSeconds'], 1, cadence['loadSeconds'] - r['startTimeSeconds'])
                 and integer(r['gracefulStopSeconds'], 0, 60), 'M7_DRIVER_SCENARIO_CONFIGURATION')
         normalized[name] = r
     result['scenarios'] = normalized
-    shards=cadence.get('driverShards',1)
-    require(workload_inputs.shard_count(shards) and
-            sum(r['maxVUs'] for r in normalized.values()) * shards <= result['maxAggregateVUs'],
-            'M7_DRIVER_VU_LIMIT')
+    require(workload_inputs.shard_count(cadence.get('driverShards', 1)), 'M7_DRIVER_SHARDS_RANGE')
     require(len(json.dumps(result).encode()) <= MAX_CONFIG_BYTES, 'M7_DRIVER_CONFIGURATION_BOUND')
     return result
 
 
 def expected_plans(m):
-    """Independent projection of existing workload math and configured overrides."""
+    """Independent projection of the arrival math. VU sizing is workload.js's alone: the
+    expected plan omits it and the logged plan supplies it (strip_vus)."""
     import driver_shards
     c = m['cadence']; cfg = configuration(c['driverPlan'], c)
     realistic = realistic_cycle_ms(c.get('workloadScale', 1), cfg.get('writeRateScale', 1)) if c.get('workloadMix') else None
@@ -241,8 +103,6 @@ def expected_plans(m):
     rows = driver_shards.plan(count, hot, c.get('offeredRps'), n) if n > 1 else [
         {'index': 0, 'tenants': count, 'weight': count - 1 + hot, 'hotFactor': hot,
          'offeredRps': c.get('offeredRps')}]
-    require(sum(r['maxVUs'] for r in cfg['scenarios'].values()) * n <= cfg['maxAggregateVUs'],
-            'M7_DRIVER_VU_LIMIT')
     plans = []
     # k6 v1.3.0 constant_arrival_rate.go:300-335 races the duration context
     # with a timer at the endpoint. Native controls reproduce the optional
@@ -263,17 +123,28 @@ def expected_plans(m):
             scenarios[name] = {'rate': rate, 'timeUnit': str(unit) + 'ms', 'perSecond': rate * 1000 / unit,
                 **r, 'offeredIterations': offered, 'plannedIterations': math.ceil(offered - 1e-9),
                 'plannedMaximum': math.floor(offered + 1e-9) + 1}
-        plans.append({'version': 2, 'event': 'driver-vu-plan', 'mode': CONFIGURED,
+        plans.append({'version': 3, 'event': 'driver-vu-plan',
             'shardIndex': shard['index'], 'shardCount': n, 'tenants': shard['tenants'],
-            'population': count, 'observer': cfg['observer'], 'scenarios': scenarios,
-            'aggregatePreallocatedVUs': sum(r['preAllocatedVUs'] for r in scenarios.values()),
-            'aggregateMaxVUs': sum(r['maxVUs'] for r in scenarios.values())})
+            'population': count, 'observer': cfg['observer'], 'driverHeadroom': headroom(c),
+            'scenarios': scenarios})
     return plans
+
+
+def headroom(cadence):
+    """Run parameter driverHeadroom; the platform default applies when it is absent."""
+    return cadence.get('driverHeadroom', workload_inputs.DRIVER_HEADROOM['compose'])
+
+
+def strip_vus(plan):
+    """The logged plan without the VU sizing that only workload.js computes."""
+    return {k: v for k, v in plan.items() if k not in ('atMs', 'aggregatePreallocatedVUs', 'aggregateMaxVUs')} | {
+        'scenarios': {name: {k: v for k, v in row.items() if k not in VU_FIELDS}
+                      for name, row in plan.get('scenarios', {}).items()}}
 
 
 def configured_environment(m, index=0):
     plans = expected_plans(m)
-    return {'M7_DRIVER_VU_DIAGNOSTIC': CONFIGURED,
+    return {'DRIVER_HEADROOM': repr(float(plans[index]['driverHeadroom'])),
             'M7_DRIVER_PLAN': json.dumps(configuration(m['cadence']['driverPlan'], m['cadence']), separators=(',', ':')),
             'M7_DRIVER_CONTEXT': json.dumps({k: plans[index][k] for k in
                 ('shardIndex', 'shardCount', 'tenants', 'population')}, separators=(',', ':')),
@@ -288,7 +159,7 @@ def configured_command(a, d, m, base):
     expected_plans(m)
     a.assert_owned(m)
     destination = d / 'k6' / SCRIPT
-    require(not destination.exists(), 'M7_DRIVER_VU_WRAPPER_EXISTS')
+    require(not destination.exists(), 'M7_DRIVER_WRAPPER_EXISTS')
     require((d / 'k6' / 'workload.js').stat().st_size <= MAX_GENERATED_BYTES, 'M7_DRIVER_GENERATED_BOUND')
     with destination.open('xb') as output:
         output.write(Path(__file__).with_name(SCRIPT).read_bytes())
@@ -343,8 +214,9 @@ def reduce_shard(load, expected, cfg, suffix=''):
         hits = [v for v in events if v['event'] == event]
         require(len(hits) == 1, 'M7_DRIVER_PHASE_MARKERS')
         return hits[0]
-    plan = one('driver-vu-plan'); actual = {k: v for k, v in plan.items() if k != 'atMs'}
-    require(actual == expected, 'M7_DRIVER_MANIFEST_PLAN_MISMATCH')
+    logged = one('driver-vu-plan')
+    require(strip_vus(logged) == strip_vus(expected), 'M7_DRIVER_MANIFEST_PLAN_MISMATCH')
+    sizing = {name: {k: row.get(k) for k in VU_FIELDS} for name, row in logged['scenarios'].items()}
     setup_start, setup_end, end = [one(name)['atMs'] for name in
         ('driver-setup-start', 'driver-setup-end', 'driver-drain-end')]
     require(all(integer(t, 1, 10**15) for t in (setup_start, setup_end, end))
@@ -382,8 +254,7 @@ def reduce_shard(load, expected, cfg, suffix=''):
             'observedScheduled': issued + drops, 'issued': issued, 'completed': finished,
             'responses': responses, 'transportFailures': transport, 'dropped': drops,
             'steadyStarts': steady_starts, 'drainStarts': drain_starts,
-            'steadyCompletions': steady, 'drainCompletions': drain,
-            'offeredWorkVerdict': 'PASS' if row['plannedIterations'] <= issued == finished <= row['plannedMaximum'] and not drops else 'FAIL'}
+            'steadyCompletions': steady, 'drainCompletions': drain, **sizing[name]}
         total.update({k: v for k, v in counts[name].items() if isinstance(v, (int, float))})
     for metric, key in (('scenario_request_attempts', 'issued'), ('scenario_http_responses', 'responses'),
                         ('scenario_transport_failures', 'transportFailures'), ('dropped_iterations', 'dropped')):
@@ -402,9 +273,8 @@ def reduce_shard(load, expected, cfg, suffix=''):
                 'basis': 'CSV start timestamps in [earliest observed origin + authored offset, start + duration)',
                 'status': 'OBSERVED',
                 'byScenario': bins}
-    return {'plan': expected, 'byScenario': counts, 'totals': dict(total), 'phases': phase,
-            'httpVerdict': raw['httpVerdict'],
-            'offeredWorkVerdict': 'PASS' if all(v['offeredWorkVerdict'] == 'PASS' for v in counts.values()) else 'FAIL'}
+    return {'plan': {k: v for k, v in logged.items() if k != 'atMs'}, 'byScenario': counts, 'totals': dict(total),
+            'phases': phase, 'httpVerdict': raw['httpVerdict']}
 
 
 def executor_windows(starts, scenarios, setup_end, end):
@@ -486,7 +356,7 @@ def trace_assess(path, counts, starts, expected, cfg, origin):
     return common
 
 
-def retain_configured(d, m):
+def retain(d, m):
     require(not m.get('remoteTransport'), 'M7_DRIVER_TARGET_UNSUPPORTED')
     plans = expected_plans(m); cfg = configuration(m['cadence']['driverPlan'], m['cadence'])
     load = d / 'load'
@@ -515,7 +385,6 @@ def retain_configured(d, m):
         'outerPhases': {'configuredWarmupSeconds': m['cadence'].get('warmupSeconds'),
                         'configuredIdleSeconds': m['cadence'].get('idleSeconds'),
                         'measurement': 'UNMEASURED by this driver; outer runner owns warmup/idle observations'},
-        'offeredWorkVerdict': 'PASS' if all(p['offeredWorkVerdict']=='PASS' for p in shards) else 'FAIL',
         'httpVerdict': 'FAIL' if any(p['httpVerdict']=='FAIL' for p in shards) else
                        'PASS' if all(p['httpVerdict']=='PASS' for p in shards) else 'UNMEASURED',
         'pooledPercentiles': 'UNMEASURED; shard percentiles are not pooled quantiles or guaranteed bounds',
@@ -542,14 +411,6 @@ def partial_configured(d, m):
             rows.append({'index': p['shardIndex'], 'verdict': 'UNMEASURED',
                          'code': code if re.fullmatch(r'M7_[A-Z0-9_]+', code) else 'M7_DRIVER_SHARD_UNAVAILABLE'})
     return {'kind': 'm7-configured-driver-partial', 'basis': 'reproduced', 'shards': rows,
-            'offeredWorkVerdict': 'UNMEASURED', 'pooledPercentiles': 'UNMEASURED',
+            'pooledPercentiles': 'UNMEASURED',
             'capacityAcceptance': 'NOT_GRANTED'}
 
-
-if __name__ == '__main__':
-    import adapter
-    target = Path(sys.argv[1])
-    points = [retain(Path(path), json.loads((Path(path) / 'owner.json').read_text())) for path in sys.argv[2:]]
-    with target.open('x') as stream:
-        json.dump(compare(points), stream, indent=2)
-        stream.write('\n')

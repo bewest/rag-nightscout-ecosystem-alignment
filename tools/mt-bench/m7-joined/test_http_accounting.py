@@ -58,19 +58,16 @@ class HttpAccounting(unittest.TestCase):
         self.assertEqual(value['storage'],'UNMEASURED')
         self.assertNotIn('DO_NOT_RETAIN',json.dumps(observed))
 
-    def test_offered_work_uses_k6_iterations_and_independent_issued_counts(self):
+    def test_iterations_and_drops_are_figures_without_an_offered_work_verdict(self):
         metrics = self.observe()['metrics']
-        self.assertEqual(assess(metrics)['offeredWorkVerdict'], 'UNMEASURED')
         metrics['iterations'] = {'count':119}
-        self.assertEqual(assess(metrics)['offeredWorkVerdict'], 'PASS')
-        metrics['iterations']['count'] = 118
-        self.assertEqual(assess(metrics)['offeredWorkVerdict'], 'UNMEASURED')
-        metrics['iterations']['count'] = 119
+        result = assess(metrics)
+        self.assertNotIn('offeredWorkVerdict', result)
+        self.assertEqual(result['sourceCounts']['iterations'], 119)
         del metrics['scenario_transport_failures']
         result = assess(metrics)
         self.assertEqual(result['sourceReconciliation'], 'UNMEASURED')
         self.assertEqual(result['sourceCounts']['scenario_transport_failures'], 'UNMEASURED')
-        self.assertEqual(result['offeredWorkVerdict'], 'UNMEASURED')
 
     def test_missing_or_tampered_data_cannot_pass(self):
         self.assertEqual(assess({})['httpVerdict'],'UNMEASURED')

@@ -6,7 +6,7 @@ import re
 import subprocess
 import sys
 import time
-import driver_vu_diagnostic
+import driver_accounting
 import phase_windows
 from contract import require, SHA, OWNER, REPLICAS, UNACCEPTED_SCOPE, discovery_scope, check_discovery_scope, discovery_api_replicas
 
@@ -69,7 +69,7 @@ class Record:
         self.a,self.d,self.m=a,d,m
         self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'coverage':{'fullNominalCgmCycle':m['cadence']['loadSeconds']>=300/m['cadence'].get('accel',1),'timerWitness':'UNMEASURED; observed progress is retained separately'},'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,**(discovery_scope(m) if m['profile']=='pgstream-sample' else {}),**({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
     def save(self):
-        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('load',) for name in ('evaluator-progress.json','probe.json','k6-summary.json','http-accounting.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json','node-observation.json','k6-scheduling.csv.gz','driver-vu-assessment.json','host-load.tsv','pg-activity.tsv','pg-blockers.tsv') if (file:=self.d/folder/name).is_file()}
+        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('load',) for name in ('evaluator-progress.json','probe.json','k6-summary.json','http-accounting.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json','node-observation.json','k6-scheduling.csv.gz','driver-accounting.json','host-load.tsv','pg-activity.tsv','pg-blockers.tsv') if (file:=self.d/folder/name).is_file()}
         self.value['collectionSegments']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('load',) for file in (self.d/folder).glob('*-collection.json') if file.is_file()}
         self.a.write(self.d/'summary.json',self.value)
     def failure(self,stage,error,hard=False):
@@ -343,13 +343,13 @@ def retain_load(a,d,m,record):
             # The raw file remains retained; malformed optional reduction must
             # not replace a primary actor/observer failure in a finally block.
             record.value.setdefault('retentionFailures',{})[name]={'verdict':'UNMEASURED','code':safe_code(error)}
-    if m.get('cadence',{}).get('driverVuDiagnostic'):
+    if 'driverPlan' in m.get('cadence',{}):
         try:
-            result = driver_vu_diagnostic.retain(d, m)
-            record.value['driverVuDiagnostic'] = result
-            a.write(out/'driver-vu-assessment.json', result)
+            result = driver_accounting.retain(d, m)
+            record.value['driverAccounting'] = result
+            a.write(out/'driver-accounting.json', result)
         except Exception as error:
-            record.value.setdefault('retentionFailures', {})['driverVuDiagnostic'] = {'verdict':'UNMEASURED','code':safe_code(error)}
+            record.value.setdefault('retentionFailures', {})['driverAccounting'] = {'verdict':'UNMEASURED','code':safe_code(error)}
     record.save()
 
 
@@ -371,22 +371,22 @@ def observed_load(a,d,m,out,work,record=None,oneoff=None):
     return getattr(observer,'result',None)
 
 def k6_command(a,d,m,image,runid):
-    if m['cadence'].get('driverVuDiagnostic') == 'configured-v1':
+    if 'driverPlan' in m['cadence']:
         require(not m.get('remoteTransport'), 'M7_DRIVER_TARGET_UNSUPPORTED')
-        driver_vu_diagnostic.expected_plans(m)
+        driver_accounting.expected_plans(m)
     base=k6_base(a,d,m,image,runid)
     shards=m['cadence'].get('driverShards',1)
-    if shards==1:return driver_vu_diagnostic.select_command(a,d,m,base)
+    if shards==1:return driver_accounting.select_command(a,d,m,base)
     import driver_shards
     tenants=json.loads(k6_roster(d).read_text())
     rows=driver_shards.plan(len(tenants),m['cadence'].get('hotFactor',10),m['cadence'].get('offeredRps'),shards)
     folder=driver_shards.write_rosters(d/'k6-shards',tenants,rows)
     a.write(d/'load'/'k6-shard-plan.json',{'version':1,'shards':rows,'scope':'one admitted k6 container; contiguous roster slices; summed weight equals the unsharded plan'})
     driver = None
-    if m['cadence'].get('driverVuDiagnostic') == 'configured-v1':
+    if 'driverPlan' in m['cadence']:
         # Stage through the same guarded single-process interface; shard argv keeps its limits.
-        configured = driver_vu_diagnostic.select_command(a,d,m,base)
-        driver = {'environment': [driver_vu_diagnostic.configured_environment(m,i) for i in range(shards)],
+        configured = driver_accounting.select_command(a,d,m,base)
+        driver = {'environment': [driver_accounting.configured_environment(m,i) for i in range(shards)],
                   'observer': m['cadence']['driverPlan']['observer']}
         base = [*configured[:configured.index(image)], *base[base.index(image):]]
     return driver_shards.argv(base,image,rows,folder,driver=driver)
@@ -399,7 +399,7 @@ def k6_roster(d):
 
 
 def k6_base(a,d,m,image,runid):
-    return (['docker','run','--rm','--name',m['project']+'-k6','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],'--label','com.docker.compose.service=k6','--network','host','-u',str(a.os.getuid())+':'+str(a.os.getgid()),'-v',str(d/'k6')+':/scripts:ro','-v',str(d/'load')+':/out','-v',str(k6_roster(d))+':/tenants.private.json:ro','-e','BASE_URL=http://127.0.0.1:'+str(m['port']),'-e','TENANTS_FILE=/tenants.private.json','-e','RUN_ID='+runid,'-e','RUN_START='+str(int(time.time()*1000)),'-e','DURATION='+str(m['cadence']['loadSeconds']),'-e','ACCEL='+str(m['cadence'].get('accel',1)),'-e','HOT_FACTOR='+str(m['cadence'].get('hotFactor',10)),*(['-e','OFFERED_RPS='+str(m['cadence']['offeredRps'])] if 'offeredRps' in m['cadence'] else []),*(['-e','M7_WORKLOAD_MIX='+m['cadence']['workloadMix']] if 'workloadMix' in m['cadence'] else []),*(['-e','M7_WORKLOAD_SCALE='+str(m['cadence']['workloadScale'])] if 'workloadScale' in m['cadence'] else []),'-e','SHAPES='+','.join(m['cadence'].get('driverPlan',{}).get('scenarios',driver_vu_diagnostic.SHAPES)),image,'run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js'])
+    return (['docker','run','--rm','--name',m['project']+'-k6','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],'--label','com.docker.compose.service=k6','--network','host','-u',str(a.os.getuid())+':'+str(a.os.getgid()),'-v',str(d/'k6')+':/scripts:ro','-v',str(d/'load')+':/out','-v',str(k6_roster(d))+':/tenants.private.json:ro','-e','BASE_URL=http://127.0.0.1:'+str(m['port']),'-e','TENANTS_FILE=/tenants.private.json','-e','RUN_ID='+runid,'-e','RUN_START='+str(int(time.time()*1000)),'-e','DURATION='+str(m['cadence']['loadSeconds']),'-e','ACCEL='+str(m['cadence'].get('accel',1)),'-e','HOT_FACTOR='+str(m['cadence'].get('hotFactor',10)),'-e','DRIVER_HEADROOM='+repr(float(driver_accounting.headroom(m['cadence']))),*(['-e','OFFERED_RPS='+str(m['cadence']['offeredRps'])] if 'offeredRps' in m['cadence'] else []),*(['-e','M7_WORKLOAD_MIX='+m['cadence']['workloadMix']] if 'workloadMix' in m['cadence'] else []),*(['-e','M7_WORKLOAD_SCALE='+str(m['cadence']['workloadScale'])] if 'workloadScale' in m['cadence'] else []),'-e','SHAPES='+','.join(m['cadence'].get('driverPlan',{}).get('scenarios',driver_accounting.SHAPES)),image,'run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js'])
 
 def count_observation(a,d,out,runid,metrics,*,probe_ledger=None):
     from discovery_counts import observe

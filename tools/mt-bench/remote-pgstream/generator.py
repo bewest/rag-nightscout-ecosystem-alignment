@@ -372,6 +372,8 @@ def traffic_commands(directory, b, descriptor, k6_name, run_start_ms):
           '-e', 'RUN_START=' + str(run_start_ms), '-e', 'DURATION=' + str(cadence['loadSeconds']), '-e', 'ACCEL=' + str(cadence['accel']), '-e', 'HOT_FACTOR=' + str(cadence['hotFactor']),
           '-e', 'SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status']
     k6 += ['-e', 'JWT_SETUP_CONCURRENCY=' + str(selected.get('jwtSetupConcurrency', 1))]
+    # Remote generator headroom H=3 unless driverHeadroom is set (decision driver-sized-from-offer).
+    k6 += ['-e', 'DRIVER_HEADROOM=' + repr(float(cadence.get('driverHeadroom', 3)))]
     if 'offeredRps' in cadence:k6 += ['-e', 'OFFERED_RPS=' + str(cadence['offeredRps'])]
     if 'workloadMix' in cadence:k6 += ['-e','M7_WORKLOAD_MIX='+cadence['workloadMix']]
     if 'workloadScale' in cadence:k6 += ['-e','M7_WORKLOAD_SCALE='+str(cadence['workloadScale'])]

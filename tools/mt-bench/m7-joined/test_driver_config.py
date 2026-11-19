@@ -12,21 +12,21 @@ from unittest.mock import Mock, patch
 
 import adapter
 import discovery
-import driver_vu_diagnostic as d
+import driver_accounting as d
 import workload
 
 
 class DriverConfiguration(unittest.TestCase):
     def configuration(self):
-        return {'version':1,'observer':'summary-v1','maxAggregateVUs':16,
-                'scenarios':{'r_sgv':{'preAllocatedVUs':2,'maxVUs':4}}}
+        return {'version':1,'observer':'summary-v1',
+                'scenarios':{'r_sgv':{'gracefulStopSeconds':10}}}
 
     def test_population_rate_window_topology_and_observer_are_not_a_fixed_case(self):
         for count, rate, seconds, replicas in ((500,120,1800,2),(10000,180,310,4)):
-            args=SimpleNamespace(driver_plan=self.configuration(),driver_vu_diagnostic=None,
+            args=SimpleNamespace(driver_plan=self.configuration(),
                 profile='pgstream-sample',run_purpose='discovery',tenants=count,replicas=replicas)
             c={'offeredRps':rate,'loadSeconds':seconds,'hotFactor':1}
-            selected=d.selection(args,c);self.assertEqual(selected['driverVuDiagnostic'],'configured-v1')
+            selected=d.selection(args,c);self.assertEqual(set(selected),{'driverPlan'})
             plans=d.expected_plans({'tenants':count,'cadence':c|selected})
             self.assertEqual(plans[0]['population'],count)
             self.assertEqual(plans[0]['scenarios']['r_sgv']['durationSeconds'],seconds)
@@ -86,8 +86,7 @@ class DriverConfiguration(unittest.TestCase):
         self.assertEqual(bins['busy'], {'before': 0, 'during': 982, 'after': 18, 'minimumStartShortfall': 18})
 
     def test_large_population_low_rate_time_unit_is_not_a_case_filter(self):
-        cfg={'version':1,'observer':'summary-v1','maxAggregateVUs':7,
-             'scenarios':{name:{'preAllocatedVUs':1,'maxVUs':1} for name in d.SHAPES}}
+        cfg={'version':1,'observer':'summary-v1','scenarios':{name:{} for name in d.SHAPES}}
         c={'loadSeconds':1800,'offeredRps':1,'hotFactor':1,'driverPlan':cfg}
         plan=d.expected_plans({'tenants':10000,'cadence':c})[0]
         self.assertEqual(plan['scenarios']['w_sgv']['timeUnit'],'110000000ms')
@@ -98,16 +97,15 @@ class DriverConfiguration(unittest.TestCase):
         # longer the invalid case. Nonrepresentable integer budgets still fail.
         c={'loadSeconds':30}
         good=self.configuration()
-        for mutate in (lambda x:x.update(observer='unknown'),lambda x:x.update(maxAggregateVUs=True),
-            lambda x:x.update(extra='ignored?'),lambda x:x['scenarios']['r_sgv'].update(maxVUs=1),
+        for mutate in (lambda x:x.update(observer='unknown'),lambda x:x.update(maxAggregateVUs=28),
+            lambda x:x.update(extra='ignored?'),lambda x:x['scenarios']['r_sgv'].update(maxVUs=4),
+            lambda x:x['scenarios']['r_sgv'].update(preAllocatedVUs=2),
             lambda x:x['scenarios']['r_sgv'].update(durationSeconds=31),
             lambda x:x['scenarios']['r_sgv'].update(executor='ramping-vus'),
             lambda x:x.update(maxTraceBytes=0),lambda x:x.update(maxTraceRows=2**53)):
             bad=copy.deepcopy(good);mutate(bad)
             with self.assertRaises(RuntimeError):d.configuration(bad,c)
-            self.assertEqual(d.configuration(good,c)['scenarios']['r_sgv']['maxVUs'],4)
-        with self.assertRaisesRegex(RuntimeError,'M7_DRIVER_VU_LIMIT'):
-            d.expected_plans({'tenants':8,'cadence':c|{'driverShards':8,'driverPlan':good}})
+            self.assertEqual(d.configuration(good,c)['scenarios']['r_sgv']['gracefulStopSeconds'],10)
         with self.assertRaisesRegex(RuntimeError,'M7_DRIVER_REALISTIC_SHAPES'):
             d.configuration(good,c|{'workloadMix':'realistic-v1'})
 
@@ -131,17 +129,16 @@ class DriverConfiguration(unittest.TestCase):
             _,argv=runner.validate_config(cfg)
             projected=rc.resolve(cfg)
             selected=projected['configuration']['cadence']['driverPlan']
-            self.assertEqual(selected['scenarios']['r_sgv']['maxVUs'],4)
+            self.assertEqual(selected['scenarios']['r_sgv']['gracefulStopSeconds'],10)
             first=projected['configurationSha256']
-            changed=self.configuration();changed['scenarios']['r_sgv']['maxVUs']=5
+            changed=self.configuration();changed['scenarios']['r_sgv']['gracefulStopSeconds']=5
             cfg['prepare']['driver-plan']=json.dumps(changed)
             self.assertNotEqual(rc.resolve(cfg)['configurationSha256'],first)
 
     def test_unsupported_target_and_command_refuse_before_writes(self):
         with tempfile.TemporaryDirectory() as tmp:
             path=Path(tmp);(path/'k6').mkdir();workload.generate(adapter.ROOT,path/'k6/workload.js')
-            c={'loadSeconds':4,'driverPlan':d.configuration(self.configuration(),{'loadSeconds':4}),
-               'driverVuDiagnostic':'configured-v1'}
+            c={'loadSeconds':4,'driverPlan':d.configuration(self.configuration(),{'loadSeconds':4})}
             m={'tenants':12,'runPurpose':'discovery','cadence':c}
             a=SimpleNamespace(assert_owned=Mock())
             base=['docker','run','--cpus','1','--memory','512m','image','run','--quiet',
