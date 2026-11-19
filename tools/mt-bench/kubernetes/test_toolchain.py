@@ -10,7 +10,7 @@ import jobs
 class Toolchain(unittest.TestCase):
     def manifest(self):
         p=json.loads((t.k.HERE/'workloads/realistic-500.json').read_bytes());p.pop('referencePins')
-        return dict(version=1,kind='multitenant-experiment',application=dict(sourceReceipt={},buildReceipt={},bindingCommit='3'*40,postgresImageId='sha256:'+'4'*64),
+        return dict(version=1,kind='multitenant-experiment',application=dict(candidate=dict(app='r/app@sha256:'+'1'*64,appImageId='sha256:'+'2'*64,postgres='r/pg@sha256:'+'5'*64,postgresImageId='sha256:'+'4'*64,coreCommit='1'*40,deployCommit='2'*40),bindingCommit='3'*40),
                     profile=p,topology=dict(apiReplicas=1,evaluatorWorkers=1,pgstreamTopology='external'),
                     local=dict(k6Image='sha256:'+'5'*64,prepare=dict(profile='pgstream-sample',**{'run-purpose':'discovery','completion-contract':'evaluator-work-v2'})))
     def test_one_intent_projects_scales_and_refuses_topology_or_second_fact(self):
@@ -39,7 +39,6 @@ class Toolchain(unittest.TestCase):
         with patch.object(t.frozen,'source',return_value=selected):
             for count in (3,16):
                 m=self.manifest();m['topology']['apiReplicas']=count
-                m['application']['buildReceipt']={'path':'/synthetic/build.json','sha256':'a'*64}
                 local=t.local(m,dict(prepare={}))
                 self.assertEqual(local['prepare']['replicas'],count)
                 self.assertEqual(local['prepare']['static-workers'],1)

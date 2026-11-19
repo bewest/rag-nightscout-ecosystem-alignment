@@ -1,4 +1,10 @@
-"""Materialize one standard discovery point using the selected deploy binding."""
+"""Materialize one standard discovery point using the selected deploy binding.
+
+Run identity is the alignment commit, the candidate image references and digests,
+and this run configuration (decision `brittle-check-removal`). There is no
+delivery, source or build receipt and no captured binding: the binding is the
+deploy checkout as selected, and the candidate images are run parameters.
+"""
 
 from datetime import datetime, timedelta, timezone
 import json
@@ -15,9 +21,23 @@ import lifecycle_config as lc
 import native_join
 
 
-def prepare(template_case, package, profile_path, output, binding=None, core=None, taint=None):
+NAMESPACE_PREFIX = 'ns-synth-'
+
+
+def resolve_image(reference, inspect=None):
+    """A digest-qualified image reference, its local image id and its labelled revisions."""
+    k.need(isinstance(reference, str) and re.search('@sha256:[0-9a-f]{64}$', reference), 'STANDARD_IMAGE_DIGEST_REQUIRED')
+    inspect = inspect or (lambda ref: json.loads(subprocess.check_output(['docker', 'image', 'inspect', ref], timeout=30))[0])
+    spec = inspect(reference)
+    labels = (spec.get('Config') or {}).get('Labels') or {}
+    return {'reference': reference, 'imageId': spec['Id'],
+            'core': labels.get('org.opencontainers.image.revision'), 'deploy': labels.get('org.nightscout.deploy.revision')}
+
+
+def prepare(template_case, binding, profile_path, output, *, app_image, postgres_image=None,
+            namespace_prefix=NAMESPACE_PREFIX, core=None, taint=None, inspect=None):
     output = output.resolve()
-    inputs = (template_case, package, binding or package/'binding')
+    inputs = (template_case, binding)
     k.need(all(not output.is_relative_to(path.resolve()) for path in inputs),
            'STANDARD_OUTPUT_INSIDE_SOURCE')
     try:
@@ -25,7 +45,8 @@ def prepare(template_case, package, profile_path, output, binding=None, core=Non
     except FileExistsError:
         raise k.Refused('K8S_STANDARD_CASE_EXISTS','UNMEASURED') from None
     try:
-        return _materialize(template_case,package,profile_path,output,binding,core,taint)
+        return _materialize(template_case,binding,profile_path,output,core,taint,
+                            app_image,postgres_image,namespace_prefix,inspect)
     except Exception as error:
         failed = output.with_name(output.name+'.failed-'+str(time.time_ns()))
         output.rename(failed)
@@ -41,14 +62,15 @@ def prepare(template_case, package, profile_path, output, binding=None, core=Non
         raise k.Refused(report['code'], report['verdict']) from error
 
 
-def _materialize(template_case, package, profile_path, output, binding, core, taint):
+def _materialize(template_case, binding, profile_path, output, core, taint,
+                 app_image, postgres_image, namespace_prefix, inspect):
     template_case = template_case.resolve()
-    package = package.resolve()
-    binding = (binding or package/'binding').resolve()
+    binding = binding.resolve()
     output = output.resolve()
     run_id = output.name
-    namespace = 'ns-synth-' + run_id
-    k.need(re.fullmatch(r'[a-z0-9][a-z0-9-]*[a-z0-9]', run_id) and len(namespace) <= 63,
+    # The prefix is a run parameter; ownership and cleanup use the run-id label.
+    namespace = namespace_prefix + run_id
+    k.need(re.fullmatch(r'[a-z0-9][a-z0-9-]*[a-z0-9]', run_id) and k.NAME.fullmatch(namespace),
            'STANDARD_CASE_NAME')
     profile = k.document(profile_path)
     profile['name'] = run_id
@@ -77,21 +99,21 @@ def _materialize(template_case, package, profile_path, output, binding, core, ta
     traffic = profile['workload']
     grace = max(v.get('gracefulStopSeconds', 30) for v in traffic['driverPlan']['scenarios'].values())
     selection['deadlineSeconds'] = max(selection['deadlineSeconds'], traffic.get('setupSeconds',310) + traffic['loadSeconds'] + grace + 5)
-    delivery = k.document(package/'runner-image-delivery.json')
-    intent = {key: value for key, value in prior.items() if key not in ('nativeLoad','profile')}
-    intent.update(profile=profile, bindingCommit=k.document(binding/'binding.json')['bindingCommit'],
-                  postgresImageId=delivery['postgresImageId'], sourceReceipt=lc.ref(package/'source-receipt.json'),
-                  buildReceipt=lc.ref(package/'build-receipt.json'))
+    app = resolve_image(app_image, inspect)
+    postgres = resolve_image(postgres_image or binding_inputs['images']['postgres'], inspect)
+    candidate = {'app': app['reference'], 'appImageId': app['imageId'],
+                 'postgres': postgres['reference'], 'postgresImageId': postgres['imageId'],
+                 'coreCommit': app['core'], 'deployCommit': app['deploy']}
+    alignment = k.instrument()['commit']
+    retired = ('nativeLoad', 'profile', 'sourceReceipt', 'buildReceipt', 'postgresImageId', 'candidate', 'alignmentCommit')
+    intent = {key: value for key, value in prior.items() if key not in retired}
+    intent.update(profile=profile, candidate=candidate, alignmentCommit=alignment, bindingCommit=app['deploy'])
     source = frozen.source(intent)
-    core_head = subprocess.check_output(['git', '-C', core, 'rev-parse', 'HEAD'],text=True).strip()
-    k.need(core_head == source['coreCommit'] == delivery['sourceCommit'] and
-           source['deployCommit'] == delivery['imageDeployCommit'] and
-           source['localImageId'] == delivery['appImageId'], 'STANDARD_CASE_SOURCE')
     # Carry forward only the platform setup allowance, independently of the selected load duration.
     setup_allowance = env['workDeadlineSeconds'] - prior['profile']['phases']['workSeconds']
     outer = phases['workSeconds'] + setup_allowance
     tenants = profile['population']['provisionedTenants']
-    images = {name:delivery[name] for name in ('app','postgres')}
+    images = {'app': candidate['app'], 'postgres': candidate['postgres']}
     binding_inputs.pop('resources', None)
     binding_inputs.update(runId=run_id, namespace=namespace, tenantCount=tenants, images=images,
                           placement=placement, placementByWorkload={}, provisionDeadlineSeconds=outer,
@@ -133,16 +155,16 @@ def _materialize(template_case, package, profile_path, output, binding, core, ta
     k.write(output/'native-run-template.json', run)
     k.write(output/'preflight.json',{'offline':'PASS','commissioning':'PREFLIGHT_ONLY',
         'trialEnvelope':{'placementMode':'scheduler','resourceAccounting':'requests-v1'},'experiment':{'runId':run_id,
-        'namespace':namespace,'renderSha256':k.digest(output/'render.json'),'experimentSha256':k.digest(output/'intent.json')}})
+        'namespace':namespace,'renderSha256':k.digest(output/'render.json'),'experimentSha256':k.digest(output/'intent.json')},
+        'identity':{'alignmentCommit':alignment,'candidate':candidate}})
     selected_control = {key:control[key] for key in ('version','toolsDirectory','k6','readonlyGuard','observerScript','pullSecretCommand') if key in control}
     selected_control.update(caseDirectory=str(output),bindingDirectory=str(binding),instrumentDirectory=str(k.ROOT),
                             schedulerPlacement=True,coreRepository=str(core),runTemplate=lc.ref(output/'native-run-template.json'),
-                            delivery=lc.ref(package/'runner-image-delivery.json'),nativeLimits=control['nativeLimits'],
+                            candidate=candidate,alignmentCommit=alignment,nativeLimits=control['nativeLimits'],
                             primerConcurrency=phases.get('primerOptions',{}).get('concurrency',control['primerConcurrency']))
     k.write(output/'lifecycle-input.json',selected_control)
     native_join.prepare_case(output,selection)
     instance = {'config':str(output/'native-run-template.json'),'render':str(output/'render.json'),
-                'inventory':str(output/'inventory.json'),'bindingReceipt':lc.ref(binding/'binding.json'),
-                'delivery':selected_control['delivery']}
+                'inventory':str(output/'inventory.json'),'binding':str(binding)}
     experiment.prepare(output/'intent.json',instance,output/'offline-final',await_primer=True)
     return experiment.launch(output/'lifecycle-input.json', True)

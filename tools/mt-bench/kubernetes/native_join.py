@@ -326,7 +326,7 @@ def prepare_case(case, selection):
     manifest=k.document(case/'intent.json');template=frozen.read_ref(control['runTemplate'])
     inventory=k.document(case/'inventory.json');render=k.document(case/'render.json')
     k.need(not any(value.get(FIELD) for value in (manifest,template,inventory)), 'NATIVE_LOAD_ALREADY_DECLARED')
-    delivery=frozen.read_ref(control['delivery']);source=frozen.source(manifest)
+    delivery=frozen.candidate(manifest);source=frozen.source(manifest)
     preparing=copy.deepcopy(template)
     preparing['pins']={'appImage':delivery['app'],'appImageId':delivery['appImageId'],
                    'pair':{'core':source['coreCommit'],'deploy':source['deployCommit']},

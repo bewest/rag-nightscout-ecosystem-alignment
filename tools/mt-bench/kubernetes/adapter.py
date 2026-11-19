@@ -93,13 +93,10 @@ def hashed(value):
 
 
 def instrument():
-    paths = [p for folder in (HERE, HERE / 'workloads', M7) for p in folder.iterdir()
-             if p.suffix in ('.py', '.cjs', '.js', '.patch')
-             and not p.name.startswith(('test_', 'test-', 'control_')) and '.test.' not in p.name
-             and not p.stem.endswith(('-control', '_control'))]
-    paths += [ROOT / 'tools/mt-bench/capacity/probe.js', ROOT / 'tools/mt-bench/capacity/k6/workload.js']
-    files = {str(p.relative_to(ROOT)): digest(p) for p in sorted(paths)}
-    return {'sha256': hashed(files), 'files': files}
+    """Run identity for the harness: the alignment commit (decision `brittle-check-removal`).
+    No file hashing; ``sha256`` is the digest of the commit id so existing pins keep their shape."""
+    head = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True, timeout=20).strip()
+    return {'commit': head, 'sha256': hashlib.sha256(head.encode()).hexdigest()}
 
 
 def timestamp(value):

@@ -4,7 +4,7 @@ Decision simple-run-cleanup. A run owns a uniquely named Namespace and the clust
 (for example the Vault TokenReview ClusterRoleBinding) that carry its `nightscout.org/run-id`
 label. Cleanup deletes the Namespace and waits, deletes the labelled cluster-scoped objects, then
 checks absence once. A leftover object is a failure, never a pass. There is no UID census,
-guard process or cleanup lock: shared-host safety comes from the unique run name and the label.
+guard process or cleanup lock: a Namespace is deleted only when it carries this run's label.
 """
 import json
 
@@ -24,6 +24,10 @@ def delete_commands(namespace, run_id, wait_seconds):
             ['delete', CLUSTER_SCOPED, '-l', selector, '--ignore-not-found=true', '--wait=true']]
 
 
+def owner_command(namespace):
+    return ['get', 'namespace', namespace, '--ignore-not-found=true', '-o', 'jsonpath={.metadata.labels.nightscout\\.org/run-id}']
+
+
 def absence_commands(namespace, run_id):
     return [['get', 'namespace', namespace, '--ignore-not-found=true', '-o', 'name'],
             ['get', CLUSTER_SCOPED, '-l', LABEL + '=' + run_id, '-o', 'name']]
@@ -31,7 +35,11 @@ def absence_commands(namespace, run_id):
 
 def cleanup(call, namespace, run_id, *, wait_seconds=120):
     """`call(argv)` runs kubectl with the run's context and returns stdout text, or raises."""
-    if not (namespace.startswith('ns-synth-') and run_id):
+    # Ownership is the run label; the namespace name carries no required prefix.
+    if not (namespace and run_id):
+        raise RuntimeError('K8S_CLEANUP_UNOWNED_NAME')
+    owner = call(owner_command(namespace)).strip()
+    if owner and owner != run_id or not owner and call(absence_commands(namespace, run_id)[0]).strip():
         raise RuntimeError('K8S_CLEANUP_UNOWNED_NAME')
     for argv in delete_commands(namespace, run_id, wait_seconds):
         call(argv)

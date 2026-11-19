@@ -34,7 +34,7 @@ def legacy(m,target='kubernetes'):
     application_topology.selection(transport,frozen.require)
     edge=edge_configuration.selection(transport.get('edge'),frozen.require)
     app=m['application']
-    frozen.require(set(app)<= {'sourceReceipt','buildReceipt','bindingCommit','postgresImageId','bootstrapHelper'},'APPLICATION_FIELDS')
+    frozen.require(set(app)<= {'candidate','alignmentCommit','bindingCommit','bootstrapHelper'},'APPLICATION_FIELDS')
     topology=m['topology']
     frozen.require(set(topology)=={'apiReplicas','evaluatorWorkers','pgstreamTopology'} and
         discovery_api_replicas(topology['apiReplicas']) and
@@ -76,7 +76,7 @@ def local(m,instance):
         names={'concurrency':'primer-concurrency','maxTenants':'primer-max-tenants'}
         options.update({names[key]:value for key,value in primer.items()})
     options.update({'core-commit':selected['coreCommit'],'deploy-commit':selected['deployCommit'],
-        'image':selected['localImageId'],'image-id':selected['localImageId'],'postgres-image':original['postgresImageId'],
+        'image':selected['localImageId'],'image-id':selected['localImageId'],'postgres-image':original['candidate']['postgresImageId'],
         'tenants':p['population']['provisionedTenants'],'replicas':t['apiReplicas'],
         'load-seconds':w['loadSeconds'],'hot-factor':w.get('hotFactor',1),'accel':1,'logical-polling-clients':w['logicalPollingClients'],
         'probe-every-ms':w['probeEveryMs'],

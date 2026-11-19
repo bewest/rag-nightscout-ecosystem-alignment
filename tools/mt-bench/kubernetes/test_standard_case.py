@@ -12,18 +12,41 @@ import unittest
 import kube_adapter as k
 
 
+class CandidateParameters(unittest.TestCase):
+    def test_candidate_is_resolved_from_image_parameters_not_receipts(self):
+        import standard_case
+        digest = 'registry.test/app@sha256:' + '1'*64
+        spec = {'Id': 'sha256:' + '2'*64, 'Config': {'Labels': {'org.opencontainers.image.revision': 'a'*40,
+                                                               'org.nightscout.deploy.revision': 'b'*40}}}
+        value = standard_case.resolve_image(digest, lambda ref: spec)
+        self.assertEqual(value, {'reference': digest, 'imageId': 'sha256:'+'2'*64, 'core': 'a'*40, 'deploy': 'b'*40})
+        with self.assertRaisesRegex(k.Refused, 'STANDARD_IMAGE_DIGEST_REQUIRED'):
+            standard_case.resolve_image('registry.test/app:latest', lambda ref: spec)
+
+    def test_frozen_source_reads_the_candidate(self):
+        import frozen
+        candidate = {'app': 'r/app@sha256:'+'1'*64, 'appImageId': 'sha256:'+'2'*64,
+                     'postgres': 'r/pg@sha256:'+'3'*64, 'postgresImageId': 'sha256:'+'4'*64,
+                     'coreCommit': 'a'*40, 'deployCommit': 'b'*40}
+        manifest = {'version': 1, 'kind': 'k8s-frozen-experiment', 'bindingCommit': 'b'*40, 'candidate': candidate}
+        self.assertEqual(frozen.source(manifest), {'coreCommit': 'a'*40, 'deployCommit': 'b'*40,
+                                                   'localImageId': 'sha256:'+'2'*64, 'sourceAcceptance': 'PENDING'})
+        with self.assertRaisesRegex(frozen.Refused, 'CANDIDATE'):
+            frozen.source({**manifest, 'candidate': {**candidate, 'app': 'r/app:tag'}})
+
+
 class StandardCase(unittest.TestCase):
     @unittest.skipUnless(all(os.environ.get('K8S_STANDARD_' + key) for key in
-                             ('TEMPLATE', 'PACKAGE', 'BINDING', 'PROFILE')), 'needs a frozen discovery package')
+                             ('TEMPLATE', 'BINDING', 'PROFILE', 'APP_IMAGE')), 'needs a template case, a deploy checkout and a local candidate image')
     def test_public_cli_prepares_two_points_without_source_writes_or_historical_capacity(self):
         paths = {key:Path(os.environ['K8S_STANDARD_' + key]).resolve()
-                 for key in ('TEMPLATE', 'PACKAGE', 'BINDING', 'PROFILE')}
+                 for key in ('TEMPLATE', 'BINDING', 'PROFILE')}
+        app_image = os.environ['K8S_STANDARD_APP_IMAGE']
         template = paths['TEMPLATE']
         inputs = [template/name for name in ('intent.json','environment.json','lifecycle-input.json',
                                              'binding-inputs.json','native-run-template.json')]
         inputs += list((template/'stages').glob('*.json'))
-        inputs += [paths['PROFILE'], paths['PACKAGE']/'source-receipt.json', paths['PACKAGE']/'build-receipt.json',
-                   paths['PACKAGE']/'runner-image-delivery.json', paths['BINDING']/'binding.json']
+        inputs += [paths['PROFILE']]
         inputs += [p for p in (paths['BINDING']/'bindings/kubernetes').rglob('*') if p.is_file()]
         def checksums():
             return {p:hashlib.sha256(p.read_bytes()).digest() for p in inputs}
@@ -40,7 +63,8 @@ class StandardCase(unittest.TestCase):
                 profile['population'].update(provisionedTenants=tenants, ordinaryRosterTenants=tenants)
                 profile['workload']['workloadScale'] = scale
                 k.write(selected, profile)
-                cmd = cli + ['standard', template, paths['PACKAGE'], selected, output, '--binding', paths['BINDING']]
+                cmd = cli + ['standard', template, paths['BINDING'], selected, output, '--app-image', app_image,
+                             '--namespace-prefix', 'smoke-']
                 if i == 0:
                     refused = subprocess.run(cmd+['--reserved-worker-taint','bad'],capture_output=True,text=True)
                     self.assertEqual(json.loads(refused.stderr)['code'],'K8S_STANDARD_RESERVED_WORKER_TAINT')

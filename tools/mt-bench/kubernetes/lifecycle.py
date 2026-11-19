@@ -26,7 +26,7 @@ e=read(d/'environment.json'); ns=e['namespace'];ctx=e['context'];rid=e['runId']
 intent=read(d/'intent.json')
 startup=cfg.get('startupWindowPreflight') or startup_preflight(intent,e,[])
 waits=startup['selectedSeconds']
-assert e['runId']==d.name and ns.startswith('ns-synth-'),'INSTANCE_IDENTITY_CHANGED'
+assert e['runId']==d.name,'INSTANCE_IDENTITY_CHANGED'
 live=d/'runtime';live.mkdir(mode=0o700,exist_ok=True);assert not any(live.iterdir()),'ENTERED_OUTPUT_EXISTS'
 def put(n,obj):(live/n).write_text(json.dumps(obj,indent=2)+'\n')
 def timestamp():return dt.datetime.now(dt.timezone.utc).isoformat()
@@ -382,20 +382,12 @@ def execpod(pod,container,args,seconds=None):
     return result
 pre=read(d/'preflight.json');assert pre['commissioning']=='PREFLIGHT_ONLY'
 scheduler = cfg.get('schedulerPlacement', False)
-assert pre['experiment']['renderSha256']==hashlib.sha256((d/'render.json').read_bytes()).hexdigest()
 assert get('namespace',ns,False) is None
 trust=objects('cluster-trust')[0]; tn=trust['metadata']['name']
 assert tn==ns+'-vault-tokenreview' and trust['roleRef']['name']=='system:auth-delegator' and trust['subjects']==[{'kind':'ServiceAccount','name':'vault','namespace':ns}] and get('clusterrolebinding',tn,False) is None
 if not scheduler:assert read(Path(cfg['cacheAbsence']['path']))['verifiedAt']
 producer_policy=producer_startup.policy(intent['profile']['phases'].get('producerStartup'),e['workDeadlineSeconds'])
 selected_source=frozen.source(intent)
-if frozen.JOB_COMPLETE in selected_source:
-    contract, = (row['data']['source-contract.json'] for row in objects('foundation')
-                 if row['kind']=='ConfigMap' and row['metadata']['name']=='provision-scripts')
-    receipt=(Path(cfg['bindingDirectory'])/'binding.json').resolve()
-    if split:
-        contract = (receipt.parent/'bindings/kubernetes/assets/source-contract.json').read_bytes()
-    frozen.rendered_contract(intent,contract,{'path':str(receipt),'sha256':cfg['inputs'][str(receipt)]})
 frozen.check_bootstrap_render(intent, [row for stage in
     startup_stages for row in objects(stage)])
 primer_storage.check_render(selected_source, objects('primer'))

@@ -69,7 +69,7 @@ try:
     cfg['baseUrl']='http://127.0.0.1:'+match[1]
     write(live/'input.json',cfg)
     instance={'config':str(live/'input.json'),'inventory':str(d/'inventory.json'),'render':str(d/'render.json'),
-              'bindingReceipt':ref(Path(control['bindingDirectory'])/'binding.json'),'delivery':control['delivery'],
+              'binding':control['bindingDirectory'],
               'roleDocuments':{role:str(live/(role+'-config.private.json')) for role in ('evaluator','realtime')}}
     instance['roleDocuments']['nativeReceipt']=str(live/'native-receipt-source.private.json')
     if (live/'platform-verification.json').exists():

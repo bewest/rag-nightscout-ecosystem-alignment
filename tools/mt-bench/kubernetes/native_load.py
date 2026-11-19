@@ -128,7 +128,7 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
     w = selection(c)
     import native_input
     k.need(input_codec in native_input.CODECS, 'NATIVE_LOAD_INPUT_CODEC')
-    k.need(k.NAME.fullmatch(c['namespace']) and c['namespace'].startswith('ns-synth-')
+    k.need(k.NAME.fullmatch(c['namespace'])
            and re.fullmatch(r'[a-z0-9-]{1,100}', runid), 'NATIVE_LOAD_SCOPE')
     k.need(type(seconds) is int and seconds > 0 and type(run_start_ms) is int
            and run_start_ms > 0 and type(setup_seconds) is int and setup_seconds > 0,
