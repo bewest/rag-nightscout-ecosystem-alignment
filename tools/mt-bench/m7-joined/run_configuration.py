@@ -57,8 +57,7 @@ def from_args(args, instrument):
 
 def from_manifest(m):
     import adapter as a
-    return {**({'staticBuildReceiptSha256': m['staticBuildReceiptSha256']} if m.get('staticBuildReceiptSha256') else {}),
-            **commissioning_wal.from_manifest(m), **a.stream_topology.ack_selection(m), **({'tenantReadiness':m['tenantReadiness']} if m.get('tenantReadiness') else {}), **({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),
+    return {**commissioning_wal.from_manifest(m), **a.stream_topology.ack_selection(m), **({'tenantReadiness':m['tenantReadiness']} if m.get('tenantReadiness') else {}), **({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),
             **({'apiCauseObservation':'on'} if m.get('apiCause') else {}),'version': 1, **{k: m.get(k) for k in ('pair','imageId','profile','runPurpose','tenants','replicas','cadence','completionContract')},
             'instrument': m['instrument']['sha256'], 'postgresImageId': m.get('postgresImageId'),
             'primerConcurrency': m.get('primerConcurrency',1), 'jwtSetupConcurrency': m.get('jwtSetupConcurrency',1),

@@ -1,5 +1,4 @@
 """Explicit source-bound static branch diagnostics through the ordinary binding."""
-import hashlib
 import json
 import re
 from pathlib import Path
@@ -7,31 +6,21 @@ from contract import require, discovery_api_replicas, discovery_workers
 import workload_inputs
 import role_instances
 
-CORE = 'ce96241b390cd5397d808417b353161eed83e564'
-DEPLOY = '160ca4d62002746c9b1401dc4784ba30b8543711'
-# Legacy diagnostic releases predate the build-receipt option.
-# New revisions use verified build receipts; do not extend this legacy set.
-E217_CORE = 'e217e7856b0379dd5989992bec106f9c4fd87efb'
-STARTUP_STATIC_CORE = '5a94bbaee7f1130b7de8db0f90deae8c4c1e480b'
-STARTUP_STATIC_DEPLOY = '49db85682482d5fa8b304a3a9ffaf3cb0980ec05'
-SOURCE_PAIRS = frozenset(((CORE, DEPLOY), (E217_CORE, DEPLOY), (STARTUP_STATIC_CORE, STARTUP_STATIC_DEPLOY)))
+# Run identity is the image digest (imageId) plus the run configuration; any
+# commit pair is accepted and recorded, and no build receipt is required.
 KIND = 'static-hash-v1'
 EDGE_COMMAND = ['node', '-r', './deploy/multitenant/load-env.js', 'deploy/multitenant/socket-edge.js']
 
 
 def validate(manifest):
     value = manifest.get('staticTopology')
-    build_digest = manifest.get("staticBuildReceiptSha256")
     if value is None:
-        require(build_digest is None, "M7_STATIC_SELECTION_REQUIRED")
         return None
     require(isinstance(value, dict) and set(value) == {'kind', 'workers'} and value['kind'] == KIND
             and discovery_workers(value['workers']), 'M7_STATIC_TOPOLOGY')
     pair = manifest.get('pair')
     require(isinstance(pair, dict) and set(pair) == {'core', 'deploy'}
-            and all(isinstance(v, str) and re.fullmatch(r'[0-9a-f]{40}', v) for v in pair.values())
-            and ((build_digest is None and (pair['core'], pair['deploy']) in SOURCE_PAIRS)
-                 or (isinstance(build_digest, str) and re.fullmatch(r'[0-9a-f]{64}', build_digest))), 'M7_STATIC_SOURCE_PAIR')
+            and all(isinstance(v, str) and re.fullmatch(r'[0-9a-f]{40}', v) for v in pair.values()), 'M7_STATIC_SOURCE_PAIR')
     require(manifest.get('profile') == 'pgstream-sample' and manifest.get('runPurpose') == 'discovery'
             and manifest.get('pgstreamTopology') == 'external-service-v1'
             and manifest.get('completionContract') == 'evaluator-work-v2'
@@ -40,44 +29,19 @@ def validate(manifest):
     return value
 
 
-def build_receipt(args):
-    """Verify the pinned local image-build evidence against both selected Git objects."""
-    path = getattr(args, 'static_build_receipt', None)
-    digest = getattr(args, 'static_build_receipt_sha256', None)
-    if path is None and digest is None:
-        return {}
-    require(isinstance(path, str) and Path(path).is_absolute()
-            and isinstance(digest, str) and re.fullmatch('[0-9a-f]{64}', digest),
-            'M7_STATIC_BUILD_RECEIPT_REQUIRED')
-    try:
-        raw = Path(path).read_bytes()
-        require(hashlib.sha256(raw).hexdigest() == digest, 'M7_STATIC_BUILD_RECEIPT_DIGEST')
-        proof = json.loads(raw)
-    except (OSError, ValueError) as error:
-        raise RuntimeError('M7_STATIC_BUILD_RECEIPT_INVALID') from error
-    # The image is the run identity. Build status, labels and build inputs are
-    # recorded by the build, not re-proved from Git on every run.
-    require(isinstance(proof, dict) and proof.get('localImageId') == (args.image_id or args.image)
-            and re.fullmatch('sha256:[0-9a-f]{64}', proof.get('localImageId') or ''),
-            'M7_STATIC_BUILD_IDENTITY')
-    return {'staticBuildReceiptSha256': digest}
-
-
 def option(args):
     count = getattr(args, 'static_workers', None)
-    build = build_receipt(args)
     if count is None:
-        require(not build, 'M7_STATIC_SELECTION_REQUIRED')
         return {}
     manifest = {'staticTopology': {'kind': KIND, 'workers': count},
                 'pair': {'core': args.core_commit, 'deploy': args.deploy_commit},
                 'profile': args.profile, 'runPurpose': args.run_purpose,
                 'pgstreamTopology': args.pgstream_topology, 'completionContract': args.completion_contract,
                 'replicas': args.replicas}
-    validate({**manifest, **build})
+    validate(manifest)
     # No explicit allocation selects uncapped Compose services (an explained
     # default reported by `runner.py plan`); it is not a refusal.
-    return {'staticTopology': manifest['staticTopology'], **build}
+    return {'staticTopology': manifest['staticTopology']}
 
 
 def environment(manifest):

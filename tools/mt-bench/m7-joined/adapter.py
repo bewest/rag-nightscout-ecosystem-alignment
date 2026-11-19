@@ -557,9 +557,6 @@ def attach(args):
                     runtime.get('primerMaxTenants')==m.get('primerMaxTenants'),'M7_PRIMER_OPTIONS_RUNTIME_CHANGED')
         if static_selection or runtime.get('staticTopology'):
             require(runtime.get('staticTopology')==m.get('staticTopology') and runtime.get('replicas')==m['replicas'],'M7_STATIC_ATTACH_RUNTIME_MISMATCH')
-        if static_selection:
-            require(m.get('staticBuildReceiptSha256') == runtime.get('staticBuildReceiptSha256'),
-                    'M7_STATIC_ATTACH_RUNTIME_MISMATCH')
         commissioning_wal.inherit(args,m,runtime,runtime_directory)
     from run_configuration import from_manifest
     m['runConfiguration']=from_manifest(m)
@@ -2261,8 +2258,6 @@ def parser():
     prep = sub.add_parser("prepare")
     for name in ("directory", "core-repo", "core-commit", "deploy-repo", "deploy-commit", "image"):prep.add_argument("--"+name, required=True)
     prep.add_argument('--static-workers',type=int,choices=range(1,DISCOVERY_MAX_WORKERS+1),help='Explicit selected static evaluator/realtime process count for bounded branch diagnostics')
-    prep.add_argument('--static-build-receipt', help='Verified local image-build receipt for a frozen static diagnostic pair')
-    prep.add_argument('--static-build-receipt-sha256', help='Exact SHA-256 from the selected diagnostic publication')
     prep.add_argument('--pgstream-topology',choices=(stream_topology.COLOCATED,stream_topology.EXTERNAL),default=stream_topology.COLOCATED)
     prep.add_argument('--api-cause-observation',choices=('off','on'),default='off',help='Source-pinned private setup-diagnostic observer; file-I/O overhead is separate')
     prep.add_argument('--completion-contract',choices=('evaluator-work-v1','evaluator-work-v2'),help='Explicit source-bound pgstream completion reader; mandatory at sample preflight')

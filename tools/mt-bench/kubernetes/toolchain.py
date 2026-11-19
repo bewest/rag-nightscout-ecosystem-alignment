@@ -20,7 +20,7 @@ FRESH={'core-repo','deploy-repo','generator-dependencies','generator-dependency-
 DERIVED={'core-commit','deploy-commit','image','image-id','postgres-image','tenants','replicas',
          'load-seconds','hot-factor','accel','offered-rps','workload-mix','workload-scale',
          'logical-polling-clients','viewer-setup','probe-every-ms','probe-ledger','evaluator-progress-budget','drain-observation','startup-windows','setup-seconds','drain-seconds','jwt-setup-concurrency','driver-plan','driver-vu-diagnostic','driver-shards',
-         'static-workers','static-build-receipt','static-build-receipt-sha256','pgstream-topology'}
+         'static-workers','pgstream-topology'}
 
 def legacy(m,target='kubernetes'):
     if m.get('kind')=='k8s-frozen-experiment':
@@ -100,8 +100,7 @@ def local(m,instance):
     if 'driverPlan'in w:
         options.update({'driver-plan':json.dumps(w['driverPlan']),'driver-shards':w.get('driverShards',1)})
     if t['evaluatorWorkers']>1 or t['apiReplicas']>1:
-        options.update({'static-workers':t['evaluatorWorkers'],'static-build-receipt':original['buildReceipt']['path'],
-                        'static-build-receipt-sha256':original['buildReceipt']['sha256']})
+        options['static-workers']=t['evaluatorWorkers']
     # Import the existing local adapter under its expected name in an isolated
     # subprocess. Both historical modules are called adapter.py; never let the
     # Python module cache silently select the other transport.

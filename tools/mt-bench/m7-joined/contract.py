@@ -303,9 +303,7 @@ def discovery_authorization(manifest, receipt):
             'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(stream_topology.ack_selection(resolved) == ack_budget, 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(primer_options.from_manifest(resolved)==primer,'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
-    require(resolved.get('staticTopology') == manifest.get('staticTopology') and
-            resolved.get('staticBuildReceiptSha256') == manifest.get('staticBuildReceiptSha256'),
-            'M7_STATIC_CONFIGURATION_MISMATCH')
+    require(resolved.get('staticTopology') == manifest.get('staticTopology'), 'M7_STATIC_CONFIGURATION_MISMATCH')
     require(all(resolved.get(k)==manifest.get(k) for k in ('pair','imageId','tenants','replicas','cadence'))
             and resolved.get('instrument')==manifest['instrument']['sha256'], 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     import commissioning_wal

@@ -788,15 +788,10 @@ Discovery accepts an integer API replica count from 1 through 16, independently
 of K. This matches the selected synthetic binding's `replicas.js` producer and
 the instrument's `api` through `api-16` service names. A larger API roster needs
 an extension to both that source contract and those instance/allocation readers.
-The fixed acceptance and pilot grid remains 1, 2 and 4. Historical static receipts
-retain their original source pairs.
-For a new pair, pass the diagnostic publication's `imageReceipt` and
-`imageReceiptSha256` as `--static-build-receipt` and
-`--static-build-receipt-sha256`. Projection checks the build receipt's source
-revisions, image ID and labels, runtime revisions, producer digest and dependency
-lock against the selected inputs. Its digest becomes part of the authorized
-configuration. A compatible new source or image is configuration and receipt data;
-do not add its hashes to the historical source-pair set. The generated source
+The fixed acceptance and pilot grid remains 1, 2 and 4. Any core/deploy pair is
+accepted and recorded; there is no legacy pair list and no build receipt. Run
+identity is the alignment commit, the image digest (`imageId`) and the run
+configuration (decision `brittle-check-removal`). The generated source
 contract, private role documents, role commands, resource limits and startup
 readiness still undergo their existing capability checks. An incompatible
 contract needs an explicit capability implementation; a new hash does not. Preparation verifies the local image and executes the source
