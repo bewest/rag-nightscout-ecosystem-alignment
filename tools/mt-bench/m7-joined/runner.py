@@ -382,7 +382,7 @@ def partial(root):
     """References remain private; missing instruments are never invented zeros."""
     d = root / 'fixture'
     artifacts = {}
-    for name in ('summary.json', 'runtime-readiness.json', 'deployment.json', 'deployment-stages.json', 'startup-primer-boundary.json', 'api-warm-cause.json', 'role-logs/manifest.json', 'load/probe.json', 'load/k6-summary.json'):
+    for name in ('summary.json', 'runtime-readiness.json', 'deployment.json', 'deployment-stages.json', 'startup-primer-boundary.json', 'role-logs/manifest.json', 'load/probe.json', 'load/k6-summary.json'):
         file = d / name
         if file.is_file():
             artifacts[name] = {'sha256': a.digest(file), 'path': str(file)}

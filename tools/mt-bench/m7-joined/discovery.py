@@ -9,7 +9,6 @@ import time
 import discovery_rest
 import driver_memory
 import driver_vu_diagnostic
-import node_observation
 import phase_windows
 from contract import require, SHA, OWNER, REPLICAS, UNACCEPTED_SCOPE, discovery_scope, check_discovery_scope, discovery_api_replicas
 
@@ -297,7 +296,7 @@ def run_load(a,d,m,k6_id,record,oneoff,out,runid,completion,accepted):
             monitor=a.loadgen_process(d,process);monitor.__enter__()
             try:
                 def work():
-                    with node_observation.collect(a,d,m,out) as node, (out/'k6.log').open('wb') as output:
+                    with (out/'k6.log').open('wb') as output:
                         def launch():
                             argv=k6_command(a,d,m,k6_id,runid)
                             timeout=a.discovery_seconds(m,m['cadence']['loadSeconds']+600)
@@ -319,8 +318,6 @@ def run_load(a,d,m,k6_id,record,oneoff,out,runid,completion,accepted):
                         if accepted is not None or 'drainSeconds' in windows:
                             windows.setdefault('drainSeconds',1500)
                             a.write(out/'phase-windows.json',windows)
-                    if node is not None:
-                        record.value['nodeObservation']=node;record.save()
                     if record.value['processes']['k6'].get('timeout'):stop_k6(a,m,record,oneoff=oneoff)
                     if m['cadence'].get('driverShards',1)>1:
                         import driver_shards

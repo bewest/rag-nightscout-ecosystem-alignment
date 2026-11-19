@@ -908,15 +908,6 @@ diagnostic receipt and frozen serving environments carry that selection. The
 launch. Its process receives no database or Vault credential. Older deployment
 pins keep their original stage sequence.
 
-For a bounded local startup experiment, select `--api-warm-cause startup-v1`
-with the existing discovery receipt and resource allocation. It supports small
-fixtures before a 10,000-tenant point. This source-bound observer samples actual
-API process heap use, V8 heap ceiling, cgroup memory ceiling/current use and safe
-startup counts once per second, retaining the first samples and a bounded recent
-window. It adds file I/O and count-sampling overhead; it is not a matched CPU
-baseline. No tenant identifier, credential, request body or glucose value is
-emitted. `warm-v1` keeps its original 10,000-tenant refusal-correlation scope.
-
 `deployment-stages.json` records each entry before effects and its elapsed time,
 verdict and safe first error in `finally`, including a throwing primer. New
 `startup-primer-boundary.json` keeps the exact API birth, process exit and Docker

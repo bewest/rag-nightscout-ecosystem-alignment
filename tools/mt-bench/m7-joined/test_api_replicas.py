@@ -17,7 +17,6 @@ import adapter as a
 import contract as c
 import diagnostic_resources as resources
 import discovery
-import node_observation
 import profile_provenance
 import run_configuration as configuration
 import static_topology
@@ -83,8 +82,6 @@ class ApiReplicas(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError,'M7_DIAGNOSTIC_LIMIT_INVALID'):c.receipt_scope(m,bad,'run')
             bad=copy.deepcopy(proof);bad['pair']['core']='0'*40
             with self.assertRaisesRegex(RuntimeError,'M7_RECEIPT_SOURCE_MISMATCH'):c.receipt_scope(m,bad,'run')
-            args=fixtures.parsed(value);args.node_observation='profile-v1';args.load_seconds=310
-            self.assertEqual(node_observation.option(args),{'nodeObservationMode':'profile-v1'})
         for bad in (0,17,True):
             self.assertFalse(c.discovery_api_replicas(bad))
             with self.assertRaises((RuntimeError,ValueError)):configuration.resolve(config(bad))
@@ -173,17 +170,6 @@ class ApiReplicas(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'M7_INSTANCE_API_COVERAGE'):static_topology.verify_config(selected,broken)
             bad_docs=copy.deepcopy(generated['documents']);bad_docs['processes'].pop()
             with self.assertRaisesRegex(RuntimeError,'M7_STATIC_DOCUMENT_COVERAGE'):static_topology.verify_documents(selected,bad_docs)
-            with tempfile.TemporaryDirectory() as tmp:
-                root=Path(tmp);(root/'state').mkdir()
-                m={**selected,'owner':'a'*32,'diagnostics':profile_provenance.selection()}
-                # The source port emits a Compose overlay. The observer consumes
-                # normalized Compose JSON; exercise its canonical unit fixture
-                # with exactly the source-derived serving-service roster.
-                node_config=instance_fixtures.config(k=2,apis=count)
-                self.assertEqual(set(node_config['services']),set(actual))
-                node_observation.install(node_config,root,m,'profile-v1')
-                self.assertEqual(len(m['nodeObservation']['instances']),count+4)
-                node_observation.verify(node_config,root,m)
 
 
 if __name__=='__main__':unittest.main()

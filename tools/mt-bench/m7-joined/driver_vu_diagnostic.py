@@ -39,8 +39,6 @@ def selection(args, cadence):
             and args.replicas == 1 and args.tenants == 1000
             and cadence.get('offeredRps') == 180 and cadence.get('loadSeconds') == 310
             and cadence.get('driverShards', 1) == 1 and not cadence.get('workloadMix')
-            and getattr(args, 'node_observation', 'off') == 'off'
-            and getattr(args, 'api_warm_cause', 'off') == 'off'
             and not cadence.get('restartDuringLoadAfterSeconds'),
             'M7_DRIVER_VU_DIAGNOSTIC_SCOPE')
     return {'driverVuDiagnostic': mode}

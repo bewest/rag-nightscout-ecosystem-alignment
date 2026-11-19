@@ -19,8 +19,6 @@ def sha(value):
 def validate_prepare(args):
     import adapter as a
     cadence = a.cadence_options(args)
-    a.node_observation.option(args)
-    a.api_warm_cause.option(args)
     static = a.static_topology.option(args)
     commissioning_wal.option(args)
     a.stream_topology.ack_option(args)
@@ -62,7 +60,7 @@ def from_args(args, instrument):
     cadence = validate_prepare(args)
     profile = a.selected_resources_profile(args)
     resources = resource_projection(a.diagnostic_resources, profile)
-    return {**commissioning_wal.option(args), **a.stream_topology.ack_option(args), **({'tenantReadiness':args.tenant_readiness} if getattr(args,'tenant_readiness',None) else {}), **a.static_topology.option(args), **a.node_observation.option(args), **a.api_warm_cause.option(args), **({'apiCauseObservation':'on'} if getattr(args,'api_cause_observation','off')=='on' else {}),'version': 1, 'pair': {'core': args.core_commit, 'deploy': args.deploy_commit},
+    return {**commissioning_wal.option(args), **a.stream_topology.ack_option(args), **({'tenantReadiness':args.tenant_readiness} if getattr(args,'tenant_readiness',None) else {}), **a.static_topology.option(args), **({'apiCauseObservation':'on'} if getattr(args,'api_cause_observation','off')=='on' else {}),'version': 1, 'pair': {'core': args.core_commit, 'deploy': args.deploy_commit},
             'imageId': args.image_id or args.image, 'instrument': instrument,
             'postgresImageId': args.postgres_image, 'profile': args.profile,
             'runPurpose': args.run_purpose, 'tenants': args.tenants, 'replicas': args.replicas,
@@ -78,11 +76,8 @@ def from_manifest(m):
     import adapter as a
     profile = m.get('diagnosticResources', {}).get('profile')
     resources = resource_projection(a.diagnostic_resources, profile)
-    node = m.get('nodeObservation')
-    warm = m.get('apiWarmCause')
     return {**({'staticBuildReceiptSha256': m['staticBuildReceiptSha256']} if m.get('staticBuildReceiptSha256') else {}),
-            **commissioning_wal.from_manifest(m), **a.stream_topology.ack_selection(m), **({'tenantReadiness':m['tenantReadiness']} if m.get('tenantReadiness') else {}), **({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),**({'nodeObservationMode':node['mode']} if node else {}),
-            **({'apiWarmCauseMode':warm['mode']} if warm else {}),
+            **commissioning_wal.from_manifest(m), **a.stream_topology.ack_selection(m), **({'tenantReadiness':m['tenantReadiness']} if m.get('tenantReadiness') else {}), **({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),
             **({'apiCauseObservation':'on'} if m.get('apiCause') else {}),'version': 1, **{k: m.get(k) for k in ('pair','imageId','profile','runPurpose','tenants','replicas','cadence','completionContract')},
             'instrument': m['instrument']['sha256'], 'postgresImageId': m.get('postgresImageId'),
             'primerConcurrency': m.get('primerConcurrency',1), 'jwtSetupConcurrency': m.get('jwtSetupConcurrency',1),
@@ -140,7 +135,7 @@ def remote_projection(config, overlay, source_acceptance=None):
             'M7_REMOTE_PRIMER_OPTIONS_UNSUPPORTED')
     if r.get('staticTopology'):
         require(r['staticTopology']=={'kind':'static-hash-v1','workers':1} and r['replicas']==1 and isinstance((r.get('resources')or{}).get('profile'),dict),'M7_STATIC_REMOTE_K1_N1_ONLY')
-    require(not (r.get('nodeObservationMode') or r.get('apiWarmCauseMode') or r['cadence'].get('driverVuDiagnostic')),
+    require(not (r['cadence'].get('driverVuDiagnostic')),
             'M7_LOCAL_OBSERVER_LOCAL_ONLY')
     require(r['postgresImageId']==transport.POSTGRES,'M7_CONFIG_REMOTE_POSTGRES_UNSUPPORTED')
     require(isinstance(overlay,dict) and set(overlay)=={'binding','hostInventory','resourceReference'}, 'M7_CONFIG_REMOTE_OVERLAY_FIELDS')

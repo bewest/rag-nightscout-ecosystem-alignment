@@ -35,9 +35,7 @@ import evaluator_progress
 import outcome_gate
 import api_cause
 import driver_vu_diagnostic
-import api_warm_cause
 import commissioning_wal
-import node_observation
 import discovery_rest
 import evaluator_idle
 import evaluator_opportunities
@@ -546,7 +544,6 @@ def attach(args):
     require(not static_selection or getattr(args,'runtime_owner',None),'M7_STATIC_ATTACH_OWNER_REQUIRED')
     require(not commissioning_wal.option(args) and getattr(args,'tenant_readiness',None) is None,'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     stream_topology.ack_option(args)
-    require(not api_warm_cause.option(args),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     require(not selected_resources_profile(args) and getattr(args,'api_cause_observation','off')=='off' and not getattr(args,'generator_dependencies',None),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     diagnostic_resources.configure()
     # Bind only instrumentation metadata to the runtime owner's exact existing
@@ -588,9 +585,6 @@ def attach(args):
                     'M7_STATIC_ATTACH_RUNTIME_MISMATCH')
         if 'diagnosticResources' in runtime:m['diagnosticResources']=runtime['diagnosticResources']
         commissioning_wal.inherit(args,m,runtime,runtime_directory)
-        node_observation.inherit(args,m,runtime,runtime_directory)
-    else:
-        require(not node_observation.option(args),'M7_NODE_OBSERVATION_ATTACH_BINDING')
     from run_configuration import from_manifest
     m['runConfiguration']=from_manifest(m)
     frozen(m,'deploy');image(m)
@@ -770,9 +764,6 @@ def prepare(args):
     selected=selected_resources_profile(args,inspect_runtime=True)
     require(not selected or args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery','M7_DIAGNOSTIC_RESOURCE_DISCOVERY_ONLY')
     require(not selected or getattr(args,'generator_dependencies',None),'M7_DIAGNOSTIC_DEPENDENCIES_REQUIRED')
-    local_observer = bool(node_observation.option(args) or api_warm_cause.option(args))
-    require(not local_observer or (selected and document(args.freeze).get('version')==2),
-            'M7_LOCAL_OBSERVER_RECEIPT')
     options=prepare_primer_options(args)
     extended_primer=primer_options.requires_extended(options)
     if extended_primer:
@@ -953,9 +944,7 @@ def prepare_staged(args,target,pinned):
             observation=resource_cpu_preflight(selected_resources,roles=roles,observation=observation)
         m['cpuPrecisionPreflight']=observation
     api_cause.install(config,target,m,getattr(args,'api_cause_observation','off')=='on')
-    api_warm_cause.install(config,target,m,api_warm_cause.option(args).get('apiWarmCauseMode','off'))
     m['servingInstances'] = role_instances.roster(config,m['replicas'])
-    node_observation.install(config,target,m,node_observation.option(args).get('nodeObservationMode','off'))
     if m.get('runPurpose') == 'discovery':
         if selected_resources is None:
             config, removed = diagnostic_resources.uncapped_compose(config)
@@ -1014,8 +1003,6 @@ def verify(d, m, teardown=False):
     commissioning_wal.verify(document(d/"frozen.compose.json"),m)
     platform_startup_config(document(d/"frozen.compose.json"),d,m,verify=True)
     api_cause.verify(document(d/"frozen.compose.json"),d,m)
-    api_warm_cause.verify(document(d/"frozen.compose.json"),d,m)
-    node_observation.verify(document(d/"frozen.compose.json"),d,m)
     static_topology.verify_config(m,document(d/"frozen.compose.json"))
     measurement_topology(m,document(d/"frozen.compose.json"))
     profile_provenance.verify_environment(document(d/"frozen.compose.json"),m["diagnostics"])
@@ -1529,9 +1516,7 @@ def deploy(d, m):
                     **({'maxTenants':m['primerMaxTenants']} if 'primerMaxTenants' in m else {}),
                     "reusedTenants":len(document(prior)["tenants"]) if prior.exists() else 0,
                     "requestedTenants":m["tenants"],"stageTimeoutSeconds":timeout})
-            observer=(api_warm_cause.observe(sys.modules[__name__],d,m) if name=='prime'
-                      else contextlib.nullcontext())
-            with observer, (d/(name+".log")).open("wb") as output:
+            with (d/(name+".log")).open("wb") as output:
                 if scope=="local":
                     command(["node",d/"core/deploy/multitenant"/args[0],d/"state"],file=output,
                             **({'timeout':timeout} if 'stageSeconds' in authored else {}))
@@ -2584,10 +2569,6 @@ def parser():
     prep.add_argument('--static-build-receipt', help='Verified local image-build receipt for a frozen static diagnostic pair')
     prep.add_argument('--static-build-receipt-sha256', help='Exact SHA-256 from the selected diagnostic publication')
     prep.add_argument('--pgstream-topology',choices=(stream_topology.COLOCATED,stream_topology.EXTERNAL),default=stream_topology.COLOCATED)
-    prep.add_argument('--node-observation',choices=('off',node_observation.MODE),default='off',
-                      help='Bound private ELU and CPU profiles inside each serving Node role during ordinary local demand')
-    prep.add_argument('--api-warm-cause',choices=('off',api_warm_cause.MODE,api_warm_cause.STARTUP_MODE),default='off',
-                      help='Private correlated warm refusal class for the owned 10000-tenant primer')
     prep.add_argument('--api-cause-observation',choices=('off','on'),default='off',help='Source-pinned private setup-diagnostic observer; file-I/O overhead is separate')
     prep.add_argument('--completion-contract',choices=('evaluator-work-v1','evaluator-work-v2'),help='Explicit source-bound pgstream completion reader; mandatory at sample preflight')
     prep.add_argument('--opportunity-observation', type=json.loads, help='Legacy option accepted for compatibility')

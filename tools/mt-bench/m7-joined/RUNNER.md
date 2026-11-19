@@ -777,15 +777,6 @@ optional quota read remains UNMEASURED. The service-to-SQL coverage companion
 maps the actual read-only configuration mount for every instance; shared SQL
 users stay shared and are counted once. It grants no per-process SQL split.
 
-`--node-observation profile-v1` installs distinct CPU/ELU captures for each actual
-serving service, using the role's ordinary entrypoint argument. The record binds
-the full instance roster and process births. The cached selected M7 module's
-state and file hash accompany the captures. Missing or inconsistent M7 state
-leaves observer-cost eligibility UNMEASURED while retaining independent valid
-CPU/ELU captures. `--diagnostics off` disables the entire M7 observer; a matched
-ON/OFF/ON SUT comparison measures that total intervention, not exclusive query
-wrapper cost. SQL bookends, host/process counters and Node captures stay separate.
-
 ### Selected static branch diagnostics
 
 `--static-workers K` explicitly selects the source-bound static profile in
