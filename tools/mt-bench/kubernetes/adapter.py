@@ -562,8 +562,12 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             comparison = dict(template(actual), spec=resource_budget.readback_projection(
                 template(expected)['spec'], template(actual)['spec'], need))
             need(subset(template(expected_visible), comparison), 'BINDING_READBACK_CHANGED')
+        elif expected['kind'] == 'ResourceQuota':
+            need(resource_budget.quota_spec_matches(expected['spec'], actual.get('spec')),
+                 'RESOURCE_READBACK_CHANGED:ResourceQuota.' + expected['metadata']['name'])
         elif 'spec' in expected:
-            need(subset(expected_visible['spec'], actual.get('spec')), 'RESOURCE_READBACK_CHANGED')
+            need(subset(expected_visible['spec'], actual.get('spec')),
+                 'RESOURCE_READBACK_CHANGED:' + expected['kind'] + '.' + expected['metadata']['name'])
         elif expected['kind'] == 'ConfigMap' and name != 'ConfigMap/' + BOOTSTRAP_MAP:
             if name=='ConfigMap/edge-nginx' and c.get('edgeConfiguration'):
                 edge_configuration.readback(expected,actual,need)
