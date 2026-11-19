@@ -50,7 +50,8 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 ### Platform/application boundary, startup and simplification
 
 - [platform-verification-removal](multitenancy-decisions.md#platform-verification-removal) — No configuration-digest certificate and no per-tenant verified floor; migration Job plus schema check; a range of single-concern health endpoints.
-- [config-few-dozen-env](multitenancy-decisions.md#config-few-dozen-env) — A few dozen environment settings plus minimal PostgreSQL bookkeeping; per-role JSON documents retire.
+- [config-few-dozen-env](multitenancy-decisions.md#config-few-dozen-env) — A few dozen environment settings (about 74 is fine) plus minimal PostgreSQL bookkeeping; per-role JSON documents retire.
+- [provisioning-secrets-in](multitenancy-decisions.md#provisioning-secrets-in) — Secrets flow into Jobs and roles, never out of a Pod; one apply converges.
 - [metrics-endpoint-deferred](multitenancy-decisions.md#metrics-endpoint-deferred) — **deferred**: no `/metrics` work now; Prometheus when it makes a run easier.
 - [platform-application-boundary](multitenancy-decisions.md#platform-application-boundary) — Application assumes a verified platform and fails closed; it never re-verifies the platform while serving.
 - [brittle-check-removal](multitenancy-decisions.md#brittle-check-removal) — Checks that refuse for anything other than a product property are removed; run identity is image digest plus run configuration.
