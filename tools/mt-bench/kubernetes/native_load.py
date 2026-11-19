@@ -371,8 +371,14 @@ def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, 
     private(out / 'k6-native.log', raw)
     _identity(c, kube.json(['get', 'namespace', ns]), uid)
     again = kube.json(['get', 'pod', pod['metadata']['name']], namespace=ns)
-    k.need(again['metadata']['uid'] == process['podUid'] and k.controller(again) == k.controller(pod),
-           'NATIVE_LOAD_POD_REPLACED')
+    k.owned(c, again)
+    k.need(k.controller(again) == k.controller(pod), 'NATIVE_LOAD_POD_CONTROLLER')
+    import native_files
+    origin = native_files.artifact_source(pod)
+    k.need(again['metadata']['uid'] == process['podUid'] and
+           native_files.artifact_source(again)['writer'] == origin['writer'],
+           'NATIVE_LOAD_POD_REPLACED', 'UNMEASURED')
+    receipt['artifactSource'] = {'podUid': process['podUid'], 'writer': origin['writer'], 'transport':'k6-logs'}
     if process.get('restartCount'):
         receipt['writerContinuity'] = 'UNMEASURED'
     events, summary = decode(raw, receipt['runId'], receipt['sourceSha256'])

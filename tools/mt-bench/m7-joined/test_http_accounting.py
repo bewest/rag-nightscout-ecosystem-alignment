@@ -59,6 +59,20 @@ class HttpAccounting(unittest.TestCase):
         self.assertEqual(value['storage'],'UNMEASURED')
         self.assertNotIn('DO_NOT_RETAIN',json.dumps(observed))
 
+    def test_offered_work_uses_k6_iterations_and_independent_issued_counts(self):
+        metrics = self.observe()['metrics']
+        self.assertEqual(assess(metrics)['offeredWorkVerdict'], 'UNMEASURED')
+        metrics['iterations'] = {'count':119}
+        self.assertEqual(assess(metrics)['offeredWorkVerdict'], 'PASS')
+        metrics['iterations']['count'] = 118
+        self.assertEqual(assess(metrics)['offeredWorkVerdict'], 'UNMEASURED')
+        metrics['iterations']['count'] = 119
+        del metrics['scenario_transport_failures']
+        result = assess(metrics)
+        self.assertEqual(result['sourceReconciliation'], 'UNMEASURED')
+        self.assertEqual(result['sourceCounts']['scenario_transport_failures'], 'UNMEASURED')
+        self.assertEqual(result['offeredWorkVerdict'], 'UNMEASURED')
+
     def test_first_setup_refusal_keeps_all_dispatched_response_accounting(self):
         value=assess(self.observe('batch')['metrics'])
         self.assertEqual(value['setup']['attempts'],2)
