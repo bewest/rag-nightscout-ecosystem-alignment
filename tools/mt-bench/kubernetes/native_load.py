@@ -191,6 +191,10 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
     k.need(all(name in ('BASE_URL', 'TENANTS_FILE', 'RUN_ID') or env.get(name) == value
                for name, value in original_env.items()), 'NATIVE_LOAD_ENVIRONMENT_CONFLICT')
     rendered = copy.deepcopy(job)
+    # Test traffic must not inherit the operator label's private control-plane
+    # NetworkPolicy access from the original lane K Job template.
+    rendered['metadata']['labels']['app.kubernetes.io/component']='load'
+    rendered['spec']['template']['metadata']['labels']['app.kubernetes.io/component']='load'
     rendered['spec']['activeDeadlineSeconds'] = seconds
     # Automatic Job TTL would remove the evidence before an interrupted
     # controller collects it. Namespace/trust cleanup belongs to run_cleanup.
@@ -239,6 +243,8 @@ def _terminal(c, wanted, job, pods):
     k.need(len(rows) == 1, 'NATIVE_LOAD_POD_CENSUS', 'UNMEASURED')
     pod = rows[0]
     k.owned(c, pod)
+    k.need(k.subset(wanted['spec']['template']['metadata']['labels'],pod['metadata'].get('labels',{})),
+           'NATIVE_LOAD_POD_LABELS_CHANGED')
     ref = k.controller(pod)
     k.need(ref['kind'] == 'Job' and ref['name'] == 'k6' and ref['uid'] == job['metadata']['uid'],
            'NATIVE_LOAD_POD_CONTROLLER')

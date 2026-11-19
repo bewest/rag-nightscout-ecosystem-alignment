@@ -81,7 +81,7 @@ class Kube:
                          'lastTransitionTime': '2026-11-19T00:00:00Z'}]}
         pod = {'apiVersion': 'v1', 'kind': 'Pod',
                'metadata': {'name': 'k6-owned', 'namespace': self.c['namespace'], 'uid': 'owned-pod',
-                            'labels': {self.c['ownerLabel']: self.c['runId']}, 'ownerReferences': [
+                            'labels': copy.deepcopy(job['spec']['template']['metadata']['labels']), 'ownerReferences': [
                                 {'kind': 'Job', 'name': 'k6', 'uid': 'owned-job', 'controller': True}]},
                'spec': copy.deepcopy(job['spec']['template']['spec']),
                'status': {'phase': 'Succeeded', 'containerStatuses': [

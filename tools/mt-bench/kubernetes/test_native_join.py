@@ -1,6 +1,8 @@
 """Opt-in execution boundary: declaration/census, budget and exact writer stop."""
 import copy
 import json
+import os
+import ipaddress
 from pathlib import Path
 import tempfile
 import unittest
@@ -46,6 +48,40 @@ def fixture():
 
 
 class NativeJoin(unittest.TestCase):
+    @unittest.skipUnless(os.environ.get('NS_NATIVE_QUALIFIED_RENDER'),'qualified binding render required')
+    def test_load_label_has_edge_access_without_private_operator_plane_access(self):
+        c,_,_,_=fixture();job=j.declarations(c)[0]
+        labels=job['spec']['template']['metadata']['labels']
+        render=k.document(os.environ['NS_NATIVE_QUALIFIED_RENDER'])
+        policies=[obj for obj in k.manifests(render) if obj['kind']=='NetworkPolicy']
+        private={1342,19001,19002,19003,19004}
+        def matches(selector,actor):
+            self.assertFalse(selector.get('matchExpressions'),'selector requires additional evidence')
+            return all(actor.get(name)==value for name,value in selector.get('matchLabels',{}).items())
+        def sources(rule,actor):
+            return not rule.get('from') or any('podSelector' in row and 'namespaceSelector' not in row
+                and matches(row['podSelector'],actor) or 'ipBlock' in row
+                and ipaddress.ip_address('192.0.2.10') in ipaddress.ip_network(row['ipBlock']['cidr'])
+                and not any(ipaddress.ip_address('192.0.2.10') in ipaddress.ip_network(net)
+                            for net in row['ipBlock'].get('except',[])) for row in rule['from'])
+        def exposed(actor):
+            found=[]
+            for obj in policies:
+                for rule in obj['spec'].get('ingress',[]):
+                    ports={row.get('port') for row in rule.get('ports',[])}
+                    if ports & private:
+                        self.assertFalse(any('namespaceSelector' in row or 'ipBlock' in row for row in rule.get('from',[])),
+                                         'private policy requires additional namespace/IP evidence')
+                    if ports & private and sources(rule,actor):found.append(obj['metadata']['name'])
+            return found
+        operator=dict(labels,**{'app.kubernetes.io/component':'operator'})
+        self.assertTrue(exposed(operator),'the control never reached the current private-plane policies')
+        self.assertEqual(labels['app.kubernetes.io/component'],'load')
+        self.assertFalse(exposed(labels),exposed(labels))
+        edge=[obj for obj in policies if obj['spec'].get('podSelector',{}).get('matchLabels',{}).get('app.kubernetes.io/component')=='edge']
+        self.assertTrue(edge)
+        self.assertTrue(any((not rule.get('ports') or any(row.get('port')==8080 for row in rule['ports']))
+                            and sources(rule,labels) for obj in edge for rule in obj['spec'].get('ingress',[])))
     def test_declared_suspended_job_rbac_and_full_pod_budget(self):
         c,inventory,render,client=fixture()
         objects=k.validate(c,inventory,render)
@@ -77,13 +113,17 @@ class NativeJoin(unittest.TestCase):
         baseline=k.observe(c,objects,client)
         job=client.objects[j.JOB];job['spec']['suspend']=False
         pod={'apiVersion':'v1','kind':'Pod','metadata':{'name':'k6-owned','namespace':c['namespace'],'uid':'pod-owned',
-            'resourceVersion':'12','labels':{c['ownerLabel']:c['runId']},'ownerReferences':[
+            'resourceVersion':'12','labels':copy.deepcopy(job['spec']['template']['metadata']['labels']),'ownerReferences':[
                 {'kind':'Job','name':'k6','uid':job['metadata']['uid'],'controller':True}]},
             'spec':copy.deepcopy(job['spec']['template']['spec']),'status':{'phase':'Pending'}}
         client.pods.append(pod)
         current=k.observe(c,objects,client,baseline)
         self.assertEqual(current['pods'].keys(),baseline['pods'].keys())
         self.assertEqual(set(current['testActors']),{'k6-owned'})
+        pod['metadata']['labels']['app.kubernetes.io/component']='operator'
+        with self.assertRaisesRegex(k.Refused,'POD_LABELS_CHANGED'):k.observe(c,objects,client,baseline)
+        pod['metadata']['labels']['app.kubernetes.io/component']='load'
+        k.observe(c,objects,client,baseline)
         with tempfile.TemporaryDirectory() as scratch:
             custody=Path(scratch)/'native-load.json';c['nativeLoadCustodyFile']=str(custody)
             k.write(custody,{'jobUid':job['metadata']['uid'],'podUid':'original-pod'})

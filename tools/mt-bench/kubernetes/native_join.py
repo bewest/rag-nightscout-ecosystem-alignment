@@ -44,7 +44,7 @@ def selected(c):
 def base_job(c):
     s = selected(c)
     labels = {c['ownerLabel']:c['runId'], 'app.kubernetes.io/name':'nightscout',
-              'app.kubernetes.io/part-of':'nightscout-multitenant','app.kubernetes.io/component':'operator'}
+              'app.kubernetes.io/part-of':'nightscout-multitenant','app.kubernetes.io/component':'load'}
     hardened = {'runAsUser':1000,'runAsGroup':1000,'runAsNonRoot':True,
                 'readOnlyRootFilesystem':True,'allowPrivilegeEscalation':False,'capabilities':{'drop':['ALL']}}
     waiter = {'name':'wait-for-jobs','image':c['pins']['appImage'],'imagePullPolicy':'IfNotPresent',
@@ -131,6 +131,8 @@ def test_pod(c, parent, pod, controller_uid=None):
     """An exact declared Job is the only dynamic test actor admitted by census."""
     k.need(selected(c) is not None and k.key(parent)==JOB,'NATIVE_LOAD_UNACCOUNTED_JOB')
     k.owned(c,pod)
+    k.need(k.subset(k.template(parent)['metadata']['labels'],pod['metadata'].get('labels',{})),
+           'NATIVE_LOAD_POD_LABELS_CHANGED')
     wanted=k.template(parent)['spec']; actual,_=k.admission_projection(wanted,pod['spec'])
     k.need(k.subset(wanted,actual),'NATIVE_LOAD_POD_CHANGED')
     k.need(not pod['spec'].get('nodeName') or pod['spec']['nodeName']==c[FIELD]['nodeName'],

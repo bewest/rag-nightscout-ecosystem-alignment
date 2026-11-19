@@ -123,6 +123,8 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None):
         row = pod_read()
         if row is not None:
             k.owned(c, row)
+            k.need(k.subset(wanted['spec']['template']['metadata']['labels'],row['metadata'].get('labels',{})),
+                   'NATIVE_LOAD_POD_LABELS_CHANGED')
             ref = k.controller(row)
             k.need(ref.get('uid') == job['metadata']['uid'] and ref.get('kind') == 'Job'
                    and ref.get('name') == 'k6', 'NATIVE_LOAD_POD_CONTROLLER')

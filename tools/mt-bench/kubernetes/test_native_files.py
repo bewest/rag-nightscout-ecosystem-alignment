@@ -192,7 +192,7 @@ class NativeFiles(unittest.TestCase):
                                          'imageID':'containerd://sha256:'+'9'*64,
                                          'state':{'running':{}} if result is None else {'terminated':{'exitCode':result}}})
                     pod = {'kind':'Pod','metadata':{'name':'k6-owned','namespace':c['namespace'],'uid':'owned-pod',
-                        'labels':{c['ownerLabel']:c['runId']},'ownerReferences':[
+                        'labels':copy.deepcopy(actual['spec']['template']['metadata']['labels']),'ownerReferences':[
                             {'kind':'Job','name':'k6','uid':'owned-job','controller':True}]},
                         'spec':copy.deepcopy(actual['spec']['template']['spec']),
                         'status':{'phase':'Succeeded' if done == 0 and rc == 0 else 'Running','containerStatuses':statuses}}

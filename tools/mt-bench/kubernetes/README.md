@@ -856,7 +856,10 @@ The probe restart signal, both-writer join, 120-second per-write observer,
 all-tenant fixed-target catch-up and full `assess_stage()` path stay in their
 original order. `assess_join()` adds capture/run/script/hash checks. The init
 waiter alone gets `jobs/get` for `provision` and `primer` in its namespace; the
-exporter receives no Kubernetes API permission. Setup actor lifetimes still
+exporter receives no Kubernetes API permission. The test Pod uses component
+`load`, so it does not match the application's
+private admin/internal `operator` selectors; it enters through the existing
+edge ingress. No application NetworkPolicy is broadened. Setup actor lifetimes still
 belong to the current binding and must cover the complete owned point. Keep
 owned namespace/trust cleanup even after Job completion. Fresh native live
 compatibility and capacity qualification remain UNMEASURED.
