@@ -339,7 +339,13 @@ def run(packet, grant_path, expected_digest, group=None):
             except Exception as exc:
                 k.write(attempt/'resource-observation-unavailable.json',failure(exc))
             try:
-                reduce.reduce_stage(d/'load', attempt/'observations')
+                measurements = reduce.reduce_stage(d/'load', attempt/'observations')
+                outcome['observations'] = {key: measurements[key] for key in
+                    ('http', 'issued', 'offeredWork', 'stored', 'clinical', 'selectedClinicalCoverage', 'delivered',
+                     'evaluatorProgress', 'catchup', 'outcomeGate', 'componentCounters', 'stopEvidence',
+                     'probeFailure', 'stageOutcome') if key in measurements}
+                outcome['reduction'] = 'observations/reduction.json'
+                k.write(attempt/'result.json', outcome)
             except Exception as exc:
                 k.write(attempt/'reduction-failure.json', failure(exc))
         # The outer lifecycle indexes its case after it verifies absence.

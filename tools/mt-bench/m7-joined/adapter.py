@@ -1634,13 +1634,21 @@ def phase_snapshot(d, out, name):
     timings={'version':1,'collectorOwner':snapshot_owner.get('owner'),'hostIdentity':snapshot_owner.get('hostIdentity'),'clockDomain':'collector-host-monotonic-v1','scope':'existing SQL snapshot request bounds; not exact query instants or database-role CPU','reads':{}}
     sql="SELECT r.rolname,sum(s.calls),sum(s.total_exec_time) FROM pg_stat_statements s JOIN pg_roles r ON r.oid=s.userid GROUP BY 1 ORDER BY 1;"
     statements="SELECT r.rolname,s.calls,s.total_exec_time,s.queryid,s.dbid,encode(convert_to(s.query,'UTF8'),'hex') FROM pg_stat_statements s JOIN pg_roles r ON r.oid=s.userid ORDER BY r.rolname,s.queryid;"
+    deferred_read_error = None
+    discovery_bookend = snapshot_owner.get('runPurpose') == 'discovery' and out == d/'load'
     for kind,query in [('pg-role',sql),('pg-statements',statements)]:
         row={'wallStartedAtNs':time.time_ns(),'monotonicStartedAtNs':time.monotonic_ns()};timings['reads'][kind]=row
         try:
             with segments.capture(kind,[name+'-'+kind+'.tsv']):
                 (out/(name+'-'+kind+'.tsv')).write_text(psql(d,query));row['status']='PASS'
-        except BaseException:
-            row['status']='FAILED';raise
+        except Exception as error:
+            row['status']='FAILED'
+            if not discovery_bookend:
+                raise
+            # Verify custody and time before another independent read.
+            assert_owned(snapshot_owner)
+            remaining_seconds(1)
+            deferred_read_error = deferred_read_error or error
         finally:
             row.update(wallFinishedAtNs=time.time_ns(),monotonicFinishedAtNs=time.monotonic_ns())
             # Timing publication never conceals the original SQL failure.
@@ -1664,6 +1672,10 @@ def phase_snapshot(d, out, name):
             with segments.capture(kind,[name+'-'+kind+'.json']):collect()
         except Exception as error:
             write(out/(name+'-'+kind+'-failure.json'),{'status':'UNMEASURED','code':collection_segments.code(error),'failureType':type(error).__name__})
+
+    if deferred_read_error is not None:
+        deferred_read_error.snapshotObserverFailed = True
+        raise deferred_read_error
 
 
 def sql_counter_rate_bounds(before,after,delta,kind='pg-role'):
@@ -2261,8 +2273,15 @@ def sample_preflight(d,m,k6_id,oneoff=None):
 
 
 def sample_results(d,probe,sql_roles):
-    require(probe.get('completedOutput',{}).get('verdict')=='PASS','M7_COMPLETED_OUTPUT_ORACLE')
-    result={name:sql_attribution.assess(sql_attribution.statements(d/name/'before-pg-statements.tsv'),sql_attribution.statements(d/name/'after-pg-statements.tsv'),sql_roles) for name in ('idle-disabled','idle','load')}
+    result = {}
+    errors = []
+    for name in ('idle-disabled', 'idle', 'load'):
+        try:
+            result[name] = sql_attribution.assess(sql_attribution.statements(d/name/'before-pg-statements.tsv'),
+                                                  sql_attribution.statements(d/name/'after-pg-statements.tsv'), sql_roles)
+        except (OSError, ValueError, RuntimeError) as error:
+            result[name] = {'status':'UNMEASURED', 'code':collection_segments.code(error)}
+            errors.append(error)
     write(d/'sql-attribution.json',result)
     companion={}
     for phase in ('idle-disabled','idle','load'):
@@ -2271,6 +2290,8 @@ def sample_results(d,probe,sql_roles):
         companion[phase]={'sql':cost_companion.assess(*(document(p) for p in sql)) if all(p.is_file() for p in sql) else {'status':'NO-INSTRUMENT','reason':'M7_COST_BOOKEND_UNAVAILABLE'},
                           'realtime':realtime_costs.assess(*(document(p) for p in rt)) if all(p.is_file() for p in rt) else {'status':'NO-INSTRUMENT','reason':'M7_REALTIME_COST_BOOKEND_UNAVAILABLE'}}
     write(d/'cost-companion-assessment.json',{'version':1,'scope':'next pinned instrument only; raw snapshots unchanged; shared SQL-role costs remain combined','phases':companion})
+    if errors:
+        raise errors[0]
     return result
 
 
@@ -2331,6 +2352,7 @@ def run_cell(d, m, k6_image):
     result_probe = document(out / "probe.json")
     completed_output=result_probe.get('completedOutput')
     if completion:
+        require((completed_output or {}).get('verdict')=='PASS','M7_COMPLETED_OUTPUT_ORACLE')
         attributed=sample_results(d,result_probe,sql_roles)
     from viewer_plan import check as check_viewers, total as viewer_total
     viewer_result=check_viewers(m,document(d/'tenants.private.json'),result_probe,document(out/'fanout.json')['probeWrites']['byTenant'])

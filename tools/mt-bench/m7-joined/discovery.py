@@ -204,38 +204,73 @@ def _run_discovery(a,d,m,k6_image,oneoff=None):
             record.value.update(status='PARTIAL',diagnosticOnly=True,ordinaryTraffic='NOT_RUN',
                 measurements={'complete':False,'code':'M7_SERIAL_EXCHANGE_DIAGNOSTIC_ONLY'})
             record.save();check_discovery(record.value);return record.value
-        try:discovery_load(a,d,m,k6_id,record,**({'oneoff':oneoff}if oneoff else{}))
-        except Exception as error:
-            if hasattr(error,'oracleFindings'):
-                # File-only reducer: no extra SQL or work after a hard count
-                # refusal; already captured cost bookends must remain visible.
-                from reduce import measurements
-                try:record.value['measurements']=measurements(d,m)
-                except Exception as missing:record.value['measurements']={'complete':False,'code':safe_code(missing)}
-                record.save()
-            raise
+        try:
+            discovery_load(a,d,m,k6_id,record,**({'oneoff':oneoff}if oneoff else{}))
+        finally:
+            # File-only reductions also run on a hard stop. They never re-open
+            # the fixture or replace the original load failure.
+            record.value.update(retained_results(a, d, m, record.value))
+            record.save()
         if m['profile']=='pgstream-sample':
             probe=record.value.get('probe')
             if probe:
-                record.value['sqlAttribution']=a.sample_results(d,probe,sql_roles)
-                record.value['completedOutput']=probe['completedOutput']
+                record.value['completedOutput']=probe.get('completedOutput', {'verdict':'UNMEASURED'})
+                record.save()
+                try:
+                    record.value['sqlAttribution']=a.sample_results(d,probe,sql_roles)
+                except Exception as error:
+                    record.failure('sqlAttribution',error,True)
+                    require(record.value['completedOutput']['verdict']=='PASS','M7_COMPLETED_OUTPUT_ORACLE')
+                    raise
+                record.save()
+                require(record.value['completedOutput']['verdict']=='PASS','M7_COMPLETED_OUTPUT_ORACLE')
             counts=record.value.get('oracle')
             from discovery_counts import control_domain
             if control_domain(counts,m['tenants']) is not None:
                 a.control(d,m);record.value['oracleControl']=a.document(d/'load/oracle-control.json')
             else:record.value['strictChecks']['oracleControl']={'verdict':'UNMEASURED','code':'M7_DISCOVERY_COUNTS_MISSING'}
-        for phase in ('idle','load'):
-            if (d/phase/'evaluator-progress.json').is_file():record.value.setdefault('evaluatorProgress',{})[phase]=a.progress_summary(d/phase)
-        from reduce import measurements
-        try:record.value['measurements']=measurements(d,m)
-        except Exception as error:record.value['measurements']={'complete':False,'code':safe_code(error)}
-        record.save()
         if not any('recoveryEpisode' in row for row in record.value['strictChecks'].values()) and record.value['measurements'].get('complete') and record.value['oracle'] is not None and record.value['probe'] is not None and (record.value['probe'].get('restart') is not None or m['profile']=='pgstream-sample' and record.value.get('completedOutput',{}).get('verdict')=='PASS' and record.value.get('oracleControl')=={'baseline':'GREEN','broken':'RED','restored':'GREEN'}) and all(record.value['processes'].get(k,{}).get('returncode')==0 for k in ('k6','probe')):record.value['status']='MEASURED'
-        if any('recoveryEpisode' in row for row in record.value['strictChecks'].values()) or record.value.get('clinicalVerdict')=='FAIL':record.value['status']='PARTIAL'
+        if record.value['hardFailures'] or any('recoveryEpisode' in row for row in record.value['strictChecks'].values()) or record.value.get('clinicalVerdict')=='FAIL':record.value['status']='PARTIAL'
         record.save();check_discovery(record.value);return record.value
     except Exception as error:
+        record.value['status']='PARTIAL'
         if not any(row['code']==safe_code(error) for row in record.value['hardFailures']):record.failure('collection',error,True)
         record.save();raise
+
+def retained_results(a, d, m, summary):
+    """Read completed observations independently, including on a partial run."""
+    from reduce import measurements
+    from viewer_plan import check
+    result = {}
+    def read(key, fn):
+        try:
+            result[key] = fn()
+        except Exception as error:
+            result[key] = {'verdict': getattr(error, 'verdict', 'UNMEASURED'), 'code': safe_code(error)}
+
+    read('measurements', lambda: measurements(d, m))
+    result['measurements'].setdefault('complete', False)
+    progress = {}
+    for phase in ('idle', 'load'):
+        if (d/phase/'evaluator-progress.json').is_file():
+            try:
+                progress[phase] = a.progress_summary(d/phase)
+            except Exception as error:
+                progress[phase] = {'verdict': 'UNMEASURED', 'code': safe_code(error)}
+    result['evaluatorProgress'] = progress
+    out = d/'load'
+    probe = summary.get('probe') or {}
+    if probe:
+        result['completedOutput'] = probe.get('completedOutput', {'verdict':'UNMEASURED'})
+    if not summary.get('viewerFrames') and probe.get('window') and (out/'fanout.json').is_file():
+        def frames():
+            try:
+                return check(m, a.document(d/'tenants.private.json'), probe, a.document(out/'fanout.json')['probeWrites']['byTenant'])
+            except RuntimeError as error:
+                return {'verdict':'FAIL', 'code':safe_code(error)}
+        read('viewerFrames', frames)
+    return result
+
 
 def serial_exchange_diagnostic(a,d,m,record):
     """Existing stock probe, selected paired exchange hooks, no ordinary load."""
@@ -356,7 +391,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
                 try:a.phase_snapshot(d,out,'after')
                 except Exception as secondary:
                     record.failure('after-snapshot',secondary,True)
-                    if primary is None:raise
+                    if primary is None and not getattr(secondary, 'snapshotObserverFailed', False):raise
             # Recheck owned custody before the existing bounded restart protocol.
             a.assert_owned(m)
             if 'drainSeconds' in windows:
@@ -374,7 +409,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
     finally:
         if process is not None:
             a.stop_job(out/'probe-job.json',m['owner']);process.wait(timeout=10)
-            if 'probe' not in record.value['processes']:record.value['processes']['probe']={'returncode':process.returncode,'stoppedByRunner':True};record.save()
+            if 'probe' not in record.value['processes']:record.value['processes']['probe']={'returncode':process.returncode,'stoppedByRunner':True,'endMonoNs':time.monotonic_ns()};record.save()
         if monitor:monitor.__exit__(None,None,None)
         retain_load(a,d,m,record)
         if load_started:
@@ -382,7 +417,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
             try:a.phase_snapshot(d,out,'after-reconnect')
             except Exception as secondary:
                 record.failure('after-reconnect-snapshot',secondary,True)
-                if primary is None:raise
+                if primary is None and not getattr(secondary, 'snapshotObserverFailed', False):raise
         if (out/'probe.json').is_file():
             record.value['probe']=a.document(out/'probe.json');record.save()
             require(not record.value['probe'].get('hardFailure'),'M7_DISCOVERY_PROBE_HARD_FAILURE')
@@ -402,8 +437,12 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
     # Publish completed HTTP/frame segments before later optional collection.
     retain_load(a,d,m,record)
     if m.get('evaluatorCatchup') is not None:evaluator_catchup.run(a,d,m,record)
-    if (out/'k6-summary.json').is_file():
-        metrics=a.document(out/'k6-summary.json')['metrics']
+    if (d/'tenants.private.json').is_file() or (out/'k6-summary.json').is_file():
+        try:
+            metrics = a.document(out/'k6-summary.json')['metrics'] if (out/'k6-summary.json').is_file() else {}
+        except (OSError, ValueError, KeyError) as error:
+            record.failure('httpCounters', error, True)
+            metrics = {}
         record.value['rateOffer']=a.rate_offer(m)
         record.save()
         try:result,known=count_observation(a,d,out,runid,metrics,probe_ledger=m['cadence'].get('probeLedger'))

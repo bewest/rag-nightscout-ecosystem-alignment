@@ -61,7 +61,7 @@ class Caller(unittest.TestCase):
         def rpc(*args, **kwargs):
             self.rpc_calls.append({'deadlineContext': a._COMMAND_DEADLINE.get(), **kwargs})
             return ''
-        def view(services, ids, fetch, *, allow_unavailable=False, policy):
+        def view(services, ids, fetch, *, allow_unavailable=False, allow_clinical_stall=False, policy):
             self.assertTrue(allow_unavailable)
             self.assertEqual(policy,progress.capture_policy(manifest['cadence'].get('evaluatorProgressBudget')))
             if thread_rpc:

@@ -52,6 +52,26 @@ class ResourceAvailability(unittest.TestCase):
             self.assertEqual(value['windows']['load']['pgStatements']['api']['calls'], 2)
             file.write_text(original);self.assertTrue(self.reduce(root)['complete'])
 
+    def test_missing_collector_keeps_independent_aggregate_and_bookends(self):
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.fixture(root)
+            for name in ('pg-activity.tsv', 'after-pg-role.tsv', 'after-cgroups.json', 'k6-summary.json'):
+                with self.subTest(name=name):
+                    path = root/'load'/name
+                    data = path.read_bytes()
+                    path.unlink()
+                    result = self.reduce(root)
+                    self.assertFalse(result['complete'])
+                    load = result['windows']['load']
+                    if name != 'after-cgroups.json':
+                        self.assertEqual(load['roles']['api']['cpuCoresMean'], .5)
+                    if name != 'after-pg-role.tsv':
+                        self.assertEqual(load['pgStatements']['api']['calls'], 2)
+                    self.assertEqual(result['windows']['idle']['roles']['api']['cpuCoresMean'], .5)
+                    path.write_bytes(data)
+                    self.assertTrue(self.reduce(root)['complete'])
+
     def test_distinct_required_gaps_are_named_then_restored(self):
         with tempfile.TemporaryDirectory() as scratch:
             root = Path(scratch);self.fixture(root)

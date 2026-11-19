@@ -23,7 +23,7 @@ class IdleProgressOutcome(unittest.TestCase):
             return frame
         return [fixture.round(i, transform) for i in range(3)]
 
-    def assess(self, rounds, outcome='PASS', missing_midpoint=False):
+    def assess(self, rounds, outcome='PASS', missing_midpoint=False, clinical='PASS'):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         d = Path(temporary.name); out = d/'load'; out.mkdir()
@@ -32,8 +32,9 @@ class IdleProgressOutcome(unittest.TestCase):
             if name=='midpoint' and missing_midpoint: continue
             k.write(out/f'progress-{name}.json',point)
         (out/'runid').write_text('synthetic-idle-load')
-        k.write(out/'probe.json',{'completedOutput':{'witnesses':[{}]}})
-        k.write(out/'probe-accounting.json',{})
+        k.write(out/'probe.json',{'window':{}, 'completedOutput':{'witnesses':[{}]}})
+        k.write(out/'probe-accounting.json', {'version':2, 'kind':'m7-discovery-probe-accounting',
+            'runId':'synthetic-idle-load', 'roster':[A,B], 'admissionsClosed':True, 'attempts':0, 'byTenant':{}})
         k.write(out/'fanout.json',{'probeWrites':{'byTenant':{}}})
         with ExitStack() as stack:
             for target,name,value in (
@@ -45,7 +46,7 @@ class IdleProgressOutcome(unittest.TestCase):
                 (execute,'load_checks',{'http':{'httpVerdict':'PASS'}}),
                 (k.viewer_plan,'check',{'verdict':'PASS'}),
             ):stack.enter_context(patch.object(target,name,return_value=value))
-            stack.enter_context(patch('workloads.reduce.witness_coverage',return_value={'verdict':'PASS'}))
+            stack.enter_context(patch('workloads.reduce.witness_coverage',return_value={'verdict':clinical}))
             judge=stack.enter_context(patch('outcome_gate.judge_kubernetes_load',return_value={
                 'verdict':outcome,'instrument':{'contract':'authored-outcome-control'},
                 'components':{'catchup':{'verdict':outcome,'codes':[]}}}))
@@ -53,9 +54,24 @@ class IdleProgressOutcome(unittest.TestCase):
                 with self.assertRaisesRegex(k.Refused,'OUTCOME_GATE_FAIL'):
                     execute.assess_stage(d,out,c,{},None)
                 result=k.document(out/'result.json')
+            elif clinical == 'UNMEASURED':
+                with self.assertRaisesRegex(k.Refused, 'CLINICAL_WITNESS_COVERAGE'):
+                    execute.assess_stage(d,out,c,{},None)
+                result = k.document(out/'result.json')
             else:result=execute.assess_stage(d,out,c,{},None)
             self.assertEqual(judge.call_count,1)
             return result
+
+    def test_clinical_observer_refusal_retains_independent_checks(self):
+        for clinical in ('PASS', 'UNMEASURED', 'PASS'):
+            result = self.assess(self.rounds(idle=False), clinical=clinical)
+            self.assertEqual(result['verdict'], 'OBSERVED' if clinical == 'PASS' else 'UNMEASURED')
+            self.assertEqual(result['clinical']['verdict'], clinical)
+            self.assertEqual(result['evaluatorProgress']['verdict'], 'PASS')
+            self.assertEqual(result['frames']['verdict'], 'PASS')
+            self.assertEqual(result['storedWrites']['verdict'], 'GREEN')
+            self.assertEqual(result['loadFunctionalChecks']['http']['httpVerdict'], 'PASS')
+            self.assertEqual(result['capacityAcceptance'], 'NOT_GRANTED')
 
     def test_idle_tenant_metric_remains_unmeasured_and_outcome_runs(self):
         rounds=self.rounds(); saved=copy.deepcopy(rounds)
