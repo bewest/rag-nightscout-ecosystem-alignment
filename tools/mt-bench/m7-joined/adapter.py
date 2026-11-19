@@ -2596,11 +2596,11 @@ def _down(d, m):
     try:terminal_snapshot(d,m)
     except Exception as error:
         write(d/'terminal-capture-unavailable.json',{'status':'UNMEASURED','type':type(error).__name__})
-    if m.get('attached'):
-        write(d/'instrument-jobs-stopped.json',{'runtimeResources':'UNCHANGED','cleanupOwner':'runtime owner'});return
     import driver_memory
     if driver_memory.selected(m) and (d / 'load' / driver_memory.CID).is_file():
         driver_memory.cleanup(sys.modules[__name__],m,d/'load',document(d/'loadgen-image.json')['k6'])
+    if m.get('attached'):
+        write(d/'instrument-jobs-stopped.json',{'runtimeResources':'UNCHANGED','cleanupOwner':'runtime owner'});return
     if m.get("prepared"):
         config=document(d/"frozen.compose.json")
         try:captured=profile_provenance.capture_logs(d/"role-logs",config,lambda role:["docker","compose","-p",m["project"],"--env-file",str(d/"env"),"-f",str(d/"frozen.compose.json"),"logs","--no-color","--no-log-prefix","--timestamps","--tail","1000",role],seconds=remaining_seconds(5*len(config['services']))/max(1,len(config['services'])))

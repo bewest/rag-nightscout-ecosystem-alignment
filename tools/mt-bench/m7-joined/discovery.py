@@ -186,7 +186,7 @@ def _run_discovery(a,d,m,k6_image,oneoff=None):
     record.save()
     try:
         require(m.get('profile')!='fresh-image-diagnostic','M7_DIAGNOSTIC_CANNOT_RUN_CAPACITY')
-        require(not driver_memory.selected(m) or (oneoff is None and not m.get('attached')),
+        require(not driver_memory.selected(m) or oneoff is None,
                 'M7_DRIVER_MEMORY_LOCAL_FIXTURE_REQUIRED')
         a.frozen(m,'run');a.quiet(d,m,'run-before',check_load=False);a.verify(d,m);a.image(m)
         record.value['ownershipVerified']=True;record.save()
