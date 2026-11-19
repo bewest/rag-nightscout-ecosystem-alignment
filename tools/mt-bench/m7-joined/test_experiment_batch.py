@@ -343,3 +343,15 @@ runner.batch_cell(sys.argv[2],sys.argv[3])
                 with self.assertRaisesRegex(RuntimeError,'FOREIGN_TICKET'):b.child_lock()
 
 if __name__=='__main__':unittest.main()
+
+
+class StructuredAllocation(unittest.TestCase):
+    def test_batch_resource_projection_accepts_same_authored_object_as_prepare(self):
+        from test_resource_allocation import supported_allocation
+        allocation=supported_allocation()
+        as_text=runner.local_batch_allocation({'prepare':{'diagnostic-resource-allocation':json.dumps(allocation)}})
+        as_object=runner.local_batch_allocation({'prepare':{'diagnostic-resource-allocation':allocation}})
+        self.assertEqual(as_object,as_text)
+        broken=copy.deepcopy(allocation);broken['services']['postgres']['millicpus']=0
+        with self.assertRaises(RuntimeError):
+            runner.local_batch_allocation({'prepare':{'diagnostic-resource-allocation':broken}})

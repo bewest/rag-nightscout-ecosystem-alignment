@@ -107,4 +107,34 @@ class RestAlongsideClinicalStall(unittest.TestCase):
             with self.assertRaises(p.Refused):discovery.observed_load(a,Path('/synthetic'),{},Path('/synthetic/load'),lambda:calls.append('MUST_NOT_RUN'))
         self.assertNotIn('MUST_NOT_RUN',calls)
 
+
+    def test_idle_known_clinical_stall_retains_fail_with_red_restored_control(self):
+        # Shape reproduced at local1000 readiness: admitted, one completed
+        # acquisition, explicit stall, all six jobs false, no failed completions.
+        frame=self.frame()
+        row=frame['view']['tenants'][0]
+        row['jobs']=dict.fromkeys(p.JOB_FLAGS,False)
+        row['progress'].update(completedAcquisitions=1,failedCompletions=0,lastCompletedAgeMs=2170)
+        def criterion():
+            with tempfile.TemporaryDirectory() as tmp:
+                d=Path(tmp);a.write(d/'tenants.private.json',[{'id':A},{'id':B}])
+                with patch.object(a,'progress_services',return_value=['evaluator']),patch.object(a,'progress_fetch',return_value=json.dumps(frame)),patch.object(a.time,'sleep'):
+                    finding=a.readiness(d,self.manifest())
+                self.assertTrue(r.result(finding))
+                self.assertEqual(finding['clinicalVerdict'],'FAIL')
+                self.assertEqual(finding['capacityAcceptance'],'NOT_GRANTED')
+                return finding
+        criterion()
+        selected=p.clinical_stall
+        with patch.object(p,'clinical_stall',side_effect=lambda value:selected(value) and value['jobState']['running']):
+            with self.assertRaisesRegex(p.Refused,'M7_EVALUATOR_PROGRESS_ERROR'):criterion()
+        criterion()
+        for change in (lambda value:value.update(code='EVALUATOR_RESTORE_CHANGED'),
+                       lambda value:value.update(evaluation={'alert':'unknown'}),
+                       lambda value:value['jobs'].update(running='false')):
+            broken=copy.deepcopy(frame);change(broken['view']['tenants'][0])
+            with self.assertRaises(p.Refused):
+                p.round_view(['evaluator'],[A,B],lambda *_:json.dumps(broken),warming=True,allow_unavailable=True,allow_clinical_stall=True)
+        print('IDLE_CLINICAL_STALL busy-bit representation RED; clinical FAIL retained; RESTORED_GREEN')
+
 if __name__=='__main__':unittest.main()

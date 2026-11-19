@@ -383,5 +383,9 @@ def availability(rounds,ids):
 
 
 def clinical_stall(row):
-    """One observed clinical failure shape; never a clinical pass or generic error allowlist."""
-    return row.get('admitted') is True and row.get('ready') is False and row.get('code')=='EVALUATOR_CLINICAL_PROGRESS_STALLED' and row.get('alert') is None and job_state(row.get('jobState')) and row['jobState']['running'] and row.get('completedAcquisitions',0)>0 and row.get('lastCompletedAgeMs') is not None
+    """An explicit clinical stall remains FAIL whether its worker is busy or idle.
+
+    Job flags describe an observation, not the clinical result. The separate
+    discovery REST path retains this FAIL while collecting independent work.
+    """
+    return row.get('admitted') is True and row.get('ready') is False and row.get('code')=='EVALUATOR_CLINICAL_PROGRESS_STALLED' and row.get('alert') is None and job_state(row.get('jobState')) and row.get('completedAcquisitions',0)>0 and row.get('lastCompletedAgeMs') is not None

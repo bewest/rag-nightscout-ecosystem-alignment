@@ -773,7 +773,7 @@ def local_batch_allocation(config):
     explicit = options.get('diagnostic-resource-allocation')
     selected = a.selected_resources_profile(argparse.Namespace(
         diagnostic_resource_profile=options.get('diagnostic-resource-profile'),
-        diagnostic_resource_allocation=json.loads(explicit) if explicit is not None else None))
+        diagnostic_resource_allocation=json.loads(explicit) if isinstance(explicit,str) else explicit))
     return selected, batch.local_resource_plan(selected)
 
 
