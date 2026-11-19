@@ -112,6 +112,33 @@ class Matrix(unittest.TestCase):
         m.allocation(self.value, self.entries)
         print('RED_RESTORED K8S_MATRIX_WORKLOAD_CENSUS')
 
+    def test_suspended_job_uses_no_node_budget_until_it_runs(self):
+        _, _, objects, baseline = self.entries[0]
+        _, initial = m.allocation(self.value, self.entries)
+        workload = 'Job/primer'
+        template = objects['StatefulSet/cohort']['spec']['template']
+        objects[workload] = {'kind': 'Job', 'spec': {'suspend': True, 'template': template}}
+        baseline['objects'][workload] = {'uid': 'fixture-primer'}
+        self.assertEqual(m.allocation(self.value, self.entries)[1], initial)
+        baseline['objects'][workload]['suspend'] = False
+        with self.assertRaisesRegex(k.Refused, 'MATRIX_WORKLOAD_CENSUS'):
+            m.allocation(self.value, self.entries)
+        baseline['pods']['primer-1'] = {'name': 'primer-1', 'workload': workload, 'nodeName': 'synthetic-node'}
+        _, running = m.allocation(self.value, self.entries)
+        self.assertGreater(running['nodes']['synthetic-node']['millicpus'], initial['nodes']['synthetic-node']['millicpus'])
+
+    def test_scheduler_reports_actor_requests_with_optional_host_ceilings(self):
+        _, expected = m.allocation(self.value, self.entries)
+        self.a['placementMode'] = 'scheduler'
+        ceilings = self.a.pop('actorCeilings')
+        self.release()
+        self.assertEqual(m.allocation(self.value, self.entries)[1], expected)
+        self.a['actorCeilings'] = ceilings
+        ceilings['synthetic-driver']['millicpus'] = 1
+        self.release()
+        with self.assertRaisesRegex(k.Refused, 'MATRIX_ACTOR_HEADROOM_EXCEEDED'):
+            m.allocation(self.value, self.entries)
+
     def test_phase_limits_match_node_and_aggregate_ceilings(self):
         # CPU peaks with a running sidecar and the later init, memory with
         # the app and both sidecars, disk in the first init before either.

@@ -499,6 +499,8 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
                 result['nativeLoadSuspended'] = actual['spec'].get('suspend')
             replica_scope(actual)
         result['objects'][name] = meta(actual)
+        if actual['kind'] == 'Job':
+            result['objects'][name]['suspend'] = actual['spec'].get('suspend', False)
         if name == 'Job/primer':
             result['objects'][name]['activeDeadlineSeconds'] = actual['spec'].get('activeDeadlineSeconds')
             primer_terminal = job_terminal(actual)

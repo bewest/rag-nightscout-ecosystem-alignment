@@ -50,8 +50,15 @@ def node_requests(objects, baseline, accounting, config=None):
         spec = k.template(objects[workload])['spec']
         total = nodes.setdefault(pod['nodeName'], dict.fromkeys(DIMS, 0))
         add(total, k.resource_budget.pod_budget(spec, accounting, k.need))
-    k.need(accounted == {name for name, obj in objects.items() if obj['kind'] in k.WORKLOADS},
-           'MATRIX_WORKLOAD_CENSUS')
+    for name, obj in objects.items():
+        if obj['kind'] not in k.WORKLOADS or name in accounted:
+            continue
+        # A suspended Job with no Pod has no requests on a node. Older
+        # observations lack the live suspend flag and retain the rendered spec.
+        observed = baseline['objects'].get(name)
+        k.need(obj['kind'] == 'Job' and observed is not None
+               and observed.get('suspend', obj['spec'].get('suspend')) is True,
+               'MATRIX_WORKLOAD_CENSUS')
     return nodes
 
 
@@ -115,8 +122,11 @@ def allocation(value, entries):
     if a.get('placementMode') != 'scheduler':  # Historical explicit per-node allocations
         for name, usage in nodes.items():
             ceiling(usage, a.get('nodeCeilings', {}).get(name), 'MATRIX_NODE_HEADROOM_EXCEEDED')
-    for name, usage in actors.items():
-        ceiling(usage, a.get('actorCeilings', {}).get(name), 'MATRIX_ACTOR_HEADROOM_EXCEEDED')
+    # The scheduler launcher places its local actors inside one bounded
+    # systemd scope. Explicit host ceilings still apply when supplied.
+    if a.get('placementMode') != 'scheduler' or 'actorCeilings' in a:
+        for name, usage in actors.items():
+            ceiling(usage, a.get('actorCeilings', {}).get(name), 'MATRIX_ACTOR_HEADROOM_EXCEEDED')
     return a, {'nodes': nodes, 'nativeActors': actors, 'resourceAccounting':accounting,
                'accounting': k.resource_budget.scope(accounting) + '; native actors counted per fixture'}
 
