@@ -21,7 +21,8 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [d20](multitenancy-decisions.md#d20) — `identifier` is client sync identity; `_id` is the hub key; quirks are version-scoped.
 - [exclusive-application-postgres-ownership](multitenancy-decisions.md#exclusive-application-postgres-ownership) — Nightscout owns its PostgreSQL namespaces; other direct database writers are unsupported.
 - [view-reads-total-order](multitenancy-decisions.md#view-reads-total-order) — Sort-key ties break on the per-tenant insertion ordinal, in SQL and in process.
-- [write-clock-history-arms](multitenancy-decisions.md#write-clock-history-arms) — The write clock serves only v3 history no-missed-write; competing arms replace the row lock.
+- [write-clock-history-arms](multitenancy-decisions.md#write-clock-history-arms) — The write clock serves only v3 history no-missed-write (arms settled by [multitenant-requires-write-clock](multitenancy-decisions.md#multitenant-requires-write-clock)).
+- [multitenant-requires-write-clock](multitenancy-decisions.md#multitenant-requires-write-clock) — Arm (a) per-tenant clock row is kept; multitenant requires `writeClock`; floor checks move to `admin`.
 - [stream-native-coverage-direction](multitenancy-decisions.md#stream-native-coverage-direction) — Evaluate committed-stream transaction coverage instead of the clock seal; replacement is proposed, unqualified.
 
 ### Roles, listeners and horizontal shape
@@ -61,7 +62,8 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [multitenant-upgrade-shape](multitenancy-decisions.md#multitenant-upgrade-shape) — Platform rolls processes; core supplies two-step migrations and checks (narrowed by [stable-evaluator-runtime](multitenancy-decisions.md#stable-evaluator-runtime)).
 - [tenant-local-startup-admission](multitenancy-decisions.md#tenant-local-startup-admission) — A suspended tenant never prevents other tenants becoming ready after a restart.
 - [tenant-defect-tenant-scoped](multitenancy-decisions.md#tenant-defect-tenant-scoped) — A defect in one tenant's state refuses that tenant only; deployment defects refuse startup.
-- [readiness-serve-then-warm](multitenancy-decisions.md#readiness-serve-then-warm) — A role is ready when its own dependencies are up; tenants warm in the background.
+- [readiness-serve-then-warm](multitenancy-decisions.md#readiness-serve-then-warm) — A role is ready when its own dependencies are up; tenants warm in the background (narrowed for the api by [api-tenant-cache-bounded-lru](multitenancy-decisions.md#api-tenant-cache-bounded-lru)).
+- [api-tenant-cache-bounded-lru](multitenancy-decisions.md#api-tenant-cache-bounded-lru) — The api's per-tenant state is a bounded LRU optimization; a miss builds inline; restart cost is independent of tenant count.
 - [datastore-loss-recover-in-place](multitenancy-decisions.md#datastore-loss-recover-in-place) — On PostgreSQL loss a role reports unhealthy, reconnects and rebuilds; exits only past a bound.
 - [datastore-loss-before-window-retirement](multitenancy-decisions.md#datastore-loss-before-window-retirement) — Move datastore-loss recovery to a connection probe before retiring the operation window.
 - [lane-failure-recover-in-place](multitenancy-decisions.md#lane-failure-recover-in-place) — A failed session lane is replaced in place, never hiding an uncertain completion.
@@ -209,8 +211,8 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [performance-signals-not-gates](multitenancy-decisions.md#performance-signals-not-gates) — Performance results are signals; correctness and safety gates stay strict.
 - [capacity-characterize-not-gate](multitenancy-decisions.md#capacity-characterize-not-gate) — Capacity runs characterize; they stop only on incorrect behavior or an unmeasurable harness.
 - [capacity-test-tiers](multitenancy-decisions.md#capacity-test-tiers) — Smoke, discovery and acceptance tiers with a target ladder (narrowed by [cluster-fan-out-testing](multitenancy-decisions.md#cluster-fan-out-testing): environments).
-- [outcome-evaluator-gate](multitenancy-decisions.md#outcome-evaluator-gate) — The evaluator gate judges outcomes against the 120 s clinical deadline; typed transient retries are counted (narrowed by [clinical-deadline-from-warm](multitenancy-decisions.md#clinical-deadline-from-warm)).
-- [clinical-deadline-from-warm](multitenancy-decisions.md#clinical-deadline-from-warm) — Run gates measure the clinical deadline from tenant warm; cold-phase misses and time-to-warm are reported figures.
+- [outcome-evaluator-gate](multitenancy-decisions.md#outcome-evaluator-gate) — The evaluator gate judges outcomes against the 120 s clinical deadline; typed transient retries are counted.
+- [deadline-from-acceptance](multitenancy-decisions.md#deadline-from-acceptance) — The clinical deadline runs from acceptance; catch-up is per accepted input; no warm evidence in any gate.
 - [preload-is-a-signal](multitenancy-decisions.md#preload-is-a-signal) — Whole-roster preload convergence is a signal; traffic starts when roles are ready.
 - [m7-envelope-measured-not-declared](multitenancy-decisions.md#m7-envelope-measured-not-declared) — Operating limits come from measurement (narrowed by [operable-architecture-first](multitenancy-decisions.md#operable-architecture-first)).
 - [local-10k-release](multitenancy-decisions.md#local-10k-release) — Run the local 10,000-tenant realistic-mix point now on the a72 reference.
@@ -239,6 +241,7 @@ The text of every row below was archived unchanged on 2026-11-18 in [the superse
 
 | row | replaced by | reason |
 |---|---|---|
+| [clinical-deadline-from-warm](multitenancy-decisions.md#clinical-deadline-from-warm) | [deadline-from-acceptance](multitenancy-decisions.md#deadline-from-acceptance) | warm evidence rebuilt per-tenant warm-up machinery; work follows input (row kept in place, not archived) |
 | [d9](multitenancy-decisions.md#d9) | its own text | historical base; the current-dev delivery plan supersedes it |
 | [allocator-preserving-restore-first](multitenancy-decisions.md#allocator-preserving-restore-first) | [tenant-local-insertion-semantics](multitenancy-decisions.md#tenant-local-insertion-semantics), [restore-suspend-drain-replace](multitenancy-decisions.md#restore-suspend-drain-replace) | shared allocator and shared pause not the target |
 | [deploy-tree-lives-in-nightscout-deploy](multitenancy-decisions.md#deploy-tree-lives-in-nightscout-deploy) | [deploy-tree-home-now](multitenancy-decisions.md#deploy-tree-home-now), [core-static-plan-retired](multitenancy-decisions.md#core-static-plan-retired) | move timing and core copy replaced |
