@@ -333,58 +333,11 @@ Realtime consumes completed clinical output, while the raw mutation tail remains
 independent of bounded clinical membership. Bootstrap, cache loss, stream gaps
 and missing history may read SQL.
 
-Private inspection samples every selected owner and foreign row without starting
-work. Every tenant must have one admitted, ready, error-free owner. Runtime IDs,
-owner placement, counter rewinds, failed completions and foreign work remain
-checked. Component `generation` fences disposable RAM; cache eviction/recreation
-may change it without a process restart. Due work may run as acquisition after
-cache loss. Neither stable RAM generation, zero acquisition growth, TIME callback
-classification nor all job flags being clear is a clinical requirement.
-
-The current progress policy is module3 and idle-safety assessor module5.
-Successful work counters combine acquisition and TIME completions. These counters
-are diagnostics, not durable clinical proof. The separate legacy v1 progress
-policy retains its original strict semantics. Existing receipts and captured
-failures remain unchanged; reproduce historical outcomes with their original
-instrument. Current policy and assessment versions prevent an old receipt from
-silently becoming current qualification.
-
-### Baseline idle-safety boundary
-
-Without an explicit durable opportunity selection, idle reports sampled work
-safety with `timeWitness:false`. `DUE_WORK_COMPLETED` means successful work was
-observed after a sampled due opportunity; it does not certify clinical output or
-that the callback was TIME. A quiet sample reports `TIME_NOT_EXERCISED`. Missing
-or ambiguous due observations remain UNMEASURED. Pending job flags are diagnostic;
-newer owed work must not erase an older completion. Missing due work may receive
-one bounded point observation after the original cost bookends; that observation
-never enters original-window throughput. It need not have a specific callback
-kind or an exact legacy-body count. Foreign pending work still refuses.
-
-For `pgstream-sample` discovery, `--evaluator-opportunities received-input-v1`
-selects the existing trusted SQL collector for **idle and load**. It captures
-three SQL-before-inspection snapshots with the existing reader/source/image
-binding and budgets. Assessment version2 reads `work_due_at` and
-`work_completed_at` from the existing typed checkpoint in the same query as
-accepted/completed vectors and output restore metadata. A sampled due is complete
-when a later durable completion crosses that due and the original due is retired
-or replaced by a strictly later one. Output content/revision may remain unchanged;
-a later real deadline remains eligible. RAM generation and acquisition/TIME
-counters cannot substitute for this check. Missing timing leaves the dependent
-timer claim UNMEASURED; independently measured input coverage remains visible.
-
-Durable vector, output revision, completion-time and restore rewinds still refuse.
-These observations establish scoped checkpoint progress, not independent current
-restore/owner-authority proof, clinical equivalence, stock-client delivery,
-per-write deadlines or capacity acceptance. Existing source/native/operator and
-client checks own those claims. No new telemetry service is required.
-
-Selectors retain the existing bounds: 128 IDs per inspection request, 10000 IDs,
-4 instances, 1024 requests and 64MiB response bytes per phase. Original raw/gzip
-captures, source/image/instrument attribution and observer costs stay private.
-Clock brackets reject wall jumps and overlapping observations. Idle always
-attempts its AFTER cost snapshot in `finally`; missing bookends remain missing.
-The durable opportunity observer needs no additional completion-tail query.
+Private inspection samples owner and foreign rows throughout ordinary traffic and at
+the end of drain. Runtime IDs, owner placement, counter rewinds, evaluator health and
+foreign work remain checked. The acceptance observer reconciles per-input acknowledgements
+against durable output and stored-write counts. Idle tenants owe no work.
+[Run and gate configuration](RUNNER.md#outcome-evaluator-gate)
 
 Restart recovery remains a separate bounded observation of changed process IDs
 and successful fresh acquisition. It does not establish clinical recovery by
@@ -408,7 +361,7 @@ database-role CPU; wall stamps support correlation, not a cross-host clock claim
 ### Discovery runs
 
 `prepare --run-purpose discovery` freezes an explicit observational route;
-`acceptance` remains the default. Discovery preserves raw strict idle/work
+`acceptance` remains the default. Discovery preserves evaluator source and scope
 verdicts, including UNMEASURED and failed work-completion counters, and executes
 the existing bounded HTTP load despite incomplete socket priming. Missing
 `.window` stops/drains the owned probe before HTTP load; it does not manufacture
@@ -440,8 +393,7 @@ the actual Record producer against an immutable transport validator without
 executing commands, applications or networks.
 
 
-Discovery classification is explicit. Missing final-tail opportunity is retained
-as UNMEASURED and does not suppress load. A missing midpoint may continue only
+Discovery classifies partial load observations separately. A missing midpoint may continue only
 with a current-source, correctly attributed, fixed-phase 1/2-round artifact;
 its available owner/foreign/reset/selector/budget invariants still apply (and
 idle clock brackets, when present in that source schema). Zero/extra rounds,
@@ -513,12 +465,6 @@ The public history stamp is observed separately. Clinical completion can advance
 while an unchanged output keeps its original captured input floor and revision.
 Explicit lifecycle invalidation may reset the snapshot position to `0/0`; accepted
 commit positions retain their own source, generation and coverage fences.
-Native opportunity assessment and fixed-target drain use captured accepted-input
-floors, metadata and due work. New accepted input invalidates a frozen quiet
-target; pending work cannot pass. The drain declares `writerIntakeCoverage`
-UNMEASURED because this port has no post-writer WAL high-watermark together with
-the configured-slot acknowledgement fence. Public history does not supply that
-proof. Historical non-native readers retain their original target semantics.
 The reader checks the actual stored marker, BG-now result and stock callback;
 metadata alone does not qualify clinical equivalence or raw delivery.
 
@@ -612,7 +558,7 @@ manifest must both contain exactly:
 {"serialExchangeDiagnostic":{"tenants":64,"phaseSeconds":120,"requestSeconds":60}}
 ```
 
-The existing `run` entry point keeps canonical readiness, warmup and strict idle.
+The existing `run` entry point checks evaluator health and scope.
 It then uses one Node actor and one fixed HTTP-agent configuration to exchange the
 same first64 ordered tenant records before and after the original16-worker JWT
 setup and two-per-tenant stock polling priming. Each phase has a120second budget,

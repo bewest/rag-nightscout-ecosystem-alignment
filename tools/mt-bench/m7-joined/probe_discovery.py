@@ -19,7 +19,7 @@ let retainedOut;
 const hardProgress=value=>value?.verdict==='FAIL'&&!['M7_EVALUATOR_PROGRESS_ERROR','M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE'].includes(value.code);
 const typedCode=e=>/^M7_[A-Z_]+$/.test(e?.message||'')?e.message:'M7_PROBE_OBSERVATION_UNAVAILABLE';
 const savePartial=()=>{if(discovery&&retainedOut)fs.writeFileSync(args.out,JSON.stringify(retainedOut)+'\n');};""")
-    change("  const byTenant = {}; const writes = { ok: 0, failed: 0 };", "  const byTenant = {}; const writes = { ok: 0, failed: 0 };\n  const accounting=discovery?require('./probe-accounting.cjs').create({ids:tenants.map(t=>t.id),runId:args.runid,budget,persist:value=>writeEvidence('probe-accounting.json',value)}):null;")
+    change("  const byTenant = {}; const writes = { ok: 0, failed: 0 };", "  const byTenant = {}; const writes = { ok: 0, failed: 0 };\n  const accounting=(discovery||process.env.M7_INPUT_ACCOUNTING==='1')?require('./probe-accounting.cjs').create({ids:tenants.map(t=>t.id),runId:args.runid,budget,persist:value=>writeEvidence('probe-accounting.json',value)}):null;")
     change("fs.writeFileSync(path.join(signalDir, 'fanout.json'), JSON.stringify({ probeWrites: { byTenant } }) + '\\n');",
            "writeEvidence('fanout.json',{probeWrites:{byTenant}});")
     change("    writers.push(request('POST', t,", "    const attempt=accounting?accounting.begin(t.id):null;\n    writers.push(request('POST', t,")

@@ -12,7 +12,7 @@ from unittest.mock import patch
 import execute
 import kube_adapter as k
 from test_adapter import A, B, fixture
-from test_preload import page
+from test_progress_capture import page
 from workloads.reduce import reduce_stage
 
 
@@ -118,7 +118,7 @@ class FailureCapture(unittest.TestCase):
                 return SimpleNamespace(returncode=0, stdout=value, stderr=b'')
             client = k.Client(c, run=run_rpc)
             import catchup
-            with patch.object(catchup, 'run', return_value={'verdict':'PASS'}) as collected, \
+            with patch.object(catchup, 'observer') as collected, \
                  patch.object(k.candidate, 'require'), patch.object(module, 'actor', return_value={}), \
                  patch.object(k, 'active_baseline', return_value=baseline), \
                  patch.object(k, 'observe', return_value=baseline), \
@@ -132,7 +132,9 @@ class FailureCapture(unittest.TestCase):
                 else:
                     self.assertEqual(module.execute(d, c, objects, client, load=True)['verdict'], 'OBSERVED')
                     assess.assert_called_once()
-                    collected.assert_called_once()
+                    collected.return_value.start.assert_called_once()
+                    collected.return_value.finish.assert_called_once()
+                    collected.return_value.close.assert_called_once()
                     self.assertEqual(k.document(out/'drain.json')['requestedSeconds'], 120)
 
             raw = out/'progress-midpoint.private.jsonl'
@@ -233,11 +235,11 @@ class FailureCapture(unittest.TestCase):
     def test_omitted_drain_still_collects_red_then_restored(self):
         import types
         source = Path(execute.__file__).read_text()
-        needle = "        if load:\n            # All-tenant fixed-floor catch-up"
+        needle = "            observer.finish(out, drain_end=drain_end, storage=findings)"
         self.assertEqual(source.count(needle), 1)
         broken = types.ModuleType('missing_catchup')
         broken.__file__ = execute.__file__
-        exec(compile(source.replace(needle, "        if load and 'drainSeconds' in settings:\n            # All-tenant fixed-floor catch-up"), execute.__file__, 'exec'), broken.__dict__)
+        exec(compile(source.replace(needle, "            if 'drainSeconds' in settings:\n    " + needle), execute.__file__, 'exec'), broken.__dict__)
         with self.assertRaises(AssertionError): self.trial(fail=False, module=broken)
         self.trial(fail=False)
         print('KUBERNETES_CATCHUP missing default selection RED; RESTORED_GREEN')

@@ -39,29 +39,11 @@ class Caller(unittest.TestCase):
                              'identity':'7'*64,'digest':'8'*64,'revision':str(revision),'generation':None,'enabled':True,'arrayBounds':True,'bodyMetadataAbsent':True}}
         return d,out,m,row
 
-    def exercise(self,*,stale=False,missing=False,health=False,initial=False,malformed=False,phase="load",timing=False,allocation=None):
+    def exercise(self,*,health=False):
         d,out,m,row=self.fixture();sql_calls=[];rpc_calls=[]
-        if allocation is not None:m['cadence']['opportunityObservation']=allocation
-        m['cadence']['idleSeconds']=0
-        due=int(time.time()*1000)-1000
-        def sql(directory,query,database,**kwargs):
-            step=len(sql_calls);sql_calls.append((query,database,kwargs))
-            self.assertEqual(directory,d);self.assertEqual(database,'synthetic_test');self.assertIn('SET LOCAL statement_timeout=',query)
-            self.assertNotIn('jsonb_agg(e.doc)',query,'metadata collection must not read marker history')
-            self.assertNotIn("THEN (c.projection->0->'output')",query,'metadata collection must not transport full clinical payload')
-            rows=[row(A,step),row(B,step)]
-            if timing:
-                for r in rows:r['typed'].update(dueAt=str(due if step<2 else due+100000),completedAt=str(due-100 if step<2 else due+500))
-            if initial:
-                for r in rows:
-                    r['state'].update(observed={'bootstrap':'0'},completed={},output=None)
-                    r['typed'].update(observed=[None,None,None,None,None,'0'],completed=[None]*6,identity=None,digest=None,revision='0',generation=None)
-            if malformed:
-                rows[0]['typed']['contractDigest']='invalid-sensitive-sentinel'
-                rows[0]['state']['output']['result']={'sensitive':'must-not-be-retained'}
-            if stale and step==2:rows[0]['typed']['completed'][0]='11';rows[0]['state']['completed']['clock']='11'
-            if missing and step==1:rows.pop(0)
-            return '\n'.join(json.dumps(r) for r in rows)+'\n'
+        def sql(*args,**kwargs):
+            sql_calls.append(args)
+            self.fail('ordinary progress invoked the retired opportunity reader')
         def rpc(directory,service,*args,**options):
             step=len(rpc_calls);rpc_calls.append(step);frame=fixtures.Progress().frame()
             frame['observedAt']=int(time.time()*1000)
@@ -79,96 +61,16 @@ class Caller(unittest.TestCase):
         caught=None;observer=None
         with mock.patch.object(a,'progress_services',return_value=['evaluator']),mock.patch.object(a,'psql',side_effect=sql),mock.patch.object(a,'progress_fetch',side_effect=rpc):
             try:
-                observer=a.observe_progress(d,m,out,phase);observer.__enter__();observer.thread.join(timeout=5);observer.__exit__(None,None,None)
+                observer=a.observe_progress(d,m,out,'load');observer.__enter__();observer.thread.join(timeout=5);observer.__exit__(None,None,None)
             except Exception as error:caught=error
         return d,out,m,observer,caught,sql_calls,rpc_calls
 
-    def test_actual_caller_invokes_three_sql_reader_and_rpc_rounds_and_persists_verifiable_capture_and_cost(self):
-        d,out,m,observer,error,sql,rpc=self.exercise();self.assertIsNone(error)
-        self.assertEqual(len(sql),3);self.assertEqual(len(rpc),3)
-        proof=a.document(out/'evaluator-progress.json');self.assertEqual(proof['kind'],'evaluator-opportunity-phase-v1')
-        self.assertEqual(len(proof['durable']),3);self.assertEqual(len(proof['captureWindows']),3)
-        self.assertEqual(o.verify(proof,2,['evaluator'],BINDING,source_sha256=a.digest(d/'completion-source.json'))['verdict'],'PASS')
-        self.assertEqual(proof['eligibleTenants'],1);self.assertEqual(proof['byTenant'][B]['classification'],'NO_KNOWN_OPPORTUNITY')
-        self.assertIsNone(proof['workWindowSeconds']);self.assertTrue(proof['workRate'].startswith('UNMEASURED'))
-        costs=proof['durableCollectorCost'];self.assertEqual(costs['preparation']['nodeCalls'],1)
-        self.assertEqual(sum(c['sqlQueries'] for c in costs['rounds']),3)
-        self.assertTrue(all(c['rawSqlBytes']>0 and c['wallSeconds']>=0 for c in costs['rounds']))
-        summary=a.progress_summary(out);self.assertNotIn('durable',summary);self.assertNotIn('byTenant',summary)
-        bad=copy.deepcopy(proof);bad['durable'].pop()
-        with self.assertRaisesRegex(p.Refused,'CAPTURE'):o.verify(bad,2,['evaluator'],BINDING)
-        bad=copy.deepcopy(proof);bad['durableCollectorCost']['rounds']=[]
-        with self.assertRaisesRegex(p.Refused,'COST'):o.verify(bad,2,['evaluator'],BINDING)
-        bad=copy.deepcopy(proof);bad['captureWindows'][1]['startNs']=0
-        with self.assertRaisesRegex(p.Refused,'ORDER'):o.verify(bad,2,['evaluator'],BINDING)
-        with self.assertRaisesRegex(p.Refused,'BINDING'):o.verify(proof,2,['evaluator'],BINDING,source_sha256='0'*64)
-        self.assertEqual(o.verify(proof,2,['evaluator'],BINDING)['verdict'],'PASS')
-
-    def test_actual_idle_caller_reuses_typed_due_completion_without_an_extra_tail(self):
-        d,out,m,observer,error,sql,rpc=self.exercise(phase='idle',timing=True)
-        self.assertIsNone(error);self.assertEqual(len(sql),3);self.assertEqual(len(rpc),3)
-        proof=a.document(out/'evaluator-progress.json')
-        self.assertEqual(proof['phase'],'idle')
-        self.assertEqual(proof['byTenant'][B]['timer'],'COMPLETED')
-        self.assertEqual(proof['durable'][-1]['rows'][1]['outputRevision'],'1')
-        self.assertEqual(o.verify(proof,2,['evaluator'],BINDING)['verdict'],'PASS')
-        self.assertIn('c.work_due_at::text',sql[0][0])
-        self.assertIn('c.work_completed_at::text',sql[0][0])
-        self.assertFalse(hasattr(observer,'complete_after_cost_window'))
-
-    def test_actual_initial_reader_collects_three_rounds_but_remains_unmeasured_pending(self):
-        _,out,_,_,error,sql,rpc=self.exercise(initial=True)
-        self.assertEqual(str(error),'M7_OPPORTUNITY_NOT_OBSERVED')
-        self.assertEqual(len(sql),3);self.assertEqual(len(rpc),3)
-        proof=a.document(out/'evaluator-progress.json')
-        self.assertEqual(proof['verdict'],'UNMEASURED')
-        self.assertEqual(proof['classifications']['KNOWN_PENDING'],2)
-        self.assertEqual(proof['durable'][0]['rows'][0]['completed'],{})
-
-    def test_actual_typed_failure_retains_only_bounded_predicates_in_existing_receipt(self):
-        _,out,_,_,error,_,_=self.exercise(malformed=True)
-        self.assertEqual(str(error),'M7_COMPLETION_TYPED_STATE');self.assertEqual(error.verdict,'FAIL')
-        proof=a.document(out/'evaluator-progress.json')
-        diagnostic=proof['failedCollection']['completionReader']
-        self.assertEqual(set(diagnostic),{'rowIndex','predicates'})
-        self.assertEqual(diagnostic['rowIndex'],0)
-        self.assertFalse(diagnostic['predicates']['contractDigestMatches'])
-        self.assertTrue(all(type(v) is bool for v in diagnostic['predicates'].values()))
-        raw=json.dumps(proof)
-        for secret in ('invalid-sensitive-sentinel','must-not-be-retained','sensitive'):
-            self.assertNotIn(secret,raw)
-        self.assertLess(len(json.dumps(diagnostic)),1024)
-        self.assertEqual(proof['durableCollectorCost']['rounds'][0]['nodeCalls'],1,'FAILED_NODE_INVOCATION_IS_WORK')
-
-    def test_removing_actual_node_failure_projection_is_red_then_restored(self):
-        def criterion():
-            _,out,_,_,_,_,_=self.exercise(malformed=True)
-            self.assertIn('completionReader',a.document(out/'evaluator-progress.json')['failedCollection'])
-        criterion();real=a.command
-        def drop_projection(*args,**kwargs):
-            raw=real(*args,**kwargs);value=json.loads(raw)
-            if isinstance(value,dict):value.pop('completionDiagnostic',None)
-            return json.dumps(value)
-        with mock.patch.object(a,'command',side_effect=drop_projection):
-            with self.assertRaises(TypeError):criterion()
-        criterion()
-
-    def test_removing_actual_observer_sql_capture_is_red_then_restored(self):
-        def criterion():
-            _,_,_,_,error,sql,_=self.exercise();self.assertIsNone(error);self.assertEqual(len(sql),3)
-        criterion()
-        def inspection_only(observer):observer.rounds.append(idle.round_view(observer.services,observer.ids,observer.fetch))
-        with mock.patch.object(o.Observer,'observe',inspection_only):
-            with self.assertRaises(AssertionError):criterion()
-        criterion()
-
-    def test_actual_stale_or_missing_capture_refuses_and_preserves_partial_evidence(self):
-        for kwargs,code in [({'stale':True},'NOT_OBSERVED'),({'missing':True},'COVERAGE')]:
-            _,out,_,_,error,sql,_=self.exercise(**kwargs)
-            self.assertIsNotNone(error);self.assertIn(code,str(error));self.assertEqual(error.verdict,'UNMEASURED')
-            proof=a.document(out/'evaluator-progress.json');self.assertEqual(proof['verdict'],'UNMEASURED')
-            self.assertGreaterEqual(len(proof['durableCollectorCost']['rounds']),2)
-            if kwargs.get('stale'):self.assertEqual(proof['byTenant'][A]['classification'],'KNOWN_PENDING')
+    def test_ordinary_progress_does_not_read_opportunity_sql(self):
+        _,out,_,_,error,sql_calls,rpc_calls=self.exercise()
+        self.assertIsNone(error)
+        self.assertEqual(sql_calls,[])
+        self.assertEqual(len(rpc_calls),3)
+        self.assertTrue(a.document(out/'evaluator-progress.json')['demandDriven'])
 
     def test_actual_all_roster_clinical_error_remains_fail_for_untouched_tenant(self):
         _,out,_,_,error,_,_=self.exercise(health=True)
@@ -192,50 +94,6 @@ class Caller(unittest.TestCase):
         self.assertEqual(str(error),'M7_OUTCOME_MIDPOINT_HARD');self.assertEqual(error.verdict,'FAIL')
         self.assertEqual(a.document(out/'evaluator-progress.json')['verdict'],'FAIL')
         self.assertIsNone(self.exercise()[4])
-
-    def test_default_is_legacy_and_unsupported_or_missing_source_refuses_before_sql(self):
-        d,out,m,_=self.fixture()
-        with mock.patch.object(a,'progress_services',return_value=['evaluator']),mock.patch.object(a,'psql',side_effect=AssertionError('NO_SQL')):
-            legacy={**m};legacy.pop('evaluatorOpportunities')
-            self.assertIs(type(a.observe_progress(d,legacy,out,'load')),p.Observer)
-            bad={**m,'completionContract':'evaluator-work-v1'}
-            with self.assertRaisesRegex(RuntimeError,'PROFILE_UNSUPPORTED'):a.observe_progress(d,bad,out,'load')
-            with self.assertRaisesRegex(RuntimeError,'PROFILE_UNSUPPORTED'):a.observe_progress(d,{**m,'evaluatorOpportunities':''},out,'load')
-            config=a.document(d/'completion-source.json');config['selection']={};a.write(d/'completion-source.json',config)
-            with self.assertRaisesRegex(RuntimeError,'SELECTED_PROFILE_UNSUPPORTED'):a.observe_progress(d,m,out,'load')
-            (d/'completion-source.json').unlink()
-            with self.assertRaisesRegex(RuntimeError,'SOURCE_REQUIRED'):a.observe_progress(d,m,out,'load')
-
-    def test_prepare_default_is_exact_discovery_profile_and_explicit_wrong_scope_refuses(self):
-        import argparse
-        m={'profile':'pgstream-sample','completionContract':'evaluator-work-v2','runPurpose':'discovery'}
-        # Durable opportunities became the default for this exact discovery
-        # scope. Keep unsupported profiles and explicit wrong scope refused.
-        a.select_opportunities(argparse.Namespace(),m);self.assertEqual(m['evaluatorOpportunities'],o.CONTRACT)
-        a.select_opportunities(argparse.Namespace(evaluator_opportunities=o.CONTRACT),m);self.assertEqual(m['evaluatorOpportunities'],o.CONTRACT)
-        for other in ({**m,'runPurpose':'acceptance'},{**m,'profile':'capacity'},{**m,'completionContract':'evaluator-work-v1'}):
-            other.pop('evaluatorOpportunities')
-            a.select_opportunities(argparse.Namespace(),other);self.assertNotIn('evaluatorOpportunities',other)
-        with self.assertRaisesRegex(RuntimeError,'PROFILE_UNSUPPORTED'):
-            a.select_opportunities(argparse.Namespace(evaluator_opportunities='wrong-contract'),m)
-        with self.assertRaisesRegex(RuntimeError,'PROFILE_UNSUPPORTED'):a.select_opportunities(argparse.Namespace(evaluator_opportunities=o.CONTRACT),{'profile':'capacity'})
-
-    def test_frozen_observer_budget_verified_independently_and_legacy_artifacts_keep_original_bound(self):
-        selected = {'sqlMaxBytes': 26214400, 'roundSeconds': 90}
-        _,out,_,_,error,_,_ = self.exercise(allocation=selected)
-        self.assertIsNone(error)
-        proof = a.document(out/'evaluator-progress.json')
-        self.assertEqual(proof['opportunityBudget'], o.round_budget(2, selected))
-        self.assertEqual(o.verify(proof,2,['evaluator'],BINDING,opportunity_budget=selected)['verdict'],'PASS')
-        with self.assertRaisesRegex(p.Refused,'BUDGET_CHANGED'):
-            o.verify(proof,2,['evaluator'],BINDING)
-        del proof['opportunityBudget']
-        with self.assertRaisesRegex(p.Refused,'BUDGET_CHANGED'):
-            o.verify(proof,2,['evaluator'],BINDING,opportunity_budget=selected)
-        self.assertEqual(o.verify(proof,2,['evaluator'],BINDING)['verdict'],'PASS')
-        proof['durableCollectorCost']['rounds'][0]['rawSqlBytes'] = o.ROUND_BYTES + 1
-        with self.assertRaisesRegex(p.Refused,'BYTE_BOUND'):
-            o.verify(proof,2,['evaluator'],BINDING)
 
     def test_actual_capture_byte_and_deadline_bounds_refuse_before_decoding_or_querying(self):
         d,_,m,_=self.fixture();collector=a.opportunity_collector(d,m,[A,B])

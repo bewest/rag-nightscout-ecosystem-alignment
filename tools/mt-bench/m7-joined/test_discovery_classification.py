@@ -36,10 +36,6 @@ class Classification(unittest.TestCase):
     def produce(self,error):
         fixture=producer.Discovery();self.addCleanup(fixture.doCleanups)
         return fixture.run_recording(error)
-    def test_actual_tail_opportunity_unmeasured_producer_continues_load_and_preserves_finding(self):
-        rows=self.raw_shape();idle.stability(rows,[A,B]);idle.clock_windows(rows)
-        error=self.error(lambda:idle.assess(rows,[A,B]));self.assertEqual((str(error),error.verdict),('M7_EVALUATOR_IDLE_TAIL_REQUIRED','UNMEASURED'))
-        result,calls,_=self.produce(error);self.assertEqual(calls,['load']);self.assertEqual(result['strictChecks']['idle'],{'verdict':'UNMEASURED','code':str(error),'hardFailure':False});self.assertEqual(result['capacityAcceptance'],'NOT_GRANTED')
     def test_actual_missing_midpoint_needs_valid_partial_capture_before_continuation(self):
         fixture=producer.Discovery();self.addCleanup(fixture.doCleanups);folder,m=fixture.setup()
         # Actual source proof and actual summary producer, with no SQL/resources.

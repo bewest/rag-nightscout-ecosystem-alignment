@@ -49,7 +49,7 @@ function query(config,ids,marker,progress=false){
  }
  // One SELECT snapshot: JSON clinical body and typed metadata cannot straddle a completion.
  const stored=progress?"'[]'::jsonb":`coalesce((SELECT jsonb_agg(e.doc) FROM "${config.entries}".entries e WHERE e.tenant_id=w.tenant_id AND e.doc->>'device'='${marker}-probe'),'[]'::jsonb)`;
- return `SELECT json_build_object('tenant',w.tenant_id::text,'stamp',w.last_stamp::text,'reader','${JSON.stringify(config.binding)}'::jsonb,'typed',${typed},'state',${state},'stored',${stored}${config.native?",'native',"+native.fields(config):''})::text FROM "${config.clock}".tenant_write_clock w LEFT JOIN "${config.checkpoint}".tenant_consumer_checkpoint c ON c.tenant_id=w.tenant_id AND c.consumer='${config.consumer}' ${config.native?native.joins(config):''} WHERE w.tenant_id IN (${selected});`;
+ return `SELECT json_build_object('tenant',w.tenant_id::text,'stamp',w.last_stamp::text,'checkpointPresent',c.tenant_id IS NOT NULL,'reader','${JSON.stringify(config.binding)}'::jsonb,'typed',${typed},'state',${state},'stored',${stored}${config.native?",'native',"+native.fields(config):''})::text FROM "${config.clock}".tenant_write_clock w LEFT JOIN "${config.checkpoint}".tenant_consumer_checkpoint c ON c.tenant_id=w.tenant_id AND c.consumer='${config.consumer}' ${config.native?native.joins(config):''} WHERE w.tenant_id IN (${selected});`;
 
 }
 const version=value=>typeof value==='string'&&/^(0|[1-9][0-9]*)$/.test(value);
@@ -84,11 +84,19 @@ function typedState(row,config,progress=false){
 function assess(row,witness,clients,expected,config){
  const no=code=>({ready:false,code});
  try{binding(config?.binding);if(!!config.native!==!!config.binding.nativeConfigurationSha256)fail('M7_COMPLETION_NATIVE_BINDING');if(config.native)native.validateConfig(config);selection(config);}catch{return no('M7_COMPLETION_BINDING');}
- if(config.kind!==config.binding.kind||!row?.reader||row.reader.kind!==config.binding.kind||row.reader.imageId!==config.binding.imageId||row.reader.instrument!==config.binding.instrument||row.reader.pair?.core!==config.binding.pair.core||row.reader.pair?.deploy!==config.binding.pair.deploy||row?.state?.kind!==config.kind)return no('M7_COMPLETION_READER_MISMATCH');
+ if(config.kind!==config.binding.kind||!row?.reader||row.reader.kind!==config.binding.kind||row.reader.imageId!==config.binding.imageId||row.reader.instrument!==config.binding.instrument||row.reader.pair?.core!==config.binding.pair.core||row.reader.pair?.deploy!==config.binding.pair.deploy)return no('M7_COMPLETION_READER_MISMATCH');
  if(config.native&&canonical(row.reader)!==canonical(config.binding))return no('M7_COMPLETION_READER_MISMATCH');
- if(config.kind==='evaluator-work-v2'&&!typedState(row,config))return no('M7_COMPLETION_TYPED_STATE');
- if(!row||row.tenant!==witness.tenant||!version(witness.stamp)||!version(row.stamp))return no('M7_COMPLETION_CLOCK');
- const state=row.state,output=state?.output;
+ if(row.tenant!==witness.tenant || row.state?.output && row.state.output.tenant!==witness.tenant)return no('M7_COMPLETION_FOREIGN_TENANT');
+ if(!version(witness.stamp)||!version(row.stamp))return no('M7_COMPLETION_CLOCK');
+ // A successful, bound LEFT JOIN can prove that this tenant has no durable
+ // completion yet. An absent SQL result or a malformed row cannot do so.
+ if(row.checkpointPresent===false && row.state?.output==null)return no('M7_COMPLETION_PENDING');
+ if(row.state?.kind!==config.kind)return no('M7_COMPLETION_READER_MISMATCH');
+ if(config.kind==='evaluator-work-v2'){
+  if(row.state.output===null&&typedState(row,config,true))return no('M7_COMPLETION_PENDING');
+  if(!typedState(row,config))return no('M7_COMPLETION_TYPED_STATE');
+ }
+ const state=row.state,output=state.output;
  let coverage;
  if(config.native){const proof=native.assess(row,witness,config);if(!proof.ready)return proof;coverage=proof;
  }else{

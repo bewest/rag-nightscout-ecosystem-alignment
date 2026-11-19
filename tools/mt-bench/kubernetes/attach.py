@@ -20,9 +20,6 @@ cfg['driver']['coreRepository']=str(core)
 k6=Path(control['k6'])
 cfg['driver'].update(k6=str(k6),k6Sha256=sha(k6));cfg['readonlyGuard']=str(Path(control['readonlyGuard']))
 cfg.update(context=e['context'],runId=e['runId'],namespace=ns,tenants=e['tenantCount'],deadlines={k:v.replace('+00:00','Z') for k,v in dl.items()},tenantsFile=str(live/'packet/primer/tenants.json'))
-serving_stage = next((row for row in read(live/'stages.json') if row['stage'] == 'serving'), {})
-if 'monoMs' in serving_stage:
-    cfg['servingStartMonoMs'] = serving_stage['monoMs']
 def execute(label,args,deadline=1800):
     path=live/(label+'.log')
     remaining=min(deadline,until-time.time())
@@ -91,7 +88,7 @@ try:
     # Capture read-only SQL independently of optional client measurements.
     try:execute('sql',ad+['observe-sql',packet,live/'sql'],120)
     except RuntimeError:pass
-    execute('access',ad+['access',packet],65+m['profile']['phases'].get('accessSetupSeconds',0))
+    execute('access',ad+['access',packet],65)
     pre=read(d/'preflight.json');profile=m['profile']
     actor=cfg['driver']['hostId']
     assert actor==cfg['observer']['hostId']
@@ -103,10 +100,7 @@ try:
            'actorCeilings':{actor:profile['proposedEnvelope']['nativeLimits']},
            'fixtures':[{'runId':e['runId'],'namespace':ns,'namespaceUid':uid,'runSha256':sha(packet/'run.json')}]}
     write(live/'grant.json',grant)
-    import preload
-    load_bound=preload.load_command_bound(profile,until-time.time())
-    write(live/'load-command-selection.json',load_bound)
-    execute('load',exp+['run',packet,live/'grant.json',sha(live/'grant.json')],load_bound['seconds'])
+    execute('load',exp+['run',packet,live/'grant.json',sha(live/'grant.json')],until-time.time())
 finally:
     if forward and forward.poll() is None:
         forward.terminate()

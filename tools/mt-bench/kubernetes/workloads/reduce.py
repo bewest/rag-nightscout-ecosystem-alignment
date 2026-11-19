@@ -68,7 +68,7 @@ def witness_coverage(probe, ledger):
     verdict = 'PASS' if ready == expected and expected else 'FAIL' if expected else 'UNMEASURED'
     if c.get('verdict') == 'FAIL':
         verdict = 'FAIL'
-    elif c.get('clinicalTiming', {}).get('contract') == 'clinical-deadline-from-warm-v1' and c.get('verdict') == 'UNMEASURED':
+    elif c.get('clinicalTiming', {}).get('contract') in ('clinical-deadline-from-acceptance-v1', 'clinical-deadline-from-warm-v1') and c.get('verdict') == 'UNMEASURED':
         verdict = 'UNMEASURED'
     elif unavailable and c.get('verdict') == 'UNMEASURED' and not detail['notReadyCodes'].get('M7_COMPLETION_DEADLINE'):
         verdict = 'UNMEASURED'

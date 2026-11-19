@@ -19,7 +19,7 @@ class ProcessDeadline(unittest.TestCase):
                          'from pathlib import Path\n'
                          f'sys.path.insert(0,{str(Path(a.__file__).parent)!r})\n'
                          'import adapter as a\n'
-                         'a.load=lambda *args,**kwargs:(Path(args[0]),{"runPurpose":"discovery","evaluatorCatchup":"fixed-target-v1"})\n'
+                         'a.load=lambda *args,**kwargs:(Path(args[0]),{"runPurpose":"discovery","completionContract":"evaluator-work-v2"})\n'
                          'a.run=lambda *args,**kwargs:print(json.dumps({"childDeadline":a._COMMAND_DEADLINE.get()}))\n'
                          'a.deploy=a.run; a.preflight=a.run\n'
                          'try:a.main()\n'

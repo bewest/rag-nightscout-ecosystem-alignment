@@ -65,90 +65,33 @@ class Progress(unittest.TestCase):
             with self.assertRaisesRegex(AssertionError,'None !='):
                 self.assert_failed_row_evidence()
         self.assert_failed_row_evidence()
-    def test_actual_readiness_discovery_keeps_unknown_history_and_strict_stays_red(self):
+    def test_readiness_handles_no_input_but_fails_untyped_errors(self):
         import adapter as a
-        frame=self.frame(ids=[A]);frame['view']['tenants'][0]['progress']['failedCompletions']=2
-        for discovery in (False,True):
-            with tempfile.TemporaryDirectory() as name:
-                d=Path(name);(d/'tenants.private.json').write_text(json.dumps([{'id':A}]))
-                with patch.object(a,'progress_services',return_value=['evaluator']),patch.object(a,'progress_fetch',return_value=json.dumps(frame)):
-                    if discovery:a.readiness(d,{'runPurpose':'discovery'})
+        frame=self.frame(ids=[A])
+        row=frame['view']['tenants'][0]
+        row.update(ready=False,code='EVALUATOR_ACQUISITION_REQUIRED')
+        row['progress'].update(completedAcquisitions=0,lastCompletedAgeMs=None)
+        for failures in (0,1):
+            with self.subTest(failures=failures), tempfile.TemporaryDirectory() as name:
+                d=Path(name);a.write(d/'tenants.private.json',[{'id':A}]);clock=ReadinessClock()
+                row['progress']['failedCompletions']=failures
+                with patch.object(a,'progress_services',return_value=['evaluator']), patch.object(a,'progress_fetch',return_value=json.dumps(frame)):
+                    if failures:
+                        with self.assertRaisesRegex(p.Refused,'UNTYPED_FAILURE'):
+                            a.readiness(d,{'runPurpose':'discovery'},clock=clock)
                     else:
-                        with self.assertRaisesRegex(p.Refused,'PROGRESS_ERROR'):a.readiness(d,{})
-                saved=json.loads((d/'runtime-readiness.json').read_text())
-                self.assertEqual(saved['verdict'],'PASS' if discovery else 'FAIL')
-                if discovery:self.assertEqual(saved['observations'][0]['causeAttribution'],'UNMEASURED')
+                        self.assertEqual(a.readiness(d,{'runPurpose':'discovery'},clock=clock)['verdict'],'PASS')
+                self.assertEqual(clock.now,0)
 
-    def test_ready_tenants_extend_evaluator_wait_until_stall_or_completion(self):
+    def test_readiness_retains_capture_budget_failure(self):
         import adapter as a
-        from test_preload_convergence import frame
-        for wedged in (True, False):
-            with self.subTest(wedged=wedged), tempfile.TemporaryDirectory() as tmp:
-                d=Path(tmp);clock=ReadinessClock()
-                a.write(d/'tenants.private.json',[{'id':A},{'id':B}])
-                def fetch(*args, **kwargs):
-                    value=frame(code='EVALUATOR_STARTING',acquisitions=0)
-                    for index,row in enumerate(value['view']['tenants']):
-                        if clock.now >= (15 if index==0 else 30) and (index==0 or not wedged):
-                            row.update(ready=True,code=None,cycles=1)
-                            row['progress'].update(completedAcquisitions=1,lastCompletedAgeMs=0)
-                    return json.dumps(value)
-                with patch.object(a,'progress_services',return_value=['evaluator']), patch.object(a,'progress_fetch',side_effect=fetch):
-                    manifest={'runPurpose':'discovery','cadence':{'startupWindows':{'evaluatorReadySeconds':20}}}
-                    if wedged:
-                        with self.assertRaisesRegex(p.Refused,'M7_RUNTIME_NOT_READY'):
-                            a.readiness(d,manifest,clock=clock)
-                        self.assertEqual(clock.now,35)
-                    else:
-                        self.assertEqual(a.readiness(d,manifest,clock=clock)['verdict'],'PASS')
-                        self.assertEqual(clock.now,30.25)
-
-    def test_selected_readiness_window_reaches_late_strict_confirmation(self):
-        import adapter as a
-        ready=self.frame(ids=[A])
-        warming=copy.deepcopy(ready)
-        warming['view']['tenants'][0].update(ready=False,code='EVALUATOR_STARTING')
-        budget={'maxQueriesPerPhase':9,'maxBytesPerPhase':12000}
-        for selection,code in (({},'M7_RUNTIME_NOT_READY'),({'evaluatorReadySeconds':1500},None)):
-            with self.subTest(selection=selection), tempfile.TemporaryDirectory() as name:
-                clock=ReadinessClock()
-                d=Path(name);a.write(d/'tenants.private.json',[{'id':A}])
-                cadence={'startupWindows':selection,'evaluatorProgressBudget':budget}
-                def fetch(*args, timeout):
-                    return json.dumps(warming if clock.now<1215 else ready)
-                with patch.object(a,'progress_services',return_value=['evaluator']), patch.object(a,'progress_fetch',side_effect=fetch):
-                    if code:
-                        with self.assertRaisesRegex(p.Refused,code):
-                            a.readiness(d,{'runPurpose':'discovery','cadence':cadence},clock=clock)
-                    else:
-                        result=a.readiness(d,{'runPurpose':'discovery','cadence':cadence},clock=clock)
-                saved=a.document(d/'runtime-readiness.json')
-                if code:
-                    self.assertEqual((clock.now,saved['code']),(1200,'M7_RUNTIME_NOT_READY'))
-                else:
-                    self.assertEqual((clock.now,result['verdict']),(1215.25,'PASS'))
-                    self.assertNotIn('code',saved)
-                    self.assertEqual(saved['observations'][0]['code'],'M7_EVALUATOR_PROGRESS_ERROR')
-                    self.assertEqual(saved['capture']['limits'],{'attempts':100,'queries':200,'bytes':800000})
-                    used=saved['capture']['used']
-                    self.assertEqual((used['attempts'],used['queries']),(82,83))
-                    self.assertGreater(used['bytes'],0)
-                    self.assertEqual(saved['policy']['maxBytesPerPhase'],budget['maxBytesPerPhase'])
-
-    def test_readiness_reports_capture_exhaustion_and_preserves_a_strict_refusal(self):
-        import adapter as a
-        for confirmation,code,verdict in ((self.frame(ids=[A]),'M7_EVALUATOR_PROGRESS_READINESS_BUDGET','UNMEASURED'),
-                                          (self.refused_frame(),'M7_EVALUATOR_PROGRESS_ERROR','FAIL')):
-            with self.subTest(code=code), tempfile.TemporaryDirectory() as name:
-                clock=ReadinessClock()
-                d=Path(name);a.write(d/'tenants.private.json',[{'id':A}])
-                frames=[json.dumps(value) for value in (self.frame(ids=[A]),confirmation)]
-                with patch.dict(p.POLICY,{'readinessMaxQueries':1}), patch.object(a,'progress_services',return_value=['evaluator']), patch.object(a,'progress_fetch',side_effect=frames):
-                    with self.assertRaisesRegex(p.Refused,code) as caught:
-                        a.readiness(d,{'runPurpose':'discovery'},clock=clock)
-                saved=a.document(d/'runtime-readiness.json')
-                self.assertEqual((clock.now,caught.exception.verdict,saved['code'],saved['capture']['used']['queries']),
-                                 (.25,verdict,code,2))
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp)
+            a.write(d/'tenants.private.json',[{'id':A}])
+            with patch.object(a,'progress_services',return_value=['evaluator']), patch.object(a,'progress_fetch',return_value=json.dumps(self.frame(ids=[A]))), patch.dict(p.POLICY,{'readinessMaxQueries':0}):
+                with self.assertRaisesRegex(p.Refused,'READINESS_BUDGET'):
+                    a.readiness(d,{'runPurpose':'discovery'},clock=ReadinessClock())
+            self.assertEqual(a.document(d/'runtime-readiness.json')['verdict'],'UNMEASURED')
 
     def test_refusal_evidence_bounds_malformed_fields_without_losing_refusal(self):
         frame=self.refused_frame();row=frame['view']['tenants'][0]
@@ -200,17 +143,6 @@ class Progress(unittest.TestCase):
         broken=copy.deepcopy(rounds);broken[-1]['owners'][A]['code']='EVALUATOR_WINDOW_REFUSED'
         with self.assertRaisesRegex(p.Refused,'PROGRESS_ERROR'):p.stable_discovery_baseline(broken[0],broken[-1],[A,B])
 
-    def test_default_discovery_selection_control_and_restore(self):
-        import adapter as a
-        from types import SimpleNamespace
-        def criterion(select):
-            m={'runPurpose':'discovery','profile':'pgstream-sample','completionContract':'evaluator-work-v2'}
-            select(SimpleNamespace(evaluator_opportunities=None),m)
-            self.assertEqual(m.get('evaluatorOpportunities'),'received-input-v1')
-        criterion(a.select_opportunities)
-        with self.assertRaises(AssertionError):criterion(lambda args,m:None)
-        criterion(a.select_opportunities)
-
     def test_discovery_unavailable_preserves_actual_ready_and_job_state(self):
         for changed,reason in [({'running':True},'BUSY'),({'booting':True},'BOOTING'),({},'COLD_OR_UNOBSERVED')]:
             frame=self.frame(ids=[A]);raw=frame['view']['tenants'][0];raw.update(ready=False,jobs={**dict.fromkeys(p.JOB_FLAGS,False),**changed})
@@ -228,17 +160,6 @@ class Progress(unittest.TestCase):
                 with self.assertRaisesRegex(p.Refused,'PROGRESS_ERROR'):p.round_view(['evaluator'],[A],lambda *_:json.dumps(bad),allow_unavailable=True)
             packed['rounds'][0]['rows'][0][p.COLUMNS.index('jobState')]=None
             with self.assertRaisesRegex(p.Refused,'PROGRESS_CONTRACT'):p.decode_rounds(packed,1,['evaluator'],allow_unavailable=True)
-
-    def test_actual_readiness_discovery_unavailability_is_unmeasured(self):
-        import adapter as a
-        frame=self.frame(ids=[A]);frame['view']['tenants'][0].update(ready=False,jobs=dict.fromkeys(p.JOB_FLAGS,False))
-        with tempfile.TemporaryDirectory() as name:
-            d=Path(name);(d/'tenants.private.json').write_text(json.dumps([{'id':A}]))
-            with patch.object(a,'progress_services',return_value=['evaluator']),patch.object(a,'progress_fetch',return_value=json.dumps(frame)):
-                result=a.readiness(d,{'runPurpose':'discovery'})
-            self.assertEqual(result['verdict'],'UNMEASURED')
-            saved=json.loads((d/'readiness-stable-baseline.private.json').read_text())
-            self.assertFalse(saved['rounds'][0]['rows'][0][p.COLUMNS.index('ready')])
 
     def test_closed_window_state_and_wrong_self_coverage_fail(self):
         def broken(frame):frame['view']['tenants'][0]['code']='EVALUATOR_WINDOW_REFUSED';return frame

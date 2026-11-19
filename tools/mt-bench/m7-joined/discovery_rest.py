@@ -9,7 +9,7 @@ import evaluator_opportunities as opportunities
 
 CODE='EVALUATOR_CLINICAL_PROGRESS_STALLED'
 
-def selected(m):return m.get('runPurpose')=='discovery' and m.get('profile')=='pgstream-sample' and m.get('evaluatorOpportunities')=='received-input-v1'
+def selected(m):return m.get('runPurpose')=='discovery' and m.get('profile')=='pgstream-sample' and (m.get('completionContract')=='evaluator-work-v2' or m.get('evaluatorOpportunities')=='received-input-v1')
 
 def result(value):return isinstance(value,dict) and value.get('verdict')=='FAIL' and value.get('clinicalVerdict')=='FAIL' and value.get('clinicalCode')==CODE and value.get('restCollectionPermitted') is True
 
@@ -18,7 +18,7 @@ def binding(m):return {**{key:m.get(key) for key in ('owner','pair','imageId')},
 def permitted(a,d,m):
     if not selected(m) or not (d/'runtime-readiness.json').is_file():return False
     value=a.document(d/'runtime-readiness.json')
-    p.need(not result(value) or value.get('sourceBinding')==binding(m),'M7_OPPORTUNITY_BINDING','FAIL')
+    p.need(not result(value) or value.get('sourceBinding')==binding(m),'M7_CLINICAL_SOURCE_BINDING','FAIL')
     return result(value)
 
 def assess_rest(rounds,ids,phase,durable,binding,*,policy=p.POLICY):

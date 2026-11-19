@@ -192,7 +192,10 @@ def clinical(load):
                  'p95 below the minimum witness count is reported but not qualified',
     }
     timing = strict.get('clinicalTiming', {})
-    if timing.get('contract') == 'clinical-deadline-from-warm-v1':
+    if timing.get('contract') == 'clinical-deadline-from-acceptance-v1':
+        result.update(clinicalTiming=timing, deadlineMisses=timing['deadlineMisses'],
+                      scope='selected clinical witnesses timed from HTTP acceptance')
+    elif timing.get('contract') == 'clinical-deadline-from-warm-v1':
         result.update(clinicalTiming=timing, requestToDurableMissingOrOver120s=result['deadlineMisses'],
                       deadlineMisses=codes.get('M7_COMPLETION_DEADLINE', 0),
                       scope='sparse probe witnesses; deadlineMisses counts proven warm-relative misses')

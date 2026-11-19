@@ -72,9 +72,7 @@ the full roster. Its probes, access checks and tenant-wide observers can reach
 tenants outside the ordinary subset. Storage checks require both k6 write counters
 for every selected tenant and query marker-tagged rows across the full database.
 An ordinary row on an unselected tenant fails the check. Probe writes on any
-provisioned tenant reconcile against the separate probe ledger. Evaluator preload convergence
-is a recorded signal by default. Set `readiness: require-all` in the selected
-preload phase to require full convergence in experiments that depend on it.
+provisioned tenant reconcile against the separate probe ledger.
 
 The optional `bootstrapHelper` manifest entry selects the reviewed deploy source
 commit and SHA-256 of `bootstrap.js`. The constructor verifies the original
@@ -216,41 +214,9 @@ Set optional `workload.evaluatorProgressBudget` with `maxQueriesPerPhase` and
 `maxBytesPerPhase` to select a different three-round evaluator capture budget.
 The packet retains the exact policy and keeps an exhausted capture `UNMEASURED`.
 
-For a fresh discovery workload, opt into an observation phase before ordinary
-traffic with `profile.phases.preloadConvergence`:
+An initial read records the owned evaluator's progress and tenant scope before traffic starts. A tenant without input may have zero completed acquisitions. Legacy profiles may still contain `phases.preloadConvergence`; the standard load ignores that field.
 
-```json
-{"contract":"strict-preload-convergence-v1","seconds":1800,"intervalSeconds":15}
-```
-
-Include this selected time in `profile.phases.workSeconds`. The phase observes
-the real source without dispatching work, retains every strict sample and saves
-exact source bytes privately before decoding. It requires two complete strict
-whole-cohort ready views with completed acquisition credit, then runs the normal
-initial strict check fresh before creating the driver. The selected phase,
-original work, cleanup and active Job cutoffs bound all observations. A late
-response cannot admit traffic. The packet records the effective window, stop
-reason, raw bytes, capture policy, source identities and command bound.
-
-Historical failed-completion counts remain visible and prevent a qualification
-pass. Unchanged valid historical counts can admit execution; an increase,
-decrease, reset, poison, unknown source code or identity change refuses it.
-This phase does not change the later clinical or load assessment. Omit the
-selection to retain immediate initial readiness behavior; that check now also
-retains its raw response and bounded refusal evidence.
-
-Set `profile.phases.accessSetupSeconds` to give the first and last selected
-socket witnesses an explicit warm-up window. The native client connects to
-both exact hosts without credentials first. It retries any refusal (HTTP 403 or
-a transport error) until the warm window ends and records each host's attempts
-and elapsed time. A host that never connects is recorded as `UNMEASURED` with
-its last status and the run continues; the witness never reports PASS on
-missing evidence. The runner then checks both own-token exchanges, both
-cross-tenant refusals, and the connected zero-foreign-frame observation. A
-socket that cannot be observed is recorded as an `UNMEASURED` case and the
-overall access verdict is `UNMEASURED`; a foreign frame, an accepted wrong
-credential or a cross-tenant read still stops the run. The access window has
-its own budget and remains within the fixture's entered work cutoff.
+The access witness checks both own-token exchanges, both cross-tenant refusals, and foreign frames on the selected socket connections. Missing socket observations yield `UNMEASURED`. A foreign frame, an accepted wrong credential or a cross-tenant read stops the run.
 
 For an independent database observation within the original work deadline, run
 `adapter.py observe-sql PACKET NEW_DIRECTORY`. It counts the source primer's
@@ -278,12 +244,7 @@ Viewer priming uses the separately configurable `workload.viewerSetup`
 progress wait and connection ramp. The [runner guide](../m7-joined/RUNNER.md#phase-clocks-and-local-discovery-to-completion)
 describes the equivalent local `viewer-setup` fields. Commission and recovery
 use polling for stock display coverage. The entered work cutoff bounds both actors.
-`drainSeconds` bounds the final wait. Each sampled accepted write has a
-120-second deadline from the later of HTTP acknowledgement and independently
-observed tenant warmth. A cold write can continue into the remaining drain.
-The result reports missing observations at the cutoff.
-All-writer clinical drain requires its own observation. The frame recorder
-retains its explicit overflow refusal.
+`drainSeconds` bounds the final wait. The clinical deadline is 120 seconds from input acceptance. Every accepted input that owes clinical work must have durable output by the end of drain. The frame recorder retains its overflow refusal.
 
 Read `experiment/result.json`, `load/failure.json` when present, and
 `experiment/observations/reduction.json` before fixture cleanup. These retain
@@ -528,9 +489,7 @@ Sparse viewers use the original quotient/remainder assignment in roster order.
 Every writer tenant retains independent accepted/stored count checks, including
 tenants with no viewer. Every accepted probe requires its distinct retained
 clinical witness. Client evidence is required for the declared viewer assignment;
-zero viewers is explicitly NOT_EXERCISED for client frames. Selected clinical
-probe outcomes and evaluator progress do not qualify ordinary all-writer intake,
-due work or fixed-target drain. The operating collector owner retains that work.
+zero viewers is explicitly NOT_EXERCISED for client frames. The accepted-input observer reconciles run-marked inputs against the ordinary and probe ledgers and checks durable completion through drain.
 `load/k6.log` contains structured event witnesses; `k6-native.log` preserves the
 full terminal summary separately so its size cannot displace the demand marker.
 
@@ -677,10 +636,10 @@ identity is the SHA-256 of that file. Tenants, rate, windows, budgets and
 |---|---|---|
 | failed completions (lifetime counters at the end point) | untyped, `unknown`, hard or unrecognised reason; a transient reason resolved or still open past the deadline | typed rows without reasons or resolution fields; a transient still open at the end inside the deadline; no end point |
 | isolation | runtime reset, foreign row ready, foreign counters changed, duplicate owner | one point only |
-| readiness | preload refused; an owner not ready, with a code or with an alert at the end point | preload not selected or not retained; no end point |
+| evaluator health | hard evaluator code or alert at the end point | missing end point |
 | storage | count oracle RED | oracle missing or not GREEN |
 | sampled oracle | probe `completedOutput` FAIL | missing |
-| all-tenant catch-up | a tenant pending once the window after writer join exceeds the deadline; a completion whose lower bound exceeds it; input changed | not captured; pending inside the deadline |
+| catch-up per accepted input | missing durable output at the end of drain or measured after the deadline | incomplete input coverage, timing or durable evidence |
 
 A declared transient reason (`verification-pending`, `startup-warming`) that
 completed inside the deadline is counted by reason and passes. Until the
@@ -688,67 +647,15 @@ source declares `view.failureReasonContract = evaluator-failure-reasons-v1`
 with `progress.failureReasons`, `unresolvedFailure` and
 `maxFailureResolutionMs`, every failed completion is untyped and fails.
 
-The midpoint is a signal. The runner records ``load/progress-midpoint-signal.json`` and stops
+The midpoint is a signal. The runner records `load/progress-midpoint-signal.json` and stops
 the driver only for a hard reason (a FAIL above, or an evaluation alert). A
 not-ready owner at the midpoint continues. Raw responses are written before
-any decoder reads them (`progress-*.private.jsonl`; after an early load stop, `progress-stop.private.jsonl`, then `stored-counts.json`, recorded in `stop-evidence.json`). The verdict is ``load/outcome-gate.json`, summarised in `result.json`; a FAIL refuses the stage as `OUTCOME_GATE_FAIL` after both are written`; HTTP
-latency over every k6 shard summary is reported beside it (exact pooled
-count and mean; per-shard quantile ranges; pooled quantiles UNMEASURED).
-An idle tenant need not increment its completion counters in every load window.
-After the existing runtime, ownership, foreign-counter and reset checks pass,
-an absent per-tenant work increase remains `evaluatorProgress.verdict=UNMEASURED`
-with `counterStability=PASS` and observed counter deltas. It does not prevent
-the mandatory native fixed-target outcome check from running. That outcome
-judges the captured accepted-input floor and boundary-known due work; no idle
-completion credit is invented. Reported collector cost counts actual captured
-rounds, including when the strict midpoint produced only a retained signal.
-`outcome_rereduce.py` re-reduces a retained run into a new file beside it and
-refuses if any original file changes.
+any decoder reads them (`progress-*.private.jsonl`; after an early load stop, `progress-stop.private.jsonl`, then `stored-counts.json`, recorded in `stop-evidence.json`). The runner publishes `load/outcome-gate.json` and a stage summary in `result.json` before returning a failure or missing measurement. It also reports HTTP latency over all k6 shard summaries, including the exact pooled count and mean, plus the quantile range across shards.
+The progress reader checks the evaluator's runtime identity, owner and foreign counters across captured rounds. It records the observed work delta, including zero for idle tenants. The workload outcome combines these checks with storage, sampled clinical results and per-input catch-up. A missing component leaves the load stage `UNMEASURED`.
 
-Run configuration `outcomeGate: {"midpointStop": "never"}` records the midpoint
-without stopping the driver; `deadlineMs` and `catchup` (default `true`) are
-also configuration.
+`outcome_rereduce.py` re-reduces a retained run into a new file beside it and refuses if any original file changes. Set `outcomeGate.midpointStop` to `never` to record a hard midpoint signal and continue collecting evidence.
 
-The all-tenant catch-up ([catchup.py](catchup.py)) runs in a load stage that
-selects `drainSeconds`, after the driver and probe exit and before terminal
-progress. It is the Compose fixed-floor reader on the Kubernetes access path:
-`completed-oracle.cjs` builds the progress query and snapshot from the run's
-completion source; each round reads storage through `postgres_read`
-(`BEGIN READ ONLY … ROLLBACK`) and the evaluator inspection through the pinned
-exec, inside one owned-namespace `observe` bracket; `evaluator_catchup.observe`
-classifies every tenant. Raw SQL and inspection responses are written to
-`load/catchup/round-NNNN-*.private.jsonl` before decoding; the result is
-`load/evaluator-catchup.json`. Its window is the drain time left after the
-writers join, clipped by the work deadline; no time left gives UNMEASURED
-`M7_DRAIN_DEADLINE` without a read.
-
-The collector uses one all-roster progress SELECT in one read-only PostgreSQL
-transaction per round. PostgreSQL streams the SELECT through a cursor, fetching up to
-128 rows at a time. Its [progress-only wire projection](../m7-joined/progress-transport.cjs)
-omits repeated constant reader metadata and JSON field names, then restores the
-independent typed/state fields before calling the unchanged strict
-`completed-oracle.progressSnapshot`. Native source, restore, contract, vector,
-output identity and timing checks remain in that reader. Clinical queries and
-clinical/client assessors keep their original complete projection.
-
-`workload.drainObservation.roundSeconds` selects the inactivity window
-(default 20 s). Each completed census request, new selected SQL row or new
-inspection page lets collection continue inside the operator's drain and work
-deadlines. `sqlMaxBytes` allows bytes between completed SQL rows (default
-16 MiB). Polls use `intervalSeconds` (default 5 s). After the boundary,
-`maxRounds`, `maxQueries` and `maxBytes` bound consecutive captures without
-progress toward the original fixed targets. Receipts count every SQL and
-inspection read and its returned bytes. The clinical deadline remains 120 s.
-Common experiment intents project these settings into the local runner's
-`--drain-observation` option.
-
-The bounded local differential control is
-`catchup_scale_control.py --output <new-absolute-directory> --node <pinned-node>
---postgres-image <cached-sha256-image-id>`. It owns one networkless disposable
-PostgreSQL fixture, with CPU/memory, container deadline and exact-ID cleanup;
-it runs each 1k/10k representation twice and checks strict native snapshot
-equivalence plus failing source/generation/restore/coverage/typed-state controls.
-Its local SQL/observer costs do not qualify Kubernetes transport or capacity.
+The accepted-input observer starts before the probe and follows run-marked writes through drain. Its Kubernetes transport brackets each read-only SQL transaction with checks of the owned namespace and Pods. Each call honors the observer timeout and the entered work deadline. The observer reconciles its inputs against the workload and probe acceptance counts. Tenants with no accepted input owe no output. [Kubernetes transport](catchup.py) · [Deadline and drain decision](../../../docs/30-design/tenancy/multitenancy-decisions.md#deadline-from-acceptance)
 
 ## One intent for Compose and Kubernetes
 
@@ -832,7 +739,7 @@ another source or changes PENDING to PASS.
 | Fixed topology | Compose preserves the released K1/API1 and K2/API2 structural checks, actual mounted-file/roster/ordinal checks and finite per-instance accounting. Native K2 scaling remains UNMEASURED. Kubernetes supports the existing K1/API1 external-producer binding; another role topology explicitly refuses. |
 | Configured driver | Both transports reuse the same generator, seven-shape wrapper, roster splitter and scenario/shard/phase reducer. Kubernetes runs each native k6 process inside the admitted combined native scope and bounded file/subprocess limits. Missing shard custody, changed VUs/plan and missing/dropped work cannot become a complete pass. Independent valid shard rows survive in partial reduction. |
 | Percentiles | Summary merging preserves counts and shard statistics. Pooled percentiles remain UNMEASURED without an adequate merged sample definition. |
-| Observation | Per-write clinical/client proof uses the shared warm-relative deadline. The finite drain can censor an outstanding observation. Accepted/stored ordinary writes, witnesses, frames and independent rows retain their own results. No all-writer clinical drain is inferred. |
+| Observation | Clinical timing starts at acceptance. The load outcomes report per-input durable coverage at the end of the finite drain, alongside stored writes, witnesses and frames. |
 | Resource capture | Native driver/controller/observer cgroup CPU, memory/events and lifetime peak are captured before scope exit. Stage controller retains all surviving init/steady container states and resources before exact UID cleanup. Missing/retired counters remain UNMEASURED; independent cluster sampling is still needed for actual init/steady phase peaks. |
 
 Launch a freshly commissioned case with its lifecycle input. The input names
@@ -915,8 +822,8 @@ Its appended `handleSummary` exports k6's actual counters/trends in framed
 chunks; it changes no workload function and includes no JWT setup data.
 
 `native_join.py` adds an opt-in `nativeLoad` selection to the existing execution,
-census and fit path. The controller, probe, SQL, completed clinical output, frames and native fixed-target
-catch-up collectors still run on the workstation. `assess_join()` verifies the
+census and fit path. The controller, probe, SQL, completed clinical output, frames and the accepted-input
+observer still run on the workstation. `assess_join()` verifies the
 capture/run/script bindings and calls the unchanged `execute.assess_stage()`;
 Job completion alone leaves the outcome gate UNMEASURED. The 120-second clinical
 contract and accepted-versus-stored accounting remain required. All-writer
@@ -983,9 +890,7 @@ Job backoff is zero, replacement waits for Failed, and test Pods have a finite
 termination grace. Runtime application Pod and container identities stay strict;
 only the exact declared test Job has a separate dynamic census.
 
-The probe restart signal, both-writer join, per-write clinical observations,
-all-tenant fixed-target catch-up and full `assess_stage()` path stay in their
-original order. `assess_join()` adds capture/run/script/hash checks. The init
+The accepted-input observer runs across probe and driver traffic. After both writers exit, the controller reconciles storage, checks remaining clinical work through drain, captures terminal progress and calls `assess_stage()`. `assess_join()` adds capture/run/script/hash checks. The init
 waiter alone gets `jobs/get` for `provision` and `primer` in its namespace;
 the split verified-serving binding also names `verification` explicitly and
 requires its completion before accepting primer readiness. Its lifecycle waits

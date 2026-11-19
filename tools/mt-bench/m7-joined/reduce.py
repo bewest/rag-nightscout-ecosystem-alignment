@@ -243,7 +243,8 @@ def phase_measurements(directory, manifest, name):
 def measurements(directory, manifest):
     windows = {}
     complete = True
-    for name in ("idle-disabled", "idle", "load"):
+    phases = [name for name in ("idle-disabled", "idle") if (directory / name).is_dir()]
+    for name in [*phases, "load"]:
         try:
             window, observed = phase_measurements(directory, manifest, name)
         except (OSError, ValueError, RuntimeError, TypeError, IndexError, KeyError) as error:

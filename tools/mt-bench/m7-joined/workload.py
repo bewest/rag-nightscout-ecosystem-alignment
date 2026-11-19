@@ -149,6 +149,17 @@ if (Object.keys(shapes).some(name => !Number.isSafeInteger(cycleMs(name)) || cyc
     account("  scenarioAttempts.add(1);\n  const response = http.get(BASE + path", "  const httpShape = ({'GET v1 sgv count=1':'r_sgv','GET v1 devicestatus count=1':'r_devicestatus','GET v1 treatments count=10':'r_treatments','GET v1 status':'r_status'})[name];\n  httpAttempts.add(1,{http_shape:httpShape});\n  scenarioAttempts.add(1);\n  const response = http.get(BASE + path")
     account("  (response.status > 0 ? scenarioResponses : scenarioTransport).add(1);", "  recordHttp(httpShape,response,[200],false);\n  (response.status > 0 ? scenarioResponses : scenarioTransport).add(1);")
     account("  scenarioAttempts.add(1);\n  const res = http.post(url,", "  const httpShape = ({entries:'w_sgv',devicestatus:'w_devicestatus',treatments:'w_treatments_v3'})[kind];\n  httpAttempts.add(1,{http_shape:httpShape});\n  scenarioAttempts.add(1);\n  const res = http.post(url,")
+    # Keep the generator's clock local. The source row becomes visible between
+    # this request starting and HTTP acceptance. The collector uses this
+    # duration to bound acceptance without comparing clocks across machines.
+    # One millisecond covers the emitter clock's timestamp quantization.
+    account("  const res = http.post(url,", "  const inputStartedAt = Date.now();\n  const res = http.post(url,")
+    account("  if (okStatuses.includes(res.status)) writesOk.add(1, tags);", """  if (okStatuses.includes(res.status)) {
+    const doc = Array.isArray(body) ? body[0] : body;
+    console.log(JSON.stringify({event:'m7-input-accepted', run:RUN_ID, tenant:t.id, domain:kind,
+      key:String(kind === 'devicestatus' ? doc.created_at : doc.date), requestToAcceptanceMs:Date.now()-inputStartedAt+1}));
+    writesOk.add(1, tags);
+  }""")
     account("  (res.status > 0 ? scenarioResponses : scenarioTransport).add(1);", "  recordHttp(httpShape,res,okStatuses,true);\n  (res.status > 0 ? scenarioResponses : scenarioTransport).add(1);")
     account("else if (res.status === 0 || res.status >= 500) writesUncertain.add(1, tags);", "else if (!(res.status >= 400 && res.status < 500)) writesUncertain.add(1, tags);")
     account("function exchangeRequest (t) {", "function exchangeRequest (t) {\n  httpAttempts.add(1,{http_shape:'jwt_setup'});")

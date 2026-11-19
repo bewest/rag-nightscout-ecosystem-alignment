@@ -7,7 +7,6 @@ import subprocess
 import sys
 import time
 import discovery_rest
-import evaluator_catchup
 import driver_memory
 import driver_vu_diagnostic
 import node_observation
@@ -119,9 +118,6 @@ class Record:
         self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'coverage':{'fullNominalCgmCycle':m['cadence']['loadSeconds']>=300/m['cadence'].get('accel',1),'timerWitness':'UNMEASURED; observed progress is retained separately'},'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,**(discovery_scope(m) if m['profile']=='pgstream-sample' else {}),**({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
     def save(self):
         self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','http-accounting.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json','node-observation.json','k6-scheduling.csv.gz','driver-vu-assessment.json',driver_memory.RESULT,driver_memory.SAMPLES,'host-load.tsv','pg-activity.tsv','pg-blockers.tsv') if (file:=self.d/folder/name).is_file()}
-        preload = self.d/'preload-convergence/result.json'
-        if preload.is_file():
-            self.value['artifacts']['preload-convergence/result.json'] = self.a.digest(preload)
         self.value['collectionSegments']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle-disabled','idle','load') for file in (self.d/folder).glob('*-collection.json') if file.is_file()}
         self.a.write(self.d/'summary.json',self.value)
     def failure(self,stage,error,hard=False):
@@ -192,19 +188,9 @@ def _run_discovery(a,d,m,k6_image,oneoff=None):
         record.value['ownershipVerified']=True;record.save()
         require((d/'deploy-before-host.json').is_file(),'M7_DEPLOY_QUIET_RECORD_REQUIRED')
         a.verify_generator(d,m)
-        if a.preload_convergence.selection(m):
-            result = record.observe('preloadConvergence', lambda: a.preload_convergence.run(a,d,m))
-            record.value['preloadConvergence'] = result
-            record.save()
-        # Fresh and unchanged: pre-load history never supplies this readiness result.
         record.observe('readiness',lambda:a.readiness(d,m))
         k6_id=json.loads(a.command(['docker','image','inspect',k6_image]))[0]['Id'];a.write(d/'loadgen-image.json',{'k6':k6_id,'generator':m['generator']})
         if m['profile']=='pgstream-sample':completion,sql_roles=a.sample_preflight(d,m,k6_id,**({'oneoff':oneoff}if oneoff else{}))
-        out=d/'idle-disabled';out.mkdir();a.psql(d,'SELECT pg_stat_statements_reset();');a.phase_snapshot(d,out,'before')
-        try:a.time.sleep(m['cadence'].get('warmupSeconds',60))
-        finally:a.phase_snapshot(d,out,'after')
-        out=d/'idle';out.mkdir();a.quiet(d,m,'idle-before',check_load=False);a.psql(d,'SELECT pg_stat_statements_reset();')
-        record.observe('idle',lambda:a.enabled_idle(d,m,out,m['cadence']['idleSeconds']))
         if m.get('serialExchangeDiagnostic') is not None:
             serial_exchange_diagnostic(a,d,m,record)
             record.value.update(status='PARTIAL',diagnosticOnly=True,ordinaryTraffic='NOT_RUN',
@@ -343,10 +329,14 @@ def serial_exchange_diagnostic(a,d,m,record):
 
 def discovery_load(a,d,m,k6_id,record,oneoff=None):
     out=d/'load';out.mkdir();runid='m7-'+m['owner'][:12];(out/'runid').write_text(runid)
+    completion = a.document(d/'completion-source.json') if m['profile']=='pgstream-sample' else {}
+    with a.accepted_input_observation(d,m,runid,completion) as accepted:
+        return run_load(a,d,m,k6_id,record,oneoff,out,runid,completion,accepted)
+
+
+def run_load(a,d,m,k6_id,record,oneoff,out,runid,completion,accepted):
     spec=m['project']+'|'+str(d/'env')+'|'+str(d/'frozen.compose.json')
-    completion=a.document(d/'completion-source.json') if m['profile']=='pgstream-sample' else {}
     env=a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies'),**({'M7_COMPLETION_SOURCE':json.dumps(completion)} if completion else {}),'M7_RUN_PURPOSE':'discovery','M7_RESTART_ROLES':json.dumps(m['restartRoles']),'M7_EVALUATOR_SERVICES':json.dumps(a.progress_services(d)),'M7_PROGRESS_PYTHON':a.sys.executable,'M7_PROGRESS_ATTRIBUTION':json.dumps(a.progress_attribution(m)),'STOCK_MS':'300000','RECOVERY_MS':'120000'})
-    if completion: env['M7_CLINICAL_WARM_PATH'] = str(d / a.clinical_warm.FILE)
     env.update(workload_inputs.probe_ledger_env(m['cadence']))
     a.psql(d,'SELECT pg_stat_statements_reset();');a.phase_snapshot(d,out,'before-prime')
     windows=phase_windows.start(m,time.monotonic_ns(),int(time.time()*1000))
@@ -388,8 +378,9 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
                             return (oneoff('k6-load',argv,file=output,timeout=timeout) if oneoff
                                     else a.command(argv,file=output,timeout=timeout))
                         record.process('k6',launch)
-                        if 'drainSeconds' in windows:
-                            windows['drainStartedMonoNs']=time.monotonic_ns()
+                        windows['drainStartedMonoNs']=time.monotonic_ns()
+                        if accepted is not None or 'drainSeconds' in windows:
+                            windows.setdefault('drainSeconds',1500)
                             a.write(out/'phase-windows.json',windows)
                     if node is not None:
                         record.value['nodeObservation']=node;record.save()
@@ -417,7 +408,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
                 (out/'.restart').touch();start=time.time()
                 drain=(a.remaining_seconds(phase_windows.remaining(windows,'drain',time.monotonic_ns()))
                        if 'drainSeconds' in windows else a.discovery_seconds(m,1500))
-                try:rc=a.clinical_warm.wait_compose(a,d,m,process,drain) if completion else process.wait(timeout=drain)
+                try:rc=process.wait(timeout=drain)
                 except a.subprocess.TimeoutExpired:rc=None
                 record.value['processes']['probe']={'returncode':rc,'startedRecoveryAt':start,'endedAt':time.time(),'timeout':rc is None,'endMonoNs':time.monotonic_ns()};record.save()
             else:
@@ -454,7 +445,6 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
         if recovery:record.value['strictChecks']['recovery']={**{k:recovery[k] for k in ('verdict','code') if k in recovery},'hardFailure':False}
     # Publish completed HTTP/frame segments before later optional collection.
     retain_load(a,d,m,record)
-    if m.get('evaluatorCatchup') is not None:evaluator_catchup.run(a,d,m,record)
     if (d/'tenants.private.json').is_file() or (out/'k6-summary.json').is_file():
         try:
             metrics = a.document(out/'k6-summary.json')['metrics'] if (out/'k6-summary.json').is_file() else {}
@@ -476,6 +466,10 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
         record.save()
         if not known:record.value['strictChecks']['counts']={'verdict':'UNMEASURED','code':'M7_DISCOVERY_COUNTS_MISSING'}
 
+    if accepted is not None:
+        boundary = a.drain_boundary(windows,a._COMMAND_DEADLINE.get())
+        accepted.finish(out, drain_end=boundary, storage=record.value.get('oracleFindings'))
+        a.terminal_progress(d,m,out)
     outcome_record(a,d,m,record)
 
     if (record.value.get('probe') or {}).get('window') and (out/'fanout.json').is_file():
@@ -631,7 +625,7 @@ def partial_progress(a,d,m,stage):
     need(value.get('kind')==kind and value.get('columns')==list(module.COLUMNS) and value.get('policy')==retained_policy and value.get('phase')==stage and value.get('verdict')=='UNMEASURED' and value.get('code')=='M7_EVALUATOR_PROGRESS_ROUNDS' and value.get('attribution')==a.progress_attribution(m),'M7_DISCOVERY_PARTIAL_PROGRESS_SCOPE')
     need(isinstance(value.get('rounds'),list) and 1<=len(value['rounds'])<=2,'M7_DISCOVERY_PARTIAL_PROGRESS_ROUNDS')
     services=a.progress_services(d);need(1<=len(services)<=progress.POLICY['maxInstances'],'M7_EVALUATOR_PROGRESS_INSTANCE_BOUND')
-    decoded,ids=(idle._decode(value,m['tenants'],services) if stage=='idle' else progress.decode_rounds(value,m['tenants'],services))
+    decoded,ids=(idle._decode(value,m['tenants'],services) if stage=='idle' else progress.decode_rounds(value,m['tenants'],services,demand_driven=True))
     expected=[row['id'] for row in a.document(d/'tenants.private.json')];progress.validate_ids(expected)
     need(ids==set(expected),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     need(sum(r['queries'] for r in decoded)<=policy['maxQueriesPerPhase'] and sum(r['bytes'] for r in decoded)<=policy['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')

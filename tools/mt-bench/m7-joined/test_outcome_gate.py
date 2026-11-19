@@ -123,27 +123,18 @@ class Fixtures(unittest.TestCase):
         self.assertEqual(g.midpoint_decision(hard)['action'], 'stop')
         self.assertEqual(g.midpoint_decision(None)['action'], 'continue')
 
-    def test_catchup_stuck_tenant_fails_and_completed_passes(self):
-        base = {'verdict':'UNMEASURED', 'writerStoppedNs':0, 'endNs':200_000_000_000,
-                'byTenant':{A:{'status':'COMPLETED'}, B:{'status':'PENDING'}},
-                'drainAfterWriterJoinMs':{A:{'lower':0, 'upper':900}}}
-        self.assertEqual(g.catchup(base, IDS)['verdict'], 'FAIL')
-        self.assertIn('M7_OUTCOME_CATCHUP_STUCK', g.catchup(base, IDS)['codes'])
-        early = {**base, 'endNs':60_000_000_000}
-        self.assertEqual(g.catchup(early, IDS)['verdict'], 'UNMEASURED')
-        done = {**base, 'verdict':'PASS', 'byTenant':{A:{'status':'COMPLETED'}, B:{'status':'COMPLETED'}},
-                'drainAfterWriterJoinMs':{A:{'lower':0, 'upper':900}, B:{'lower':0, 'upper':1500}}}
-        self.assertEqual(g.catchup(done, IDS)['verdict'], 'PASS')
-        self.assertEqual(g.catchup(None, IDS)['verdict'], 'UNMEASURED')
+    def test_legacy_fixed_tenant_targets_cannot_establish_input_coverage(self):
+        self.assertEqual(g.catchup({'byTenant': {A:{'status':'COMPLETED'}}}, IDS)['verdict'], 'UNMEASURED')
 
     def judged(self, **overrides):
         values = dict(ids=IDS, points={'before':point(row(A), HEALTHY()), 'midpoint':None,
                                        'after':point(row(A), HEALTHY())},
-                      preload_status='CONVERGED',
-                      storage_findings={'verdict':'GREEN', 'uncertain':0, 'failureCount':0},
-                      completed_output={'verdict':'PASS', 'witnesses':[1, 2]},
-                      catchup_value={'verdict':'PASS', 'writerStoppedNs':0, 'endNs':10, 'byTenant':{A:{'status':'COMPLETED'}, B:{'status':'COMPLETED'}},
-                                     'drainAfterWriterJoinMs':{A:{'lower':0, 'upper':5}, B:{'lower':0, 'upper':5}}})
+                      storage_findings={'verdict':'GREEN', 'uncertain':0, 'failureCount':0,
+                          'rows':[{'tenant':A, 'accepted':1,'probeAccepted':0},{'tenant':B,'accepted':0,'probeAccepted':0}]},
+                      completed_output={'verdict':'PASS', 'witnesses':[{'clinicalTiming':{'verdict':'PASS'}}],
+                             'clinicalTiming':{'contract':'clinical-deadline-from-acceptance-v1','witnesses':1}},
+                      catchup_value={'kind':'accepted-input-drain-v1','verdict':'PASS','deadlineMs':120000,
+                                     'acceptedInputs':1, 'inputs':[{'tenant': A, 'status':'ON_TIME'}]})
         values.update(overrides)
         return g.judge(**values)
 
@@ -152,16 +143,6 @@ class Fixtures(unittest.TestCase):
         for key in ('storage_findings', 'completed_output', 'catchup_value'):
             with self.subTest(key):
                 self.assertEqual(self.judged(**{key:None})['verdict'], 'UNMEASURED')
-        # preload-is-a-signal: an unwarm or uncaptured preload never decides the verdict.
-        for status in (None, 'NOT_CONVERGED', 'REFUSED'):
-            with self.subTest(preload=status):
-                judged = self.judged(preload_status=status)
-                self.assertEqual(judged['verdict'], 'PASS')
-                self.assertEqual(judged['components']['readiness']['preloadSignal'], {'status': status, 'role': 'signal'})
-        # The opt-in all-tenant mode keeps the old judgement.
-        self.assertEqual(self.judged(preload_status=None, preload_strict=True)['verdict'], 'UNMEASURED')
-        self.assertEqual(self.judged(preload_status='NOT_CONVERGED', preload_strict=True)['verdict'], 'UNMEASURED')
-        self.assertEqual(self.judged(preload_status='REFUSED', preload_strict=True)['verdict'], 'FAIL')
         self.assertEqual(self.judged(points={'before':point(row(A), HEALTHY()), 'after':None})['verdict'], 'UNMEASURED')
         self.assertEqual(self.judged(storage_findings={'verdict':'RED', 'failureCount':1})['verdict'], 'FAIL')
 
@@ -203,7 +184,8 @@ class Fixtures(unittest.TestCase):
     def test_instrument_identity_is_file_bytes_not_configuration(self):
         import hashlib
         identity = g.instrument()
-        self.assertEqual(identity['sha256'], hashlib.sha256(Path(g.__file__).read_bytes()).hexdigest())
+        self.assertEqual(identity['sha256'], hashlib.sha256(b'\0'.join(path.read_bytes() for path in (Path(g.__file__),
+            Path(g.accepted_inputs.__file__),Path(g.__file__).with_name('accepted-inputs.sql')))).hexdigest())
         a = self.judged()['instrument']
         b = self.judged(config={'deadlineMs':60000})
         self.assertEqual(a, b['instrument'])
@@ -227,18 +209,6 @@ class StrictReaders(unittest.TestCase):
         self.assertEqual(value['failurePolicy'], p.OUTCOME_FAILURE_POLICY)
         with self.assertRaisesRegex(p.Refused, 'FAILURE_POLICY'):
             p.assess(self.rounds(0), IDS, 'load', failure_policy='anything-else')
-
-    def test_preload_inspect_accepts_typed_transient_and_refuses_untyped(self):
-        import preload_convergence as pc
-        def pages(rows, typed):
-            data = json.loads(page(rows, typed=typed))
-            data['view']['configured'] = {'ordinal':0, 'mode':'single'}
-            return {'evaluator':(json.dumps(data) + '\n').encode()}
-        transient = [row(A, failed=1, reasons={'startup-warming':1}, unresolved={'reason':'startup-warming', 'ageMs':10}), HEALTHY()]
-        pc.inspect_pages(pages(transient, True), ['evaluator'], IDS, failure_policy=p.OUTCOME_FAILURE_POLICY)
-        with self.assertRaisesRegex(RuntimeError, 'M7_PRELOAD_EVALUATION_FAILURE'):
-            pc.inspect_pages(pages([row(A, failed=1), HEALTHY()], False), ['evaluator'], IDS,
-                             failure_policy=p.OUTCOME_FAILURE_POLICY)
 
     def test_compose_raw_is_written_before_decode(self):
         import adapter
@@ -306,12 +276,6 @@ def midpoint_check(hard):
     return check
 
 
-def catchup_check(module):
-    value = {'writerStoppedNs':0, 'endNs':200_000_000_000, 'byTenant':{A:{'status':'COMPLETED'}, B:{'status':'PENDING'}},
-             'drainAfterWriterJoinMs':{A:{'lower':0, 'upper':900}}}
-    return module.catchup(value, IDS)['verdict'] == 'FAIL'
-
-
 def missing_storage_check(module):
     return module.storage(None)['verdict'] == 'UNMEASURED'
 
@@ -321,14 +285,10 @@ def compose_drain_check(module):
     with tempfile.TemporaryDirectory() as temporary:
         load = Path(temporary) / 'load'
         load.mkdir()
-        cols = list(module.IDLE_COLUMNS)
-        def packed(failed):
-            return [[t, 'evaluator', 1, 3, 0, failed if t == A else 0, 5, 3, True, True, None, None, None, None, None, 0]
-                    for t in IDS]
-        rounds = [{'instances':{'evaluator':{'runtimeId':R}}, 'rows':packed(0)} for _ in range(3)]
-        (load / 'evaluator-progress.json').write_text(json.dumps({'columns':cols, 'rounds':rounds}))
-        (load / 'evaluator-catchup.json').write_text(json.dumps({'captures':[{'cost':{'inspection':{
-            'instances':{'evaluator':{'runtimeId':R}}, 'rows':packed(1)}}}]}))
+        raw = load / 'evaluator-progress-raw'
+        raw.mkdir()
+        (raw/'load-00-evaluator.private.jsonl').write_bytes(page([row(A), HEALTHY()]))
+        (raw/'drain-00-evaluator.private.jsonl').write_bytes(page([row(A, failed=1), HEALTHY()], typed=False))
         points = module.compose_points(load)
         return (points['endPoint'].startswith('end of drain') and
                 module.classify_point(points['after'], IDS, final=True)['verdict'] == 'FAIL')
@@ -360,9 +320,8 @@ CONTROLS = {
                        fixture_check('clinical-alert')),
     'midpoint-stop': ("    hard = classification['verdict'] == 'FAIL'", "    hard = False", midpoint_check(True)),
     'midpoint-continue': ("    hard = classification['verdict'] == 'FAIL'", "    hard = True", midpoint_check(False)),
-    'catchup-stuck': ("            if observed_ms is not None and observed_ms > deadline:", "            if False:", catchup_check),
-    'compose-drain-end': ("    end, label = drain_end_point(load), 'end of drain: last all-tenant catch-up inspection'",
-                          "    end, label = None, 'end of drain: last all-tenant catch-up inspection'", compose_drain_check),
+    'compose-drain-end': ("'after': from_pages(terminal) if terminal else None",
+                          "'after': ordered[0]", compose_drain_check),
     'missing-never-pass': ("        return {'verdict': 'UNMEASURED', 'codes': ['M7_OUTCOME_STORAGE_NOT_CAPTURED']}",
                            "        return {'verdict': 'PASS', 'codes': []}", missing_storage_check),
 }

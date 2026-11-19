@@ -291,7 +291,6 @@ def unaccepted_check(document):
 def discovery_authorization(manifest, receipt):
     """Version 1 preserves the original PENDING contract; v2 binds projections."""
     import stream_topology
-    import preload_convergence
     import primer_options
     version=receipt.get('version',1)
     require(type(version) is int and version in (1,2),'M7_DIAGNOSTIC_RECEIPT_VERSION')
@@ -299,7 +298,6 @@ def discovery_authorization(manifest, receipt):
             'M7_COMMISSIONING_SLOT_WAL_BOUND_RECEIPT_REQUIRED')
     ack_budget = stream_topology.ack_selection(manifest)
     require(not ack_budget or version==2, 'M7_PGSTREAM_ACK_BOUND_RECEIPT_REQUIRED')
-    preload = preload_convergence.receipt(manifest, receipt)
     selected_budgets={'opportunityObservation','probeLedger','startupWindows','evaluatorProgressBudget'} & manifest.get('cadence',{}).keys()
     require(not selected_budgets or version==2,'M7_WORKLOAD_BUDGET_BOUND_RECEIPT_REQUIRED')
     primer=primer_options.selection(primer_options.from_manifest(manifest),lambda ok,code:require(ok,'M7_'+code))
@@ -313,7 +311,6 @@ def discovery_authorization(manifest, receipt):
     require(isinstance(resolved,dict) and receipt.get('configurationSha256')==sha(resolved),
             'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(stream_topology.ack_selection(resolved) == ack_budget, 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
-    require(preload_convergence.selection(resolved) == preload, 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(primer_options.from_manifest(resolved)==primer,'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(resolved.get('staticTopology') == manifest.get('staticTopology') and
             resolved.get('staticBuildReceiptSha256') == manifest.get('staticBuildReceiptSha256'),
@@ -332,7 +329,7 @@ def discovery_authorization(manifest, receipt):
             'M7_DIAGNOSTIC_EXECUTION_LIMIT')
     work = execution['workSeconds']
     cadence = resolved.get('cadence', {})
-    selected_phases = [cadence.get(key) for key in ('warmupSeconds','idleSeconds','loadSeconds')]
+    selected_phases = [cadence.get('loadSeconds')]
     selected_phases += [cadence[key] for key in ('setupSeconds','drainSeconds') if key in cadence]
     require(all(workload_inputs.seconds(value) for value in selected_phases),'M7_DIAGNOSTIC_EXECUTION_LIMIT')
     phase_seconds = sum(selected_phases)

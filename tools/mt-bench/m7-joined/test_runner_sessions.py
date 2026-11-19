@@ -47,16 +47,17 @@ class Sessions(unittest.TestCase):
             d=Path(args[args.index('--directory')+1]);d.mkdir()
             a.write(d/'owner.json',{'attached':True,'project':'owned','owner':'c'*32})
             (d/'seed-witness').write_text((self.d/'seed-witness').read_text() if (self.d/'seed-witness').exists() else 'seed')
-    def observe(self,name='first'):
-        return r.session_observe(self.root,self.state['owner'],name,'config',self.history)
+    def observe(self,name='first',history_file=None):
+        return r.session_observe(self.root,self.state['owner'],name,'config',history_file)
     def test_two_observations_retain_fixture_and_separate_history(self):
         (self.d/'seed-witness').write_text('original')
-        self.observe();self.observe('second')
+        self.observe();self.observe('second',self.history)
         self.assertEqual([args[0] for _,args in self.calls],['attach','preflight','run']*2)
         self.assertFalse((self.root/'cleanup.json').exists())
         self.assertEqual((self.d/'seed-witness').read_text(),'original')
         history=a.document(self.root/'observations/second/history.json')
-        self.assertEqual(history['previousObservations'],['first'])
+        self.assertEqual(a.document(self.root/'observations/first/history.json'), {'runtime':'REUSED'})
+        self.assertEqual(history['declared'],a.document(self.history))
         self.assertEqual(history['runtime'],'REUSED')
         with self.assertRaisesRegex(RuntimeError,'OBSERVATION_EXISTS'):self.observe()
     def test_observer_attach_uses_validated_json_and_omits_prepare_only_options(self):

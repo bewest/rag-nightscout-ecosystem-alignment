@@ -3,7 +3,7 @@
 The gate judges outcomes, not a lifetime failure counter. A run FAILS on:
 an accepted write not stored or uncertain; an accepted input without durable
 evaluated output inside the clinical deadline (sampled oracle plus an
-end-of-run catch-up over every tenant); wrong, foreign or stale output; an
+end-of-drain catch-up over every accepted input); wrong, foreign or stale output; an
 isolation failure; or any failed completion whose reason is untyped, unknown
 or hard. A failed completion with a declared transient reason that completed
 inside the deadline is counted by reason, not failed. Missing evidence is
@@ -31,10 +31,11 @@ import hashlib
 import json
 import math
 import os
-import clinical_warm
+from collections import Counter
+import accepted_inputs
 from pathlib import Path
 
-CONTRACT = 'outcome-evaluator-gate-v1'
+CONTRACT = 'outcome-evaluator-gate-v2'
 TYPED_CONTRACT = 'evaluator-failure-reasons-v1'
 SOURCE_FIELDS = {'declaration': 'failureReasonContract', 'reasons': 'failureReasons',
                  'unresolved': 'unresolvedFailure', 'resolution': 'maxFailureResolutionMs'}
@@ -48,8 +49,9 @@ SAMPLE = 16  # bounded tenant examples per class; counts are complete
 
 
 def instrument():
-    """One frozen identity: this file's bytes. Parameters are configuration."""
-    data = Path(__file__).read_bytes()
+    """Bind the assessment, acceptance observer and source query. Parameters are configuration."""
+    data = b'\0'.join(p.read_bytes() for p in (Path(__file__), Path(accepted_inputs.__file__),
+                       Path(accepted_inputs.__file__).with_name('accepted-inputs.sql')))
     return {'contract': CONTRACT, 'sha256': hashlib.sha256(data).hexdigest(),
             'parameters': 'configuration (tenants, rate, windows, budgets, deadlineMs); not part of the identity'}
 
@@ -159,7 +161,7 @@ def tenant_failure(row, *, final, deadline_ms):
     """Classify one admitted tenant's failed completions.
 
     Returns (class, verdict, code, reasons). `final` is True at a judged
-    point (preload convergence, end of drain); False at the midpoint.
+    point (end of drain); False at the midpoint.
     """
     failed = row.get('failed')
     if not _nonneg(failed):
@@ -216,7 +218,7 @@ def classify_point(point, ids, *, final, config=None):
     for service, rows in point['rows'].items():
         for tenant, row in rows.items():
             if tenant not in ids:
-                note('UNMEASURED', 'M7_OUTCOME_ROSTER_EXTRA')
+                note('FAIL', 'M7_OUTCOME_ROSTER_EXTRA')
                 continue
             if row.get('admitted') is not True:
                 if row.get('ready') is True:
@@ -245,8 +247,9 @@ def classify_point(point, ids, *, final, config=None):
     if missing:
         note('UNMEASURED', 'M7_OUTCOME_COVERAGE')
     failure_verdict = worst(*verdicts) if verdicts else 'UNMEASURED'
-    ready_verdict = 'PASS' if not missing and readiness['READY'] == len(ids) else (
-        'UNMEASURED' if missing else 'FAIL')
+    # An owner awaiting its first acquisition owes no baseline work.
+    unhealthy = set(readiness['NOT_READY']) - {'None', 'EVALUATOR_STARTING', 'EVALUATOR_ACQUISITION_REQUIRED'}
+    ready_verdict = 'FAIL' if unhealthy else 'UNMEASURED' if missing else 'PASS'
     return {'verdict': failure_verdict, 'codes': sorted(codes), 'source': point.get('source'),
             'owners': len(owners), 'missingOwners': len(missing), 'classes': classes,
             'examples': examples, 'failedCompletionsByReason': by_reason,
@@ -291,61 +294,28 @@ def foreign_and_reset(first, last):
 # ------------------------------------------------------- end-of-run components
 
 def catchup(value, ids, *, config=None):
-    """All-tenant end-of-run catch-up from the fixed-floor reader's artifact.
-
-    A tenant still PENDING once the observation after writer join exceeds the
-    deadline is stuck: FAIL. A completion whose lower bound after writer join
-    exceeds the deadline is late: FAIL. Both are measured from writer join,
-    a lower bound on input age; the per-write deadline is the sampled oracle.
-    """
-    config = configuration(config)
-    deadline = config['deadlineMs']
-    if not isinstance(value, dict) or not isinstance(value.get('byTenant'), dict):
+    """Read the input-keyed drain evidence; older tenant floors do not cover HTTP ACKs."""
+    if not isinstance(value, dict) or value.get('kind') != accepted_inputs.KIND:
         return {'verdict': 'UNMEASURED', 'codes': ['M7_OUTCOME_CATCHUP_NOT_CAPTURED']}
-    rows = value['byTenant']
-    codes, counts = set(), {}
-    if not ids or set(rows) != set(ids):
-        codes.add('M7_OUTCOME_CATCHUP_COVERAGE')
-    observed_ms = None
-    if type(value.get('endNs')) is int and type(value.get('writerStoppedNs')) is int:
-        observed_ms = (value['endNs'] - value['writerStoppedNs']) / 1e6
-    bounds = value.get('drainAfterWriterJoinMs') or {}
-    stuck, late, open_bound = [], [], []
-    for tenant, row in rows.items():
-        status = row.get('status')
-        counts[status] = counts.get(status, 0) + 1
-        if status == 'INPUT_CHANGED':
-            codes.add('M7_OUTCOME_CATCHUP_INPUT_CHANGED')
-        elif status == 'PENDING':
-            if observed_ms is not None and observed_ms > deadline:
-                stuck.append(tenant)
-            else:
-                codes.add('M7_OUTCOME_CATCHUP_PENDING')
-        elif status == 'COMPLETED':
-            b = bounds.get(tenant)
-            if not isinstance(b, dict) or not _finite(b.get('upper')):
-                open_bound.append(tenant)
-            elif _finite(b.get('lower')) and b['lower'] > deadline:
-                late.append(tenant)
-            elif b['upper'] > deadline:
-                open_bound.append(tenant)
-        else:
-            codes.add('M7_OUTCOME_CATCHUP_UNMEASURED')
-    if stuck:
-        codes.add('M7_OUTCOME_CATCHUP_STUCK')
-    if late:
-        codes.add('M7_OUTCOME_CATCHUP_LATE')
-    if open_bound:
-        codes.add('M7_OUTCOME_CATCHUP_DEADLINE_UNRESOLVED')
-    hard = {'M7_OUTCOME_CATCHUP_STUCK', 'M7_OUTCOME_CATCHUP_LATE', 'M7_OUTCOME_CATCHUP_INPUT_CHANGED'}
-    verdict = 'FAIL' if codes & hard else 'UNMEASURED' if codes else 'PASS'
-    if value.get('verdict') == 'FAIL':
+    verdict = value.get('verdict')
+    rows = value.get('inputs')
+    codes = set(value.get('codes') or [])
+    if verdict not in ORDER or not isinstance(rows, list) or value.get('acceptedInputs') != len(rows):
+        return {'verdict': 'FAIL' if verdict == 'FAIL' else 'UNMEASURED',
+                'codes': sorted(codes or {'M7_INPUT_ACK_COVERAGE'})}
+    cohort = set(ids)
+    if any(not isinstance(row, dict) or not isinstance(row.get('tenant'), str)
+           or row.get('status') not in ('LATE', 'MISSING_AT_DRAIN', 'ON_TIME', 'UNMEASURED') for row in rows):
+        return {'verdict': worst(verdict, 'UNMEASURED'), 'codes': ['M7_INPUT_ACK_COVERAGE']}
+    if any(row['tenant'] not in cohort for row in rows):
+        return {'verdict': 'FAIL', 'codes': ['M7_INPUT_FOREIGN_ACK']}
+    counts = Counter(row['status'] for row in rows)
+    if counts['LATE'] or counts['MISSING_AT_DRAIN']:
         verdict = 'FAIL'
-        codes.add('M7_OUTCOME_CATCHUP_READER_FAIL')
-    return {'verdict': verdict, 'codes': sorted(codes), 'classifications': counts,
-            'observedAfterWriterJoinMs': observed_ms, 'stuckTenants': len(stuck), 'lateTenants': len(late),
-            'stuckExamples': sorted(stuck)[:SAMPLE], 'readerVerdict': value.get('verdict'),
-            'scope': 'every roster tenant; fixed native accepted-input floor; deadline measured from writer join'}
+    elif counts['ON_TIME'] != len(rows) or value.get('deadlineMs') != accepted_inputs.DEADLINE_MS:
+        verdict = worst(verdict, 'UNMEASURED')
+    return {'verdict': verdict, 'codes': sorted(codes), 'acceptedInputs': len(rows),
+            'classifications': dict(counts), 'endOfDrain': value.get('endOfDrain'), 'scope': 'all acknowledged inputs through end of drain'}
 
 
 def storage(findings):
@@ -368,50 +338,21 @@ def sampled_oracle(completed_output):
     witnesses = completed_output.get('witnesses')
     count = len(witnesses) if isinstance(witnesses, list) else None
     timing = completed_output.get('clinicalTiming')
-    if isinstance(timing, dict) and timing.get('contract') == clinical_warm.CONTRACT:
-        if verdict not in ORDER or not count or timing.get('witnesses') != count:
-            return {'verdict': 'UNMEASURED', 'codes': ['M7_CLINICAL_WITNESS_COVERAGE'], 'clinicalTiming': timing}
-        codes = {row.get('clinicalTiming', {}).get('code') for row in witnesses}
-        return {'verdict': verdict, 'codes': sorted(c for c in codes if c),
-                'witnesses': count, 'clinicalTiming': timing}
-    if verdict == 'PASS' and count:
-        return {'verdict': 'PASS', 'codes': [], 'witnesses': count}
-    if verdict == 'FAIL':
-        return {'verdict': 'FAIL', 'codes': ['M7_OUTCOME_ORACLE_FAIL'], 'witnesses': count}
-    return {'verdict': 'UNMEASURED', 'codes': ['M7_OUTCOME_ORACLE_UNMEASURED'], 'witnesses': count}
+    if not isinstance(timing, dict) or timing.get('contract') != 'clinical-deadline-from-acceptance-v1':
+        return {'verdict': 'UNMEASURED', 'codes': ['M7_CLINICAL_ACCEPTANCE_UNMEASURED']}
+    if verdict not in ORDER or not count or timing.get('witnesses') != count:
+        return {'verdict': 'UNMEASURED', 'codes': ['M7_CLINICAL_WITNESS_COVERAGE'], 'clinicalTiming': timing}
+    details = [row.get('clinicalTiming') if isinstance(row, dict) else None for row in witnesses]
+    if not all(isinstance(detail, dict) and detail.get('verdict') in ORDER for detail in details):
+        return {'verdict': worst(verdict, 'UNMEASURED'), 'codes': ['M7_CLINICAL_WITNESS_COVERAGE']}
+    codes = {detail.get('code') for detail in details}
+    verdict = worst(verdict, *(detail['verdict'] for detail in details))
+    return {'verdict': verdict, 'codes': sorted(c for c in codes if c),
+            'witnesses': count, 'clinicalTiming': timing}
 
 
-def readiness_component(preload, end, strict=False):
-    """Readiness is judged at the end of drain; preload convergence is a signal.
-
-    Decision preload-is-a-signal: a roster that is not warm at traffic start is
-    recorded, never refused. Only the opt-in all-tenant mode (`strict`) judges the
-    preload status as before.
-    """
-    codes = []
-    signal = {'status': preload, 'role': 'signal'}
-    if strict:
-        signal['role'] = 'required-all-tenants'
-        if preload is None:
-            codes.append('M7_OUTCOME_PRELOAD_NOT_CAPTURED')
-            pre = 'UNMEASURED'
-        else:
-            pre = 'PASS' if preload in ('CONVERGED', 'EXECUTION_READY') else 'FAIL' if preload == 'REFUSED' else 'UNMEASURED'
-            if pre != 'PASS':
-                codes.append('M7_OUTCOME_PRELOAD_' + str(preload).upper())
-    else:
-        pre = 'PASS'
-    end_verdict = end['readiness']['verdict'] if end is not None else 'UNMEASURED'
-    if end is None:
-        codes.append('M7_OUTCOME_END_NOT_CAPTURED')
-    elif end_verdict != 'PASS':
-        codes.append('M7_OUTCOME_END_NOT_READY')
-    return {'verdict': worst(pre, end_verdict), 'codes': codes, 'preload': preload, 'preloadSignal': signal,
-            'endOfDrain': end['readiness'] if end is not None else None}
-
-
-def judge(*, ids, points, preload_status, storage_findings, completed_output, catchup_value,
-          authority=None, config=None, attribution=None, preload_strict=False, warmth=None):
+def judge(*, ids, points, storage_findings, completed_output, catchup_value,
+          authority=None, config=None, attribution=None):
     """Combine the components. Any FAIL fails; any UNMEASURED is UNMEASURED.
 
     `points` maps 'before'/'midpoint'/'after' to a read point or None. The
@@ -429,6 +370,10 @@ def judge(*, ids, points, preload_status, storage_findings, completed_output, ca
         if last_name != 'after' and failures['verdict'] != 'FAIL':
             failures['verdict'] = 'UNMEASURED'
             failures['codes'] = sorted(set(failures['codes']) | {'M7_OUTCOME_END_POINT_MISSING'})
+        for earlier, _ in available[:-1]:
+            if classified[earlier]['verdict'] == 'FAIL':
+                failures['verdict'] = 'FAIL'
+                failures['codes'] = sorted(set(failures['codes']) | set(classified[earlier]['codes']))
         failures['judgedAt'] = last_name
         components['failedCompletions'] = failures
         components['isolation'] = foreign_and_reset(available[0][1], available[-1][1]) if len(available) > 1 else {
@@ -436,12 +381,19 @@ def judge(*, ids, points, preload_status, storage_findings, completed_output, ca
     else:
         components['failedCompletions'] = {'verdict': 'UNMEASURED', 'codes': ['M7_OUTCOME_NO_POINTS']}
         components['isolation'] = {'verdict': 'UNMEASURED', 'codes': ['M7_OUTCOME_NO_POINTS']}
-    components['readiness'] = readiness_component(preload_status, classified.get('after'), strict=preload_strict)
+    components['readiness'] = classified['after']['readiness'] if 'after' in classified else {
+        'verdict': 'UNMEASURED', 'codes': ['M7_OUTCOME_END_NOT_CAPTURED']}
     components['storage'] = storage(storage_findings)
     components['sampledOracle'] = sampled_oracle(completed_output)
-    if warmth is not None:
-        components['tenantWarmth'] = warmth
     components['catchup'] = catchup(catchup_value, ids, config=config)
+    if components['catchup']['verdict'] == 'PASS':
+        expected = (storage_findings or {}).get('rows')
+        observed = Counter(r['tenant'] for r in catchup_value['inputs'])
+        if (not isinstance(expected, list) or len(expected) != len(set(ids))
+                or {r.get('tenant') for r in expected} != set(ids)
+                or any(not _nonneg(r.get('accepted')) or not _nonneg(r.get('probeAccepted'))
+                       or r['accepted'] + r['probeAccepted'] != observed[r['tenant']] for r in expected)):
+            components['catchup'].update(verdict='UNMEASURED', codes=['M7_INPUT_ACK_COVERAGE'])
     if authority is not None:
         components['authority'] = authority
     verdict = worst(*(c['verdict'] for c in components.values()))
@@ -522,37 +474,20 @@ def load_point(folder, name, service='evaluator'):
     return from_decoded(decoded) if isinstance(decoded, dict) and 'allRows' in decoded else None
 
 
-def strict_preload(preload):
-    return bool(preload) and preload.get('configuration', {}).get('readiness') == 'require-all'
-
-
-def warm_component(folder, ids, probe):
-    timing = (probe.get('completedOutput') or {}).get('clinicalTiming') or {}
-    path = folder / clinical_warm.FILE
-    if timing.get('contract') == clinical_warm.CONTRACT or path.is_file():
-        return clinical_warm.coverage(path, ids)
-    return None  # Packet predates observation of evaluator warmth.
-
-
 def judge_kubernetes_load(folder, ids, *, config=None, attribution=None):
     """One Kubernetes load stage folder (runtime/packet/load)."""
     folder = Path(folder)
-    after = load_point(folder, 'progress-after') or load_point(folder, 'progress-stop')
-    preload = _document(folder / 'preload-convergence' / 'result.json')
+    after = load_point(folder, 'progress-after')
     probe = _document(folder / 'probe.json') or {}
     if not probe.get('completedOutput'):
         probe['completedOutput'] = _document(folder/'clinical-witnesses-partial.json')
-    warmth = warm_component(folder, ids, probe)
-    verdict = judge(warmth=warmth, ids=ids, points={'before': load_point(folder, 'progress-before'),
-                                  'midpoint': load_point(folder, 'progress-midpoint'), 'after': after},
-                 preload_status=preload.get('status') if preload else None,
-                 preload_strict=strict_preload(preload),
+    verdict = judge(ids=ids, points={'before': load_point(folder, 'progress-before'),
+                                  'midpoint': load_point(folder, 'progress-stop') or load_point(folder, 'progress-midpoint'), 'after': after},
                  storage_findings=_document(folder / 'oracle-findings.json'),
                  completed_output=probe.get('completedOutput'),
                  catchup_value=_document(folder / 'evaluator-catchup.json'),
                  config=config, attribution=attribution)
-    verdict['endPoint'] = ('terminal progress after drain' if load_point(folder, 'progress-after')
-                           else 'early-stop capture' if after else None)
+    verdict['endPoint'] = 'terminal progress after drain' if after else None
     return verdict
 
 
@@ -572,42 +507,23 @@ def compose_points(load):
         ordered = [from_packed(r, columns) for r in value.get('rounds') or []]
     if not ordered:
         return {'before': None, 'midpoint': None, 'after': None, 'endPoint': None}
-    end, label = drain_end_point(load), 'end of drain: last all-tenant catch-up inspection'
-    if end is None:
-        end, label = (ordered[-1] if len(ordered) >= 2 else None), 'end of load bookend (no catch-up inspection retained)'
+    terminal = {p.name[len('drain-00-'):-len('.private.jsonl')]:p.read_bytes()
+                for p in raw.glob('drain-00-*.private.jsonl')}
     return {'before': ordered[0], 'midpoint': ordered[1] if len(ordered) == 3 else None,
-            'after': end, 'endPoint': label}
-
-
-# evaluator_idle.COLUMNS, the packed inspection layout the catch-up retains.
-IDLE_COLUMNS = ('tenant', 'service', 'generation', 'completedAcquisitions', 'completedTimeCycles', 'failedCompletions',
-                'lastCompletedAgeMs', 'legacyCycles', 'admitted', 'ready', 'code', 'alert', 'dueAt', 'dueReason',
-                'jobState', 'jobs')
-
-
-def drain_end_point(load):
-    """The last catch-up capture's evaluator inspection (packed idle columns)."""
-    value = _document(Path(load) / 'evaluator-catchup.json') or {}
-    for capture in reversed(value.get('captures') or []):
-        inspection = (capture.get('cost') or {}).get('inspection') or {}
-        if inspection.get('rows'):
-            return from_packed(inspection, IDLE_COLUMNS)
-    return None
+            'after': from_pages(terminal) if terminal else None,
+            'endPoint': 'end of drain: source inspection' if terminal else None}
 
 
 def judge_compose_run(directory, ids, *, config=None, attribution=None):
     """One Compose run directory (the fixture), from retained files only."""
     d = Path(directory)
     load = d / 'load'
-    preload = _document(d / 'preload-convergence' / 'result.json')
     probe = _document(load / 'probe.json') or {}
     if not probe.get('completedOutput'):
         probe['completedOutput'] = _document(load/'clinical-witnesses-partial.json')
     points = compose_points(load)
     end_label = points.pop('endPoint')
-    verdict = judge(warmth=warm_component(d, ids, probe), ids=ids, points=points,
-                    preload_status=preload.get('status') if preload else None,
-                 preload_strict=strict_preload(preload),
+    verdict = judge(ids=ids, points=points,
                     storage_findings=_document(load / 'oracle-findings.json'),
                     completed_output=probe.get('completedOutput'),
                     catchup_value=_document(load / 'evaluator-catchup.json'),

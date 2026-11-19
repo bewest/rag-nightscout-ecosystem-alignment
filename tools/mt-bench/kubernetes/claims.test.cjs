@@ -47,3 +47,18 @@ for(const clients of [0,1]){
  assert.equal(assess(sparse).verdict,'PASS');
  console.log('RED_RESTORED unviewed tenant storage required, clients='+clients);
 }
+
+const delayed=JSON.parse(JSON.stringify(value));
+const lateWitness=delayed.probe.completedOutput.witnesses[0];
+Object.assign(lateWitness,{clientProofVersion:3,expectedSockets:[0],sentMono:0,
+  clinicalTiming:{verdict:'PASS',acceptedMono:10,acceptanceToCompletionMs:120001}});
+Object.assign(lateWitness.clientObservations[0],{atMono:20,transportId:'synthetic-transport'});
+assert.equal(assess(delayed).verdict,'UNMEASURED');
+lateWitness.clinicalTiming.acceptanceToCompletionLowerMs=120000;
+assert.throws(()=>assess(delayed),/K8S_CLINICAL_DEADLINE/);
+lateWitness.clinicalTiming.acceptanceToCompletionLowerMs=0;
+lateWitness.clinicalTiming.acceptanceToCompletionMs=119999;
+assert.equal(assess(delayed).verdict,'PASS');
+lateWitness.clientObservations[0].atMono=120010;
+assert.throws(()=>assess(delayed),/K8S_CLINICAL_DEADLINE/);
+console.log('RED_RESTORED late first read UNMEASURED, proven late durable and frame at 120s refused');
