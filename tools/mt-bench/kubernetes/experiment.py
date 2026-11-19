@@ -215,9 +215,14 @@ def render_checks(instance):
     package = Path(instance['bindingReceipt']['path']).parent / 'bindings/kubernetes'
     check = """const fs=require('node:fs'),check=require(process.argv[1]);
       const read=path=>JSON.parse(fs.readFileSync(path));
-      const inventory=read(process.argv[3]);let all=check.manifests(read(process.argv[2]));
-      // The opt-in test Job has its own exact declaration/census validation.
-      // The original binding checks still see every application resource.
+      // Native declarations are an array; older binding flatteners omit arrays.
+      const manifests=value=>Array.isArray(value)?value.flatMap(manifests):
+        value&&typeof value==='object'?(value.kind==='List'?manifests(value.items):
+          value.apiVersion&&value.kind?[value]:Object.values(value).flatMap(manifests)):[];
+      const inventory=read(process.argv[3]);let all=manifests(read(process.argv[2]));
+      // Only the opt-in test Job is outside the application's workload roster.
+      // Its exact owned edge policy stays visible to the original binding's
+      // private-plane checks, alongside every unchanged application policy.
       if(inventory.nativeLoad)all=all.filter(m=>!(m.kind==='Job'&&m.metadata.name==='k6'));
       console.log(JSON.stringify(check.checks(all,inventory)));"""
     raw = subprocess.check_output(['node', '-e', check, package/'check/invariants.js',

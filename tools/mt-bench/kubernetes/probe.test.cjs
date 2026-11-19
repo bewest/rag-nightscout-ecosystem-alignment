@@ -32,7 +32,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http
  };
  fs.writeFileSync(path.join(d,'tenants.json'),JSON.stringify(tenants));
  const argv=['node',target,'--base','http://127.0.0.1:'+server.address().port,'--tenants',path.join(d,'tenants.json'),'--runid','synthetic-pipeline','--per','1','--clients','2','--open','0','--probeEvery','1','--maxWrites','2','--restart','0','--out',path.join(d,'probe.json'),'--signal',path.join(d,'.window')];
- const child={execFile(exe,args,opts,callback){assert.equal(exe,'synthetic-python');assert.equal(args[1],'sql');queries++;return {stdin:{end(query){assert(query.startsWith('SELECT '));if(unavailable){setImmediate(()=>callback(Object.assign(Error('observer unavailable'),{code:1}),'',''));return;}setImmediate(()=>callback(null,ids.map(row).filter(Boolean).map(r=>JSON.stringify(r)).join('\n')));}}};}};
+ const child={execFile(exe,args,opts,callback){assert.equal(exe,'synthetic-python');assert.equal(args[1],'clinical-sql');assert.equal(opts.timeout,60000);queries++;return {stdin:{end(query){assert(query.startsWith('SELECT '));if(unavailable){setImmediate(()=>callback(Object.assign(Error('observer unavailable'),{code:1}),'',''));return;}setImmediate(()=>callback(null,ids.map(row).filter(Boolean).map(r=>JSON.stringify(r)).join('\n')));}}};}};
  let watchdog;
  try{
    await new Promise((resolve,reject)=>{

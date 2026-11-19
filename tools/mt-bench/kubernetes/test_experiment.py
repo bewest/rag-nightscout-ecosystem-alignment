@@ -17,6 +17,31 @@ import primer_options
 
 
 class Frozen(unittest.TestCase):
+    def test_render_check_partition_keeps_native_policy_and_unexpected_jobs_visible(self):
+        check = self.root/'bindings/kubernetes/check'
+        check.mkdir(parents=True)
+        (check/'invariants.js').write_text("""
+          module.exports={checks:all=>[{name:'native-partition',failures:
+            all.some(x=>x.kind==='NetworkPolicy'&&x.metadata.name==='native-load-to-edge') &&
+            all.some(x=>x.kind==='ConfigMap'&&x.metadata.name==='application') &&
+            !all.some(x=>x.kind==='Job') ? [] : ['wrong partition']}]};
+        """)
+        receipt=self.ref('binding.json',{'files':{}})
+        render=self.root/'render.json';inventory=self.root/'inventory.json'
+        policy={'apiVersion':'networking.k8s.io/v1','kind':'NetworkPolicy','metadata':{'name':'native-load-to-edge'}}
+        job={'apiVersion':'batch/v1','kind':'Job','metadata':{'name':'k6'}}
+        contents={'application':{'apiVersion':'v1','kind':'ConfigMap','metadata':{'name':'application'}},
+                  'nativeLoadResources':[job,policy]}
+        k.write(render,contents);k.write(inventory,{'nativeLoad':{'version':1}})
+        instance={'render':str(render),'inventory':str(inventory),'bindingReceipt':receipt}
+        self.assertEqual(experiment.render_checks(instance),['native-partition'])
+        contents['nativeLoadResources'].append(dict(job,metadata={'name':'unaccounted'}))
+        k.write(render,contents)
+        with self.assertRaisesRegex(k.Refused,'UNSUPPORTED_RENDER:native-partition'):
+            experiment.render_checks(instance)
+        contents['nativeLoadResources'].pop();k.write(render,contents)
+        self.assertEqual(experiment.render_checks(instance),['native-partition'])
+
     def test_split_candidate_pin_uses_hashed_binding_and_refuses_contract_tamper(self):
         package = self.root/'bindings/kubernetes/assets'
         package.mkdir(parents=True)

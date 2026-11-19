@@ -18,12 +18,28 @@ import candidate
 FIELD = 'nativeLoad'
 JOB = 'Job/k6'
 ACCOUNT = 'native-load-waiter'
+POLICY = 'NetworkPolicy/native-load-to-edge'
 
 
 def waiting_jobs(c):
     # In the split binding, primer readiness only proves client export is ready;
     # the independent verification Job must have completed as well.
     return ['provision', 'verification', 'primer:ready'] if candidate.verified_serving(c) else ['provision', 'primer:ready']
+
+
+def actor_labels(c, component):
+    return {c['ownerLabel']:c['runId'], 'app.kubernetes.io/name':'nightscout',
+            'app.kubernetes.io/part-of':'nightscout-multitenant','app.kubernetes.io/component':component}
+
+
+def edge_policy(c):
+    port=c.get('nativeLoadEdgePort',8080)
+    k.need(type(port) is int and 1<=port<=65535,'NATIVE_LOAD_EDGE_PORT')
+    return {'apiVersion':'networking.k8s.io/v1','kind':'NetworkPolicy',
+            'metadata':{'name':'native-load-to-edge','namespace':c['namespace'],'labels':actor_labels(c,'load')},
+            'spec':{'podSelector':{'matchLabels':actor_labels(c,'edge')},'policyTypes':['Ingress'],
+                    'ingress':[{'from':[{'podSelector':{'matchLabels':actor_labels(c,'load')}}],
+                                'ports':[{'port':port,'protocol':'TCP'}]}]}}
 
 
 def has_mask(value):
@@ -96,8 +112,7 @@ def selected(c):
 
 def base_job(c):
     s = selected(c)
-    labels = {c['ownerLabel']:c['runId'], 'app.kubernetes.io/name':'nightscout',
-              'app.kubernetes.io/part-of':'nightscout-multitenant','app.kubernetes.io/component':'load'}
+    labels = actor_labels(c,'load')
     hardened = {'runAsUser':1000,'runAsGroup':1000,'runAsNonRoot':True,
                 'readOnlyRootFilesystem':True,'allowPrivilegeEscalation':False,'capabilities':{'drop':['ALL']}}
     waiter = {'name':'wait-for-jobs','image':c['pins']['appImage'],'imagePullPolicy':'IfNotPresent',
@@ -146,7 +161,8 @@ def declarations(c):
                    'resourceNames':[name.split(':')[0] for name in waiting_jobs(c)],'verbs':['get']}]},
         {'apiVersion':'rbac.authorization.k8s.io/v1','kind':'RoleBinding','metadata':dict(meta,name=ACCOUNT),
          'roleRef':{'apiGroup':'rbac.authorization.k8s.io','kind':'Role','name':ACCOUNT},
-         'subjects':[{'kind':'ServiceAccount','name':ACCOUNT,'namespace':c['namespace']}]}]
+         'subjects':[{'kind':'ServiceAccount','name':ACCOUNT,'namespace':c['namespace']}]},
+        edge_policy(c)]
 
 
 def stage_runid(c):
@@ -159,6 +175,7 @@ def validate(c, inventory, objects):
     k.need(inventory.get(FIELD)==s,'NATIVE_LOAD_INVENTORY_CHANGED')
     if s is None:
         k.need(JOB not in objects,'NATIVE_LOAD_UNACCOUNTED_JOB')
+        k.need(POLICY not in objects,'NATIVE_LOAD_UNACCOUNTED_POLICY')
         return
     for expected in declarations(c):
         k.need(objects.get(k.key(expected))==expected,'NATIVE_LOAD_DECLARATION_CHANGED:'+k.key(expected))
