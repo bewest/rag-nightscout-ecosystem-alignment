@@ -148,10 +148,16 @@ class Coverage:
                 # Restore fencing: output from another source or generation never covers an input.
                 self.figures['fenceRejectedRows'] += 1
                 continue
+            before_snapshot = None
+            latest = None
             for key in keys:
-                item = self.inputs.setdefault((tenant, *key), {
-                    'beforeStore': self.previous_start, 'storedBy': end, 'upperFloor': None,
-                    'absentFloor': None, 'durableBy': None, 'pendingAt': None})
+                input_key = (tenant, *key)
+                item = self.inputs.get(input_key)
+                if item is None:
+                    item = {
+                        'beforeStore': self.previous_start, 'storedBy': end, 'upperFloor': None,
+                        'absentFloor': None, 'durableBy': None, 'pendingAt': None}
+                    self.inputs[input_key] = item
                 if row['outputAbsent']:
                     item['pendingAt'] = start
                 if item['durableBy'] is not None or not valid:
@@ -162,15 +168,18 @@ class Coverage:
                                                   and row['tailBase'] <= old['head'])
                 # A later recovery snapshot could already have included the
                 # source row. Only pre-write snapshot coverage proves absence.
-                snapshot = row['snapshotPosition']
-                before_snapshot = (self.before_writes_lsn is not None and snapshot is not None and
-                                   wal_position(snapshot) <= self.before_writes_lsn)
+                if before_snapshot is None:
+                    snapshot = row['snapshotPosition']
+                    before_snapshot = (self.before_writes_lsn is not None and snapshot is not None and
+                                       wal_position(snapshot) <= self.before_writes_lsn)
                 if key not in events and item['upperFloor'] is None and intact and before_snapshot:
                     item['absentFloor'] = floor
                     item['pendingAt'] = start
                 if key in events and item['upperFloor'] is None:
                     item['upperFloor'] = floor
-                if row['latest'] is not None and tuple(row['latest']) == key:
+                if latest is None and row['latest'] is not None:
+                    latest = tuple(row['latest'])
+                if latest == key:
                     # The tail head belongs to the current native commit and
                     # follows the recovery snapshot. Its floor is exact.
                     item['absentFloor'] = floor-1
