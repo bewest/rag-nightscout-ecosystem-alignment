@@ -36,7 +36,7 @@ function source(evaluator,realtime,selected){
 }
 function query(config,ids,marker,progress=false){
  if(typeof progress!=='boolean'||progress&&config.kind!=='evaluator-work-v2')fail('M7_COMPLETION_SELECTOR');
- if(!['clock','checkpoint','entries'].every(key=>NAME.test(config[key]))||!/^evaluator-[A-Za-z0-9_-]{1,100}-completed$/.test(config.consumer)||!['evaluator-work-v1','evaluator-work-v2'].includes(config.kind)||!Array.isArray(ids)||!ids.length||!ids.every(id=>UUID.test(id))||!/^[a-z0-9-]{1,120}$/.test(marker))fail('M7_COMPLETION_SELECTOR');
+ if(!['clock','checkpoint','entries'].every(key=>NAME.test(config[key]))||!/^evaluator-[A-Za-z0-9_-]{1,100}-completed$/.test(config.consumer)||!['evaluator-work-v1','evaluator-work-v2'].includes(config.kind)||!Array.isArray(ids)||!ids.length||ids.length>10000||!ids.every(id=>UUID.test(id))||!/^[a-z0-9-]{1,120}$/.test(marker))fail('M7_COMPLETION_SELECTOR');
  binding(config.binding);selection(config);if(config.kind!==config.binding.kind)fail('M7_COMPLETION_READER_MISMATCH');
  const selected=ids.map(id=>"'"+id+"'").join(',');
  const vector=column=>`(SELECT coalesce(jsonb_object_agg(k,v),'{}'::jsonb) FROM (VALUES ${SOURCES.map((key,i)=>`('${key}',c.${column}[${i+1}]::text)`).join(',')}) s(k,v) WHERE v IS NOT NULL)`;
@@ -54,18 +54,19 @@ function query(config,ids,marker,progress=false){
 }
 const version=value=>typeof value==='string'&&/^(0|[1-9][0-9]*)$/.test(value);
 const exact=value=>version(value)&&value.length<=19&&BigInt(value)<=9223372036854775807n;
-// The native receipt cutover rewrites contract_digest to the native selection's
-// contract (core lib/pgstream/native-receipt-cutover.js). The row is already
-// selected by table and consumer, so a native row needs only a well-formed
-// digest; the non-native contract keeps its exact recomputation.
-function contractMatches(t,config){
- if(config.native)return typeof t?.contractDigest==='string'&&/^[a-f0-9]{64}$/.test(t.contractDigest);
- return t?.contractDigest===createHash('sha256').update(JSON.stringify([config.kind,config.checkpoint,config.consumer.replace(/-completed$/,'')])).digest('hex');
+function contractDigest(config){
+ const fields=[config.kind,config.checkpoint,config.consumer.replace(/-completed$/,'')];
+ // Source lib/tenant-lifecycle/native-selection binds the native receipt to
+ // intake-profile's lifecycle codec/domain. Legacy clock receipts keep their
+ // original three-field contract; a row never supplies its expected digest.
+ if(config.native)fields.push('canonical-maintenance-active-plus2-v1','positive-int8-complete-pair-max-4611686018427387902-v1');
+ return createHash('sha256').update(JSON.stringify(fields)).digest('hex');
 }
 function typedState(row,config,progress=false){
  const t=row.typed,s=row.state,o=s?.output;
+ const digest=contractDigest(config);
 
- if(!t||t.version!==2||!contractMatches(t,config)||t.enabled!==true||t.arrayBounds!==true||t.bodyMetadataAbsent!==true)return false;
+ if(!t||t.version!==2||t.contractDigest!==digest||t.enabled!==true||t.arrayBounds!==true||t.bodyMetadataAbsent!==true)return false;
  for(const [field,name]of [['observed','observed'],['completed','completed']]){
   const values=t[field],map=s?.[name];
   if(!Array.isArray(values)||values.length!==SOURCES.length||!map||typeof map!=='object'||Array.isArray(map)||Object.keys(map).some(k=>!SOURCES.includes(k)))return false;
@@ -117,7 +118,7 @@ function assess(row,witness,clients,expected,config){
 // This is neither a clinical nor a client-frame verdict.
 function progressSnapshot(rows,config,ids){
  binding(config?.binding);selection(config);
- if(config.kind!=='evaluator-work-v2'||config.binding.kind!==config.kind||!Array.isArray(ids)||!ids.length||!ids.every(id=>UUID.test(id))||new Set(ids).size!==ids.length||!Array.isArray(rows)||rows.length!==ids.length||new Set(rows.map(r=>r?.tenant)).size!==ids.length)fail('M7_OPPORTUNITY_COVERAGE');
+ if(config.kind!=='evaluator-work-v2'||config.binding.kind!==config.kind||!Array.isArray(ids)||!ids.length||ids.length>10000||!ids.every(id=>UUID.test(id))||new Set(ids).size!==ids.length||!Array.isArray(rows)||rows.length!==ids.length||new Set(rows.map(r=>r?.tenant)).size!==ids.length)fail('M7_OPPORTUNITY_COVERAGE');
  const byTenant=new Map(rows.map(row=>[row?.tenant,row]));
  const values=ids.map(tenant=>{
   const row=byTenant.get(tenant);
@@ -132,7 +133,7 @@ function progressSnapshot(rows,config,ids){
     revisionZero:t?.revision==='0',identityNull:t?.identity===null,digestNull:t?.digest===null,
     completedEmpty:Array.isArray(t?.completed)&&t.completed.length===6&&t.completed.every(v=>v===null),
     versionTwo:t?.version===2,enabled:t?.enabled===true,arrayBounds:t?.arrayBounds===true,bodyMetadataAbsent:t?.bodyMetadataAbsent===true,
-    contractDigestMatches:contractMatches(t,config),
+    contractDigestMatches:t?.contractDigest===contractDigest(config),
     observedSixSlots:Array.isArray(t?.observed)&&t.observed.length===6,
     completedSixSlots:Array.isArray(t?.completed)&&t.completed.length===6}};
    throw error;
@@ -145,4 +146,4 @@ function progressSnapshot(rows,config,ids){
  });
  return {kind:'evaluator-durable-progress-v1',reader:plain(config.binding),rows:values};
 }
-module.exports={source,prepare,query,assess,assessDurable:(row,witness,config)=>assess(row,witness,[],0,config),progressSnapshot,progressQuery:(config,ids)=>query(config,ids,'progress-opportunity',true)};
+module.exports={source,prepare,query,assess,assessDurable:(row,witness,config)=>assess(row,witness,[],0,config),expectedContractDigest:config=>contractDigest(prepare(config)),progressSnapshot,progressQuery:(config,ids)=>query(config,ids,'progress-opportunity',true)};
