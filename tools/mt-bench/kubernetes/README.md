@@ -268,7 +268,7 @@ exists. Terminal totals stay UNMEASURED when the summary is missing.
 | Docker restart/health timestamps | Separate exact Node-role restart, container ID/restart-count readback and unchanged other incarnations; no Docker health-time equivalence |
 | Compose project deletion | Inspectable exact-object DELETE bodies with server-side UID preconditions; no selector deletion |
 
-`claims.cjs` reruns `completed-oracle.cjs` over raw independent SQL rows and actual
+The removed `claims.cjs` reran `completed-oracle.cjs` over raw independent SQL rows and actual
 stock-client observations. This proves the existing selected BG-now bucket
 mean/last, typed durable output, stored row and client frame properties for the
 witness subset. It does not establish all clinical properties. The original
@@ -655,7 +655,7 @@ not-ready owner at the midpoint continues. Raw responses are written before
 any decoder reads them (`progress-*.private.jsonl`; after an early load stop, `progress-stop.private.jsonl`, then `stored-counts.json`, recorded in `stop-evidence.json`). The runner publishes `load/outcome-gate.json` and a stage summary in `result.json` before returning a failure or missing measurement. It also reports HTTP latency over all k6 shard summaries, including the exact pooled count and mean, plus the quantile range across shards.
 The progress reader checks the evaluator's runtime identity, owner and foreign counters across captured rounds. It records the observed work delta, including zero for idle tenants. The workload outcome combines these checks with storage, sampled clinical results and per-input catch-up. A missing component leaves the load stage `UNMEASURED`.
 
-`outcome_rereduce.py` re-reduces a retained run into a new file beside it and refuses if any original file changes. Set `outcomeGate.midpointStop` to `never` to record a hard midpoint signal and continue collecting evidence.
+`assessor.py <load>` re-reduces a retained run into a new file beside it and refuses if any original file changes. Set `outcomeGate.midpointStop` to `never` to record a hard midpoint signal and continue collecting evidence.
 
 The accepted-input observer starts before the probe and follows run-marked writes through drain. Its Kubernetes transport brackets each read-only SQL transaction with checks of the owned namespace and Pods. Each call honors the observer timeout and the entered work deadline. The observer reconciles its inputs against the workload and probe acceptance counts. Tenants with no accepted input owe no output. [Kubernetes transport](catchup.py) · [Deadline and drain decision](../../../docs/30-design/tenancy/multitenancy-decisions.md#deadline-from-acceptance)
 

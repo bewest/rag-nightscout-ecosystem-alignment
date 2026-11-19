@@ -366,7 +366,7 @@ not-ready owner at the midpoint continues. Raw responses are written before
 any decoder reads them (`load/evaluator-progress-raw/`). The verdict is ``load/outcome-gate.json` and the discovery check `outcomeGate``; HTTP
 latency over every k6 shard summary is reported beside it (exact pooled
 count and mean; per-shard quantile ranges; pooled quantiles UNMEASURED).
-`outcome_rereduce.py` re-reduces a retained run into a new file beside it and
+`assessor.py <load>` re-reduces a retained run into a new file beside it and
 refuses if any original file changes.
 
 ## Planned evaluator restart during local discovery demand
@@ -1143,7 +1143,7 @@ Kubernetes checks evaluator scope, authorization and viewer frame delivery. See
 
 The evaluator-progress readers use one policy and judge failed completions
 through the outcome gate only. Retained runs re-reduce with
-`outcome_rereduce.py`.
+`assessor.py <load>`.
 
 Removed from the run tooling at alignment `5a203ee7` plus the tooling branch
 (history keeps them; retained evidence is unchanged): the revision witness, the

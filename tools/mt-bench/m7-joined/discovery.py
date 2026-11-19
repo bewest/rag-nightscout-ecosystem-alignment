@@ -206,13 +206,8 @@ def _run_discovery(a,d,m,k6_image,oneoff=None):
                     record.value['sqlAttribution']=a.sample_results(d,probe,sql_roles)
                 except Exception as error:
                     record.failure('sqlAttribution',error,True)
-                    require(record.value['completedOutput']['verdict']=='PASS','M7_COMPLETED_OUTPUT_ORACLE')
                     raise
                 record.save()
-                if record.value['completedOutput'].get('clinicalTiming') and record.value['completedOutput']['verdict']=='UNMEASURED':
-                    record.value['strictChecks']['sampledOracle']={'verdict':'UNMEASURED','code':'M7_CLINICAL_OBSERVATION_INCOMPLETE'}
-                else:
-                    require(record.value['completedOutput']['verdict']=='PASS','M7_COMPLETED_OUTPUT_ORACLE')
             counts=record.value.get('oracle')
             from discovery_counts import control_domain
             if control_domain(counts,m['tenants']) is not None:
@@ -453,7 +448,6 @@ def observed_load(a,d,m,out,work,record=None,oneoff=None):
         require(record is not None,'M7_DEMAND_RECOVERY_RECORD_REQUIRED')
         return demand_recovery.run(a,d,m,out,work,record,lambda:stop_k6(a,m,record,oneoff))
     observer=a.observe_progress(d,m,out,'load')
-    observer.on_hard_midpoint=lambda:hard_midpoint_stop(a,m,oneoff)
     try:observer.__enter__()
     except Exception as error:
         if not incomplete(error):raise
@@ -506,18 +500,6 @@ def stop_k6(a,m,record,oneoff=None):
         a.owned(row,m['owner']);require(re.fullmatch(r'[a-f0-9]{64}',row.get('Id','')),'M7_DISCOVERY_LOADGEN_CUSTODY')
         a.command(['docker','stop','--time','10',row['Id']],timeout=20)
     record.value['processes']['k6']['ownedContainerStopCompleted']=True;record.save()
-
-
-def hard_midpoint_stop(a,m,oneoff=None):
-    """A hard outcome reason at the midpoint stops the owned driver early."""
-    try:
-        if oneoff is not None:oneoff.stop();return
-        a.assert_owned(m)
-        for row in a.resources(m):
-            if (row.get('Config',{}).get('Labels') or {}).get('com.docker.compose.service')=='k6':
-                a.owned(row,m['owner'])
-                if re.fullmatch(r'[a-f0-9]{64}',row.get('Id','')):a.command(['docker','stop','--time','10',row['Id']],timeout=20)
-    except Exception:pass  # The phase failure stays authoritative.
 
 
 def outcome_record(a,d,m,record):

@@ -70,7 +70,7 @@ class Coverage(unittest.TestCase):
         self.assertEqual(measured['scenario'], {'attempts':'UNMEASURED', 'completed':'UNMEASURED'})
         self.assertEqual(measured['shapes']['w_sgv']['responses'], 'UNMEASURED')
         metrics['dropped_iterations']['count'] = 1
-        self.assertEqual(reduction.http_accounting.assess(metrics)['offeredWorkVerdict'], 'FAIL')
+        self.assertEqual(reduction.http_accounting.assess(metrics)['droppedIterations'], 1)
         metrics['dropped_iterations']['count'] = 0
         self.assertEqual(reduction.http_accounting.assess(metrics)['offeredWorkVerdict'], 'UNMEASURED')
         del metrics['dropped_iterations']

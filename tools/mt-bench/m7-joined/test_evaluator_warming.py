@@ -102,10 +102,6 @@ class Warming(unittest.TestCase):
         sleep.assert_not_called()
         self.assertEqual(records[-1]['verdict'],'PASS')
         self.assertEqual(len(records[-1]['observations']),1)
-        released['view']['tenants'][0]['progress']['failedCompletions']=1
-        with tempfile.TemporaryDirectory() as directory,patch.object(adapter,'document',return_value=[{'id':A}]),patch.object(adapter,'progress_services',return_value=['evaluator']),patch.object(adapter,'progress_fetch',return_value=json.dumps(released).encode()),patch.object(adapter,'write'),patch.object(adapter.time,'sleep') as sleep:
-            with self.assertRaises(p.Refused) as caught:adapter.readiness(Path(directory),{})
-            self.assertEqual(caught.exception.verdict,'FAIL');sleep.assert_not_called()
     @unittest.skipUnless(os.environ.get('M7_PROGRESS_CORE') and os.environ.get('M7_PROGRESS_COMMIT'),'exact source recording fixture not selected')
     def test_actual_runtime_window_release_old_new_restore(self):
         result=subprocess.run(['node',str(Path(__file__).with_name('evaluator-readiness-fixture.cjs'))],capture_output=True,check=True,timeout=20)

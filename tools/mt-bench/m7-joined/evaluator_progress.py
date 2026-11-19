@@ -10,7 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 UUID=re.compile(r'[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}')
 # One reader policy. Failed completions are judged by outcome_gate (decision
 # outcome-evaluator-gate); the original strict-zero and earlier policy versions
-# are not live. Retained runs re-reduce through outcome_rereduce.py.
+# are not live. Retained runs re-reduce through assessor.py.
 POLICY={'version': 2, 'moduleVersion': 5, 'selectorRows': 128, 'maxTenants': 4294967295, 'maxInstances': 8, 'roundsPerPhase': 3, 'maxQueriesPerPhase': 1024, 'maxBytesPerPhase': 67108864, 'responseMaxBytes': 1048576, 'rpcTimeoutMs': 5000, 'roundDeadlineMs': 15000, 'idleWitness': 'successful-work-progression-not-clinical-proof', 'loadWitness': 'successful-work-progression', 'recoveryCadenceMs': 15000, 'recoveryTimeoutMs': 900000, 'recoveryMaxRounds': 60, 'readinessMaxQueries': 25600, 'readinessMaxBytes': 268435456, 'readinessMaxRounds': 80, 'deadlineClaim': False, 'workloadCohortChanged': False, 'dueState': 'captured-only-not-opportunity-assessed', 'cacheGeneration': 'disposable-not-process-identity'}  # The pinned Compose worker roster supports 1-8.
 # Decision outcome-evaluator-gate: failed completions are judged by
 # outcome_gate from raw typed reasons, not by a lifetime zero here.

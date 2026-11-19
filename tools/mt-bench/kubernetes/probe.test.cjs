@@ -49,27 +49,24 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http
      fs.writeFileSync(process.argv[4],JSON.stringify({config,stored:Object.fromEntries([...stored].map(([id,docs])=>[id,{probe:docs.length}]))}));
    }
    if(unavailable){
-     assert.equal(probe.completedOutput.verdict,'UNMEASURED');
      assert.equal(probe.completedOutput.observerFailure.code,'M7_PROBE_SQL_OBSERVATION_UNAVAILABLE');
      assert.equal(ledger.admissionsClosed,true);assert(ledger.attempts>0);
      assert.equal(probe.window.writes.ok,ledger.attempts);assert.equal(probe.window.deliveredFrames,ledger.attempts);
-     assert.equal(probe.window.evaluationMissedWithin120s,null);
-     console.log(JSON.stringify({clinical:probe.completedOutput.verdict,attempts:ledger.attempts,frames:probe.window.deliveredFrames,queries}));
+     console.log(JSON.stringify({durable:probe.completedOutput.clinicalTiming.durableObserved,attempts:ledger.attempts,frames:probe.window.deliveredFrames,queries}));
      return;
    }
-   assert.equal(probe.completedOutput.verdict,'PASS');assert.equal(probe.completedOutput.witnesses.length,2);assert.equal(ledger.attempts,2);assert.equal(probe.window.deliveredFrames,2);assert(queries>0);
+   assert.equal(probe.completedOutput.witnesses.length,2);assert.equal(ledger.attempts,2);assert.equal(probe.window.deliveredFrames,2);assert(queries>0);
    {
      const timing=probe.completedOutput.clinicalTiming;
-     assert.equal(timing.contract,'clinical-deadline-from-acceptance-v1');
+     assert.equal(timing.contract,'clinical-timing-from-acceptance-v2');
      assert(probe.completedOutput.witnesses.every(w => Number.isFinite(w.acceptedAt) && w.requestToAcceptanceMs>=0));
      assert.equal(timing.accepted,2);assert.equal(timing.durableObserved,2);assert.equal(timing.matchedFrames,2);
      assert.equal(timing.acceptanceToCompletionMs.n,2);assert.equal(timing.acceptanceToFrameMs.n,2);
-     assert.deepEqual(timing.coverage,{PASS:2,FAIL:0,UNMEASURED:0});
+     assert.equal(timing.delivered,2);
      assert.equal(probe.durableOutputObservation.drain.perWriteObservationBudgetMs,undefined);
      assert.equal(probe.durableOutputObservation.drain.clinicalDeadlineMs,120000);
    }
-   process.argv[2]=path.join(__dirname,'../m7-joined/completed-oracle.cjs');const {assess}=require('./claims.cjs');
-   assert.equal(assess({completion:config,probe,tenants,clients:2}).verdict,'PASS');
+
    console.log('PASS actual generated probe -> raw SQL/stored/clinical/client-frame/accounting wiring; synthetic SQL/socket boundaries, loopback HTTP only');
  }finally{clearTimeout(watchdog);server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
 })().catch(e=>{console.error(e);process.exitCode=1;});

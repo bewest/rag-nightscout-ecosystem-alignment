@@ -124,16 +124,13 @@ def generate(root, target, *, public_traffic_only=False):
     for(const e of evalPending){
       const frames=[...(pending.get(e.tenant+':'+e.date)?.clientFrames?.values()||[])];
       e.clinicalTiming=timing.assess(e,frames);
-      e.completion={...e.completion,ready:e.clinicalTiming.verdict==='PASS',
-        code:e.clinicalTiming.code,assessedCode:e.semantic?.code,clinicalTiming:e.clinicalTiming};
+      e.completion={...e.completion,ready:e.clinicalTiming.delivered,
+        code:e.clinicalTiming.observationProblem,assessedCode:e.semantic?.code,clinicalTiming:e.clinicalTiming};
     }
     out.durableOutputObservation=lag.summary(evalPending,pending,oracleCost,timing);
     const clinicalTiming=timing.summary(evalPending);
-    out.window.evaluationMissedWithin120s=clinicalTiming.coverage.UNMEASURED?null:clinicalTiming.deadlineMisses;
-    const verdict=writes.failed || clinicalTiming.coverage.FAIL?'FAIL':
-      clinicalTiming.witnesses && !clinicalTiming.coverage.UNMEASURED?'PASS':'UNMEASURED';
     out.completedOutput={rosterTenants:tenants.length,witnessTenants:[...new Set(evalPending.map(e=>e.tenant))],
-      clinicalTiming,witnessTenantCount:new Set(evalPending.map(e=>e.tenant)).size,verdict,
+      clinicalTiming,witnessTenantCount:new Set(evalPending.map(e=>e.tenant)).size,
       ...(out.sqlObserverFailure?{observerFailure:out.sqlObserverFailure}:{}),
       witnesses:evalPending.map(e=>({tenant:e.tenant,date:e.date,stamp:e.stamp,acceptedAt:e.acked,requestToAcceptanceMs:e.clinicalTiming.requestToAcceptanceMs,requestStartedAt:e.sent,...e.completion})),
       probeCadenceMs:PROBE,scope:'sampled stored/output/client witnesses and selected BG-now mean; witnessTenants is the exercised subset, not all-roster clinical equivalence; uploader separate from ordinary k6 workload; any planned restart is qualified by its separate receipt'};

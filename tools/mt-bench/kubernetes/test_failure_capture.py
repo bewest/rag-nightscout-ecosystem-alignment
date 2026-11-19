@@ -139,10 +139,8 @@ class FailureCapture(unittest.TestCase):
             self.assertEqual(raw.stat().st_mode & 0o777, 0o600)
             response = k.document(out/'progress-midpoint-response.json')
             self.assertEqual(response['sourceDecode'], 'REFUSED' if fail or signal else 'PASS')
-            decision = k.document(out/'progress-midpoint-signal.json')
-            self.assertEqual(decision['action'], 'continue')
+            # The midpoint is retained evidence only; no decision file, never a stop.
             if signal or fail:
-                self.assertEqual(decision['strictRefusal']['code'], 'M7_EVALUATOR_PROGRESS_ERROR')
                 self.assertTrue((out/'.restart').exists(), 'a midpoint signal stopped the driver')
                 print('Midpoint signal recorded; driver continued to completion')
                 return

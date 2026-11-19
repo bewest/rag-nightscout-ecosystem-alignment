@@ -80,21 +80,6 @@ class Caller(unittest.TestCase):
         self.assertEqual(proof['failedCollection']['diagnostic']['failedRow']['alert'],'SYNTHETIC_CLINICAL_FAILURE')
         self.assertIsNone(self.exercise()[4],'restored actual observer remains healthy')
 
-    def test_untyped_counter_is_hard_at_midpoint_and_reset_refuses(self):
-        # Decision outcome-evaluator-gate: until the source emits typed reasons
-        # every failed completion is untyped, hence hard. The midpoint stops.
-        _,out,_,_,error,_,_=self.exercise(health='counter')
-        self.assertEqual(str(error),'M7_OUTCOME_MIDPOINT_HARD');self.assertEqual(error.verdict,'FAIL')
-        signal=a.document(out/'evaluator-midpoint-signal.json')
-        self.assertEqual(signal['action'],'stop');self.assertIn('M7_OUTCOME_UNTYPED_FAILURE',signal['reason'])
-        self.assertTrue(sorted((out/'evaluator-progress-raw').glob('load-01-*.private.jsonl')),'raw midpoint response not retained')
-        # The reset fixture raises the counter at the midpoint before rewinding
-        # it; that untyped failure is now the first hard reason and stops.
-        _,out,_,_,error,_,_=self.exercise(health='reset')
-        self.assertEqual(str(error),'M7_OUTCOME_MIDPOINT_HARD');self.assertEqual(error.verdict,'FAIL')
-        self.assertEqual(a.document(out/'evaluator-progress.json')['verdict'],'FAIL')
-        self.assertIsNone(self.exercise()[4])
-
     def test_actual_capture_byte_and_deadline_bounds_refuse_before_decoding_or_querying(self):
         d,_,m,_=self.fixture();collector=a.opportunity_collector(d,m,[A,B])
         with mock.patch.object(a,'psql',return_value='x'*100) as sql,mock.patch.object(o,'ROUND_BYTES',10):

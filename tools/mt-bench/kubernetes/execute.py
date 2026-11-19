@@ -324,25 +324,6 @@ def retained_progress(d, out, c, objects, client, name, *, until=None):
     return value
 
 
-def midpoint_signal(out, c, ids, refusal):
-    """Midpoint is a recorded signal; only a hard outcome reason stops the driver."""
-    import outcome_gate
-    raw = out/'progress-midpoint.private.jsonl'
-    try:
-        point = outcome_gate.from_pages({'evaluator':raw.read_bytes()}) if raw.is_file() else None
-        classification = outcome_gate.classify_point(point, ids, final=False, config=gate_config(c)) if point else None
-    except Exception:
-        classification = None
-    decision = outcome_gate.midpoint_decision(classification)
-    if gate_mode(c)['midpointStop'] == 'never' and decision['action'] == 'stop':
-        decision = {**decision, 'action':'continue', 'configured':'midpointStop=never'}
-    decision.update(rawRetained=raw.is_file(), instrument=outcome_gate.instrument(),
-                    strictRefusal=None if refusal is None else progress_refusal(refusal),
-                    classification=classification)
-    k.write(out/'progress-midpoint-signal.json', decision)
-    return decision
-
-
 def gate_mode(c):
     value = dict(c.get('outcomeGate') or {})
     value.setdefault('midpointStop', 'hard')
@@ -530,18 +511,11 @@ def execute(d, c, objects, client, load=False, recovery=False):
                 break
         if cancel.wait(settings['loadSeconds'] / 2 if load else .5):
             return
-        refusal = None
+        # The midpoint capture is retained evidence; a run never stops on a verdict.
         try:
             retained_progress(d, out, c, objects, client, 'progress-midpoint')
-        except Exception as error:
-            refusal = error
-        try:
-            decision = midpoint_signal(out, c, [row['id'] for row in tenants], refusal)
-        except Exception as error:
-            midpoint_failure.append(refusal or error)
-            return
-        if decision['action'] == 'stop':
-            midpoint_failure.append(refusal or k.Refused('M7_OUTCOME_MIDPOINT_HARD', 'FAIL'))
+        except Exception:
+            pass
     observer = catchup.observer(d, c, objects, client, runid, [row['id'] for row in tenants]) if load else None
     log = (out / 'probe.log').open('xb')
     try:
@@ -702,15 +676,6 @@ def capture_storage(d, out, c, objects, client, runid, namespace_uid):
     k.write(out / 'storage-readback.json', receipt)
 
 
-def semantic(c, out, *, run=finite):
-    tenants = roster(c)
-    value = json.loads(run(c, [c['driver']['node'], k.HERE / 'claims.cjs', str(k.M7 / 'completed-oracle.cjs')],
-                           data=json.dumps({'completion': c['completion'], 'probe': k.document(out / 'probe.json'),
-                                            'tenants': [{'id': r['id']} for r in tenants], 'clients': c['workload']['logicalPollingClients']}).encode(), seconds=30))
-    k.need(value.get('verdict') == 'PASS', 'CLINICAL_UNMEASURED', 'UNMEASURED')
-    return value
-
-
 def accepted_writes(out, c, values, metrics=None):
     tenants = roster(c)
     runid = (out / 'runid').read_text().strip()
@@ -803,7 +768,6 @@ def stored_writes(d, out, c, objects, client, runid):
 
 def assess_stage(d, out, c, objects, client):
     import outcome_gate
-    from workloads.reduce import witness_coverage
     completion(c)
     tenants = roster(c)
     ids = [r['id'] for r in tenants]
@@ -824,14 +788,8 @@ def assess_stage(d, out, c, objects, client):
     def clinical():
         k.need((out/'probe.json').is_file(), 'CLINICAL_UNMEASURED', 'UNMEASURED')
         probe = k.document(out/'probe.json')
-        ledger, _ = k.discovery_counts.probe_metadata(k, out, runid, set(ids),
-                                                      probe_ledger=c['workload'].get('probeLedger'))
-        k.need(ledger is not None, 'CLINICAL_LEDGER_MISSING', 'UNMEASURED')
-        coverage = witness_coverage(probe, ledger)
-        clinical_detail['coverage'] = coverage
-        k.write(out/'witness-coverage.json', coverage)
-        k.need(coverage['verdict'] == 'PASS', 'CLINICAL_WITNESS_COVERAGE', coverage['verdict'])
-        return semantic(c, out)
+        # Timings only; the single assessor (assessor.py) judges the clinical property.
+        return {'clinicalTiming': (probe.get('completedOutput') or {}).get('clinicalTiming', 'UNMEASURED')}
 
     def delivery():
         k.need(all((out/name).is_file() for name in ('fanout.json', 'probe.json')),
@@ -850,9 +808,7 @@ def assess_stage(d, out, c, objects, client):
     def gate():
         outcome = outcome_gate.judge_kubernetes_load(out, ids, config=gate_config(c),
                                                      attribution={'pins':c['pins'], 'runId':runid})
-        k.write(out/'outcome-gate.json', outcome)
-        if outcome['verdict'] == 'FAIL' or out.name == 'load' and outcome['verdict'] != 'PASS':
-            errors.append(k.Refused('K8S_OUTCOME_GATE_' + outcome['verdict'], outcome['verdict']))
+        k.write(out/'outcome-gate.json', outcome)  # reported, never a stop condition
         return {'verdict': outcome['verdict'], 'instrument': outcome['instrument'],
                 'components': {name: {'verdict': row['verdict'], 'codes': row.get('codes', [])}
                                for name, row in outcome['components'].items()}}

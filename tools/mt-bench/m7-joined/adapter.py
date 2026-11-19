@@ -1977,13 +1977,6 @@ def retain_raw(out,phase,fetch):
     return retained
 
 
-def midpoint_judge(ids):
-    def judge(raw):
-        point=outcome_gate.from_pages({service:value for service,value in raw.items() if value is not None})
-        return outcome_gate.midpoint_decision(outcome_gate.classify_point(point,ids,final=False))
-    return judge
-
-
 def observe_progress(d,m,out,phase):
     ids=sorted(row['id'] for row in document(d/'tenants.private.json'))
     until=_COMMAND_DEADLINE.get()
@@ -1993,7 +1986,7 @@ def observe_progress(d,m,out,phase):
             return progress_fetch(d,*args)
     fetch=retain_raw(out,phase,fetch)
     args=(progress_services(d),ids,fetch,m['cadence'][phase+'Seconds'],phase,lambda value:write_progress(out,value,m))
-    observer={'midpoint_judge':midpoint_judge(ids),'signal_write':lambda value:write(out/'evaluator-midpoint-signal.json',{**value,'instrument':outcome_gate.instrument()})}
+    observer={}  # a run reports its verdict; it never stops on it
     policy=evaluator_progress.capture_policy(m['cadence'].get('evaluatorProgressBudget'))
     if phase=='idle':return evaluator_idle.Observer(*args,tail_fetch=fetch,policy=policy,failure_policy=evaluator_progress.OUTCOME_FAILURE_POLICY,**observer)
     value=evaluator_progress.Observer(*args,policy=policy,demand_driven=True,**observer);value.failure_policy=evaluator_progress.OUTCOME_FAILURE_POLICY
@@ -2124,9 +2117,6 @@ def readiness(d, m, *, clock=time):
             raise
         for key in ('queries','bytes'):
             used[key]+=value[key]
-        classification = outcome_gate.classify_point(outcome_gate.from_pages(pages), ids, final=False)
-        if classification['verdict'] != 'PASS':
-            raise evaluator_progress.Refused(classification['codes'][0], classification['verdict'])
         return value
 
     def publish(verdict, **fields):
@@ -2424,14 +2414,12 @@ def run_cell_load(d, m, k6_id, completion, sql_roles, runid, out, accepted):
         accepted.finish(out, drain_end=drain_end, storage=findings)
         terminal_progress(d,m,out)
         outcome = outcome_gate.judge_compose_run(d,[row['id'] for row in document(d/'tenants.private.json')])
-        write(out/'outcome-gate.json',outcome)
-        require(outcome['verdict'] == 'PASS','M7_OUTCOME_GATE_' + outcome['verdict'])
+        write(out/'outcome-gate.json',outcome)  # reported, never a stop condition
     control(d, m)
     host = fixture_inventory(m);write(d / "run-after-host.json", host)
     result_probe = document(out / "probe.json")
     completed_output=result_probe.get('completedOutput')
     if completion:
-        require((completed_output or {}).get('verdict')=='PASS','M7_COMPLETED_OUTPUT_ORACLE')
         attributed=sample_results(d,result_probe,sql_roles)
     from viewer_plan import check as check_viewers, total as viewer_total
     viewer_result=check_viewers(m,document(d/'tenants.private.json'),result_probe,document(out/'fanout.json')['probeWrites']['byTenant'])

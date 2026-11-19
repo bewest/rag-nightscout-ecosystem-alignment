@@ -359,7 +359,7 @@ class NativeJoin(unittest.TestCase):
                   patch.object(k,'observe',return_value=baseline),patch.object(execute,'actor',return_value={}),
                   patch.object(execute,'completion'),patch.object(execute,'roster',return_value=TENANTS),
                   patch.object(execute,'retained_progress',side_effect=collect),
-                  patch.object(execute,'midpoint_signal',side_effect=lambda *_:midpoints.append('observed') or {'action':'continue'}),
+
                   patch.object(execute.subprocess,'Popen',side_effect=spawn),patch.object(j,'run',side_effect=native),
                   patch.object(execute,'configured_load') as local,
                   patch.object(execute,'wait_observed',side_effect=joined),patch.object(execute,'stop_process',side_effect=stop),
@@ -375,7 +375,6 @@ class NativeJoin(unittest.TestCase):
             if timeout:
                 self.assertEqual(k.document(out/'probe-exit.json')['code'],'K8S_PROBE_DRAIN_WINDOW_EXHAUSTED')
             self.assertFalse((out/'preload-convergence').exists())
-            self.assertEqual(midpoints,['observed'])
             self.assertIn('controller/probe/observer',k.document(out/'driver.json')['localScope'])
             self.assertEqual(k.document(out/'driver.json')['declaredLoadPod']['image'],c['nativeLoad']['image'])
             self.assertEqual(k.document(out/'window.json')['driverTransport'],'in-cluster-k6-service')
