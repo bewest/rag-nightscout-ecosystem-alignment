@@ -32,7 +32,7 @@ import profile_provenance
 import evaluator_progress
 import outcome_gate
 import api_cause
-import driver_vu_diagnostic
+import driver_accounting
 import commissioning_wal
 import observation_rows
 import sql_attribution
@@ -492,7 +492,11 @@ def cadence_options(args):
         realistic_cycle_ms(scale)
         value['workloadScale'] = scale
     phase_windows.selection(value)
-    value.update(driver_vu_diagnostic.selection(args, value))
+    headroom = getattr(args, 'driver_headroom', None)
+    if headroom is not None:
+        require(workload_inputs.driver_headroom(headroom), 'M7_DRIVER_HEADROOM_RANGE')
+        value['driverHeadroom'] = headroom
+    value.update(driver_accounting.selection(args, value))
     return value
 
 
@@ -2177,7 +2181,7 @@ def run_cell_load(d, m, k6_id, completion, sql_roles, runid, out, accepted):
                 command(["docker", "run", "--rm", "--name", m["project"] + "-k6", "--label", OWNER + "=" + m["owner"], "--label", "com.docker.compose.project=" + m["project"], "--label", "com.docker.compose.service=k6",
                     "--network", "host", "-u", str(os.getuid()) + ":" + str(os.getgid()), "-v", str(d / "k6") + ":/scripts:ro", "-v", str(out) + ":/out", "-v", str(roster) + ":/tenants.private.json:ro",
                     "-e", "BASE_URL=http://127.0.0.1:" + str(m["port"]), "-e", "TENANTS_FILE=/tenants.private.json", "-e", "RUN_ID=" + runid,
-                    "-e", "RUN_START=" + str(int(time.time()*1000)), "-e", "DURATION=" + str(m["cadence"]["loadSeconds"]), "-e", "ACCEL="+str(m["cadence"]["accel"]), "-e", "HOT_FACTOR="+str(m["cadence"]["hotFactor"]),
+                    "-e", "RUN_START=" + str(int(time.time()*1000)), "-e", "DURATION=" + str(m["cadence"]["loadSeconds"]), "-e", "ACCEL="+str(m["cadence"]["accel"]), "-e", "HOT_FACTOR="+str(m["cadence"]["hotFactor"]), "-e", "DRIVER_HEADROOM="+repr(float(driver_accounting.headroom(m["cadence"]))),
                     *(["-e","OFFERED_RPS="+str(m["cadence"]["offeredRps"])] if "offeredRps" in m["cadence"] else []), "-e", "SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status", k6_id, "run", "--quiet", "--summary-export", "/out/k6-summary.json", "/scripts/workload.js"], file=output, timeout=m["cadence"]["loadSeconds"]+600)
                 windows = {'drainStartedMonoNs':time.monotonic_ns(),'drainSeconds':m['cadence'].get('drainSeconds',1500)}
                 if accepted is not None:
@@ -2359,9 +2363,8 @@ def parser():
     prep.add_argument('--logical-polling-clients',type=int)
     prep.add_argument('--probe-every-ms',type=int)
     prep.add_argument('--driver-shards',type=int)
-    prep.add_argument('--driver-vu-diagnostic',choices=driver_vu_diagnostic.MODES,
-                      help='Historical matched diagnostic, or configured-v1 with --driver-plan')
-    prep.add_argument('--driver-plan',type=json.loads,help='Finite JSON scheduling/VU/observer configuration; selects configured-v1')
+    prep.add_argument('--driver-headroom',type=float,help='k6 VU headroom factor H (decision driver-sized-from-offer); default 1.5 local Compose, 3 remote generator')
+    prep.add_argument('--driver-plan',type=json.loads,help='Finite JSON scheduling/observer configuration for k6-vu-driver.js; VUs are derived from the offer')
     prep.add_argument('--workload-mix', choices=(REALISTIC_MIX,))
     prep.add_argument('--workload-scale', type=float, help='Positive representable realistic-v1 rate multiplier; default1 preserves sensor cadence')
     prep.add_argument("--restart-during-load-after-seconds",type=int,help="Discovery-only planned evaluator restart after actual ordinary scenario demand begins; requires v2 receipt")

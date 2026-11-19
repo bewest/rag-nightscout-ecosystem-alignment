@@ -8,7 +8,7 @@ JS=r'''
 const fs=require('fs'),vm=require('vm');const [script,count,mix,scale,offered,plan]=process.argv.slice(1);
 const env={ACCEL:'1',HOT_FACTOR:'1',DURATION:'1800',SHAPES:'w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status'};
 if(mix!=='-')env.M7_WORKLOAD_MIX=mix;if(scale!=='-')env.M7_WORKLOAD_SCALE=scale;if(offered!=='-')env.OFFERED_RPS=offered;
-if (plan) Object.assign(env,{M7_DRIVER_VU_DIAGNOSTIC:'configured-v1',M7_DRIVER_PLAN:plan,RUN_START:'0'});
+if (plan) Object.assign(env,{M7_DRIVER_PLAN:plan,RUN_START:'0'});
 const context={__ENV:env,exec:{scenario:{iterationInTest:Number(count)}},console:{log(){}}, SharedArray:function(_,fn){return fn();},open:()=>JSON.stringify(Array.from({length:Number(count)},(_,id)=>({id}))),Counter:class{}};
 const text=fs.readFileSync(script,'utf8').replace(/^import .*;$/gm,'').replace(/^export /gm,'');
 const result = plan ? `({scenarios:options.scenarios, stamps:Object.fromEntries(
@@ -50,11 +50,10 @@ class WorkloadScale(unittest.TestCase):
   import sys
   sys.path.append(str(adapter.HERE.parent/'kubernetes'))
   import workload_runtime as kube
-  import driver_vu_diagnostic as driver
+  import driver_accounting as driver
 
   shapes=workload.REALISTIC_CADENCE_MS
-  plan={'version':1, 'observer':'summary-v1','maxAggregateVUs':28,
-        'scenarios':{shape:{'preAllocatedVUs':2,'maxVUs':4} for shape in shapes}}
+  plan={'version':1, 'observer':'summary-v1','scenarios':{shape:{} for shape in shapes}}
   w={'loadSeconds':120,'workloadMix':'realistic-v1','workloadScale':1,
      'logicalPollingClients':16,'probeEveryMs':30000}
   with tempfile.TemporaryDirectory() as tmp:

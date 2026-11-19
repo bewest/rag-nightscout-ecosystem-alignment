@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 import adapter as a
 import contract
-import driver_vu_diagnostic as driver
+import driver_accounting as driver
 import driver_shards
 import evaluator_progress as progress
 import run_configuration as configuration
@@ -149,18 +149,14 @@ load(ledger); ledger.close(); console.log(JSON.stringify(ledger.snapshot()));
         with self.assertRaisesRegex(progress.Refused,'M7_EVALUATOR_PROGRESS_QUERY_BOUND'):
             progress._round_view(['a','b','c','d'],ids,lambda *args:self.fail('before fetch'))
 
-    def test_configured_vu_and_capture_overrides_keep_declared_budget_strict(self):
-        cfg={'version':1,'observer':'scheduling-v1','maxAggregateVUs':15000,
-             'maxTraceBytes':1024**3,'maxTraceRows':6000000,
-             'scenarios':{'r_sgv':{'preAllocatedVUs':14000,'maxVUs':15000}}}
+    def test_configured_capture_overrides_and_large_window(self):
+        cfg={'version':1,'observer':'scheduling-v1',
+             'maxTraceBytes':1024**3,'maxTraceRows':6000000,'scenarios':{'r_sgv':{}}}
         m={'tenants':12001,'cadence':{'loadSeconds':90000,'hotFactor':32,
                                    'offeredRps':20,'driverPlan':cfg}}
         plan=driver.expected_plans(m)[0]
         self.assertEqual(plan['population'],12001)
-        self.assertEqual(plan['scenarios']['r_sgv']['maxVUs'],15000)
         self.assertEqual(plan['scenarios']['r_sgv']['durationSeconds'],90000)
-        cfg['maxAggregateVUs']=14999
-        with self.assertRaisesRegex(RuntimeError,'M7_DRIVER_VU_LIMIT'):driver.expected_plans(m)
 
     def test_real_workload_large_roster_hot_weight_and_duration(self):
         script=r'''
@@ -191,8 +187,8 @@ console.log(JSON.stringify(vm.runInNewContext(s+'\n({setup:setup(),weight,option
     def test_cleanup_socket_and_partition_overrides_follow_normal_cli(self):
         value=self.selected();value['cleanupSeconds']=7200
         value['prepare'].update({'tenants':1000,'sockets-per-tenant':16,'driver-shards':32,
-            'driver-plan':json.dumps({'version':1,'observer':'summary-v1','maxAggregateVUs':224,
-                'scenarios':{name:{'preAllocatedVUs':1,'maxVUs':1} for name in driver.SHAPES}})})
+            'driver-plan':json.dumps({'version':1,'observer':'summary-v1',
+                'scenarios':{name:{} for name in driver.SHAPES}})})
         del value['prepare']['logical-polling-clients']
         with patch.object(a,'instrument',return_value={'sha256':'d'*64}):
             r=configuration.resolve(value)
@@ -200,7 +196,6 @@ console.log(JSON.stringify(vm.runInNewContext(s+'\n({setup:setup(),weight,option
             selected=r['configuration'];self.assertEqual(viewer_plan.total(selected),16000)
             plans=driver.expected_plans(selected);self.assertEqual(len(plans),32)
             self.assertEqual(sum(p['tenants'] for p in plans),1000)
-            self.assertEqual(sum(p['aggregateMaxVUs'] for p in plans),224)
             receipt=r['diagnosticReceiptTemplate'];receipt['status']='AUTHORIZED_DIAGNOSTIC'
             manifest={**selected,'instrument':{'sha256':'d'*64},'runConfiguration':selected}
             contract.receipt_scope(manifest,receipt,'run')
@@ -210,8 +205,6 @@ console.log(JSON.stringify(vm.runInNewContext(s+'\n({setup:setup(),weight,option
                 for i in range(32)],observer='summary-v1'))
             self.assertEqual(script.count('k6 run --quiet'),32)
             subprocess.run(['sh','-n','-c',script],check=True)
-            selected['cadence']['driverPlan']['maxAggregateVUs']=223
-            with self.assertRaisesRegex(RuntimeError,'M7_DRIVER_VU_LIMIT'):driver.expected_plans(selected)
             for key,bad in [('driver-shards',1001),('sockets-per-tenant',2**32)]:
                 broken=copy.deepcopy(value);broken['prepare'][key]=bad
                 with self.assertRaises(RuntimeError):configuration.resolve(broken)

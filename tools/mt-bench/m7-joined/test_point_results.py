@@ -45,7 +45,7 @@ class StandardPoint(unittest.TestCase):
             value = points.publish_compose(root, {'memAvailableAtEntryBytes': 37, 'runtime': 'REUSED'}, {'status': 'DEFERRED_TO_SESSION_CLOSE'})
             self.assertEqual(value['memAvailableAtEntryBytes'], 37)
             self.assertEqual(value['fixtureReuse'], 'reused')
-            self.assertEqual(value['measurements']['offeredWork'], 'UNMEASURED')
+            self.assertNotIn('offeredWork', value['measurements'])
             self.assertEqual(value['cleanup']['status'], 'DEFERRED_TO_SESSION_CLOSE')
             self.assertFalse((root.parent/'result.json').exists())
 
@@ -128,13 +128,13 @@ class StandardPoint(unittest.TestCase):
             load = Path(temp)
             http = http_accounting.assess({'dropped_iterations': {'count': 0}})
             summary = points.load_report(load, http)
-            self.assertEqual(summary['offeredWork'], 'UNMEASURED')
+            self.assertNotIn('offeredWork', summary)
             self.assertEqual(summary['counts']['dropped_iterations'], 0)
             self.assertEqual(summary['counts']['scenario_request_attempts'], 'UNMEASURED')
             old = {'offeredWorkVerdict':'PASS', 'sourceReconciliation':'UNMEASURED',
                    'sourceCounts':{'dropped_iterations':0, 'scenario_request_attempts':0}}
             historical = points.load_report(load, old)
-            self.assertEqual(historical['offeredWork'], 'UNMEASURED')
+            self.assertNotIn('offeredWork', historical)
             self.assertEqual(historical['counts']['scenario_request_attempts'], 'UNMEASURED')
             points.write(load/'k6-summary.json', {'metrics': {'dropped_iterations': {'count': 0}}})
             self.assertEqual(points.load_report(load, old)['counts'], http['sourceCounts'])

@@ -60,10 +60,10 @@ class Coverage(unittest.TestCase):
                 self.assertEqual(value['product']['components'][name]['verdict'], 'UNMEASURED')
             self.assertIn('k6-summary.json', value['product']['figures']['missingFiles'])
 
-    def test_dropped_iteration_and_missing_counter_are_not_complete_offered_work(self):
+    def test_dropped_iteration_and_missing_counter_are_figures(self):
         metrics = {'dropped_iterations': {'count': 0}}
         measured = reduction.http_accounting.assess(metrics)
-        self.assertEqual(measured['offeredWorkVerdict'], 'UNMEASURED')
+        self.assertNotIn('offeredWorkVerdict', measured)
         self.assertEqual(measured['sourceCounts']['dropped_iterations'], 0)
         self.assertEqual(measured['sourceCounts']['scenario_request_attempts'], 'UNMEASURED')
         self.assertEqual(measured['sourceCounts']['http_reqs'], 'UNMEASURED')
@@ -71,10 +71,8 @@ class Coverage(unittest.TestCase):
         self.assertEqual(measured['shapes']['w_sgv']['responses'], 'UNMEASURED')
         metrics['dropped_iterations']['count'] = 1
         self.assertEqual(reduction.http_accounting.assess(metrics)['droppedIterations'], 1)
-        metrics['dropped_iterations']['count'] = 0
-        self.assertEqual(reduction.http_accounting.assess(metrics)['offeredWorkVerdict'], 'UNMEASURED')
         del metrics['dropped_iterations']
-        self.assertEqual(reduction.http_accounting.assess(metrics)['offeredWorkVerdict'], 'UNMEASURED')
+        self.assertEqual(reduction.http_accounting.assess(metrics)['droppedIterations'], 'UNMEASURED')
 
     def test_unsupported_skew_history_and_restart_refuse(self):
         p = profiles.read(profiles.HERE / 'small.json')

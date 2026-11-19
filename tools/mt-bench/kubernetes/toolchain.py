@@ -19,7 +19,7 @@ FRESH={'core-repo','deploy-repo','generator-dependencies','generator-dependency-
        'generator-dependency-receipt-sha256','fixture-project','backend-subnet','edge-subnet','port','receipt','freeze'}
 DERIVED={'core-commit','deploy-commit','image','image-id','postgres-image','tenants','replicas',
          'load-seconds','hot-factor','accel','offered-rps','workload-mix','workload-scale',
-         'logical-polling-clients','viewer-setup','probe-every-ms','probe-ledger','evaluator-progress-budget','drain-observation','startup-windows','setup-seconds','drain-seconds','jwt-setup-concurrency','driver-plan','driver-vu-diagnostic','driver-shards',
+         'logical-polling-clients','viewer-setup','probe-every-ms','probe-ledger','evaluator-progress-budget','drain-observation','startup-windows','setup-seconds','drain-seconds','jwt-setup-concurrency','driver-plan','driver-headroom','driver-shards',
          'static-workers','pgstream-topology'}
 
 def legacy(m,target='kubernetes'):
@@ -99,6 +99,8 @@ def local(m,instance):
         options['startup-windows'] = json.dumps(startup['compose'])
     if 'driverPlan'in w:
         options.update({'driver-plan':json.dumps(w['driverPlan']),'driver-shards':w.get('driverShards',1)})
+    if 'driverHeadroom' in w:
+        options['driver-headroom'] = w['driverHeadroom']
     if t['evaluatorWorkers']>1 or t['apiReplicas']>1:
         options['static-workers']=t['evaluatorWorkers']
     # Import the existing local adapter under its expected name in an isolated

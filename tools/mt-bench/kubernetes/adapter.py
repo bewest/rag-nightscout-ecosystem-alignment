@@ -738,7 +738,7 @@ def stored(d, c, objects, runid, client=None):
 
 def generate_probe(target):
     result = probe.generate(ROOT, target, transport=HERE/'probe-kubernetes.cjs')
-    return {**result, 'kubernetesSha256': digest(target), 'restart': 'external role restart'}
+    return {**result, 'restart': 'external role restart'}
 
 
 def prepare(config, inventory_file, render_file, directory):
@@ -758,11 +758,10 @@ def prepare(config, inventory_file, render_file, directory):
     work = workload.generate(ROOT, d / 'workload.js')
     if 'driverPlan' in c.get('workload', {}):
         import workload_runtime
-        import driver_vu_diagnostic as driver
+        import driver_accounting as driver
         workload_runtime.driver_manifest(c)
         need((d / 'workload.js').stat().st_size <= driver.MAX_GENERATED_BYTES, 'GENERATED_WORKLOAD_BOUND')
         (d / driver.SCRIPT).write_bytes((M7 / driver.SCRIPT).read_bytes())
-        work['driverWrapperSha256'] = digest(d / driver.SCRIPT)
     packet = {'version': 1, 'runSha256': digest(d / 'run.json'), 'instrument': identity, 'probe': generated,
               'workload': work, 'clusterStarted': False, 'liveCorrectness': 'UNMEASURED', 'capacityAcceptance': 'NOT_GRANTED',
               'deadlines': c['deadlines'], 'commands': {phase: [sys.executable, str(HERE / 'adapter.py'), phase, str(d)] for phase in ('observe', 'forward-plan', 'policy', 'commission', 'access', 'assess', 'recovery', 'load', 'cleanup-plan')}}

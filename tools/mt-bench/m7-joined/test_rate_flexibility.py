@@ -6,7 +6,7 @@ import tempfile
 import unittest
 import adapter
 import driver_shards
-import driver_vu_diagnostic as driver
+import driver_accounting as driver
 import workload
 
 PORT=r"""
@@ -46,8 +46,7 @@ class RateFlexibility(unittest.TestCase):
                 self.assertNotEqual(result.returncode,0);self.assertIn(code,result.stderr)
 
     def test_configured_plan_uses_same_fractional_schedule_and_duration_boundary(self):
-        plan={'version':1,'observer':'summary-v1','maxAggregateVUs':56,
-              'scenarios':{name:{'preAllocatedVUs':1,'maxVUs':1} for name in driver.SHAPES}}
+        plan={'version':1,'observer':'summary-v1','scenarios':{name:{} for name in driver.SHAPES}}
         m={'tenants':1000,'cadence':{'loadSeconds':600,'hotFactor':1,'driverShards':8,'offeredRps':.25,'driverPlan':plan}}
         rows=driver.expected_plans(m)
         self.assertAlmostEqual(sum(s['perSecond'] for r in rows for s in r['scenarios'].values()),.25)

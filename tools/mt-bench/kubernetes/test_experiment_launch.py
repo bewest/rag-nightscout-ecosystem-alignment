@@ -40,18 +40,16 @@ class ExperimentLaunch(unittest.TestCase):
         self.assertEqual(identity['sha256'], k.hashlib.sha256(identity['commit'].encode()).hexdigest())
 
     def test_configured_shards_split_the_ordinary_population_and_rate(self):
-        import driver_vu_diagnostic as driver
+        import driver_accounting as driver
         c, _, _ = configured()
         c.update(tenants=1000, ordinaryRosterTenants=100)
         c['workload'].update(driverShards=3, offeredRps=100)
-        c['workload']['driverPlan']['maxAggregateVUs'] *= 3
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             out = root/'load'
             out.mkdir()
             wrapper = root/driver.SCRIPT
             wrapper.write_bytes((k.M7/driver.SCRIPT).read_bytes())
-            k.write(root/'packet.json', {'workload': {'driverWrapperSha256': k.digest(wrapper)}})
             full = list(range(1000))
             selected = execute.ordinary_driver_inputs(c, full, out, {})
             observed = {}

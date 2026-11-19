@@ -256,7 +256,7 @@ def local_sql(signals, evidence, windows, scenario, summary, info):
                 [info, rt_file] if role == "realtime" else [info], size)
 
 
-def local_signals(evidence, summary, owner, driver):
+def local_signals(evidence, summary, owner, driver, driver_path="fixture/load/driver-accounting.json"):
     signals = {}
     info = "fixture/summary.json"
     probe_path = "fixture/load/probe.json"
@@ -306,7 +306,7 @@ def local_signals(evidence, summary, owner, driver):
                 "local single-generator retained k6 summary", [info], size)
     local_sql(signals, evidence, windows, get(summary, "httpAccounting", "scenario"), summary, info)
     add_pooled(evidence, signals, driver, get(summary, "cadence") or owner.get("cadence"),
-               "fixture/load", "fixture/load/driver-vu-assessment.json")
+               "fixture/load", driver_path)
     return signals
 
 
@@ -343,7 +343,10 @@ def local(evidence):
     http = get(summary, "httpAccounting") or evidence.obj("fixture/load/http-accounting.json")
     raw_k6 = evidence.obj("fixture/load/k6-summary.json")
     scenario = get(http, "scenario")
-    driver = evidence.obj("fixture/load/driver-vu-assessment.json")
+    # Retained runs before driver-sized-from-offer named this file driver-vu-assessment.json.
+    driver_path = next((path for path in ("fixture/load/driver-accounting.json", "fixture/load/driver-vu-assessment.json")
+                        if evidence.obj(path)), "fixture/load/driver-accounting.json")
+    driver = evidence.obj(driver_path)
     totals = get(driver, "totals") if driver.get("kind") == "m7-configured-driver-accounting" else None
     checks = get(summary, "strictChecks") or get(partial, "strictChecks")
     phase = token(str(result.get("phase", "")).upper())
@@ -368,7 +371,7 @@ def local(evidence):
     else:
         source_conflicts(evidence, ("fixture/owner.json", owner), ("fixture/summary.json", summary))
     if driver:
-        source_conflicts(evidence, ("fixture/owner.json", owner), ("fixture/load/driver-vu-assessment.json", driver))
+        source_conflicts(evidence, ("fixture/owner.json", owner), (driver_path, driver))
     for name in ("cleanup.json", "fixture/deployment-stages.json", "fixture/runtime-readiness.json",
                  "fixture/terminal-before-cleanup.json", "fixture/terminal-capture-unavailable.json",
                  "fixture/compose-limits-readback.json", "smoke.json"):
@@ -429,9 +432,8 @@ def local(evidence):
             "idle": verdict(get(checks, "idle")),
             "load": verdict(get(checks, "load")),
             "http": verdict(get(http, "httpVerdict")),
-            "offeredWork": verdict(first_known(get(driver, "offeredWorkVerdict"), get(http, "offeredWorkVerdict"))),
         },
-        "signals": local_signals(evidence, summary, owner, driver),
+        "signals": local_signals(evidence, summary, owner, driver, driver_path),
     }
 
 
@@ -591,7 +593,6 @@ def kube(evidence):
             "clientFrames": verdict(get(load, "frames")),
             "evaluatorProgress": verdict(get(load, "evaluatorProgress")),
             "http": verdict(get(driver, "httpVerdict")),
-            "offeredWork": verdict(get(driver, "offeredWorkVerdict")),
             "settings": verdict(get(load, "loadFunctionalChecks", "settingsFingerprint")),
         },
         "signals": signals,

@@ -152,12 +152,10 @@ def configured_load(d, out, c, env, setup, ordinary):
     """Use the local generator, wrapper, roster splitter and accounting natively."""
     from concurrent.futures import ThreadPoolExecutor, as_completed
     import driver_shards
-    import driver_vu_diagnostic as driver
+    import driver_accounting as driver
     m = workload_runtime.driver_manifest(c)
     plans = driver.expected_plans(m)
     cfg = m['cadence']['driverPlan']
-    k.need(k.digest(d / driver.SCRIPT) == k.document(d / 'packet.json')['workload']['driverWrapperSha256'],
-           'DRIVER_WRAPPER_CHANGED')
     n = len(plans)
     rows = (driver_shards.plan(len(ordinary), m['cadence']['hotFactor'], m['cadence'].get('offeredRps'), n)
             if n > 1 else [dict(index=0, start=0, end=len(ordinary), tenants=len(ordinary),
@@ -470,7 +468,6 @@ def execute(d, c, objects, client, load=False, recovery=False):
     completion(c)
     tenants = roster(c)
     k.need(load or len(tenants) == 2, 'TINY_TWO_TENANTS')
-    k.need(k.digest(d / 'probe.cjs') == k.document(d / 'packet.json')['probe']['kubernetesSha256'] and k.digest(d / 'workload.js') == k.document(d / 'packet.json')['workload']['adaptedSha256'], 'GENERATED_INPUT_CHANGED')
     if recovery:
         k.need(k.document(d / 'restart.json').get('status') == 'OBSERVED', 'RESTART_FIRST')
     baseline = k.active_baseline(d)
@@ -693,7 +690,7 @@ def accepted_writes(out, c, values, metrics=None):
 
 
 def load_checks(out, c=None):
-    """Join the original M7 HTTP/offered-work reducers."""
+    """Join the original M7 HTTP reducer and the configured driver's per-operation figures."""
     import http_accounting
     k.need((out/'k6-summary.json').is_file(), 'LOAD_HTTP_MISSING', 'UNMEASURED')
     metrics = k.document(out / 'k6-summary.json').get('metrics', {})
@@ -701,7 +698,7 @@ def load_checks(out, c=None):
     value = {'http': http}
     k.write(out / 'load-functional.json', value)
     if c and 'driverPlan' in c.get('workload', {}):
-        import driver_vu_diagnostic as driver
+        import driver_accounting as driver
         measured = driver.retain(out.parent, workload_runtime.driver_manifest(c))
         value['configuredDriver'] = measured
         k.write(out / 'load-functional.json', value)

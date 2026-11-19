@@ -19,6 +19,9 @@ KUBERNETES_STARTUP_DEFAULTS = {'workloadReadySeconds':300, 'primerReadySeconds':
                               'jobCompleteSeconds':30, 'requestSeconds':14, 'commandSeconds':18, 'execSeconds':35,
                               'dataPrimerSeconds':3600}
 MAX_VIEWERS = MAX_ARRAY_LENGTH
+# Decision driver-sized-from-offer: k6 VU headroom factor H by deployment target. workload.js
+# driverVUs applies it; the run parameter driverHeadroom overrides it.
+DRIVER_HEADROOM = {'compose': 1.5, 'kubernetes': 2, 'remote': 3}
 
 
 def seconds(value):
@@ -50,6 +53,10 @@ def offered_rate(value):
         return math.isfinite(value)
     except OverflowError:
         return False
+
+
+def driver_headroom(value):
+    return type(value) in (int, float) and math.isfinite(value) and 0 < value <= 100
 
 
 def polling_clients(value):

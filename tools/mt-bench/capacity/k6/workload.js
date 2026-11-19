@@ -20,7 +20,9 @@
 //
 // Environment: BASE_URL, TENANTS_FILE, RUN_ID, RUN_START, DURATION, ACCEL, HOT_FACTOR, SHAPES,
 // OFFERED_RPS (optional total arrival rate), M7_WORKLOAD_MIX=realistic-v1 and M7_WORKLOAD_SCALE
-// (optional sensor-cadence mix), M7_DRIVER_VU_DIAGNOSTIC=configured-v1 with M7_DRIVER_PLAN.
+// (optional sensor-cadence mix), DRIVER_HEADROOM (VU headroom factor H, default 1.5 for local
+// Compose; harnesses pass 2 for Kubernetes and 3 for a remote generator), and M7_DRIVER_PLAN
+// (optional scheduling plan read by m7-joined/k6-vu-driver.js).
 //
 // Every write carries RUN_ID (entries/devicestatus `device`, treatments `enteredBy`) and a
 // timestamp unique within the run; each accepted write logs one `m7-input-accepted` event.
@@ -69,7 +71,7 @@ const mix = __ENV.M7_WORKLOAD_MIX;
 const workloadScale = __ENV.M7_WORKLOAD_SCALE === undefined ? 1 : Number(__ENV.M7_WORKLOAD_SCALE);
 if (!Number.isFinite(workloadScale) || workloadScale <= 0 ||
     (__ENV.M7_WORKLOAD_SCALE !== undefined && mix !== 'realistic-v1')) throw Error('M7_WORKLOAD_SCALE_CONFIGURATION');
-const driverPlan = __ENV.M7_DRIVER_VU_DIAGNOSTIC === 'configured-v1' ? JSON.parse(__ENV.M7_DRIVER_PLAN) : {};
+const driverPlan = __ENV.M7_DRIVER_PLAN ? JSON.parse(__ENV.M7_DRIVER_PLAN) : {};
 const writeScale = driverPlan.writeRateScale === undefined ? 1 : driverPlan.writeRateScale;
 if (!Number.isFinite(writeScale) || writeScale <= 0 ||
     (driverPlan.writeRateScale !== undefined && mix !== 'realistic-v1')) throw Error('M7_WORKLOAD_SCALE_CONFIGURATION');
@@ -89,12 +91,23 @@ function cycleMs(name) {
 if (Object.keys(shapes).some(name => !Number.isSafeInteger(cycleMs(name)) || cycleMs(name) < 1 || cycleMs(name) > 9223372036854)) {
   throw Error('M7_OFFERED_RPS_TIME_UNIT');
 }
+// Decision driver-sized-from-offer: the only k6 VU sizing, used by every k6 path (Compose,
+// the Kubernetes native driver and k6-vu-driver.js, which imports these scenarios).
+// perSecond is one operation's offered requests/s; H is the platform headroom factor. A drop
+// occurs only when server latency exceeds about 5 s x H at that rate. maxVUs are created
+// only when latency requires them.
+export function driverVUs (perSecond, headroom) {
+  return { preAllocatedVUs: Math.max(2, Math.ceil(perSecond * 0.25 * headroom)),
+           maxVUs: Math.max(4, Math.ceil(perSecond * 5 * headroom)) };
+}
+export const DRIVER_HEADROOM = __ENV.DRIVER_HEADROOM === undefined ? 1.5 : Number(__ENV.DRIVER_HEADROOM);
+if (!Number.isFinite(DRIVER_HEADROOM) || DRIVER_HEADROOM <= 0 || DRIVER_HEADROOM > 100) throw Error('M7_DRIVER_HEADROOM_RANGE');
 const scenarios = {};
 for (const [name, perCycle] of Object.entries(shapes)) {
   const rate = perCycle * weight; // iterations per cycle
   scenarios[name] = {
     executor: 'constant-arrival-rate', exec: name, rate, timeUnit: cycleMs(name) + 'ms',
-    duration: DURATION + 's', preAllocatedVUs: Math.min(400, Math.ceil(rate * 1000 / cycleMs(name)) * 2 + 5), maxVUs: 800,
+    duration: DURATION + 's', ...driverVUs(rate * 1000 / cycleMs(name), DRIVER_HEADROOM),
     tags: { shape: name },
   };
 }

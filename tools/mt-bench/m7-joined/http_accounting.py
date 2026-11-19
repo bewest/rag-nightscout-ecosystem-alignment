@@ -62,16 +62,9 @@ def assess(metrics):
     drops = source['dropped_iterations']
     iterations = observed('iterations')
     source['iterations'] = iterations
-    # The k6 iteration counter is independent of the instrumented HTTP issue
-    # and completion counters. Configured-driver accounting also checks the
-    # requested per-executor plan.
-    # A dropped iteration is a figure (droppedIterations), never a FAIL
-    # (decision four-product-failures).
+    # Drops and iterations are figures only; there is no offered-work verdict
+    # (decisions four-product-failures and driver-sized-from-offer).
     result['droppedIterations'] = drops if type(drops) is int else 'UNMEASURED'
-    result['offeredWorkVerdict'] = 'UNMEASURED'
-    if (drops == 0 and result['sourceReconciliation'] == 'PASS' and type(iterations) is int
-          and iterations > 0 and iterations == result['scenario']['attempts'] == result['scenario']['completed']):
-        result['offeredWorkVerdict'] = 'PASS'
     for shape, fields in coverage.items():
         row = result['shapes'][shape]
         for field, measured in fields.items():

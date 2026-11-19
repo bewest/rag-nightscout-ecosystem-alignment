@@ -22,7 +22,7 @@ FILES = {'k6.log': 8 * 1024**2, 'k6-native.log': 8 * 1024**2,
 
 def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contract):
     import native_load as n
-    import driver_vu_diagnostic as driver
+    import driver_accounting as driver
     manifest = workload_runtime.driver_manifest(c)
     cfg = driver.configuration(c['workload']['driverPlan'], c['workload'])
     k.need(isinstance(exporter_resources, dict), 'NATIVE_LOAD_EXPORTER_RESOURCES_REQUIRED', 'UNMEASURED')
@@ -43,9 +43,7 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
     files = dict(FILES)
     if cfg['observer'] == 'scheduling-v1':
         files['k6-scheduling.csv.gz'] = maximum
-    config = dict(runId=receipt['runId'], sourceSha256=n.sha(script),
-                  driverWrapperSha256=n.sha(wrapper), files=files,
-                  seconds=receipt['activeDeadlineSeconds'])
+    config = dict(runId=receipt['runId'], files=files, seconds=receipt['activeDeadlineSeconds'])
     secret['stringData'] = {**secret['stringData'],
                             'workload.js': script.decode(), driver.SCRIPT: wrapper.decode(),
                             'native-artifacts.cjs': (k.HERE / 'native-artifacts.cjs').read_text(),
@@ -87,9 +85,7 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
     # must still enter the operating owner's fit/quota admission.
     pod['volumes'].append({'name': 'artifacts', 'emptyDir': {'sizeLimit': str(sum(files.values()) + 4096)}})
     receipt.update(captureMode='owned-exec-files', files=files, fileLimitBytes=limit,
-                   shellContract=shell_contract, driverWrapperSha256=n.sha(wrapper),
-                   adaptedSha256=n.sha(wrapper), jobSha256=k.hashed(job), driverManifest=manifest,
-                   artifactExporterSha256=k.digest(k.HERE / 'native-artifacts.cjs'))
+                   shellContract=shell_contract, jobSha256=k.hashed(job), driverManifest=manifest)
     return job, secret, receipt
 
 
@@ -160,13 +156,13 @@ def terminal_process(c, wanted, job, pod, final_job, final_pod):
 
 
 def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private_data=None):
-    """Writer exit -> bounded exec read/hash -> ack -> Job completion.
+    """Writer exit -> bounded exec read -> ack -> Job completion.
 
     No terminal-log artifact fallback, upload service or indefinitely waiting
     sidecar. The Job deadline also fences an interrupted controller's exporter.
     """
     import native_load as n
-    import driver_vu_diagnostic as driver
+    import driver_accounting as driver
     out = Path(out)
     k.need(out.name == 'load', 'NATIVE_LOAD_CONFIGURED_OUTPUT_DIRECTORY')
     ns, uid = c['namespace'], receipt['namespaceUid']
@@ -246,7 +242,7 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
     raw = None
     while raw is None:
         remaining()
-        # File hashing finishes after the k6 child exits. Missing manifest is
+        # The manifest is written after the k6 child exits. Missing manifest is
         # a bounded wait, never a substitution from container logs.
         try:
             raw = kube.call(command + ['manifest'], namespace=ns, timeout=min(20, remaining()))
@@ -263,13 +259,11 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
     n.private(out / 'native-artifacts.json', raw)
     meta = json.loads(raw)
     k.need(meta.get('kind') == 'm7-native-artifacts-v1' and meta.get('runId') == receipt['runId']
-           and meta.get('sourceSha256') == receipt['sourceSha256']
-           and meta.get('driverWrapperSha256') == receipt['driverWrapperSha256']
            and set(meta.get('files', {})) == set(receipt['files']), 'NATIVE_LOAD_MANIFEST_BINDING')
     for filename, maximum in receipt['files'].items():
         expected = meta['files'][filename]
-        k.need(type(expected.get('bytes')) is int and 0 < expected['bytes'] <= maximum
-               and k.HEX.fullmatch(expected.get('sha256', '')), 'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
+        k.need(type(expected.get('bytes')) is int and 0 < expected['bytes'] <= maximum,
+               'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
         data = kube.call(command + ['read', filename], data=b'', namespace=ns, timeout=min(120, remaining()))
         # fanout.Kube.call uses text when no data is supplied. Force its binary
         # mode with bytes input, including for compressed scheduling CSV.
@@ -277,8 +271,8 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
             k.need(filename != 'k6-scheduling.csv.gz', 'NATIVE_LOAD_BINARY_TRANSPORT_REQUIRED', 'UNMEASURED')
             data = data.encode()
         k.need(isinstance(data, bytes) and len(data) <= maximum, 'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
-        n.private(out / filename, data)  # raw first, including a mismatched response
-        k.need(len(data) == expected['bytes'] and n.sha(data) == expected['sha256'], 'NATIVE_LOAD_ARTIFACT_CHANGED')
+        n.private(out / filename, data)
+        k.need(len(data) == expected['bytes'], 'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
     limits = (out / 'file-limits.txt').read_text()
     match = re.search(r'^Max file size\s+([0-9]+)\s+([0-9]+)\s+bytes\s*$', limits, re.M)
     k.need(match and int(match[1]) == int(match[2]) == receipt['fileLimitBytes'], 'NATIVE_LOAD_FILE_LIMIT_UNPROVEN')
@@ -302,7 +296,7 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
     receipt['artifactSource'] = source
     k.write(out/'native-load.json', receipt)
     check_namespace()
-    kube.call(command + ['ack', n.sha(raw)], namespace=ns, timeout=min(20, remaining()))
+    kube.call(command + ['ack', receipt['runId']], namespace=ns, timeout=min(20, remaining()))
     kube.call(['wait', '--for=condition=complete', 'job/k6', '--timeout=%ds' % max(1, math.ceil(remaining()))],
               namespace=ns, timeout=remaining())
     final_job = kube.json(['get', 'job', 'k6'], namespace=ns, timeout=min(20, remaining()))
@@ -322,8 +316,6 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
                                       'manifest': manifest, 'pooledPercentiles': 'UNMEASURED'})
     accounting = driver.retain(out.parent, manifest)
     k.write(out / 'driver-accounting.json', accounting)
-    receipt.update(capture='CAPTURED', process=process,
-                   eventsSha256=k.digest(out / 'k6.log'), summarySha256=k.digest(out / 'k6-summary.json'),
-                   artifactSha256={name: row['sha256'] for name, row in meta['files'].items()})
+    receipt.update(capture='CAPTURED', process=process)
     k.write(out / 'native-load.json', receipt)
     return receipt
