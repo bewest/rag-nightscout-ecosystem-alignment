@@ -15,6 +15,7 @@ import candidate
 import run_cleanup
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
 from auto_catalog import auto_catalog
+import point_results
 from primer_progress import ProgressWindow
 cfg=fixture_config(Path(sys.argv[1]))
 d=Path(cfg['caseDirectory']); tool=Path(cfg['toolsDirectory'])
@@ -470,7 +471,9 @@ try:
                                         'podUid':latest['uid'],'containerId':container['containerID']})
     step('attach released runtime')
     limits=cfg['nativeLimits']
-    command(['systemd-run','--user','--scope','--quiet','--unit=ns-'+rid+'-native',
+    native_scope = 'ns-' + rid + '-native.scope'
+    put('native-unit.json', {'unit': native_scope})
+    command(['systemd-run','--user','--scope','--quiet','--unit='+native_scope,
              '-p','CPUQuota='+str(limits['millicpus']/10)+'%',
              '-p','MemoryMax='+str(limits['memoryBytes']),'-p','MemorySwapMax=0',
              '-p','RuntimeMaxSec='+str(max(1,int(work-time.time())-6)),
@@ -518,8 +521,22 @@ finally:
             put('absence.json',{**result,'namespaceUid':nsuid,'trustUid':trustuid,'verifiedAt':timestamp()})
         except run_cleanup.CleanupFailed as error:cleanup_errors.append({'scope':'absence','code':'K8S_CLEANUP_LEFTOVER','leftovers':error.leftovers})
         except Exception as error:cleanup_errors.append({'scope':'cleanup','code':type(error).__name__})
+    if (live/'native-unit.json').exists():
+        try:
+            observed = subprocess.run(['systemctl', '--user', 'show', native_scope,
+                '--property=LoadState', '--property=ActiveState'], env=env, capture_output=True,
+                text=True, timeout=min(5, max(1, cleanup-time.time())))
+            states = dict(line.split('=', 1) for line in observed.stdout.splitlines() if '=' in line)
+            absent = (observed.returncode in (0, 4) and states.get('LoadState') == 'not-found'
+                      or observed.returncode == 0 and states.get('ActiveState') == 'inactive')
+            put('native-unit-absence.json', {'unit': native_scope, 'absent': absent, **states})
+            if not absent:
+                cleanup_errors.append({'scope':'native-host-unit', 'code':'K8S_NATIVE_UNIT_ABSENCE_UNCONFIRMED'})
+        except (OSError, subprocess.SubprocessError) as error:
+            cleanup_errors.append({'scope':'native-host-unit','code':type(error).__name__})
     if cleanup_errors:
         put('cleanup-failure.json',{'verdict':'FAIL' if any(x['scope']=='absence' for x in cleanup_errors) else 'UNMEASURED','failures':cleanup_errors})
+    point_results.publish_native(d)
     auto_catalog(d, lambda path, value: path.write_text(json.dumps(value, indent=2) + '\n'))
     if cleanup_errors:
         raise RuntimeError('OWNED_CLEANUP_UNCONFIRMED')

@@ -264,7 +264,7 @@ class NativeJoin(unittest.TestCase):
         with self.assertRaisesRegex(k.Refused,'DECLARATION_CHANGED'):k.validate(c,inventory,render)
         job['spec']['backoffLimit']=0;k.validate(c,inventory,render)
 
-    def test_dynamic_test_actor_preserves_application_census_and_rejects_replacement(self):
+    def test_dynamic_test_actor_preserves_application_census_and_reports_owned_replacement(self):
         c,inventory,render,client=fixture();objects=k.validate(c,inventory,render)
         baseline=k.observe(c,objects,client)
         job=client.objects[j.JOB];job['spec']['suspend']=False
@@ -283,7 +283,8 @@ class NativeJoin(unittest.TestCase):
         with tempfile.TemporaryDirectory() as scratch:
             custody=Path(scratch)/'native-load.json';c['nativeLoadCustodyFile']=str(custody)
             k.write(custody,{'jobUid':job['metadata']['uid'],'podUid':'original-pod'})
-            with self.assertRaisesRegex(k.Refused,'ACTOR_REPLACED'):k.observe(c,objects,client,baseline)
+            actor=k.observe(c,objects,client,baseline)['testActors']['k6-owned']
+            self.assertEqual(actor['actorTransitions'], [{'actor':'Pod','from':'original-pod','to':'pod-owned'}])
             k.write(custody,{'jobUid':job['metadata']['uid'],'podUid':'pod-owned'})
             k.observe(c,objects,client,baseline)
         role=client.objects['Role/'+j.ACCOUNT];role['rules'][0]['verbs'].append('create')

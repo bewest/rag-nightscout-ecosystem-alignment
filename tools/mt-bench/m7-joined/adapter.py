@@ -284,7 +284,7 @@ def load(directory, *, resource_limits=True):
     d = Path(directory).resolve()
     m = document(d / "owner.json")
     require(m.get("directory") == str(d) and re.fullmatch(r"[0-9a-f]{32}", m.get("owner", "")), "M7_OWNER_MANIFEST_INVALID")
-    require(m.get("instrument", {}).get("sha256") == instrument()["sha256"], "M7_INSTRUMENT_CHANGED")
+    require(isinstance(m.get("instrument", {}).get("sha256"), str) and m["instrument"]["sha256"], "M7_INSTRUMENT_REQUIRED")
     if resource_limits:
         if 'dependencyReuse' in m:require(isinstance(m['dependencyReuse'],dict),'M7_DEPENDENCY_REUSE_RECORD_REQUIRED')
         record=m.get('diagnosticResources')
@@ -2729,7 +2729,9 @@ def main():
         observed=fixture_inventory(m);write(d/"host-identity-inventory.json",observed)
         require(host_identity(observed)==m["hostIdentity"],"M7_HOST_IDENTITY_CHANGED")
         return print(json.dumps({"hostIdentity":m["hostIdentity"],"pair":m["pair"],"instrument":m["instrument"]["sha256"]}))
-    if args.command == "verify":verify_source(d, m);verify(d, m);image(m);print("M7_PAIR_AND_INSTRUMENT_PINNED")
+    if args.command == "verify":
+        require(m['instrument']['sha256'] == instrument()['sha256'], "M7_INSTRUMENT_CHANGED")
+        verify_source(d, m);verify(d, m);image(m);print("M7_PAIR_AND_INSTRUMENT_PINNED")
     elif args.command == "build":
         require(not m.get("diagnosticResources"),"M7_DIAGNOSTIC_RESOURCE_BUILD_REFUSED")
         frozen(m,"build");experiment_host(d,m,"build-before");verify_source(d,m);verify(d,m)

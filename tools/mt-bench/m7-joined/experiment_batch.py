@@ -41,6 +41,7 @@ def local_resource_plan(selected):
     import diagnostic_resources as resources
     need(selected is not None, 'LOCAL_PROFILE_REQUIRED')
     resources.selection(selected)
+    need(not isinstance(selected, dict) or 'ceiling' in selected, 'LOCAL_BATCH_BUDGET_REQUIRED')
     original_driver = resources.driver_limit(selected)
     driver = original_driver if isinstance(selected, dict) else resources.DISCOVERY_K6
     sut = {'millicpus': resources.cpu_ceiling(selected) - original_driver.cpu,

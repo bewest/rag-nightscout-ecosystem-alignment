@@ -521,7 +521,7 @@ def capture_bootstrap_map(d, c, objects, namespace_uid, client):
     return receipt
 
 
-def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=None, serving_sql=False):
+def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=None, serving_sql=False, measure_actors=False):
     import native_join
     ns = client.get('namespace', c['namespace'], cleanup)
     need(ns['metadata']['name'] == c['namespace'] and ns['metadata'].get('labels', {}).get(c['ownerLabel']) == c['runId'], 'FOREIGN_NAMESPACE')
@@ -663,6 +663,32 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         selected = [r for r in result['pods'].values() if r['workload'] == selection['workload']]
         need(len(selected) == 1, 'ROLE_POD_UNMEASURED:' + role, 'UNMEASURED')
         need(selected[0]['nodeName'], 'NODE_UNMEASURED', 'UNMEASURED')
+    if measure_actors and baseline is not None:
+        # Ordinary window bookends compare the same owned workload across
+        # pods. SQL/observer reads and intentional restart controls still bind
+        # the exact actor they sampled.
+        baseline = {**baseline, 'pods': dict(baseline['pods'])}
+        result['actorTransitions'] = []
+        for name, pod in result['pods'].items():
+            workload = pod['workload']
+            if not workload.startswith(('Deployment/', 'StatefulSet/')):
+                continue
+            old = baseline['pods'].get(name)
+            if old is None:
+                candidates = [(key, row) for key, row in baseline['pods'].items() if row['workload'] == workload
+                              and key not in result['pods']]
+                need(len(candidates) == 1, 'POD_TRANSITION_UNATTRIBUTABLE', 'UNMEASURED')
+                old_name, old = candidates[0]
+                del baseline['pods'][old_name]
+            need(old['workload'] == workload and old['controllerUid'] == pod['controllerUid'], 'POD_CONTROLLER')
+            for container, current in pod['containers'].items():
+                previous = old['containers'][container]
+                fields = ('containerID', 'imageID', 'restartCount')
+                if old['uid'] != pod['uid'] or any(current[key] != previous[key] for key in fields):
+                    result['actorTransitions'].append({'workload': workload, 'container': container,
+                        'fromPodUid': old['uid'], 'toPodUid': pod['uid'],
+                        'previous': {key: previous[key] for key in fields}, 'current': {key: current[key] for key in fields}})
+            baseline['pods'][name] = pod
     if baseline is not None:
         need(all(result[k] == baseline[k] for k in ('context', 'runId', 'pins')), 'SOURCE_IMAGE_BINDING_CHANGED')
         need(result['namespace']['uid'] == baseline['namespace']['uid'], 'NAMESPACE_UID_CHANGED')
@@ -725,7 +751,6 @@ def selected_pod(c, observation, role):
 def load(directory, cleanup=False):
     d = Path(directory).resolve()
     c = document(d / 'run.json')
-    need(c['pins']['instrument'] == instrument()['sha256'], 'INSTRUMENT_CHANGED')
     need(digest(d / 'render.json') == c['pins']['renderSha256'], 'RENDER_CHANGED')
     need(digest(d / 'inventory.json') == c['pins']['inventorySha256'], 'INVENTORY_CHANGED')
     by_key = validate(c, document(d / 'inventory.json'), document(d / 'render.json'), cleanup=cleanup)
@@ -880,7 +905,8 @@ def generate_probe(target):
 def prepare(config, inventory_file, render_file, directory):
     c = document(config)
     need(digest(inventory_file) == c['pins']['inventorySha256'] and digest(render_file) == c['pins']['renderSha256'], 'RENDER_INVENTORY_PIN')
-    need(c['pins']['instrument'] == instrument()['sha256'], 'INSTRUMENT_CHANGED')
+    identity = instrument()
+    need(c['pins']['instrument'] == identity['sha256'], 'INSTRUMENT_CHANGED')
     validate(c, document(inventory_file), document(render_file))
     d = Path(directory)
     need(d.is_absolute() and not d.exists(), 'NEW_ABSOLUTE_OUTPUT_REQUIRED')
@@ -898,7 +924,7 @@ def prepare(config, inventory_file, render_file, directory):
         need((d / 'workload.js').stat().st_size <= driver.MAX_GENERATED_BYTES, 'GENERATED_WORKLOAD_BOUND')
         (d / driver.SCRIPT).write_bytes((M7 / driver.SCRIPT).read_bytes())
         work['driverWrapperSha256'] = digest(d / driver.SCRIPT)
-    packet = {'version': 1, 'runSha256': digest(d / 'run.json'), 'instrument': instrument(), 'probe': generated,
+    packet = {'version': 1, 'runSha256': digest(d / 'run.json'), 'instrument': identity, 'probe': generated,
               'workload': work, 'clusterStarted': False, 'liveCorrectness': 'UNMEASURED', 'capacityAcceptance': 'NOT_GRANTED',
               'deadlines': c['deadlines'], 'commands': {phase: [sys.executable, str(HERE / 'adapter.py'), phase, str(d)] for phase in ('observe', 'forward-plan', 'policy', 'commission', 'access', 'assess', 'recovery', 'load', 'cleanup-plan')}}
     if 'experimentSha256' in c:

@@ -22,6 +22,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import adapter as a
 import workload_inputs
+import point_results
 from contract import require
 from auto_catalog import auto_catalog
 
@@ -237,7 +238,8 @@ def prepare(config_file, directory, *, one_shot=False):
     require(not root.exists(), 'M7_RUNNER_OUTPUT_EXISTS')
     root.mkdir(mode=0o700, parents=True)
     write(root / 'config.json', config)
-    write(root / 'result.json', {'version': 1, 'status': 'PREPARING', 'phase': 'prepare', 'capacityAcceptance': 'NOT_GRANTED'})
+    entry_memory = point_results.available_memory()
+    write(root / 'result.json', {'version': 1, 'memAvailableAtEntryBytes': entry_memory, 'status': 'PREPARING', 'phase': 'prepare', 'capacityAcceptance': 'NOT_GRANTED'})
     phase = 'configuration'
     try:
         if tier is not None:
@@ -262,13 +264,14 @@ def prepare(config_file, directory, *, one_shot=False):
         write(root / 'result.json', {'version': 1, 'status': 'PREPARED', 'phase': 'prepare', 'runtimeStarted': False, 'configSha256': a.digest(root / 'config.json'), 'capacityAcceptance': 'NOT_GRANTED'})
     except BaseException as error:
         write(root / 'result.json', {'version': 1, 'status': 'FAILED', 'phase': phase,
-                                     'code': code(error), 'runtimeStarted': False,
+                                     'code': code(error), 'runtimeStarted': False, 'memAvailableAtEntryBytes': entry_memory,
                                      'finishedAt': time.time(), 'capacityAcceptance': 'NOT_GRANTED'})
         if (root / 'execution.json').exists():
             try:
                 cleanup(root, 'PREPARE_FAILURE')
             except BaseException as cleanup_error:
                 write(root / 'cleanup-failure.json', {'code': code(cleanup_error)})
+        point_results.publish_compose(root, a.document(root/'result.json'))
         auto_catalog(root, write)
         raise
     return root
@@ -570,7 +573,10 @@ def arm_window(root,config):
     start=time.time()
     work = config['workSeconds']
     cleanup_seconds = config['cleanupSeconds']
+    initial = point_results.read(root/'result.json')
+    entry_memory = initial['memAvailableAtEntryBytes'] if 'memAvailableAtEntryBytes' in initial else point_results.available_memory()
     state = {'owner': uuid.uuid4().hex, 'startedAt': start, 'startedMonoNs': time.monotonic_ns(),
+             'memAvailableAtEntryBytes': entry_memory,
              'stopWorkAt': start + work if work is not None else None,
              'cleanupAt': start + work + cleanup_seconds if work is not None else None,
              'configSha256': a.digest(root/'config.json'), 'includesPreparation': True}
@@ -642,7 +648,7 @@ def execute(directory, rehearsal=False):
         result = {'version': 1, 'status': ('COMPLETED' if partial(root)['adapterStatus'] == 'MEASURED' else 'COMPLETED_PARTIAL') if failure is None else 'FAILED_PARTIAL', 'phase': phase, 'failure': failure, 'partial': partial(root), 'cleanup': a.document(root / 'cleanup.json') if (root / 'cleanup.json').exists() else {'status': 'UNMEASURED'}, 'capacityAcceptance': 'NOT_GRANTED', 'finishedAt': time.time()}
         if 'startedMonoNs' in state:
             result['elapsedSeconds'] = (time.monotonic_ns() - state['startedMonoNs']) / 1e9
-        write(root / 'result.json', result)
+        point_results.publish_compose(root, result)
         auto_catalog(root, write)
     require(failure is None, 'M7_RUNNER_POINT_INCOMPLETE')
     return result
@@ -945,6 +951,9 @@ def main():
         prep = sub.add_parser(mode)
         prep.add_argument('config')
         prep.add_argument('directory')
+        if mode == 'run':
+            prep.add_argument('--standard-case', action='store_true',
+                              help='Create a fresh case with result.json, cleanup.json and raw/')
     plan = sub.add_parser('plan')
     plan.add_argument('config')
     for name in ('execute', 'rehearse', 'result', 'down', '_guard', 'batch-result'):
@@ -987,10 +996,26 @@ def main():
     if args.action == 'plan':
         return print(json.dumps(tier_plan(a.document(args.config)), indent=2))
     if args.action in ('prepare', 'run'):
-        root = prepare(args.config, args.directory, one_shot=args.action == 'run')
-        if args.action == 'run':
-            return execute(root)
-        return root
+        directory = Path(args.directory).resolve()
+        if not getattr(args, 'standard_case', False):
+            root = prepare(args.config, directory, one_shot=args.action == 'run')
+            return execute(root) if args.action == 'run' else root
+        directory.mkdir(mode=0o700, parents=True, exist_ok=False)
+        raw = directory / 'raw'
+        try:
+            return execute(prepare(args.config, raw, one_shot=True))
+        except BaseException as error:
+            if not raw.exists():
+                raw.mkdir(mode=0o700)
+            if not (raw/'result.json').exists():
+                write(raw/'result.json', {'version': 1, 'status': 'FAILED_PARTIAL',
+                      'code': code(error), 'capacityAcceptance': 'NOT_GRANTED'})
+            raise
+        finally:
+            result = point_results.read(raw/'result.json')
+            result = point_results.publish_compose(raw, result)
+            write(directory/'result.json', {**result, 'rawDirectory': 'raw'})
+            write(directory/'cleanup.json', result['cleanup'])
     root = Path(args.directory).resolve()
     if args.action in ('execute', 'rehearse'):return execute(root, args.action == 'rehearse')
     if args.action == '_guard':return guard(root)

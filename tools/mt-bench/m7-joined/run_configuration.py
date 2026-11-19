@@ -50,8 +50,9 @@ def validate_prepare(args):
 def resource_projection(resources, profile):
     if profile is None:
         return None
-    return {'profile': profile, 'millicpus': resources.cpu_ceiling(profile),
-            'memoryBytes': resources.memory_ceiling(profile),
+    legacy_estimate = ({} if isinstance(profile, dict) and 'ceiling' not in profile else
+                       {'millicpus': resources.cpu_ceiling(profile), 'memoryBytes': resources.memory_ceiling(profile)})
+    return {'profile': profile, **legacy_estimate,
             **({'standalone': {'k6': resources.driver_record(profile)}}
                if resources.driver_memory_request(profile) else {})}
 

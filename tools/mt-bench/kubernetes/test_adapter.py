@@ -165,6 +165,13 @@ class Adapter(unittest.TestCase):
         value=k.observe(self.c,self.objects,self.client,initial,restarted_role='evaluator')
         self.assertEqual(value['pods']['cohort-0']['containers']['evaluator']['restartCount'],1)
         with self.assertRaisesRegex(k.Refused,'CONTAINER_INCARNATION_CHANGED'):k.observe(self.c,self.objects,self.client,initial)
+        ordinary = k.observe(self.c, self.objects, self.client, initial, measure_actors=True)
+        self.assertEqual([(row['container'], row['current']['restartCount'])
+                          for row in ordinary['actorTransitions']], [('evaluator', 1)])
+        self.client.pods[0]['metadata']['labels'][self.c['ownerLabel']] = 'peer'
+        with self.assertRaisesRegex(k.Refused, 'PEER_RESOURCE_REFUSED'):
+            k.observe(self.c, self.objects, self.client, initial, measure_actors=True)
+        self.client.pods[0]['metadata']['labels'][self.c['ownerLabel']] = self.c['runId']
         changed.update(containerID='containerd://evaluator',restartCount=0)
         self.green()
 
