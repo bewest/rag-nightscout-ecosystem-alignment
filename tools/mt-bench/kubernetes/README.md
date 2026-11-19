@@ -632,15 +632,18 @@ identity is the SHA-256 of that file. Tenants, rate, windows, budgets and
 
 | component | FAIL | UNMEASURED |
 |---|---|---|
-| failed completions (lifetime counters at the end point) | untyped, `unknown`, hard or unrecognised reason; a transient reason resolved or still open past the deadline | typed rows without reasons or resolution fields; a transient still open at the end inside the deadline; no end point |
+| failed completions (lifetime counters at the end point) | untyped, `unknown`, hard or unrecognised reason, or a transient failure still open past the deadline | typed rows without reasons or resolution fields; a transient still open at the end inside the deadline; no end point |
 | isolation | runtime reset, foreign row ready, foreign counters changed, duplicate owner | one point only |
 | evaluator health | hard evaluator code or alert at the end point | missing end point |
 | storage | count oracle RED | oracle missing or not GREEN |
 | sampled oracle | probe `completedOutput` FAIL | missing |
 | catch-up per accepted input | missing durable output at the end of drain or measured after the deadline | incomplete input coverage, timing or durable evidence |
 
-A declared transient reason (`verification-pending`, `startup-warming`) that
-completed inside the deadline is counted by reason and passes. Until the
+Resolved `verification-pending` and `startup-warming` failures are counted by reason.
+Their maximum resolution time describes the process lifetime. The clinical deadline
+uses the current run's HTTP acknowledgement and tenant-bound durable output.
+On replay, the gate checks distinct input identities against each writer's accepted
+count and compares individual keys wherever the writer records are available. Until the
 source declares `view.failureReasonContract = evaluator-failure-reasons-v1`
 with `progress.failureReasons`, `unresolvedFailure` and
 `maxFailureResolutionMs`, every failed completion is untyped and fails.

@@ -69,10 +69,12 @@ def read_acks(folder, run, ids, result):
         require(identity not in result, 'M7_INPUT_DUPLICATE_ACK')
         result[identity] = duration
 
+    writers = set()
     logs = sorted(folder.glob('k6-shard-*.log')) or [folder/'k6.log']
     for path in logs:
         if not path.is_file():
             continue
+        writers.add(run)
         with path.open() as stream:
             for line in stream:
                 if 'm7-input-accepted' not in line:
@@ -90,10 +92,14 @@ def read_acks(folder, run, ids, result):
             completed = doc.get('completedOutput') if name == 'probe.json' else doc
             if not isinstance(completed, dict):
                 continue
+            if isinstance(completed.get('witnesses'), list):
+                writers.add(run+'-probe')
             for row in completed.get('witnesses', []):
                 if row.get('acceptedAt') is not None:
                     add(row['tenant'], 'entries', run+'-probe', str(row['date']), row['requestToAcceptanceMs'])
             break
+    return writers
+
 
 def reconcile(result, run, ids, storage):
     """Reconcile the ACK identities against the independently reduced write counts."""
@@ -155,8 +161,7 @@ class Coverage:
                         row['tailHead'] >= old['head'] and row['tailBase'] >= old['base'] and
                         (old['completed'] is None or completed is not None and completed >= old['completed']),
                         'M7_INPUT_GENERATION_CHANGED', 'FAIL')
-            if row['revision'] and row['outputOK'] is not True:
-                require(row['outputTenant'] is not None, 'M7_INPUT_OUTPUT_UNMEASURED')
+            if row['revision'] and row['outputTenant'] == tenant and row['outputOK'] is False:
                 raise EvidenceError('M7_INPUT_INVALID_OUTPUT', 'FAIL')
             for key in keys:
                 item = self.inputs.setdefault((tenant, *key), {
@@ -184,13 +189,11 @@ class Coverage:
                     # The tail head belongs to the current native commit and
                     # follows the recovery snapshot. Its floor is exact.
                     item['absentFloor'] = floor-1
-                if row['stateOK'] is not True:
+                if row['stateOK'] is not True or row['outputTenant'] != tenant or row['outputOK'] is not True:
                     continue
-                if (item['upperFloor'] is not None and row['outputOK'] is True and
-                        completed is not None and completed >= item['upperFloor']):
+                if item['upperFloor'] is not None and completed is not None and completed >= item['upperFloor']:
                     item['durableBy'] = end
-                elif (row['revision'] == 0 or completed is None or
-                      (item['absentFloor'] is not None and completed <= item['absentFloor'])):
+                elif completed is None or (item['absentFloor'] is not None and completed <= item['absentFloor']):
                     item['pendingAt'] = start
             self.tenants[tenant] = {'keys': keys, 'generation': row['generation'],
                                     'floor': floor if valid else None, 'completed': completed, 'head': row['tailHead'], 'base': row['tailBase']}

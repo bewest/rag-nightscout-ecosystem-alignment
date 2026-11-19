@@ -58,7 +58,7 @@ FIXTURES = {
                                               unresolved={'reason':'verification-pending', 'ageMs':130000}), HEALTHY()],
                                 True, True, 'FAIL', 'M7_OUTCOME_TRANSIENT_DEADLINE'),
     'transient-resolved-late': (lambda: [row(A, failed=1, reasons={'startup-warming':1}, resolution=150000), HEALTHY()],
-                                True, True, 'FAIL', 'M7_OUTCOME_TRANSIENT_DEADLINE'),
+                                True, True, 'PASS', 'TRANSIENT_HISTORICAL_MAX'),
     'untyped-old-payload': (lambda: [row(A, failed=3), HEALTHY()], False, True, 'FAIL', 'M7_OUTCOME_UNTYPED_FAILURE'),
     'untyped-declared-unknown': (lambda: [row(A, failed=1, reasons={'unknown':1}, resolution=10), HEALTHY()],
                                  True, True, 'FAIL', 'M7_OUTCOME_UNTYPED_FAILURE'),
@@ -127,14 +127,16 @@ class Fixtures(unittest.TestCase):
         self.assertEqual(g.catchup({'byTenant': {A:{'status':'COMPLETED'}}}, IDS)['verdict'], 'UNMEASURED')
 
     def judged(self, **overrides):
-        values = dict(ids=IDS, points={'before':point(row(A), HEALTHY()), 'midpoint':None,
+        values = dict(run_id='run', ids=IDS, points={'before':point(row(A), HEALTHY()), 'midpoint':None,
                                        'after':point(row(A), HEALTHY())},
                       storage_findings={'verdict':'GREEN', 'uncertain':0, 'failureCount':0,
                           'rows':[{'tenant':A, 'accepted':1,'probeAccepted':0},{'tenant':B,'accepted':0,'probeAccepted':0}]},
                       completed_output={'verdict':'PASS', 'witnesses':[{'clinicalTiming':{'verdict':'PASS'}}],
                              'clinicalTiming':{'contract':'clinical-deadline-from-acceptance-v1','witnesses':1}},
                       catchup_value={'kind':'accepted-input-drain-v1','verdict':'PASS','deadlineMs':120000,
-                                     'acceptedInputs':1, 'inputs':[{'tenant': A, 'status':'ON_TIME'}]})
+                                     'acceptedInputs':1, 'ackCoverage':'COMPLETE', 'runId':'run',
+                                     'inputs':[{'tenant':A, 'domain':'entries', 'marker':'run', 'key':'42',
+                                                'status':'ON_TIME', 'endOfDrain':'DURABLE'}]})
         values.update(overrides)
         return g.judge(**values)
 
@@ -306,7 +308,8 @@ CONTROLS = {
                        "        return 'NONE', 'PASS', None, {}", fixture_check('missing-reason-field')),
     'resolution-invalid': ("    if resolution is not None and not _finite(resolution):", "    if False:",
                            fixture_check('malformed-resolution')),
-    'resolved-late': ("    if resolution is not None and resolution > deadline_ms:", "    if False:",
+    'resolved-late': ("        return 'TRANSIENT_HISTORICAL_MAX', 'PASS', None, reasons",
+                      "        return 'TRANSIENT_LATE', 'FAIL', 'M7_OUTCOME_TRANSIENT_DEADLINE', reasons",
                       fixture_check('transient-resolved-late')),
     'unresolved-late': ("        if unresolved['ageMs'] > deadline_ms:", "        if False:",
                         fixture_check('transient-past-deadline')),
