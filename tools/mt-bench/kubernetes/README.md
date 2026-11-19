@@ -940,11 +940,23 @@ for verification, then serving readiness, then releases the standalone primer.
 Legacy bindings retain their original primer-ready gate. The
 exporter receives no Kubernetes API permission. The test Pod uses component
 `load`, so it does not match the application's
-private admin/internal `operator` selectors; it enters through the existing
-edge ingress. No application NetworkPolicy is broadened. Setup actor lifetimes still
+private admin/internal `operator` selectors. One additional owned
+`NetworkPolicy/native-load-to-edge` explicitly permits only same-namespace,
+same-run load Pods to reach the same-run edge on its selected TCP port (8080
+for the qualified binding). Every application policy stays unchanged. The new
+policy has exact declaration and live spec-readback checks; a missing or changed
+source, target, port or namespace refuses. The original binding's private-plane
+checks also inspect it, including when declarations are nested in an array.
+Setup actor lifetimes still
 belong to the current binding and must cover the complete owned point. Keep
 owned namespace/trust cleanup even after Job completion. Fresh native live
 compatibility and capacity qualification remain UNMEASURED.
+
+An `ipBlock` match is not treated as evidence of Pod ingress. Cilium documents
+that its default excludes intra-cluster Pod and Node addresses from such rules;
+see the [Cilium policy reference](https://docs.cilium.io/en/stable/network/kubernetes/policy/).
+The policy controls model explicit Pod selectors and same-namespace scope.
+Actual CNI connectivity remains a separate live control owned by the operator.
 
 When the read guard masks native Secret references or projected keys, only the
 named owned native Job or Pod gets a bounded private spec read. Namespace and

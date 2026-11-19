@@ -2,7 +2,6 @@
 import copy
 import json
 import os
-import ipaddress
 from pathlib import Path
 import tempfile
 import time
@@ -157,38 +156,88 @@ class NativeJoin(unittest.TestCase):
 
     @unittest.skipUnless(os.environ.get('NS_NATIVE_QUALIFIED_RENDER'),'qualified binding render required')
     def test_load_label_has_edge_access_without_private_operator_plane_access(self):
-        c,_,_,_=fixture();job=j.declarations(c)[0]
-        labels=job['spec']['template']['metadata']['labels']
+        c,_,_,_=fixture()
         render=k.document(os.environ['NS_NATIVE_QUALIFIED_RENDER'])
-        policies=[obj for obj in k.manifests(render) if obj['kind']=='NetworkPolicy']
-        private={1342,19001,19002,19003,19004}
+        objects={k.key(obj):obj for obj in k.manifests(render)}
+        namespace=next(obj for obj in objects.values() if obj['kind']=='Namespace')
+        owner,= [name for name in namespace['metadata']['labels'] if name.endswith('/run-id')]
+        c.update(ownerLabel=owner,runId=namespace['metadata']['labels'][owner],namespace=namespace['metadata']['name'])
+        job=j.declarations(c)[0];labels=job['spec']['template']['metadata']['labels']
+        policies=[obj for obj in objects.values() if obj['kind']=='NetworkPolicy']
+        original=copy.deepcopy(policies)
+        policy,= [obj for obj in j.declarations(c) if obj['kind']=='NetworkPolicy']
+        policies.append(policy)
         def matches(selector,actor):
             self.assertFalse(selector.get('matchExpressions'),'selector requires additional evidence')
             return all(actor.get(name)==value for name,value in selector.get('matchLabels',{}).items())
-        def sources(rule,actor):
-            return not rule.get('from') or any('podSelector' in row and 'namespaceSelector' not in row
-                and matches(row['podSelector'],actor) or 'ipBlock' in row
-                and ipaddress.ip_address('192.0.2.10') in ipaddress.ip_network(row['ipBlock']['cidr'])
-                and not any(ipaddress.ip_address('192.0.2.10') in ipaddress.ip_network(net)
-                            for net in row['ipBlock'].get('except',[])) for row in rule['from'])
-        def exposed(actor):
-            found=[]
+        def allowed(source,target,port,source_namespace=None):
+            destination=objects[target]['spec']['template']['metadata']['labels']
             for obj in policies:
+                if obj['metadata']['namespace']!=c['namespace'] or not matches(obj['spec']['podSelector'],destination):continue
                 for rule in obj['spec'].get('ingress',[]):
-                    ports={row.get('port') for row in rule.get('ports',[])}
-                    if ports & private:
-                        self.assertFalse(any('namespaceSelector' in row or 'ipBlock' in row for row in rule.get('from',[])),
-                                         'private policy requires additional namespace/IP evidence')
-                    if ports & private and sources(rule,actor):found.append(obj['metadata']['name'])
-            return found
+                    if rule.get('ports') and not any(row.get('port')==port and row.get('protocol','TCP')=='TCP' for row in rule['ports']):continue
+                    if not rule.get('from'):return True
+                    for peer in rule['from']:
+                        # Cilium's default ipBlock excludes Pod identities. A
+                        # CIDR match is not evidence of Pod-to-Pod permission.
+                        if 'ipBlock' in peer:continue
+                        self.assertNotIn('namespaceSelector',peer,'cross-namespace policy requires separate evidence')
+                        if source_namespace not in (None,c['namespace']):continue
+                        if 'podSelector' in peer and matches(peer['podSelector'],source):return True
+            return False
+        edge_port,= [row['port'] for row in objects['Service/edge']['spec']['ports']]
+        self.assertTrue(allowed(labels,'Deployment/edge',edge_port))
+        policies.remove(policy)
+        self.assertFalse(allowed(labels,'Deployment/edge',edge_port))
+        policies.append(policy)
+        self.assertTrue(allowed(labels,'Deployment/edge',edge_port))
+        self.assertFalse(allowed(labels,'Deployment/edge',edge_port,'peer-namespace'))
+        self.assertFalse(allowed(dict(labels,**{owner:'peer-run'}),'Deployment/edge',edge_port))
+        self.assertFalse(allowed(labels,'Deployment/edge',1342))
         operator=dict(labels,**{'app.kubernetes.io/component':'operator'})
-        self.assertTrue(exposed(operator),'the control never reached the current private-plane policies')
+        self.assertTrue(allowed(operator,'Deployment/admin',1342),'control must reach the current private policy')
         self.assertEqual(labels['app.kubernetes.io/component'],'load')
-        self.assertFalse(exposed(labels),exposed(labels))
-        edge=[obj for obj in policies if obj['spec'].get('podSelector',{}).get('matchLabels',{}).get('app.kubernetes.io/component')=='edge']
-        self.assertTrue(edge)
-        self.assertTrue(any((not rule.get('ports') or any(row.get('port')==8080 for row in rule['ports']))
-                            and sources(rule,labels) for obj in edge for rule in obj['spec'].get('ingress',[])))
+        for target,port in [('admin',1342),('api',1337),('api',19001),('evaluator',19002),('evaluator',19913),
+                            ('realtime',1339),('realtime',19003),('tenant-admin',19004),('postgres',5432),('vault',8200)]:
+            kind='StatefulSet' if target in ('postgres','vault') else 'Deployment'
+            self.assertFalse(allowed(labels,kind+'/'+target,port),(target,port))
+        self.assertEqual([obj for obj in policies if obj is not policy],original)
+
+    def test_native_edge_policy_is_exact_owned_declaration_and_readback(self):
+        c,inventory,render,client=fixture()
+        policy,= [obj for obj in render if obj['kind']=='NetworkPolicy']
+        objects=k.validate(c,inventory,render)
+        baseline=k.observe(c,objects,client)
+        self.assertEqual(policy['metadata']['namespace'],c['namespace'])
+        self.assertEqual(policy['spec']['ingress'][0]['ports'],[{'port':8080,'protocol':'TCP'}])
+        source=policy['spec']['ingress'][0]['from'][0]
+        self.assertEqual(set(source),{'podSelector'})
+        self.assertEqual(source['podSelector']['matchLabels']['app.kubernetes.io/component'],'load')
+        self.assertEqual(source['podSelector']['matchLabels'][c['ownerLabel']],c['runId'])
+        self.assertEqual(policy['spec']['podSelector']['matchLabels']['app.kubernetes.io/component'],'edge')
+        key=k.key(policy)
+        del objects[key]
+        with self.assertRaisesRegex(k.Refused,'NATIVE_LOAD_DECLARATION_CHANGED'):j.validate(c,inventory,objects)
+        objects[key]=policy;j.validate(c,inventory,objects)
+        changes=[lambda p:p['spec']['ingress'][0]['from'][0]['podSelector']['matchLabels'].update({'app.kubernetes.io/component':'operator'}),
+                 lambda p:p['spec']['ingress'][0]['ports'][0].update(port=1342),
+                 lambda p:p['spec']['ingress'][0]['from'][0].update(namespaceSelector={}),
+                 lambda p:p['metadata'].update(namespace='peer-namespace'),
+                 lambda p:p['spec']['podSelector']['matchLabels'].update({'app.kubernetes.io/component':'api'})]
+        for mutate in changes:
+            broken=copy.deepcopy(policy);mutate(broken);objects[key]=broken
+            with self.assertRaisesRegex(k.Refused,'NATIVE_LOAD_DECLARATION_CHANGED'):j.validate(c,inventory,objects)
+            objects[key]=policy;j.validate(c,inventory,objects)
+            live=copy.deepcopy(client.objects[key]);mutate(live);client.objects[key]=live
+            with self.assertRaisesRegex(k.Refused,'NATIVE_LOAD_EDGE_POLICY_CHANGED|FOREIGN_NAMESPACE'):
+                k.observe(c,objects,client,baseline)
+            client.objects[key]=dict(copy.deepcopy(policy),metadata=dict(policy['metadata'],uid='uid-'+policy['metadata']['name'],resourceVersion='10'))
+            k.observe(c,objects,client,baseline)
+        without=copy.deepcopy(c);without.pop(j.FIELD)
+        no_selection=copy.deepcopy(inventory);no_selection.pop(j.FIELD)
+        without_job={name:obj for name,obj in objects.items() if name!=j.JOB}
+        with self.assertRaisesRegex(k.Refused,'NATIVE_LOAD_UNACCOUNTED_POLICY'):
+            j.validate(without,no_selection,without_job)
     def test_declared_suspended_job_rbac_and_full_pod_budget(self):
         c,inventory,render,client=fixture()
         objects=k.validate(c,inventory,render)

@@ -562,6 +562,8 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             comparison = dict(template(actual), spec=resource_budget.readback_projection(
                 template(expected)['spec'], template(actual)['spec'], need))
             need(subset(template(expected_visible), comparison), 'BINDING_READBACK_CHANGED')
+        elif name == native_join.POLICY:
+            need(actual.get('spec') == expected['spec'], 'NATIVE_LOAD_EDGE_POLICY_CHANGED')
         elif expected['kind'] == 'ResourceQuota':
             need(resource_budget.quota_spec_matches(expected['spec'], actual.get('spec')),
                  'RESOURCE_READBACK_CHANGED:ResourceQuota.' + expected['metadata']['name'])
