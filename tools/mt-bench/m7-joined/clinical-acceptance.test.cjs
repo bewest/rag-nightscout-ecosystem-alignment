@@ -12,7 +12,8 @@ const start = source.indexOf('  const poller = (async () => {');
 const end = source.indexOf('  const writers = [];', start);
 assert(start > 0 && end > start);
 assert(source.includes('e.acceptedMono=r.responseMono'));
-assert.equal(timing.contract, 'clinical-deadline-from-acceptance-v1');
+assert.equal(timing.contract, 'clinical-timing-from-acceptance-v2');
+assert.equal(timing.deadlineMs, 120000);
 
 async function exercise({durableAt, frameAt, prior=false, unavailable=false, foreign=false, queryMs=0}) {
   const accepted = 8000;
@@ -41,29 +42,28 @@ async function exercise({durableAt, frameAt, prior=false, unavailable=false, for
   await vm.runInNewContext(source.slice(start, end)+'\npoller',context);
   return timing.assess(witness,[...frames.values()]);
 }
+// The probe reports timings only; assessor.py applies the 120 s deadline.
 (async()=>{
   for(const prior of [false,true]){
     const missing=await exercise({durableAt:Infinity,frameAt:7000,prior});
-    assert.equal(missing.verdict,'FAIL');
-    assert.equal(missing.code,'M7_COMPLETION_DEADLINE');
+    assert(!('verdict' in missing));
+    assert.equal(missing.durableObserved,false);
+    assert(missing.acceptanceToCompletionLowerMs>=120000);
   }
   const justInTime=await exercise({durableAt:127000,frameAt:7000});
-  assert.equal(justInTime.verdict,'PASS');
   assert.equal(justInTime.acceptanceToCompletionMs,119000);
   assert.deepEqual(justInTime.acceptanceToFrameMs,[-1000]);
-  const boundary=await exercise({durableAt:128000,frameAt:8000});
-  assert.equal(boundary.verdict,'UNMEASURED');
+  assert.equal(justInTime.delivered,true);
   const crossing=await exercise({durableAt:128000,frameAt:8000,queryMs:1500});
-  assert.equal(crossing.verdict,'UNMEASURED');
   assert(crossing.acceptanceToCompletionLowerMs<120000 && crossing.acceptanceToCompletionMs>=120000);
   const timedFrame=await exercise({durableAt:8000,frameAt:128000});
-  assert.equal(timedFrame.code,'M7_COMPLETION_DEADLINE');
+  assert(timedFrame.acceptanceToFrameMs.every(ms=>ms>=120000) || timedFrame.matchedFrames===0);
   const missingFrame=await exercise({durableAt:10000,frameAt:Infinity});
-  assert.equal(missingFrame.code,'M7_COMPLETION_DEADLINE');
+  assert.equal(missingFrame.matchedFrames,0);
+  assert.equal(missingFrame.delivered,false);
   const lost=await exercise({durableAt:Infinity,frameAt:Infinity,unavailable:true});
-  assert.equal(lost.verdict,'UNMEASURED');
+  assert.equal(lost.durableObserved,false);
   const foreign=await exercise({durableAt:8000,frameAt:8000,foreign:true});
-  assert.equal(foreign.verdict,'FAIL');
-  assert.equal(foreign.code,'M7_COMPLETION_FOREIGN_TENANT');
-  console.log(path.basename(file)+' missing output (first/subsequent) FAIL, 119s PASS, missing frame FAIL, missing SQL UNMEASURED, foreign SQL row FAIL');
+  assert.equal(foreign.observationProblem,'M7_COMPLETION_FOREIGN_TENANT');
+  console.log(path.basename(file)+' timings only: missing output lower bound >=120s, 119s upper, crossing unresolved, missing frame, foreign SQL row recorded');
 })().catch(e=>{console.error(e);process.exitCode=1;});

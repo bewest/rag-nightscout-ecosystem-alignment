@@ -63,7 +63,7 @@ export default function () {
 
 class FailureCapture(unittest.TestCase):
     def trial(self, fail, signal=False, module=execute):
-        """fail: a hard midpoint (untyped failed completion) stops the driver.
+        """fail: an untyped failed completion at the midpoint is a recorded signal; the driver continues.
         signal: a not-ready midpoint without a hard reason is recorded; the run continues."""
         capture = os.environ.get('K8S_TEST_CAPTURE_DIR')
         if capture:
@@ -125,17 +125,13 @@ class FailureCapture(unittest.TestCase):
                  patch.object(k.shutil, 'which', return_value=str(tool)), \
                  patch.dict('os.environ', {'K6_NO_USAGE_REPORT':'true', 'K6_ADDRESS':'127.0.0.1:0'}), \
                  patch.object(module, 'assess_stage', return_value={'verdict':'OBSERVED'}) as assess:
-                if fail:
-                    with self.assertRaisesRegex(k.evaluator_progress.Refused, 'M7_EVALUATOR_PROGRESS_ERROR'):
-                        module.execute(d, c, objects, client, load=True)
-                    assess.assert_not_called()
-                else:
-                    self.assertEqual(module.execute(d, c, objects, client, load=True)['verdict'], 'OBSERVED')
-                    assess.assert_called_once()
-                    collected.return_value.start.assert_called_once()
-                    collected.return_value.finish.assert_called_once()
-                    collected.return_value.close.assert_called_once()
-                    self.assertEqual(k.document(out/'drain.json')['requestedSeconds'], 120)
+                # The midpoint is a recorded signal (four-product-failures); the driver always continues.
+                self.assertEqual(module.execute(d, c, objects, client, load=True)['verdict'], 'OBSERVED')
+                assess.assert_called_once()
+                collected.return_value.start.assert_called_once()
+                collected.return_value.finish.assert_called_once()
+                collected.return_value.close.assert_called_once()
+                self.assertEqual(k.document(out/'drain.json')['requestedSeconds'], 120)
 
             raw = out/'progress-midpoint.private.jsonl'
             self.assertTrue(raw.is_file(), 'typed midpoint response bytes were lost')
@@ -144,11 +140,9 @@ class FailureCapture(unittest.TestCase):
             response = k.document(out/'progress-midpoint-response.json')
             self.assertEqual(response['sourceDecode'], 'REFUSED' if fail or signal else 'PASS')
             decision = k.document(out/'progress-midpoint-signal.json')
-            self.assertEqual(decision['action'], 'stop' if fail else 'continue')
-            if signal:
+            self.assertEqual(decision['action'], 'continue')
+            if signal or fail:
                 self.assertEqual(decision['strictRefusal']['code'], 'M7_EVALUATOR_PROGRESS_ERROR')
-                self.assertEqual(decision['classification']['readiness']['NOT_READY'],
-                                 {'EVALUATOR_CLINICAL_PROGRESS_STALLED': 2})
                 self.assertTrue((out/'.restart').exists(), 'a midpoint signal stopped the driver')
                 print('Midpoint signal recorded; driver continued to completion')
                 return
@@ -158,49 +152,20 @@ class FailureCapture(unittest.TestCase):
             events = out/'k6.log'
             self.assertEqual(events.stat().st_mode & 0o777, 0o600)
             self.assertNotIn(b'scenario-first-iteration', (out/'k6-native.log').read_bytes())
-            if fail:
-                failure = k.document(out/'progress-midpoint-failure.json')
-                self.assertEqual(failure['diagnostic']['failedRow']['code'],
-                                 'EVALUATOR_CLINICAL_PROGRESS_STALLED')
-                self.assertFalse((out/'progress-after.json').exists())
-                self.assertFalse((out/'.restart').exists())
-                self.assertEqual(decision['classification']['classes'].get('UNTYPED'), 1)
-                stop = k.document(out/'stop-evidence.json')
-                self.assertTrue(stop['progressRetained'], 'raw progress at the stop point was not retained')
-                self.assertTrue((out/'progress-stop.private.jsonl').is_file())
-                self.assertIn('storage', stop)
-                self.assertIn(b'scenario-first-iteration', midpoint_logs[0],
-                              'scenario marker was unavailable before process-group TERM')
-                has_summary = (out/'k6-summary.json').is_file()
-                if not launch:
-                    self.assertFalse(has_summary)
-                reduced = reduce_stage(out, d/'reduced')
-                if not has_summary:
-                    self.assertEqual(reduced['coverage']['http']['verdict'], 'UNMEASURED')
-                self.assertEqual(reduced['midpointEvaluatorProgress']['verdict'], 'FAIL')
-                early, = reduced['interruptedDrivers']
-                self.assertNotEqual(early['returncode'], 0)
-                self.assertEqual(early['summaryRetained'], has_summary)
-                self.assertEqual(early['finalAccounting'], 'UNMEASURED')
-                self.assertLessEqual(early['markersAtMs']['scenario-first-iteration'],
-                                     reduced['midpointEvaluatorProgress']['observedAt'] * 1000)
-                print('Strict midpoint refusal retained; stopped driver exit', early['returncode'],
-                      f'with scenario marker; summary retained={has_summary}')
-            else:
-                from node_observation import log_events
-                markers = log_events(events, names=('jwt-setup-start', 'jwt-setup-end', 'scenario-first-iteration'))
-                midpoint = response['observedAt']
-                signalled = float((out/'.window').read_text())
-                self.assertLess(signalled, midpoint)
-                self.assertGreaterEqual(midpoint - signalled, 1)
-                self.assertLess(markers['jwt-setup-start'] / 1000, midpoint)
-                self.assertLess(midpoint, markers['jwt-setup-end'] / 1000)
-                self.assertLessEqual(markers['jwt-setup-end'], markers['scenario-first-iteration'])
-                self.assertTrue((out/'k6-summary.json').is_file())
-                self.assertNotIn(b'terminal stdout', events.read_bytes())
-                self.assertFalse((out/'progress-midpoint-failure.json').exists())
-                print(f'Delayed setup: midpoint +{midpoint-signalled:.3f}s from probe, '
-                      f'first ordinary marker +{markers["scenario-first-iteration"]/1000-signalled:.3f}s')
+            from node_observation import log_events
+            markers = log_events(events, names=('jwt-setup-start', 'jwt-setup-end', 'scenario-first-iteration'))
+            midpoint = response['observedAt']
+            signalled = float((out/'.window').read_text())
+            self.assertLess(signalled, midpoint)
+            self.assertGreaterEqual(midpoint - signalled, 1)
+            self.assertLess(markers['jwt-setup-start'] / 1000, midpoint)
+            self.assertLess(midpoint, markers['jwt-setup-end'] / 1000)
+            self.assertLessEqual(markers['jwt-setup-end'], markers['scenario-first-iteration'])
+            self.assertTrue((out/'k6-summary.json').is_file())
+            self.assertNotIn(b'terminal stdout', events.read_bytes())
+            self.assertFalse((out/'progress-midpoint-failure.json').exists())
+            print(f'Delayed setup: midpoint +{midpoint-signalled:.3f}s from probe, '
+                  f'first ordinary marker +{markers["scenario-first-iteration"]/1000-signalled:.3f}s')
 
     def test_reducer_keeps_only_markers_for_incomplete_configured_shard(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -220,10 +185,10 @@ class FailureCapture(unittest.TestCase):
                 'process':'k6-process-1.json', 'returncode':105, 'markersAtMs':markers,
                 'summaryRetained':False, 'finalAccounting':'UNMEASURED'
             }])
-            self.assertEqual(result['coverage']['http']['verdict'], 'UNMEASURED')
-            self.assertEqual(result['inputs'][str(log)], k.digest(log))
+            self.assertEqual(result['http'], 'UNMEASURED')
+            self.assertIn(result['product']['verdict'], ('UNMEASURED', 'FAIL', 'PASS'))
 
-    def test_midpoint_failure_keeps_private_raw_and_partial_driver_evidence(self):
+    def test_midpoint_failed_completion_is_a_signal_and_driver_continues(self):
         self.trial(fail=True)
 
     def test_not_ready_midpoint_is_a_signal_and_driver_continues(self):

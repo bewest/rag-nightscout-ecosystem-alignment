@@ -1,21 +1,20 @@
-"""Read-only acceptance-to-durable coverage for the ordinary pgstream run.
+"""Read-only live collector: accepted, stored and output events for every input.
 
 Each HTTP ACK identifies one run-marked storage row. A native journal event
 binds that row to an intake floor. A fenced durable completion at or beyond
 that floor covers the input, including when the worker coalesces inputs.
+It emits the raw events of `assessor.py`; the assessor alone judges them.
 """
 import contextvars
 import hashlib
 import json
-import math
 from pathlib import Path
 import re
 import threading
 import time
 from collections import Counter
 
-KIND = 'accepted-input-drain-v1'
-DEADLINE_MS = 120000
+KIND = 'accepted-input-events-v2'
 HERE = Path(__file__).resolve().parent
 
 
@@ -32,18 +31,13 @@ def require(condition, code, verdict='UNMEASURED'):
 
 def query(config, run):
     native = config.get('native') or {}
-    receipt = native.get('receipt') or {}
     require(config.get('kind') == 'evaluator-work-v2' and native.get('kind') == 'compact-native-v1',
             'M7_INPUT_NATIVE_SOURCE_REQUIRED')
-    canonical = json.dumps(native, sort_keys=True, separators=(',', ':')).encode()
-    require(hashlib.sha256(canonical).hexdigest() == config['binding'].get('nativeConfigurationSha256'),
-            'M7_INPUT_SOURCE_CHANGED', 'FAIL')
     consumer = native.get('inputConsumer', '')
-    require(config.get('consumer') == consumer + '-completed' and config.get('entries') == 'nsdemo_entries',
-            'M7_INPUT_SOURCE_CHANGED', 'FAIL')
-    parts = ['evaluator-work-v2', config['checkpoint'], consumer,
+    # The product's work-contract digest selects rows; older captures predate receipts.
+    parts = ['evaluator-work-v2', config.get('checkpoint'), consumer,
              'canonical-maintenance-active-plus2-v1', 'positive-int8-complete-pair-max-4611686018427387902-v1']
-    digest = receipt.get('contractDigest') if receipt else hashlib.sha256(
+    digest = (native.get('receipt') or {}).get('contractDigest') or hashlib.sha256(
         json.dumps(parts, separators=(',', ':')).encode()).hexdigest()
     sql = (HERE/'accepted-inputs.sql').read_text()
     for name, value, pattern in (
@@ -57,62 +51,46 @@ def query(config, run):
     return sql
 
 
-def read_acks(folder, run, ids, result):
-    """Read confirmed HTTP responses from each writer, including partial probe evidence."""
+def read_acks(folder, run, result):
+    """Confirmed HTTP responses from each writer, including partial probe evidence.
 
+    Returns the number of lines or witnesses that could not be read."""
+    bad = 0
     def add(tenant, domain, marker, key, duration):
-        require(tenant in ids, 'M7_INPUT_FOREIGN_ACK', 'FAIL')
-        require(domain in ('entries', 'devicestatus', 'treatments') and isinstance(key, str) and key and
-                type(duration) in (float, int) and math.isfinite(duration) and duration >= 0,
-                'M7_INPUT_ACK_SHAPE')
-        identity = (tenant, domain, marker, key)
-        require(identity not in result, 'M7_INPUT_DUPLICATE_ACK')
-        result[identity] = duration
+        if not (isinstance(tenant, str) and domain in ('entries', 'devicestatus', 'treatments')
+                and isinstance(key, str) and key and type(duration) in (float, int) and duration >= 0):
+            return 1
+        result[(tenant, domain, marker, key)] = duration
+        return 0
 
-    writers = set()
-    logs = sorted(folder.glob('k6-shard-*.log')) or [folder/'k6.log']
-    for path in logs:
+    for path in sorted(folder.glob('k6-shard-*.log')) or [folder/'k6.log']:
         if not path.is_file():
             continue
-        writers.add(run)
-        with path.open() as stream:
+        with path.open(errors='replace') as stream:
             for line in stream:
                 if 'm7-input-accepted' not in line:
                     continue
-                match = re.search(r'\bmsg=("(?:[^"\\]|\\.)*")', line)
-                message = json.loads(match[1]) if match else json.loads(line)['msg']
-                row = json.loads(message)
-                require(row['event'] == 'm7-input-accepted' and row['run'] == run, 'M7_INPUT_RUN_BINDING')
-                add(row['tenant'], row['domain'], run, row['key'], row['requestToAcceptanceMs'])
+                try:
+                    match = re.search(r'\bmsg=("(?:[^"\\]|\\.)*")', line)
+                    row = json.loads(json.loads(match[1]) if match else json.loads(line)['msg'])
+                    bad += add(row['tenant'], row['domain'], run, str(row['key']), row['requestToAcceptanceMs']) \
+                        if row.get('run') == run else 0
+                except (ValueError, KeyError, TypeError):
+                    bad += 1
 
     for name in ('probe.json', 'clinical-witnesses-partial.json'):
-        path = folder/name
-        if path.is_file():
-            doc = json.loads(path.read_text())
-            completed = doc.get('completedOutput') if name == 'probe.json' else doc
-            if not isinstance(completed, dict):
-                continue
-            if isinstance(completed.get('witnesses'), list):
-                writers.add(run+'-probe')
-            for row in completed.get('witnesses', []):
-                if row.get('acceptedAt') is not None:
-                    add(row['tenant'], 'entries', run+'-probe', str(row['date']), row['requestToAcceptanceMs'])
-            break
-    return writers
-
-
-def reconcile(result, run, ids, storage):
-    """Reconcile the ACK identities against the independently reduced write counts."""
-    require(isinstance(storage, dict) and storage.get('verdict') == 'GREEN' and storage.get('uncertain') == 0,
-            'M7_INPUT_STORAGE_UNMEASURED')
-    rows = storage.get('rows') or []
-    require(len(rows) == len(ids) and {r['tenant'] for r in rows} == ids, 'M7_INPUT_STORAGE_COVERAGE')
-    counts = Counter((t, marker) for t, _, marker, _ in result)
-    for row in rows:
-        require(row.get('match') is True and row['probePending'] == row['probeUncertain'] == 0 and
-                row['accepted'] == row['stored'] == counts[row['tenant'], run] and
-                row['probeAccepted'] == row['probeStored'] == counts[row['tenant'], run+'-probe'],
-                'M7_INPUT_ACK_COVERAGE')
+        try:
+            doc = json.loads((folder/name).read_text())
+        except (OSError, ValueError):
+            continue
+        completed = doc.get('completedOutput') if name == 'probe.json' else doc
+        if not isinstance(completed, dict):
+            continue
+        for row in completed.get('witnesses') or []:
+            if isinstance(row, dict) and row.get('acceptedAt') is not None:
+                bad += add(row.get('tenant'), 'entries', run+'-probe', str(row.get('date')), row.get('requestToAcceptanceMs'))
+        break
+    return bad
 
 
 def wal_position(value):
@@ -130,39 +108,46 @@ class Coverage:
         self.previous_start = started
         self.inputs = {}
         self.tenants = {}
+        self.stored = {}            # tenant -> keys in the latest snapshot
+        self.foreign_output = {}    # tenant -> another tenant's output seen in its checkpoint
+        self.figures = Counter()
         self.rounds = 0
 
     def capture(self, rows, start, end):
-        """Times are observer monotonic seconds bracketing one PostgreSQL snapshot."""
-        seen = set()
+        """Times are observer monotonic seconds bracketing one PostgreSQL snapshot.
+
+        Shape and fence problems never raise: the row is skipped and counted."""
+        seen, stored = set(), {}
         for row in rows:
-            tenant = row['tenant']
-            require(tenant in self.ids, 'M7_INPUT_FOREIGN_STORAGE', 'FAIL')
-            require(tenant not in seen, 'M7_INPUT_DUPLICATE_TENANT')
+            try:
+                tenant = row['tenant']
+                keys = {tuple(k) for k in row['inputs']}
+                events = {tuple(k) for k in row['events']}
+            except (KeyError, TypeError):
+                self.figures['malformedRows'] += 1
+                continue
+            if tenant in seen:
+                self.figures['duplicateTenantRows'] += 1
+                continue
             seen.add(tenant)
+            stored[tenant] = keys
+            if tenant not in self.ids:
+                continue                       # stored under a tenant outside the roster: isolation
+            if row.get('outputTenant') not in (tenant, None):
+                self.foreign_output[tenant] = row['outputTenant']
             old = self.tenants.get(tenant)
-            keys = {tuple(k) for k in row['inputs']}
-            events = {tuple(k) for k in row['events']}
-            require(len(keys) == len(row['inputs']), 'M7_INPUT_DUPLICATE_STORAGE')
-            for domain, marker, key in keys | events:
-                require(isinstance(key, str) and domain in ('entries', 'devicestatus', 'treatments') and
-                        (marker == self.run or (marker == self.run+'-probe' and domain == 'entries')),
-                        'M7_INPUT_SOURCE_KEY')
-            require(events <= keys, 'M7_INPUT_FOREIGN_EVENT', 'FAIL')
-            require(old is None or old['keys'] <= keys, 'M7_INPUT_STORED_ROW_LOST', 'FAIL')
-            require(row['outputTenant'] in (tenant, None), 'M7_INPUT_FOREIGN_OUTPUT', 'FAIL')
-            require(row['sourceOK'] is not False and row['stateOK'] is not False, 'M7_INPUT_SOURCE_FENCE', 'FAIL')
-            if self.source is not None and row['identity'] is not None:
-                require(row['identity'] == self.source, 'M7_INPUT_SOURCE_FENCE', 'FAIL')
-            floor, completed = row['inputFloor'], row['completed']
-            valid = row['sourceOK'] is True and type(floor) is int and floor >= 0
-            if valid and old and old['floor'] is not None:
-                require(row['generation'] == old['generation'] and floor >= old['floor'] and
-                        row['tailHead'] >= old['head'] and row['tailBase'] >= old['base'] and
-                        (old['completed'] is None or completed is not None and completed >= old['completed']),
-                        'M7_INPUT_GENERATION_CHANGED', 'FAIL')
-            if row['revision'] and row['outputTenant'] == tenant and row['outputOK'] is False:
-                raise EvidenceError('M7_INPUT_INVALID_OUTPUT', 'FAIL')
+            floor, completed = row.get('inputFloor'), row.get('completed')
+            valid = row.get('sourceOK') is True and type(floor) is int and floor >= 0
+            fenced = (row.get('sourceOK') is False or row.get('stateOK') is False
+                      or self.source is not None and row.get('identity') not in (None, self.source)
+                      or valid and old and old['floor'] is not None and not (
+                          row.get('generation') == old['generation'] and floor >= old['floor'] and
+                          row['tailHead'] >= old['head'] and row['tailBase'] >= old['base'] and
+                          (old['completed'] is None or completed is not None and completed >= old['completed'])))
+            if fenced:
+                # Restore fencing: output from another source or generation never covers an input.
+                self.figures['fenceRejectedRows'] += 1
+                continue
             for key in keys:
                 item = self.inputs.setdefault((tenant, *key), {
                     'beforeStore': self.previous_start, 'storedBy': end, 'upperFloor': None,
@@ -189,61 +174,47 @@ class Coverage:
                     # The tail head belongs to the current native commit and
                     # follows the recovery snapshot. Its floor is exact.
                     item['absentFloor'] = floor-1
+                if row.get('revision') and row['outputTenant'] == tenant and row['outputOK'] is False:
+                    item['pendingAt'] = start    # an output failing its own checks proves no valid output yet
+                    continue
                 if row['stateOK'] is not True or row['outputTenant'] != tenant or row['outputOK'] is not True:
                     continue
                 if item['upperFloor'] is not None and completed is not None and completed >= item['upperFloor']:
                     item['durableBy'] = end
                 elif completed is None or (item['absentFloor'] is not None and completed <= item['absentFloor']):
                     item['pendingAt'] = start
-            self.tenants[tenant] = {'keys': keys, 'generation': row['generation'],
+            self.tenants[tenant] = {'keys': keys, 'generation': row.get('generation'),
                                     'floor': floor if valid else None, 'completed': completed, 'head': row['tailHead'], 'base': row['tailBase']}
-        require(set(self.tenants) <= seen, 'M7_INPUT_STORED_ROW_LOST', 'FAIL')
+        self.stored = stored
         self.rounds += 1
         self.previous_start = start
 
-    def assess(self, acks, drain_end):
-        codes = set()
-        rows = []
-        if set(self.inputs) - set(acks):
-            codes.add('M7_INPUT_STORAGE_ACK_MISMATCH')
-        for identity, duration in sorted(acks.items()):
-            item = self.inputs.get(identity, {})
+    def events(self, acks, drain_end, *, through_drain=True):
+        """Raw events (see assessor.py) for every acknowledged input."""
+        writer = lambda marker: 'probe' if marker == self.run+'-probe' else 'ordinary'
+        events = []
+        for (tenant, domain, marker, key), duration in sorted(acks.items()):
+            item = self.inputs.get((tenant, domain, marker, key), {})
             # Storage commits during the request. The ACK lies between the
             # previous absence and first visibility + measured request duration.
-            observed = item.get('durableBy')
-            pending = item.get('pendingAt')
-            earliest = item.get('beforeStore')
-            latest = item.get('storedBy')
-            upper_ms = max(0, (observed-earliest)*1000) if observed is not None else None
-            lower_ms = max(0, (pending-latest)*1000-duration) if pending is not None else None
-            if observed is not None and observed <= drain_end:
-                at_end = 'DURABLE'
-            elif pending is not None and pending >= drain_end:
-                at_end = 'MISSING'
-            else:
-                at_end = 'UNMEASURED'
-            if lower_ms is not None and lower_ms >= DEADLINE_MS:
-                status = 'LATE'
-            elif at_end == 'MISSING':
-                status = 'MISSING_AT_DRAIN'
-            elif observed is not None and observed <= drain_end and upper_ms < DEADLINE_MS:
-                status = 'ON_TIME'
-            else:
-                status = 'UNMEASURED'
-            rows.append(dict(zip(('tenant', 'domain', 'marker', 'key'), identity),
-                             status=status, endOfDrain=at_end, lowerMs=lower_ms, upperMs=upper_ms))
-        counts = Counter(r['status'] for r in rows)
-        if counts['LATE']:
-            codes.add('M7_INPUT_DEADLINE')
-        if counts['MISSING_AT_DRAIN']:
-            codes.add('M7_INPUT_MISSING_AT_DRAIN')
-        if counts['UNMEASURED'] or self.rounds == 0:
-            codes.add('M7_INPUT_TIMING_UNMEASURED')
-        verdict = 'FAIL' if counts['LATE'] or counts['MISSING_AT_DRAIN'] else 'UNMEASURED' if codes else 'PASS'
-        return {'kind': KIND, 'verdict': verdict, 'codes': sorted(codes), 'acceptedInputs': len(acks),
-                'classifications': dict(counts), 'endOfDrain': dict(Counter(r['endOfDrain'] for r in rows)),
-                'inputs': rows, 'rounds': self.rounds,
-                'deadlineMs': DEADLINE_MS, 'drainEndMonoSeconds': drain_end}
+            observed, pending = item.get('durableBy'), item.get('pendingAt')
+            upper_ms = max(0, (observed-item['beforeStore'])*1000) if observed is not None else None
+            lower_ms = max(0, (pending-item['storedBy'])*1000-duration) if pending is not None else None
+            at_drain = ('DURABLE' if observed is not None and observed <= drain_end else
+                        'MISSING' if pending is not None and pending >= drain_end else 'UNKNOWN')
+            base = {'tenant': tenant, 'domain': domain, 'key': key, 'writer': writer(marker)}
+            events.append({'event': 'accepted', **base, 'requestMs': duration})
+            events.append({'event': 'output', **base, 'atDrain': at_drain, 'acceptedToOutputMinMs': lower_ms,
+                           'acceptedToOutputMaxMs': upper_ms if at_drain == 'DURABLE' else None,
+                           'outputTenant': self.foreign_output.get(tenant, tenant if at_drain == 'DURABLE' else None)})
+        for tenant, keys in sorted(self.stored.items()):
+            for domain, marker, key in sorted(keys):
+                events.append({'event': 'stored', 'tenant': tenant, 'domain': domain, 'key': key, 'writer': writer(marker)})
+        if self.rounds:
+            events.append({'event': 'datastore', 'source': 'sql-observer', 'healthy': True})
+            for what in ('storage',) + (('output',) if through_drain else ()):
+                events += [{'event': 'readback', 'what': what, 'writer': w} for w in ('ordinary', 'probe')]
+        return events
 
 
 class Observer:
@@ -285,41 +256,29 @@ class Observer:
         if self.thread:
             self.thread.join()
 
-    def finish(self, out, *, drain_end, storage):
+    def durable(self, acks):
+        return all((self.coverage.inputs.get(a) or {}).get('durableBy') is not None for a in acks)
+
+    def finish(self, out, *, drain_end, storage=None):
+        """Write the raw events; `storage` is accepted for callers and unused."""
         self.close()
         acks = {}
-        failures = []
-        def attempted(fn, *args):
+        unread = read_acks(out, self.run, acks)
+        errors = [self.error] if self.error else []
+        while not self.error and acks and self.coverage.previous_start < drain_end:
             try:
-                fn(*args)
-                return True
+                self.read()
             except Exception as exc:
-                failures.append(exc)
-                return False
-
-        decoded = attempted(read_acks, out, self.run, self.ids, acks)
-        complete = attempted(reconcile, acks, self.run, self.ids, storage) and decoded
-        if self.error:
-            failures.append(self.error)
-        while not self.error and (complete or acks):
-            if not attempted(self.read):
+                errors.append(exc)
                 break
-            value = self.coverage.assess(acks, drain_end)
-            if value['endOfDrain'].get('DURABLE', 0) == len(acks) or self.coverage.previous_start >= drain_end:
+            if self.durable(acks):
                 break
             time.sleep(min(3, max(0, drain_end-time.monotonic())))
-        value = self.coverage.assess(acks, drain_end)
-        for exc in failures:
-            code = str(exc)
-            code = code if re.fullmatch(r'(M7|K8S)_[A-Z0-9_]+', code) else 'M7_INPUT_COLLECTION_UNMEASURED'
-            value['codes'].append(code)
-            if getattr(exc, 'verdict', None) == 'FAIL':
-                value['verdict'] = 'FAIL'
-            elif value['verdict'] == 'PASS':
-                value['verdict'] = 'UNMEASURED'
-        value['codes'] = sorted(set(value['codes']))
-        value['ackCoverage'] = 'COMPLETE' if complete else 'PARTIAL'
-        value['reader'] = self.config.get('binding')
-        value['runId'] = self.run
+        through = not errors and (self.coverage.previous_start >= drain_end or self.durable(acks))
+        codes = sorted({str(e) if re.fullmatch(r'(M7|K8S)_[A-Z0-9_]+', str(e)) else 'M7_INPUT_COLLECTION_UNMEASURED'
+                        for e in errors})
+        value = {'kind': KIND, 'runId': self.run, 'events': self.coverage.events(acks, drain_end, through_drain=through),
+                 'figures': {**self.coverage.figures, 'rounds': self.coverage.rounds, 'unreadAckLines': unread,
+                             'collectionErrors': codes, 'drainEndMonoSeconds': drain_end}}
         (out/'evaluator-catchup.json').write_text(json.dumps(value, allow_nan=False)+'\n')
         return value

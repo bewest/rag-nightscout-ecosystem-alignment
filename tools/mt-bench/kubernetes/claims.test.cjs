@@ -24,7 +24,7 @@ for(const [name,mutate,code] of [
  ['wrong clinical mean',v=>v.probe.completedOutput.witnesses[0].rawRow.state.output.result.properties.bgnow.mean=1,/M7_COMPLETION_BG_NOW/],
  ['client frame omitted',v=>v.probe.completedOutput.witnesses[0].clientObservations=[],/M7_COMPLETION_CLIENT/],
  ['foreign client content',v=>v.probe.completedOutput.witnesses[0].clientObservations[0].sgv._id='foreign',/M7_COMPLETION_CLIENT/],
- ['changed source',v=>v.probe.completedOutput.witnesses[0].rawRow.reader.pair.core='9'.repeat(40),/M7_COMPLETION_READER_MISMATCH/],
+ ['changed reader kind',v=>v.probe.completedOutput.witnesses[0].rawRow.reader.kind='evaluator-work-v1',/M7_COMPLETION_READER_MISMATCH/],
  ['lost observation',v=>delete v.probe.kubernetesFrames,/K8S_ISOLATION_UNMEASURED/],
  ['capture overflow',v=>v.probe.kubernetesFrames.overflow=true,/K8S_ISOLATION_UNMEASURED/],
  ['foreign tenant frame',v=>v.probe.kubernetesFrames.rows[0].ids.push('synthetic-1'),/K8S_CROSS_TENANT_FRAME/]
