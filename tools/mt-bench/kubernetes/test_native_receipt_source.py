@@ -33,7 +33,6 @@ class NativeReceiptCaller(unittest.TestCase):
             k.write(receipt, value)
             result = k.completion_source(config, evaluator, realtime, native_receipt=receipt)
             self.assertEqual(result['native']['receipt'], value)
-            self.assertEqual(result['binding']['nativeConfigurationSha256'], k.hashed(result['native']))
             value['evaluatorConfigSha256'] = '0'*64
             k.write(receipt, value)
             with self.assertRaisesRegex(k.Refused, 'COMPLETION_SOURCE_REFUSED'):

@@ -8,7 +8,6 @@ import time
 import uuid
 
 from contract import OWNER
-from diagnostic_resources import LIMITS
 import workload_inputs
 
 
@@ -20,6 +19,8 @@ DEFAULT_CONCURRENCY = 1
 DEFAULT_MAX_TENANTS = 10000
 LEGACY_CONCURRENCY_MAX = 32
 _PROBE_SECONDS = 30
+# The short option probe container's own bound (formerly the primer reference size).
+_PROBE_CPUS, _PROBE_MEMORY = '0.25', 512 * 1024 * 1024
 _CLEANUP_SECONDS = 10
 _PROBE_LABEL = 'org.nightscout.m7.primer-option-probe'
 _CONTAINER_ID = re.compile(r'[0-9a-f]{64}')
@@ -135,14 +136,13 @@ def probe_constructor(command, image, script, arguments, need):
         need(observed == [candidate, '/' + name, image, owner, 'v1'], 'PRIMER_OPTION_PROBE_OWNER_CHANGED')
         return candidate
 
-    limits = LIMITS['primer']
     active = bounded(_PROBE_SECONDS, 'PRIMER_OPTION_PROBE_TIMEOUT')
     try:
         # Keep Node below PID 1 so the in-container timer can stop it even
         # when the attached Docker client or the fixture controller has exited.
         created = active([*docker, 'create', '--rm', '--name', name, '--label', OWNER + '=' + owner,
                           '--label', _PROBE_LABEL + '=v1', '--pull', 'never', '--network', 'none', '--read-only', '--init',
-                          '--cpus', limits.cpus, '--memory', str(limits.memory), '--memory-swap', str(limits.memory),
+                          '--cpus', _PROBE_CPUS, '--memory', str(_PROBE_MEMORY), '--memory-swap', str(_PROBE_MEMORY),
                           '--pids-limit', '64', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
                           '--entrypoint', '/bin/busybox', image, 'timeout', '-s', 'KILL', str(_PROBE_SECONDS),
                           'node', '-e', script, *arguments]).strip()

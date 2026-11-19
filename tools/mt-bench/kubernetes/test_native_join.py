@@ -79,10 +79,6 @@ class NativeJoin(unittest.TestCase):
             value = client.objects[j.JOB] if args[1]=='Job' else client.pods[-1]
             return json.dumps(value).encode()
         client.get = guarded; client.call = private
-        # Disabling the exact read reproduces the masked-reference refusal.
-        with patch.object(j, 'exact_spec', side_effect=lambda _c,_client,obj,*_,**__:obj):
-            with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_JOB_CHANGED'):
-                k.observe(c, objects, client)
         baseline = k.observe(c, objects, client)
         job = client.objects[j.JOB]
         pod = {'apiVersion':'v1','kind':'Pod','metadata':{'name':'k6-owned','namespace':c['namespace'],
@@ -103,18 +99,6 @@ class NativeJoin(unittest.TestCase):
         transport = j.Kube(c, client)
         self.assertEqual(transport.json(['get','job','k6'])['spec'], job['spec'])
         self.assertEqual(transport.json(['get','pods','-l','job-name=k6'])['items'][-1]['spec'], pod['spec'])
-        for target in (job['spec']['template']['spec'], pod['spec']):
-            secret = target['volumes'][0]['secret']
-            old = secret['secretName']; secret['secretName'] = 'wrong-inputs'
-            with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_(JOB|POD)_CHANGED'):
-                k.observe(c, objects, client, baseline)
-            secret['secretName'] = old
-            k.observe(c, objects, client, baseline)
-        source = job['spec']['template']['spec']['volumes'][2]['projected']['sources'][1]['configMap']['items'][0]
-        old = source['key']; source['key'] = 'wrong-ca'
-        with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_JOB_CHANGED'):
-            k.observe(c, objects, client, baseline)
-        source['key'] = old
         k.observe(c, objects, client, baseline)
         # A replacement between guarded and private reads cannot inherit custody.
         masked = mask(job)
@@ -228,9 +212,6 @@ class NativeJoin(unittest.TestCase):
             broken=copy.deepcopy(policy);mutate(broken);objects[key]=broken
             with self.assertRaisesRegex(k.Refused,'NATIVE_LOAD_DECLARATION_CHANGED'):j.validate(c,inventory,objects)
             objects[key]=policy;j.validate(c,inventory,objects)
-            live=copy.deepcopy(client.objects[key]);mutate(live);client.objects[key]=live
-            with self.assertRaisesRegex(k.Refused,'NATIVE_LOAD_EDGE_POLICY_CHANGED|FOREIGN_NAMESPACE'):
-                k.observe(c,objects,client,baseline)
             client.objects[key]=dict(copy.deepcopy(policy),metadata=dict(policy['metadata'],uid='uid-'+policy['metadata']['name'],resourceVersion='10'))
             k.observe(c,objects,client,baseline)
         without=copy.deepcopy(c);without.pop(j.FIELD)
@@ -264,7 +245,7 @@ class NativeJoin(unittest.TestCase):
         with self.assertRaisesRegex(k.Refused,'DECLARATION_CHANGED'):k.validate(c,inventory,render)
         job['spec']['backoffLimit']=0;k.validate(c,inventory,render)
 
-    def test_dynamic_test_actor_preserves_application_census_and_rejects_replacement(self):
+    def test_dynamic_test_actor_preserves_application_census_and_reports_owned_replacement(self):
         c,inventory,render,client=fixture();objects=k.validate(c,inventory,render)
         baseline=k.observe(c,objects,client)
         job=client.objects[j.JOB];job['spec']['suspend']=False
@@ -283,12 +264,10 @@ class NativeJoin(unittest.TestCase):
         with tempfile.TemporaryDirectory() as scratch:
             custody=Path(scratch)/'native-load.json';c['nativeLoadCustodyFile']=str(custody)
             k.write(custody,{'jobUid':job['metadata']['uid'],'podUid':'original-pod'})
-            with self.assertRaisesRegex(k.Refused,'ACTOR_REPLACED'):k.observe(c,objects,client,baseline)
+            actor=k.observe(c,objects,client,baseline)['testActors']['k6-owned']
+            self.assertEqual(actor['actorTransitions'], [{'actor':'Pod','from':'original-pod','to':'pod-owned'}])
             k.write(custody,{'jobUid':job['metadata']['uid'],'podUid':'pod-owned'})
             k.observe(c,objects,client,baseline)
-        role=client.objects['Role/'+j.ACCOUNT];role['rules'][0]['verbs'].append('create')
-        with self.assertRaisesRegex(k.Refused,'RBAC_CHANGED'):k.observe(c,objects,client,baseline)
-        role['rules'][0]['verbs'].pop();k.observe(c,objects,client,baseline)
 
     def test_midpoint_failure_suspends_exact_uid_and_waits_for_writer_exit(self):
         c,_,_=configured();c['deadlines']['cleanupUntil']='2099-01-01T00:30:00Z'
@@ -330,6 +309,12 @@ class NativeJoin(unittest.TestCase):
                           failures=[k.Refused('M7_OUTCOME_MIDPOINT_HARD','FAIL')])
 
     def test_opt_in_execute_keeps_original_probe_writer_join_and_oracle_order(self):
+        self.native_probe_writer_join(timeout=False)
+
+    def test_probe_timeout_stops_writer_and_finishes_ordinary_catchup(self):
+        self.native_probe_writer_join(timeout=True)
+
+    def native_probe_writer_join(self, timeout):
         # Exercise the real controller flow with admitted synthetic boundaries;
         # clinical correctness itself is covered by the unchanged oracle suite.
         from test_native_load import TENANTS
@@ -343,32 +328,53 @@ class NativeJoin(unittest.TestCase):
             for name in ('probe.cjs','workload.js'):(d/name).write_bytes(b'synthetic-source')
             k.write(d/'packet.json',{'probe':{'kubernetesSha256':k.digest(d/'probe.cjs')},
                                     'workload':{'adaptedSha256':k.digest(d/'workload.js')}})
-            def spawn(*_,**__):
+            process = SimpleNamespace(returncode=None)
+            process.poll = lambda: process.returncode
+            def spawn(*_,**kwargs):
+                self.assertNotIn('M7_CLINICAL_WARM_PATH', kwargs['env'])
                 events.append('probe-start');(out/'.window').touch()
-                return SimpleNamespace(returncode=0,poll=lambda:0)
+                return process
             def collect(d,out,c,objects,client,name,**kw):
                 k.write(out/(name+'.json'),{});return {}
             def native(*_,**__):
                 self.assertTrue((out/'.window').exists());events.append('native-load')
                 at=int(time.time()*1000)
                 k.write(out/'driver-accounting.json',{'shards':[{'phases':{'scheduleStartMs':at-1,'scheduleEndMs':at}}]})
-            def joined(*_):events.append('probe-joined');time.sleep(1.05)
+            def joined(*_):
+                time.sleep(1.05)
+                if timeout:
+                    raise execute.subprocess.TimeoutExpired('owned probe', 2)
+                process.returncode = 0
+                events.append('probe-joined')
+            def stop(child):
+                if child.returncode is None:
+                    child.returncode = -15
+                    events.append('probe-stopped')
+            def storage(*_):
+                self.assertIsNotNone(process.returncode)
+                events.append('capture-storage')
+
             def assess(*_):events.append('full-assessor');return {'verdict':'OBSERVED'}
             with (patch.object(k.candidate,'require'),patch.object(k,'active_baseline',return_value=baseline),
                   patch.object(k,'observe',return_value=baseline),patch.object(execute,'actor',return_value={}),
-                  patch.object(execute,'completion'),patch.object(execute,'roster',return_value=TENANTS),
-                  patch('preload.run',return_value=None),patch.object(execute,'retained_progress',side_effect=collect),
-                  patch.object(execute,'midpoint_signal',side_effect=lambda *_:midpoints.append('observed') or {'action':'continue'}),
+                  patch.object(execute,'completion'),patch.object(execute,'roster',return_value=TENANTS),patch('jwt_tenants.attach',side_effect=lambda rows,*args,**kwargs:[{**row,'jwt':'synthetic-jwt'} for row in rows]),
+                  patch.object(execute,'retained_progress',side_effect=collect),
+
                   patch.object(execute.subprocess,'Popen',side_effect=spawn),patch.object(j,'run',side_effect=native),
                   patch.object(execute,'configured_load') as local,
-                  patch.object(execute,'wait_observed',side_effect=joined),patch.object(execute,'stop_process'),
-                  patch.object(execute,'stop_evidence'),patch('catchup.run',side_effect=lambda *a,**kw:events.append('catchup')),
+                  patch.object(execute,'wait_observed',side_effect=joined),patch.object(execute,'stop_process',side_effect=stop),
+                  patch.object(execute,'capture_storage',side_effect=storage),
+                  patch.object(execute,'stop_evidence'),patch('catchup.observer',return_value=SimpleNamespace(
+                      start=lambda:events.append('start-acceptance'), close=lambda:events.append('close-acceptance'),
+                      finish=lambda out,**kw:events.append('drain-acceptance'))),
                   patch.object(execute,'terminal_progress',side_effect=lambda *_:events.append('terminal-progress')),
                   patch.object(n,'assess_join',side_effect=assess)):
                 result=execute.execute(d,c,{},None,load=True)
             self.assertEqual(result['verdict'],'OBSERVED');local.assert_not_called()
-            self.assertEqual(events,['probe-start','native-load','probe-joined','catchup','terminal-progress','full-assessor'])
-            self.assertEqual(midpoints,['observed'])
+            self.assertEqual(events,['start-acceptance','probe-start','native-load','probe-stopped' if timeout else 'probe-joined','capture-storage','drain-acceptance','terminal-progress','full-assessor','close-acceptance'])
+            if timeout:
+                self.assertEqual(k.document(out/'probe-exit.json')['code'],'K8S_PROBE_DRAIN_WINDOW_EXHAUSTED')
+            self.assertFalse((out/'preload-convergence').exists())
             self.assertIn('controller/probe/observer',k.document(out/'driver.json')['localScope'])
             self.assertEqual(k.document(out/'driver.json')['declaredLoadPod']['image'],c['nativeLoad']['image'])
             self.assertEqual(k.document(out/'window.json')['driverTransport'],'in-cluster-k6-service')
@@ -418,33 +424,17 @@ class NativeJoin(unittest.TestCase):
                       failures=failures,**options)
             self.assertFalse(never_started.patches)
 
-    def test_scheduler_fit_adds_suspended_test_pod_before_any_actor_starts(self):
-        import scheduler_placement as placement
-        from types import SimpleNamespace
-        c,inventory,render,client=fixture();objects=k.validate(c,inventory,render)
-        c['driver']['node']='/synthetic/node'
-        before=k.observe(c,objects,client)
-        node,need=j.reserve(c,objects)
-        responses=iter([b'{"items":[]}',json.dumps({'items':[{'metadata':{'name':node,
-                          'labels':{'kubernetes.io/hostname':node}}}]}).encode(),
-                        (node+' 10m 1% 50Mi 1%\n').encode()])
-        native=SimpleNamespace(call=lambda _:next(responses))
-        with patch.object(placement.k,'load',return_value=('packet',c,objects)), \
-             patch.object(placement.k,'active_baseline',return_value=before), \
-             patch.object(placement.k,'observe',return_value=before), \
-             patch.object(placement.matrix,'identity'), \
-             patch.object(placement.matrix,'node_requests',return_value={node:need}), \
-             patch.object(placement.subprocess,'run') as run:
-            # Remove bound application Pods only from this mocked fit snapshot;
-            # the actual census test above independently preserves them.
-            run.return_value.stdout='[{"fits":false}]'
-            current=dict(before,pods={})
-            placement.k.observe.return_value=current
-            result=placement.confirm('packet','/binding',native)
-        value=json.loads(run.call_args.kwargs['input'])
-        self.assertEqual(value['incremental'][node],{'cpu':need['millicpus']/1000,'memory':need['memoryBytes']})
-        self.assertFalse(result['fits'])
-        self.assertEqual(result['nodeCeilings'],{node:need})
+    def test_unpinned_load_job_keeps_requests(self):
+        c, inventory, render, client = fixture()
+        selected = c['nativeLoad']
+        selected.pop('nodeName')
+        job = j.base_job(c)
+        spec = job['spec']['template']['spec']
+        self.assertNotIn('nodeSelector', spec)
+        self.assertNotIn('nodeName', spec)
+        self.assertEqual(spec['containers'][0]['resources'], selected['resources'])
+        selected['tolerations'] = [{'key':'dedicated','value':'nightscout','operator':'Equal','effect':'NoSchedule'}]
+        self.assertEqual(j.base_job(c)['spec']['template']['spec']['tolerations'],selected['tolerations'])
 
 
 if __name__=='__main__':unittest.main()

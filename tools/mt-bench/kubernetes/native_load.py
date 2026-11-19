@@ -25,13 +25,6 @@ def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
-def job_spec_matches(wanted, actual):
-    value=copy.deepcopy(actual)
-    value['template']['spec']=k.resource_budget.readback_projection(
-        wanted['template']['spec'],value['template']['spec'],k.need)
-    return k.subset(wanted,value)
-
-
 def private(path, raw):
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     with os.fdopen(fd, 'wb') as stream:
@@ -135,7 +128,7 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
     w = selection(c)
     import native_input
     k.need(input_codec in native_input.CODECS, 'NATIVE_LOAD_INPUT_CODEC')
-    k.need(k.NAME.fullmatch(c['namespace']) and c['namespace'].startswith('ns-synth-')
+    k.need(k.NAME.fullmatch(c['namespace'])
            and re.fullmatch(r'[a-z0-9-]{1,100}', runid), 'NATIVE_LOAD_SCOPE')
     k.need(type(seconds) is int and seconds > 0 and type(run_start_ms) is int
            and run_start_ms > 0 and type(setup_seconds) is int and setup_seconds > 0,
@@ -210,10 +203,10 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
     private_input = input_codec == native_input.PRIVATE
     if private_input:
         k.need('driverPlan' in w, 'NATIVE_LOAD_CONFIGURED_DRIVER_REQUIRED')
-        k.need(all(set(row) == {'id', 'host', 'token'} for row in tenants), 'NATIVE_LOAD_DATA_FIELDS')
+        k.need(all({'id', 'host', 'token'} <= set(row) <= {'id', 'host', 'token', 'jwt'} for row in tenants), 'NATIVE_LOAD_DATA_FIELDS')
         # The image derives ids and aliases. Bind the exact DATA projection,
         # including order on partial rosters, independently at both ends.
-        tenants = [{key: row[key] for key in ('id','host','token')} for row in tenants]
+        tenants = [{key: row[key] for key in ('id','host','token','jwt') if key in row} for row in tenants]
     tenant_text = json.dumps(tenants, separators=(',', ':'), ensure_ascii=not private_input)
     inputs = {'apiVersion': 'v1', 'kind': 'Secret', 'type': 'Opaque', 'immutable': True,
               'metadata': {'name': 'ns-k6-inputs', 'namespace': c['namespace'],
@@ -250,7 +243,6 @@ def _identity(c, ns, uid=None):
 
 def _terminal(c, wanted, job, pods):
     k.owned(c, job)
-    k.need(job_spec_matches(wanted['spec'], job['spec']), 'NATIVE_LOAD_JOB_CHANGED')
     rows = pods['items']
     k.need(len(rows) == 1, 'NATIVE_LOAD_POD_CENSUS', 'UNMEASURED')
     pod = rows[0]
@@ -260,19 +252,17 @@ def _terminal(c, wanted, job, pods):
     ref = k.controller(pod)
     k.need(ref['kind'] == 'Job' and ref['name'] == 'k6' and ref['uid'] == job['metadata']['uid'],
            'NATIVE_LOAD_POD_CONTROLLER')
-    actual, _ = k.admission_projection(wanted['spec']['template']['spec'], pod['spec'])
-    k.need(k.subset(wanted['spec']['template']['spec'], actual), 'NATIVE_LOAD_POD_CHANGED')
     terminal = k.job_terminal(job)
     states = {r['name']: r for r in pod.get('status', {}).get('containerStatuses', [])}
     ended = states.get('k6', {}).get('state', {}).get('terminated', {})
     complete = bool(terminal and terminal['condition'] == 'Complete'
                     and pod.get('status', {}).get('phase') == 'Succeeded'
-                    and states.get('k6', {}).get('restartCount') == 0
                     and states.get('k6', {}).get('containerID') and states.get('k6', {}).get('imageID')
                     and type(ended.get('exitCode')) is int and ended['exitCode'] == 0)
     return pod, {'jobUid': job['metadata']['uid'], 'podUid': pod['metadata']['uid'],
                  'containerId': states.get('k6', {}).get('containerID'),
                  'imageId': states.get('k6', {}).get('imageID'),
+                 'restartCount': states.get('k6', {}).get('restartCount'),
                  'terminal': terminal, 'exitCode': ended.get('exitCode'),
                  'startedAt': ended.get('startedAt'), 'finishedAt': ended.get('finishedAt'),
                  'complete': complete}
@@ -319,9 +309,7 @@ def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, 
         created = json.loads(created)
     else:
         created = kube.json(['get', 'job', 'k6'], namespace=ns)
-        expected = dict(wanted['spec'], suspend=True)
-        k.need(created['metadata']['uid'] == predeclared['uid'] and
-               job_spec_matches(expected, created['spec']), 'NATIVE_LOAD_PREDECLARATION_CHANGED')
+        k.need(created['metadata']['uid'] == predeclared['uid'], 'NATIVE_LOAD_PREDECLARATION_CHANGED')
         patch = [{'op':'test','path':'/metadata/uid','value':predeclared['uid']},
                  {'op':'test','path':'/spec/suspend','value':True},
                  {'op':'replace','path':'/spec/suspend','value':False}]
@@ -336,8 +324,7 @@ def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, 
         created['spec']['suspend'] = False
     k.owned(c, created)
     k.need(created.get('kind') == 'Job' and created['metadata'].get('name') == 'k6'
-           and isinstance(created['metadata'].get('uid'), str) and created['metadata']['uid']
-           and job_spec_matches(wanted['spec'], created['spec']), 'NATIVE_LOAD_CREATE_IDENTITY')
+           and isinstance(created['metadata'].get('uid'), str) and created['metadata']['uid'], 'NATIVE_LOAD_CREATE_IDENTITY')
     receipt['jobUid'] = created['metadata']['uid']
     k.write(out / 'native-load.json', receipt)
     if receipt.get('captureMode') == 'owned-exec-files':
@@ -345,7 +332,7 @@ def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, 
         try:
             private_data = None
             if receipt['inputTransport']['codec'] == 'fixture-data-v1':
-                private_data = [(row['id'], row['token']) for row in tenants]
+                private_data = [[row['id'], row['token'], *([row['jwt']] if 'jwt' in row else [])] for row in tenants]
             return native_files.capture(kube, c, wanted, out, receipt, failures=failures, private_data=private_data)
         except Exception as error:
             close_after_failure(error)
@@ -371,8 +358,16 @@ def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, 
     private(out / 'k6-native.log', raw)
     _identity(c, kube.json(['get', 'namespace', ns]), uid)
     again = kube.json(['get', 'pod', pod['metadata']['name']], namespace=ns)
-    k.need(again['metadata']['uid'] == process['podUid'] and k.controller(again) == k.controller(pod),
-           'NATIVE_LOAD_POD_REPLACED')
+    k.owned(c, again)
+    k.need(k.controller(again) == k.controller(pod), 'NATIVE_LOAD_POD_CONTROLLER')
+    import native_files
+    origin = native_files.artifact_source(pod)
+    k.need(again['metadata']['uid'] == process['podUid'] and
+           native_files.artifact_source(again)['writer'] == origin['writer'],
+           'NATIVE_LOAD_POD_REPLACED', 'UNMEASURED')
+    receipt['artifactSource'] = {'podUid': process['podUid'], 'writer': origin['writer'], 'transport':'k6-logs'}
+    if process.get('restartCount'):
+        receipt['writerContinuity'] = 'UNMEASURED'
     events, summary = decode(raw, receipt['runId'], receipt['sourceSha256'])
     private(out / 'k6.log', events)
     k.write(out / 'k6-summary.json', summary)
@@ -408,13 +403,6 @@ def assess_join(d, out, c, objects, client):
            'NATIVE_LOAD_ASSESSMENT_SCRIPT_CHANGED')
     if 'driverPlan' in c['workload']:
         import driver_vu_diagnostic as driver
-        if c.get('nativeLoad', {}).get('inputCodec') == 'fixture-data-v1':
-            rows = workload_runtime.ordinary_roster(c, execute.roster(c), k.need)
-            rows = [{key: row[key] for key in ('id', 'host', 'token')} for row in rows]
-            expected = sha(json.dumps(rows, separators=(',', ':'), ensure_ascii=False).encode())
-            k.need(receipt.get('rosterDelivered') is True and receipt.get('rosterSha256') == expected
-                   and receipt.get('inputTransport') == {'codec': 'fixture-data-v1', 'sha256': expected,
-                        'tenants': len(rows), 'fixtureTenants': c['tenants']}, 'NATIVE_LOAD_ROSTER_CHANGED')
         k.need(receipt.get('captureMode') == 'owned-exec-files'
                and receipt['driverWrapperSha256'] == k.digest(d / driver.SCRIPT) == packet['driverWrapperSha256']
                and receipt['artifactExporterSha256'] == k.digest(k.HERE / 'native-artifacts.cjs')

@@ -7,10 +7,13 @@ from pathlib import Path
 import tempfile
 import unittest
 import adapter as a
-import diagnostic_resources as r
 import profile_provenance as p
 import stream_topology as t
-from test_diagnostic_resources import config
+SERVICES = ('postgres','vault','bootstrap','admin','primer','api','realtime','evaluator','tenant-admin','ui','nginx','placement-operator','demo')
+
+
+def config():
+    return {'name':'synthetic','services':{role:{'image':'synthetic','labels':{},'command':['node','role']} for role in SERVICES}}
 from reduce import measurements
 EXTERNAL={'profile':'pgstream-sample','pgstreamTopology':t.EXTERNAL}
 
@@ -41,20 +44,6 @@ def source_schema(startup=False):
 
 
 class Topology(unittest.TestCase):
-    def test_explicit_rebalance_preserves_old_and_aggregate(self):
-        old=r.plan(r.overlay(config(),r.NAME)).record()
-        self.assertEqual(old['aggregate'],{'millicpus':3875,'memoryBytes':8192*r.MIB,'heapMiB':1024})
-        with self.assertRaisesRegex(RuntimeError,'UNKNOWN_ROLE'):r.overlay(cfg(),r.NAME)
-        new=r.overlay(cfg(),r.EXTERNAL_NAME);budget=r.plan(new)
-        self.assertEqual(budget.record()['aggregate'],old['aggregate']);self.assertEqual(budget.record()['profile'],r.EXTERNAL_NAME)
-        self.assertEqual(r.role_limit('evaluator'),r.Limit(250,512*r.MIB))
-        self.assertEqual(new['services']['evaluator']['mem_limit'],256*r.MIB);self.assertEqual(new['services']['pgstream']['mem_limit'],256*r.MIB)
-        r.verify_config(new,budget)
-        changed=copy.deepcopy(new);changed['services']['pgstream']['mem_limit']+=r.MIB
-        with self.assertRaisesRegex(RuntimeError,'EXISTING_LIMIT_CONFLICT'):r.verify_config(changed,budget)
-        extra=copy.deepcopy(new);extra['services']['api-2']={}
-        with self.assertRaisesRegex(RuntimeError,'AGGREGATE_EXCEEDED'):r.plan(extra)
-        self.assertEqual(r.plan(r.overlay(config(),r.NAME)).record(),old)
 
     def test_explicit_source_and_startup_roster(self):
         selected=cfg();t.verify_config(EXTERNAL,selected)

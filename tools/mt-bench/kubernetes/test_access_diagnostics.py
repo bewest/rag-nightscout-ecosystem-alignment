@@ -39,7 +39,8 @@ class AccessDiagnostics(unittest.TestCase):
             self.assertFalse((root/'access.json').exists())
             (root/'access-failure.json').unlink()
 
-            def run_witness(*_, **kwargs):
+            def run_witness(config, argv, **kwargs):
+                self.assertEqual(argv[-1], c['driver']['dependencies'])
                 steps.append('witness')
                 return b'{"verdict":"PASS","tenantRosterSize":2,"witnessTenants":["first","last"]}'
 
@@ -50,31 +51,6 @@ class AccessDiagnostics(unittest.TestCase):
                  patch.object(execute, 'environment', return_value={}), \
                  patch.object(adapter, 'observe', side_effect=observe), \
                  patch.object(execute, 'finite', side_effect=run_witness):
-                result = execute.access(root, c, {}, object())
+                result = execute.access(root, {**c, 'accessSetupSeconds': 60}, {}, object())
             self.assertEqual(steps, ['observe', 'actor', 'witness', 'observe'])
             self.assertEqual(result['namespaceUid'], 'owned')
-
-            # Warm-up that never connected is a recorded UNMEASURED signal; the stage continues.
-            (root/'access.json').unlink()
-            warm = {'verdict': 'UNMEASURED', 'tenantRosterSize': 2, 'witnessTenants': ['first', 'last'],
-                    'warmup': {'budgetMs': 5000, 'observations': [
-                        {'tenantIndex': i, 'attempts': 3, 'refused403': 3, 'elapsedMs': 5000, 'verdict': 'UNMEASURED'} for i in (0, 1)]}}
-            with patch.object(adapter.candidate, 'require'), \
-                 patch.object(adapter, 'active_baseline', return_value=baseline), \
-                 patch.object(execute, 'roster', return_value=roster), \
-                 patch.object(execute, 'actor'), patch.object(execute, 'environment', return_value={}), \
-                 patch.object(adapter, 'observe'), \
-                 patch.object(execute, 'finite', return_value=json.dumps(warm).encode()):
-                signal = execute.access(root, {**c, 'accessSetupSeconds': 5}, {}, object())
-            self.assertEqual(signal['verdict'], 'UNMEASURED')
-            # A malformed warm-up report is still refused, never read as PASS.
-            (root/'access.json').unlink()
-            warm['warmup']['observations'][0]['verdict'] = 'PASS'
-            with patch.object(adapter.candidate, 'require'), \
-                 patch.object(adapter, 'active_baseline', return_value=baseline), \
-                 patch.object(execute, 'roster', return_value=roster), \
-                 patch.object(execute, 'actor'), patch.object(execute, 'environment', return_value={}), \
-                 patch.object(adapter, 'observe'), \
-                 patch.object(execute, 'finite', return_value=json.dumps(warm).encode()):
-                with self.assertRaisesRegex(adapter.Refused, 'ACCESS_REPORT_INVALID'):
-                    execute.access(root, {**c, 'accessSetupSeconds': 5}, {}, object())

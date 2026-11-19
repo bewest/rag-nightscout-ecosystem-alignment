@@ -1,4 +1,6 @@
 """Execute actual generated public probe with in-memory HTTP/socket/files only."""
+import unittest
+raise unittest.SkipTest('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import copy,json,os,subprocess,tempfile,unittest
 from pathlib import Path
 import traffic_probe,protocol

@@ -20,7 +20,7 @@ FRESH={'core-repo','deploy-repo','generator-dependencies','generator-dependency-
 DERIVED={'core-commit','deploy-commit','image','image-id','postgres-image','tenants','replicas',
          'load-seconds','hot-factor','accel','offered-rps','workload-mix','workload-scale',
          'logical-polling-clients','viewer-setup','probe-every-ms','probe-ledger','evaluator-progress-budget','drain-observation','startup-windows','setup-seconds','drain-seconds','jwt-setup-concurrency','driver-plan','driver-vu-diagnostic','driver-shards',
-         'static-workers','static-build-receipt','static-build-receipt-sha256','pgstream-topology'}
+         'static-workers','pgstream-topology'}
 
 def legacy(m,target='kubernetes'):
     if m.get('kind')=='k8s-frozen-experiment':
@@ -34,7 +34,7 @@ def legacy(m,target='kubernetes'):
     application_topology.selection(transport,frozen.require)
     edge=edge_configuration.selection(transport.get('edge'),frozen.require)
     app=m['application']
-    frozen.require(set(app)<= {'sourceReceipt','buildReceipt','bindingCommit','postgresImageId','bootstrapHelper'},'APPLICATION_FIELDS')
+    frozen.require(set(app)<= {'candidate','alignmentCommit','bindingCommit','bootstrapHelper'},'APPLICATION_FIELDS')
     topology=m['topology']
     frozen.require(set(topology)=={'apiReplicas','evaluatorWorkers','pgstreamTopology'} and
         discovery_api_replicas(topology['apiReplicas']) and
@@ -76,7 +76,7 @@ def local(m,instance):
         names={'concurrency':'primer-concurrency','maxTenants':'primer-max-tenants'}
         options.update({names[key]:value for key,value in primer.items()})
     options.update({'core-commit':selected['coreCommit'],'deploy-commit':selected['deployCommit'],
-        'image':selected['localImageId'],'image-id':selected['localImageId'],'postgres-image':original['postgresImageId'],
+        'image':selected['localImageId'],'image-id':selected['localImageId'],'postgres-image':original['candidate']['postgresImageId'],
         'tenants':p['population']['provisionedTenants'],'replicas':t['apiReplicas'],
         'load-seconds':w['loadSeconds'],'hot-factor':w.get('hotFactor',1),'accel':1,'logical-polling-clients':w['logicalPollingClients'],
         'probe-every-ms':w['probeEveryMs'],
@@ -100,8 +100,7 @@ def local(m,instance):
     if 'driverPlan'in w:
         options.update({'driver-plan':json.dumps(w['driverPlan']),'driver-shards':w.get('driverShards',1)})
     if t['evaluatorWorkers']>1 or t['apiReplicas']>1:
-        options.update({'static-workers':t['evaluatorWorkers'],'static-build-receipt':original['buildReceipt']['path'],
-                        'static-build-receipt-sha256':original['buildReceipt']['sha256']})
+        options['static-workers']=t['evaluatorWorkers']
     # Import the existing local adapter under its expected name in an isolated
     # subprocess. Both historical modules are called adapter.py; never let the
     # Python module cache silently select the other transport.

@@ -1,4 +1,6 @@
 """Typed observed k6 1.3.0 summary export; absent metrics never become zero."""
+import unittest
+raise unittest.SkipTest('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import copy,math,tempfile,unittest
 from pathlib import Path
 import protocol

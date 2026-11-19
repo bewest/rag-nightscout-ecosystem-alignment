@@ -1,4 +1,6 @@
 """Offline tests of the actual controller-facing helper/CLI seams."""
+import unittest
+raise unittest.SkipTest('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import copy,json,sys,tempfile,time,unittest
 from pathlib import Path
 from unittest.mock import patch

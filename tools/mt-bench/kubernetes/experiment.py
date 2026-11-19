@@ -220,8 +220,7 @@ def workload(m):
 
 
 def render_checks(instance):
-    frozen.read_ref(instance['bindingReceipt'])
-    package = Path(instance['bindingReceipt']['path']).parent / 'bindings/kubernetes'
+    package = Path(instance['binding']) / 'bindings/kubernetes'
     check = """const fs=require('node:fs'),check=require(process.argv[1]);
       const read=path=>JSON.parse(fs.readFileSync(path));
       // Native declarations are an array; older binding flatteners omit arrays.
@@ -243,18 +242,11 @@ def render_checks(instance):
     return [row['name'] for row in rows]
 
 
-def candidate_pin(inventory, binding_reference):
-    """Resolve the same immutable candidate contract for pre-entry and prepare.
-
-    Split inventories project only source identity; the materialized binding
-    receipt, rather than a retired inventory field, holds the full contract.
-    """
+def candidate_pin(inventory, binding):
+    """Resolve the candidate contract for pre-entry and prepare from the binding as selected."""
     if 'verification' not in inventory.get('workloads', {}):
         return inventory['candidateContract']
-    receipt = frozen.read_ref(binding_reference)
-    asset = Path(binding_reference['path']).parent/'bindings/kubernetes/assets/source-contract.json'
-    k.need(k.digest(asset) == receipt['sourceContractSha256'] ==
-           receipt['files']['assets/source-contract.json'], 'CANDIDATE_SOURCE_IMAGE_CHANGED')
+    asset = Path(binding)/'bindings/kubernetes/assets/source-contract.json'
     source_contract = k.document(asset)
     k.need(source_contract['platformVerification'] in k.candidate.STARTUP_PROTOCOLS,
            'VERIFIED_SERVING_BINDING_OPTIONS')
@@ -263,8 +255,7 @@ def candidate_pin(inventory, binding_reference):
     pin.update({key:source_contract[key] for key in
                 (primer_options.FIELD, primer_options.PROTOCOL_FIELD, frozen.ACK_BUDGET)
                 if key in source_contract})
-    pin.update(verificationJob='verification', imageConfigId=source_contract['localImageId'],
-               sourceContractSha256=receipt['sourceContractSha256'])
+    pin.update(verificationJob='verification', imageConfigId=source_contract['localImageId'])
     return pin
 
 
@@ -281,15 +272,12 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
     render = k.document(instance['render'])
     population_ceiling.check_render(m,inventory,k.manifests(render),k.need)
     edge=edge_configuration.check(m,inventory,k.manifests(render),k.need)
-    delivery = frozen.read_ref(instance['delivery'])
-    # The delivered digests are the run identity; Kubernetes pulls by digest.
-    k.need(delivery['app'] == inventory['images']['app'] and delivery['postgres'] == inventory['images']['postgres'],
-           'DELIVERY_IMAGE_CHANGED')
+    # The candidate's image digests are the run identity; Kubernetes pulls by digest.
+    delivery = frozen.candidate(m)
     selected = frozen.source(m)
     split = 'verification' in inventory.get('workloads', {})
-    selected_candidate = candidate_pin(inventory, instance['bindingReceipt'])
+    selected_candidate = candidate_pin(inventory, instance['binding'])
     if split:
-        asset = Path(instance['bindingReceipt']['path']).parent/'bindings/kubernetes/assets/source-contract.json'
         k.need(frozen.PRIMER_STORAGE not in selected and population_ceiling.FIELD not in selected,
                'VERIFIED_SERVING_BINDING_OPTIONS')
     pins = dict(pair=dict(core=selected['coreCommit'], deploy=selected['deployCommit']),
@@ -325,11 +313,6 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
     frozen.check_bootstrap_render(m, objects.values())
     k.need(all(pins['candidate'].get(key) == selected.get(key) for key in
                ('runtimeBootstrapHelper', 'imageSourceAcceptance', 'sourceAcceptance')), 'BOOTSTRAP_HELPER_SCOPE')
-    contract = objects['ConfigMap/provision-scripts']['data']['source-contract.json']
-    if split:
-        frozen.rendered_contract(m, asset.read_bytes(), instance['bindingReceipt'])
-    else:
-        frozen.rendered_contract(m, contract, instance['bindingReceipt'])
     k.need(pins['candidate']['sourceAcceptance'] == selected['sourceAcceptance'], 'CANDIDATE_IMAGE_STATUS')
     checks = render_checks(instance)
     expected_roles = application_topology.role_mapping(application_topology.selection(c, k.need))
@@ -503,7 +486,20 @@ def main():
             command.add_argument('--await-primer', action='store_true', help='bind DATA credentials after verified in-Pod priming')
         if name == 'run':
             command.add_argument('--matrix', type=Path)
+    standard = commands.add_parser('standard', help='Prepare a fresh scheduler-placed discovery case offline')
+    for field in ('template_case','binding','profile','output'):
+        standard.add_argument(field, type=Path)
+    standard.add_argument('--app-image', required=True, help='Candidate application image, REF@sha256:DIGEST')
+    standard.add_argument('--postgres-image', help='PostgreSQL image, REF@sha256:DIGEST (defaults to the template)')
+    standard.add_argument('--namespace-prefix', default='ns-synth-', help='Namespace name prefix; ownership is the run-id label')
+    standard.add_argument('--core', type=Path, help='Core checkout for the driver (defaults to the template checkout)')
+    standard.add_argument('--reserved-worker-taint', metavar='KEY=VALUE', help='Tolerate the reserved worker for this run')
     a = parser.parse_args()
+    if a.action == 'standard':
+        import standard_case
+        return standard_case.prepare(a.template_case,a.binding,a.profile,a.output,app_image=a.app_image,
+                                     postgres_image=a.postgres_image,namespace_prefix=a.namespace_prefix,
+                                     core=a.core,taint=a.reserved_worker_taint)
     if a.action == 'launch':
         return launch(a.config, a.prepare_only)
     if a.action == 'binding':

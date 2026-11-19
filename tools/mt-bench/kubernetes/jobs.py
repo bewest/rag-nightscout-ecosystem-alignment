@@ -26,11 +26,9 @@ def selection(manifest):
     s=manifest['deploymentJobs']
     need(set(s)=={'receipt','requestVersion','topology'} and s['requestVersion']==1,'CAPABILITY_UNSUPPORTED')
     need(s['topology']=='source-default','TOPOLOGY_UNSUPPORTED')
-    r=frozen.read_ref(s['receipt']);app=frozen.source(manifest);build=frozen.read_ref(manifest['buildReceipt'])
+    r=frozen.read_ref(s['receipt']);app=frozen.source(manifest)
     need(r['coreCommit']==app['coreCommit'] and r['applicationDeploy']==app['deployCommit'],
          'APPLICATION_COMPATIBILITY')
-    need(r['producerSha256']==app['producerBinarySha256'] and
-         r['lockSha256']==build['runtime']['lockSha256'],'RUNTIME_COMPATIBILITY')
     need(re.fullmatch(r'sha256:[a-f0-9]{64}',r['localImageId']) and
          re.fullmatch(r'[a-f0-9]{40}',r['toolCommit']),'IMAGE_IDENTITY')
     return r

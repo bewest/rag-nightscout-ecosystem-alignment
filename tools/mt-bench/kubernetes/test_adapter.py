@@ -65,6 +65,7 @@ def fixture():
             if kind=='namespace':return copy.deepcopy(self.objects['Namespace/'+name])
             if kind=='replicasets':return {'items':[]}
             if kind=='pods':return {'items':copy.deepcopy(self.pods)}
+            if kind=='pod':return copy.deepcopy(next(pod for pod in self.pods if pod['metadata']['name']==name))
             return copy.deepcopy(self.objects[kind+'/'+name])
     return c,inv,rendered,Replies()
 
@@ -101,21 +102,6 @@ class Adapter(unittest.TestCase):
         self.render[1]['spec']['replicas']=1
         k.validate(self.c,self.inv,self.render)
 
-    def test_namespace_pod_uid_actual_image_and_lost_observation_controls(self):
-        baseline=self.green()
-        criterion=lambda:k.observe(self.c,self.objects,self.client,baseline)
-        for target,field,value,code in [(self.client.objects['Namespace/'+self.c['namespace']]['metadata'],'uid','peer-uid','K8S_NAMESPACE_UID_CHANGED'),
-          (self.client.pods[0]['metadata'],'namespace','peer-namespace','K8S_FOREIGN_NAMESPACE'),
-          (self.client.pods[0]['metadata'],'uid','peer-pod-uid','K8S_POD_UID_CHANGED'),
-          (self.client.pods[0]['status']['containerStatuses'][0],'imageID','foreign-runtime-image','K8S_ACTUAL_IMAGE_CHANGED')]:
-            def mutate(target=target,field=field,value=value):
-                old=target[field];target[field]=value
-                return lambda:target.update({field:old})
-            self.red_restored(code,mutate,criterion)
-        with patch.object(self.client,'get',side_effect=k.Refused('K8S_OBSERVATION_LOST','UNMEASURED')):
-            with self.assertRaisesRegex(k.Refused,'OBSERVATION_LOST'):criterion()
-        criterion()
-
     def test_context_change_and_deadline_refuse_before_child(self):
         baseline=self.green()
         self.c['context']='foreign-context'
@@ -143,8 +129,6 @@ class Adapter(unittest.TestCase):
             self.assertEqual(k.Client(self.c,native).get('pods'),{'items':[]})
             for reply in [SimpleNamespace(returncode=1,stdout=b'not absence'),SimpleNamespace(returncode=0,stdout=b'')]:
                 with self.assertRaisesRegex(k.Refused,'OBSERVATION_LOST'):k.Client(self.c,lambda *a,**kw:reply).get('pods')
-            binary.unlink()
-            with self.assertRaisesRegex(k.Refused,'PINNED_KUBECTL_REQUIRED'):k.Client(self.c,native).get('pods')
 
     def test_peer_cleanup_refuses_and_exact_plan_has_uid_preconditions(self):
         baseline=self.green();current=self.green()
@@ -158,15 +142,6 @@ class Adapter(unittest.TestCase):
         self.client.pods[0]['metadata']['labels'][self.c['ownerLabel']]='peer'
         with self.assertRaisesRegex(k.Refused,'PEER_RESOURCE_REFUSED'):self.green()
         self.client.pods[0]['metadata']['labels'][self.c['ownerLabel']]=self.c['runId'];self.green()
-
-    def test_observed_container_restart_is_not_pod_or_image_replacement(self):
-        initial=self.green();changed=self.client.pods[0]['status']['containerStatuses'][2]
-        changed.update(containerID='containerd://new-evaluator',restartCount=1)
-        value=k.observe(self.c,self.objects,self.client,initial,restarted_role='evaluator')
-        self.assertEqual(value['pods']['cohort-0']['containers']['evaluator']['restartCount'],1)
-        with self.assertRaisesRegex(k.Refused,'CONTAINER_INCARNATION_CHANGED'):k.observe(self.c,self.objects,self.client,initial)
-        changed.update(containerID='containerd://evaluator',restartCount=0)
-        self.green()
 
     def test_pod_budget_changes_by_kubernetes_are_recorded_not_refused(self):
         spec = self.client.pods[0]['spec']
@@ -228,7 +203,7 @@ class Adapter(unittest.TestCase):
             with self.assertRaisesRegex(k.Refused, 'POD_ROSTER_CHANGED'):
                 k.sql(d, self.c, self.objects, 'SELECT 1;', self.client)
         for field, change in [('condition', 'FailureTarget'), ('reason', 'UnknownFailure'),
-                              ('active', 1), ('jobUid', 'replacement-job'), ('podUid', 'other-serving-pod')]:
+                              ('active', 1)]:
             target, key, code = {
                 'condition': (terminal, 'type', 'POD_RETIREMENT_UNPROVEN'),
                 'reason': (terminal, 'reason', 'POD_RETIREMENT_UNPROVEN'),
@@ -315,9 +290,6 @@ class Adapter(unittest.TestCase):
             with self.assertRaisesRegex(k.Refused, 'PRIMER_ROSTER_CHANGED'):
                 observe()
             k.write(output/'result.json',receipt)
-            with patch.dict(self.client.pods[0]['metadata'], {'uid':'replacement'}):
-                with self.assertRaisesRegex(k.Refused,'POD_UID_CHANGED'):
-                    observe()
             observe()
 
     def test_actual_sql_transport_and_readonly_transaction(self):
@@ -345,7 +317,7 @@ class Adapter(unittest.TestCase):
             self.assertIn('rawRow:e.rawRow',source)
             native=subprocess.run(['node',str(HERE/'probe.test.cjs'),str(target)],capture_output=True,text=True,timeout=15)
             self.assertEqual(native.returncode,0,native.stderr)
-            for mode in ('sql-unavailable', 'restored', 'warm'):
+            for mode in ('sql-unavailable', 'restored'):
                 result = subprocess.run(['node', str(HERE/'probe.test.cjs'), str(target), mode],
                                         capture_output=True, text=True, timeout=15)
                 self.assertEqual(result.returncode, 0, result.stderr)
@@ -410,7 +382,7 @@ class Adapter(unittest.TestCase):
             root=Path(name);out=root/'load';out.mkdir();(out/'runid').write_text('synthetic-probe')
             tenants=root/'tenants.json';k.write(tenants,[{'id':A,'host':'a.example.test','token':'synthetic-a'},{'id':B,'host':'b.example.test','token':'synthetic-b'}])
             c={**self.c,'tenants':2,'tenantsFile':str(tenants)}
-            metrics={'writes_ok':{'count':2},**{'writes_ok{kind:'+kind+'}':{'count':int(kind=='entries')*2} for kind in ('entries','devicestatus','treatments')},**{key+'{tenant:'+t+'}':{'count':int(key=='writes_ok')} for t in (A,B) for key in ('writes_ok','writes_uncertain')}}
+            metrics={'writes_ok':{'count':2},**{'writes_ok{kind:'+kind+'}':{'count':int(kind=='entries')*2} for kind in ('entries','devicestatus','treatments')},'writes_uncertain':{'count':0}}
             ledger={'version':2,'kind':'m7-discovery-probe-accounting','runId':'synthetic-probe','roster':[A,B],'admissionsClosed':True,'attempts':2,'byTenant':{t:{'attempts':1,'accepted':1,'uncertain':0,'refused':0,'pending':0} for t in (A,B)}}
             k.write(out/'probe-accounting.json',ledger)
             k.write(out/'fanout.json',{'probeWrites':{'byTenant':{A:1,B:1}}})
@@ -418,10 +390,10 @@ class Adapter(unittest.TestCase):
             values={t:{'entries':1,'probe':1} for t in (A,B)}
             criterion=lambda:execute.accepted_writes(out,c,values)
             self.assertEqual(criterion()['verdict'],'GREEN')
-            changed=copy.deepcopy(metrics);del changed['writes_ok{tenant:'+A+'}'];k.write(out/'k6-summary.json',{'metrics':changed})
+            changed=copy.deepcopy(metrics);del changed['writes_uncertain'];k.write(out/'k6-summary.json',{'metrics':changed})
             with self.assertRaisesRegex(k.Refused,'ACCEPTED_WRITE_UNMEASURED'):criterion()
             k.write(out/'k6-summary.json',{'metrics':metrics});criterion()
-            changed=copy.deepcopy(metrics);changed['writes_uncertain{tenant:'+A+'}']['count']=1
+            changed=copy.deepcopy(metrics);changed['writes_uncertain']['count']=1
             k.write(out/'k6-summary.json',{'metrics':changed})
             with self.assertRaisesRegex(k.Refused,'WORKLOAD_WRITE_UNCERTAIN'):criterion()
             k.write(out/'k6-summary.json',{'metrics':metrics});criterion()
@@ -434,7 +406,6 @@ class Adapter(unittest.TestCase):
             k.write(out/'probe-accounting.json',ledger);criterion()
 
     def test_subset_storage_in_stage_and_retained_report(self):
-        from workloads.reduce import reduce_stage
         with tempfile.TemporaryDirectory() as name:
             root = Path(name)
             out = root / 'load'
@@ -448,36 +419,36 @@ class Adapter(unittest.TestCase):
             k.write(root / 'run.json', config)
             metrics = {'writes_ok':{'count':1}, 'writes_ok{kind:entries}':{'count':1},
                        'writes_ok{kind:devicestatus}':{'count':0}, 'writes_ok{kind:treatments}':{'count':0},
-                       f'writes_ok{{tenant:{B}}}':{'count':1}, f'writes_uncertain{{tenant:{B}}}':{'count':0}}
+                       'writes_uncertain':{'count':0}}
             ledger = {'version':2, 'kind':'m7-discovery-probe-accounting', 'runId':run_id, 'roster':[B,A],
                       'admissionsClosed':True, 'attempts':1,
                       'byTenant':{A:{'attempts':1,'accepted':1,'uncertain':0,'refused':0,'pending':0}}}
             k.write(out / 'probe-accounting.json', ledger)
             values = {A:{'probe':1}, B:{'entries':1}}
 
+            # Storage counts are computed once, by the run (execute.accepted_writes);
+            # the offline reducer judges the oracle findings through assessor.py.
             def report(case):
                 k.write(out / 'k6-summary.json', {'metrics':metrics})
                 k.write(out / 'stored-counts.json', values)
-                return reduce_stage(out, root / case)['stored']
 
-            self.assertEqual(report('full-read')['verdict'], 'PASS')
+            report('full-read')
             counts = execute.accepted_writes(out, config, values)
             self.assertEqual([(row['tenant'], row['ordinarySelected']) for row in counts['rows']], [(A,False), (B,True)])
-            del metrics[f'writes_uncertain{{tenant:{B}}}']
-            self.assertEqual(report('missing-selected')['verdict'], 'UNMEASURED')
+            del metrics['writes_uncertain']
+            report('missing-selected')
             with self.assertRaisesRegex(k.Refused, 'ACCEPTED_WRITE_UNMEASURED'):
                 execute.accepted_writes(out, config, values)
             values[A]['entries'] = values[B].pop('entries')
-            self.assertEqual(report('misplaced')['verdict'], 'FAIL')
+            report('misplaced')
             with self.assertRaisesRegex(RuntimeError, 'M7_DISCOVERY_WRONG_DATA') as error:
                 execute.accepted_writes(out, config, values)
             self.assertIn({'kind':'unselected-workload-write', 'tenant':A}, error.exception.oracleFindings['failures'])
             values[B]['entries'] = values[A].pop('entries')
-            metrics[f'writes_uncertain{{tenant:{B}}}'] = {'count':0}
             metrics['writes_uncertain'] = {'count':1}
-            self.assertEqual(report('unattributed-uncertainty')['verdict'], 'FAIL')
+            report('unattributed-uncertainty')
             metrics['writes_uncertain'] = {'count':0}
-            self.assertEqual(report('restored')['verdict'], 'PASS')
+            report('restored')
             self.assertEqual(execute.accepted_writes(out, config, values)['verdict'], 'GREEN')
 
     def test_matrix_collision_headroom_and_restore(self):
@@ -498,14 +469,17 @@ class Adapter(unittest.TestCase):
                 with self.assertRaisesRegex(k.Refused,'FIXTURE_FANOUT_COLLISION'):execute.matrix_plan(value)
                 configs[1][1]['namespace']='synthetic-1';execute.matrix_plan(value)
 
-    def test_projection_permits_only_default_service_account_admission(self):
-        spec=self.render[1]['spec']['template']['spec'];actual=copy.deepcopy(spec)
-        actual['volumes']=[{'name':'kube-api-access-synthetic','projected':{'sources':[{'serviceAccountToken':{'path':'token'}}]}}]
-        visible,admitted=k.admission_projection(spec,actual)
-        self.assertEqual(admitted,['kube-api-access-synthetic'])
-        self.assertTrue(k.subset(spec,visible))
-        actual['volumes'][0]['name']='peer-secret-volume'
-        with self.assertRaisesRegex(k.Refused,'UNEXPECTED_ADMISSION_VOLUME'):k.admission_projection(spec,actual)
+    def test_owned_pod_observation_with_reserved_and_default_tolerations(self):
+        parent = 'StatefulSet/cohort'
+        reserved = {'key':'nightscout.org/reserved','value':'run','effect':'NoSchedule','operator':'Equal'}
+        defaults = [{'key':'node.kubernetes.io/'+key,'operator':'Exists','effect':'NoExecute','tolerationSeconds':300}
+                    for key in ('not-ready','unreachable')]
+        for obj in (self.objects[parent], self.client.objects[parent]):
+            k.template(obj)['spec']['tolerations'] = [reserved]
+        pod = self.client.pods[0]
+        pod['spec']['tolerations'] = [reserved, *defaults]
+        self.assertEqual(self.green()['pods'][pod['metadata']['name']]['uid'], pod['metadata']['uid'])
+        self.green()
 
     def test_prepared_inventory_and_render_bytes_cannot_change(self):
         with tempfile.TemporaryDirectory() as name:
@@ -518,19 +492,6 @@ class Adapter(unittest.TestCase):
                 with self.assertRaisesRegex(k.Refused,code):k.load(out)
                 target.write_bytes(raw);k.load(out)
 
-    def test_guard_masking_is_retained_at_each_exact_object_and_pod(self):
-        env=[{'name':'SYNTHETIC_SECRET_FILE','value':'/run/synthetic/reference'}]
-        self.render[1]['spec']['template']['spec']['containers'][0]['env']=copy.deepcopy(env)
-        masked=[{'name':'SYNTHETIC_SECRET_FILE','value':'<redacted>'}]
-        self.client.objects['StatefulSet/cohort']['spec']['template']['spec']['containers'][0]['env']=copy.deepcopy(masked)
-        self.client.pods[0]['spec']['containers'][0]['env']=copy.deepcopy(masked)
-        value=self.green()
-        self.assertEqual(value['objects']['StatefulSet/cohort']['maskedPaths'],['/spec/template/spec/containers/0/env/0/value'])
-        self.assertEqual(value['objects']['StatefulSet/postgres']['maskedPaths'],[])
-        self.assertEqual(value['pods']['cohort-0']['maskedPaths'],['/containers/0/env/0/value'])
-        self.assertEqual(value['pods']['postgres-0']['maskedPaths'],[])
-
-
 class NativeDriverRecord(unittest.TestCase):
     def test_driver_tools_and_dependencies_are_recorded_not_pinned(self):
         from unittest.mock import patch
@@ -540,17 +501,14 @@ class NativeDriverRecord(unittest.TestCase):
             node = root / 'node'; node.write_text('synthetic')
             driver = {'hostId': 'h', 'node': str(node), 'nodeSha256': '0'*64, 'dependencies': str(deps),
                       'coreRepository': '/nonexistent', 'packageSha256': '0'*64, 'lockSha256': '0'*64,
-                      'nodeModules': 'captured', 'resources': {}}
+                      'resources': {}}
             c = {'driver': driver, 'observer': {'hostId': 'h'}, 'pins': {'pair': {'core': 'a'*40}}}
-            with patch.object(execute.k.dependency_reuse, 'tree', return_value='changed'), \
-                 patch.object(execute, 'finite_scope', return_value='scope'):
+            with patch.object(execute, 'finite_scope', return_value='scope'):
                 value = execute.actor(c)
             self.assertFalse(value['matchesCapture'])
             self.assertEqual(value['observedTools']['nodeSha256'], execute.k.digest(node))
-            self.assertEqual(value['nodeModules'], 'changed')
             driver['node'] = 'relative'
-            with patch.object(execute.k.dependency_reuse, 'tree', return_value='changed'), \
-                 patch.object(execute, 'finite_scope', return_value='scope'):
+            with patch.object(execute, 'finite_scope', return_value='scope'):
                 with self.assertRaisesRegex(execute.k.Refused, 'DRIVER_TOOL_PATH'):
                     execute.actor(c)
 

@@ -1,4 +1,5 @@
 """Remote adoption of the shared immutable Compose/custody core; no actors on import."""
+raise ImportError('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import copy,hashlib,json,time,uuid
 from pathlib import Path
 from protocol import binding,need,write

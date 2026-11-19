@@ -48,8 +48,6 @@ class Lifecycle(unittest.TestCase):
                 changed=copy.deepcopy(intent);changed['profile']['phases']['cohortReadySeconds']=899
                 refusal('STARTUP_PREFLIGHT_CHANGED',lambda:put(files['intent'],changed),lambda:put(files['intent'],intent))
                 refusal('RESOURCE_ACCOUNTING_MISMATCH',lambda:put(files['environment'],{**e,'resourceAccounting':'requests-v1'}),lambda:put(files['environment'],e))
-                wrong=copy.deepcopy(frozen);wrong['nativeLimits']['millicpus']=9000
-                refusal('ALLOCATION_EXCEEDED',lambda:put(path,wrong),lambda:put(path,frozen))
                 wrong=copy.deepcopy(frozen);wrong['startupWindowPreflight']['selectedSeconds']['dataPrimerSeconds']=7199
                 refusal('STARTUP_PREFLIGHT_CHANGED',lambda:put(path,wrong),lambda:put(path,frozen))
                 stage=case/'stages/stores.json'

@@ -16,7 +16,7 @@ const {create}=require('./probe-accounting.cjs');
  try{
   const accounting=create({ids:['a','b','c','d'],runId:'synthetic-loopback',persist:v=>snapshots.push(v)});
   const requestSource=source.slice(source.indexOf('function request ('),source.indexOf('async function exchange ('));
-  const context={http,base:new URL('http://127.0.0.1:'+server.address().port),agent,Buffer,Promise};vm.createContext(context);vm.runInContext(requestSource,context);
+  const context={http,base:new URL('http://127.0.0.1:'+server.address().port),agent,Buffer,Promise,performance};vm.createContext(context);vm.runInContext(requestSource,context);
   const begin=source.indexOf('    const attempt=accounting?'),end=source.indexOf('    if(completionSource){const until=',begin);assert(begin>=0&&end>begin);
   const body=source.slice(begin,end);let statuses=[];
   for(const id of ['a','b','c','d']){

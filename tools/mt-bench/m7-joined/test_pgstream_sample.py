@@ -92,11 +92,11 @@ class Sample(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             d=Path(temp);(d/'deploy-before-host.json').write_text('{}')
             def load(a,d,m,image,record):
-                rows=[{'tenant':str(i),'accepted':1,'stored':1,'uncertain':0,'match':True,'probeAccepted':1,'probeStored':1,'probeUncertain':0,'probeRefused':0,'probePending':0} for i in range(2)]
+                rows=[{'tenant':str(i),'stored':1,'match':True,'probeAccepted':1,'probeStored':1,'probeUncertain':0,'probeRefused':0,'probePending':0} for i in range(2)]
                 # Control eligibility now requires the full exact count-observer metadata.
-                record.value.update(probe={'completedOutput':{'verdict':'PASS'}},oracle={'verdict':'GREEN','failureCount':0,'failures':[],'missingFieldCount':0,'uncertain':0,'domains':{'entries':2,'devicestatus':0,'treatments':0},'rows':rows,'probeCountProof':'KNOWN','probeAccounting':{'version':2,'admissionsClosed':True,'pending':0}},processes={'k6':{'returncode':0},'probe':{'returncode':0}},settingsFingerprintObservation={'verdict':'PASS'});record.save()
+                record.value.update(probe={'completedOutput':{'verdict':'PASS'}},oracle={'verdict':'GREEN','failureCount':0,'failures':[],'missingFieldCount':0,'accepted':2,'stored':2,'uncertain':0,'domains':{'entries':2,'devicestatus':0,'treatments':0},'rows':rows,'probeCountProof':'KNOWN','probeAccounting':{'version':2,'admissionsClosed':True,'pending':0}},processes={'k6':{'returncode':0},'probe':{'returncode':0}},settingsFingerprintObservation={'verdict':'PASS'});record.save()
             with contextlib.ExitStack() as stack:
-                for name in ('frozen','quiet','verify','image','verify_generator','readiness','psql','phase_snapshot','enabled_idle'):stack.enter_context(patch.object(a,name))
+                for name in ('frozen','quiet','verify','image','verify_generator','readiness','psql','phase_snapshot','k6_tenants'):stack.enter_context(patch.object(a,name))
                 stack.enter_context(patch.object(a.time,'sleep'));stack.enter_context(patch.object(a,'command',return_value='[{"Id":"sha256:synthetic"}]'))
                 stack.enter_context(patch.object(a,'sample_preflight',return_value=({},{})))
                 proof=stack.enter_context(patch.object(a,'sample_results',return_value={'idle':{'status':'MEASURED'}}))

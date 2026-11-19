@@ -64,19 +64,4 @@ class Unaccepted(unittest.TestCase):
  def test_source_cli_explicit_flags(self):
   args=adapter.parser().parse_args(['prepare','--directory','/private/not-created','--core-repo','/private/core','--core-commit','a'*40,'--deploy-repo','/private/deploy','--deploy-commit','b'*40,'--image','qualified','--freeze','/private/auth','--profile','remote-pilot','--measurement-mode','unaccepted','--run-id',RUN,'--image-id',IMAGE,'--maximum-run-minutes','180','--tenants','500','--replicas','1'])
   self.assertEqual((args.measurement_mode,args.run_id,args.image_id,args.maximum_run_minutes),('unaccepted',RUN,IMAGE,180))
- def test_real_receipt_gate_rejects_unaccepted_cell_even_when_otherwise_valid(self):
-  directory=Path(__file__).resolve().parents[2]/'queue/gates';sys.path.insert(0,str(directory))
-  try:
-   spec=importlib.util.spec_from_file_location('receipt_fixtures',directory/'test_m7_joined_receipt.py');fixtures=importlib.util.module_from_spec(spec);spec.loader.exec_module(fixtures)
-   fixture=fixtures.ReceiptTests();fixture.setUp()
-   try:
-    doc=fixture.capacity(counts=(500,));cell=doc['cells'][0];gate=fixtures.gate
-    def check():
-     evidence=gate.Evidence(fixture.root);evidence.allowed=fixture.expected['artifacts'];return gate.cell_measurement(cell,fixture.expected,'capacity',cell['hostIdentity'],evidence)
-    check();cell.update(c.UNACCEPTED_SCOPE)
-    with self.assertRaisesRegex(ValueError,'NOT_ACCEPTANCE'):check()
-    fixture.receipt['kind']='joined-measurement-authorization'
-    with self.assertRaisesRegex(ValueError,'NOT_ACCEPTANCE'):fixture.check()
-   finally:fixture.doCleanups()
-  finally:sys.path.pop(0)
 if __name__=='__main__':unittest.main()

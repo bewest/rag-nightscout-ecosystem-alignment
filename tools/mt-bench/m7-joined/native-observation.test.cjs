@@ -9,19 +9,18 @@ test('native lifecycle codec and domain refuse legacy or incompatible typed rece
  for(const value of [digest(fields),digest([...fields,'unsupported-codec','positive-int8-complete-pair-max-4611686018427387902-v1']),digest([...fields,'canonical-maintenance-active-plus2-v1','unsupported-domain'])]){
   const bad=structuredClone(row);bad.typed.contractDigest=value;
   assert.equal(assess(bad).code,'M7_COMPLETION_TYPED_STATE');
-  assert.throws(()=>oracle.progressSnapshot([bad],config,[tenant]),error=>error.message==='M7_COMPLETION_TYPED_STATE'&&error.completionDiagnostic.predicates.contractDigestMatches===false);
   green();
  }
  const corrupt=structuredClone(row);corrupt.typed.completed[5]='3';
  assert.equal(assess(corrupt).code,'M7_COMPLETION_TYPED_STATE');green();
 });
 test('legacy clock receipts retain their exact contract and refuse the native digest',()=>{
- const {createHash}=require('node:crypto'),legacy=structuredClone(config);delete legacy.native;delete legacy.binding.nativeConfigurationSha256;
+ const {createHash}=require('node:crypto'),legacy=structuredClone(config);delete legacy.native;
  const value=structuredClone(row);value.reader=legacy.binding;
  Object.assign(value.typed,{contractDigest:createHash('sha256').update(JSON.stringify(['evaluator-work-v2','synthetic_checkpoint','evaluator-sample'])).digest('hex'),observed:[witness.stamp,null,null,null,null,null],completed:[witness.stamp,null,null,null,null,null]});
  Object.assign(value.state,{observed:{clock:witness.stamp},completed:{clock:witness.stamp}});value.state.output.inputCheckpoint=witness.stamp;
  const legacyAssess=()=>oracle.assess(value,witness,clients,2,legacy);
- assert.equal(legacyAssess().ready,true);assert.equal(oracle.progressSnapshot([value],legacy,[tenant]).rows[0].writerClock,witness.stamp);
+ assert.equal(legacyAssess().ready,true);
  const saved=value.typed.contractDigest;value.typed.contractDigest=row.typed.contractDigest;
  assert.equal(legacyAssess().code,'M7_COMPLETION_TYPED_STATE');value.typed.contractDigest=saved;assert.equal(legacyAssess().ready,true);
 });
@@ -34,7 +33,6 @@ test('native receipt agrees with the pinned source selection module',{skip:!proc
   assert.equal(oracle.expectedContractDigest(selected),actual.contractDigest);
   const value=structuredClone(row);value.reader=selected.binding;value.typed.contractDigest=actual.contractDigest;
   assert.equal(oracle.assess(value,witness,clients,2,selected).ready,true);
-  assert.equal(oracle.progressSnapshot([value],selected,[tenant]).rows[0].outputRevision,'1');
  }
  const bad=structuredClone(config);delete bad.native;assert.throws(()=>oracle.expectedContractDigest(bad),/NATIVE_BINDING/);
 });
@@ -51,13 +49,12 @@ for(const [name,change,code]of [
  ['unsafe floor',r=>r.native.inputFloor=r.native.persistedFloor='9007199254740992','NATIVE_STATE'],['bad native position',r=>r.native.stream.accepted_position='9007199254740993','NATIVE_POSITION'],
  ['raw coverage loss',r=>r.native.raw.base='5','NATIVE_RAW'],['old clinical coverage',r=>{r.state.completed={bootstrap:'1'};r.typed.completed=[null,null,null,null,null,'1'];},'PENDING'],
  ['old completed row',r=>r.typed.inputFloor='1','OUTPUT_CLOCK'],['wrong retained floor pair',r=>r.state.output.result.checkpoint=0,'OUTPUT_CLOCK'],['output ahead',r=>{r.state.output.result.checkpoint=3;r.state.output.inputCheckpoint=3;},'OUTPUT_CLOCK'],
- ['stale output restore',r=>{r.state.output.restoreGeneration='2';r.typed.generation='2';},'NATIVE_FENCE'],['wrong reader config',r=>r.reader.nativeConfigurationSha256='0'.repeat(64),'READER_MISMATCH'],
+ ['stale output restore',r=>{r.state.output.restoreGeneration='2';r.typed.generation='2';},'NATIVE_FENCE'],['wrong reader kind',r=>r.reader.kind='evaluator-work-v1','READER_MISMATCH'],
  ['missing marker',r=>r.stored=[],'STORED'],['wrong clinical frame',r=>r.state.output.frame.sgvs[0].mgdl=99,'FRAME']
 ])test(name+' refuses; restoration passes',()=>{const bad=structuredClone(row);change(bad);assert.equal(assess(bad).code,'M7_COMPLETION_'+code);green();});
-test('explicit invalidation supplies no accepted coverage until identity returns',()=>{const invalid=structuredClone(row);invalid.native.stream=null;assert.equal(assess(invalid).code,'M7_COMPLETION_NATIVE_INVALIDATED');assert.throws(()=>oracle.progressSnapshot([invalid],config,[tenant]),/NATIVE_INVALIDATED/);green();});
+test('explicit invalidation supplies no accepted coverage until identity returns',()=>{const invalid=structuredClone(row);invalid.native.stream=null;assert.equal(assess(invalid).code,'M7_COMPLETION_NATIVE_INVALIDATED');green();});
 test('freeze accepted target while later input remains pending',()=>{const newer=structuredClone(row);newer.native.inputFloor=newer.native.persistedFloor='3';newer.state.observed={bootstrap:'3'};newer.typed.observed=[null,null,null,null,null,'3'];const target={...witness,nativeTarget:native.snapshot(row,config)};assert.equal(assess(newer,target).ready,true);assert.equal(assess(newer).code,'M7_COMPLETION_PENDING');const wrong=structuredClone(target);wrong.nativeTarget.generation='b'.repeat(32)+':1';assert.equal(assess(newer,wrong).code,'M7_COMPLETION_NATIVE_FENCE');green();});
-test('metadata observes source, due, pending and raw identity without copied cache/body',()=>{const metadata=oracle.progressSnapshot([row],config,[tenant]);assert.equal(metadata.rows[0].pendingAt,null);assert.equal(metadata.rows[0].dueAt,10000);assert.deepEqual(metadata.rows[0].native,native.progress(row,config));const query=oracle.progressQuery(config,[tenant]);assert(query.startsWith('SELECT '));assert(query.includes('pg_control_system()'));assert(query.includes('i.checkpoint::text'));assert(query.includes('c.checkpoint::text'));assert(query.includes('work_pending_at::text'));assert(!query.includes('jsonb_agg(e.doc)'));assert(!query.includes("THEN (c.projection->0->'output')"));});
-test('mandatory native configuration cannot silently downgrade to clock reader',()=>{const bad=structuredClone(config);delete bad.native;assert.throws(()=>oracle.prepare(bad),/NATIVE_BINDING/);assert.throws(()=>oracle.source({...evaluator,pgstream:{...evaluator.pgstream,recovery:null}},realtime,binding),/NATIVE_SOURCE/);const changed=structuredClone(config);changed.native.slot='other';assert.throws(()=>oracle.prepare(changed),/NATIVE_BINDING/);});
+test('native source refuses an incomplete pgstream configuration',()=>{assert.throws(()=>oracle.source({...evaluator,pgstream:{...evaluator.pgstream,recovery:null}},realtime,binding),/NATIVE_SOURCE/);});
 test('actual native source validator ablation defeats the wrong-source criterion',()=>{
  const fs=require('node:fs'),source=fs.readFileSync(require.resolve('./native-observation.cjs'),'utf8'),needle='canonical(s.source_identity)!==canonical(v.actualSource)';
  assert.equal(source.split(needle).length,2);const mod={exports:{}};Function('require','module',source.replace(needle,'false'))(require,mod);

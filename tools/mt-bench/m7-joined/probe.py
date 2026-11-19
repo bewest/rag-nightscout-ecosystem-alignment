@@ -4,7 +4,7 @@ from pathlib import Path
 from contract import DISCOVERY_MAX_WORKERS, require
 
 
-def generate(root, target, *, serial_exchange=False, host_warm_clock=True):
+def generate(root, target, *, public_traffic_only=False):
     baseline = Path(root) / "tools/mt-bench/capacity/probe.js"
     source = baseline.read_text()
     old = "const roles = ['api', 'realtime', 'evaluator', 'tenant-admin'];"
@@ -68,10 +68,24 @@ def generate(root, target, *, serial_exchange=False, host_warm_clock=True):
     # The first pgstream sample joins an actual stored marker, durable completion,
     # the evaluator-produced frame and already-connected client identity/content.
     source=source.replace("const { io } = require('socket.io-client');", "const { io } = require(process.env.M7_GENERATOR_ROOT?path.join(process.env.M7_GENERATOR_ROOT,'node_modules/socket.io-client'):'socket.io-client');")
-    source=source.replace("const signalDir = path.dirname(args.signal);", "const completionSource=process.env.M7_COMPLETION_SOURCE?JSON.parse(process.env.M7_COMPLETION_SOURCE):null;\nconst completionOracle=completionSource?require('./completed-oracle.cjs'):null;const lag=require('./durable-lag.cjs');const oracleCost={queries:0,bytes:0,elapsedMs:0,missing:0,durablePendingPeak:0};\nconst signalDir = path.dirname(args.signal);")
+    source=source.replace("const signalDir = path.dirname(args.signal);", "const completionSource=process.env.M7_COMPLETION_SOURCE?JSON.parse(process.env.M7_COMPLETION_SOURCE):null;\nconst completionOracle=completionSource?require('./completed-oracle.cjs'):null;const lag=require('./durable-lag.cjs');const timing=completionSource?require('./clinical-timing.cjs'):null;const oracleCost={queries:0,bytes:0,elapsedMs:0,missing:0,durablePendingPeak:0};\nconst signalDir = path.dirname(args.signal);")
     source=source.replace("const p = { sent: Date.now(),", "const p = { sentMono:performance.now(), sent: Date.now(),")
     source=source.replace("const e = { tenant: t.id,", "const e = { clientProofVersion:2, expectedSockets:sockets.flatMap((s,i)=>s.index===tenants.indexOf(t)?[i]:[]), date, sentMono:p.sentMono, tenant: t.id,")
     source=source.replace("    for (const sgv of frame?.sgvs || []) {", "    for (const sgv of frame?.sgvs || []) { const proof=pending.get(t.id+':'+sgv.mills);if(proof&&completionSource){proof.clientFrames??=new Map();if(!proof.clientFrames.has(s))proof.clientFrames.set(s,{atMono:performance.now(),socket:sockets.indexOf(s),connects:s.connects,transportId:s.socket.id,sgv:{_id:String(sgv._id),mills:sgv.mills,mgdl:sgv.mgdl}});}")
+    if not public_traffic_only:
+        source=source.replace("clientProofVersion:2", "clientProofVersion:3")
+        source=source.replace("const req = http.request({ host: base.hostname, port: base.port, method,",
+                              "const requestStart=performance.now(); const req = http.request({ host: base.hostname, port: base.port, method,")
+        source=source.replace("res => { let b = '';", "res => { const responseMono=performance.now(),responseAt=Date.now(); let b = '';")
+        source=source.replace("status: res.statusCode, body: b", "status: res.statusCode, body: b, responseMono, responseAt, requestStart")
+        source=source.replace("e.acked = Date.now();", "e.acked = r.responseAt; e.acceptedMono=r.responseMono; e.sentMono=r.requestStart;")
+    start=source.index("    while (polling || evalPending.some(")
+    end=source.index("      if (open.length)",start)
+    source=source[:start]+"""    for (;;) {
+      const open=evalPending.filter(e=>e.evaluatedAt===null &&
+        (completionSource?timing.shouldPoll(e):Date.now()-e.sent<120000));
+      if(!polling&&!open.length)break;
+"""+source[end:]
     source=source.replace("      if (open.length) {", """      if(open.length && completionSource){
         const ids=[...new Set(open.map(e=>e.tenant))];
         oracleCost.durablePendingPeak=Math.max(oracleCost.durablePendingPeak,open.filter(e=>e.acked!==null&&!e.durableObservation).length);
@@ -82,41 +96,43 @@ def generate(root, target, *, serial_exchange=False, host_warm_clock=True):
         catch(error) {
           if(!discovery || error.message!=='M7_PROBE_SQL_OBSERVATION_UNAVAILABLE')throw error;
           out.sqlObserverFailure={verdict:'UNMEASURED',code:error.message};
-          for(const witness of evalPending){
-            if(witness.evaluatedAt===null && queryStart-witness.sentMono>=120000)
-              witness.completion={...witness.completion,ready:false,code:'M7_COMPLETION_DEADLINE'};
-          }
+          timing.checkpoint(signalDir,evalPending,pending);
           return;
         }
         const queryEnd=performance.now();oracleCost.queries++;oracleCost.bytes+=Buffer.byteLength(raw);oracleCost.elapsedMs+=queryEnd-queryStart;if(!raw)oracleCost.missing++;
         const rows=new Map(raw.split('\\n').filter(Boolean).map(line=>{const row=JSON.parse(line);return [row.tenant,row];}));
+        const foreign=[...rows.keys()].some(id=>!ids.includes(id));
         for(const e of open){
-          if(e.acked===null)continue;const row=rows.get(e.tenant);if(!row)continue;
+          if(foreign){e.hardClinical='M7_COMPLETION_FOREIGN_TENANT';continue;}
+          e.lastQueryStartMono=queryStart;
+          const row=rows.get(e.tenant);if(!row)continue;
           if(e.stamp===null)e.stamp=row.stamp;
           if(completionSource.native&&!e.nativeTarget){try{e.nativeTarget=require('./native-observation.cjs').snapshot(row,completionSource);}catch{}}
           const proof=pending.get(e.tenant+':'+e.date);
           const durable=completionOracle.assessDurable(row,e,completionSource);
           lag.observe(e,durable,queryStart,queryEnd);
           const result=completionOracle.assess(row,e,[...(proof?.clientFrames?.values()||[])],PER,completionSource);
-          // The SQL read may cross the deadline after admission. Credit only
-          // evidence returned within the same-process strict 120-second window.
-          const withinDeadline=performance.now()-e.sentMono<120000;
-          e.completion=withinDeadline?result:{...result,ready:false,code:'M7_COMPLETION_DEADLINE',assessedCode:result.code,...(result.clientFailure?{assessedClientFailure:result.clientFailure}:{})};
+          e.completion=result;
+          timing.observe(e,result,queryStart);
           if(e.completion.ready){e.evaluatedAt=Date.now();evalLatencies.push(e.evaluatedAt-e.sent);}
         }
+        timing.checkpoint(signalDir,evalPending,pending);
       }else if (open.length) {""")
     source=source.replace("const e = { tenant: t.id, sent: p.sent,", "const e = { tenant: t.id, date, sent: p.sent,")
     source=source.replace("    await sleep(PROBE);", "    if(completionSource){const until=Date.now()+PROBE;while(Date.now()<until&&!fs.existsSync(path.join(signalDir,'.restart')))await sleep(Math.min(1000,until-Date.now()));}else await sleep(PROBE);")
     source=source.replace("  fs.writeFileSync(args.out, JSON.stringify(out, null, 2)", """  if(completionSource){oracleCost.observationEndMono=performance.now();
-    out.durableOutputObservation=lag.summary(evalPending,pending,oracleCost);
-    let verdict='FAIL';
-    if(evalPending.length && evalPending.every(e=>e.completion?.ready) && writes.failed===0)verdict='PASS';
-    else if(out.sqlObserverFailure && writes.failed===0 && !evalPending.some(e=>e.completion?.code==='M7_COMPLETION_DEADLINE'))
-      verdict='UNMEASURED';
+    for(const e of evalPending){
+      const frames=[...(pending.get(e.tenant+':'+e.date)?.clientFrames?.values()||[])];
+      e.clinicalTiming=timing.assess(e,frames);
+      e.completion={...e.completion,ready:e.clinicalTiming.delivered,
+        code:e.clinicalTiming.observationProblem,assessedCode:e.semantic?.code,clinicalTiming:e.clinicalTiming};
+    }
+    out.durableOutputObservation=lag.summary(evalPending,pending,oracleCost,timing);
+    const clinicalTiming=timing.summary(evalPending);
     out.completedOutput={rosterTenants:tenants.length,witnessTenants:[...new Set(evalPending.map(e=>e.tenant))],
-      witnessTenantCount:new Set(evalPending.map(e=>e.tenant)).size,verdict,
+      clinicalTiming,witnessTenantCount:new Set(evalPending.map(e=>e.tenant)).size,
       ...(out.sqlObserverFailure?{observerFailure:out.sqlObserverFailure}:{}),
-      witnesses:evalPending.map(e=>({tenant:e.tenant,date:e.date,stamp:e.stamp,requestStartedAt:e.sent,...e.completion})),
+      witnesses:evalPending.map(e=>({tenant:e.tenant,date:e.date,stamp:e.stamp,acceptedAt:e.acked,requestToAcceptanceMs:e.clinicalTiming.requestToAcceptanceMs,requestStartedAt:e.sent,...e.completion})),
       probeCadenceMs:PROBE,scope:'sampled stored/output/client witnesses and selected BG-now mean; witnessTenants is the exercised subset, not all-roster clinical equivalence; uploader separate from ordinary k6 workload; any planned restart is qualified by its separate receipt'};
     for(const s of sockets)s.socket.close();
   }
@@ -130,93 +146,6 @@ def generate(root, target, *, serial_exchange=False, host_warm_clock=True):
     source=source.replace("    out.restart = restart;\n  }", "    out.restart = restart;\n    }\n  }")
     source=source.replace("  process.exit(0);", "  process.exit(out.sqlObserverFailure && args.restart==='1' ? 1 : 0);")
     source=source.replace("  savePartial();\n  log('window'", "  if(out.sqlObserverFailure)out.window.evaluationMissedWithin120s=null;\n  savePartial();\n  log('window'")
-    if host_warm_clock:
-        # CLOCK_MONOTONIC source and probe run on the same workstation in both transports.
-        source=source.replace("const signalDir = path.dirname(args.signal);", """const timing=process.env.M7_CLINICAL_WARM_PATH?require('./clinical-timing.cjs'):null;
-const clinicalWarm=timing?timing.source(process.env.M7_CLINICAL_WARM_PATH,path.dirname(args.signal)):null;
-const signalDir = path.dirname(args.signal);""")
-        source=source.replace(" evalPending.push(e);", """ if(clinicalWarm){e.warmClinical=true;e.clientProofVersion=3;} evalPending.push(e);""")
-        source=source.replace("e.acked = Date.now();", """e.acked = Date.now(); if(e.warmClinical){e.acceptedMono=performance.now();e.acceptedHostMs=Number(process.hrtime.bigint())/1e6;}""")
-        start=source.index("    while (polling || evalPending.some(")
-        end=source.index("      if(open.length && completionSource)",start)
-        source=source[:start]+"""    for (;;) {
-      if(typeof clinicalWarm!=='undefined' && clinicalWarm)clinicalWarm.refresh();
-      const open=evalPending.filter(e=>e.evaluatedAt===null && (e.warmClinical?
-        timing.shouldPoll(e,clinicalWarm.row(e.tenant),polling,performance.now(),clinicalWarm):Date.now()-e.sent<120000));
-      let waitingForWarm=false;
-      if(typeof clinicalWarm!=='undefined' && clinicalWarm?.inTail()){
-        waitingForWarm=clinicalWarm.needsObservation(evalPending);
-        timing.checkpoint(signalDir,evalPending,pending,clinicalWarm);
-      }
-      if(!polling&&!open.length&&!waitingForWarm)break;
-"""+source[end:]
-        source=source.replace("          if(e.acked===null)continue;", """          if(e.warmClinical){
-            e.lastQueryStartMono=queryStart;
-            if(clinicalWarm.timeLeftMs()<=0)continue;
-          }
-          if(e.acked===null)continue;""")
-        source=source.replace("          if(e.completion.ready){e.evaluatedAt", """          if(e.warmClinical){
-            timing.observe(e,result,queryStart);
-            if(result.ready)e.semanticObservedMono=queryEnd;
-            e.completion=result;
-          }
-          if(e.completion.ready){e.evaluatedAt""")
-        source=source.replace("lag.summary(evalPending,pending,oracleCost)",
-                              "lag.summary(evalPending,pending,oracleCost,clinicalWarm?timing:null)")
-        source=source.replace("    let verdict='FAIL';", """    if(clinicalWarm){
-      clinicalWarm.refresh();
-      out.window.evaluationMissedWithin120s=out.sqlObserverFailure?null:
-        evalPending.filter(e=>e.semanticObservedMono==null || e.semanticObservedMono-e.sentMono>=timing.deadlineMs).length;
-      for(const e of evalPending){
-        const frames=[...(pending.get(e.tenant+':'+e.date)?.clientFrames?.values()||[])];
-        e.clinicalTiming=timing.assess(e,frames,clinicalWarm.row(e.tenant));
-        e.completion={...e.completion,ready:e.clinicalTiming.verdict==='PASS',
-          code:e.clinicalTiming.code,assessedCode:e.semantic?.code,clinicalTiming:e.clinicalTiming};
-      }
-    }
-    let verdict='FAIL';""")
-        source=source.replace("    out.completedOutput={rosterTenants:", """    if(clinicalWarm){
-      const results=evalPending.map(e=>e.clinicalTiming.verdict);
-      verdict=writes.failed || results.includes('FAIL')?'FAIL':
-        results.length && results.every(v=>v==='PASS')?'PASS':'UNMEASURED';
-    }
-    out.completedOutput={rosterTenants:""")
-        source=source.replace("witnessTenantCount:new Set", """...(clinicalWarm?{clinicalTiming:timing.summary(evalPending)}:{}),
-      witnessTenantCount:new Set""")
-    if serial_exchange:
-        stock="async function exchange (t) {"
-        require(source.count(stock)==1,'M7_SERIAL_EXCHANGE_STOCK_ANCHOR')
-        source=source.replace(stock,"const serialStockExchange={attempts:0,retryAttempts:0,httpResponses:0,transportFailures:0,statuses:{}};\n"+stock)
-        attempt="    const r = await request('GET', t, '/api/v2/authorization/request/' + encodeURIComponent(t.token), null, 60000);"
-        require(source.count(attempt)==1,'M7_SERIAL_EXCHANGE_STOCK_ATTEMPT_ANCHOR')
-        source=source.replace(attempt,attempt+"\n    serialStockExchange.attempts++;if(k>0)serialStockExchange.retryAttempts++;if(r.status>0)serialStockExchange.httpResponses++;else serialStockExchange.transportFailures++;serialStockExchange.statuses[r.status]=(serialStockExchange.statuses[r.status]||0)+1;")
-        before="  const jwts = new Array(tenants.length);"
-        require(source.count(before)==1,'M7_SERIAL_EXCHANGE_BEFORE_ANCHOR')
-        source=source.replace(before, """  out.diagnosticOnly=true;
-  const serialExchange=require('./serial-exchange-pair.cjs').createActor(args.serialExchangeBinding,args.serialExchangeBindingSha256);
-  out.serialExchangeDiagnostic={selection:{tenants:64,phaseSeconds:120,requestSeconds:60},before:null,after:null,stockExchange:serialStockExchange};
-  try{
-    out.serialExchangeDiagnostic.before=await serialExchange.phase('before');
-    if(out.serialExchangeDiagnostic.before.status!=='COMPLETED_64'){
-      fs.writeFileSync(args.out,JSON.stringify(out,null,2)+'\\n');return;
-    }
-"""+before)
-        release="  fs.writeFileSync(args.signal, String(Date.now()));"
-        require(source.count(release)==1,'M7_SERIAL_EXCHANGE_AFTER_ANCHOR')
-        source=source.replace(release,"""  out.serialExchangeDiagnostic.after=await serialExchange.phase('after');
-  fs.writeFileSync(args.out,JSON.stringify(out,null,2)+'\\n');return;
-"""+release)
-        close="})().catch(e => {"
-        require(source.count(close)==1,'M7_SERIAL_EXCHANGE_CLOSE_ANCHOR')
-        source=source.replace(close,"""  }finally{
-    let serialCleanupFailed=false;
-    try{serialExchange.close();}catch(_){serialCleanupFailed=true;}
-    for(const s of sockets){try{s.socket.close();}catch(_){serialCleanupFailed=true;}}
-    try{agent.destroy();}catch(_){serialCleanupFailed=true;}
-    try{plainAgent.destroy();}catch(_){serialCleanupFailed=true;}
-    if(serialCleanupFailed)throw Error('M7_SERIAL_EXCHANGE_CLEANUP_FAILED');
-  }
-"""+close)
     # Quotient/remainder preserves tenant-major order for legacy per-tenant load.
     def viewers_change(old,new):
         nonlocal source
@@ -231,7 +160,7 @@ const signalDir = path.dirname(args.signal);""")
     viewers_change("],PER,completionSource)", "],viewers[tenants.findIndex(t=>t.id===e.tenant)],completionSource)")
     viewers_change("out.completedOutput={rosterTenants", "out.completedOutput={clientFrames:{verdict:out.window.expectedFrames===0?'NOT_EXERCISED':evalPending.every(e=>e.completion?.ready)?'PASS':'UNMEASURED'},rosterTenants")
     viewers_change("  log('prime', out.prime);", "  out.viewerBindings=sockets.map((s,socket)=>({socket,tenant:tenants[s.index].id}));\n  log('prime', out.prime);")
-    # Keep the stock polling path for the serial-exchange and historical public
+    # Keep the stock polling path for the historical public
     # calibration actors. Current runners explicitly select the viewer scenario.
     viewers_change("const sockets = [], reasons = {}, pending = new Map();",
                    Path(__file__).with_name('viewer-setup.cjs').read_text() +
@@ -259,12 +188,9 @@ const signalDir = path.dirname(args.signal);""")
     target = Path(target)
     target.write_text(source)
     helpers={}
-    for name in ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs','probe-accounting.cjs','completed-oracle.cjs','native-observation.cjs','client-delivery.cjs','durable-lag.cjs',*(['clinical-timing.cjs'] if host_warm_clock else [])):
+    for name in ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs','probe-accounting.cjs','completed-oracle.cjs','native-observation.cjs','client-delivery.cjs','durable-lag.cjs',*(['clinical-timing.cjs'] if not public_traffic_only else [])):
         data=Path(__file__).with_name(name).read_bytes();target.with_name(name).write_bytes(data)
         helpers[name]=hashlib.sha256(data).hexdigest()
-    if serial_exchange:
-        data=Path(__file__).with_name('serial-exchange-pair.cjs').read_bytes();target.with_name('serial-exchange-pair.cjs').write_bytes(data)
-        helpers['serial-exchange-pair.cjs']=hashlib.sha256(data).hexdigest()
     return {"baseline": str(baseline.relative_to(root)), "baselineSha256": hashlib.sha256(baseline.read_bytes()).hexdigest(),
             "adaptedSha256": hashlib.sha256(target.read_bytes()).hexdigest(), "recoveryHelpers": helpers,
             "changes": ["actual explicit replica restart roster", "bounded v2 exact-instance fresh-owned-window recovery with changed runtime proof", "separate hot/cold tenant write-to-frame distributions", "reject failed or unobserved container restart"]}

@@ -22,13 +22,14 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import adapter as a
 import workload_inputs
+import point_results
 from contract import require
 from auto_catalog import auto_catalog
 
 TIERS = ('smoke', 'discovery', 'acceptance')
 GENERATED_RECEIPT = 'configuration-receipt.json'
 TO_COMPLETION = 'local-owned-to-completion'
-STRUCTURED_OPTIONS = {'viewer-setup', 'diagnostic-resource-allocation', 'driver-plan', 'opportunity-observation', 'drain-observation'}
+STRUCTURED_OPTIONS = {'viewer-setup', 'driver-plan', 'opportunity-observation', 'drain-observation'}
 SMOKE_DEFAULTS = {
     'tenants': 8, 'replicas': 1, 'load-seconds': 60, 'warmup-seconds': 5,
     'idle-seconds': 5, 'probe-every-ms': 10000, 'sockets-per-tenant': 1,
@@ -80,8 +81,7 @@ def tier_plan(config):
                                'origin': 'authored; a finite cleanup is always required'},
             'drainSeconds': {'value': effective.get('cadence', {}).get('drainSeconds'),
                              'origin': 'authored' if 'drainSeconds' in effective.get('cadence', {}) else 'run work deadline'}},
-        'resourceOrigin': ('configured diagnostic allocation' if effective['resources'] else
-                           'uncapped Compose services; host limits may apply'),
+        'resourceOrigin': 'uncapped Compose services; host limits may apply',
         'coverage': {
             'clinical': 'selected write witnesses',
             'wholePopulationClinicalTails': 'UNMEASURED',
@@ -105,16 +105,38 @@ def clean_source_preflight(parsed):
         a.image({'pair': {'core': parsed.core_commit, 'deploy': parsed.deploy_commit},
                  'image': parsed.image, 'imageId': parsed.image_id or parsed.image})
         return
-    # Discovery builds image inputs here: check the build sources once, at build.
+    # Discovery builds image inputs from the selected commits (git archive);
+    # the checkout's HEAD and working tree are not compared.
     for role in ('core', 'deploy'):
-        repo = getattr(parsed, role + '_repo')
-        selected = a.commit(repo, getattr(parsed, role + '_commit'))
-        label = role.upper()
-        require(a.git(repo, 'rev-parse', 'HEAD') == selected, 'M7_SOURCE_' + label + '_HEAD')
-        require(not a.git(repo, 'status', '--porcelain', '--untracked-files=normal'),
-                'M7_SOURCE_' + label + '_DIRTY')
+        a.commit(getattr(parsed, role + '_repo'), getattr(parsed, role + '_commit'))
     a.prepare_image_inputs(parsed)
 
+
+
+CANDIDATE_OPTIONS = ('image', 'image-id', 'core-commit', 'deploy-commit')
+
+
+def with_candidate(config, reference=None):
+    """The candidate image is a run parameter, never a pinned tuple in the config.
+
+    `--candidate` (or M7_CANDIDATE_IMAGE) names a local image reference. Its
+    digest and its labelled core/deploy revisions replace whatever the config
+    carried, and are recorded as the run's identity with the run configuration.
+    """
+    reference = reference or os.environ.get('M7_CANDIDATE_IMAGE')
+    if not reference:
+        return config, None
+    spec = json.loads(a.command(['docker', 'image', 'inspect', reference]))[0]
+    labels = (spec.get('Config') or {}).get('Labels') or {}
+    candidate = {'reference': reference, 'imageId': spec['Id'], 'repoDigests': spec.get('RepoDigests') or [],
+                 'core': labels.get('org.opencontainers.image.revision'),
+                 'deploy': labels.get('org.nightscout.deploy.revision')}
+    require(all(isinstance(candidate[k], str) and re.fullmatch(r'[0-9a-f]{40}', candidate[k]) for k in ('core', 'deploy')),
+            'M7_CANDIDATE_LABELS')
+    prepare = {k: v for k, v in config['prepare'].items() if k not in CANDIDATE_OPTIONS}
+    prepare.update({'image': spec['Id'], 'image-id': spec['Id'],
+                    'core-commit': candidate['core'], 'deploy-commit': candidate['deploy']})
+    return {**config, 'prepare': prepare}, candidate
 
 
 def write(path, value):
@@ -165,8 +187,6 @@ def validate_config(config):
             and type(config['cleanupSeconds']) is int and 30 <= config['cleanupSeconds'] <=
             (workload_inputs.MAX_SECONDS if tier == 'discovery' else 3600),
             'M7_RUNNER_FINITE_LIMIT')
-    require(not local_to_completion or not os.environ.get('M7_BATCH_RESERVATION'),
-            'M7_RUNNER_TO_COMPLETION_REQUIRES_ONE_SHOT')
     options = config['prepare']
     require(isinstance(options, dict) and 'directory' not in options and 'fixture-project' in options
             and 'backend-subnet' in options and 'edge-subnet' in options, 'M7_RUNNER_PREPARE_CONFIG')
@@ -194,15 +214,9 @@ def validate_config(config):
     validate_prepare(parsed)
     require(0 <= parsed.quiet_load <= (os.cpu_count() or 1), 'M7_QUIET_BOUND_INVALID')
     cadence = a.cadence_options(parsed)
-    require(not a.preload_convergence.option(parsed) or local_to_completion,
-            'M7_PRELOAD_LOCAL_OWNED_TO_COMPLETION_REQUIRED')
-    # The run stage gets no work deadline in a to-completion run, so a catch-up
-    # drain needs its own authored window. Refused here, before any actor exists.
-    require(parsed.evaluator_catchup is None or not local_to_completion or 'drainSeconds' in cadence,
-            'M7_DRAIN_WORK_DEADLINE_REQUIRED')
     require(not local_to_completion or {'setupSeconds', 'drainSeconds'} <= cadence.keys(),
             'M7_RUNNER_TO_COMPLETION_PHASE_BUDGETS_REQUIRED')
-    authored_windows = ('warmupSeconds', 'idleSeconds', 'loadSeconds', 'setupSeconds', 'drainSeconds')
+    authored_windows = ('loadSeconds', 'setupSeconds', 'drainSeconds')
     require(local_to_completion or work > sum(cadence.get(key, 0) for key in authored_windows),
             'M7_RUNNER_WORK_WINDOW')
     return config, argv
@@ -227,8 +241,25 @@ def preflight_receipt(config, argv):
         a.receipt_scope({**resolved,'instrument':{'sha256':resolved['instrument']},'runConfiguration':resolved},receipt,'deploy')
 
 
-def prepare(config_file, directory, *, one_shot=False):
-    config = a.document(config_file)
+def materialize_tier_receipt(directory, config, argv):
+    """Resolve the selected workload once for this new point or observation."""
+    if config.get('tier') in ('smoke', 'discovery'):
+        for option in ('--receipt', '--freeze'):
+            if option not in argv:
+                continue
+            index = argv.index(option) + 1
+            if argv[index] == GENERATED_RECEIPT:
+                from run_configuration import resolve
+                receipt = resolve(config)['diagnosticReceiptTemplate']
+                receipt['status'] = 'AUTHORIZED_DIAGNOSTIC'
+                path = directory / GENERATED_RECEIPT
+                write(path, receipt)
+                argv[index] = str(path)
+            break
+
+
+def prepare(config_file, directory, *, one_shot=False, candidate=None):
+    config, selected = with_candidate(a.document(config_file), candidate)
     tier = config.get('tier')
     if tier is None:
         _, argv = validate_config(config)
@@ -237,7 +268,10 @@ def prepare(config_file, directory, *, one_shot=False):
     require(not root.exists(), 'M7_RUNNER_OUTPUT_EXISTS')
     root.mkdir(mode=0o700, parents=True)
     write(root / 'config.json', config)
-    write(root / 'result.json', {'version': 1, 'status': 'PREPARING', 'phase': 'prepare', 'capacityAcceptance': 'NOT_GRANTED'})
+    if selected is not None:
+        write(root / 'candidate.json', selected)
+    entry_memory = point_results.available_memory()
+    write(root / 'result.json', {'version': 1, 'memAvailableAtEntryBytes': entry_memory, 'status': 'PREPARING', 'phase': 'prepare', 'capacityAcceptance': 'NOT_GRANTED'})
     phase = 'configuration'
     try:
         if tier is not None:
@@ -246,12 +280,7 @@ def prepare(config_file, directory, *, one_shot=False):
             parsed = a.parser().parse_args(['prepare', '--directory', str(root / 'fixture'), *argv])
             phase = 'source-input'
             clean_source_preflight(parsed)
-            if parsed.freeze == GENERATED_RECEIPT:
-                from run_configuration import resolve
-                receipt = resolve(config)['diagnosticReceiptTemplate']
-                receipt['status'] = 'AUTHORIZED_DIAGNOSTIC'
-                write(root / GENERATED_RECEIPT, receipt)
-                argv[argv.index('--receipt') + 1] = str(root / GENERATED_RECEIPT)
+            materialize_tier_receipt(root, config, argv)
             phase = 'receipt'
             preflight_receipt(config, argv)
         phase = 'prepare'
@@ -262,13 +291,14 @@ def prepare(config_file, directory, *, one_shot=False):
         write(root / 'result.json', {'version': 1, 'status': 'PREPARED', 'phase': 'prepare', 'runtimeStarted': False, 'configSha256': a.digest(root / 'config.json'), 'capacityAcceptance': 'NOT_GRANTED'})
     except BaseException as error:
         write(root / 'result.json', {'version': 1, 'status': 'FAILED', 'phase': phase,
-                                     'code': code(error), 'runtimeStarted': False,
+                                     'code': code(error), 'runtimeStarted': False, 'memAvailableAtEntryBytes': entry_memory,
                                      'finishedAt': time.time(), 'capacityAcceptance': 'NOT_GRANTED'})
         if (root / 'execution.json').exists():
             try:
                 cleanup(root, 'PREPARE_FAILURE')
             except BaseException as cleanup_error:
                 write(root / 'cleanup-failure.json', {'code': code(cleanup_error)})
+        point_results.publish_compose(root, a.document(root/'result.json'))
         auto_catalog(root, write)
         raise
     return root
@@ -322,9 +352,6 @@ def _cleanup(root, reason):
             if not value.get('completed'):
                 stop_stage(job, value['owner'])
         state=a.document(root/'execution.json') if (root/'execution.json').exists() else {}
-        if state.get('producer')=='vault-component-v1':
-            import vault_component
-            vault_component.cleanup_resources(root)
         if (root/'session.json').exists():stop_session_collectors(root)
         fixture = root / 'fixture'
         if (fixture / 'owner.json').exists():
@@ -378,7 +405,7 @@ def partial(root):
     """References remain private; missing instruments are never invented zeros."""
     d = root / 'fixture'
     artifacts = {}
-    for name in ('summary.json', 'runtime-readiness.json', 'deployment.json', 'deployment-stages.json', 'startup-primer-boundary.json', 'api-warm-cause.json', 'role-logs/manifest.json', 'load/probe.json', 'load/k6-summary.json'):
+    for name in ('summary.json', 'runtime-readiness.json', 'deployment.json', 'deployment-stages.json', 'startup-primer-boundary.json', 'role-logs/manifest.json', 'load/probe.json', 'load/k6-summary.json'):
         file = d / name
         if file.is_file():
             artifacts[name] = {'sha256': a.digest(file), 'path': str(file)}
@@ -543,12 +570,9 @@ def generated_control(root, d, m):
     This is a real Node execution, before I/O; the normal run then exercises
     the same bytes with the canonical caller/environment.
     """
-    a.diagnostic_resources.configure(m.get('diagnosticResources',{}).get('profile'), driver_scope=d)
-    try:
-        with a.diagnostic_resources.command([m['generator']['tools']['node']['path'],str(d/'probe.js')],a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies')})) as (argv,env):
-            with (root/'generated-control.private.log').open('xb') as output:
-                result=subprocess.run(argv,env=env,stdout=output,stderr=subprocess.STDOUT,timeout=10)
-    finally:a.diagnostic_resources.configure()
+    argv=[m['generator']['tools']['node']['path'],str(d/'probe.js')]
+    with (root/'generated-control.private.log').open('xb') as output:
+        result=subprocess.run(argv,env=a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies')}),stdout=output,stderr=subprocess.STDOUT,timeout=10)
     text = (root / 'generated-control.private.log').read_text()
     require(result.returncode != 0 and 'ERR_INVALID_URL' in text, 'M7_RUNNER_GENERATED_CONTROL_VACUOUS')
     write(root / 'generated-control.json', {'status': 'EXPECTED_FAILURE', 'returncode': result.returncode,
@@ -570,16 +594,16 @@ def arm_window(root,config):
     start=time.time()
     work = config['workSeconds']
     cleanup_seconds = config['cleanupSeconds']
+    initial = point_results.read(root/'result.json')
+    entry_memory = initial['memAvailableAtEntryBytes'] if 'memAvailableAtEntryBytes' in initial else point_results.available_memory()
     state = {'owner': uuid.uuid4().hex, 'startedAt': start, 'startedMonoNs': time.monotonic_ns(),
+             'memAvailableAtEntryBytes': entry_memory,
              'stopWorkAt': start + work if work is not None else None,
              'cleanupAt': start + work + cleanup_seconds if work is not None else None,
              'configSha256': a.digest(root/'config.json'), 'includesPreparation': True}
     if work is None:
         state.update(mode=TO_COMPLETION, controller=controller_identity(os.getpid())[0],
                      cleanupSeconds=cleanup_seconds)
-    if config.get('producer')=='vault-component-v1':state['producer']=config['producer']
-    if os.environ.get('M7_BATCH_RESERVATION'):
-        require(state['cleanupAt']<=a.document(os.environ['M7_BATCH_RESERVATION'])['cleanupAt'],'M7_BATCH_CELL_DEADLINE')
     write(root/'execution.json',state)
     with (root/'guard.private.log').open('xb') as output:
         guardian=subprocess.Popen([sys.executable,'-B',str(Path(__file__).resolve()),'_guard',str(root)],stdout=output,stderr=subprocess.STDOUT,start_new_session=True)
@@ -623,7 +647,6 @@ def execute(directory, rehearsal=False):
         # Essential source/runtime/instrument checks stay in adapter preflight.
         optional_preflight(root, d)
         stage(root, 'run', ['run', str(d), '--k6-image', config['k6Image']])
-        if m.get('vaultRefusalControl'):stage(root,'vault-check',['vault-check',str(d)])
         if config.get('tier') == 'smoke':
             from tier_smoke import assess
             assess(root, config.get('smokeBaseline'))
@@ -642,7 +665,7 @@ def execute(directory, rehearsal=False):
         result = {'version': 1, 'status': ('COMPLETED' if partial(root)['adapterStatus'] == 'MEASURED' else 'COMPLETED_PARTIAL') if failure is None else 'FAILED_PARTIAL', 'phase': phase, 'failure': failure, 'partial': partial(root), 'cleanup': a.document(root / 'cleanup.json') if (root / 'cleanup.json').exists() else {'status': 'UNMEASURED'}, 'capacityAcceptance': 'NOT_GRANTED', 'finishedAt': time.time()}
         if 'startedMonoNs' in state:
             result['elapsedSeconds'] = (time.monotonic_ns() - state['startedMonoNs']) / 1e9
-        write(root / 'result.json', result)
+        point_results.publish_compose(root, result)
         auto_catalog(root, write)
     require(failure is None, 'M7_RUNNER_POINT_INCOMPLETE')
     return result
@@ -654,9 +677,9 @@ def execute(directory, rehearsal=False):
 SESSION_VARIABLE_OPTIONS = frozenset(('freeze', 'receipt', 'warmup-seconds', 'idle-seconds',
     'load-seconds', 'offered-rps', 'hot-factor', 'probe-every-ms', 'sockets-per-tenant',
     'logical-polling-clients', 'viewer-setup', 'workload-mix', 'workload-scale', 'sampler-interval', 'quiet-load', 'jwt-setup-concurrency',
-    'evaluator-catchup', 'evaluator-opportunities', 'opportunity-observation', 'restart-during-load-after-seconds', 'driver-shards', 'driver-vu-diagnostic'))
+    'evaluator-catchup', 'evaluator-opportunities', 'opportunity-observation', 'restart-during-load-after-seconds', 'driver-shards', 'driver-vu-diagnostic', 'driver-plan'))
 SESSION_PREPARE_ONLY = frozenset(('fixture-project', 'backend-subnet', 'edge-subnet', 'commissioning-slot-wal-mib', 'tenant-readiness',
-    'diagnostic-resource-profile', 'diagnostic-resource-allocation', 'generator-dependencies', 'generator-dependency-receipt',
+    'generator-dependencies', 'generator-dependency-receipt',
     'generator-dependency-receipt-sha256', 'generator-dependency-preparation',
     'generator-dependency-preparation-sha256', 'generator-dependency-preparation-head'))
 
@@ -665,10 +688,6 @@ def session_start(config_file, directory):
     root = prepare(config_file, directory)
     config = a.document(root/'config.json')
     try:
-        selected=config['prepare'].get('diagnostic-resource-profile')
-        if config['prepare'].get('diagnostic-resource-allocation') is not None:selected=json.loads(config['prepare']['diagnostic-resource-allocation'])
-        require(a.diagnostic_resources.selection(selected) is not None,
-                'M7_SESSION_RESOURCE_CEILING_REQUIRED')
         stage(root, 'deploy', ['deploy', str(root/'fixture')])
         d, m = a.load(root/'fixture', resource_limits=False)
         require(not m.get('attached'), 'M7_SESSION_ORIGINAL_OWNER_REQUIRED')
@@ -677,8 +696,7 @@ def session_start(config_file, directory):
         value = {'version':1, 'owner':state['owner'], 'startedAt':state['startedAt'],
             'stopWorkAt':state['stopWorkAt'], 'cleanupAt':state['cleanupAt'],
             'runtimeOwnerSha256':a.digest(d/'owner.json'), 'runtimeOwner':m['owner'],
-            'resourceCeiling':m['diagnosticResources'], 'cleanupRunner':str(Path(__file__).resolve()),
-            'seedHistory':'Original deployment and seeding retained; subsequent observations are reused history.'}
+            'cleanupRunner':str(Path(__file__).resolve())}
         with custody(root):
             execution_window(root,config)
             write(root/'session.json', value)
@@ -699,8 +717,7 @@ def session_access(root, owner):
     d = root/'fixture'
     require(a.digest(d/'owner.json') == session['runtimeOwnerSha256'], 'M7_SESSION_RUNTIME_CHANGED')
     m = a.document(d/'owner.json')
-    require(not m.get('attached') and m['owner'] == session['runtimeOwner']
-            and m.get('diagnosticResources') == session['resourceCeiling'], 'M7_SESSION_RUNTIME_CHANGED')
+    require(not m.get('attached') and m['owner'] == session['runtimeOwner'], 'M7_SESSION_RUNTIME_CHANGED')
     return session, d, m
 
 
@@ -713,7 +730,7 @@ def session_observation_lock(root):
         yield
 
 
-def session_observe(directory, owner, name, config_file, history_file):
+def session_observe(directory, owner, name, config_file, history_file=None):
     root = Path(directory).resolve()
     require(re.fullmatch(r'[a-z][a-z0-9-]{0,47}', name) is not None, 'M7_SESSION_OBSERVATION_NAME')
     with session_observation_lock(root):
@@ -723,29 +740,21 @@ def session_observe(directory, owner, name, config_file, history_file):
         require(config['k6Image'] == original['k6Image'], 'M7_SESSION_RUNTIME_CONFIG_CHANGED')
         stable = lambda options:{k:v for k,v in options.items() if k not in SESSION_VARIABLE_OPTIONS}
         require(stable(config['prepare']) == stable(original['prepare']), 'M7_SESSION_RUNTIME_CONFIG_CHANGED')
-        history = a.document(history_file)
-        require(isinstance(history,dict) and all(k in history for k in
-            ('warmCache','seedHistory','previousWrites','restarts','activeViewers','elapsedAges')),
-            'M7_SESSION_HISTORY_REQUIRED')
         ob = root/'observations'/name
         require(not ob.exists(), 'M7_SESSION_OBSERVATION_EXISTS')
         ob.mkdir(mode=0o700)
+        entry_memory = point_results.available_memory()
         write(ob/'config.json',config)
-        write(ob/'history.json',{'declared':history, 'runtime':'REUSED',
-            'elapsedSessionSeconds':time.time()-session['startedAt'],
-            'previousObservations':sorted(p.name for p in ob.parent.iterdir() if p != ob),
-            'runtimeOwnerSha256':session['runtimeOwnerSha256'], 'collector':a.instrument(),
-            'clocksAndCounters':'UNCHANGED; no implicit reset or retry'})
+        reuse = {'runtime': 'REUSED'}
+        if history_file is not None:
+            reuse['declared'] = a.document(history_file)
+        write(ob/'history.json', reuse)
         failure = None
         try:
-            try:
-                with a.command_deadline(session['stopWorkAt']):
-                    a.diagnostic_resources.configure(session['resourceCeiling']['profile'],
-                        a.document(d/'frozen.compose.json'),session['resourceCeiling'],
-                        observe=lambda:a.diagnostic_resource_rows(m), driver_scope=d)
-                    a.verify(d,m);a.image(m)
-                    write(ob/'runtime-before.json',a.resources(m))
-            finally:a.diagnostic_resources.configure()
+            with a.command_deadline(session['stopWorkAt']):
+                a.verify(d,m);a.image(m)
+                write(ob/'runtime-before.json',a.resources(m))
+            materialize_tier_receipt(ob, config, prepared_argv)
             argv = ['attach','--directory',str(ob/'fixture')]
             # Reuse the validated tier defaults and JSON serialization for the
             # attached observer just as for a newly prepared fixture.
@@ -774,7 +783,8 @@ def session_observe(directory, owner, name, config_file, history_file):
                 'cleanupOwner':session['owner'],'stopWorkAt':session['stopWorkAt'],
                 'capacityAcceptance':'NOT_GRANTED','runtime':'REUSED',
                 'writeEffects':'UNCERTAIN after failure; inspect originals before another scenario' if failure else 'Retained; never reset'}
-            write(ob/'result.json',result)
+            result['memAvailableAtEntryBytes'] = entry_memory
+            point_results.publish_compose(ob, result, cleanup={'status':'DEFERRED_TO_SESSION_CLOSE'})
             auto_catalog(ob, write)
             if failure and failure.get('errorType') in ('KeyboardInterrupt','SystemExit'):
                 session_close(root,session['owner'])
@@ -807,151 +817,29 @@ def session_close(directory, owner):
     return subprocess.run([sys.executable,'-B',original,'down',str(root)],check=True)
 
 
-def local_batch_allocation(config):
-    """Use the adapter's resource selection for planning and configuration help."""
-    import experiment_batch as batch
-    options = config['prepare']
-    explicit = options.get('diagnostic-resource-allocation')
-    selected = a.selected_resources_profile(argparse.Namespace(
-        diagnostic_resource_profile=options.get('diagnostic-resource-profile'),
-        diagnostic_resource_allocation=json.loads(explicit) if isinstance(explicit,str) else explicit))
-    return selected, batch.local_resource_plan(selected)
-
-
-def local_batch_plan(spec, payload_root):
-    import experiment_batch as batch
-    planned=batch.plan(spec)
-    allowlist=batch.verify_payload(spec,payload_root)
-    env=spec['envelope']
-    # The envelope is the caller's explicit aggregate allocation. Each cell
-    # still reserves its complete enforced producer maximum below.
-    batch.need(env['hourlyMicrousd']==env['totalMicrousd']==0,'LOCAL_MONEY')
-    axes=env['workload']
-    for cell in spec['cells']:
-        batch.need(cell['target']=={'kind':'local'},'LOCAL_TARGET')
-        if cell['config'].get('producer')=='vault-component-v1':
-            import vault_component
-            cell_plan=vault_component.plan(cell,spec,payload_root,allowlist)
-            next(c for c in planned['cells'] if c['id']==cell['id'])['allocationBreakdown']=cell_plan
-            continue
-        config=cell['config'];validate_config(config);options=config['prepare']
-        selected, allocation = local_batch_allocation(config)
-        batch.check_local_reservation(cell['resources'], allocation['resources'])
-        next(c for c in planned['cells'] if c['id']==cell['id'])['allocationBreakdown']=allocation['allocationBreakdown']
-        receipt=Path(options.get('receipt',''))
-        batch.need(receipt.is_absolute() and receipt.is_relative_to(Path(payload_root).resolve()),'RECEIPT_ALLOWLIST')
-        batch.need(str(receipt.relative_to(Path(payload_root).resolve())) in allowlist,'RECEIPT_ALLOWLIST')
-        batch.need(options.get('core-commit')==spec['payload']['source']['core'] and
-                   options.get('deploy-commit')==spec['payload']['source']['deploy'],'SOURCE_CHANGED')
-        batch.need(options.get('image-id')==options.get('image')==spec['payload']['image'],'IMAGE_CHANGED')
-        external=options.get('pgstream-topology','colocated-v1')=='external-service-v1'
-        batch.need(external==a.diagnostic_resources.external_selection(selected),'LOCAL_TOPOLOGY_PROFILE')
-        batch.need(options.get('fixture-project')==cell['namespace'] and cell['subnets']==[options.get('backend-subnet'),options.get('edge-subnet')], 'ISOLATION_CHANGED')
-        batch.need(cell['ports']==[], 'LOCAL_PORTS_UNSUPPORTED')
-        batch.need(config['workSeconds']==cell['workSeconds'] and config['cleanupSeconds']==cell['cleanupSeconds'] and options.get('offered-rps')==cell['offeredRps'],'WORKLOAD_CHANGED')
-        values={'tenants':options.get('tenants'),'offeredRps':cell['offeredRps'],
-                'durationSeconds':options.get('load-seconds'),'probeEveryMs':options.get('probe-every-ms',1000),
-                'hotFactor':options.get('hot-factor',1)}
-        for key,value in values.items():
-            batch.need(batch.number(value) and axes[key][0]<=value<=axes[key][1],'WORKLOAD_OUTSIDE_ENVELOPE')
-        # Ordinary runner only; fault profiles must first gain a typed adapter.
-        batch.need(not axes['faultCases'], 'LOCAL_FAULT_UNSUPPORTED')
-    return planned
-
-
-def batch_run(spec_file, directory, payload_root):
-    import experiment_batch as batch
-    spec=a.document(spec_file);planned=local_batch_plan(spec,payload_root)
-    cancelled=False
-    def cancel(signum, frame):
-        nonlocal cancelled
-        cancelled=True
-    old={s:signal.signal(s,cancel) for s in (signal.SIGINT,signal.SIGTERM)}
-    try:
-        with batch.local_custody(directory,spec) as ledger:
-            root=ledger.directory
-            write(root/'batch.json',spec)
-            write(root/'batch-payload.json',{'root':str(Path(payload_root).resolve()),'specSha256':batch.digest(spec)})
-            write(root/'batch-plan.json',planned)
-            def perform(cell,ticket):
-                # Each cell is a process. Adapter process-global state is never
-                # shared by concurrent cells in coordinator threads.
-                ticket_file=root/(cell['id']+'.ticket.json');batch.write(ticket_file,ticket)
-                config_file=root/(cell['id']+'.config.json');write(config_file,cell['config'])
-                child_env={**os.environ,'M7_BATCH_RESERVATION':str(ticket_file)}
-                point=root/cell['id']
-                with (root/(cell['id']+'.private.log')).open('xb') as output:
-                    child=subprocess.Popen([sys.executable,'-B',str(HERE/'runner.py'),'_batch-cell',str(config_file),str(point)],env=child_env,stdout=output,stderr=subprocess.STDOUT,start_new_session=True)
-                    a.job_record(root/(cell['id']+'.job.json'),child,ticket['nonce'],group=True)
-                    # Existing independent guard owns finite effects/cleanup.
-                    # Reserve remains if child or guard cannot prove absence.
-                    try:child.wait(timeout=cell['workSeconds']+cell['cleanupSeconds']+20)
-                    except subprocess.TimeoutExpired:
-                        stop_stage(root/(cell['id']+'.job.json'),ticket['nonce'])
-                        child.wait(timeout=12)
-                result=a.document(point/'result.json') if (point/'result.json').exists() else {'status':'FAILED_PARTIAL'}
-                require((point/'cleanup.json').exists() and a.document(point/'cleanup.json')['status']=='ABSENT','M7_BATCH_ABSENCE_REQUIRED')
-                until=time.monotonic()+10
-                while guard_alive(point) and time.monotonic()<until:time.sleep(.05)
-                require(not guard_alive(point),'M7_BATCH_GUARD_PENDING')
-                require(not batch.group_members(child.pid),'M7_BATCH_CELL_GROUP_REMAINS')
-                if (point/'guard-job.json').exists():
-                    require(not batch.group_members(a.document(point/'guard-job.json')['pid']),'M7_BATCH_GUARD_GROUP_REMAINS')
-                lock=root/(cell['id']+'.heap.lock')
-                if lock.exists():
-                    with lock.open('r+') as stream:
-                        fcntl.flock(stream,fcntl.LOCK_EX|fcntl.LOCK_NB)
-                        require(not stream.read(),'M7_BATCH_HEAP_STALE')
-                return result,{'status':'ABSENT','id':ticket['id'],'nonce':ticket['nonce']}
-            result=batch.schedule(spec,ledger,perform,lambda:cancelled,
-                changed=lambda:local_batch_plan(spec,payload_root))
-            write(root/'batch-result.json',result)
-            return result
-    finally:
-        for signum,handler in old.items():signal.signal(signum,handler)
-
-
-def batch_cell(config, directory):
-    # Private entrypoint: no arbitrary lock bypass without aggregate custody.
-    from experiment_batch import child_lock, read
-    require(child_lock() is not None,'M7_BATCH_TICKET_REQUIRED')
-    ticket=read(os.environ['M7_BATCH_RESERVATION'])
-    limits=a.document(config)
-    require(time.time()+limits['workSeconds']+limits['cleanupSeconds']<=ticket['cleanupAt'],
-            'M7_BATCH_CELL_DEADLINE')
-    root=Path(directory).resolve()
-    try:
-        if limits.get('producer')=='vault-component-v1':
-            import vault_component
-            return vault_component.execute(config,root)
-        prepare(config,root)
-        return execute(root)
-    finally:
-        if (root/'execution.json').exists() and not (root/'cleanup.json').exists():
-            cleanup(root,'BATCH_CELL_EXIT')
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='action', required=True)
     sub.add_parser('identity')
-    sub.add_parser('batch-resources', help='Explain the selected local cell reservation without starting actors').add_argument('config')
-    project=sub.add_parser('project');project.add_argument('config');project.add_argument('--remote-overlay');project.add_argument('--source-acceptance')
-    for mode in ('batch-plan','batch-run'):
-        command=sub.add_parser(mode);command.add_argument('config');command.add_argument('--payload-root',required=True)
-        if mode=='batch-run':command.add_argument('directory')
-    cell=sub.add_parser('_batch-cell');cell.add_argument('config');cell.add_argument('directory')
+    project=sub.add_parser('project');project.add_argument('config');project.add_argument('--source-acceptance')
+    candidate_help = 'Candidate image reference (default $M7_CANDIDATE_IMAGE); sets image, image-id and the labelled core/deploy commits'
+    project.add_argument('--candidate', help=candidate_help)
     for mode in ('prepare', 'run'):
         prep = sub.add_parser(mode)
         prep.add_argument('config')
         prep.add_argument('directory')
+        prep.add_argument('--candidate', help=candidate_help)
+        if mode == 'run':
+            prep.add_argument('--standard-case', action='store_true',
+                              help='Create a fresh case with result.json, cleanup.json and raw/')
     plan = sub.add_parser('plan')
     plan.add_argument('config')
-    for name in ('execute', 'rehearse', 'result', 'down', '_guard', 'batch-result'):
+    plan.add_argument('--candidate', help=candidate_help)
+    for name in ('execute', 'rehearse', 'result', 'down', '_guard'):
         sub.add_parser(name).add_argument('directory')
     start = sub.add_parser('session-start');start.add_argument('config');start.add_argument('directory')
     observe = sub.add_parser('session-observe');observe.add_argument('directory');observe.add_argument('--owner',required=True)
-    observe.add_argument('--name',required=True);observe.add_argument('--config',required=True);observe.add_argument('--history',required=True)
+    observe.add_argument('--name',required=True);observe.add_argument('--config',required=True);observe.add_argument('--history', help='Optional legacy observation metadata')
     close = sub.add_parser('session-close');close.add_argument('directory');close.add_argument('--owner',required=True)
     args = parser.parse_args()
     if args.action in ('prepare', 'execute', 'rehearse', 'run', 'session-start', 'session-observe'):
@@ -962,35 +850,37 @@ def main():
     if args.action == 'session-close':return session_close(args.directory,args.owner)
     if args.action == 'project':
         import run_configuration as rc
-        config=a.document(args.config)
+        config,_=with_candidate(a.document(args.config),args.candidate)
         acceptance=a.document(args.source_acceptance) if args.source_acceptance else None
-        value=rc.remote_projection(config,a.document(args.remote_overlay),acceptance) if args.remote_overlay else rc.resolve(config,acceptance)
+        value=rc.resolve(config,acceptance)
         return print(json.dumps(value,indent=2))
-    if args.action == 'batch-result':
-        root=Path(args.directory).resolve();spec=a.document(root/'batch.json')
-        retained=a.document(root/'batch-result.json') if (root/'batch-result.json').exists() else {'batch':spec['id'],'cells':{},'capacityAcceptance':'NOT_GRANTED'}
-        for cell in spec['cells']:
-            file=root/cell['id']/'result.json'
-            if file.exists():retained['cells'][cell['id']]=a.document(file)
-            elif cell['id'] not in retained['cells']:retained['cells'][cell['id']]={'status':'UNMEASURED'}
-        return print(json.dumps(retained,indent=2))
-    if args.action == '_batch-cell':return batch_cell(args.config,args.directory)
-    if args.action == 'batch-resources':
-        config, _ = load_config(args.config)
-        return print(json.dumps(local_batch_allocation(config)[1], indent=2))
-    if args.action == 'batch-plan':
-        return print(json.dumps(local_batch_plan(a.document(args.config),args.payload_root),indent=2))
-    if args.action == 'batch-run':return batch_run(args.config,args.directory,args.payload_root)
     if args.action == 'identity':
         identity = a.instrument()
         return print(json.dumps({'helperHead': identity['commit'], 'helperInstrument': identity['sha256']}, indent=2))
     if args.action == 'plan':
-        return print(json.dumps(tier_plan(a.document(args.config)), indent=2))
+        return print(json.dumps(tier_plan(with_candidate(a.document(args.config), args.candidate)[0]), indent=2))
     if args.action in ('prepare', 'run'):
-        root = prepare(args.config, args.directory, one_shot=args.action == 'run')
-        if args.action == 'run':
-            return execute(root)
-        return root
+        directory = Path(args.directory).resolve()
+        if not getattr(args, 'standard_case', False):
+            root = prepare(args.config, directory, one_shot=args.action == 'run', candidate=args.candidate)
+            return execute(root) if args.action == 'run' else root
+        directory.mkdir(mode=0o700, parents=True, exist_ok=False)
+        raw = directory / 'raw'
+        try:
+            return execute(prepare(args.config, raw, one_shot=True, candidate=args.candidate))
+        except BaseException as error:
+            if not raw.exists():
+                raw.mkdir(mode=0o700)
+            result = point_results.read(raw/'result.json')
+            if not result or result.get('status') in ('PREPARING', 'PREPARED'):
+                write(raw/'result.json', {**result, 'version': 1, 'status': 'FAILED_PARTIAL',
+                      'code': code(error), 'capacityAcceptance': 'NOT_GRANTED'})
+            raise
+        finally:
+            result = point_results.read(raw/'result.json')
+            result = point_results.publish_compose(raw, result)
+            write(directory/'result.json', {**result, 'rawDirectory': 'raw'})
+            write(directory/'cleanup.json', result['cleanup'])
     root = Path(args.directory).resolve()
     if args.action in ('execute', 'rehearse'):return execute(root, args.action == 'rehearse')
     if args.action == '_guard':return guard(root)

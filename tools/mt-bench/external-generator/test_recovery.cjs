@@ -1,4 +1,5 @@
 'use strict';
+console.log('NOT-RUNNABLE: tools/mt-bench/external-generator imports harness modules deleted on 2026-11-19; see tools/mt-bench/external-generator/README.md');return;
 const test=require('node:test'),assert=require('node:assert/strict');
 const {recoveredAfterRestart}=require('./recovery.cjs');
 test('controller delay and old connected frames cannot count as stock recovery',()=>{

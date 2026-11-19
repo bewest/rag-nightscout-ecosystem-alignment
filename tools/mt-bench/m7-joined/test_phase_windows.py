@@ -33,24 +33,6 @@ class PhaseWindows(unittest.TestCase):
             windows.drain_seconds({**m,'owner':'foreign'},value,700_000_000_000)
         self.assertEqual(windows.drain_seconds({'cadence':{}},{},0),60)
 
-    def test_generated_jwt_setup_override_default_and_break_restore(self):
-        with tempfile.TemporaryDirectory() as folder:
-            file=Path(folder)/'workload.js';workload(a.ROOT,file);source=file.read_text()
-            script=WORKLOAD_PORT.replace("__ENV:{BASE_URL:","__ENV:{...(process.argv[3]===undefined?{}:{M7_SETUP_SECONDS:process.argv[3],M7_SETUP_UNTIL_MS:String(Date.now()+900000)}),BASE_URL:")
-            def run(seconds=None):
-                args=['node','-e',script,str(file),'0',*([str(seconds)] if seconds is not None else [])]
-                return subprocess.run(args,capture_output=True,text=True,timeout=10)
-            self.assertEqual(json.loads(run().stdout)['options']['setupTimeout'],'300s')
-            def criterion():
-                self.assertEqual(json.loads(run(900).stdout)['options']['setupTimeout'],'900s','AUTHORED_SETUP_NOT_APPLIED')
-            criterion()
-            file.write_text(source.replace("options.setupTimeout = seconds + 's';","options.setupTimeout = '300s';"))
-            with self.assertRaisesRegex(AssertionError,'AUTHORED_SETUP_NOT_APPLIED'):criterion()
-            file.write_text(source);criterion()
-            for bad in ('0','-1','true','1.5','Infinity'):
-                result=run(bad);self.assertNotEqual(result.returncode,0)
-                self.assertIn('M7_PHASE_WINDOW_INVALID:setupSeconds',result.stderr)
-
     def test_generated_probe_setup_override_and_legacy_materializer_anchor(self):
         with tempfile.TemporaryDirectory() as folder:
             file=Path(folder)/'probe.js';probe(a.ROOT,file);source=file.read_text()
@@ -70,40 +52,6 @@ class PhaseWindows(unittest.TestCase):
             self.assertEqual(source.count(predicate),1)
             file.write_text(source.replace(predicate,'Date.now() - t0 < 300000'))
             with self.assertRaisesRegex(AssertionError,'AUTHORED_PROBE_SETUP_NOT_APPLIED'):criterion()
-            file.write_text(source);criterion()
-
-    def test_setup_cutoff_covers_driver_initialization_and_response_delay(self):
-        port=r"""
-const fs=require('node:fs'),vm=require('node:vm');
-const source=fs.readFileSync(process.argv[1],'utf8').replace(/^import .*;$/gm,'').replace(/export (const|function) /g,'$1 ');
-function run(before,delay){
- let now=1000000,requests=0,timeout;
- class Clock extends Date{static now(){return now;}}
- const c={Date:Clock,__VU:0,__ENV:{BASE_URL:'http://synthetic.invalid',TENANTS_FILE:'unused',RUN_ID:'synthetic',
- RUN_START:'1800000000000',DURATION:'1',ACCEL:'1',HOT_FACTOR:'1',OFFERED_RPS:'1',SHAPES:'w_treatments_v3',M7_SETUP_SECONDS:'900',M7_SETUP_UNTIL_MS:'1900000'},
- console:{log(){}},sha256:()=>'',SharedArray:function(n,f){return f();},
- open:()=>JSON.stringify([{id:'a',host:'a.invalid',token:'synthetic'}]),
- exec:{scenario:{iterationInTest:0}},Counter:class{add(){}},http:{expectedStatuses:()=>null,
- get(url,params){requests++;timeout=params.timeout;now+=delay;return{status:200,body:'{"token":"synthetic"}'};}}};
- vm.createContext(c);vm.runInContext(source,c);now+=before;
- try{vm.runInContext('setup()',c);return{status:'PASS',requests,timeout};}
- catch(error){return{status:error.message,requests,timeout};}
-}
-console.log(JSON.stringify({lateInit:run(900001,0),lateResponse:run(890000,10001),within:run(600000,1)}));
-"""
-        with tempfile.TemporaryDirectory() as folder:
-            file=Path(folder)/'workload.js';workload(a.ROOT,file);source=file.read_text()
-            def criterion():
-                value=subprocess.run(['node','-e',port,str(file)],capture_output=True,text=True,timeout=5)
-                self.assertEqual(value.returncode,0,value.stderr);x=json.loads(value.stdout)
-                self.assertEqual(x['lateInit']['requests'],0)
-                self.assertEqual(x['lateInit']['status'],'M7_PHASE_WINDOW_EXHAUSTED:setup')
-                self.assertEqual(x['lateResponse']['timeout'],'10000ms')
-                self.assertEqual(x['lateResponse']['status'],'M7_PHASE_WINDOW_EXHAUSTED:setup','LATE_JWT_SETUP_CREDITED')
-                self.assertEqual(x['within']['status'],'PASS')
-            criterion()
-            file.write_text(source.replace('setupRemainingMs();',';'))
-            with self.assertRaises(AssertionError):criterion()
             file.write_text(source);criterion()
 
     def launch_window(self,outer_seconds):
@@ -128,6 +76,7 @@ console.log(JSON.stringify({lateInit:run(900001,0),lateResponse:run(890000,10001
                 stack.enter_context(patch.object(a,name))
             for name in ('sampling','loadgen_process','observe_progress'):
                 stack.enter_context(patch.object(a,name,ctx))
+            stack.enter_context(patch.object(a,'k6_tenants'))
             stack.enter_context(patch.object(a,'progress_services',return_value=['evaluator']))
             stack.enter_context(patch.object(a,'progress_attribution',return_value={}))
             stack.enter_context(patch.object(a.subprocess,'Popen',side_effect=popen))

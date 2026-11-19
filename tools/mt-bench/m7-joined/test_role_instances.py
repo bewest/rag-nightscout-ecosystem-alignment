@@ -6,7 +6,6 @@ from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 import role_instances as r
-import node_observation as n
 import profile_provenance as p
 import adapter as a
 from contract import OWNER
@@ -30,7 +29,7 @@ def manifest(apis=2):
 
 
 def rows(c, m):
-    return [{'Id': 'physical-' + name, 'Image': m['imageId'], 'Config': {'Cmd': n.command(name),
+    return [{'Id': 'physical-' + name, 'Image': m['imageId'], 'Config': {'Cmd': ['node', 'deploy/multitenant/entrypoint.js', r.instance(name)['role']],
              'Labels': {OWNER: m['owner'], 'com.docker.compose.project': m['project'],
                         'com.docker.compose.service': name, **spec.get('labels', {})}},
              'State': {'Running': True, 'StartedAt': '2026-11-17T00:00:00Z', 'Pid': 100 + i}}
@@ -145,20 +144,6 @@ class Instances(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'MISSING_INSTANCE_MUST_REFUSE'): criterion(scope['runtime'])
         criterion(r.runtime)
 
-    def test_profiles_install_every_instance_and_refuse_dropped_or_swapped_instance(self):
-        with TemporaryDirectory() as tmp:
-            d = Path(tmp); (d/'state').mkdir(); c = config(); m = manifest()
-            n.install(c, d, m, n.MODE)
-            self.assertEqual(set(m['nodeObservation']['configs']), set(c['services']))
-            self.assertEqual(c['services']['api-2']['command'][-1], 'api')
-            self.assertEqual(json.loads((d/'state/node-observe/realtime-2.json').read_text())['role'], 'realtime-2')
-            n.verify(c, d, m)
-            bad = copy.deepcopy(c); bad['services'].pop('evaluator-2')
-            with self.assertRaisesRegex(RuntimeError, 'DECLARED_ORDINAL|ROSTER_CHANGED'): n.verify(bad, d, m)
-            bad = copy.deepcopy(c); bad['services']['api-2']['environment']['M7_NODE_OBSERVATION_CONFIG'] = n.DEST + '/api.json'
-            with self.assertRaisesRegex(RuntimeError, 'COMMAND'): n.verify(bad, d, m)
-            n.verify(c, d, m)
-
     def test_diagnostics_and_logs_cover_all_instances_duplicate_runtime_refuses(self):
         c = config(3, 2); chosen = p.selection('on'); p.select_environment(c, chosen)
         self.assertEqual(set(p.log_roles(c)), set(c['services']))
@@ -168,31 +153,6 @@ class Instances(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'ROSTER_MISMATCH'): p.runtime_environment(observed[:-1], chosen, c)
         with self.assertRaisesRegex(RuntimeError, 'ROSTER_MISMATCH'): p.runtime_environment(observed + observed[-1:], chosen, c)
         p.runtime_environment(observed, chosen, c)
-
-    def test_resource_plan_counts_every_static_ordinal_and_transient_overlap(self):
-        import diagnostic_resources as dr
-        from test_static_topology import allocation
-        budgets = {}
-        for k, apis in ((1, 1), (2, 2)):
-            limits = allocation()
-            if k == 1:
-                for role in ('api-2', 'evaluator-2', 'realtime-2'):
-                    limits['services'].pop(role)
-            c = config(k, apis)
-            for service in limits['services']:
-                c['services'].setdefault(service, {})
-            overlaid = dr.overlay(c, limits); budget = dr.plan(overlaid).record(); budgets[k] = budget
-            self.assertEqual(set(budget['services']), set(c['services']))
-            for service in r.roster(overlaid, apis):
-                self.assertEqual(budget['services'][service]['maximumConcurrent'], 1)
-            for service in ('bootstrap', 'primer'):
-                self.assertEqual(budget['services'][service]['maximumConcurrent'], 2)
-            broken = copy.deepcopy(overlaid); broken['services'].pop('evaluator')
-            with self.assertRaisesRegex(RuntimeError, 'M7_DIAGNOSTIC_RESOURCE_ALLOCATION_ROSTER_CHANGED'):
-                dr.plan(broken)
-            self.assertEqual(dr.plan(overlaid).record(), budget)
-        self.assertEqual(budgets[2]['aggregate']['millicpus'] - budgets[1]['aggregate']['millicpus'], 3000)
-        self.assertEqual(budgets[2]['aggregate']['memoryBytes'] - budgets[1]['aggregate']['memoryBytes'], 3 * 1024 * dr.MIB)
 
     def test_effective_limits_missing_invalid_and_restored(self):
         row = {'Id': 'exact', 'HostConfig': {'NanoCpus': 500000000, 'Memory': 1048576}}
@@ -226,14 +186,6 @@ class Instances(unittest.TestCase):
                 self.assertTrue((root/'before-pg-statements.tsv').is_file())
                 self.assertEqual(captured['roles']['api-2']['cgroup'],'usage_usec 100\n1024\nanon 512\n')
                 if mode=='duplicate':self.assertTrue(captured['roles']['realtime-2']['unavailable'])
-
-    def test_missing_wrapper_proof_does_not_discard_independent_cpu_capture(self):
-        binding={'diagnosticsMode':'off'}
-        good={'status':'VERIFIED','mode':'off','enabled':False,'sourceSha256':'a'*64}
-        self.assertEqual(n.diagnostics_proof({'m7Diagnostics':good},binding),good)
-        for value in ({}, {'m7Diagnostics':{**good,'enabled':True}}, {'m7Diagnostics':{**good,'sourceSha256':'unknown'}}):
-            self.assertEqual(n.diagnostics_proof(value,binding),{'status':'UNMEASURED','reason':'M7_NODE_DIAGNOSTICS_STATE'})
-        self.assertEqual(n.diagnostics_proof({'m7Diagnostics':good},binding),good)
 
     def test_shared_sql_role_is_mapped_once_never_split_by_process(self):
         with TemporaryDirectory() as tmp:

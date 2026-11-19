@@ -145,58 +145,12 @@ Host inventories include container IDs/labels, image IDs, load, RAM, Docker/cont
 kernel and process names/CPU/RSS, never command arguments/environments. Only local
 Unix-socket Docker contexts are supported: host metrics must describe that daemon.
 
-### Shared Compose namespace and epoch custody
+### Compose project and cleanup
 
-`orchestration_binding.py` is the shared command boundary for existing-fixture
-upgrades and resumes. It does not schedule a run or replace the existing finite
-GO, host ownership, PID/birth checks or guard. Artifact stages import this source
-module instead of copying a `COMPOSE` shell array. The tracked instrument inventory
-requires this module. Remote source packs must retain the complete tracked
-`tools/mt-bench/m7-joined/` prefix, including this module; a prefix import and
-manifest digest check belong before any provider allocation.
-
-The command factory requires the immutable project, raw frozen Compose `name`,
-`NS_DEMO_PROJECT` and current owner record to agree. `adapter.compose` uses this
-cheap check and the frozen file hashes on every call. It renders actual Compose
-configuration only for container lifecycle mutations; private SQL and inspector
-polls do not acquire a new Docker-config measurement cost. Missing anchors refuse;
-there is no fallback to the owner record alone.
-
-Before the first effect, the integration owner:
-
-1. Uses `stamp_candidate` to add the single `org.nightscout.m7.attempt` nonce to
-   **new** candidate declarations only. Historical fixture declarations and owner
-   labels remain unchanged. A later resume can retain a prior attempt's labels
-   as its recorded original epoch; it does not recreate resources to retag them.
-2. Uses read-only `image_metadata` and `make_binding` to freeze original and
-   candidate epochs, exact source/image identities, state roots, environment and
-   Compose hashes. An absent/null Compose command is resolved from the exact
-   pinned image's OCI command, not inferred from a running container. Preserve
-   historical `configFiles` when original containers used another frozen path.
-3. Writes a unique `begin_journal` with actual full inspected original IDs. Bind
-   `binding['sha256']` and its attempt nonce into the existing root GO. The
-   supplied `authorize` callback must revalidate that authority before effects.
-4. Calls `checked_run` for Compose creation/replacement. It builds the only
-   project/env/config prefix, checks actual expanded configuration, writes intent
-   before effect, and records created IDs even when the command fails. No shell
-   namespace override is accepted. Calls `checked_ids` for exact existing
-   container start/restart/stop; these retain the recorded epoch's declaration.
-5. Calls `cleanup_recorded` from the existing guard/finally path. It inspects
-   recorded full IDs directly and validates each against its **own** epoch.
-   Discovery admits only the current attempt label plus owner, project, source,
-   config-file, creation and exact command/mount/environment proofs. Foreign or
-   unknown IDs are refused while proven owned IDs still stop. A declaration,
-   capture, log or journal-write failure is never authority for a broad project
-   stop. Cleanup preserves volumes and does not read mutable project/env/config
-   files; a metadata failure remains explicit even when owned stopping succeeds.
-
-Use the new journal API for an upgrade/resume integration; do not fall back to a
-project-wide `down` or reinterpret old containers using new candidate declarations.
-The focused `test_orchestration_binding.py` controls exercise wrong project,
-source, owner, state mount, missing/swapped attempt, original/candidate epoch,
-failed capture/stdout/journal persistence and foreign-ID refusal before effects.
-All mutation calls in those controls are injected. Actual stopped-fixture
-qualification uses only `ps`, `inspect`, image inspection and `compose config`.
+Every Compose call is `docker compose -p <project> --env-file <run>/env -f <run>/frozen.compose.json`,
+built by `adapter.compose_prefix`. The project name is unique to the run; cleanup is `down -v` on that project
+and one absence check on its label (decision `simple-run-cleanup`). The run records the alignment commit and image
+digest; no file, binding or epoch hashing precedes a Compose call (decision `four-product-failures`).
 
 ## JWT setup concurrency
 
@@ -333,58 +287,11 @@ Realtime consumes completed clinical output, while the raw mutation tail remains
 independent of bounded clinical membership. Bootstrap, cache loss, stream gaps
 and missing history may read SQL.
 
-Private inspection samples every selected owner and foreign row without starting
-work. Every tenant must have one admitted, ready, error-free owner. Runtime IDs,
-owner placement, counter rewinds, failed completions and foreign work remain
-checked. Component `generation` fences disposable RAM; cache eviction/recreation
-may change it without a process restart. Due work may run as acquisition after
-cache loss. Neither stable RAM generation, zero acquisition growth, TIME callback
-classification nor all job flags being clear is a clinical requirement.
-
-The current progress policy is module3 and idle-safety assessor module5.
-Successful work counters combine acquisition and TIME completions. These counters
-are diagnostics, not durable clinical proof. The separate legacy v1 progress
-policy retains its original strict semantics. Existing receipts and captured
-failures remain unchanged; reproduce historical outcomes with their original
-instrument. Current policy and assessment versions prevent an old receipt from
-silently becoming current qualification.
-
-### Baseline idle-safety boundary
-
-Without an explicit durable opportunity selection, idle reports sampled work
-safety with `timeWitness:false`. `DUE_WORK_COMPLETED` means successful work was
-observed after a sampled due opportunity; it does not certify clinical output or
-that the callback was TIME. A quiet sample reports `TIME_NOT_EXERCISED`. Missing
-or ambiguous due observations remain UNMEASURED. Pending job flags are diagnostic;
-newer owed work must not erase an older completion. Missing due work may receive
-one bounded point observation after the original cost bookends; that observation
-never enters original-window throughput. It need not have a specific callback
-kind or an exact legacy-body count. Foreign pending work still refuses.
-
-For `pgstream-sample` discovery, `--evaluator-opportunities received-input-v1`
-selects the existing trusted SQL collector for **idle and load**. It captures
-three SQL-before-inspection snapshots with the existing reader/source/image
-binding and budgets. Assessment version2 reads `work_due_at` and
-`work_completed_at` from the existing typed checkpoint in the same query as
-accepted/completed vectors and output restore metadata. A sampled due is complete
-when a later durable completion crosses that due and the original due is retired
-or replaced by a strictly later one. Output content/revision may remain unchanged;
-a later real deadline remains eligible. RAM generation and acquisition/TIME
-counters cannot substitute for this check. Missing timing leaves the dependent
-timer claim UNMEASURED; independently measured input coverage remains visible.
-
-Durable vector, output revision, completion-time and restore rewinds still refuse.
-These observations establish scoped checkpoint progress, not independent current
-restore/owner-authority proof, clinical equivalence, stock-client delivery,
-per-write deadlines or capacity acceptance. Existing source/native/operator and
-client checks own those claims. No new telemetry service is required.
-
-Selectors retain the existing bounds: 128 IDs per inspection request, 10000 IDs,
-4 instances, 1024 requests and 64MiB response bytes per phase. Original raw/gzip
-captures, source/image/instrument attribution and observer costs stay private.
-Clock brackets reject wall jumps and overlapping observations. Idle always
-attempts its AFTER cost snapshot in `finally`; missing bookends remain missing.
-The durable opportunity observer needs no additional completion-tail query.
+Private inspection samples owner and foreign rows throughout ordinary traffic and at
+the end of drain. Runtime IDs, owner placement, counter rewinds, evaluator health and
+foreign work remain checked. The acceptance observer reconciles per-input acknowledgements
+against durable output and stored-write counts. Idle tenants owe no work.
+[Run and gate configuration](RUNNER.md#outcome-evaluator-gate)
 
 Restart recovery remains a separate bounded observation of changed process IDs
 and successful fresh acquisition. It does not establish clinical recovery by
@@ -408,7 +315,7 @@ database-role CPU; wall stamps support correlation, not a cross-host clock claim
 ### Discovery runs
 
 `prepare --run-purpose discovery` freezes an explicit observational route;
-`acceptance` remains the default. Discovery preserves raw strict idle/work
+`acceptance` remains the default. Discovery preserves evaluator source and scope
 verdicts, including UNMEASURED and failed work-completion counters, and executes
 the existing bounded HTTP load despite incomplete socket priming. Missing
 `.window` stops/drains the owned probe before HTTP load; it does not manufacture
@@ -440,8 +347,7 @@ the actual Record producer against an immutable transport validator without
 executing commands, applications or networks.
 
 
-Discovery classification is explicit. Missing final-tail opportunity is retained
-as UNMEASURED and does not suppress load. A missing midpoint may continue only
+Discovery classifies partial load observations separately. A missing midpoint may continue only
 with a current-source, correctly attributed, fixed-phase 1/2-round artifact;
 its available owner/foreign/reset/selector/budget invariants still apply (and
 idle clock brackets, when present in that source schema). Zero/extra rounds,
@@ -513,12 +419,6 @@ The public history stamp is observed separately. Clinical completion can advance
 while an unchanged output keeps its original captured input floor and revision.
 Explicit lifecycle invalidation may reset the snapshot position to `0/0`; accepted
 commit positions retain their own source, generation and coverage fences.
-Native opportunity assessment and fixed-target drain use captured accepted-input
-floors, metadata and due work. New accepted input invalidates a frozen quiet
-target; pending work cannot pass. The drain declares `writerIntakeCoverage`
-UNMEASURED because this port has no post-writer WAL high-watermark together with
-the configured-slot acknowledgement fence. Public history does not supply that
-proof. Historical non-native readers retain their original target semantics.
 The reader checks the actual stored marker, BG-now result and stock callback;
 metadata alone does not qualify clinical equivalence or raw delivery.
 
@@ -601,64 +501,6 @@ target. Keep accepted/persisted writes and evaluator/client witnesses separate.
 Raw k6 `iterations` and `dropped_iterations` remain distinct; a metric absent
 from the capture stays unmeasured.
 
-
-### Receipt-selected serial exchange diagnostic
-
-`prepare` and `attach` accept `--serial-exchange-diagnostic` only for a3000-tenant
-`pgstream-sample` discovery. The genuine `AUTHORIZED_DIAGNOSTIC` receipt and owner
-manifest must both contain exactly:
-
-```json
-{"serialExchangeDiagnostic":{"tenants":64,"phaseSeconds":120,"requestSeconds":60}}
-```
-
-The existing `run` entry point keeps canonical readiness, warmup and strict idle.
-It then uses one Node actor and one fixed HTTP-agent configuration to exchange the
-same first64 ordered tenant records before and after the original16-worker JWT
-setup and two-per-tenant stock polling priming. Each phase has a120second budget,
-each request a60second maximum, and the first non200 stops that phase without
-retry. A BEFORE refusal skips stock setup. An AFTER refusal retains the priming
-result. Stock setup retains safe aggregate attempt, retry, HTTP-status and transport
-counts while keeping its original16 workers and retry behavior. Both serial phases
-return diagnostic evidence and close every stock socket and agent.
-
-This route never releases `.window`, sends a probe write, starts k6 or records an
-ordinary310second measurement. The summary remains `PARTIAL`, with
-`diagnosticOnly:true` and `ordinaryTraffic:NOT_RUN`. The ordinary route and its
-default generated probe bytes are unchanged when the flag is absent.
-
-`load/binding.private.json` binds the actual owner/source/image/instrument,
-ordered credential file, actor bytes and Node executable hashes. Both phases
-recheck those inputs. `load/exchange-phases/{before,after}.json` contains bounded
-status, allowlisted error class, tenant index/hash, clock and elapsed observations;
-it contains no returned JWT, credential, raw response body or request URL. Existing
-owned-process/job sampling stays at `load/probe-job.json` and `load/loadgen.jsonl`.
-The selected probe wait is bounded900seconds and remains subject to integration's
-shorter finite deadline; a600second external sampler does not prove coverage of a
-longer diagnostic. No PostgreSQL statistics reset is added between the paired phases.
-The unchanged clinical, source, image, ownership and process guards remain in force.
-
-Bound oneoff launches use `make_binding(..., oneoff_root=..., oneoff_images={'k6': pinned_id})`
-and `checked_oneoff(binding, kind, argv, scope, runner, authorize, journal_file)`.
-The only kinds are `k6-version`, `k6-help` and `k6-load`. `argv` is the existing
-source-generated Docker command. `scope` contains `directory`, attachment `owner`
-and pinned `imageId`. The helper verifies the attachment/project, binds the exact
-command, image defaults, mount and environment layout, prewrites intent, then adds
-the attempt label and exclusive CID file. The optional `oneoff` callback passed to
-`sample_preflight` or `run` covers only these explicit launch sites; it does not
-intercept reads or change generated scripts. Its `stop()` uses `checked_ids` for
-recorded oneoff IDs. Journal cleanup also recovers attempt-qualified live IDs when
-CLI output or capture failed; completed `--rm` absence is allowed.
-
-Remote producer command suffixes use immutable named stages:
-`make_binding(..., run_stages={name: {'epoch': epoch, 'argv': source_tail,
-'sourceFile': producer_path}})`. The source tail starts with
-`--profile ops run`, includes one declared role, and uses the existing bounded run
-options. The producer file hash, exact suffix and semantic command layout are
-sealed. Pass `stage=name`, matching `epoch`, `roles` and `options` to
-`compose_argv` or `checked_run`. Unknown stages, changed source/options/roles and
-namespace overrides refuse before effects. A default service command has no
-suffix. These APIs retain the caller's finite authorization and PID guard.
 
 ### Clinical sender and early-request diagnostic (source qualified)
 
@@ -841,6 +683,8 @@ boundary evidence; the integrator owns the final joined runtime acceptance.
 
 ### Authored resource and nginx allocations
 
+**Retired 2026-11-19:** the `diagnostic-resource-profile` and `diagnostic-resource-allocation` options were deleted; Compose services always run uncapped and the host's `MemAvailable` is recorded once at run entry (`run-before-host.json`). The text below is historical.
+
 `--diagnostic-resource-allocation` accepts one exact version-1 JSON allocation
 with `services`, `driver`, `ceiling` and `edge` fields. It replaces reference
 CPU/memory sizing when preparing a fresh fixture. Named profiles retain their
@@ -961,6 +805,8 @@ separates these instrument boundaries from application and acceptance claims.
 
 ### Named qualification profile
 
+**Retired 2026-11-19:** the `diagnostic-resource-profile` and `diagnostic-resource-allocation` options were deleted; Compose services always run uncapped and the host's `MemAvailable` is recorded once at run entry (`run-before-host.json`). The text below is historical.
+
 `--diagnostic-resource-profile local-qualification-external-pgstream-6cpu-10g-v1`
 selects one proposed allocation for local synthetic qualification with
 `external-service-v1`. It is not a measured supported envelope. Keep tenant
@@ -1019,15 +865,6 @@ diagnostic receipt and frozen serving environments carry that selection. The
 `platform-verify` job calls the private admin API after commission and before API
 launch. Its process receives no database or Vault credential. Older deployment
 pins keep their original stage sequence.
-
-For a bounded local startup experiment, select `--api-warm-cause startup-v1`
-with the existing discovery receipt and resource allocation. It supports small
-fixtures before a 10,000-tenant point. This source-bound observer samples actual
-API process heap use, V8 heap ceiling, cgroup memory ceiling/current use and safe
-startup counts once per second, retaining the first samples and a bounded recent
-window. It adds file I/O and count-sampling overhead; it is not a matched CPU
-baseline. No tenant identifier, credential, request body or glucose value is
-emitted. `warm-v1` keeps its original 10,000-tenant refusal-correlation scope.
 
 `deployment-stages.json` records each entry before effects and its elapsed time,
 verdict and safe first error in `finally`, including a throwing primer. New

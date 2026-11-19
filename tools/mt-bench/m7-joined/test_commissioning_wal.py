@@ -11,7 +11,7 @@ import commissioning_wal as w
 import contract as c
 import run_configuration as rc
 import runner
-from test_run_configuration import config, parsed, packet, overlay
+from test_run_configuration import config, parsed, packet
 
 
 def compose():
@@ -59,7 +59,6 @@ class CommissioningWal(unittest.TestCase):
             m={w.FIELD:1024,'profile':'pgstream-sample','runPurpose':'discovery',**changes}
             with self.subTest(changes=changes),self.assertRaisesRegex(RuntimeError,'LOCAL_DIAGNOSTIC_ONLY'):w.from_manifest(m)
         with self.assertRaisesRegex(RuntimeError,'PREPARE_OPTION'):runner.validate_config(selected(True))
-        with self.assertRaisesRegex(RuntimeError,'REMOTE_STARTUP_SELECTION'):rc.remote_projection(selected(),overlay())
         with self.assertRaisesRegex(RuntimeError,'FRESH_PREPARE_ONLY'):a.attach(parsed(selected()))
 
     def test_disk_generous_default_can_still_select_finite_wal_and_sample_live_slot(self):

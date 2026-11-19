@@ -1,4 +1,5 @@
 """Reuse the existing selected clinical/output oracle on the SUT only."""
+raise ImportError('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import json
 import time
 from protocol import need, write

@@ -113,8 +113,7 @@ separately. This does not force process exit or change the traffic budget.
 ## Explicit independent pgstream topology
 
 Fresh `pgstream-sample` discovery configurations for a separately managed Go
-service select `--pgstream-topology external-service-v1` and
-`--diagnostic-resource-profile local-diagnostic-external-pgstream-4cpu-8g-v1`.
+service select `--pgstream-topology external-service-v1` (the resource profile option was retired 2026-11-19).
 The default remains `colocated-v1`; a standalone Compose service under that
 selection refuses. The new selection validates the exact pinned core schema,
 canonical frozen service command, source/image identity and separate process

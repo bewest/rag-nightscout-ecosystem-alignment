@@ -1,5 +1,12 @@
 # Remote PostgreSQL stream calibration
 
+> **NOT RUNNABLE (2026-11-19).** This path imports `tools/mt-bench/m7-joined` modules that the
+> simplification round deleted: `orchestration_binding`, `evaluator_idle`, `evaluator_opportunities`, `discovery_rest`, `diagnostic_resources`, `experiment_batch` and `completed-oracle-v2-control.cjs`, plus adapter seams built on them (`opportunity_collector`, `enabled_idle`, the resource wrappers, the local remote projection in `run_configuration.py`). Every module here raises `ImportError` at import, and its
+> tests skip, rather than half-work. Maintainer decision: port later, do not delete. The port target
+> is the single assessor (`m7-joined/assessor.py`) and its raw event format (accepted, stored, output,
+> frame, access, datastore, readback); the k6 roster now carries each tenant's JWT
+> (`m7-joined/jwt_tenants.py`). The round's base, `ea2231e834`, still has the deleted modules.
+
 This is a separate diagnostic extension of the existing external-generator path.
 It preserves sealed M7 and the existing external profile. Its unchanged default prepares1000 tenants and2000 logical stock polling clients.
 Explicit file plans admit10,1000,3000,5000 or10000 tenants with two clients per tenant.

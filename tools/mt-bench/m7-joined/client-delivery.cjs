@@ -1,6 +1,7 @@
 "use strict";
 // A viewer is a stable probe slot; transport incarnations may change. Actual
 // stock-client callbacks retain content and the probe's monotonic clock.
+// Timing is reported by clinical-timing.cjs; the deadline is judged by assessor.py.
 function assess(clients, expected, doc, witness={}) {
  const no=code=>({ready:false,code});
  if(!Number.isInteger(expected)||expected<0||!Array.isArray(clients)||clients.length!==expected)return no('M7_CLIENT_COUNT');
@@ -19,7 +20,6 @@ function assess(clients, expected, doc, witness={}) {
   if(strict){
    if(typeof c.transportId!=='string'||c.transportId.length<1||c.transportId.length>256)return no('M7_CLIENT_INCARNATION');
    if(!Number.isFinite(c.atMono)||c.atMono<witness.sentMono)return no('M7_CLIENT_CLOCK');
-   if(witness.clientProofVersion===2 && c.atMono-witness.sentMono>=120000)return no('M7_CLIENT_DEADLINE');
   }
  }
  return {ready:true,viewers:expected,reconnectedViewers:clients.filter(c=>c.connects>1).length,proof:witness.clientProofVersion===3?'exact-viewer-callback-v3':strict?'exact-viewer-callback-v2':'legacy-content-only'};

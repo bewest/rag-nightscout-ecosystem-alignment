@@ -5,7 +5,7 @@ const assert=require('node:assert/strict'),oracle=require('../m7-joined/complete
 const original=require('../m7-joined/native-observation-fixture.cjs'),f=structuredClone(original),c=f.config;
 c.native.receipt={kind:'native-receipt-contract-v1',evaluatorConfigSha256:c.native.evaluatorConfigSha256,realtimeConfigSha256:c.native.realtimeConfigSha256,contractDigest:f.row.typed.contractDigest,
  selection:{selectionDigest:'d'.repeat(64),binding:{namespace:c.checkpoint,consumer:c.native.inputConsumer,lifecycleNamespace:c.native.lifecycle,generation:c.native.generation,source:structuredClone(f.row.native.actualSource)}}};
-c.binding.nativeConfigurationSha256=native.hash(c.native);f.row.reader=structuredClone(c.binding);oracle.prepare(c);
+f.row.reader=structuredClone(c.binding);oracle.prepare(c);
 f.witness.nativeTarget=native.snapshot(f.row,c);
 const assess=row=>oracle.assess(row,f.witness,f.clients,2,c),green=()=>assert.equal(assess(f.row).ready,true);
 green();

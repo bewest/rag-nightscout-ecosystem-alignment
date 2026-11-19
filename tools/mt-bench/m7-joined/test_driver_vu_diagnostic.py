@@ -19,9 +19,7 @@ class DriverVuDiagnosticTests(unittest.TestCase):
         for key, value in [('offeredRps',120),('loadSeconds',300),('driverShards',8),('workloadMix','realistic-v1'),('restartDuringLoadAfterSeconds',30)]:
             with self.assertRaisesRegex(RuntimeError,'M7_DRIVER_VU_DIAGNOSTIC_SCOPE'):
                 v.selection(args, cadence | {key:value})
-        args.node_observation='profile-v1'
-        with self.assertRaisesRegex(RuntimeError,'M7_DRIVER_VU_DIAGNOSTIC_SCOPE'):v.selection(args,cadence)
-        args.node_observation='off';args.driver_vu_diagnostic=None
+        args.driver_vu_diagnostic=None
         self.assertEqual(v.selection(args,cadence),{})
 
     def test_command_keeps_limits_and_refuses_before_writing(self):

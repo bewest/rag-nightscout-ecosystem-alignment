@@ -1,4 +1,8 @@
-"""Read the owner-selected receipt and verify the independent build and delivery evidence."""
+"""Read the run's candidate (image references, digests and labelled commits) and its selected options.
+
+Run identity is the alignment commit, the image digests and the run configuration
+(decision `brittle-check-removal`); no source, build or delivery receipt is read.
+"""
 import hashlib
 import json
 from pathlib import Path
@@ -35,29 +39,31 @@ def read_ref(ref):
     return json.loads(raw)
 
 
+CANDIDATE = ('app', 'appImageId', 'postgres', 'postgresImageId', 'coreCommit', 'deployCommit')
+
+
+def candidate(manifest):
+    value = manifest.get('candidate')
+    require(isinstance(value, dict) and set(CANDIDATE) <= set(value)
+            and all(re.fullmatch('[0-9a-f]{40}', value[k] or '') for k in ('coreCommit', 'deployCommit'))
+            and all(re.fullmatch('sha256:[0-9a-f]{64}', value[k] or '') for k in ('appImageId', 'postgresImageId'))
+            and all(isinstance(value[k], str) and re.search('@sha256:[0-9a-f]{64}$', value[k]) for k in ('app', 'postgres')),
+            'CANDIDATE')
+    return value
+
+
 def source(manifest):
     require(manifest['version'] == 1 and manifest['kind'] == 'k8s-frozen-experiment', 'MANIFEST')
-    src = read_ref(manifest['sourceReceipt'])
-    build_ref = manifest['buildReceipt']
-    build = read_ref(build_ref)
-    # Run identity is the image digest plus the run configuration. The build
-    # receipt names them; status words, labels and cross-receipt equality are
-    # recorded by the build, not re-proved per run.
-    pair = dict(core=build['coreCommit'], deploy=build['deployCommit'])
-    require(all(re.fullmatch('[0-9a-f]{40}', x) for x in (*pair.values(), manifest['bindingCommit'])), 'SOURCE_ID')
-    image = build['localImageId']
-    producer = build['runtime']['binarySha256']
-    require(re.fullmatch('sha256:[0-9a-f]{64}', image) and re.fullmatch('[0-9a-f]{64}', producer), 'BUILD_IDENTITY')
-    # Only an acceptance receipt for this image can label the source PASS.
-    status = ('PASS' if src.get('kind') == 'joined-acceptance' and src.get('status') == 'PASS'
-              and src.get('imageId') == image else 'PENDING')
+    selected = candidate(manifest)
+    require(re.fullmatch('[0-9a-f]{40}', manifest.get('bindingCommit') or ''), 'SOURCE_ID')
     tier = manifest.get('tier', 'discovery')
     require(tier in ('smoke','discovery','acceptance'), 'TIER')
-    require(tier != 'acceptance' or status == 'PASS' and 'bootstrapHelper' not in manifest,
-            'FROZEN_ACCEPTANCE_REQUIRED')
-    chosen = dict(coreCommit=pair['core'], deployCommit=pair['deploy'], localImageId=image,
-                producerBinarySha256=producer, diagnosticSha256=manifest['sourceReceipt']['sha256'],
-                imageReceiptSha256=build_ref['sha256'], sourceAcceptance=status)
+    # No receipt can label a source PASS; acceptance needs its own frozen record.
+    status = 'PENDING'
+    require(tier != 'acceptance', 'FROZEN_ACCEPTANCE_REQUIRED')
+    chosen = dict(coreCommit=selected['coreCommit'], deployCommit=selected['deployCommit'],
+                  localImageId=selected['appImageId'], sourceAcceptance=status)
+    pair = dict(core=selected['coreCommit'], deploy=selected['deployCommit'])
     if 'bootstrapHelper' in manifest:
         require(pair['deploy'] == BOOTSTRAP_BASE and manifest['bootstrapHelper'] == BOOTSTRAP_HELPER,
                 'BOOTSTRAP_HELPER_UNSUPPORTED')
@@ -91,8 +97,7 @@ def source(manifest):
     return chosen
 
 
-PROVENANCE = frozenset(('coreCommit', 'deployCommit', 'producerBinarySha256', 'diagnosticSha256',
-                        'imageReceiptSha256', 'sourceAcceptance', 'imageSourceAcceptance'))
+PROVENANCE = frozenset(('coreCommit', 'deployCommit', 'sourceAcceptance', 'imageSourceAcceptance'))
 
 
 def contract(manifest, observed):
@@ -119,18 +124,6 @@ def contract(manifest, observed):
         require(observed.get('sourceFilesSha256', {}).get('bootstrap.js') == BOOTSTRAP_ORIGINAL, 'BOOTSTRAP_BASE_CHANGED')
     require(re.fullmatch('[a-f0-9]{64}', observed['nativeCatalogueSha256']), 'CATALOGUE_ID')
     return chosen
-
-
-def rendered_contract(manifest, raw, binding_ref):
-    binding = read_ref(binding_ref)
-    selected = contract(manifest, json.loads(raw))
-    require(binding['files'].get('assets/bootstrap-helper.js') == selected.get('runtimeBootstrapHelper', {}).get('sha256'),
-            'BOOTSTRAP_HELPER_PACKAGE_CHANGED')
-    require(all((name in binding['files']) == (ACK_BUDGET in selected) for name in ACK_PACKAGE),
-            'PGSTREAM_ACK_PACKAGE_CHANGED')
-    require((PRIMER_STORAGE_PACKAGE in binding['files']) == (PRIMER_STORAGE in selected),
-            'PRIMER_STORAGE_PACKAGE_CHANGED')
-    return selected
 
 
 # Only the independently controlled registry-client lifetime correction is supported.

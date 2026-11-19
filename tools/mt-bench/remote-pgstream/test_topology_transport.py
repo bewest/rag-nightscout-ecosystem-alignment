@@ -1,4 +1,6 @@
 """Explicit topology binding through the actual caller, worker and helper parser."""
+import unittest
+raise unittest.SkipTest('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import ast,copy,hashlib,importlib.util,json,os,subprocess,sys,tempfile,unittest
 from pathlib import Path
 from unittest.mock import patch

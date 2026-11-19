@@ -6,19 +6,19 @@ const path = require('node:path');
 
 // The pinned application supplies the same fixture seed used by its primer.
 // The private controller forwards only the selected, already-issued DATA
-// credentials. No management credential enters the load Pod.
+// credentials (and each tenant's DATA JWT). No management credential enters the load Pod.
 function install(demo, meta, credentials, directory) {
   if (!Number.isSafeInteger(meta.fixtureTenants) || meta.fixtureTenants < 1 ||
       !Array.isArray(credentials) || credentials.length !== meta.tenants ||
       meta.tenants < 1 || meta.tenants > meta.fixtureTenants) throw Error('ROSTER_COUNT');
   const aliases = new Map(demo.tenantIds(meta.fixtureTenants).map((id, i) => [id, demo.tenantAlias(i)]));
   const rows = credentials.map(pair => {
-    if (!Array.isArray(pair) || pair.length !== 2) throw Error('ROSTER_DATA');
-    const [id, token] = pair;
+    if (!Array.isArray(pair) || pair.length < 2 || pair.length > 3) throw Error('ROSTER_DATA');
+    const [id, token, jwt] = pair;
     const host = aliases.get(id);
     if (!host || typeof token !== 'string' || !token) throw Error('ROSTER_DATA');
     aliases.delete(id);
-    return {id, host, token};
+    return jwt === undefined ? {id, host, token} : {id, host, token, jwt};
   });
   const raw = JSON.stringify(rows);
   const digest = crypto.createHash('sha256').update(raw).digest('hex');

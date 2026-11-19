@@ -1,4 +1,5 @@
 """Generate a public-traffic-only variant of the exact joined stock probe."""
+raise ImportError('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 from pathlib import Path
 import hashlib
 import re
@@ -63,7 +64,7 @@ def generate(root, target):
     target = Path(target)
     with tempfile.TemporaryDirectory() as scratch:
         joined = Path(scratch) / 'probe.js'
-        provenance = joined_generate(root, joined, host_warm_clock=False)
+        provenance = joined_generate(root, joined, public_traffic_only=True)
         source = joined.read_text()
     source = replace_once(source, "const { execFileSync, spawnSync, execFile } = require('node:child_process');", "const {recoveredAfterRestart}=require('./recovery.cjs');")
     source = replace_once(source, 'const s = { index, frames: [], connected: false, connects: 0, serverDisconnects: 0 };', 'const s = { index, frames: [], connected: false, connects: 0, serverDisconnects: 0, disconnectCount: 0, connectionFrames: [] };')

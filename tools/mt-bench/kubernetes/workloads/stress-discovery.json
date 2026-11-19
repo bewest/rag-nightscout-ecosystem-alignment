@@ -25,18 +25,6 @@
     "restart": false,
     "reconnectBurstClients": 0
   },
-  "proposedEnvelope": {
-    "clusterLimits": {
-      "millicpus": 1800,
-      "memoryBytes": 3221225472,
-      "ephemeralStorageBytes": 3489660928
-    },
-    "imageCacheReserveBytes": 2147483648,
-    "nativeLimits": {
-      "millicpus": 1200,
-      "memoryBytes": 1342177280
-    }
-  },
   "capacityAcceptance": "NOT_GRANTED",
   "referencePins": {
     "core": "6463f24eea02a9e4355d988b1353f238f21d3609",

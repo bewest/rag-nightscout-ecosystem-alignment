@@ -82,17 +82,6 @@ class Profile(unittest.TestCase):
         self.assertEqual(base,profile.identity(profile.selection(),config))
         config['services']['vault-agent']={}
         with self.assertRaisesRegex(RuntimeError,'AGENT_OVERLAY_UNSUPPORTED'):profile.identity(profile.selection(),config)
-    def test_comparison_refuses_same_source_but_changed_diagnostics(self):
-        import contract
-        config={'services':{'api':{},'realtime':{},'evaluator':{},'vault':{'command':['vault','server']}}}
-        chosen=profile.identity(profile.selection(),config)
-        pair={'core':'b'*40,'deploy':'c'*40}
-        row={'pair':pair,'hostIdentity':'d'*64,'instrument':'e'*64,'imageId':'sha256:'+'f'*64,'verdict':'PASS','profile':'remote-pilot','replicas':2,'measurements':{'complete':True},'profileSelection':chosen}
-        doc={'kind':'m7-joined-remote-pilot','pair':pair,'hostIdentity':'d'*64,'instrument':'e'*64,'imageId':row['imageId'],'profileSelection':chosen,'profileReplicas':2,'cells':[{**row,'tenants':n} for n in contract.PILOT_COUNTS]}
-        self.assertTrue(contract.pilot_check(doc))
-        for replacement in (profile.identity(profile.selection('on'),config),):
-            broken=copy.deepcopy(doc);broken['cells'][1]['profileSelection']=replacement
-            with self.assertRaisesRegex(RuntimeError,'PROFILE_SELECTION_MISMATCH'):contract.pilot_check(broken)
 
     def test_stats_only_exited_k6_separate_and_unknown_serving_missing_fail(self):
         with tempfile.TemporaryDirectory() as temporary:

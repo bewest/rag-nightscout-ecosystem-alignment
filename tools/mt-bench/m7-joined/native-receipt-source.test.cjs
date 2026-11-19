@@ -24,9 +24,7 @@ test('historical native and non-native source configs keep their contract',()=>{
 test('selected shipping native API drives clinical and durable readers',{skip:!root},()=>{
  const f=fixture();
  assert.equal(oracle.assess(f.row,f.witness,f.clients,2,f.config).ready,true);
- assert.equal(oracle.progressSnapshot([f.row],f.config,[f.row.tenant]).rows.length,1);
  assert.equal(f.config.native.receipt.contractDigest,f.selected.contractDigest);
- assert.notEqual(f.config.binding.nativeConfigurationSha256,original.config.binding.nativeConfigurationSha256);
 });
 test('existing exported state files produce the same source receipt',{skip:!root},()=>{
  const fs=require('node:fs'),os=require('node:os'),tmp=fs.mkdtempSync(path.join(os.tmpdir(),'native-receipt-state-')),f=fixture();
@@ -54,7 +52,6 @@ test('current typed reader rejects legacy and foreign row contracts then restore
  for(const digest of [legacy,'9'.repeat(64),'invalid']){
   const bad=copy(f.row);bad.typed.contractDigest=digest;
   assert.equal(oracle.assess(bad,f.witness,f.clients,2,f.config).code,'M7_COMPLETION_TYPED_STATE');
-  assert.throws(()=>oracle.progressSnapshot([bad],f.config,[bad.tenant]),/M7_COMPLETION_TYPED_STATE/);
  }
  assert.equal(oracle.assess(f.row,f.witness,f.clients,2,f.config).ready,true);
 });

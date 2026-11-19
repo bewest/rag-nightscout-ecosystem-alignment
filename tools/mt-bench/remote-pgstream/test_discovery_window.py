@@ -1,4 +1,6 @@
 """Original finite discovery binding at actual stage/session ports; no actors."""
+import unittest
+raise unittest.SkipTest('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import contextlib,io,tempfile,unittest
 from types import SimpleNamespace
 from pathlib import Path

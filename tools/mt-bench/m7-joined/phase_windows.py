@@ -1,7 +1,7 @@
 """Configured discovery clocks; the existing outer work cutoff always wins.
 
 Setup includes stock-client priming and the ordinary driver's JWT exchanges.
-Drain includes probe completion and the separate fixed-target observation. The
+Drain includes probe completion and the accepted-input observation. The
 selected clinical witness keeps its independent strict 120-second deadline.
 """
 import math
@@ -60,7 +60,7 @@ def start(manifest, now_ns, now_ms):
              'setupStartedMonoNs': now_ns,
              **({'setupUntilUnixMs':now_ms+values['setupSeconds']*1000} if 'setupSeconds' in values else {}),
              'selectedClinicalDeadlineSeconds': 120,
-             'allWriterDrain': 'separate fixed-target observation; no clinical deadline extension'}
+             'allWriterDrain': 'accepted-input observation; no clinical deadline extension'}
             if values else {})
 
 

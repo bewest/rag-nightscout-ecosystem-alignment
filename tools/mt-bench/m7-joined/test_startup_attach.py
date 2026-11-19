@@ -6,7 +6,6 @@ from types import SimpleNamespace
 from unittest.mock import patch
 import adapter as a
 import commissioning_wal as w
-import node_observation as n
 import run_configuration as rc
 import runner
 
@@ -98,21 +97,5 @@ class RetainedStartup(unittest.TestCase):
   helper=a.command(['git','-C',self.config['prepare']['deploy-repo'],'show',self.owner['pair']['deploy']+':bindings/compose/multitenant/platform-startup.js'],binary=True)
   root=self.out/'source-proof';file=root/'core/deploy/multitenant/platform-startup.js';file.parent.mkdir(parents=True);file.write_bytes(helper);self.assertEqual(a.digest(file),self.owner['platformStartup']['helperSha256'])
   a.platform_startup_config(a.document(self.runtime/'frozen.compose.json'),root,self.owner,verify=True)
-
-class ProfileCadence(unittest.TestCase):
- def test_profile_marker_requires_cadence_and_old_profile_cannot_be_borrowed(self):
-  with tempfile.TemporaryDirectory() as tmp:
-   root=Path(tmp);source=root/'old-profile.json';target=root/'never.json';source.write_text(json.dumps({'owner':'a'*32,'nonce':'b'*32,'cadenceSha256':'c'*64}))
-   row=n.copy_checked(source,target,{'owner':'a'*32,'nonce':'b'*32,'cadenceSha256':'d'*64},{'pid':1},'profile',1000,1800000)
-   self.assertEqual(row['reason'],'M7_NODE_OBSERVATION_FOREIGN');self.assertFalse(target.exists())
-   script="const fs=require('node:fs'),o=require(process.argv[1]),f=process.argv[2],v={owner:'a'.repeat(32),nonce:'b'.repeat(32),ordinaryAt:1000,armedAt:1000,cadenceSha256:'c'.repeat(64)};fs.writeFileSync(f,JSON.stringify(v));if(!o.marker(f,v.owner,1000))throw Error('RESTORED_MARKER');delete v.cadenceSha256;fs.writeFileSync(f,JSON.stringify(v));if(o.marker(f,v.owner,1000)!==null)throw Error('OMISSION_MUST_REFUSE');v.cadenceSha256='c'.repeat(64);fs.writeFileSync(f,JSON.stringify(v));if(!o.marker(f,v.owner,1000))throw Error('RESTORED_MARKER');"
-   a.command(['node','-e',script,str(Path(n.__file__).with_name(n.HELPER)),str(root/'marker.json')])
- def test_already_issued_is_explicit_and_never_copies_original_profile(self):
-  with tempfile.TemporaryDirectory() as tmp:
-   root=Path(tmp);(root/'state/node-observe').mkdir(parents=True);(root/'state/node-observe/signal.json').write_text('{}');out=root/'new-load';out.mkdir();manifest={'nodeObservation':{'owner':'a'*32},'cadence':{'loadSeconds':310,'workloadScale':2}}
-   with patch.object(n,'identities') as identities:
-    with n.collect(None,root,manifest,out) as row:self.assertEqual(row['reason'],'M7_NODE_OBSERVATION_ALREADY_ISSUED')
-    identities.assert_not_called()
-   value=a.document(out/'node-observation.json');self.assertEqual(value['status'],'UNMEASURED');self.assertEqual(value['cadenceSha256'],n.cadence_identity(manifest['cadence']));self.assertFalse(list(out.glob('node-profile-*')))
 
 if __name__=='__main__':unittest.main()

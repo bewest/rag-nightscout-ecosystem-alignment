@@ -21,7 +21,7 @@ function source(e,r,selected){
 }
 function validateConfig(c){
  const n=c.native;
- if(!n||Object.keys(n).sort().join(',')!==(n.receipt===undefined?'evaluatorConfigSha256,generation,inputConsumer,kind,lifecycle,realtimeConfigSha256,slot':'evaluatorConfigSha256,generation,inputConsumer,kind,lifecycle,realtimeConfigSha256,receipt,slot')||n.kind!=='compact-native-v1'||c.kind!=='evaluator-work-v2'||!/^evaluator-[A-Za-z0-9_-]{1,100}$/.test(n.inputConsumer)||n.inputConsumer+'-completed'!==c.consumer||!name(n.lifecycle)||!name(n.slot)||! /^[a-f0-9]{32}$/.test(n.generation)||![n.evaluatorConfigSha256,n.realtimeConfigSha256].every(x=>typeof x==='string'&&/^[a-f0-9]{64}$/.test(x))||c.binding.nativeConfigurationSha256!==hash(n))throw Error('M7_COMPLETION_NATIVE_BINDING');
+ if(!n||Object.keys(n).sort().join(',')!==(n.receipt===undefined?'evaluatorConfigSha256,generation,inputConsumer,kind,lifecycle,realtimeConfigSha256,slot':'evaluatorConfigSha256,generation,inputConsumer,kind,lifecycle,realtimeConfigSha256,receipt,slot')||n.kind!=='compact-native-v1'||c.kind!=='evaluator-work-v2'||!/^evaluator-[A-Za-z0-9_-]{1,100}$/.test(n.inputConsumer)||n.inputConsumer+'-completed'!==c.consumer||!name(n.lifecycle)||!name(n.slot)||! /^[a-f0-9]{32}$/.test(n.generation)||![n.evaluatorConfigSha256,n.realtimeConfigSha256].every(x=>typeof x==='string'&&/^[a-f0-9]{64}$/.test(x)))throw Error('M7_COMPLETION_NATIVE_BINDING');
  if(n.receipt!==undefined)receipt(n,c,n.receipt);
  return n;
 }
@@ -44,7 +44,7 @@ function snapshot(row,c){
  // Raw continuity is observed; no raw delivery is inferred from this snapshot.
  return {source:{...a},generation:s.generation,inputFloor:v.inputFloor,snapshotPosition:s.snapshot_position,acceptedPosition:s.accepted_position,restoreGeneration:v.currentRestore,raw:{...raw}};
 }
-function assess(row,witness,c,progress=false){
+function assess(row,witness,c){
  let value;try{value=snapshot(row,c);}catch(e){return {ready:false,code:e.message};}
  const target=witness.nativeTarget??value;
  if(canonical(target.source)!==canonical(value.source)||target.generation!==value.generation||target.restoreGeneration!==value.restoreGeneration||!exact(target.inputFloor))return {ready:false,code:'M7_COMPLETION_NATIVE_FENCE'};
@@ -52,16 +52,10 @@ function assess(row,witness,c,progress=false){
  // Accepted commit coverage keeps its own source/generation/position fence.
  try{position(target.snapshotPosition);if(target.acceptedPosition!==null&&(value.acceptedPosition===null||position(value.acceptedPosition)<position(target.acceptedPosition)))return {ready:false,code:'M7_COMPLETION_NATIVE_FENCE'};}catch{return {ready:false,code:'M7_COMPLETION_NATIVE_POSITION'};}
  const completed=row.state?.completed?.bootstrap,observed=row.state?.observed?.bootstrap,output=row.state?.output;
- if(progress)return {ready:true,coverage:value};
  if(!exact(observed)||!exact(completed)||BigInt(completed)>BigInt(observed)||BigInt(completed)<BigInt(target.inputFloor)||BigInt(completed)>BigInt(value.inputFloor))return {ready:false,code:'M7_COMPLETION_PENDING'};
  const covered=row.typed?.inputFloor,floor=String(output?.inputCheckpoint),resultFloor=String(output?.result?.checkpoint);
  if(!exact(covered)||BigInt(covered)<BigInt(target.inputFloor)||BigInt(covered)<BigInt(completed)||BigInt(covered)>BigInt(value.inputFloor)||!exact(floor)||!exact(resultFloor)||floor!==resultFloor||BigInt(floor)>BigInt(covered))return {ready:false,code:'M7_COMPLETION_OUTPUT_CLOCK'};
  if(output.restoreGeneration!==value.restoreGeneration)return {ready:false,code:'M7_COMPLETION_NATIVE_FENCE'};
  return {ready:true,coverage:value,targetInputFloor:target.inputFloor,completedInputFloor:covered,completedBootstrap:completed,outputInputFloor:floor};
 }
-function progress(row,c){
- const value=snapshot(row,c),completed=row.state?.completed?.bootstrap,observed=row.state?.observed?.bootstrap,floor=row.typed?.inputFloor;
- if(!exact(floor)||BigInt(floor)>BigInt(value.inputFloor)||completed!==undefined&&(!exact(completed)||BigInt(floor)<BigInt(completed))||observed!==undefined&&(!exact(observed)||BigInt(observed)>BigInt(value.inputFloor)))throw Error('M7_COMPLETION_NATIVE_STATE');
- return {...value,completedInputFloor:floor};
-}
-module.exports={hash,source,validateConfig,fields,joins,snapshot,assess,position,progress};
+module.exports={hash,source,validateConfig,fields,joins,snapshot,assess,position};

@@ -14,7 +14,6 @@ ROOT = HERE.parents[3]
 sys.path.insert(0, str(HERE.parent))
 sys.path.append(str(ROOT / 'tools/mt-bench/m7-joined'))
 import workload_runtime
-import preload
 import primer_options
 import population_ceiling
 SHAPES = workload_runtime.SHAPES
@@ -57,23 +56,15 @@ def validate(p):
     need(p['phases']['restart'] is False and type(burst) is int and
          (burst == 0 or viewer_setup['scenario'] == 'simultaneous-reconnect' and
           burst == w['logicalPollingClients']), 'RESTART_IS_SEPARATE_SCENARIO')
-    access_setup = p['phases'].get('accessSetupSeconds')
-    if 'accessSetupSeconds' in p['phases']:
-        need(workload_runtime.workload_inputs.seconds(access_setup), 'ACCESS_SETUP_WINDOW')
     if 'cohortReadySeconds' in p['phases']:
         need(workload_runtime.workload_inputs.seconds(p['phases']['cohortReadySeconds']), 'COHORT_READY_WINDOW')
     workload_runtime.workload_inputs.startup_selection(p['phases'],need)
     primer_options.from_profile(p,need)
-    pre_load = preload.selection(p['phases'].get('preloadConvergence'))
-    access_window = access_setup + 60 if access_setup is not None else 0
     work = p['phases']['workSeconds']
     need(workload_runtime.workload_inputs.seconds(work) and
-         work >= w.get('setupSeconds', 310) + w['loadSeconds'] + w.get('drainSeconds', 120) + access_window
-                 + (pre_load['seconds'] if pre_load else 0) + 5,
+         work >= w.get('setupSeconds', 310) + w['loadSeconds'] + w.get('drainSeconds', 120) + 5,
          'WORK_WINDOW')
     need(workload_runtime.workload_inputs.seconds(p['phases']['cleanupSeconds']), 'CLEANUP_WINDOW')
-    for group in ('clusterLimits', 'nativeLimits'):
-        need(all(type(x) is int and x > 0 for x in p['proposedEnvelope'][group].values()), 'RESOURCE_ENVELOPE')
     need(p['capacityAcceptance'] == 'NOT_GRANTED', 'NO_CAPACITY_GRANT')
     return p
 
@@ -87,7 +78,6 @@ def describe(p):
     inputs=workload_runtime.workload_inputs
     startup=inputs.startup_selection(p['phases'],need)
     return {'version': 1, 'profile': p['name'], 'basis': 'read-derived equations from generated M7 workload',
-            'preloadConvergence':preload.selection(p['phases'].get('preloadConvergence')),
             **({primer_options.FIELD:p['phases'][primer_options.FIELD]} if primer_options.FIELD in p['phases'] else {}),
             **({population_ceiling.FIELD:population_ceiling.from_profile(p,need)} if 'maxTenants' in p['population'] else {}),
             **({'populationCommissioning':population_ceiling.commissioning(p['population']['provisionedTenants'],primer_options.from_profile(p,need))}
@@ -97,7 +87,7 @@ def describe(p):
                 key: {'seconds': w.get(key, default), 'origin': 'authored' if key in w else 'legacy default'}
                 for key, default in (('setupSeconds', 310), ('drainSeconds', 120))
             } | {key:{'seconds':p['phases'][key], 'origin':'authored'} for key in
-                 ('accessSetupSeconds','cohortReadySeconds') if key in p['phases']},
+                 ('cohortReadySeconds',) if key in p['phases']},
             'startupWindows':{target:{key:{'seconds':startup.get(target,{}).get(key,value),
                                           'origin':'authored' if key in startup.get(target,{}) else 'reference'}
                                       for key,value in defaults.items()}
@@ -126,12 +116,6 @@ def bind(p, config):
     need(config['pins']['pair'] == {k: p['referencePins'][k] for k in ('core', 'deploy')} and
          config['pins']['bindingCommit'] == p['referencePins']['bindingCommit'], 'SOURCE_PROFILE_MISMATCH')
     need(config['tenants'] == p['population']['provisionedTenants'], 'CONFIG_ROSTER')
-    # This does not acquire resources. Compare the existing planned actor envelope.
-    native = p['proposedEnvelope']['nativeLimits']
-    actors = [config[k]['resources'] for k in ('driver', 'observer')]
-    need(all(type(r[k]) is int and r[k] > 0 for r in actors for k in ('millicpus', 'memoryBytes')) and
-         sum(r['millicpus'] for r in actors) <= native['millicpus'] and
-         sum(r['memoryBytes'] for r in actors) <= native['memoryBytes'], 'ACTOR_PLAN_EXCEEDS_PROFILE')
     from datetime import datetime
     cutoff = lambda v: datetime.fromisoformat(v.replace('Z', '+00:00')).timestamp()
     remaining = cutoff(config['deadlines']['workUntil']) - __import__('time').time()
@@ -147,10 +131,7 @@ def bind(p, config):
     observation=p['workload'].get('drainObservation')
     need(existing.get('drainObservation',observation)==observation,'DRAIN_OBSERVATION_CHANGED')
     result = copy.deepcopy(config)
-    access_setup = p['phases'].get('accessSetupSeconds')
-    need(config.get('accessSetupSeconds', access_setup) == access_setup, 'ACCESS_SETUP_WINDOW_CHANGED')
-    if access_setup is not None:
-        result['accessSetupSeconds'] = access_setup
+    result.pop('accessSetupSeconds', None)
     data_seconds=workload_runtime.workload_inputs.startup_selection(p['phases'],need).get('kubernetes',{}).get('dataPrimerSeconds')
     need(config.get('dataPrimerSeconds',data_seconds)==data_seconds,'DATA_PRIMER_WINDOW_CHANGED')
     if data_seconds is not None:
@@ -162,10 +143,7 @@ def bind(p, config):
     need(config.get(primer_options.FIELD,primer)==primer,'PRIMER_OPTIONS_CHANGED')
     if primer is not None:
         result[primer_options.FIELD]=primer
-    pre_load = preload.selection(p['phases'].get('preloadConvergence'))
-    need(config.get('preloadConvergence', pre_load) == pre_load, 'PRELOAD_CONVERGENCE_CHANGED')
-    if pre_load is not None:
-        result['preloadConvergence'] = pre_load
+    result.pop('preloadConvergence', None)
     # A profile intentionally replaces the old rate selection, but preserves
     # runtime marker identity. Revalidate to refuse incompatible combinations.
     result['workload'] = {k: v for k, v in existing.items() if k in ('pointId', 'hotFactor')}

@@ -17,31 +17,10 @@ class SetupConcurrency(unittest.TestCase):
         if value is not None:m['jwtSetupConcurrency']=value
         return m
 
-    def direct_command(self, m):
-        # Evaluate the actual argv expression passed to command(), without
-        # launching the surrounding stack/probe/evaluator machinery.
-        tree=ast.parse(Path(adapter.__file__).read_text())
-        node=next(n for n in ast.walk(tree) if isinstance(n,ast.Call)
-                  and isinstance(n.func,ast.Name) and n.func.id=='command' and n.args
-                  and isinstance(n.args[0],ast.List) and len(n.args[0].elts)>2
-                  and all(isinstance(x,ast.Constant) for x in n.args[0].elts[:3])
-                  and [x.value for x in n.args[0].elts[:3]]==['docker','run','--rm'])
-        scope={**vars(adapter),'d':Path('/tmp/synthetic'),'out':Path('/tmp/synthetic/load'),'m':m,'k6_id':'pinned-image','runid':'synthetic'}
-        return eval(compile(ast.Expression(node.args[0]),'<actual local k6 argv>','eval'),scope)
-
-    def test_default_and_explicit_selection_reach_both_local_launchers(self):
-        for value,expected in [(None,1),(1,1),(16,16),(64,64)]:
-            m=self.manifest(value)
-            for argv in (self.direct_command(m), discovery.k6_command(adapter,Path('/tmp/synthetic'),m,'pinned-image','synthetic')):
-                env=[argv[i+1] for i,x in enumerate(argv[:-1]) if x=='-e']
-                self.assertEqual([x for x in env if x.startswith('JWT_SETUP_CONCURRENCY=')],['JWT_SETUP_CONCURRENCY='+str(expected)])
-                self.assertIn('ACCEL=1',env)
-                self.assertIn('DURATION=2',env)
-
     def test_invalid_manifest_values_refuse_before_launch(self):
         for value in (0,65,-1,'16',16.0,True):
             with self.assertRaisesRegex(RuntimeError,'M7_JWT_SETUP_CONCURRENCY_INVALID'):
-                discovery.k6_command(adapter,Path('/tmp/synthetic'),self.manifest(value),'image','run')
+                adapter.k6_tenants(Path('/tmp/synthetic'),self.manifest(value))
 
     def test_prepare_records_selection_and_keeps_cadence_unchanged(self):
         args=SimpleNamespace(core_commit='a'*40,deploy_commit='b'*40,core_repo='/tmp/core',deploy_repo='/tmp/deploy',image='synthetic',tenants=6,replicas=1,quiet_load=3,freeze='/tmp/freeze',profile='capacity',jwt_setup_concurrency=16)

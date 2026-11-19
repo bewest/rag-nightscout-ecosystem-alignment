@@ -53,15 +53,5 @@ class ApiCause(unittest.TestCase):
   d,config,m=self.fixture();m['runPurpose']='acceptance'
   with self.assertRaisesRegex(RuntimeError,'SCOPE'):c.install(config,d,m,True)
   m['runPurpose']='discovery';c.install(config,d,m,True);self.assertEqual(c.retain(d,m)['code'],'M7_API_CAUSE_NO_CAPTURE')
- def test_prepare_stage_binding_is_parseable_exact_and_starts_nothing(self):
-  d,config,m=self.fixture();m.update(tenants=1000,imageId='sha256:'+'c'*64,instrument={'sha256':'d'*64},port=54173);m['pair']['deploy']='e'*40
-  (d/'owner.json').write_text(json.dumps(m));(d/'tenants.private.json').write_text('[]')
-  package=d/'generator/node_modules/socket.io-client/package.json';package.parent.mkdir(parents=True);package.write_text('{}')
-  value=c.prepare_stages(d,m,node_executable=str(Path(shutil.which('node')).resolve()),generator_root=str(d/'generator'),deadline_utc='2026-11-18T03:30:00Z',output_directory=str(d/'out'))
-  binding=json.loads(Path(value['path']).read_text());self.assertEqual(value['status'],'PREPARED_NOT_RUN');self.assertEqual(value['sha256'],hashlib.sha256(Path(value['path']).read_bytes()).hexdigest());self.assertFalse((d/'out').exists())
-  script="console.log(JSON.stringify(require(process.argv[1]).SELECTION));"
-  selection=json.loads(subprocess.check_output([shutil.which('node'),'-e',script,str(Path(c.__file__).with_name('admission-stages.cjs'))],text=True))
-  self.assertEqual(binding['selection'],selection)
-  with self.assertRaises(FileExistsError):c.prepare_stages(d,m,node_executable=str(Path(shutil.which('node')).resolve()),generator_root=str(d/'generator'),deadline_utc='2026-11-18T03:30:00Z',output_directory=str(d/'out'))
 
 if __name__=='__main__':unittest.main()

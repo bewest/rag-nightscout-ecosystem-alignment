@@ -41,7 +41,7 @@ def configured():
 
 
 class NativeFiles(unittest.TestCase):
-    def test_terminal_export_requires_same_admitted_actor_and_declaration(self):
+    def test_terminal_export_records_owned_lifetime_changes_and_requires_the_admitted_job(self):
         c, base, options = configured()
         wanted, _, _ = n.package(c, base, b'// synthetic driver\n', TENANTS, **options)
         kube = Kube(c)
@@ -56,15 +56,10 @@ class NativeFiles(unittest.TestCase):
             requests['memory'] = str(k.resource_budget.quantity(requests['memory'], False, k.need))
         self.assertTrue(f.terminal_process(c, wanted, job, pod, job, pod)['complete'])
         changes = [
-            ('job', ('metadata', 'uid'), 'different-job', 'ACTOR_REPLACED'),
-            ('pod', ('metadata', 'uid'), 'different-pod', 'ACTOR_REPLACED'),
+            ('job', ('metadata', 'uid'), 'different-job', 'JOB_CHANGED'),
             ('pod', ('metadata', 'ownerReferences', 0, 'uid'), 'peer', 'POD_CONTROLLER'),
-            ('pod', ('spec', 'containers', 0, 'image'), 'changed-image', 'POD_CHANGED'),
-            ('pod', ('spec', 'containers', 0, 'command'), ['false'], 'POD_CHANGED'),
             ('pod', ('spec', 'containers', 0, 'resources', 'requests', 'memory'), '1Gi', 'RESOURCES_CHANGED'),
             ('job', ('spec', 'template', 'spec', 'containers', 0, 'resources', 'requests', 'cpu'), '2', 'RESOURCES_CHANGED'),
-            ('pod', ('status', 'containerStatuses', 0, 'containerID'), 'changed-id', 'ACTOR_REPLACED'),
-            ('pod', ('status', 'containerStatuses', 1, 'imageID'), 'changed-image-id', 'ACTOR_REPLACED'),
             ('pod', ('status', 'containerStatuses', 1, 'state', 'terminated', 'exitCode'), 8, 'EXPORTER_FAILED'),
         ]
         for actor, path, value, code in changes:
@@ -76,7 +71,24 @@ class NativeFiles(unittest.TestCase):
                 target[path[-1]] = value
                 with self.assertRaisesRegex(k.Refused, code):
                     f.terminal_process(c, wanted, job, pod, final_job, final_pod)
-        with self.assertRaisesRegex(k.Refused, 'ACTOR_REPLACED'):
+        changed = copy.deepcopy(pod)
+        changed['metadata']['uid'] = 'later-pod'
+        changed['status']['containerStatuses'][0]['containerID'] = 'later-k6'
+        measured = f.terminal_process(c, wanted, job, pod, job, changed)
+        self.assertEqual(measured['writerContinuity'], 'UNMEASURED')
+        self.assertTrue(measured['complete'])
+        self.assertEqual(measured['artifactSource']['podUid'], pod['metadata']['uid'])
+        self.assertEqual(measured['artifactSource']['writer']['containerId'], pod['status']['containerStatuses'][0]['containerID'])
+        self.assertEqual(measured['artifactSource']['exporter']['containerId'], 'containerd://exporter')
+        self.assertEqual(measured['podUid'], 'later-pod')
+        self.assertEqual(measured['containerId'], 'later-k6')
+        self.assertEqual(measured['actorTransitions'][0]['to'], 'later-pod')
+        exporter_restart = copy.deepcopy(pod)
+        exporter_restart['status']['containerStatuses'][1].update(containerID='new-exporter', restartCount=1)
+        observed = f.terminal_process(c, wanted, job, pod, job, exporter_restart)
+        self.assertNotIn('writerContinuity', observed)
+        self.assertEqual(observed['actorTransitions'][0]['actor'], 'artifact-exporter')
+        with self.assertRaisesRegex(k.Refused, 'TERMINAL_POD_MISSING'):
             f.terminal_process(c, wanted, job, pod, job, None)
         self.assertTrue(f.terminal_process(c, wanted, job, pod, job, pod)['complete'])
 

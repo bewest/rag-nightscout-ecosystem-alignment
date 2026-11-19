@@ -59,17 +59,3 @@ def retain(d,m):
     binding={'owner':m['owner'],'source':m['pair']['core'],'sourceFiles':record['sourceFiles']}
     result=json.loads(subprocess.check_output([m['generator']['tools']['node']['path'],'-e',script,str(Path(__file__).with_name('api-cause.cjs'))],input=json.dumps({'states':values,'binding':binding}),text=True,timeout=5))
     result['captures']=[{'path':str(p.relative_to(d)),'sha256':sha(p)} for p in files];return result
-
-
-def prepare_stages(d,m,*,node_executable,generator_root,deadline_utc,output_directory):
-    """Prepare an unrun, exact-fixture setup driver; caller supplies validated runtime paths."""
-    d=Path(d);node=Path(node_executable);generator=Path(generator_root);out=Path(output_directory)
-    require(m.get('runPurpose')=='discovery' and m.get('profile')=='pgstream-sample' and m.get('tenants')==1000,'M7_ADMISSION_SCOPE')
-    require(all(p.is_absolute() for p in [d,node,generator,out]),'M7_ADMISSION_PATH')
-    owner=json.loads((d/'owner.json').read_text())
-    require(owner.get('owner')==m['owner'] and owner.get('pair')==m['pair'] and owner.get('imageId')==m['imageId'] and owner.get('instrument')==m['instrument'],'M7_ADMISSION_SOURCE')
-    value={'version':1,'kind':'m7-admission-stages-v1','selection':{'tenants':1000,'stages':[0,4000,8000],'opensPerSecond':50,'exchangesPerStage':64,'maxElapsedMs':900000,'requestTimeoutMs':10000,'stockDeadlineMs':60000},'fixtureDirectory':str(d),'outputDirectory':str(out),'generatorRoot':str(generator),'nodeExecutable':str(node),'owner':m['owner'],'pair':m['pair'],'imageId':m['imageId'],'instrument':m['instrument']['sha256'],'baseUrl':'http://127.0.0.1:'+str(m['port'])+'/','deadlineUtc':deadline_utc,'ownerSha256':sha(d/'owner.json'),'tenantsSha256':sha(d/'tenants.private.json'),'actorSha256':sha(Path(__file__).with_name('admission-stages.cjs')),'serialActorSha256':sha(Path(__file__).with_name('serial-exchange-pair.cjs')),'nodeSha256':sha(node),'socketPackageSha256':sha(generator/'node_modules/socket.io-client/package.json')}
-    target=d/'admission-stages-binding.json'
-    with target.open('x') as stream:json.dump(value,stream);stream.write('\n')
-    target.chmod(0o600)
-    return {'path':str(target),'sha256':sha(target),'status':'PREPARED_NOT_RUN','command':[str(node),str(Path(__file__).with_name('admission-stages.cjs')),str(target),sha(target)]}

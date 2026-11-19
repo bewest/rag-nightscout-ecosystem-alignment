@@ -56,7 +56,7 @@ class ActualStages(unittest.TestCase):
             def wait(self,timeout):waits.append(timeout);return 0
         def sleep(_):clock[0]+=700;(root/'load/.window').touch()
         with contextlib.ExitStack() as stack:
-            for name in ('psql','phase_snapshot','job_record','stop_job','quiet','assert_owned'):stack.enter_context(patch.object(a,name))
+            for name in ('psql','phase_snapshot','job_record','stop_job','quiet','assert_owned','k6_tenants'):stack.enter_context(patch.object(a,name))
             for name in ('sampling','loadgen_process'):stack.enter_context(patch.object(a,name,return_value=contextlib.nullcontext()))
             stack.enter_context(patch.object(a,'progress_services',return_value=['evaluator']));stack.enter_context(patch.object(a,'progress_attribution',return_value={}))
             stack.enter_context(patch.object(a.subprocess,'Popen',return_value=Process()))

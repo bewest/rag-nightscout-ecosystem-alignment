@@ -19,12 +19,9 @@ def sha(value):
 def validate_prepare(args):
     import adapter as a
     cadence = a.cadence_options(args)
-    a.node_observation.option(args)
-    a.api_warm_cause.option(args)
     static = a.static_topology.option(args)
     commissioning_wal.option(args)
     a.stream_topology.ack_option(args)
-    a.preload_convergence.option(args)
     require(args.measurement_mode=='accepted','M7_CONFIG_DISCOVERY_MEASUREMENT_MODE')
     require(workload_inputs.tenants(args.tenants)
             and (discovery_api_replicas(args.replicas) if args.run_purpose=='discovery'
@@ -39,55 +36,33 @@ def validate_prepare(args):
     private=[ipaddress.ip_network(c) for c in ('10.0.0.0/8','172.16.0.0/12','192.168.0.0/16')]
     require(all(n.version==4 and any(n.subnet_of(p) for p in private) for n in networks) and not networks[0].overlaps(networks[1]),
             'M7_CONFIG_SUBNET_OVERLAP_OR_PUBLIC')
-    selected = a.selected_resources_profile(args)
-    external = args.pgstream_topology == a.stream_topology.EXTERNAL
-    require(not selected or external == a.diagnostic_resources.external_selection(selected),
-            'M7_CONFIG_RESOURCE_TOPOLOGY')
-    require(not selected or args.generator_dependencies, 'M7_DIAGNOSTIC_DEPENDENCIES_REQUIRED')
     return cadence
-
-
-def resource_projection(resources, profile):
-    if profile is None:
-        return None
-    return {'profile': profile, 'millicpus': resources.cpu_ceiling(profile),
-            'memoryBytes': resources.memory_ceiling(profile),
-            **({'standalone': {'k6': resources.driver_record(profile)}}
-               if resources.driver_memory_request(profile) else {})}
 
 
 def from_args(args, instrument):
     import adapter as a
     # This is semantic input, independent of transport paths and observed limits.
     cadence = validate_prepare(args)
-    profile = a.selected_resources_profile(args)
-    resources = resource_projection(a.diagnostic_resources, profile)
-    return {**commissioning_wal.option(args), **a.stream_topology.ack_option(args), **a.preload_convergence.option(args), **({'tenantReadiness':args.tenant_readiness} if getattr(args,'tenant_readiness',None) else {}), **a.static_topology.option(args), **a.node_observation.option(args), **a.api_warm_cause.option(args), **({'apiCauseObservation':'on'} if getattr(args,'api_cause_observation','off')=='on' else {}),'version': 1, 'pair': {'core': args.core_commit, 'deploy': args.deploy_commit},
+    return {**commissioning_wal.option(args), **a.stream_topology.ack_option(args), **({'tenantReadiness':args.tenant_readiness} if getattr(args,'tenant_readiness',None) else {}), **a.static_topology.option(args), **({'apiCauseObservation':'on'} if getattr(args,'api_cause_observation','off')=='on' else {}),'version': 1, 'pair': {'core': args.core_commit, 'deploy': args.deploy_commit},
             'imageId': args.image_id or args.image, 'instrument': instrument,
             'postgresImageId': args.postgres_image, 'profile': args.profile,
             'runPurpose': args.run_purpose, 'tenants': args.tenants, 'replicas': args.replicas,
             'cadence': cadence, 'primerConcurrency': args.primer_concurrency,
             **({'primerMaxTenants': args.primer_max_tenants} if getattr(args,'primer_max_tenants',None) is not None else {}),
             'jwtSetupConcurrency': args.jwt_setup_concurrency,
-            'pgstreamTopology': args.pgstream_topology, 'resources': resources,
+            'pgstreamTopology': args.pgstream_topology,
             'completionContract': args.completion_contract,
             'diagnostics':a.profile_provenance.selection(args.diagnostics,args.diagnostics_interval_ms)}
 
 
 def from_manifest(m):
     import adapter as a
-    profile = m.get('diagnosticResources', {}).get('profile')
-    resources = resource_projection(a.diagnostic_resources, profile)
-    node = m.get('nodeObservation')
-    warm = m.get('apiWarmCause')
-    return {**({'staticBuildReceiptSha256': m['staticBuildReceiptSha256']} if m.get('staticBuildReceiptSha256') else {}),
-            **commissioning_wal.from_manifest(m), **a.stream_topology.ack_selection(m), **a.preload_convergence.selection(m), **({'tenantReadiness':m['tenantReadiness']} if m.get('tenantReadiness') else {}), **({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),**({'nodeObservationMode':node['mode']} if node else {}),
-            **({'apiWarmCauseMode':warm['mode']} if warm else {}),
+    return {**commissioning_wal.from_manifest(m), **a.stream_topology.ack_selection(m), **({'tenantReadiness':m['tenantReadiness']} if m.get('tenantReadiness') else {}), **({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),
             **({'apiCauseObservation':'on'} if m.get('apiCause') else {}),'version': 1, **{k: m.get(k) for k in ('pair','imageId','profile','runPurpose','tenants','replicas','cadence','completionContract')},
             'instrument': m['instrument']['sha256'], 'postgresImageId': m.get('postgresImageId'),
             'primerConcurrency': m.get('primerConcurrency',1), 'jwtSetupConcurrency': m.get('jwtSetupConcurrency',1),
             **({'primerMaxTenants':m['primerMaxTenants']} if 'primerMaxTenants' in m else {}),
-            'pgstreamTopology': m.get('pgstreamTopology',a.stream_topology.COLOCATED), 'resources': resources,
+            'pgstreamTopology': m.get('pgstreamTopology',a.stream_topology.COLOCATED),
             'diagnostics':m.get('diagnostics',a.profile_provenance.selection())}
 
 
@@ -115,79 +90,6 @@ def resolve(config, source_acceptance=None):
                               for key,value in workload_inputs.COMPOSE_STARTUP_DEFAULTS.items()},
             'workSeconds': config['workSeconds'], 'cleanupSeconds': config['cleanupSeconds'],
             'k6Image': config['k6Image']}
-
-
-def remote_projection(config, overlay, source_acceptance=None):
-    """Generate an existing discovery binding. No provisioning or permission grant."""
-    import sys
-    from pathlib import Path
-    import adapter as a
-    remote = Path(__file__).resolve().parent.parent/'remote-pgstream'
-    previous=list(sys.path)
-    try:
-        sys.path.insert(0,str(remote))
-        import protocol
-        import transport
-    finally:
-        sys.path[:]=previous
-    require(config['workSeconds'] is not None, 'M7_REMOTE_TO_COMPLETION_UNSUPPORTED')
-    result = resolve(config,source_acceptance); r = result['configuration']
-    resources = (r.get('resources') or {}).get('profile')
-    require(not a.diagnostic_resources.driver_memory_request(resources),
-            'M7_CONFIG_REMOTE_DRIVER_MEMORY_RESERVATION_UNSUPPORTED')
-    import primer_options
-    require('primerMaxTenants' not in r and not primer_options.requires_extended(primer_options.from_manifest(r)),
-            'M7_REMOTE_PRIMER_OPTIONS_UNSUPPORTED')
-    if r.get('staticTopology'):
-        require(r['staticTopology']=={'kind':'static-hash-v1','workers':1} and r['replicas']==1 and isinstance((r.get('resources')or{}).get('profile'),dict),'M7_STATIC_REMOTE_K1_N1_ONLY')
-    require(not (r.get('nodeObservationMode') or r.get('apiWarmCauseMode') or r['cadence'].get('driverVuDiagnostic')),
-            'M7_LOCAL_OBSERVER_LOCAL_ONLY')
-    require(r['postgresImageId']==transport.POSTGRES,'M7_CONFIG_REMOTE_POSTGRES_UNSUPPORTED')
-    require(isinstance(overlay,dict) and set(overlay)=={'binding','hostInventory','resourceReference'}, 'M7_CONFIG_REMOTE_OVERLAY_FIELDS')
-    b = copy.deepcopy(overlay['binding'])
-    # Caller owns transport/authority; semantic mirrors are generated exclusively.
-    require(not set(b).intersection({'tenants','pair','imageId','k6Image','workload','reportMode','pgstreamTopology','diagnosticResourceProfile','diagnosticResourceAllocation','staticTopology','commissioningSlotWalMiB','tenantReadiness'}),
-            'M7_CONFIG_REMOTE_MIRROR_REFUSED')
-    cadence = dict(r['cadence'])
-    require(not {'setupSeconds','drainSeconds','drainObservation','opportunityObservation','startupWindows','probeLedger','evaluatorProgressBudget'} & cadence.keys(),
-            'M7_REMOTE_PHASE_WINDOWS_UNSUPPORTED')
-    viewers = cadence.get('logicalPollingClients',r['tenants']*cadence['socketsPerTenant'])
-    b.update(tenants=r['tenants'], pair=r['pair'], imageId=r['imageId'], reportMode='discovery',
-             k6Image='grafana/k6@'+config['k6Image'], workload={
-                 'cadence':cadence, 'primerConcurrency':r['primerConcurrency'], 'jwtSetupConcurrency':r['jwtSetupConcurrency'],
-                 'resourcePlan':{'reference':overlay['resourceReference'], 'tenants':r['tenants'],
-                                 'logicalPollingClients':viewers, 'hosts':overlay['hostInventory']}})
-    if r['pgstreamTopology']!='colocated-v1':
-        selected=r['resources']['profile'] if r['resources'] else None
-        b.update(pgstreamTopology=r['pgstreamTopology'],**({'diagnosticResourceAllocation':selected} if isinstance(selected,dict) else {'diagnosticResourceProfile':selected}))
-    if cadence.get('driverShards',1)>1:
-        require(b.get('pgstreamTopology')=='external-service-v1' and isinstance(b.get('helperDependencies'),dict),
-                'M7_CONFIG_REMOTE_SHARDS_TOPOLOGY')
-        files=b['helperDependencies']['files']
-        for name in ('tools/mt-bench/m7-joined/driver_shards.py','tools/mt-bench/m7-joined/contract.py'):
-            expected=a.digest(a.ROOT/name)
-            require(name not in files or files[name]==expected,'M7_CONFIG_REMOTE_SHARD_DEPENDENCY_CHANGED')
-            files[name]=expected
-    if r.get('staticTopology'):b['staticTopology']=r['staticTopology']
-    for key in ('commissioningSlotWalMiB','tenantReadiness'):
-        if key in r:b[key]=r[key]
-    if commissioning_wal.remote_selection(b):
-        files=b['helperDependencies']['files']
-        for name in ('commissioning_wal.py','contract.py'):
-            path='tools/mt-bench/m7-joined/'+name
-            require(path not in files or files[path]==a.digest(a.ROOT/path),'M7_REMOTE_STARTUP_DEPENDENCY_CHANGED')
-            files[path]=a.digest(a.ROOT/path)
-    protocol.binding(b)
-    require(protocol.prepared_cadence(b)==r['cadence'], 'M7_CONFIG_REMOTE_CADENCE_DRIFT')
-    return {**result, 'binding':b, 'remoteReceiptProjection':{
-        'remoteProfile':b['profile'], 'remoteTransport':b['transport'], 'remoteExtensionSha256':b['sourceSha256'],
-        'remoteReportMode':b['reportMode'], 'remoteWorkload':b['workload'],
-        'remotePgstreamTopology':b.get('pgstreamTopology'), 'remoteDiagnosticResourceProfile':b.get('diagnosticResourceProfile'),
-        'remoteDiagnosticResourceAllocation':b.get('diagnosticResourceAllocation'),
-        'remoteHelperDependencies':b.get('helperDependencies'), 'completionContract':r['completionContract'],
-        **({'remoteNativeSourceAdmission':b['nativeSourceAdmission']} if b.get('nativeSourceAdmission') else {}),
-        **({'remoteStaticTopology':b['staticTopology']} if b.get('staticTopology') else {}),
-        **({'remoteCommissioningSlotWalMiB':b['commissioningSlotWalMiB'],'remoteTenantReadiness':b['tenantReadiness']}if b.get('commissioningSlotWalMiB')is not None else {})}}
 
 
 def validate_execution(config, receipt):

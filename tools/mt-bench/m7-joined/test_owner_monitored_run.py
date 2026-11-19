@@ -45,7 +45,7 @@ except RuntimeError as error:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root/'manifest.json').write_text(json.dumps({
-                'evaluatorCatchup': 'fixed-target-v1', 'cadence': cadence}))
+                'completionContract': 'evaluator-work-v2', 'runPurpose': 'discovery', 'cadence': cadence}))
             args = [sys.executable, '-B', '-c', script, str(Path(adapter.__file__).parent), str(root)]
             if deadline is not None:
                 args += ['--work-deadline', str(deadline)]

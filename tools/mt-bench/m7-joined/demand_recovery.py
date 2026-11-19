@@ -12,7 +12,6 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 import evaluator_progress as p
 import evaluator_recovery as recovery
-import evaluator_opportunities as opportunities
 from contract import require
 
 
@@ -43,45 +42,6 @@ def active_marker(path):
         except (ValueError,TypeError):continue
         if event.get('event')=='scenario-first-iteration' and type(event.get('atMs')) is int:events.append(event['atMs'])
     return min(events) if events else None
-
-
-def validate_authority(value,ids):
-    require(isinstance(value,list) and len(value)==len(ids)
-            and {v.get('tenant') for v in value}==set(ids),'M7_DEMAND_RECOVERY_AUTHORITY_COVERAGE')
-    for row in value:
-        require(set(row)=={'tenant','state','phase','generation','claim','artifact'}
-                and row['state']==row['phase']=='active'
-                and isinstance(row['generation'],str) and row['generation'].isdecimal()
-                and int(row['generation'])>0,'M7_DEMAND_RECOVERY_AUTHORITY')
-    return sorted(value,key=lambda row:row['tenant'])
-
-
-def authority(a,d,ids):
-    # This mode is the existing unselected nsdemo fixture only. Namespace and
-    # authority shape are independently read from the owned rendered layout.
-    layout=a.document(d/'state/bootstrap/layout.json')
-    namespaces=layout.get('namespaces',{})
-    require(namespaces.get('control')=='nsdemo_control' and namespaces.get('registry')=='nsdemo_registry',
-            'M7_DEMAND_RECOVERY_AUTHORITY_LAYOUT')
-    p.validate_ids(ids)
-    values=','.join("'"+tenant+"'::uuid" for tenant in ids)
-    sql="SELECT json_build_object('tenant',r.tenant_id::text,'state',r.state,'phase',w.phase,'generation',w.generation::text,'claim',w.claim_id::text,'artifact',w.artifact_digest) FROM nsdemo_registry.tenant_registry r JOIN nsdemo_control.tenant_lifecycle_windows w USING(tenant_id) WHERE r.tenant_id IN ("+values+") ORDER BY r.tenant_id;"
-    return validate_authority([json.loads(line) for line in a.psql(d,sql,a.application_database(d)).splitlines() if line],ids)
-
-
-def assess_bracket(before,after,ids,binding,authority_before,authority_after):
-    require(validate_authority(authority_before,ids)==validate_authority(authority_after,ids),
-            'M7_DEMAND_RECOVERY_AUTHORITY_CHANGED')
-    rows=opportunities.durable_rows([before,after,after],ids,binding)
-    require(all(rows[0][tenant]['restoreGeneration'] is not None
-                and rows[0][tenant]['restoreGeneration']==rows[-1][tenant]['restoreGeneration'] for tenant in ids),
-            'M7_DEMAND_RECOVERY_RESTORE_CHANGED')
-    for tenant in ids:
-        first,last=rows[0][tenant],rows[-1][tenant]
-        targets={**first['observed'],'clock':first['writerClock']}
-        require(all(key in last['completed'] and opportunities.revision(last['completed'][key])>=opportunities.revision(value)
-                    for key,value in targets.items()),'M7_DEMAND_RECOVERY_ACCEPTED_TARGET_PENDING')
-    return {'verdict':'PASS','tenants':len(ids),'scope':'stable sampled authority/restore, monotone durable positions and pre-restart targets clinically completed; no per-write clinical equivalence'}
 
 
 def verify_probe(probe,receipt):
@@ -139,21 +99,11 @@ def observational_baseline(error):
     return str(error)=='M7_EVALUATOR_PROGRESS_UNAVAILABLE'
 
 
-def continued_durable(before,after,ids,binding,auth_before,auth_after):
-    require(validate_authority(auth_before,ids)==validate_authority(auth_after,ids),
-            'M7_DEMAND_RECOVERY_AUTHORITY_CHANGED')
-    rows=opportunities.durable_rows([before,after,after],ids,binding)
-    require(all(rows[0][tenant]['restoreGeneration'] is not None
-                and rows[0][tenant]['restoreGeneration']==rows[-1][tenant]['restoreGeneration'] for tenant in ids),
-            'M7_DEMAND_RECOVERY_RESTORE_CHANGED')
-    return {'verdict':'PASS','scope':'sampled unchanged authority/restore and monotone durable positions; fault not exercised'}
-
 def run(a,d,m,out,work,record,stop_load):
     validate(m)
     require(selected(m) is not None,'M7_DEMAND_RECOVERY_SELECTION')
     ids=sorted(row['id'] for row in a.document(d/'tenants.private.json'))
     services=a.progress_services(d)
-    collector=a.opportunity_collector(d,m,ids)
     result={'kind':'evaluator-under-demand-recovery-v1','verdict':'UNMEASURED','roles':services,
             'source':a.progress_attribution(m),'delaySeconds':selected(m),'ordinaryWindow':'UNMEASURED'}
     a.write(out/'demand-recovery.json',result)
@@ -175,9 +125,6 @@ def run(a,d,m,out,work,record,stop_load):
             active=time.monotonic();result['scenarioStartedAtMs']=scenario_start;result['scenarioObservedAtMs']=int(time.time()*1000)
             while time.monotonic()-active<selected(m):live(future);bound();time.sleep(.1)
             live(future);bound();a.assert_owned(m)
-            auth_before=authority(a,d,ids);before,cost_before=collector()
-            result['captures']={'before':before,'authorityBefore':auth_before,'costBefore':cost_before}
-            a.write(out/'demand-recovery.json',result)
             try:
                 policy=p.capture_policy(m.get('cadence',{}).get('evaluatorProgressBudget'))
                 baseline=p.round_view(services,ids,lambda service,chosen,q,b:a.progress_fetch(d,service,chosen,q,b),warming=True,allow_unavailable=True,policy=policy)
@@ -193,9 +140,6 @@ def run(a,d,m,out,work,record,stop_load):
                 result.update(verdict='UNMEASURED',code='M7_DEMAND_RECOVERY_BASELINE_UNMEASURED',faultExercised=False)
                 a.write(out/'demand-recovery.json',result)
                 future.result(timeout=a.remaining_seconds(max(1,until-time.time()-3)))
-                after,cost_after=collector();auth_after=authority(a,d,ids)
-                result['continuedDurable']=continued_durable(before,after,ids,collector.binding,auth_before,auth_after)
-                result['captures'].update(after=after,authorityAfter=auth_after,costAfter=cost_after)
                 require(abs((time.time()-wall_started)-(time.monotonic()-started))<.5,'M7_DEMAND_RECOVERY_CLOCK_CHANGED')
                 result['ordinaryWindow']='ordinary load finished without fault injection; recovery remains UNMEASURED'
                 record.value['demandRecovery']=result;record.save()
@@ -205,15 +149,12 @@ def run(a,d,m,out,work,record,stop_load):
             # A cumulative historical count cannot identify its cause. Admit only
             # a healthy same-runtime bracket; uncredited attempts retain unknown cause.
             baseline_admission=p.stable_discovery_baseline(baseline,confirmed,ids)
-            require(auth_before==authority(a,d,ids),'M7_DEMAND_RECOVERY_AUTHORITY_CHANGED')
             result['rejectedWorkBaseline']=baseline_admission
             a.write(out/'demand-recovery-confirmed-baseline.private.json',confirmed)
             # All rendered evaluator services, and no API/realtime/foreign role.
             require(services==a.progress_services(d),'M7_DEMAND_RECOVERY_ROLE_CHANGED')
             live(future);a.assert_owned(m)
-            restart_argv=a.orchestration_binding.fixture_argv(d,['restart',*services])
-            a.orchestration_binding.fixture_mutation_preflight(d,restart_argv,a.command)
-            compose_args=a.orchestration_binding.fixture_argv(d,[])[1:]
+            compose_args=a.compose_prefix(d)[1:]
             script="const x=JSON.parse(process.argv[1]);require(process.argv[2]).restart(x).then(v=>console.log(JSON.stringify(v))).catch(e=>{console.error(e.code);process.exit(1)});"
             result['faultExercised']=True
             result['restartStartedAtMs']=int(time.time()*1000)
@@ -231,17 +172,12 @@ def run(a,d,m,out,work,record,stop_load):
                 # Unknown evaluator availability limits recovery claims, not the
                 # unrelated finite REST workload. Keep durable fences enforced.
                 future.result(timeout=a.remaining_seconds(max(1,until-time.time()-3)))
-                after,cost_after=collector();auth_after=authority(a,d,ids)
-                result['continuedDurable']=continued_durable(before,after,ids,collector.binding,auth_before,auth_after)
-                result['captures'].update(after=after,authorityAfter=auth_after,costAfter=cost_after)
                 result.update(verdict='UNMEASURED',code=proof['code'],ordinaryWindow='ordinary load finished; evaluator recovery availability remains UNMEASURED')
                 record.value['demandRecovery']=result;record.save();return result
             if proof.get('verdict')!='PASS':raise p.Refused(proof.get('code','M7_DEMAND_RECOVERY_RUNTIME_NOT_OBSERVED'),proof.get('verdict','UNMEASURED'))
             live(future);bound()
-            after,cost_after=collector();auth_after=authority(a,d,ids)
-            result['durableBracket']=assess_bracket(before,after,ids,collector.binding,auth_before,auth_after)
-            result['captures']={'before':before,'after':after,'authorityBefore':auth_before,'authorityAfter':auth_after,
-                                'costBefore':cost_before,'costAfter':cost_after}
+            # Accepted inputs before and after the restart are judged by the
+            # assessor (stored, and clinical output within the deadline).
             result['recoveryObservedAtMs']=int(time.time()*1000)
             result['ordinaryWindow']='active scenario marker observed before restart; load command still active after recovery'
             future.result(timeout=a.remaining_seconds(max(1,until-time.time()-3)))

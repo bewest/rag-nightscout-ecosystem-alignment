@@ -117,9 +117,8 @@ The global k6 HTTP window includes JWT setup; per-shape REST durations and
 failure metrics describe ordinary scenarios. Native scenario attempts, HTTP
 responses, transport failures and dropped iterations remain separate. The
 stored-count oracle compares accepted, persisted and uncertain writes. All-roster
-evaluator health is required independently of opportunity-aware progress; quiet
-tenants need no forced work. The optional opportunity caller supports unselected
-v2 discovery only and refuses selected-profile collection before SQL.
+evaluator scope and health are checked throughout load. Each accepted clinical input
+owes durable output by its deadline and by the end of drain.
 
 `load/probe.json` and the runner result retain `durableOutputObservation`. This
 uses the existing private oracle, including typed completion, stored tuple and
@@ -211,225 +210,6 @@ full-client, zero-failure and required-metric checks. REST metrics, sampled clie
 frame times and SUT completion observations remain separate; remote output timing
 is `UNMEASURED` and no cross-host clock subtraction is used.
 
-## Finite experiment batches
-
-`runner.py batch-plan <batch.json> --payload-root <absolute-private-directory>`
-prints a deterministic review plan without starting services. `batch-run
-<batch.json> <new-private-output> --payload-root <absolute-private-directory>`
-executes that same admitted specification. `batch-result <private-output>` reads
-completed and partial per-cell results, including after an interrupted batch.
-The ordinary single-point commands and their defaults stay available.
-
-Before copying a cell's resource fields, run:
-
-```bash
-python3 -B tools/mt-bench/m7-joined/runner.py batch-resources /absolute/private/run.json
-```
-
-This validates the ordinary runner configuration and prints `resources` plus the
-allocation breakdown without starting actors. Copy `resources` to the cell and
-set the batch envelope for the desired concurrency. Then `batch-plan` checks the
-complete payload, workload, isolation and aggregate bounds. These commands grant
-no infrastructure or spending authority.
-
-Start from [the local batch template](examples/local-batch.json). Replace its
-source/helper/receipt paths and hashes, project/CIDRs and zero cleanup cutoff
-with the reviewed inputs and original absolute cutoff; the template is inert.
-Both cells reuse the same immutable source/image/helper. The template declares
-room for two whole cells. Set its aggregate envelope to the resources allocated
-to your lane; a smaller envelope queues cells without reducing their quotas.
-
-Batch digests use the [shared canonical vectors](examples/batch-digest-vectors.json).
-Numbers must be finite; integral numbers must fit the exact shared range
-−9007199254740991 through 9007199254740991. Negative zero becomes zero,
-and `1.0` and `1` have one identity. Payload bytes are never transformed.
-
-The common version 1 batch structure is shared with the deployment controller's
-`pgstream-caller.mjs` batch API. A batch contains explicit cells; expand an R&D
-matrix into cells before review rather than submitting executable generators.
-Each `cell.config` is an ordinary runner configuration locally, or an existing
-remote caller specification remotely. Local and remote batches have the same
-review fields; each backend still checks its own typed runtime contract.
-
-| Field | Meaning |
-|---|---|
-| `version`, `id` | Version 1 and a unique lowercase batch name |
-| `payload.source` | Exact `core` and `deploy` Git commits |
-| `payload.image`, `payload.helper` | Immutable image ID and executed helper content hash; remote helper is its extension hash |
-| `payload.files` | Explicit relative `{path, sha256}` allowlist under the private payload root; local receipts must be included; symlinks refuse |
-| `envelope` | `maxConcurrent`, aggregate `millicpus`, `memoryBytes`, `heapMiB`, `hourlyMicrousd`, `totalMicrousd`, `maxLiveResources`, `maxOfferedRps`, and absolute Unix-seconds `cleanupAt` |
-| `envelope.workload` | Inclusive `[minimum, maximum]` bounds for `tenants`, `offeredRps`, `durationSeconds`, `probeEveryMs`, `hotFactor`; explicit `faultCases` allowlist |
-| `cells[]` | Unique `id`, `namespace`, `ports`, `subnets`, `target`, `resources`, `offeredRps`, `workSeconds`, `cleanupSeconds`, and `config` |
-| `cell.resources` | Whole-cell `millicpus`, `memoryBytes`, `heapMiB`, `hourlyMicrousd`, `totalMicrousd`, `liveResources`; costs use integral millionths of USD |
-
-For local cells, `target` is `{"kind":"local"}`, ports are empty (no host-port
-configuration is supported by this runner), and subnets exactly match the
-configuration's backend and edge CIDRs. Names and CIDRs cannot overlap another
-cell, even when cells run sequentially. The existing adapter performs its fresh
-host census before effects. Local cells use any existing named diagnostic profile or an explicit
-`diagnostic-resource-allocation`, with the same adapter selection and topology
-checks as a direct run. A cell must reserve at least the selected CPU/memory
-ceiling, host V8 heaps and managed-resource allowance. Larger authored
-reservations are valid; the batch envelope remains the aggregate bound. An
-explicit allocation supplies its own driver limits and is not capped by the
-old local reference reservation.
-
-Named profiles retain their server limits, while discovery replaces their old
-500-millicpu/1-GiB k6 default with the existing 2000-millicpu/4-GiB driver. The
-planner includes that delta. For example, the named 4-CPU/8-GiB profile requires
-5500 millicpus and 11811160064 memory bytes for the complete discovery cell,
-plus 1024 MiB host V8 heaps, zero money and a conservative 64 managed resources.
-Use `batch-resources` for the selected configuration instead of repeating this
-arithmetic. Profile names describe their original reference allocation.
-
-The allocation breakdown uses the selected ceiling as a conservative upper
-bound for SUT roles and declared oneoffs; it does not claim they consume that
-amount simultaneously. Host heaps include helper, generator and probe overlaps.
-Host RSS/native memory remains separately observed; a V8 heap limit does not
-bound RSS. The caller keeps the aggregate envelope within its lane allocation.
-Concurrent cells share the host: record contention in comparisons. The scheduler
-accounts declared maxima; it does not reserve a quiet machine, establish physical
-CPU demand or bound host RSS. Phase-specific lower reservations require matching
-producer enforcement and focused controls.
-
-Each batch holds the original UID-global driver lock and atomically reserves
-whole cells in a private ledger. Only a live exact-birth coordinator and matching
-nonce can authorize a child driver to use its own cell heap lock. This retains
-legacy-driver exclusion, per-cell native quota/census checks and stale-marker
-refusal. It does not rename the global lock to pretend aggregate admission.
-The unchanged independent guard owns each cell's finite cleanup window, starting
-with preparation; the batch cutoff never extends it. Source-loader preflight now
-runs automatically during batch preparation before services. A failed cell keeps
-its private phase and partial outputs. Admission continues for independent cells
-when their reservations fit. Unconfirmed cleanup retains its entire reservation.
-A child rechecks the ticket's absolute cleanup cutoff before preparation, so
-process-launch delay cannot silently authorize a fresh full window.
-Coordinator death leaves custody markers intact for explicit exact-resource
-reconciliation; PID expiry alone never frees resources.
-
-SIGINT/SIGTERM stops new admissions while entered cells finish their original
-finite cleanup. Reservations release only after the child returns, the original
-guard is absent, adapter cleanup records exact absence and the cell heap marker
-is empty under exclusive lock. No other cell's reservation or resource is
-released. Changing payload bytes or source/image/helper pins refuses before a
-new cell starts. Raw logs, tickets, namespaces, process births and ledgers stay
-in ignored private output, not the public repository.
-
-Local batch configurations use existing tenant/rate/duration/cadence/hot-factor
-options and preserve the adapter's required correctness oracles. Ordinary local
-batches currently require an empty fault allowlist; unsupported fault cases
-refuse. Remote component cases retain their existing typed implementation.
-Optional counters and generator headroom remain UNMEASURED when unavailable.
-A constrained generator can limit offered load; that is not a product capacity
-measurement. Every batch result keeps `capacityAcceptance: NOT_GRANTED`.
-Parameter changes inside the declared envelope use the same tool and focused
-input checks; they do not trigger an application rebuild or full acceptance.
-
-A reviewable batch plan does not grant remote spending, export or tool permission.
-Remote plans must disclose their payload allowlist and exact provider destinations
-and use the existing authoritative budget/custody hooks. Paid allocation and
-transport remain with the remote owner. Independent remote pairs retain exact
-unconditional deletion; retaining a pair across cells is a separate reset and
-rig-ownership capability. Active experiments stay pinned to their original tools.
-
-Scheduling checks use the real local caller/process/ticket/flock path with
-synthetic prepare/execute actors, and the remote caller with synthetic root hooks.
-They qualify admission, overlap, failure isolation and custody, not application
-capacity or a native live provider gateway. Remote batches reuse verified sealed
-input directories; `batch-run` does not call `bundle` or export images again.
-Changed inputs require their own matching source/image/helper pins and hashes.
-Remote cleanup uncertainty retains accounting while other eligible pairs proceed;
-reservation/authority uncertainty stops admission. Per-cell deadlines skip only
-the expired cell; the common cutoff leaves no cell eligible. Native approval
-message lookup/provider installation remains UNMEASURED here and belongs to the
-remote custodian; source adapters do not grant tool permissions.
-
-### Typed local Vault component cells
-
-`cell.config.producer: "vault-component-v1"` selects the fixed Vault component
-executor in [vault_component.py](vault_component.py), through the same
-`batch-plan`, `batch-run`, private `_batch-cell` and result gateway. It runs the
-six actual key purposes and synthetic 48-byte root-secret encryption from the
-pinned source capsule. It does not provision SQL tenants or qualify application
-serving. Remote targets refuse; no provider or paid gateway is added.
-
-The exact config fields are `version: 1`, `producer`, `capsule` (absolute private
-allowlisted JSON path), `helperInstrument`, `workSeconds` (30–3600),
-`cleanupSeconds` (30–180), `targetSets` (1–10000) and `vaultMemoryMiB`
-(256, 512 or 1024). Unknown fields refuse. Each cell declares one unused explicit
-loopback port and an empty subnet list; it uses the existing Docker bridge,
-without creating or deleting a network. Names and ports still pass common batch
-isolation checks. `offeredRps` is zero because this producer has no application
-load driver; Vault work is bounded by target sets and four-worker concurrency,
-not an asserted zero provider-request rate. The shared workload axes bound
-`tenants` as component set count and `durationSeconds` as the work window;
-`probeEveryMs` is the inapplicable fixed zero and `hotFactor` is fixed one.
-Fault cases remain unsupported.
-
-The capsule has exact fields `version`, `producer`, `source`, `image`, `imageId`,
-`helper`, `files`, `workerSha256` and `tools`. Its source binds the shared batch
-pins; core is `3b2cec6405451d0aff103f5d21f4312606d4295b` and the four required
-module hashes are fixed by this producer. The common deploy pin is retained
-provenance, not an executed deployment tree for this component. The payload
-allowlist contains `source/lib/tenant-registry/{vault-keys,rules}.js`,
-`source/lib/secrets/{vault-transit,component}.js` and the capsule itself, with
-exact bytes and no symlinks. No credentials, token, key path or root secret is
-part of that capsule. The image is the retained pinned Vault manifest and
-matching image ID. Tools are exact resolved `node` and `docker` paths, hashes and
-version receipts; Node is 24.22.1. The executor verifies them before SUT effects,
-uses only fixed argv, refuses preloads and never installs, pulls or builds.
-Docker commands explicitly select the local Unix socket. Provider credentials
-are created in memory and sent to the fixed worker over stdin only.
-
-| Exact per-cell reservation | Meaning |
-|---|---|
-| 1130 millicpus | Vault requested 125m/effective 130m plus a conservative 1000m host allowance |
-| `vaultMemoryMiB * 1048576` bytes | The exact native Vault memory and memory-plus-swap limits |
-| 128 MiB heap | One total V8 heap; RSS remains separately observed |
-| Zero money | Local-only; this grants no remote authority |
-| Seven logical managed actors | Cell coordinator, guard, Node worker, two native-command slots, one container and one volume |
-
-Only the owned cell process and its descendants receive a one-CPU affinity mask
-chosen from their actual allowed mask. The coordinator and foreign processes
-are never pinned. The mask is verified before effects and its inheritance is
-checked in a harmless child, the guard and the Node worker. This is a bound on
-shared CPU use, not an exclusive CPU reservation or a quiet-host claim.
-Unsupported or changed affinity refuses. Python has a 512 MiB address-space
-soft limit; native command children have a 16 GiB address-space limit and Node
-has 128 GiB. Address space, RSS and V8 heap are different measurements. The seven
-logical actors are not an OS PID/thread maximum. In-container shell/storage
-collector descendants share the native Vault cgroup; timing out a Docker CLI
-does not prove an exec child ended. Exact container cleanup owns those children.
-Ordinary cells use the selected allocation and effective discovery driver above.
-The 8448 MiB variant therefore needs a larger reservation than the legacy 8192 MiB
-claim; `batch-resources` exposes it before preparation.
-
-A typed child must match the live exact-birth parent, private ticket/ledger,
-batch digest, complete config and resource claim. It then acquires the existing
-cell heap lock. Without a valid ticket the existing legacy UID-global exclusion
-remains intact; this producer provides no bypass flag. The existing runner
-arms the preparation-inclusive work/cleanup window and independent guard.
-Guard arming rechecks the absolute parent cutoff. Pipe collection and native
-commands use that same deadline; cleanup uses the original cleanup cutoff.
-The 6000-set prefix is never promoted to a requested 10000-set completion.
-
-Cleanup dispatch remains under the runner's existing custody lock. It verifies
-exact container ID, creation, name, label, image and quotas, plus volume creation
-and label, then confirms absence and worker termination. The normal batch caller
-also waits for the cell and guard leaders to exit, requires their recorded
-process groups to have no live members, and verifies the empty cell heap marker.
-An unreadable group census refuses rather than asserting absence. Only then can the existing ledger release the reservation. Partial
-measurements with exact cleanup let independent cells continue; uncertain
-cleanup keeps the reservation and global custody marker. Private raw output and
-safe first-failure projection remain per cell. Every result retains
-`capacityAcceptance: NOT_GRANTED`.
-
-Focused checks in [test_vault_component.py](test_vault_component.py) cover exact
-input/reservation rejection, real typed child overlap, partial failure/peer
-progress, uncertain-cleanup retention and affinity confined to a harmless child.
-They do not by themselves qualify native Vault overlap; that requires retained
-source-bound native actors, progress and independent exact cleanup evidence.
-
 ### Resolve once for local and remote discovery
 
 The existing version-1 runner JSON remains the authoring source. `prepare` holds
@@ -481,14 +261,14 @@ acceptance remains separate and failed correctness remains failed.
 | Tenant roster and topology | The source limits tenant count. The generated roster and hot wheel must fit JavaScript arrays. Compose discovery supports 1–16 API replicas and 1–8 evaluator/realtime workers with the required source and role receipts. Native Kubernetes runs one API and one evaluator/realtime worker with an external producer. |
 | `logical-polling-clients`, `sockets-per-tenant` | Choose a nonnegative viewer total within the JavaScript array limit. Compose can derive it from tenants × sockets per tenant. The Kubernetes workload selects the total explicitly. |
 | `offered-rps` | Positive finite scenario HTTP attempts per second with a representable k6 time unit. Setup and stock-probe requests have separate rates. |
-| `warmup-seconds`, `idle-seconds`, `load-seconds`, setup and drain | Positive integer seconds within the shared duration representation. A finite work window must contain the applicable phases. Warmup and idle here are Compose cadence options. Native Kubernetes binds finite setup, load, drain and its outer work window. |
+| `warmup-seconds`, `idle-seconds`, `load-seconds`, setup and drain | Positive integer seconds within the shared duration representation. A finite work window must contain the applicable phases. Compose accepts the legacy warmup and idle options without running those phases. Native Kubernetes binds finite setup, load, drain and its outer work window. |
 | `probe-every-ms` | Positive whole milliseconds up to 2,147,483,647. The planned write count must stay below the probe ledger's entry ceiling. |
 | `sampler-interval` | Compose sampler interval of 1–60 seconds. Native Kubernetes has its own observer settings. |
 | `accel`, `hot-factor` | Compose acceleration uses positive integers within the shared input representation. Both transports require the roster plus hot weight to fit the generated array. |
 | `primer-concurrency`, `primer-max-tenants` | The bound DATA primer accepts positive JavaScript safe integers when the selected source supports them. Defaults are one worker and at most 10,000 pending tenants per invocation. Both settings are bounded by the actual pending roster. |
 | `population-ceiling` | Optional whole-registry population budget for a fresh discovery fixture. Omission retains 10,000. The seed must fit the selected budget and the source's UUID/array representation. Page, cache, byte, resource and primer chunk bounds stay independent. |
 | `jwt-setup-concurrency` | Discovery JWT setup accepts a positive JavaScript safe integer and batches at most the remaining roster. |
-| `diagnostic-resource-profile`, `diagnostic-resource-allocation` | Compose accepts named profiles and explicit per-service CPU and memory. Native Kubernetes binds requests and selected limits in its own fixture and allocation. |
+| `diagnostic-resource-profile`, `diagnostic-resource-allocation` | Retired 2026-11-19: Compose services run uncapped. Native Kubernetes binds requests in its own fixture. |
 
 The [legacy remote protocol](../remote-pgstream/protocol.py) still uses a
 three-hour combined warmup, idle and load ceiling, a one-hour probe interval
@@ -564,15 +344,18 @@ identity is the SHA-256 of that file. Tenants, rate, windows, budgets and
 
 | component | FAIL | UNMEASURED |
 |---|---|---|
-| failed completions (lifetime counters at the end point) | untyped, `unknown`, hard or unrecognised reason; a transient reason resolved or still open past the deadline | typed rows without reasons or resolution fields; a transient still open at the end inside the deadline; no end point |
+| failed completions (lifetime counters at the end point) | untyped, `unknown`, hard or unrecognised reason, or a transient failure still open past the deadline | typed rows without reasons or resolution fields; a transient still open at the end inside the deadline; no end point |
 | isolation | runtime reset, foreign row ready, foreign counters changed, duplicate owner | one point only |
-| readiness | preload refused; an owner not ready, with a code or with an alert at the end point | preload not selected or not retained; no end point |
+| readiness | evaluator health or scope failure | missing terminal inspection |
 | storage | count oracle RED | oracle missing or not GREEN |
 | sampled oracle | probe `completedOutput` FAIL | missing |
-| all-tenant catch-up | a tenant pending once the window after writer join exceeds the deadline; a completion whose lower bound exceeds it; input changed | not captured; pending inside the deadline |
+| accepted-input catch-up | an accepted input missing durable output by end of drain or known late from acceptance | incomplete input identity, source, timing or output evidence |
 
-A declared transient reason (`verification-pending`, `startup-warming`) that
-completed inside the deadline is counted by reason and passes. Until the
+Resolved `verification-pending` and `startup-warming` failures are counted by reason.
+Their maximum resolution time describes the process lifetime. The clinical deadline
+uses the current run's HTTP acknowledgement and tenant-bound durable output.
+On replay, the gate checks distinct input identities against each writer's accepted
+count and compares individual keys wherever the writer records are available. Until the
 source declares `view.failureReasonContract = evaluator-failure-reasons-v1`
 with `progress.failureReasons`, `unresolvedFailure` and
 `maxFailureResolutionMs`, every failed completion is untyped and fails.
@@ -583,7 +366,7 @@ not-ready owner at the midpoint continues. Raw responses are written before
 any decoder reads them (`load/evaluator-progress-raw/`). The verdict is ``load/outcome-gate.json` and the discovery check `outcomeGate``; HTTP
 latency over every k6 shard summary is reported beside it (exact pooled
 count and mean; per-shard quantile ranges; pooled quantiles UNMEASURED).
-`outcome_rereduce.py` re-reduces a retained run into a new file beside it and
+`assessor.py <load>` re-reduces a retained run into a new file beside it and
 refuses if any original file changes.
 
 ## Planned evaluator restart during local discovery demand
@@ -624,34 +407,6 @@ remain separate denominators. The receipt records partial captures and the fixed
 finite runner guard continues to own exact cleanup. Source/image acceptance is
 separate; this helper capability does not require another application campaign.
 
-Discovery interprets `failedCompletions` as uncredited evaluator attempts. The
-runtime also increments this counter when a configuration change fences a stale
-operation window; the counter alone does not identify a clinical failure. A
-second healthy observation binds readiness and fault admission to the same
-runtime. Discovery retains baseline and delta counts with cause attribution
-`UNMEASURED`; unrelated traffic continues when this counter increases. Current
-errors, counter rewinds, foreign work and unexpected runtime changes still
-refuse the observation. Durable accepted targets, restore and authority fences,
-completion coverage and matching client frames keep their separate checks.
-The strict progress and recovery modes retain their original counter rules.
-
-Discovery also retains evaluator `ready: false` as availability `UNMEASURED`
-when the admitted row has no current code or alert and carries all six typed
-job flags. `BUSY`, `BOOTING` and `COLD_OR_UNOBSERVED` describe those flags; they
-do not prove a benign cause. The private proof keeps the original readiness
-boolean and job state through packing and decoding. Such availability does not
-stop unrelated REST traffic. Typed durable targets and actual client output
-still establish completion separately. Current errors, malformed job state,
-foreign work, unexpected runtime changes and counter rewinds keep their guards.
-A planned fault is skipped while baseline availability is unknown; an unknown
-recovery observation does not cancel the finite REST workload. Strict readiness
-and strict progress retain their original readiness requirement.
-
-New pgstream discovery fixtures using `evaluator-work-v2` select the existing
-`received-input-v1` observer when the caller omits that option. The generated
-manifest records the selection. This also covers the canonical remote worker;
-its omitted CLI option does not fall back to the strict idle/load assessor.
-
 The remote supervisor has a different load route. Remote projection explicitly
 refuses this selection as `REMOTE_DEMAND_RECOVERY_LOCAL_ONLY`; a coordinated
 controller/deployment implementation is required before a remote capture can use
@@ -667,8 +422,8 @@ metadata retain unknown continuity; this does not repair old captures.
 
 ### Reuse a bounded local fixture
 
-`session-start` uses the existing runner configuration, explicit diagnostic
-resource profile, prepare and deploy paths. It seeds once and prints the session
+`session-start` uses the existing runner configuration and its prepare and
+deploy paths. It retains any explicitly selected resources. It seeds once and prints the session
 owner token and original cutoffs. Preparation consumes the same `workSeconds`.
 The original independent guard remains responsible for cleanup; retain its helper
 worktree unchanged until exact absence. An existing point, foreign fixture or
@@ -677,24 +432,23 @@ sealed run cannot be adopted into a session.
 ```bash
 python3 -B tools/mt-bench/m7-joined/runner.py session-start CONFIG.json /mnt/data/nightscout-workspace/artifacts/example-lane/session01
 python3 -B tools/mt-bench/m7-joined/runner.py session-observe /mnt/data/nightscout-workspace/artifacts/example-lane/session01 \
-  --owner OWNER_FROM_SESSION_START --name first --config CONFIG.json --history HISTORY.json
+  --owner OWNER_FROM_SESSION_START --name first --config CONFIG.json
 # A second named observation uses the same seeded physical fixture.
 python3 -B tools/mt-bench/m7-joined/runner.py session-observe /mnt/data/nightscout-workspace/artifacts/example-lane/session01 \
-  --owner OWNER_FROM_SESSION_START --name repaired-collector --config COLLECTOR-CONFIG.json --history HISTORY.json
+  --owner OWNER_FROM_SESSION_START --name repaired-collector --config COLLECTOR-CONFIG.json
 python3 -B tools/mt-bench/m7-joined/runner.py session-close /mnt/data/nightscout-workspace/artifacts/example-lane/session01 --owner OWNER_FROM_SESSION_START
 ```
 
-Each history input is a JSON object describing `warmCache`, `seedHistory`,
-`previousWrites`, `restarts`, `activeViewers` and `elapsedAges`. Use explicit
-`UNMEASURED` descriptions where unknown. The runner adds elapsed session time,
-prior observation names, actual pre-observation resource identities, original
-runtime-owner digest and collector identity. Inputs, errors, logs and partial
-results remain separate under `observations/NAME/`; names cannot be reused.
-No counters, clocks, caches, clinical state, leases or slots are reset or copied.
-If the question needs fresh history, use a separate default point or session.
+Each observation records fixture reuse. The optional `--history` argument accepts legacy operator metadata.
 
-A later observation can select an explicitly pinned newer collector and receipt,
-workload timing/rate, viewer count or existing TIME/recovery observation options.
+A later observation can select a newer collector and receipt,
+workload timing, a configured driver plan, viewer count or existing TIME/recovery
+observation options. Discovery and smoke tiers generate each observation's receipt
+from its own configuration. To measure a write-rate change on the same roster,
+change `driver-plan.writeRateScale` in a realistic-v1 observation. To compare
+tenant counts, start a session with the new roster and match the per-shape
+aggregate read and write rates across sessions. Each observation has a distinct
+run ID for storage and probe accounting.
 All other preparation options, the application image, source/deployment pair,
 dependency roots, topology, configuration and resource ceiling must stay compatible.
 The existing attach and preflight paths check the physical resources and current
@@ -771,6 +525,8 @@ absence.
 
 ### Explicit finite allocation
 
+**Retired 2026-11-19:** the `diagnostic-resource-profile` and `diagnostic-resource-allocation` options were deleted; Compose services always run uncapped and the host's `MemAvailable` is recorded once at run entry (`run-before-host.json`). The text below is historical.
+
 A new discovery fixture can use `--diagnostic-resource-allocation '<JSON>'`
 instead of `--diagnostic-resource-profile`. Runner preparation configuration uses
 the same `diagnostic-resource-allocation` key with the JSON string as its value.
@@ -815,15 +571,8 @@ spending, host, fixture or cleanup authority. Named configurations keep their
 existing behavior. This extension does not establish which allocation meets an
 operating latency or throughput objective.
 
-A prospective discovery sample using the durable received-input observer can
-continue independent REST collection when the complete roster records exactly
-`EVALUATOR_CLINICAL_PROGRESS_STALLED` on an admitted, running owner with prior
-completion. Readiness and idle/load retain clinical `FAIL`, and capacity remains
-`NOT_GRANTED`. This is not a general error allowlist. Unknown codes, alerts,
-malformed state, foreign work, changed ownership/runtime, restore rewinds, clock
-failures, durable reader/source mismatches and collection bounds still refuse.
-The three existing durable-before-inspection captures and their cost bounds stay
-in place. Original failed runs are unchanged.
+Discovery retains a source-reported clinical stall as FAIL while measuring independent
+REST work. Scope, authority, malformed state and datastore errors retain their guards.
 
 For explicit remote allocations, the trusted DRIVER supervisor now inserts the
 authored driver CPU/memory/no-swap flags, binds them into its existing creation
@@ -978,9 +727,7 @@ with the manifest-derived plan for **each shard**, checks every exit receipt and
 native summary, and checks the merged counters. Missing shards or plans cannot
 produce a pass. JWT exchanges have separate counts and elapsed time. Starts and
 completions are split at each scenario's scheduled end, so an iteration dispatched
-at the boundary or completed during drain is visible. Outer warmup and idle remain
-the existing runner's measured phases; this driver reports their configuration
-and marks their own observation UNMEASURED.
+at the boundary or completed during drain is visible. Compose begins the ordinary observation after setup.
 
 The nominal offered count is `rate * duration / timeUnit`. The planned integer
 range is its ceiling through `floor(nominal) + 1`: at an exact endpoint, k6 can
@@ -1032,15 +779,6 @@ optional quota read remains UNMEASURED. The service-to-SQL coverage companion
 maps the actual read-only configuration mount for every instance; shared SQL
 users stay shared and are counted once. It grants no per-process SQL split.
 
-`--node-observation profile-v1` installs distinct CPU/ELU captures for each actual
-serving service, using the role's ordinary entrypoint argument. The record binds
-the full instance roster and process births. The cached selected M7 module's
-state and file hash accompany the captures. Missing or inconsistent M7 state
-leaves observer-cost eligibility UNMEASURED while retaining independent valid
-CPU/ELU captures. `--diagnostics off` disables the entire M7 observer; a matched
-ON/OFF/ON SUT comparison measures that total intervention, not exclusive query
-wrapper cost. SQL bookends, host/process counters and Node captures stay separate.
-
 ### Selected static branch diagnostics
 
 `--static-workers K` explicitly selects the source-bound static profile in
@@ -1050,15 +788,10 @@ Discovery accepts an integer API replica count from 1 through 16, independently
 of K. This matches the selected synthetic binding's `replicas.js` producer and
 the instrument's `api` through `api-16` service names. A larger API roster needs
 an extension to both that source contract and those instance/allocation readers.
-The fixed acceptance and pilot grid remains 1, 2 and 4. Historical static receipts
-retain their original source pairs.
-For a new pair, pass the diagnostic publication's `imageReceipt` and
-`imageReceiptSha256` as `--static-build-receipt` and
-`--static-build-receipt-sha256`. Projection checks the build receipt's source
-revisions, image ID and labels, runtime revisions, producer digest and dependency
-lock against the selected inputs. Its digest becomes part of the authorized
-configuration. A compatible new source or image is configuration and receipt data;
-do not add its hashes to the historical source-pair set. The generated source
+The fixed acceptance and pilot grid remains 1, 2 and 4. Any core/deploy pair is
+accepted and recorded; there is no legacy pair list and no build receipt. Run
+identity is the alignment commit, the image digest (`imageId`) and the run
+configuration (decision `brittle-check-removal`). The generated source
 contract, private role documents, role commands, resource limits and startup
 readiness still undergo their existing capability checks. An incompatible
 contract needs an explicit capability implementation; a new hash does not. Preparation verifies the local image and executes the source
@@ -1220,50 +953,27 @@ admin verification and the serving roles precede the lab client's provisioning
 and DATA preload stages. Ordinary traffic requires DATA credentials for its
 active roster. Primer failures and uncertain writes remain setup evidence.
 
-### Explicit local pre-load convergence
-
-For a fresh `tier: discovery` run with `workSeconds: null`, the preparation
-options `preload-convergence-seconds` and
-`preload-convergence-interval-seconds` select a finite observation phase before
-ordinary traffic. For example, select 900 and 15 seconds. The version 2 receipt
-binds the phase configuration and `LOCAL_OWNED_TO_COMPLETION` scope. Omission
-preserves the existing readiness path. This phase is implemented for fresh local
-owned-to-completion discovery; it is not a product or remote-capacity limit.
-
-The phase keeps each original complete strict source snapshot and its actual
-PASS, FAIL or UNMEASURED verdict under `preload-convergence/`. It can continue
-observing the source-defined starting, acquisition-required, pending-input-aged
-or unready-without-error states while their failed-completion counters remain
-zero. The source can report no error code while reconstructing a component or
-gating metadata recovery; job flags and prior acquisition credit do not identify
-all such transitions. A failed snapshot
-remains failed; this does not declare its cause benign or allow ordinary work.
-Permanent source errors, failed evaluations, changed ownership/runtime identity,
-counter rewind and incomplete observations refuse the phase.
-
-Convergence requires two stable whole-cohort views with completed acquisition
-credit and a recorded completion age. The default `preload-readiness: signal`
-records expiry as `NOT_CONVERGED` and lets the run proceed to its ordinary
-checks. Select `preload-readiness: require-all` when the experiment requires
-whole-cohort convergence before traffic. The clinical deadline and clinical,
-storage and client verdicts have their own checks. Capture budgets scale with
-the configured observation duration, interval, cohort and source-page bounds.
-
 Add `"tier": "smoke"`, `"tier": "discovery"` or `"tier": "acceptance"` to
 the existing runner configuration. Existing version 1 configurations that
 omit `tier` retain their receipt-based workflow.
 
 ```bash
-python3 tools/mt-bench/m7-joined/runner.py plan /absolute/private/config.json
+python3 tools/mt-bench/m7-joined/runner.py plan /absolute/private/config.json --candidate <image>
 python3 tools/mt-bench/m7-joined/runner.py run /absolute/private/config.json \
-  /mnt/data/nightscout-workspace/artifacts/<lane>/<new-run>
+  /mnt/data/nightscout-workspace/artifacts/<lane>/<new-run> --candidate <image>
 ```
 
+The candidate is a run parameter, not part of the configuration: `--candidate`
+(or `M7_CANDIDATE_IMAGE`) names a local image reference, and the runner sets
+`image`, `image-id`, `core-commit` and `deploy-commit` from its digest and its
+`org.opencontainers.image.revision` / `org.nightscout.deploy.revision` labels,
+replacing anything the configuration carried. `candidate.json` beside the
+retained `config.json` records the reference, digest and registry digests.
+Run identity is the alignment commit, that digest and the run configuration.
+
 `plan` prints authored keys, applied defaults, effective cadence, resource
-mode, and source admission. It starts no services. Tiered runs check source
-worktree heads and cleanliness and inspect the actual image before starting a
-fixture. Supply an existing immutable application image and its exact core
-and deployment heads. For smoke and discovery, omit `prepare.receipt` to
+mode, and source admission. It starts no services. Tiered runs inspect the
+actual image before starting a fixture. For smoke and discovery, omit `prepare.receipt` to
 have the runner bind the verified source and authored finite plan into a
 private PENDING receipt. Supply the frozen source acceptance receipt for the
 acceptance tier. The runner preserves input failures and automatically indexes
@@ -1283,8 +993,7 @@ Use `exactStatementSignals` for baseline keys whose deterministic statement
 count per unit must match. PostgreSQL timing changes remain observations.
 Measurements with uncertain or variable units stay outside the exact list.
 
-Omitting both `diagnostic-resource-profile` and
-`diagnostic-resource-allocation` selects uncapped Compose services, including
+Compose services are always uncapped (the resource options were retired 2026-11-19), including
 ordinary external pgstream discovery. Preparation removes reference CPU and
 memory sizing from the frozen runtime configuration and records the affected
 fields. Deployment checks the owned Docker readback. Host constraints still
@@ -1310,17 +1019,15 @@ disconnects it, then reconnects all its viewers together before ordinary
 traffic. The probe records actual initial and reconnect frame coverage and
 transport counts under `viewerSetup`.
 
-`setup-seconds` covers the ordinary k6 driver's JWT exchanges. `drain-seconds` governs the post-writer probe and fixed-target
-observer. Local and Kubernetes probes measure 120 seconds from the later of HTTP
-acknowledgement and evaluator warmth for that tenant. Independent owner inspection
-brackets the transition between the last zero-acquisition read and the first ready
-owner with a credited acquisition. A deadline inside that uncertainty interval can
-leave the verdict UNMEASURED. The outcome includes per-tenant warm intervals and
-coverage, acceptance-to-durable and acceptance-to-frame delays, nominal deadline
-misses before warmth, and witnesses censored by the remaining drain clock. Terminal
-zero lifetime acquisitions on the observed owner fail the never-warm criterion.
-Earlier packets retain the clinical verdict of their own instrument.
-Use `plan` to inspect their values and the work they cover. Set these limits
+`setup-seconds` covers the ordinary k6 driver's JWT exchanges. The drain window
+starts when the ordinary driver finishes. Compose and Kubernetes reconcile accepted
+input identities with the independent stored-write counts and durable output
+through the end of drain. Each accepted input has 120 seconds from its HTTP
+acknowledgement. Idle tenants owe no work. Missing source or timing evidence
+leaves the affected measurement UNMEASURED.
+[Decision in force](../../../docs/30-design/tenancy/multitenancy-decisions.md#deadline-from-acceptance)
+
+Use `plan` to inspect these phase limits and the work they cover. Set these limits
 from observed phase timings and keep their evidence with the experiment.
 Deployment priming is a separate provisioning stage. A traffic window names
 the generator's offered-work plan and does not set the overall cleanup clock.
@@ -1396,20 +1103,6 @@ and 64 MiB. Select `--evaluator-progress-budget` with `maxQueriesPerPhase` and
 tenants across eight workers need 1,896 queries. Each retained observation uses
 the selected query and byte budget. Exhausted capture stays `UNMEASURED`.
 
-The local durable opportunity observer reads the selected roster in 64-tenant
-SQL batches before each evaluator inspection. Each new selected SQL row or
-inspection page renews the inactivity clock. Query counts cover generated SELECTs.
-PostgreSQL cursor fetches carry their rows. By default a read allows 20 s
-between advances and 16 MiB for an unfinished SQL row. A scenario can select
-these allowances with `prepare.opportunity-observation.roundSeconds` and
-`sqlMaxBytes`. The receipt records total SQL bytes, largest row, longest SQL
-inactivity, query count and elapsed time. Retained fixed-budget receipts keep
-their original checks. The operator work cutoff applies throughout.
-`drainObservation` selects the separate post-writer observation. Its round,
-query and byte counters stop repeated snapshots that make no progress toward
-the frozen targets. All captures count toward reported cost.
-
-
 `--startup-windows` accepts optional `composeReadySeconds`, `stageSeconds` and
 `evaluatorReadySeconds` for fresh Compose discovery. A shared experiment places
 the same object in `profile.phases.startupWindows.compose`. Plans show the
@@ -1420,14 +1113,14 @@ last completed count. The verified-serving binding starts the Vault process,
 waits for PostgreSQL, runs platform bootstrap and verification, then starts
 all serving roles in one Compose invocation before tenant provision and prime.
 `composeReadySeconds` measures time without a new service startup milestone.
-`evaluatorReadySeconds` measures time without a newly observed warm tenant.
+`evaluatorReadySeconds` limits the startup health and ownership inspection.
 The owner's overall work cutoff clips each wait. During DATA priming,
 `primeSlotWal` records the observed slot setting, active flag, retained bytes
 and sample coverage. A failed slot read remains visible in the unavailable
 count.
 An explicit evaluator window or progress budget derives the readiness capture
 allowance from the effective window, roster, and per-round byte bound. Each
-discovery attempt allows a second capture to confirm readiness. The result
+discovery attempt reads the selected evaluator instances. The result
 records capture limits and usage and identifies exhaustion separately from an
 elapsed readiness window.
 Explicit startup, progress and probe ledger budgets require a version-2 receipt.
@@ -1443,19 +1136,16 @@ measurement.
 `runner.py plan CONFIG` is the one offline resolver. It reports the effective
 `workSeconds`, `cleanupSeconds` and `drainSeconds` with their maximum and origin,
 and the resource origin, before any actor exists. Refusals that depend only on
-the configuration fire here, not at run time. A to-completion run that selects
-`evaluator-catchup` without its own `drain-seconds` refuses with
-`M7_DRAIN_WORK_DEADLINE_REQUIRED` at plan time. A finite cleanup is always
+the configuration fire here, not at run time. An owner-monitored run requires authored
+setup and drain windows. A finite cleanup is always
 required (`M7_RUNNER_FINITE_LIMIT`); 600 seconds is accepted.
 
-The Kubernetes access witness and cohort readiness window record warm-up
-refusals as `UNMEASURED` signals and continue. Isolation, authorization and
-foreign-frame failures still stop the run. See
+Kubernetes checks evaluator scope, authorization and viewer frame delivery. See
 [the Kubernetes guide](../kubernetes/README.md).
 
 The evaluator-progress readers use one policy and judge failed completions
 through the outcome gate only. Retained runs re-reduce with
-`outcome_rereduce.py`.
+`assessor.py <load>`.
 
 Removed from the run tooling at alignment `5a203ee7` plus the tooling branch
 (history keeps them; retained evidence is unchanged): the revision witness, the
@@ -1463,5 +1153,12 @@ clinical intake timeline and sender trace, the runtime source-access census,
 pool diagnostics, component profiles, the query-wrapper bench, `campaign.py`,
 `smoke.py` (use `tier_smoke.py`), `qualify_driver_config.py`, the Kubernetes
 `examples.py` and the workload `qualify.py` and `loopback.py`, and the
-`--population-ceiling` option of the Compose path. The API cause, warm-cause and
-serial-exchange discriminators remain until their last users finish.
+`--population-ceiling` option of the Compose path. The API cause discriminator remains until its last users finish; the warm-cause and
+serial-exchange discriminators were removed on 2026-11-19.
+
+For a cold standard point, `runner.py run CONFIG CASE --standard-case` creates
+a fresh directory with `result.json`, `cleanup.json` and `raw/`. The same
+runner performs preparation, execution and cleanup. The result records entry
+MemAvailable and the observed per-shape counts, executor start times and
+product verdicts where available. A missing counter stays unmeasured. Explicit
+per-service settings can omit the former aggregate allocation ceiling.

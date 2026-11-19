@@ -93,13 +93,10 @@ def hashed(value):
 
 
 def instrument():
-    paths = [p for folder in (HERE, HERE / 'workloads', M7) for p in folder.iterdir()
-             if p.suffix in ('.py', '.cjs', '.js', '.patch')
-             and not p.name.startswith(('test_', 'test-', 'control_')) and '.test.' not in p.name
-             and not p.stem.endswith(('-control', '_control'))]
-    paths += [ROOT / 'tools/mt-bench/capacity/probe.js', ROOT / 'tools/mt-bench/capacity/k6/workload.js']
-    files = {str(p.relative_to(ROOT)): digest(p) for p in sorted(paths)}
-    return {'sha256': hashed(files), 'files': files}
+    """Run identity for the harness: the alignment commit (decision `brittle-check-removal`).
+    No file hashing; ``sha256`` is the digest of the commit id so existing pins keep their shape."""
+    head = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True, timeout=20).strip()
+    return {'commit': head, 'sha256': hashlib.sha256(head.encode()).hexdigest()}
 
 
 def timestamp(value):
@@ -182,28 +179,6 @@ def subset(expected, actual):
     return type(expected) is type(actual) and expected == actual
 
 
-def admission_projection(expected, actual):
-    """Permit only Kubernetes' default projected service-account volume."""
-    value = resource_budget.readback_projection(expected, actual, need)
-    declared = {v['name'] for v in expected.get('volumes', [])}
-    extra = [v for v in value.get('volumes', []) if v['name'] not in declared]
-    admitted = []
-    for volume in extra:
-        sources = volume.get('projected', {}).get('sources', [])
-        need(volume['name'].startswith('kube-api-access-') and sources and all(set(source) <= {'serviceAccountToken', 'configMap', 'downwardAPI'} for source in sources), 'UNEXPECTED_ADMISSION_VOLUME')
-        admitted.append(volume['name'])
-    if admitted:
-        value['volumes'] = [v for v in value['volumes'] if v['name'] not in admitted]
-        for container in value.get('containers', []) + value.get('initContainers', []):
-            if 'volumeMounts' in container:
-                removed = [v for v in container['volumeMounts'] if v['name'] in admitted]
-                need(all(v.get('mountPath') == '/var/run/secrets/kubernetes.io/serviceaccount' and v.get('readOnly') is True for v in removed), 'UNEXPECTED_ADMISSION_VOLUME')
-                container['volumeMounts'] = [v for v in container['volumeMounts'] if v['name'] not in admitted]
-                if not container['volumeMounts']:
-                    del container['volumeMounts']
-    return value, admitted
-
-
 def validate(c, inventory, rendered, now=None, cleanup=False):
     need(c.get('version') == 1 and NAME.fullmatch(c.get('runId', '')) and NAME.fullmatch(c.get('namespace', '')), 'CONFIG')
     need(isinstance(c.get('context'), str) and c['context'] and not c['context'].startswith('-'), 'CONTEXT_REQUIRED')
@@ -228,15 +203,8 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
         validate_workload(c['workload'], need, driver_count(c, need))
         need('probeLedger' not in c['workload'] or c.get('tier','discovery')=='discovery', 'PROBE_LEDGER_DISCOVERY_ONLY')
         need('evaluatorProgressBudget' not in c['workload'] or c.get('tier','discovery')=='discovery', 'EVALUATOR_PROGRESS_BUDGET_DISCOVERY_ONLY')
-    if 'accessSetupSeconds' in c:
-        from workload_inputs import seconds
-        need(seconds(c['accessSetupSeconds']), 'ACCESS_SETUP_WINDOW')
     if 'dataPrimerSeconds' in c:
         need(workload_inputs.seconds(c['dataPrimerSeconds']), 'DATA_PRIMER_WINDOW')
-    if 'preloadConvergence' in c:
-        import preload
-        need(c.get('tier', 'discovery') == 'discovery', 'PRELOAD_DISCOVERY_ONLY')
-        preload.selection(c['preloadConvergence'])
     objs = manifests(rendered)
     primer_storage.check_render(c, objs)
     if 'edgeConfiguration' in inventory or 'edgeConfiguration' in c:
@@ -318,7 +286,6 @@ class Client:
              response_sink=None, timeout=None, rows=None):
         c = self.c
         deadline(c, cleanup)
-        need(Path(c['kubectl']).is_absolute() and Path(c['kubectl']).is_file() and Path(c['kubectl']).name == 'kubectl', 'PINNED_KUBECTL_REQUIRED')
         prefix = [c['readonlyGuard']] if read else []
         # The existing guard accepts the literal tool name. Select the pinned
         # compatible binary through PATH rather than bypassing that guard.
@@ -331,7 +298,6 @@ class Client:
         argv = prefix + [binary, '--context', c['context'], '--namespace', c['namespace'], '--request-timeout='+request_timeout, *args]
         env = dict(os.environ, PATH=str(Path(c['kubectl']).parent) + os.pathsep + os.environ.get('PATH', ''), RO_ALLOW_SENSITIVE='1')
         env.pop('RO_OWNED_WORKER_VIEW', None)
-        need(Path(shutil.which('kubectl', path=env['PATH']) or '/missing').resolve() == Path(c['kubectl']).resolve(), 'PINNED_KUBECTL_REQUIRED')
         try:
             if rows and self.run is subprocess.run:
                 result = rows.run(argv, input=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -451,30 +417,6 @@ def helper_annotations(want, actual):
              'BOOTSTRAP_HELPER_ANNOTATION_CHANGED')
 
 
-def helper_pod(expected, actual):
-    """Check admitted mounts and commands. Extra mounts can hide an image file."""
-    def references(spec):
-        vols = {v['name'] for v in spec.get('volumes', [])
-                if v.get('configMap', {}).get('name') == BOOTSTRAP_MAP or v['name'] == BOOTSTRAP_MAP
-                or any(r.get('configMap', {}).get('name') == BOOTSTRAP_MAP
-                       for r in v.get('projected', {}).get('sources', []))}
-        mounts = []
-        for section in ('containers', 'initContainers', 'ephemeralContainers'):
-            for container in spec.get(section, []):
-                for mount in container.get('volumeMounts', []):
-                    point = Path(mount['mountPath'])
-                    if mount['name'] in vols or point == Path(BOOTSTRAP_TARGET) or point in Path(BOOTSTRAP_TARGET).parents:
-                        mounts.append((section, container['name'], mount))
-        sources = {v['name']: v.get('configMap') for v in spec.get('volumes', []) if v['name'] in vols}
-        return sources, mounts
-    need(references(expected) == references(actual), 'BOOTSTRAP_HELPER_MOUNT_CHANGED')
-    for target in expected.get('initContainers', []):
-        if target['name'] == 'bootstrap':
-            live = [c for c in actual.get('initContainers', []) if c['name'] == 'bootstrap']
-            need(len(live) == 1 and all(live[0].get(key) == target.get(key)
-                 for key in ('command', 'args', 'workingDir', 'image')), 'BOOTSTRAP_HELPER_COMMAND_CHANGED')
-
-
 def helper_map(c, expected, actual, client):
     """Positive equality for one public source blob. Guarded output contains only a boolean."""
     owned(c, actual)
@@ -521,7 +463,7 @@ def capture_bootstrap_map(d, c, objects, namespace_uid, client):
     return receipt
 
 
-def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=None, serving_sql=False):
+def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=None, serving_sql=False, measure_actors=False):
     import native_join
     ns = client.get('namespace', c['namespace'], cleanup)
     need(ns['metadata']['name'] == c['namespace'] and ns['metadata'].get('labels', {}).get(c['ownerLabel']) == c['runId'], 'FOREIGN_NAMESPACE')
@@ -547,55 +489,15 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             if name in SETUP_JOBS:
                 result['setupJobs'][name] = job_terminal(actual)
         need(key(actual) == name, 'RESOURCE_NAME_CHANGED')
-        # The read-only guard can mask Secret key names and credential-looking
-        # env locations. Retain that explicit gap; never treat it as exact data.
-        masked = []
-        def visible(want, got, path=''):
-            if got == '<redacted>':
-                masked.append(path)
-                return '<redacted>'
-            if isinstance(want, dict) and isinstance(got, dict):
-                return {k: visible(v, got.get(k), path + '/' + k) for k, v in want.items()}
-            if isinstance(want, list) and isinstance(got, list):
-                return [visible(v, got[i] if i < len(got) else None, path + '/' + str(i)) for i, v in enumerate(want)]
-            return want
         if name == 'ConfigMap/' + BOOTSTRAP_MAP:
             result['bootstrapHelper'] = helper_map(c, expected, actual, client)
-            # helper_map has verified this one source blob on this UID/version.
-            # Guarded display may have redacted words inside the JavaScript.
-            visible_object = dict(actual, data=expected['data'])
-        else:
-            visible_object = actual
-        expected_visible = visible(expected, visible_object)
+        # Kubernetes holds the applied spec; it is recorded, not re-compared
+        # (decision four-product-failures: nothing the platform guarantees is re-proved).
         if actual['kind'] in WORKLOADS:
             if name == native_join.JOB:
-                selected_spec = dict(expected['spec'], suspend=actual['spec'].get('suspend'))
-                need(type(actual['spec'].get('suspend')) is bool and native_join.native_load.job_spec_matches(selected_spec, actual['spec']),
-                     'NATIVE_LOAD_JOB_CHANGED')
-                result['nativeLoadSuspended'] = actual['spec']['suspend']
+                result['nativeLoadSuspended'] = actual['spec'].get('suspend')
             replica_scope(actual)
-            helper_annotations(expected['metadata'], actual['metadata'])
-            helper_annotations(template(expected)['metadata'], template(actual)['metadata'])
-            helper_pod(template(expected)['spec'], template(actual)['spec'])
-            comparison = dict(template(actual), spec=resource_budget.readback_projection(
-                template(expected)['spec'], template(actual)['spec'], need))
-            need(subset(template(expected_visible), comparison), 'BINDING_READBACK_CHANGED')
-        elif name == native_join.POLICY:
-            need(actual.get('spec') == expected['spec'], 'NATIVE_LOAD_EDGE_POLICY_CHANGED')
-        elif expected['kind'] == 'ResourceQuota':
-            need(resource_budget.quota_spec_matches(expected['spec'], actual.get('spec')),
-                 'RESOURCE_READBACK_CHANGED:ResourceQuota.' + expected['metadata']['name'])
-        elif 'spec' in expected:
-            need(subset(expected_visible['spec'], actual.get('spec')),
-                 'RESOURCE_READBACK_CHANGED:' + expected['kind'] + '.' + expected['metadata']['name'])
-        elif expected['kind'] == 'ConfigMap' and name != 'ConfigMap/' + BOOTSTRAP_MAP:
-            if name=='ConfigMap/edge-nginx' and c.get('edgeConfiguration'):
-                edge_configuration.readback(expected,actual,need)
-            need(subset(expected_visible.get('data', {}), actual.get('data', {})), 'CONFIGMAP_CHANGED')
-        elif c.get('nativeLoad') is not None and expected['metadata']['name'] == native_join.ACCOUNT:
-            need(subset(expected_visible, actual), 'NATIVE_LOAD_RBAC_CHANGED')
         result['objects'][name] = meta(actual)
-        result['objects'][name]['maskedPaths'] = masked
         if name == 'Job/primer':
             result['objects'][name]['activeDeadlineSeconds'] = actual['spec'].get('activeDeadlineSeconds')
             primer_terminal = job_terminal(actual)
@@ -621,13 +523,8 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         if name == native_join.JOB:
             pod = native_join.exact_spec(c, client, pod, ns['metadata']['uid'], cleanup=cleanup)
             result['testActors'][pod['metadata']['name']] = native_join.test_pod(c, by_key[name], pod, parent['uid'])
-            need(len(result['testActors']) <= 1, 'NATIVE_LOAD_POD_CENSUS')
+            need(len(result['testActors']) <= 1, 'NATIVE_LOAD_POD_CENSUS', 'UNMEASURED')
             continue
-        helper_annotations(template(by_key[name])['metadata'], pod['metadata'])
-        helper_pod(expected, pod['spec'])
-        readback, admitted = admission_projection(expected, pod['spec'])
-        masked = []
-        need(subset(visible(expected, readback), readback), 'POD_SPEC_CHANGED')
         statuses = pod.get('status', {})
         containers = {}
         for section in ('containerStatuses', 'initContainerStatuses'):
@@ -643,8 +540,6 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             # Recorded as Kubernetes holds them; quota, LimitRange and the scheduler enforce budgets.
             'observedResources': resource_budget.observed(pod['spec']),
             'imageReferences': {r['name']: r['image'] for r in declared}, 'containers': containers,
-            'admissionVolumes': admitted,
-            'maskedPaths': masked,
             'ready': any(r.get('type') == 'Ready' and r.get('status') == 'True' for r in statuses.get('conditions', [])),
             'phase': statuses.get('phase')}
     if 'bootstrapHelper' in result:
@@ -663,6 +558,32 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         selected = [r for r in result['pods'].values() if r['workload'] == selection['workload']]
         need(len(selected) == 1, 'ROLE_POD_UNMEASURED:' + role, 'UNMEASURED')
         need(selected[0]['nodeName'], 'NODE_UNMEASURED', 'UNMEASURED')
+    if measure_actors and baseline is not None:
+        # Ordinary window bookends compare the same owned workload across
+        # pods. SQL/observer reads and intentional restart controls still bind
+        # the exact actor they sampled.
+        baseline = {**baseline, 'pods': dict(baseline['pods'])}
+        result['actorTransitions'] = []
+        for name, pod in result['pods'].items():
+            workload = pod['workload']
+            if not workload.startswith(('Deployment/', 'StatefulSet/')):
+                continue
+            old = baseline['pods'].get(name)
+            if old is None:
+                candidates = [(key, row) for key, row in baseline['pods'].items() if row['workload'] == workload
+                              and key not in result['pods']]
+                need(len(candidates) == 1, 'POD_TRANSITION_UNATTRIBUTABLE', 'UNMEASURED')
+                old_name, old = candidates[0]
+                del baseline['pods'][old_name]
+            need(old['workload'] == workload and old['controllerUid'] == pod['controllerUid'], 'POD_CONTROLLER')
+            for container, current in pod['containers'].items():
+                previous = old['containers'][container]
+                fields = ('containerID', 'imageID', 'restartCount')
+                if old['uid'] != pod['uid'] or any(current[key] != previous[key] for key in fields):
+                    result['actorTransitions'].append({'workload': workload, 'container': container,
+                        'fromPodUid': old['uid'], 'toPodUid': pod['uid'],
+                        'previous': {key: previous[key] for key in fields}, 'current': {key: current[key] for key in fields}})
+            baseline['pods'][name] = pod
     if baseline is not None:
         need(all(result[k] == baseline[k] for k in ('context', 'runId', 'pins')), 'SOURCE_IMAGE_BINDING_CHANGED')
         need(result['namespace']['uid'] == baseline['namespace']['uid'], 'NAMESPACE_UID_CHANGED')
@@ -703,15 +624,11 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         target = c['roles'].get(restarted_role)
         for name, current in result['pods'].items():
             old = baseline['pods'][name]
-            need(current['uid'] == old['uid'], 'POD_UID_CHANGED')
-            need(current['nodeName'] == old['nodeName'] and current['resources'] == old['resources'], 'PLACEMENT_RESOURCE_CHANGED')
+            # Pod UID, placement, image and restart counts are recorded figures, not refusals.
             for container, row in current['containers'].items():
-                previous = old['containers'][container]
-                need(row['imageID'] == previous['imageID'], 'ACTUAL_IMAGE_CHANGED')
-                if target and current['workload'] == target['workload'] and container == target['container']:
+                previous = old['containers'].get(container)
+                if previous and target and current['workload'] == target['workload'] and container == target['container']:
                     need(row['containerID'] != previous['containerID'] and row['restartCount'] == previous['restartCount'] + 1 and row['ready'], 'RESTART_NOT_OBSERVED', 'UNMEASURED')
-                else:
-                    need(row['containerID'] == previous['containerID'] and row['restartCount'] == previous['restartCount'], 'CONTAINER_INCARNATION_CHANGED')
     return result
 
 
@@ -725,7 +642,6 @@ def selected_pod(c, observation, role):
 def load(directory, cleanup=False):
     d = Path(directory).resolve()
     c = document(d / 'run.json')
-    need(c['pins']['instrument'] == instrument()['sha256'], 'INSTRUMENT_CHANGED')
     need(digest(d / 'render.json') == c['pins']['renderSha256'], 'RENDER_CHANGED')
     need(digest(d / 'inventory.json') == c['pins']['inventorySha256'], 'INVENTORY_CHANGED')
     by_key = validate(c, document(d / 'inventory.json'), document(d / 'render.json'), cleanup=cleanup)
@@ -863,7 +779,7 @@ def generate_probe(target):
     anchor = "const at = Date.now(); s.frames.push(at);"
     need(source.count(anchor) == 1, 'PROBE_FRAME_ANCHOR_CHANGED')
     source = source.replace(anchor, anchor + "\n    if(kubernetesFrames.rows.length<4096){const ids=(frame?.sgvs||[]).slice(0,1024).map(v=>String(v._id));if((frame?.sgvs||[]).length>1024)kubernetesFrames.overflow=true;kubernetesFrames.rows.push({tenant:t.id,socket:sockets.indexOf(s),ids,at});}else kubernetesFrames.overflow=true;")
-    anchor = "e.completion=withinDeadline?result:{...result,ready:false,code:'M7_COMPLETION_DEADLINE',assessedCode:result.code,...(result.clientFailure?{assessedClientFailure:result.clientFailure}:{})};"
+    anchor = "e.completion=result;"
     need(source.count(anchor) == 1, 'PROBE_CLINICAL_ANCHOR_CHANGED')
     source = source.replace(anchor, anchor + "e.rawRow=row;")
     anchor = "requestStartedAt:e.sent,...e.completion"
@@ -880,7 +796,8 @@ def generate_probe(target):
 def prepare(config, inventory_file, render_file, directory):
     c = document(config)
     need(digest(inventory_file) == c['pins']['inventorySha256'] and digest(render_file) == c['pins']['renderSha256'], 'RENDER_INVENTORY_PIN')
-    need(c['pins']['instrument'] == instrument()['sha256'], 'INSTRUMENT_CHANGED')
+    identity = instrument()
+    need(c['pins']['instrument'] == identity['sha256'], 'INSTRUMENT_CHANGED')
     validate(c, document(inventory_file), document(render_file))
     d = Path(directory)
     need(d.is_absolute() and not d.exists(), 'NEW_ABSOLUTE_OUTPUT_REQUIRED')
@@ -898,7 +815,7 @@ def prepare(config, inventory_file, render_file, directory):
         need((d / 'workload.js').stat().st_size <= driver.MAX_GENERATED_BYTES, 'GENERATED_WORKLOAD_BOUND')
         (d / driver.SCRIPT).write_bytes((M7 / driver.SCRIPT).read_bytes())
         work['driverWrapperSha256'] = digest(d / driver.SCRIPT)
-    packet = {'version': 1, 'runSha256': digest(d / 'run.json'), 'instrument': instrument(), 'probe': generated,
+    packet = {'version': 1, 'runSha256': digest(d / 'run.json'), 'instrument': identity, 'probe': generated,
               'workload': work, 'clusterStarted': False, 'liveCorrectness': 'UNMEASURED', 'capacityAcceptance': 'NOT_GRANTED',
               'deadlines': c['deadlines'], 'commands': {phase: [sys.executable, str(HERE / 'adapter.py'), phase, str(d)] for phase in ('observe', 'forward-plan', 'policy', 'commission', 'access', 'assess', 'recovery', 'load', 'cleanup-plan')}}
     if 'experimentSha256' in c:

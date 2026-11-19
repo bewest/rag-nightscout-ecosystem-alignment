@@ -27,9 +27,11 @@ class MemoryPeak(unittest.TestCase):
         self.assertEqual(value['memoryPeakBytesAfter'],300);self.assertNotIn('memoryPeakBytesDelta',value)
         self.assertEqual(value['memoryEventsDelta']['oom_kill'],2)
         self.assertIn('not phase peak',value['scope']);self.assertIn('concurrent',value['scope'])
-        for mutation,code in [(lambda x:x.update(id='other'),'CONTAINER_CHANGED'),(lambda x:x['memoryObservation'].update(memoryPeakBytes=199),'PEAK_RESET'),(lambda x:x['memoryObservation'].update(memoryPeakBytes=True),'PEAK_RESET'),(lambda x:x['memoryObservation']['memoryEvents'].update(high=0),'EVENTS_RESET')]:
+        for mutation in [lambda x:x.update(id='other'),lambda x:x['memoryObservation'].update(memoryPeakBytes=199),lambda x:x['memoryObservation'].update(memoryPeakBytes=True)]:
             broken=copy.deepcopy(last);mutation(broken)
-            with self.assertRaisesRegex(RuntimeError,code):r.memory_peak_observation(first,broken)
+            self.assertEqual(r.memory_peak_observation(first,broken)['status'],'UNMEASURED')
+        broken=copy.deepcopy(last);broken['memoryObservation']['memoryEvents']['high']=0
+        self.assertEqual(r.memory_peak_observation(first,broken)['memoryEventsDelta'],'UNMEASURED')
         self.assertEqual(r.memory_peak_observation(first,last)['memoryPeakBytesAfter'],300)
         self.assertEqual(r.memory_peak_observation({},last)['status'],'UNMEASURED')
     def test_phase_snapshot_raw_parser_and_exact_identity_unchanged(self):
@@ -43,19 +45,12 @@ class MemoryPeak(unittest.TestCase):
                 a.phase_snapshot(d,d,'before')
             role=a.document(d/'before-cgroups.json')['roles']['evaluator']
             self.assertEqual(role['cgroup'],raw);self.assertEqual(role['id'],'exact-id');self.assertEqual(role['memoryObservation']['memoryPeakBytes'],2048)
-    def test_restart_lifetime_gap_and_forged_birth_refusal(self):
+    def test_restart_lifetime_gap_is_unmeasured_never_refused(self):
         first=self.row(500);last=self.row(100);last['containerStartedAt']='2026-11-16T21:00:00.000000001Z';last['memoryObservation']['birth']['startedAt']=last['containerStartedAt']
         value=r.memory_peak_observation(first,last)
         self.assertEqual(value['status'],'UNMEASURED');self.assertEqual(value['reason'],'container-lifetime-changed')
-        self.assertEqual(value['memoryPeakBytesBeforeLifetime'],500);self.assertEqual(value['memoryPeakBytesAfterLifetime'],100);self.assertEqual(value['memoryEventsDelta'],'UNMEASURED')
-        old=copy.deepcopy(first);del old['memoryObservation']['birth']
-        self.assertEqual(r.memory_peak_observation(old,last)['reason'],'container-birth-unavailable')
-        for field,value in [('containerId','forged'),('startedAt','forged'),('source','caller-asserted'),('stableRead',False)]:
-            bad=copy.deepcopy(last);bad['memoryObservation']['birth'][field]=value
-            with self.assertRaisesRegex(RuntimeError,'BIRTH_PROVENANCE'):r.memory_peak_observation(first,bad)
-        older=copy.deepcopy(last);older['containerStartedAt']='2026-11-16T19:00:00Z';older['memoryObservation']['birth']['startedAt']=older['containerStartedAt']
-        with self.assertRaisesRegex(RuntimeError,'BIRTH_REWIND'):r.memory_peak_observation(first,older)
-        with self.assertRaisesRegex(RuntimeError,'PEAK_RESET'):r.memory_peak_observation(first,self.row(100))
+        self.assertEqual(value['memoryPeakBytesBeforeLifetime'],500);self.assertEqual(value['memoryPeakBytesAfterLifetime'],100)
+        self.assertEqual(r.memory_peak_observation(first,self.row(100))['status'],'UNMEASURED')
     def test_capture_brackets_started_at_and_refuses_midread_restart(self):
         import json
         started='2026-11-16T20:00:00.000000001Z'
@@ -64,13 +59,10 @@ class MemoryPeak(unittest.TestCase):
             with patch.object(a,'command',side_effect=['123','oom 0',json.dumps(row)]):value=a.memory_observation('id',started)
             if changed:self.assertEqual(value['status'],'UNMEASURED');self.assertNotIn('birth',value)
             else:self.assertEqual(value['birth']['startedAt'],started)
-    def test_omitted_identity_and_monotonicity_checks_are_detectable(self):
-        first=self.row();broken=self.row(100,'foreign')
-        def bad_reader(first,last):return {'memoryPeakBytesAfter':last['memoryObservation']['memoryPeakBytes']}
-        self.assertEqual(bad_reader(first,broken)['memoryPeakBytesAfter'],100)
-        with self.assertRaisesRegex(RuntimeError,'CONTAINER_CHANGED'):r.memory_peak_observation(first,broken)
-        broken['id']='same';broken['memoryObservation']['birth']['containerId']='same'
-        with self.assertRaisesRegex(RuntimeError,'PEAK_RESET'):r.memory_peak_observation(first,broken)
+    def test_changed_container_and_reset_peak_are_reported_not_measured(self):
+        first=self.row()
+        self.assertEqual(r.memory_peak_observation(first,self.row(300,'foreign'))['status'],'UNMEASURED')
+        self.assertEqual(r.memory_peak_observation(first,self.row(100))['status'],'UNMEASURED')
         self.assertEqual(r.memory_peak_observation(first,self.row(300))['status'],'MEASURED')
 
 if __name__=='__main__':unittest.main()

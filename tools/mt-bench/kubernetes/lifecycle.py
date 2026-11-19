@@ -13,8 +13,10 @@ import producer_startup
 import application_topology
 import candidate
 import run_cleanup
+import scheduling
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
 from auto_catalog import auto_catalog
+import point_results
 from primer_progress import ProgressWindow
 cfg=fixture_config(Path(sys.argv[1]))
 d=Path(cfg['caseDirectory']); tool=Path(cfg['toolsDirectory'])
@@ -24,10 +26,25 @@ e=read(d/'environment.json'); ns=e['namespace'];ctx=e['context'];rid=e['runId']
 intent=read(d/'intent.json')
 startup=cfg.get('startupWindowPreflight') or startup_preflight(intent,e,[])
 waits=startup['selectedSeconds']
-assert e['runId']==d.name and ns.startswith('ns-synth-'),'INSTANCE_IDENTITY_CHANGED'
+assert e['runId']==d.name,'INSTANCE_IDENTITY_CHANGED'
 live=d/'runtime';live.mkdir(mode=0o700,exist_ok=True);assert not any(live.iterdir()),'ENTERED_OUTPUT_EXISTS'
 def put(n,obj):(live/n).write_text(json.dumps(obj,indent=2)+'\n')
 def timestamp():return dt.datetime.now(dt.timezone.utc).isoformat()
+entry_memory = point_results.available_memory()
+
+# Once this case has acquired its empty output directory, refusals before the
+# namespace create also need a terminal result. The entered lifecycle below
+# installs its own exception/cleanup path before making any mutation.
+def unentered_failure(kind, error, trace):
+    import re
+    try:
+        code = str(error)
+        put('first-failure.json', {'stage':'pre-entry', 'time':timestamp(),
+            'code':code if re.fullmatch(r'[A-Z0-9_]{1,120}', code) else kind.__name__})
+        point_results.publish_native(d, mem_available_at_entry_bytes=entry_memory)
+    finally:
+        sys.__excepthook__(kind, error, trace)
+sys.excepthook = unentered_failure
 def command(argv,data=None,timeout=None,private=False):
     rem=cleanup-time.time() if cleaning else work-time.time()
     if not cleaning and phase_cutoff is not None:
@@ -84,6 +101,14 @@ def install(stage):
     step(stage);owned()
     for obj in objects(stage):
         assert obj['metadata']['namespace']==ns
+        if obj['kind']=='Job':
+            # Jobs start when their stage is applied; the primer's deadline is the
+            # remaining work window. No observer suspend/deadline patching.
+            obj=dict(obj,spec=dict(obj['spec'],suspend=False))
+            if obj['metadata']['name']=='primer':
+                left=int(work-time.time())
+                if left<=0:raise RuntimeError('PRIMER_WORK_DEADLINE')
+                obj['spec']['activeDeadlineSeconds']=left
         made=create(obj)
         uids.append({'kind':made['kind'],'name':made['metadata']['name'],'uid':made['metadata']['uid']})
         put('created.json',uids)
@@ -171,12 +196,16 @@ def ready(label,typ,timeout,convergence=None,primer_job=None):
         unavailable=False
     stable=producer_startup.StableReady(convergence['stableReadySeconds'] if convergence else 0)
     failures={}
+    placements = []
     try:
         with progress.bound_reads():
             while time.time()<until and progress.remaining()>0:
                 owned()
                 found=pods(label)
                 if any(x['metadata']['labels'].get('nightscout.org/run-id')!=rid for x in found):raise RuntimeError('FOREIGN_POD')
+                placements = [scheduling.outcome(p) for p in found]
+                if found:
+                    put('placement-'+typ+'.json', placements)
                 ready_pod=None
                 identity=None
                 for pod in found:
@@ -244,6 +273,8 @@ def ready(label,typ,timeout,convergence=None,primer_job=None):
             raise
         if primer_job is not None:
             unavailable=True
+    if any(p['placement'] == 'Unschedulable' for p in placements):
+        raise RuntimeError('K8S_POD_UNSCHEDULABLE')
     if primer_job is not None and time.time()<outer:
         raise RuntimeError('PRIMER_PROVISION_PROGRESS_UNMEASURED' if unavailable else 'PRIMER_PROVISION_STALLED')
     if application_topology.readiness_signal(intent,typ,frozen.require) and time.time()<work:
@@ -269,18 +300,7 @@ def workload_ready(stage):
         ready(','.join(k+'='+v for k,v in sel.items()),nm,seconds,convergence)
 def release_job(name):
     owned()
-    job = get('job', name)
-    uid, = (row['uid'] for row in uids if row['kind']=='Job' and row['name']==name)
-    assert job['metadata']['uid']==uid and job['spec']['suspend'] is True, 'JOB_OWNERSHIP_CHANGED'
-    patch=[{'op':'test','path':'/metadata/uid','value':uid},
-           {'op':'test','path':'/spec/suspend','value':True}]
-    if name=='primer':
-        left=int(work-time.time())
-        if left<=0:
-            raise RuntimeError('PRIMER_WORK_DEADLINE')
-        patch.append({'op':'replace','path':'/spec/activeDeadlineSeconds','value':left})
-    patch.append({'op':'replace','path':'/spec/suspend','value':False})
-    return json.loads(k(['patch','job',name,'-n',ns,'--type=json','-o','json','-p',json.dumps(patch)]))
+    return get('job', name)
 
 
 def verify_database(job_uid, seconds):
@@ -360,30 +380,14 @@ def execpod(pod,container,args,seconds=None):
                    timeout=waits['execSeconds'] if seconds is None else seconds,private=True)
     assert get('pod',nm)['metadata']['uid']==uid
     return result
-raw=Path(cfg['snapshotDirectory']);src=read(raw/'capture.json')
-assert dt.datetime.now(dt.timezone.utc).timestamp()-dt.datetime.fromisoformat(src['capturedAt']).timestamp()<300,'REFRESH_BEFORE_ENTRY'
 pre=read(d/'preflight.json');assert pre['commissioning']=='PREFLIGHT_ONLY'
 scheduler = cfg.get('schedulerPlacement', False)
-if not scheduler:
-    selected=pre['trialEnvelope']['placementEnvelopes']
-    if len(selected)>1:assert all(v['trialFits'] for v in pre['workers'])
-    else:
-        ordered=[n['metadata']['name'] for n in read(raw/'nodes.json')['items']]
-        assert pre['workers'][ordered.index(e['targetNode'])]['trialFits']
-assert pre['experiment']['renderSha256']==hashlib.sha256((d/'render.json').read_bytes()).hexdigest()
 assert get('namespace',ns,False) is None
 trust=objects('cluster-trust')[0]; tn=trust['metadata']['name']
 assert tn==ns+'-vault-tokenreview' and trust['roleRef']['name']=='system:auth-delegator' and trust['subjects']==[{'kind':'ServiceAccount','name':'vault','namespace':ns}] and get('clusterrolebinding',tn,False) is None
 if not scheduler:assert read(Path(cfg['cacheAbsence']['path']))['verifiedAt']
 producer_policy=producer_startup.policy(intent['profile']['phases'].get('producerStartup'),e['workDeadlineSeconds'])
 selected_source=frozen.source(intent)
-if frozen.JOB_COMPLETE in selected_source:
-    contract, = (row['data']['source-contract.json'] for row in objects('foundation')
-                 if row['kind']=='ConfigMap' and row['metadata']['name']=='provision-scripts')
-    receipt=(Path(cfg['bindingDirectory'])/'binding.json').resolve()
-    if split:
-        contract = (receipt.parent/'bindings/kubernetes/assets/source-contract.json').read_bytes()
-    frozen.rendered_contract(intent,contract,{'path':str(receipt),'sha256':cfg['inputs'][str(receipt)]})
 frozen.check_bootstrap_render(intent, [row for stage in
     startup_stages for row in objects(stage)])
 primer_storage.check_render(selected_source, objects('primer'))
@@ -391,6 +395,7 @@ nsuid=trustuid=None;events=[];uids=[];current='create-namespace'
 def interrupted(signum, frame):raise RuntimeError('CONTROLLER_SIGNAL_'+str(signum))
 signal.signal(signal.SIGTERM,interrupted)
 put('deadlines.json',{'workUntil':dt.datetime.fromtimestamp(work,dt.timezone.utc).isoformat(),'cleanupUntil':dt.datetime.fromtimestamp(cleanup,dt.timezone.utc).isoformat()})
+sys.excepthook = sys.__excepthook__
 try:
     node=create(objects('namespace')[0]);nsuid=node['metadata']['uid'];put('custody.json',{'namespace':ns,'namespaceUid':nsuid})
     owned();node=create(trust);trustuid=node['metadata']['uid'];put('custody.json',{'namespace':ns,'namespaceUid':nsuid,'trustName':tn,'trustUid':trustuid})
@@ -470,7 +475,9 @@ try:
                                         'podUid':latest['uid'],'containerId':container['containerID']})
     step('attach released runtime')
     limits=cfg['nativeLimits']
-    command(['systemd-run','--user','--scope','--quiet','--unit=ns-'+rid+'-native',
+    native_scope = 'ns-' + rid + '-native.scope'
+    put('native-unit.json', {'unit': native_scope})
+    command(['systemd-run','--user','--scope','--quiet','--unit='+native_scope,
              '-p','CPUQuota='+str(limits['millicpus']/10)+'%',
              '-p','MemoryMax='+str(limits['memoryBytes']),'-p','MemorySwapMax=0',
              '-p','RuntimeMaxSec='+str(max(1,int(work-time.time())-6)),
@@ -512,14 +519,41 @@ finally:
     cleaning=True
     rpc=[tool/'kubectl','--context',ctx,'--request-timeout=170s']  # `delete --wait` holds one request
     cleanup_errors=[]
+    try:
+        if nsuid and current != 'create-namespace':
+            owned()
+            remaining_pods = pods('nightscout.org/run-id='+rid)
+            rows = [scheduling.outcome(pod) for pod in remaining_pods]
+            for pod, row in zip(remaining_pods, rows):
+                if row['placement'] == 'Unschedulable':
+                    events = json.loads(k(['get','events','-n',ns,'--field-selector',
+                                           'involvedObject.uid='+row['uid']+',reason=FailedScheduling','-o','json']))
+                    row['events'] = scheduling.failed_events(pod, events)
+            put('scheduling.json', rows)
+    except (OSError, RuntimeError, ValueError, AssertionError, subprocess.SubprocessError) as error:
+        put('scheduling-unavailable.json', {'status':'UNMEASURED','reason':type(error).__name__})
     if nsuid or trustuid:
         try:
             result=run_cleanup.cleanup(lambda argv:command(rpc+argv,timeout=min(150,max(1,cleanup-time.time()-2))).decode(),ns,rid)
             put('absence.json',{**result,'namespaceUid':nsuid,'trustUid':trustuid,'verifiedAt':timestamp()})
         except run_cleanup.CleanupFailed as error:cleanup_errors.append({'scope':'absence','code':'K8S_CLEANUP_LEFTOVER','leftovers':error.leftovers})
         except Exception as error:cleanup_errors.append({'scope':'cleanup','code':type(error).__name__})
+    if (live/'native-unit.json').exists():
+        try:
+            observed = subprocess.run(['systemctl', '--user', 'show', native_scope,
+                '--property=LoadState', '--property=ActiveState'], env=env, capture_output=True,
+                text=True, timeout=min(5, max(1, cleanup-time.time())))
+            states = dict(line.split('=', 1) for line in observed.stdout.splitlines() if '=' in line)
+            absent = (observed.returncode in (0, 4) and states.get('LoadState') == 'not-found'
+                      or observed.returncode == 0 and states.get('ActiveState') == 'inactive')
+            put('native-unit-absence.json', {'unit': native_scope, 'absent': absent, **states})
+            if not absent:
+                cleanup_errors.append({'scope':'native-host-unit', 'code':'K8S_NATIVE_UNIT_ABSENCE_UNCONFIRMED'})
+        except (OSError, subprocess.SubprocessError) as error:
+            cleanup_errors.append({'scope':'native-host-unit','code':type(error).__name__})
     if cleanup_errors:
         put('cleanup-failure.json',{'verdict':'FAIL' if any(x['scope']=='absence' for x in cleanup_errors) else 'UNMEASURED','failures':cleanup_errors})
+    point_results.publish_native(d, mem_available_at_entry_bytes=entry_memory)
     auto_catalog(d, lambda path, value: path.write_text(json.dumps(value, indent=2) + '\n'))
     if cleanup_errors:
         raise RuntimeError('OWNED_CLEANUP_UNCONFIRMED')

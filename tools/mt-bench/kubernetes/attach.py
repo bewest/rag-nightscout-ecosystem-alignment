@@ -20,9 +20,6 @@ cfg['driver']['coreRepository']=str(core)
 k6=Path(control['k6'])
 cfg['driver'].update(k6=str(k6),k6Sha256=sha(k6));cfg['readonlyGuard']=str(Path(control['readonlyGuard']))
 cfg.update(context=e['context'],runId=e['runId'],namespace=ns,tenants=e['tenantCount'],deadlines={k:v.replace('+00:00','Z') for k,v in dl.items()},tenantsFile=str(live/'packet/primer/tenants.json'))
-serving_stage = next((row for row in read(live/'stages.json') if row['stage'] == 'serving'), {})
-if 'monoMs' in serving_stage:
-    cfg['servingStartMonoMs'] = serving_stage['monoMs']
 def execute(label,args,deadline=1800):
     path=live/(label+'.log')
     remaining=min(deadline,until-time.time())
@@ -72,7 +69,7 @@ try:
     cfg['baseUrl']='http://127.0.0.1:'+match[1]
     write(live/'input.json',cfg)
     instance={'config':str(live/'input.json'),'inventory':str(d/'inventory.json'),'render':str(d/'render.json'),
-              'bindingReceipt':ref(Path(control['bindingDirectory'])/'binding.json'),'delivery':control['delivery'],
+              'binding':control['bindingDirectory'],
               'roleDocuments':{role:str(live/(role+'-config.private.json')) for role in ('evaluator','realtime')}}
     instance['roleDocuments']['nativeReceipt']=str(live/'native-receipt-source.private.json')
     if (live/'platform-verification.json').exists():
@@ -91,32 +88,18 @@ try:
     # Capture read-only SQL independently of optional client measurements.
     try:execute('sql',ad+['observe-sql',packet,live/'sql'],120)
     except RuntimeError:pass
-    execute('access',ad+['access',packet],65+m['profile']['phases'].get('accessSetupSeconds',0))
+    execute('access',ad+['access',packet],65)
     pre=read(d/'preflight.json');profile=m['profile']
     actor=cfg['driver']['hostId']
     assert actor==cfg['observer']['hostId']
     mode=cfg.get('resourceAccounting','limits-v1')
     assert mode in ('limits-v1','requests-v1') and pre['trialEnvelope'].get('resourceAccounting','limits-v1')==mode,'RESOURCE_ACCOUNTING_MISMATCH'
-    group='requests' if mode=='requests-v1' else 'limits'
-    if control.get('schedulerPlacement'):
-        from scheduler_placement import confirm
-        placement = confirm(packet, control['bindingDirectory'])
-        write(live/'scheduler-placement.json', placement)
-        if not placement['fits']:
-            raise RuntimeError('K8S_SCHEDULER_FIT_REFUSED')
-        nodes = placement['nodeCeilings']
-    else:
-        nodes={node:{'millicpus':round(total[group]['cpu']*1000),'memoryBytes':int(total[group]['memory']),'ephemeralBytes':int(total[group]['ephemeral-storage'])} for node,total in pre['trialEnvelope']['placementEnvelopes'].items()}
     grant={'version':1,'status':'RELEASED','existingCapacityOnly':True,'context':cfg['context'],**cfg['deadlines'],
            'resourceAccounting':mode,
-           'preflight':ref(d/'preflight.json'),'experimentSha256':sha(d/'intent.json'),'nodeCeilings':nodes,
-           'actorCeilings':{actor:profile['proposedEnvelope']['nativeLimits']},
+           'preflight':ref(d/'preflight.json'),'experimentSha256':sha(d/'intent.json'),'placementMode':'scheduler',
            'fixtures':[{'runId':e['runId'],'namespace':ns,'namespaceUid':uid,'runSha256':sha(packet/'run.json')}]}
     write(live/'grant.json',grant)
-    import preload
-    load_bound=preload.load_command_bound(profile,until-time.time())
-    write(live/'load-command-selection.json',load_bound)
-    execute('load',exp+['run',packet,live/'grant.json',sha(live/'grant.json')],load_bound['seconds'])
+    execute('load',exp+['run',packet,live/'grant.json',sha(live/'grant.json')],until-time.time())
 finally:
     if forward and forward.poll() is None:
         forward.terminate()

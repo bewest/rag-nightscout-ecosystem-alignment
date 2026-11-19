@@ -5,15 +5,16 @@ import tempfile, unittest
 from unittest.mock import patch
 import adapter as a, contract as c, run_configuration as rc, static_topology as s
 from test_static_topology import config
+STARTUP_STATIC_CORE, STARTUP_STATIC_DEPLOY = '5a94bbaee7f1130b7de8db0f90deae8c4c1e480b', '49db85682482d5fa8b304a3a9ffaf3cb0980ec05'
 
 class PublishedStartup(unittest.TestCase):
     def test_published_exact_startup_receipt_retains_pending_truth(self):
-        cfg=config();cfg['prepare'].update({'core-commit':s.STARTUP_STATIC_CORE,'deploy-commit':s.STARTUP_STATIC_DEPLOY,
+        cfg=config();cfg['prepare'].update({'core-commit':STARTUP_STATIC_CORE,'deploy-commit':STARTUP_STATIC_DEPLOY,
             'tenant-readiness':'serve','primer-concurrency':16,'commissioning-slot-wal-mib':1024})
         with patch.object(a,'instrument',return_value={'sha256':'d'*64}):projection=rc.resolve(cfg,{'status':'PENDING'})
         value=projection['configuration'];proof={**projection['diagnosticReceiptTemplate'],'status':'AUTHORIZED_DIAGNOSTIC'}
-        m={**value,'instrument':{'sha256':'d'*64},'runConfiguration':value,'diagnosticResources':{'profile':value['resources']['profile']}}
-        self.assertEqual(value['pair'],{'core':s.STARTUP_STATIC_CORE,'deploy':s.STARTUP_STATIC_DEPLOY})
+        m={**value,'instrument':{'sha256':'d'*64},'runConfiguration':value}
+        self.assertEqual(value['pair'],{'core':STARTUP_STATIC_CORE,'deploy':STARTUP_STATIC_DEPLOY})
         self.assertEqual((value['tenantReadiness'],value['primerConcurrency'],value['commissioningSlotWalMiB']),('serve',16,1024))
         self.assertEqual(c.receipt_scope(m,proof,'run')['functionalAcceptance'],'PENDING')
         self.assertEqual(c.receipt_scope(m,proof,'deploy')['capacityAcceptance'],'NOT_GRANTED')

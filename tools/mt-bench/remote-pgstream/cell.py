@@ -1,4 +1,5 @@
 """SUT-only entry point. No actor is started by importing this module."""
+raise ImportError('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import argparse
 import json
 from pathlib import Path

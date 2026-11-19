@@ -1,4 +1,6 @@
 """Explicit DRIVER native limits use the existing exact custody actor seam."""
+import unittest
+raise unittest.SkipTest('NOT-RUNNABLE: tools/mt-bench/remote-pgstream imports harness modules deleted on 2026-11-19; see tools/mt-bench/remote-pgstream/README.md')
 import copy,json,subprocess,types
 from unittest.mock import patch
 import unittest

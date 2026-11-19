@@ -14,15 +14,6 @@ import discovery
 import run_configuration as rc
 import runner
 
-REMOTE=Path(__file__).resolve().parent.parent/'remote-pgstream'
-previous_path=list(sys.path)
-try:
-    sys.path.insert(0,str(REMOTE))
-    import protocol
-    import cell
-    import transport
-finally:
-    sys.path[:]=previous_path
 
 
 def config():
@@ -49,17 +40,6 @@ def packet(value):
     return m,receipt
 
 
-def overlay():
-    return {'binding':{'version':1,'profile':protocol.PROFILE,'runId':'synthetic-run',
-        'cloudId':'synthetic-run-'+'a'*12,'nonce':'b'*32,'cell':1,
-        'appAddress':'10.1.1.1','generatorAddress':'10.1.1.2','port':18080,
-        'expiresAt':time.time()+2000,'sourceSha256':'f'*64,
-        'transport':{'interface':'eth1','mac':'00:11:22:33:44:55','approvedAddress':'10.1.1.1','approvalReference':'synthetic-only'}},
-        'resourceReference':'synthetic-only','hostInventory':{
-            'sut':{'providerId':'synthetic-sut','cpuCores':8,'ramBytes':16*1024**3},
-            'driver':{'providerId':'synthetic-driver','cpuCores':4,'ramBytes':8*1024**3}}}
-
-
 class Configuration(unittest.TestCase):
     def setUp(self):
         self.pin=patch.object(a,'instrument',return_value={'sha256':'d'*64});self.pin.start();self.addCleanup(self.pin.stop)
@@ -73,15 +53,13 @@ class Configuration(unittest.TestCase):
         self.assertEqual(rc.from_manifest(manifest),observed)
         manifest.pop('apiCause');self.assertNotIn('apiCauseObservation',rc.from_manifest(manifest))
 
-    def test_readiness_changes_configuration_hash_and_has_no_unbound_remote_projection(self):
+    def test_readiness_changes_configuration_hash(self):
         cfg=config();cfg['prepare']['tenant-readiness']='serve'
         serve=rc.from_args(parsed(cfg),'d'*64)
         cfg['prepare']['tenant-readiness']='all';all_tenants=rc.from_args(parsed(cfg),'d'*64)
         self.assertNotEqual(rc.sha(serve),rc.sha(all_tenants))
         manifest={**serve,'instrument':{'sha256':'d'*64}}
         self.assertEqual(rc.from_manifest(manifest),serve)
-        with self.assertRaisesRegex(RuntimeError,'REMOTE_STARTUP_SELECTION'):
-            rc.remote_projection(cfg,overlay())
 
     def test_legacy_pending_and_strict_acceptance_stay_compatible(self):
         m,r=packet(config());r.pop('version');r.pop('sourceAcceptance');r.pop('configurationSha256');r.pop('purpose')
@@ -117,77 +95,32 @@ class Configuration(unittest.TestCase):
                 c.receipt_scope(m,{**r,'sourceAcceptance':{'status':status}},'run')
 
     def test_actual_runner_refuses_tamper_before_output_guard_or_effects(self):
-        for key,value in (('load-seconds',31),('core-commit','0'*40),('logical-polling-clients',5),
-                          ('diagnostic-resource-profile',a.diagnostic_resources.EXTERNAL_NAME),('tenant-readiness','all')):
+        for key,value in (('load-seconds',31),('core-commit','0'*40),('logical-polling-clients',5),('tenant-readiness','all')):
             with self.subTest(key=key),tempfile.TemporaryDirectory() as tmp:
                 cfg=config();m,r=packet(cfg);root=Path(tmp);receipt=root/'receipt.json';a.write(receipt,r)
                 cfg['prepare']['receipt']=str(receipt);cfg['prepare'][key]=value
-                if key=='diagnostic-resource-profile':
-                    cfg['prepare'].update({'pgstream-topology':'external-service-v1','generator-dependencies':'/synthetic'})
                 file=root/'run.json';a.write(file,cfg);target=root/'never-created'
                 with patch.object(runner,'arm_window') as guard,patch.object(runner,'stage') as effects:
                     with self.assertRaisesRegex(RuntimeError,'CONFIGURATION_MISMATCH|LIMIT_INVALID|SOURCE_MISMATCH'):runner.prepare(file,target)
                     self.assertFalse(target.exists());guard.assert_not_called();effects.assert_not_called()
+
+    def test_legacy_preload_options_do_not_add_a_run_phase(self):
+        cfg=config()
+        before=rc.from_args(parsed(cfg),'d'*64)
+        cfg['prepare'].update({'preload-convergence-seconds':900,'preload-convergence-interval-seconds':15,
+                               'preload-readiness':'require-all','evaluator-opportunities':'received-input-v1'})
+        self.assertEqual(rc.from_args(parsed(cfg),'d'*64),before)
 
     def test_invalid_bounds_and_cross_fields_before_output(self):
         # Discovery reference sizes are overridable; array representation
         # overflow remains invalid instead of the former 10000/80000 examples.
         for changes in ({'tenants':2**32},{'replicas':2},{'logical-polling-clients':2**32},
                         {'offered-rps':float('inf')},{'probe-every-ms':0},
-                        {'backend-subnet':'10.247.237.0/24'},{'sampler-interval':61},
-                        {'diagnostic-resource-profile':a.diagnostic_resources.EXTERNAL_NAME}):
+                        {'backend-subnet':'10.247.237.0/24'},{'sampler-interval':61}):
             cfg=config();cfg['prepare'].update(changes)
             with self.subTest(changes=changes),self.assertRaises((RuntimeError,ValueError)):runner.validate_config(cfg)
-        cfg=config();cfg['workSeconds']=38
+        cfg=config();cfg['workSeconds']=cfg['prepare']['load-seconds']
         with self.assertRaisesRegex(RuntimeError,'WORK_WINDOW'):runner.validate_config(cfg)
-
-    def test_remote_realistic_shards_derive_exact_shared_dependency_hashes(self):
-        cfg=config();cfg['workSeconds']=3600
-        cfg['prepare'].pop('offered-rps')
-        cfg['prepare'].update({'tenants':1000,'load-seconds':1800,'logical-polling-clients':100,
-                              'sockets-per-tenant':1,'workload-mix':'realistic-v1','workload-scale':2,'driver-shards':8,
-                              'pgstream-topology':'external-service-v1',
-                              'diagnostic-resource-profile':a.diagnostic_resources.EXTERNAL_NAME,
-                              'generator-dependencies':'/synthetic'})
-        o=overlay();o['binding']['helperDependencies']={'version':1,'profile':'external-service-batch-v1',
-            'files':{name:a.digest(a.ROOT/name) for name in (
-                'tools/mt-bench/m7-joined/stream_topology.py',
-                'tools/mt-bench/m7-joined/diagnostic_resources.py',
-                'tools/mt-bench/m7-joined/experiment_batch.py')}}
-        original=copy.deepcopy(o)
-        value=rc.remote_projection(cfg,o);bound=value['binding']
-        self.assertEqual(o,original)
-        self.assertEqual(bound['workload']['cadence']['workloadMix'],'realistic-v1')
-        self.assertEqual(bound['workload']['cadence']['workloadScale'],2)
-        self.assertEqual(bound['workload']['cadence']['driverShards'],8)
-        for name in ('driver_shards.py','contract.py'):
-            name='tools/mt-bench/m7-joined/'+name
-            self.assertEqual(bound['helperDependencies']['files'][name],a.digest(a.ROOT/name))
-        protocol.topology_dependencies(bound,a.ROOT)
-        o['binding']['helperDependencies']['files']['tools/mt-bench/m7-joined/driver_shards.py']='0'*64
-        with self.assertRaisesRegex(RuntimeError,'M7_CONFIG_REMOTE_SHARD_DEPENDENCY_CHANGED'):rc.remote_projection(cfg,o)
-        o=copy.deepcopy(original)
-        self.assertEqual(rc.remote_projection(cfg,o),value)
-
-    def test_remote_projection_equivalence_and_actual_consumer(self):
-        cfg=config();o=overlay();before=list(sys.path);p=rc.remote_projection(cfg,o);b=p['binding']
-        self.assertEqual(sys.path,before)
-        self.assertEqual(p,rc.remote_projection(cfg,o))
-        self.assertEqual(protocol.prepared_cadence(b),rc.resolve(cfg)['configuration']['cadence'])
-        self.assertEqual(protocol.viewer_total(b),4)
-        with tempfile.TemporaryDirectory() as tmp:
-            root=Path(tmp);receipt=root/'receipt.json';binding=root/'binding.json';run=root/'run.json'
-            m,r=packet(cfg);r.update(p['remoteReceiptProjection']);a.write(receipt,r);a.write(binding,b)
-            cfg['prepare']['receipt']=str(receipt);a.write(run,cfg)
-            argv=['cell.py','prepare','--binding',str(binding),'--cell',str(root/'cell'),'--run-config',str(run)]
-            with patch.object(sys,'argv',argv),patch.object(a,'prepare') as prepare,patch.object(cell.app,'record_prepared_binding'):
-                cell.main();self.assertEqual(a.cadence_options(prepare.call_args.args[0]),protocol.prepared_cadence(b))
-            b['workload']['cadence']['loadSeconds']+=1;a.write(binding,b)
-            with patch.object(sys,'argv',argv),patch.object(a,'prepare') as prepare:
-                with self.assertRaisesRegex(RuntimeError,'REMOTE_PREPARE_PROFILE_REQUIRED'):cell.main()
-                prepare.assert_not_called()
-        o['binding']['tenants']=2
-        with self.assertRaisesRegex(RuntimeError,'MIRROR_REFUSED'):rc.remote_projection(cfg,o)
 
     def test_pending_only_ablation_rejects_truthful_accepted_diagnostic(self):
         # Reinstall the original predicate in the actual receipt entrypoint.
@@ -260,19 +193,6 @@ class Controls(unittest.TestCase):
             self.assertTrue((root/'never-created/config.json').is_file())
             import shutil
             shutil.rmtree(root/'never-created');criterion()
-
-    def test_prepared_resource_mirror_refuses_before_deploy(self):
-        cfg=config();cfg['prepare'].update({'diagnostic-resource-profile':a.diagnostic_resources.EXTERNAL_NAME,
-            'pgstream-topology':'external-service-v1','generator-dependencies':'/synthetic'})
-        m,r=packet(cfg)
-        m.update(diagnostics=m['runConfiguration']['diagnostics'],prepared=True,postgresImageId=m['runConfiguration']['postgresImageId'],
-                 pgstreamTopology='external-service-v1',diagnosticResources={'profile':a.diagnostic_resources.EXTERNAL_NAME})
-        with tempfile.TemporaryDirectory() as tmp:
-            receipt=Path(tmp)/'receipt.json';a.write(receipt,r);m['freeze']=str(receipt)
-            a.frozen(m,'deploy')
-            m['diagnosticResources']['profile']=a.diagnostic_resources.QUALIFICATION_NAME
-            with self.assertRaisesRegex(RuntimeError,'CONFIGURATION_MISMATCH'):a.frozen(m,'deploy')
-            m['diagnosticResources']['profile']=a.diagnostic_resources.EXTERNAL_NAME;a.frozen(m,'deploy')
 
 class Namespace(unittest.TestCase):
     def test_actual_daemon_network_projection_refuses_overlap(self):

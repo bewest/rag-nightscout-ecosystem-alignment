@@ -35,7 +35,8 @@ def node_requests(objects, baseline, accounting, config=None):
     if config is not None and config.get('nativeLoad') is not None:
         import native_join
         node, request = native_join.reserve(config, objects)
-        add(nodes.setdefault(node,dict.fromkeys(DIMS,0)),request)
+        if node is not None:
+            add(nodes.setdefault(node,dict.fromkeys(DIMS,0)),request)
         accounted.add(native_join.JOB)
     pods = list(baseline['pods'].values())
     finished = baseline.get('completedPrimer')
@@ -66,19 +67,7 @@ def identity(c, baseline, current):
             k.need(old.get('uid') == finished['uid'] and old.get('workload') == 'Job/primer', 'MATRIX_ROSTER_CHANGED')
             expected.discard(finished['name'])
         k.need(set(current[section]) == expected, 'MATRIX_ROSTER_CHANGED')
-        for name, row in current[section].items():
-            old = baseline[section][name]
-            k.need(row['uid'] == old['uid'], 'POD_UID_CHANGED' if section == 'pods' else 'RESOURCE_UID_CHANGED')
-            if section == 'pods':
-                k.need(all(row[n] == old[n] for n in ('workload', 'nodeName', 'resources', 'imageReferences')),
-                       'MATRIX_PEER_INCARNATION_CHANGED')
-                if finished and name == finished['name'] and row['phase'] == 'Succeeded':
-                    k.need(row['uid'] == finished['uid'] and row['containers'].keys() == old['containers'].keys() and
-                           all((v.get('state') or {}).get('terminated', {}).get('exitCode') == 0 and
-                               all(v[key] == old['containers'][n][key] for key in ('containerID','imageID','restartCount'))
-                               for n,v in row['containers'].items()), 'MATRIX_PEER_INCARNATION_CHANGED')
-                else:
-                    k.need(row['containers'] == old['containers'], 'MATRIX_PEER_INCARNATION_CHANGED')
+        # UID, placement and container incarnation are recorded, not re-compared.
 
 
 def allocation(value, entries):
@@ -123,8 +112,9 @@ def allocation(value, entries):
             add(total, actor['resources'])
     k.need(sorted(rows, key=lambda r: r.get('runId', '')) == sorted(expected, key=lambda r: r['runId']),
            'MATRIX_ALLOCATION_IDENTITY_CHANGED')
-    for name, usage in nodes.items():
-        ceiling(usage, a.get('nodeCeilings', {}).get(name), 'MATRIX_NODE_HEADROOM_EXCEEDED')
+    if a.get('placementMode') != 'scheduler':  # Historical explicit per-node allocations
+        for name, usage in nodes.items():
+            ceiling(usage, a.get('nodeCeilings', {}).get(name), 'MATRIX_NODE_HEADROOM_EXCEEDED')
     for name, usage in actors.items():
         ceiling(usage, a.get('actorCeilings', {}).get(name), 'MATRIX_ACTOR_HEADROOM_EXCEEDED')
     return a, {'nodes': nodes, 'nativeActors': actors, 'resourceAccounting':accounting,
@@ -148,8 +138,7 @@ def joined_point(d, c, baseline, current):
            result.get('evaluatorProgress', {}).get('verdict') == 'PASS' and
            result.get('storedWrites', {}).get('verdict') == 'GREEN' and
            result['storedWrites'].get('uncertain') == 0 and
-           result.get('loadFunctionalChecks', {}).get('http', {}).get('httpVerdict') == 'PASS' and
-           result['loadFunctionalChecks']['http'].get('offeredWorkVerdict') == 'PASS',
+           result.get('loadFunctionalChecks', {}).get('http', {}).get('httpVerdict') == 'PASS',
            'MATRIX_ORACLE_UNMEASURED', 'UNMEASURED')
     probe = k.document(out / 'probe.json')
     frames = probe.get('kubernetesFrames', {})

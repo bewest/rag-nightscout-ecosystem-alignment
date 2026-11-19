@@ -27,7 +27,6 @@
     "sampler-interval": 2,
     "quiet-load": 3,
     "pgstream-topology": "external-service-v1",
-    "diagnostic-resource-profile": "local-qualification-external-pgstream-6cpu-10g-v1",
     "diagnostics": "on",
     "maximum-run-minutes": 25,
     "fixture-project": "ns-local-recovery-new-attempt",

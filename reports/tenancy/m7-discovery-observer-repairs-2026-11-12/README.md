@@ -78,7 +78,7 @@ current format and bounds. Implementation and controls:
 [generated adaptation](../../../tools/mt-bench/m7-joined/probe_discovery.py),
 [count controls](../../../tools/mt-bench/m7-joined/test_probe_counts.py),
 [discovery producer controls](../../../tools/mt-bench/m7-joined/test_discovery.py),
-[typed classification controls](../../../tools/mt-bench/m7-joined/test_discovery_classification.py).
+typed classification controls (`tools/mt-bench/m7-joined/test_discovery_classification.py`, deleted 2026-11-19 in `70330f8eae`).
 
 ## Executed controls and limits
 

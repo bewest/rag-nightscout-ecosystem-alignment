@@ -22,8 +22,8 @@ class Discovery(unittest.TestCase):
         args=a.parser().parse_args(['prepare','--directory','/tmp/new','--core-repo','/tmp/core','--core-commit','a'*40,'--deploy-repo','/tmp/deploy','--deploy-commit','b'*40,'--image','image','--freeze','/tmp/freeze','--tenants','500','--replicas','1'])
         self.assertEqual(args.run_purpose,'acceptance')
         folder,m=self.setup()
-        with patch.object(a,'run_cell',side_effect=p.Refused('M7_EVALUATOR_IDLE_JOB_PENDING')) as strict,patch.object(d,'run_discovery') as discovery:
-            with self.assertRaisesRegex(p.Refused,'JOB_PENDING'):a.run(folder,m,'k6')
+        with patch.object(a,'run_cell',side_effect=p.Refused('M7_EVALUATOR_PROGRESS_NOT_OBSERVED')) as strict,patch.object(d,'run_discovery') as discovery:
+            with self.assertRaisesRegex(p.Refused,'NOT_OBSERVED'):a.run(folder,m,'k6')
             strict.assert_called_once();discovery.assert_not_called()
     def test_shared_discovery_records_foreign_host_without_relaxing_project_ownership(self):
         # Shared-host diagnosis is allowed; strict acceptance still requires a
@@ -53,17 +53,17 @@ class Discovery(unittest.TestCase):
             calls.append('load');r=args[-1];r.value.update(oracle={'verdict':'GREEN'},probe={'restart':{},'window':{'deliveredFrames':0,'expectedFrames':100}},settingsFingerprintObservation={'verdict':'PASS'},processes={'k6':{'returncode':0},'probe':{'returncode':0}})
             r.value['strictChecks']['httpErrors']={'verdict':'FAIL','hardFailure':False};r.save()
         with contextlib.ExitStack() as stack:
-            for key in ('frozen','quiet','verify','image','verify_generator','readiness','psql','phase_snapshot'):stack.enter_context(patch.object(a,key))
+            for key in ('frozen','quiet','verify','image','verify_generator','psql','phase_snapshot'):stack.enter_context(patch.object(a,key))
             stack.enter_context(patch.object(a.time,'sleep'));stack.enter_context(patch.object(a,'command',return_value='[{"Id":"sha256:synthetic"}]'))
-            stack.enter_context(patch.object(a,'enabled_idle',side_effect=error));stack.enter_context(patch.object(d,'discovery_load',side_effect=load));stack.enter_context(patch('reduce.measurements',return_value={'complete':True}))
+            stack.enter_context(patch.object(a,'readiness',side_effect=error));stack.enter_context(patch.object(d,'discovery_load',side_effect=load));stack.enter_context(patch('reduce.measurements',return_value={'complete':True}))
             if d.incomplete(error):result=d.run_discovery(a,folder,m,'k6')
             else:
                 with self.assertRaises(type(error)):d.run_discovery(a,folder,m,'k6')
                 result=a.document(folder/'summary.json')
         return result,calls,folder
-    def test_idle_unmeasured_still_invokes_load_and_cannot_claim_acceptance(self):
-        result,calls,_=self.run_recording(p.Refused('M7_EVALUATOR_IDLE_JOB_PENDING'))
-        self.assertEqual(calls,['load']);self.assertEqual(result['status'],'MEASURED');self.assertEqual(result['strictChecks']['idle']['verdict'],'UNMEASURED');self.assertEqual(result['capacityAcceptance'],'NOT_GRANTED');self.assertNotIn('verdict',result);d.check_discovery(result)
+    def test_partial_readiness_still_invokes_load_without_idle_observations(self):
+        result,calls,_=self.run_recording(p.Refused('M7_EVALUATOR_PROGRESS_NOT_OBSERVED'))
+        self.assertEqual(calls,['load']);self.assertEqual(result['status'],'MEASURED');self.assertNotIn('idle',result['strictChecks']);self.assertEqual(result['strictChecks']['readiness']['verdict'],'UNMEASURED');self.assertEqual(result['capacityAcceptance'],'NOT_GRANTED');self.assertNotIn('verdict',result);d.check_discovery(result)
     def test_known_foreign_reset_and_clinical_fail_refuse_before_load(self):
         for code in ('M7_EVALUATOR_PROGRESS_FOREIGN','M7_EVALUATOR_PROGRESS_RESET','M7_EXPLICIT_UNSAFE_CLINICAL_OUTPUT'):
             result,calls,_=self.run_recording(p.Refused(code,'FAIL'));self.assertEqual(calls,[]);self.assertEqual(result['hardFailures'][0]['code'],code)
@@ -71,11 +71,11 @@ class Discovery(unittest.TestCase):
     def test_actual_current_error_is_hard_after_counter_ambiguity_moves_to_fields(self):
         for code in ('M7_EVALUATOR_PROGRESS_ERROR','M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE'):
             result,calls,_=self.run_recording(p.Refused(code,'FAIL'))
-            self.assertEqual(calls,[]);self.assertTrue(result['strictChecks']['idle']['hardFailure'])
+            self.assertEqual(calls,[]);self.assertTrue(result['strictChecks']['readiness']['hardFailure'])
             with self.assertRaisesRegex(RuntimeError,'HARD_FAILURE'):d.check_discovery(result)
 
     def test_count_bounds_preserve_ambiguous_writes_but_reject_corruption(self):
-        metrics={'writes_ok':{'count':1},'writes_ok{tenant:a}':{'count':1},'writes_uncertain{tenant:a}':{'count':1},'writes_ok{kind:entries}':{'count':1}}
+        metrics={'writes_ok':{'count':1},'writes_uncertain':{'count':1},'writes_ok{kind:entries}':{'count':1}}
         self.assertEqual(oracle({'a':{'entries':2}},metrics,{},[{'id':'a'}],allow_empty=True)['verdict'],'GREEN')
         self.assertEqual(oracle({'a':{'entries':3}},metrics,{},[{'id':'a'}],allow_empty=True)['verdict'],'RED')
         with self.assertRaisesRegex(RuntimeError,'TENANT_SCOPE'):oracle({'foreign':{}},metrics,{},[{'id':'a'}],allow_empty=True)
@@ -106,7 +106,7 @@ class Discovery(unittest.TestCase):
         def ctx(*args):yield
         def observed(*args):events.append('load');raise p.Refused('M7_EVALUATOR_PROGRESS_NOT_OBSERVED')
         with contextlib.ExitStack() as stack:
-            for name in ('psql','job_record','stop_job'):stack.enter_context(patch.object(a,name))
+            for name in ('psql','job_record','stop_job','k6_tenants'):stack.enter_context(patch.object(a,name))
             stack.enter_context(patch.object(a,'quiet'));stack.enter_context(patch.object(a,'progress_services',return_value=['evaluator']));stack.enter_context(patch.object(a,'progress_attribution',return_value={}))
             stack.enter_context(patch.object(a,'sampling',ctx));stack.enter_context(patch.object(a,'loadgen_process',ctx));stack.enter_context(patch.object(a,'assert_owned',side_effect=lambda *args:events.append('custody')))
             stack.enter_context(patch.object(a,'phase_snapshot',side_effect=lambda d,o,name:events.append(name)));stack.enter_context(patch.object(a.subprocess,'Popen',side_effect=popen));stack.enter_context(patch.object(d,'observed_load',side_effect=observed))
@@ -124,7 +124,7 @@ class Discovery(unittest.TestCase):
         def command(argv,**kwargs):
             events.append('k6');a.write(folder/'load/k6-summary.json',{'metrics':{}})
         with contextlib.ExitStack() as stack:
-            for name in ('psql','job_record','stop_job','quiet','assert_owned','phase_snapshot'):stack.enter_context(patch.object(a,name))
+            for name in ('psql','job_record','stop_job','quiet','assert_owned','phase_snapshot','k6_tenants'):stack.enter_context(patch.object(a,name))
             stack.enter_context(patch.object(a,'progress_services',return_value=['evaluator']));stack.enter_context(patch.object(a,'progress_attribution',return_value={}))
             for name in ('sampling','loadgen_process','observe_progress'):stack.enter_context(patch.object(a,name,ctx))
             stack.enter_context(patch.object(a.subprocess,'Popen',return_value=Process()));stack.enter_context(patch.object(a,'command',side_effect=command));stack.enter_context(patch.object(a,'stored',return_value={}))
@@ -132,11 +132,91 @@ class Discovery(unittest.TestCase):
         self.assertEqual(events,['k6']);self.assertFalse((folder/'load/.restart').exists());self.assertEqual(record.value['processes']['probe']['returncode'],7)
         self.assertIsNone(record.value['oracle']);self.assertEqual(record.value['oracleFindings']['probeCountProof'],'UNMEASURED');self.assertEqual(record.value['status'],'PARTIAL');self.assertEqual(record.value['capacityAcceptance'],'NOT_GRANTED')
 
+    def test_acceptance_observer_brackets_both_writers_and_uses_original_drain(self):
+        from unittest.mock import Mock
+        import accepted_inputs
+        folder,m = self.setup()
+        m.update(profile='pgstream-sample',runPurpose='discovery',completionContract='evaluator-work-v2',
+                 project='owned',port=1234,restartRoles=[],generator={'tools':{'node':{'path':'node'}}})
+        m['cadence']['drainSeconds'] = 300
+        a.write(folder/'tenants.private.json',[{'id':'a'},{'id':'b'}])
+        a.write(folder/'completion-source.json',{'kind':m['completionContract']})
+        events = []
+        storage = {'verdict':'GREEN','rows':[]}
+        record = d.Record(a,folder,m)
+        process = Mock(pid=12345, returncode=0)
+        process.poll.return_value = None
+        process.wait.side_effect = lambda timeout: events.append('probe joined') or 0
+        observer = Mock()
+        observer.start.side_effect = lambda: events.append('observer started')
+        observer.close.side_effect = lambda: events.append('observer closed')
+        def finish(out, *, drain_end, storage):
+            window = a.document(out/'phase-windows.json')
+            self.assertAlmostEqual(drain_end,window['drainStartedMonoNs']/1e9+300,places=4)
+            self.assertEqual(storage['verdict'],'GREEN')
+            events.append('assessed')
+        observer.finish.side_effect = finish
+        def popen(*args, **kwargs):
+            (folder/'load/.window').touch()
+            events.append('probe started')
+            return process
+        def observed(*args):
+            args[-1]()
+        def command(argv, **kwargs):
+            events.append('k6 joined')
+            a.write(folder/'load/k6-summary.json',{'metrics':{}})
+        with contextlib.ExitStack() as stack:
+            for name in ('psql','job_record','stop_job','quiet','assert_owned','phase_snapshot','k6_tenants'):
+                stack.enter_context(patch.object(a,name))
+            for name in ('sampling','loadgen_process'):
+                stack.enter_context(patch.object(a,name,side_effect=lambda *args:contextlib.nullcontext()))
+            stack.enter_context(patch.object(a,'progress_services',return_value=['evaluator']))
+            stack.enter_context(patch.object(a,'progress_attribution',return_value={}))
+            stack.enter_context(patch.object(a,'application_database',return_value='synthetic'))
+            stack.enter_context(patch.object(a,'rate_offer',return_value={}))
+            stack.enter_context(patch.object(a,'command',side_effect=command))
+            stack.enter_context(patch.object(a.subprocess,'Popen',side_effect=popen))
+            stack.enter_context(patch.object(accepted_inputs,'Observer',return_value=observer))
+            stack.enter_context(patch.object(d,'observed_load',side_effect=observed))
+            stack.enter_context(patch.object(d,'k6_command',return_value=['k6']))
+            stack.enter_context(patch.object(d,'count_observation',return_value=(storage,True)))
+            stack.enter_context(patch.object(a,'terminal_progress',side_effect=lambda *args:events.append('terminal')))
+            stack.enter_context(patch.object(d,'outcome_record'))
+            d.discovery_load(a,folder,m,'k6',record)
+        self.assertEqual(events,['observer started','probe started','k6 joined','probe joined',
+                                 'probe joined','assessed','terminal','observer closed'])
+
+    def test_storage_refusal_and_probe_timeout_still_finish_the_original_drain(self):
+        import accepted_inputs
+        from unittest.mock import Mock
+        for error in (RuntimeError('M7_DISCOVERY_WRONG_DATA'), subprocess.TimeoutExpired('probe',120)):
+            with self.subTest(error=type(error).__name__):
+                folder,m=self.setup()
+                out=folder/'load'
+                window={'drainStartedMonoNs':123000000000,'drainSeconds':300}
+                findings={'verdict':'RED','code':'M7_DISCOVERY_WRONG_DATA'}
+                a.write(out/'phase-windows.json',window)
+                a.write(out/'oracle-findings.json',findings)
+                a.write(folder/'tenants.private.json',[{'id':'a'}])
+                observer=Mock()
+                def finish(output, *, drain_end, storage):
+                    self.assertEqual((output,drain_end,storage),(out,423,findings))
+                    a.write(output/'evaluator-catchup.json',{'verdict':'FAIL'})
+                observer.finish.side_effect=finish
+                with patch.object(a,'assert_owned'), patch.object(a,'application_database',return_value='synthetic'), patch.object(a,'terminal_progress'), patch.object(accepted_inputs,'Observer',return_value=observer):
+                    with self.assertRaises(type(error)) as caught:
+                        with a.accepted_input_observation(folder,m,'synthetic',{'kind':'evaluator-work-v2'}):
+                            raise error
+                    self.assertIs(caught.exception,error)
+                    observer.finish.assert_called_once()
+                    observer.close.assert_called_once()
+                    self.assertTrue((out/'outcome-gate.json').is_file())
+
     def wrong_data_collection(self):
         corrupt=True
         folder,m=self.setup();m.update(project='owned',port=1234,restartRoles=['api'],generator={'tools':{'node':{'path':'node'}}})
         a.write(folder/'deploy-before-host.json',{});a.write(folder/'tenants.private.json',[{'id':'a'},{'id':'b'}]);events=[]
-        metrics={'writes_ok':{'count':2},'writes_ok{tenant:a}':{'count':1},'writes_ok{tenant:b}':{'count':1},'writes_uncertain{tenant:a}':{'count':0},'writes_uncertain{tenant:b}':{'count':0},'writes_ok{kind:entries}':{'count':2},'writes_ok{kind:devicestatus}':{'count':0},'writes_ok{kind:treatments}':{'count':0}}
+        metrics={'writes_ok':{'count':2},'writes_uncertain':{'count':0},'writes_ok{kind:entries}':{'count':2},'writes_ok{kind:devicestatus}':{'count':0},'writes_ok{kind:treatments}':{'count':0}}
         class Process:
             pid=12345;returncode=0
             def poll(self):return None
@@ -151,7 +231,7 @@ class Discovery(unittest.TestCase):
         @contextlib.contextmanager
         def ctx(*args):yield
         with contextlib.ExitStack() as stack:
-            for name in ('frozen','quiet','verify','image','verify_generator','readiness','psql','phase_snapshot','enabled_idle','job_record','stop_job','assert_owned'):stack.enter_context(patch.object(a,name))
+            for name in ('frozen','quiet','verify','image','verify_generator','readiness','psql','phase_snapshot','job_record','stop_job','assert_owned','k6_tenants'):stack.enter_context(patch.object(a,name))
             stack.enter_context(patch.object(a.time,'sleep'));stack.enter_context(patch.object(a,'command',side_effect=command));stack.enter_context(patch.object(a,'progress_services',return_value=['evaluator']));stack.enter_context(patch.object(a,'progress_attribution',return_value={}))
             for name in ('sampling','loadgen_process','observe_progress'):stack.enter_context(patch.object(a,name,ctx))
             stack.enter_context(patch.object(a.subprocess,'Popen',side_effect=popen));stack.enter_context(patch.object(a,'stored',side_effect=stored));stack.enter_context(patch('reduce.measurements',side_effect=reduced))
@@ -187,13 +267,13 @@ class Discovery(unittest.TestCase):
         with patch.object(a,'stored',return_value={'a':{'entries':5}}):
             value,known=d.count_observation(a,folder,out,'synthetic',{})
             self.assertFalse(known);self.assertEqual(value['verdict'],'UNMEASURED')
-            with self.assertRaisesRegex(RuntimeError,'WRONG_DATA'):d.count_observation(a,folder,out,'synthetic',{'writes_ok{tenant:a}':{'count':1},'writes_uncertain{tenant:a}':{'count':0}})
+            with self.assertRaisesRegex(RuntimeError,'WRONG_DATA'):d.count_observation(a,folder,out,'synthetic',{'writes_ok':{'count':1},'writes_uncertain':{'count':0}})
         with patch.object(a,'stored',return_value={'foreign':{'entries':1}}):
             with self.assertRaisesRegex(RuntimeError,'TENANT_SCOPE'):d.count_observation(a,folder,out,'synthetic',{})
 
     def test_aggregate_requires_matching_identity_and_no_acceptance_label(self):
-        result,_,_=self.run_recording(p.Refused('M7_EVALUATOR_IDLE_JOB_PENDING'));aggregate={**{k:result[k] for k in ('version','pair','hostIdentity','instrument','imageId','runPurpose','status','capacityAcceptance','profileSelection')},'kind':'m7-joined-discovery','cells':[result]};d.check_discovery(aggregate)
-        broken=copy.deepcopy(aggregate);broken['cells'][0]['instrument']='0'*64
+        result,_,_=self.run_recording(p.Refused('M7_EVALUATOR_PROGRESS_NOT_OBSERVED'));aggregate={**{k:result[k] for k in ('version','pair','hostIdentity','instrument','imageId','runPurpose','status','capacityAcceptance','profileSelection')},'kind':'m7-joined-discovery','cells':[result]};d.check_discovery(aggregate)
+        broken=copy.deepcopy(aggregate);broken['cells'][0]['imageId']='sha256:'+'0'*64
         with self.assertRaisesRegex(RuntimeError,'MIXED_IDENTITY'):d.check_discovery(broken)
         broken=copy.deepcopy(aggregate);broken['capacityAcceptance']='PASS'
         with self.assertRaisesRegex(RuntimeError,'SHAPE'):d.check_discovery(broken)

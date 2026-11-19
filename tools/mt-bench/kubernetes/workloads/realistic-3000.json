@@ -19,18 +19,6 @@
     "ordinaryRosterTenants": 3000,
     "provisionedTenants": 3000
   },
-  "proposedEnvelope": {
-    "clusterLimits": {
-      "ephemeralStorageBytes": 3489660928,
-      "memoryBytes": 3221225472,
-      "millicpus": 2100
-    },
-    "imageCacheReserveBytes": 2147483648,
-    "nativeLimits": {
-      "memoryBytes": 1342177280,
-      "millicpus": 1200
-    }
-  },
   "referencePins": {
     "bindingCommit": "6133f9136c591551344e31c661bb23e0bd113c96",
     "core": "5a94bbaee7f1130b7de8db0f90deae8c4c1e480b",

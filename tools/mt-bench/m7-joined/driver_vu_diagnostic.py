@@ -39,8 +39,6 @@ def selection(args, cadence):
             and args.replicas == 1 and args.tenants == 1000
             and cadence.get('offeredRps') == 180 and cadence.get('loadSeconds') == 310
             and cadence.get('driverShards', 1) == 1 and not cadence.get('workloadMix')
-            and getattr(args, 'node_observation', 'off') == 'off'
-            and getattr(args, 'api_warm_cause', 'off') == 'off'
             and not cadence.get('restartDuringLoadAfterSeconds'),
             'M7_DRIVER_VU_DIAGNOSTIC_SCOPE')
     return {'driverVuDiagnostic': mode}
@@ -303,9 +301,17 @@ def configured_command(a, d, m, base):
 
 
 def markers(path):
-    require(0 < path.stat().st_size <= 4 * 1024 * 1024, 'M7_DRIVER_LOG_BOUND')
-    values = []
-    for line in path.read_text().splitlines():
+    with path.open() as stream:
+        return list(driver_markers(stream))
+
+
+def driver_markers(stream):
+    size = 0
+    for line in stream:
+        if 'm7-input-accepted' in line:
+            continue
+        size += len(line.encode())
+        require(size <= 4 * 1024 * 1024, 'M7_DRIVER_LOG_BOUND')
         # Actual k6 console envelope (and JSON console mode) only, no greedy brace parsing.
         match = re.search(r'\bmsg=("(?:[^"\\]|\\.)*")', line)
         try:
@@ -317,8 +323,7 @@ def markers(path):
         except (ValueError, TypeError, KeyError):
             continue
         if isinstance(v, dict) and str(v.get('event', '')).startswith('driver-'):
-            values.append(v)
-    return values
+            yield v
 
 
 def counter(metrics, name):

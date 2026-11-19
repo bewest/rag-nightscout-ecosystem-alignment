@@ -9,6 +9,8 @@ import tempfile
 import unittest
 import adapter as a
 import static_topology as s
+from test_static_topology import DEPLOY
+E217_CORE = 'e217e7856b0379dd5989992bec106f9c4fd87efb'
 
 CORE=os.environ.get('M7_PROFILE_TEST_CORE')
 COMMIT=os.environ.get('M7_PROFILE_TEST_COMMIT')
@@ -16,7 +18,7 @@ HERE=Path(__file__).parent
 
 
 def manifest():
-    return {'pair':{'core':COMMIT or s.E217_CORE,'deploy':os.environ.get('M7_PROFILE_TEST_DEPLOY_COMMIT',s.DEPLOY)},'profile':'pgstream-sample',
+    return {'pair':{'core':COMMIT or E217_CORE,'deploy':os.environ.get('M7_PROFILE_TEST_DEPLOY_COMMIT',DEPLOY)},'profile':'pgstream-sample',
             'runPurpose':'discovery','pgstreamTopology':'external-service-v1','completionContract':'evaluator-work-v2',
             'replicas':2,'tenants':4,'staticTopology':{'kind':s.KIND,'workers':2}}
 
@@ -46,7 +48,6 @@ class SeedCount(unittest.TestCase):
 
     @unittest.skipUnless(CORE and COMMIT,'owned selected source fixture required')
     def test_actual_ordinary_seed_count_red_restored(self):
-        self.assertIn((COMMIT,manifest()['pair']['deploy']),s.SOURCE_PAIRS)
         self.assertEqual(subprocess.check_output(['git','-C',CORE,'rev-parse','HEAD'],text=True).strip(),COMMIT)
         m=manifest();source=inspect.getsource(a.preparation_environment)
         broken=source.replace("'NS_DEMO_TENANTS': str(m['tenants']),",'')

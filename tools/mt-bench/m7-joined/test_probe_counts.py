@@ -14,7 +14,7 @@ class ProbeCounts(unittest.TestCase):
     def setup(self):
         tmp=tempfile.TemporaryDirectory();self.addCleanup(tmp.cleanup);folder=Path(tmp.name);out=folder/'load';out.mkdir()
         a.write(folder/'tenants.private.json',[{'id':t} for t in ['a','b','c','d']])
-        metrics={'writes_ok':{'count':0},**{'writes_ok{kind:'+k+'}':{'count':0} for k in ('entries','devicestatus','treatments')},**{name+'{tenant:'+t+'}':{'count':0} for t in ('a','b','c','d') for name in ('writes_ok','writes_uncertain')}}
+        metrics={'writes_ok':{'count':0},**{'writes_ok{kind:'+k+'}':{'count':0} for k in ('entries','devicestatus','treatments')},'writes_uncertain':{'count':0}}
         ledger={'version':2,'kind':'m7-discovery-probe-accounting','runId':'synthetic-loopback','roster':['a','b','c','d'],'admissionsClosed':True,'attempts':4,'byTenant':{t:{'attempts':1,'accepted':int(t=='c'),'uncertain':int(t in ('a','b')),'refused':int(t=='d'),'pending':0} for t in ('a','b','c','d')}}
         return folder,out,metrics,ledger
     def observe(self,folder,out,metrics,ledger,stored):
@@ -57,14 +57,13 @@ class ProbeCounts(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'WRONG_DATA'):self.observe(folder,out,metrics,ledger,{'a':{'entries':1},'c':{'probe':1}})
         value,known=self.observe(folder,out,{},ledger,{'c':{'probe':1}});self.assertFalse(known);self.assertGreater(value['missingFieldCount'],0)
     def test_missing_actual_count_field_is_unmeasured_never_fabricated_zero(self):
-        for key in ('writes_ok','writes_ok{tenant:a}','writes_uncertain{tenant:a}','writes_ok{kind:entries}'):
+        for key in ('writes_ok','writes_uncertain','writes_ok{kind:entries}'):
             for row in ({},{'values':{}},{'rate':0},{'values':{'rate':0}}):
                 folder,out,metrics,ledger=self.setup();metrics[key]=row
                 value,known=self.observe(folder,out,metrics,ledger,{'c':{'probe':1}})
                 self.assertFalse(known);self.assertEqual(value['verdict'],'UNMEASURED');self.assertIn(key,value['missingFields'])
-                if key=='writes_ok{tenant:a}':self.assertIsNone(next(r for r in value['rows'] if r['tenant']=='a')['accepted'])
     def test_invalid_actual_counter_refuses_before_query_nested_or_flat(self):
-        for key in ('writes_ok','writes_ok{tenant:a}','writes_uncertain{tenant:a}','writes_ok{kind:entries}'):
+        for key in ('writes_ok','writes_uncertain','writes_ok{kind:entries}'):
             for value in (True,False,1.5,float('inf'),float('-inf'),float('nan'),-1,'0',None,9007199254740992):
                 for nested in (False,True):
                     folder,out,metrics,ledger=self.setup();metrics[key]={'values':{'count':value}} if nested else {'count':value};a.write(out/'probe-accounting.json',ledger)

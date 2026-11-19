@@ -14,12 +14,13 @@ import lifecycle_config
 from kube_adapter import frozen
 from primer_progress import ProgressWindow
 import producer_startup
+import scheduling
 
 
 def scope(**values):
-    values["ProgressWindow"] = ProgressWindow
+    values.update(ProgressWindow=ProgressWindow, scheduling=scheduling, subprocess=subprocess)
     source = Path(__file__).with_name('lifecycle.py')
-    names = {'release_job', 'ready', 'provisioned_count'}
+    names = {'install', 'ready', 'provisioned_count'}
     body = [node for node in ast.parse(source.read_text()).body
             if isinstance(node, ast.FunctionDef) and node.name in names]
     exec(compile(ast.Module(body=body, type_ignores=[]), str(source), 'exec'), values)
@@ -46,25 +47,21 @@ class ProvisionProgress(unittest.TestCase):
         result = lifecycle_config.startup_preflight(intent,env,[job])
         self.assertEqual(result['selectedSeconds']['primerReadySeconds'],4200)
 
-    def test_release_uses_remaining_work_only_for_primer(self):
+    def test_install_starts_jobs_and_bounds_only_the_primer_by_remaining_work(self):
+        # No suspend/deadline patching of a live Job: the stage applies it running.
         for name, bound in (('primer', 24), ('verification', 6)):
-            job = {'kind': 'Job', 'metadata': {'uid': 'owned'},
+            job = {'kind': 'Job', 'metadata': {'name': name, 'namespace': 'ns'},
                    'spec': {'activeDeadlineSeconds': 6, 'suspend': True}}
-            def patch(args):
-                for op in json.loads(args[-1]):
-                    parent, field = op['path'].lstrip('/').split('/')
-                    if op['op'] == 'test':
-                        self.assertEqual(job[parent][field], op['value'])
-                    else:
-                        self.assertEqual(op['op'], 'replace')
-                        job[parent][field] = op['value']
-                return json.dumps(job).encode()
-            env = scope(owned=lambda: None, uids=[{'kind':'Job', 'name':name, 'uid':'owned'}],
-                        get=lambda *_:copy.deepcopy(job), k=patch, ns='ns',
-                        json=json, time=SimpleNamespace(time=lambda:15.2), work=40)
-            env['release_job'](name)
-            self.assertIs(job['spec']['suspend'], False)
-            self.assertEqual(job['spec']['activeDeadlineSeconds'], bound)
+            created = []
+            def create(obj):
+                created.append(obj)
+                return {'kind': obj['kind'], 'metadata': {'name': obj['metadata']['name'], 'uid': 'owned'}}
+            env = scope(owned=lambda: None, uids=[], step=lambda _stage: None, put=lambda *_: None,
+                        objects=lambda _stage: [copy.deepcopy(job)], create=create, ns='ns',
+                        time=SimpleNamespace(time=lambda: 15.2), work=40)
+            env['install'](name)
+            self.assertIs(created[0]['spec']['suspend'], False)
+            self.assertEqual(created[0]['spec']['activeDeadlineSeconds'], bound)
 
     def attempt(self, *, wedged=False, work=32, probe_error=None):
         clock = SimpleNamespace(now=0)
@@ -133,7 +130,8 @@ class ProvisionProgress(unittest.TestCase):
                         if elapsed>=4:status['conditions'].append({'type':'PodScheduled','status':'True'})
                         if elapsed>=8:status['initContainerStatuses'].append({'state':{'terminated':{'exitCode':0}}})
                         if elapsed>=12:status['conditions'].append({'type':'Ready','status':'True'})
-                        return [{'metadata':{'labels':{'nightscout.org/run-id':'run'}},'status':status}]
+                        return [{'metadata':{'uid':'pod','name':name+'-xyz','labels':{'nightscout.org/run-id':'run'}},
+                                 'spec':{'nodeName':'worker'} if elapsed>=4 else {},'status':status}]
                     target=scope(time=clock,work=24,phase_cutoff=None,rid='run',owned=lambda:None,
                         pods=pods,step=lambda *_:None,summary=lambda _:{'uid':'pod','containers':[]},
                         producer_startup=producer_startup,application_topology=application_topology,

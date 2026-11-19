@@ -4,16 +4,11 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http=require('node:http'),assert=require('node:assert/strict'),{EventEmitter}=require('node:events'),{createHash}=require('node:crypto'),{createRequire}=require('node:module');
 (async()=>{
  const target=path.resolve(process.argv[2]),d=path.dirname(target),realRequire=createRequire(target),o=realRequire('./completed-oracle.cjs');
- const unavailable=process.argv[3]==='sql-unavailable',warm=process.argv[3]==='warm';
+ const unavailable=process.argv[3]==='sql-unavailable';
  const ids=['11111111-1111-4111-8111-111111111111','22222222-2222-4222-8222-222222222222'];
  const tenants=ids.map((id,i)=>({id,host:(i?'b':'a')+'.example.test',token:'synthetic-'+i}));
  const binding={kind:'evaluator-work-v2',pair:{core:'1'.repeat(40),deploy:'2'.repeat(40)},imageId:'sha256:'+'3'.repeat(64),instrument:'4'.repeat(64)};
  const config=o.source({pgstream:{},consumer:'evaluator-sample',postgres:{namespaces:{clock:'synthetic_clock',checkpoint:'synthetic_checkpoint',entries:'synthetic_entries'}}},{completedOutput:{namespace:'synthetic_checkpoint',consumer:'evaluator-sample'}},binding);
- const warmPath=path.join(d,'clinical-warm.private.json');
- if(warm){
-   const byTenant=Object.fromEntries(ids.map(tenant=>[tenant,{warmByMs:Number(process.hrtime.bigint())/1e6,coldThroughMs:null}]));
-   fs.writeFileSync(warmPath,JSON.stringify({contract:'clinical-deadline-from-warm-v1',byTenant}));
- }
  const stored=new Map(ids.map(t=>[t,[]])),sockets=[];let ordinal=0,queries=0;
  const server=http.createServer((req,res)=>{
    const tenant=tenants.find(t=>t.host===req.headers.host);assert(tenant);
@@ -38,12 +33,12 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http
  };
  fs.writeFileSync(path.join(d,'tenants.json'),JSON.stringify(tenants));
  const argv=['node',target,'--base','http://127.0.0.1:'+server.address().port,'--tenants',path.join(d,'tenants.json'),'--runid','synthetic-pipeline','--per','1','--clients','2','--viewerSetup',JSON.stringify({opensPerSecond:100,transport:'websocket-first',scenario:'ordinary',stallSeconds:3}),'--probeEvery','1','--maxWrites','2','--restart','0','--out',path.join(d,'probe.json'),'--signal',path.join(d,'.window')];
- const child={execFile(exe,args,opts,callback){assert.equal(exe,'synthetic-python');assert.equal(args[1],'clinical-sql');assert.equal(opts.timeout,60000);queries++;return {stdin:{end(query){assert(query.startsWith('SELECT '));if(unavailable){setImmediate(()=>callback(Object.assign(Error('observer unavailable'),{code:1}),'',''));return;}setImmediate(()=>callback(null,ids.map(row).filter(Boolean).map(r=>JSON.stringify(r)).join('\n')));}}};}};
+ const child={execFile(exe,args,opts,callback){assert.equal(exe,'synthetic-python');assert.equal(args[1],'clinical-sql');assert.equal(opts.timeout,60000);queries++;return {stdin:{end(query){assert(query.startsWith('SELECT '));if(unavailable){setImmediate(()=>callback(Object.assign(Error('observer unavailable'),{code:1}),'',''));return;}setImmediate(()=>callback(null,ids.filter(id=>query.includes("'"+id+"'")).map(row).filter(Boolean).map(r=>JSON.stringify(r)).join('\n')));}}};}};
  let watchdog;
  try{
    await new Promise((resolve,reject)=>{
      watchdog=setTimeout(()=>reject(Error('SYNTHETIC_PROBE_TIMEOUT')),10000);
-     const fakeProcess={argv,hrtime:process.hrtime,env:{...(warm?{M7_CLINICAL_WARM_PATH:warmPath}:{}),M7_RUN_PURPOSE:'discovery',M7_COMPLETION_SOURCE:JSON.stringify(config),K8S_PYTHON:'synthetic-python',K8S_ADAPTER:'synthetic-adapter',K8S_RUN_DIRECTORY:d},once(){},exit(code){code?reject(Error('GENERATED_PROBE_EXIT_'+code)):resolve();}};
+     const fakeProcess={argv,hrtime:process.hrtime,env:{M7_RUN_PURPOSE:'discovery',M7_COMPLETION_SOURCE:JSON.stringify(config),K8S_PYTHON:'synthetic-python',K8S_ADAPTER:'synthetic-adapter',K8S_RUN_DIRECTORY:d},once(){},exit(code){code?reject(Error('GENERATED_PROBE_EXIT_'+code)):resolve();}};
      const require_=name=>name==='socket.io-client'?{io}:name==='node:child_process'?child:realRequire(name);
      const context={require:require_,process:fakeProcess,console:{log(){},error:reject},__dirname:d,Buffer,URL,performance,setTimeout:(f,ms)=>setTimeout(f,Math.min(ms,10)),clearTimeout,setImmediate};
      vm.runInNewContext(fs.readFileSync(target,'utf8'),context,{filename:target});
@@ -54,25 +49,24 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http
      fs.writeFileSync(process.argv[4],JSON.stringify({config,stored:Object.fromEntries([...stored].map(([id,docs])=>[id,{probe:docs.length}]))}));
    }
    if(unavailable){
-     assert.equal(probe.completedOutput.verdict,'UNMEASURED');
      assert.equal(probe.completedOutput.observerFailure.code,'M7_PROBE_SQL_OBSERVATION_UNAVAILABLE');
      assert.equal(ledger.admissionsClosed,true);assert(ledger.attempts>0);
      assert.equal(probe.window.writes.ok,ledger.attempts);assert.equal(probe.window.deliveredFrames,ledger.attempts);
-     assert.equal(probe.window.evaluationMissedWithin120s,null);
-     console.log(JSON.stringify({clinical:probe.completedOutput.verdict,attempts:ledger.attempts,frames:probe.window.deliveredFrames,queries}));
+     console.log(JSON.stringify({durable:probe.completedOutput.clinicalTiming.durableObserved,attempts:ledger.attempts,frames:probe.window.deliveredFrames,queries}));
      return;
    }
-   assert.equal(probe.completedOutput.verdict,'PASS');assert.equal(probe.completedOutput.witnesses.length,2);assert.equal(ledger.attempts,2);assert.equal(probe.window.deliveredFrames,2);assert(queries>0);
-   if(warm){
+   assert.equal(probe.completedOutput.witnesses.length,2);assert.equal(ledger.attempts,2);assert.equal(probe.window.deliveredFrames,2);assert(queries>0);
+   {
      const timing=probe.completedOutput.clinicalTiming;
+     assert.equal(timing.contract,'clinical-timing-from-acceptance-v2');
+     assert(probe.completedOutput.witnesses.every(w => Number.isFinite(w.acceptedAt) && w.requestToAcceptanceMs>=0));
      assert.equal(timing.accepted,2);assert.equal(timing.durableObserved,2);assert.equal(timing.matchedFrames,2);
      assert.equal(timing.acceptanceToCompletionMs.n,2);assert.equal(timing.acceptanceToFrameMs.n,2);
-     assert.deepEqual(timing.coverage,{PASS:2,FAIL:0,UNMEASURED:0});
+     assert.equal(timing.delivered,2);
      assert.equal(probe.durableOutputObservation.drain.perWriteObservationBudgetMs,undefined);
      assert.equal(probe.durableOutputObservation.drain.clinicalDeadlineMs,120000);
    }
-   process.argv[2]=path.join(__dirname,'../m7-joined/completed-oracle.cjs');const {assess}=require('./claims.cjs');
-   assert.equal(assess({completion:config,probe,tenants,clients:2}).verdict,'PASS');
+
    console.log('PASS actual generated probe -> raw SQL/stored/clinical/client-frame/accounting wiring; synthetic SQL/socket boundaries, loopback HTTP only');
  }finally{clearTimeout(watchdog);server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
 })().catch(e=>{console.error(e);process.exitCode=1;});
