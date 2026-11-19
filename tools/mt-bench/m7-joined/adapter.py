@@ -395,24 +395,9 @@ def quiet(d, m, phase, check_load=True):
         require(host["load"][0] <= m["quietLoad"], "M7_HOST_NOT_QUIET")
 
 
-SERIAL_EXCHANGE_DIAGNOSTIC = {'tenants':64, 'phaseSeconds':120, 'requestSeconds':60}
-
-def serial_exchange_selection(args):
-    if not getattr(args, 'serial_exchange_diagnostic', False):return None
-    require(args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery' and args.tenants==3000,
-            'M7_SERIAL_EXCHANGE_DIAGNOSTIC_SCOPE')
-    return dict(SERIAL_EXCHANGE_DIAGNOSTIC)
-
-def serial_exchange_receipt(m, value):
-    require(m.get('serialExchangeDiagnostic') == value.get('serialExchangeDiagnostic'), 'M7_SERIAL_EXCHANGE_DIAGNOSTIC_RECEIPT')
-    if m.get('serialExchangeDiagnostic') is not None:
-        require(m['serialExchangeDiagnostic']==SERIAL_EXCHANGE_DIAGNOSTIC and m.get('profile')=='pgstream-sample' and
-                m.get('runPurpose')=='discovery' and m.get('tenants')==3000 and value.get('status')=='AUTHORIZED_DIAGNOSTIC',
-                'M7_SERIAL_EXCHANGE_DIAGNOSTIC_SCOPE')
-
 def frozen(m,operation):
     require(Path(m["freeze"]).is_file(),"M7_FROZEN_OR_DIAGNOSTIC_RECEIPT_REQUIRED")
-    value=document(m["freeze"]);serial_exchange_receipt(m,value)
+    value=document(m["freeze"])
     if value.get('version')==2 and value.get('kind')=='joined-diagnostic' and m.get('profile')=='pgstream-sample' and m.get('runPurpose')=='discovery' and m.get('prepared'):
         from run_configuration import from_manifest
         require(from_manifest(m)==m.get('runConfiguration'),'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
@@ -576,8 +561,6 @@ def attach(args):
     m={'version':1,'directory':str(target),'owner':uuid.uuid4().hex,'project':args.project,'pair':pair,'instrument':pinned,'image':args.image,'imageId':args.image_id or args.image,'profile':'pgstream-sample','runPurpose':'discovery','measurementMode':'accepted','cadence':cadence_options(args),'tenants':args.tenants,'replicas':args.replicas,'freeze':str(Path(args.freeze).resolve()),'diagnostics':profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000)),'coreRepository':str(Path(args.core_repo).resolve()),'attached':True,'completionContract':getattr(args,'completion_contract',None),'jwtSetupConcurrency':jwt_setup_concurrency(getattr(args,'jwt_setup_concurrency',1), args.run_purpose=='discovery')}
     if getattr(args,'pgstream_topology',stream_topology.COLOCATED)!=stream_topology.COLOCATED:m['pgstreamTopology']=args.pgstream_topology
     m.update(static_selection)
-    selection=serial_exchange_selection(args)
-    if selection is not None:m['serialExchangeDiagnostic']=selection
     require(re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,62}',args.project) and workload_inputs.tenants(args.tenants) and (args.replicas==1 or static_selection),'M7_ATTACH_SCOPE')
     # Current receipts bind semantic configuration before attachment admission.
     # This is provisional read-only metadata; canonical owner/dependency/resource
@@ -640,7 +623,7 @@ def attach(args):
             m['sourceCompose']={str(file):digest(file) for file in [*files,Path(args.env_file).resolve()]}
             m['environmentSha256']=digest(target/'env');write(target/'frozen.compose.json',config);m['composeSha256']=digest(target/'frozen.compose.json')
             shutil.copyfile(HERE/'restart.cjs',target/'restart.cjs');m['restartHelperSha256']=digest(target/'restart.cjs')
-            m['probe']=generate(ROOT,target/'probe.js',serial_exchange=bool(m.get('serialExchangeDiagnostic')));m['workload']=generate_workload(ROOT,target/'k6/workload.js')
+            m['probe']=generate(ROOT,target/'probe.js');m['workload']=generate_workload(ROOT,target/'k6/workload.js')
             m['generator']=attachment_generator(target,source,dependencies,m,getattr(args,'runtime_owner',None))
             if m['generator'].get('runtimeOwner'):
                 runtime=document(args.runtime_owner)
@@ -830,9 +813,6 @@ def prepare(args):
         candidate.update(ack_budget)
         if ack_budget:
             candidate['pgstreamTopology']=args.pgstream_topology
-        selection=serial_exchange_selection(args)
-        if selection is not None:candidate['serialExchangeDiagnostic']=selection
-        serial_exchange_receipt(candidate,document(args.freeze))
         if document(args.freeze).get('version')==2:
             from run_configuration import from_args
             candidate['runConfiguration']=from_args(args,pinned['sha256'])
@@ -868,8 +848,6 @@ def prepare_staged(args,target,pinned):
     m.update(static_topology.option(args))
     if getattr(args,'namespace_preflight',None):m['namespacePreflight']=args.namespace_preflight
     if getattr(args,'dependency_qualification',None) is not None:m['dependencyReuse']=args.dependency_qualification
-    selection=serial_exchange_selection(args)
-    if selection is not None:m['serialExchangeDiagnostic']=selection
     if getattr(args,'pgstream_topology',stream_topology.COLOCATED)!=stream_topology.COLOCATED:m['pgstreamTopology']=args.pgstream_topology
     options=prepare_primer_options(args)
     m["primerConcurrency"]=options['concurrency']
@@ -996,7 +974,7 @@ def prepare_staged(args,target,pinned):
     m["composeSha256"] = digest(target / "frozen.compose.json")
     shutil.copyfile(HERE / "restart.cjs", target / "restart.cjs")
     m["restartHelperSha256"]=digest(target / "restart.cjs")
-    m["probe"] = generate(ROOT, target / "probe.js",serial_exchange=bool(m.get("serialExchangeDiagnostic")))
+    m["probe"] = generate(ROOT, target / "probe.js")
     m["workload"] = generate_workload(ROOT, target / "k6/workload.js")
     write(target / "owner.json", m)
     print(json.dumps({"prepared": m["project"], "pair": m["pair"], "tenants": args.tenants, "replicas": args.replicas}))
@@ -2639,7 +2617,6 @@ def parser():
     prep.add_argument('--generator-dependency-preparation')
     prep.add_argument('--generator-dependency-preparation-sha256')
     prep.add_argument('--generator-dependency-preparation-head')
-    prep.add_argument("--serial-exchange-diagnostic",action="store_true",help="Receipt-selected3k diagnostic only:64 serial exchanges before/after stock priming; no ordinary traffic")
     prep.add_argument("--profile",choices=tuple(CADENCE),default="capacity")
     prep.add_argument('--sockets-per-tenant',type=int)
     prep.add_argument('--viewer-setup', type=json.loads, help='Viewer opening rate, transport, scenario and stall interval')

@@ -4,7 +4,7 @@ from pathlib import Path
 from contract import DISCOVERY_MAX_WORKERS, require
 
 
-def generate(root, target, *, serial_exchange=False, public_traffic_only=False):
+def generate(root, target, *, public_traffic_only=False):
     baseline = Path(root) / "tools/mt-bench/capacity/probe.js"
     source = baseline.read_text()
     old = "const roles = ['api', 'realtime', 'evaluator', 'tenant-admin'];"
@@ -149,40 +149,6 @@ def generate(root, target, *, serial_exchange=False, public_traffic_only=False):
     source=source.replace("    out.restart = restart;\n  }", "    out.restart = restart;\n    }\n  }")
     source=source.replace("  process.exit(0);", "  process.exit(out.sqlObserverFailure && args.restart==='1' ? 1 : 0);")
     source=source.replace("  savePartial();\n  log('window'", "  if(out.sqlObserverFailure)out.window.evaluationMissedWithin120s=null;\n  savePartial();\n  log('window'")
-    if serial_exchange:
-        stock="async function exchange (t) {"
-        require(source.count(stock)==1,'M7_SERIAL_EXCHANGE_STOCK_ANCHOR')
-        source=source.replace(stock,"const serialStockExchange={attempts:0,retryAttempts:0,httpResponses:0,transportFailures:0,statuses:{}};\n"+stock)
-        attempt="    const r = await request('GET', t, '/api/v2/authorization/request/' + encodeURIComponent(t.token), null, 60000);"
-        require(source.count(attempt)==1,'M7_SERIAL_EXCHANGE_STOCK_ATTEMPT_ANCHOR')
-        source=source.replace(attempt,attempt+"\n    serialStockExchange.attempts++;if(k>0)serialStockExchange.retryAttempts++;if(r.status>0)serialStockExchange.httpResponses++;else serialStockExchange.transportFailures++;serialStockExchange.statuses[r.status]=(serialStockExchange.statuses[r.status]||0)+1;")
-        before="  const jwts = new Array(tenants.length);"
-        require(source.count(before)==1,'M7_SERIAL_EXCHANGE_BEFORE_ANCHOR')
-        source=source.replace(before, """  out.diagnosticOnly=true;
-  const serialExchange=require('./serial-exchange-pair.cjs').createActor(args.serialExchangeBinding,args.serialExchangeBindingSha256);
-  out.serialExchangeDiagnostic={selection:{tenants:64,phaseSeconds:120,requestSeconds:60},before:null,after:null,stockExchange:serialStockExchange};
-  try{
-    out.serialExchangeDiagnostic.before=await serialExchange.phase('before');
-    if(out.serialExchangeDiagnostic.before.status!=='COMPLETED_64'){
-      fs.writeFileSync(args.out,JSON.stringify(out,null,2)+'\\n');return;
-    }
-"""+before)
-        release="  fs.writeFileSync(args.signal, String(Date.now()));"
-        require(source.count(release)==1,'M7_SERIAL_EXCHANGE_AFTER_ANCHOR')
-        source=source.replace(release,"""  out.serialExchangeDiagnostic.after=await serialExchange.phase('after');
-  fs.writeFileSync(args.out,JSON.stringify(out,null,2)+'\\n');return;
-"""+release)
-        close="})().catch(e => {"
-        require(source.count(close)==1,'M7_SERIAL_EXCHANGE_CLOSE_ANCHOR')
-        source=source.replace(close,"""  }finally{
-    let serialCleanupFailed=false;
-    try{serialExchange.close();}catch(_){serialCleanupFailed=true;}
-    for(const s of sockets){try{s.socket.close();}catch(_){serialCleanupFailed=true;}}
-    try{agent.destroy();}catch(_){serialCleanupFailed=true;}
-    try{plainAgent.destroy();}catch(_){serialCleanupFailed=true;}
-    if(serialCleanupFailed)throw Error('M7_SERIAL_EXCHANGE_CLEANUP_FAILED');
-  }
-"""+close)
     # Quotient/remainder preserves tenant-major order for legacy per-tenant load.
     def viewers_change(old,new):
         nonlocal source
@@ -197,7 +163,7 @@ def generate(root, target, *, serial_exchange=False, public_traffic_only=False):
     viewers_change("],PER,completionSource)", "],viewers[tenants.findIndex(t=>t.id===e.tenant)],completionSource)")
     viewers_change("out.completedOutput={rosterTenants", "out.completedOutput={clientFrames:{verdict:out.window.expectedFrames===0?'NOT_EXERCISED':evalPending.every(e=>e.completion?.ready)?'PASS':'UNMEASURED'},rosterTenants")
     viewers_change("  log('prime', out.prime);", "  out.viewerBindings=sockets.map((s,socket)=>({socket,tenant:tenants[s.index].id}));\n  log('prime', out.prime);")
-    # Keep the stock polling path for the serial-exchange and historical public
+    # Keep the stock polling path for the historical public
     # calibration actors. Current runners explicitly select the viewer scenario.
     viewers_change("const sockets = [], reasons = {}, pending = new Map();",
                    Path(__file__).with_name('viewer-setup.cjs').read_text() +
@@ -228,9 +194,6 @@ def generate(root, target, *, serial_exchange=False, public_traffic_only=False):
     for name in ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs','probe-accounting.cjs','completed-oracle.cjs','native-observation.cjs','client-delivery.cjs','durable-lag.cjs',*(['clinical-timing.cjs'] if not public_traffic_only else [])):
         data=Path(__file__).with_name(name).read_bytes();target.with_name(name).write_bytes(data)
         helpers[name]=hashlib.sha256(data).hexdigest()
-    if serial_exchange:
-        data=Path(__file__).with_name('serial-exchange-pair.cjs').read_bytes();target.with_name('serial-exchange-pair.cjs').write_bytes(data)
-        helpers['serial-exchange-pair.cjs']=hashlib.sha256(data).hexdigest()
     return {"baseline": str(baseline.relative_to(root)), "baselineSha256": hashlib.sha256(baseline.read_bytes()).hexdigest(),
             "adaptedSha256": hashlib.sha256(target.read_bytes()).hexdigest(), "recoveryHelpers": helpers,
             "changes": ["actual explicit replica restart roster", "bounded v2 exact-instance fresh-owned-window recovery with changed runtime proof", "separate hot/cold tenant write-to-frame distributions", "reject failed or unobserved container restart"]}

@@ -548,64 +548,6 @@ Raw k6 `iterations` and `dropped_iterations` remain distinct; a metric absent
 from the capture stays unmeasured.
 
 
-### Receipt-selected serial exchange diagnostic
-
-`prepare` and `attach` accept `--serial-exchange-diagnostic` only for a3000-tenant
-`pgstream-sample` discovery. The genuine `AUTHORIZED_DIAGNOSTIC` receipt and owner
-manifest must both contain exactly:
-
-```json
-{"serialExchangeDiagnostic":{"tenants":64,"phaseSeconds":120,"requestSeconds":60}}
-```
-
-The existing `run` entry point checks evaluator health and scope.
-It then uses one Node actor and one fixed HTTP-agent configuration to exchange the
-same first64 ordered tenant records before and after the original16-worker JWT
-setup and two-per-tenant stock polling priming. Each phase has a120second budget,
-each request a60second maximum, and the first non200 stops that phase without
-retry. A BEFORE refusal skips stock setup. An AFTER refusal retains the priming
-result. Stock setup retains safe aggregate attempt, retry, HTTP-status and transport
-counts while keeping its original16 workers and retry behavior. Both serial phases
-return diagnostic evidence and close every stock socket and agent.
-
-This route never releases `.window`, sends a probe write, starts k6 or records an
-ordinary310second measurement. The summary remains `PARTIAL`, with
-`diagnosticOnly:true` and `ordinaryTraffic:NOT_RUN`. The ordinary route and its
-default generated probe bytes are unchanged when the flag is absent.
-
-`load/binding.private.json` binds the actual owner/source/image/instrument,
-ordered credential file, actor bytes and Node executable hashes. Both phases
-recheck those inputs. `load/exchange-phases/{before,after}.json` contains bounded
-status, allowlisted error class, tenant index/hash, clock and elapsed observations;
-it contains no returned JWT, credential, raw response body or request URL. Existing
-owned-process/job sampling stays at `load/probe-job.json` and `load/loadgen.jsonl`.
-The selected probe wait is bounded900seconds and remains subject to integration's
-shorter finite deadline; a600second external sampler does not prove coverage of a
-longer diagnostic. No PostgreSQL statistics reset is added between the paired phases.
-The unchanged clinical, source, image, ownership and process guards remain in force.
-
-Bound oneoff launches use `make_binding(..., oneoff_root=..., oneoff_images={'k6': pinned_id})`
-and `checked_oneoff(binding, kind, argv, scope, runner, authorize, journal_file)`.
-The only kinds are `k6-version`, `k6-help` and `k6-load`. `argv` is the existing
-source-generated Docker command. `scope` contains `directory`, attachment `owner`
-and pinned `imageId`. The helper verifies the attachment/project, binds the exact
-command, image defaults, mount and environment layout, prewrites intent, then adds
-the attempt label and exclusive CID file. The optional `oneoff` callback passed to
-`sample_preflight` or `run` covers only these explicit launch sites; it does not
-intercept reads or change generated scripts. Its `stop()` uses `checked_ids` for
-recorded oneoff IDs. Journal cleanup also recovers attempt-qualified live IDs when
-CLI output or capture failed; completed `--rm` absence is allowed.
-
-Remote producer command suffixes use immutable named stages:
-`make_binding(..., run_stages={name: {'epoch': epoch, 'argv': source_tail,
-'sourceFile': producer_path}})`. The source tail starts with
-`--profile ops run`, includes one declared role, and uses the existing bounded run
-options. The producer file hash, exact suffix and semantic command layout are
-sealed. Pass `stage=name`, matching `epoch`, `roles` and `options` to
-`compose_argv` or `checked_run`. Unknown stages, changed source/options/roles and
-namespace overrides refuse before effects. A default service command has no
-suffix. These APIs retain the caller's finite authorization and PID guard.
-
 ### Clinical sender and early-request diagnostic (source qualified)
 
 The clinical completion criterion remains open. This instrument separates the

@@ -191,11 +191,6 @@ def _run_discovery(a,d,m,k6_image,oneoff=None):
         record.observe('readiness',lambda:a.readiness(d,m))
         k6_id=json.loads(a.command(['docker','image','inspect',k6_image]))[0]['Id'];a.write(d/'loadgen-image.json',{'k6':k6_id,'generator':m['generator']})
         if m['profile']=='pgstream-sample':completion,sql_roles=a.sample_preflight(d,m,k6_id,**({'oneoff':oneoff}if oneoff else{}))
-        if m.get('serialExchangeDiagnostic') is not None:
-            serial_exchange_diagnostic(a,d,m,record)
-            record.value.update(status='PARTIAL',diagnosticOnly=True,ordinaryTraffic='NOT_RUN',
-                measurements={'complete':False,'code':'M7_SERIAL_EXCHANGE_DIAGNOSTIC_ONLY'})
-            record.save();check_discovery(record.value);return record.value
         try:
             discovery_load(a,d,m,k6_id,record,**({'oneoff':oneoff}if oneoff else{}))
         finally:
@@ -268,64 +263,6 @@ def retained_results(a, d, m, summary):
         read('viewerFrames', frames)
     return result
 
-
-def serial_exchange_diagnostic(a,d,m,record):
-    """Existing stock probe, selected paired exchange hooks, no ordinary load."""
-    require(m.get('serialExchangeDiagnostic')==a.SERIAL_EXCHANGE_DIAGNOSTIC,'M7_SERIAL_EXCHANGE_DIAGNOSTIC_SCOPE')
-    a.frozen(m,'run');a.verify(d,m);a.image(m);a.verify_generator(d,m);a.assert_owned(m)
-    out=d/'load';out.mkdir();runid='m7-'+m['owner'][:12]
-    spec=m['project']+'|'+str(d/'env')+'|'+str(d/'frozen.compose.json')
-    completion=a.document(d/'completion-source.json')
-    node=m['generator']['tools']['node']
-    binding={'version':1,'kind':'pgstream-serial-exchange-pair-v1','selection':m['serialExchangeDiagnostic'],
-             'owner':m['owner'],'pair':m['pair'],'imageId':m['imageId'],'instrument':m['instrument']['sha256'],
-             'ownerFile':str(d/'owner.json'),'ownerSha256':a.digest(d/'owner.json'),
-             'tenantsFile':str(d/'tenants.private.json'),'tenantsSha256':a.digest(d/'tenants.private.json'),
-             'actorSha256':a.digest(d/'serial-exchange-pair.cjs'),'nodeExecutable':node['path'],'nodeSha256':node['sha256'],
-             'baseUrl':'http://127.0.0.1:'+str(m['port']),'outputDirectory':str(out/'exchange-phases')}
-    binding_path=out/'binding.private.json';a.write(binding_path,binding)
-    env=a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies'),'M7_COMPLETION_SOURCE':json.dumps(completion),
-        'M7_RUN_PURPOSE':'discovery','M7_RESTART_ROLES':json.dumps(m['restartRoles']),
-        'M7_EVALUATOR_SERVICES':json.dumps(a.progress_services(d)),'M7_PROGRESS_PYTHON':a.sys.executable,
-        'M7_PROGRESS_ATTRIBUTION':json.dumps(a.progress_attribution(m)),'STOCK_MS':'300000','RECOVERY_MS':'120000'})
-    argv=[node['path'],str(d/'probe.js'),'--base',binding['baseUrl'],'--tenants',str(d/'tenants.private.json'),
-          '--compose',spec,'--runid',runid,'--clients',str(viewer_plan.total(m)),'--per',str(m['cadence'].get('socketsPerTenant',2)),'--open','5','--window',str(m['cadence']['loadSeconds']),
-          '--probeEvery',str(m['cadence'].get('probeEveryMs',3000)),'--restart','0','--evalTimeout','900',
-          '--out',str(out/'probe.json'),'--signal',str(out/'.window'),
-          '--serialExchangeBinding',str(binding_path),'--serialExchangeBindingSha256',a.digest(binding_path)]
-    a.write(out/'launch.json',{'argv':argv,'diagnosticOnly':True,'serialExchangeDiagnostic':m['serialExchangeDiagnostic'],
-            'bindingSha256':a.digest(binding_path),'ordinaryTraffic':'NOT_RUN','capacityAcceptance':'NOT_GRANTED'})
-    process=None;monitor=None
-    with (out/'probe.log').open('wb')as probe_log,a.sampling(d,out):
-        a.phase_snapshot(d,out,'before')
-        try:
-            process=a.diagnostic_resources.popen(a.subprocess.Popen, argv,env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
-            a.job_record(out/'probe-job.json',process,m['owner'],group=True)
-            monitor=a.loadgen_process(d,process);monitor.__enter__()
-            rc=process.wait(timeout=900)
-            record.value['processes']['probe']={'returncode':rc,'diagnosticOnly':True};record.save()
-            require(rc==0,'M7_SERIAL_EXCHANGE_DIAGNOSTIC_PROCESS_FAILED')
-        finally:
-            if process is not None:
-                a.stop_job(out/'probe-job.json',m['owner']);process.wait(timeout=10)
-            if monitor:monitor.__exit__(None,None,None)
-            a.phase_snapshot(d,out,'after')
-    require(not(out/'.window').exists() and not(out/'k6-summary.json').exists(),'M7_SERIAL_EXCHANGE_ORDINARY_TRAFFIC_RELEASED')
-    probe=a.document(out/'probe.json')
-    require(probe.get('diagnosticOnly') is True and isinstance(probe.get('serialExchangeDiagnostic'),dict),
-            'M7_SERIAL_EXCHANGE_DIAGNOSTIC_RESULT')
-    require(not probe.get('hardFailure') and not probe.get('failure'),'M7_SERIAL_EXCHANGE_DIAGNOSTIC_HARNESS_FAILURE')
-    observed=probe['serialExchangeDiagnostic'];before=observed.get('before');after=observed.get('after')
-    statuses=('COMPLETED_64','HTTP_REFUSED','TRANSPORT_FAILURE','PHASE_DEADLINE')
-    require(isinstance(before,dict) and before.get('status') in statuses and
-            (isinstance(after,dict) and after.get('status') in statuses if before['status']=='COMPLETED_64' else after is None),
-            'M7_SERIAL_EXCHANGE_DIAGNOSTIC_PHASES')
-    record.value['probe']=probe
-    record.value['serialExchangeDiagnostic']={'selection':m['serialExchangeDiagnostic'],'before':before,'after':after,
-         'priming':probe.get('prime'),'bindingSha256':a.digest(binding_path),'ordinaryTraffic':'NOT_RUN',
-         'scope':'Matched Node64serial exchange phases around original stock-client setup; no full k6 setup or ordinary310second result'}
-    record.value['strictChecks']['serialExchangeDiagnostic']={'verdict':'UNMEASURED','code':'M7_SERIAL_EXCHANGE_DIAGNOSTIC_ONLY','hardFailure':False}
-    record.save()
 
 def discovery_load(a,d,m,k6_id,record,oneoff=None):
     out=d/'load';out.mkdir();runid='m7-'+m['owner'][:12];(out/'runid').write_text(runid)

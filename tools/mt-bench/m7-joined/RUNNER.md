@@ -1160,8 +1160,8 @@ clinical intake timeline and sender trace, the runtime source-access census,
 pool diagnostics, component profiles, the query-wrapper bench, `campaign.py`,
 `smoke.py` (use `tier_smoke.py`), `qualify_driver_config.py`, the Kubernetes
 `examples.py` and the workload `qualify.py` and `loopback.py`, and the
-`--population-ceiling` option of the Compose path. The API cause, warm-cause and
-serial-exchange discriminators remain until their last users finish.
+`--population-ceiling` option of the Compose path. The API cause discriminator remains until its last users finish; the warm-cause and
+serial-exchange discriminators were removed on 2026-11-19.
 
 For a cold standard point, `runner.py run CONFIG CASE --standard-case` creates
 a fresh directory with `result.json`, `cleanup.json` and `raw/`. The same
