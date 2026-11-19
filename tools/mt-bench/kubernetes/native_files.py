@@ -51,8 +51,7 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
                             'native-artifacts.cjs': (k.HERE / 'native-artifacts.cjs').read_text(),
                             'export.json': json.dumps(config)}
     env = {row['name']: row['value'] for row in container['env']}
-    launch = {name: env.pop(name) for name in ('RUN_START','M7_SETUP_SECONDS','M7_SETUP_UNTIL_MS')}
-    secret['stringData']['launch.env'] = ''.join('export '+name+'='+value+'\n' for name,value in sorted(launch.items()))
+    secret['stringData']['launch.env'] = 'export RUN_START='+env.pop('RUN_START')+'\n'
     env.update(driver.configured_environment(manifest))
     # Persisted configuration sorts object keys. Keep this JSON-valued env
     # byte-identical across reloads so exact Job declaration checks remain valid.

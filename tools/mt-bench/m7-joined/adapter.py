@@ -58,14 +58,14 @@ def jwt_setup_concurrency(value, discovery=False):
     return value
 
 
-def k6_tenants(d, m):
+def k6_tenants(d, m, deadline=None):
     """Exchange every tenant's JWT once, before k6 starts (bounded by jwtSetupConcurrency)."""
     import jwt_tenants
     concurrency = jwt_setup_concurrency(m.get("jwtSetupConcurrency", 1), m.get('runPurpose') == 'discovery')
     roster = document(d/"tenants.private.json")
     # Ids only (no credentials): the assessor's roster after cleanup removes the private files.
     write(d/"load"/"roster.json", [row["id"] for row in roster])
-    rows = jwt_tenants.attach(roster, "http://127.0.0.1:" + str(m["port"]), concurrency)
+    rows = jwt_tenants.attach(roster, "http://127.0.0.1:" + str(m["port"]), concurrency, deadline=deadline)
     return jwt_tenants.write(d/"load"/"k6-tenants.private.json", rows)
 
 
@@ -622,7 +622,7 @@ def prepare_image_inputs(args):
     if args.profile!='pgstream-sample' or getattr(args,'run_purpose','acceptance')!='discovery':return None
     options=prepare_primer_options(args)
     primer_raw=None
-    if primer_options.requires_extended(options):
+    if primer_options.requires_extended(options) and not git(args.core_repo,'ls-tree','--name-only',args.core_commit,'lib/server/serve/deployment-settings.js'):
         primer_raw=command(['git','-C',args.deploy_repo,'show',args.deploy_commit+':'+primer_options.SOURCE_PATH],binary=True)
         primer_options.require_source(options,primer_options.source_protocol(primer_raw),primer_need)
     selected=image({'pair':{'core':args.core_commit,'deploy':args.deploy_commit},'image':args.image,

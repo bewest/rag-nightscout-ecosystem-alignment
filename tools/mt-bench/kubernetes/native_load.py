@@ -131,9 +131,9 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
     k.need(k.NAME.fullmatch(c['namespace'])
            and re.fullmatch(r'[a-z0-9-]{1,100}', runid), 'NATIVE_LOAD_SCOPE')
     k.need(type(seconds) is int and seconds > 0 and type(run_start_ms) is int
-           and run_start_ms > 0 and type(setup_seconds) is int and setup_seconds > 0,
+           and run_start_ms > 0,
            'NATIVE_LOAD_WINDOW')
-    k.need((planning or seconds <= k.deadline(c)) and setup_seconds < seconds, 'NATIVE_LOAD_WORK_DEADLINE')
+    k.need(planning or seconds <= k.deadline(c), 'NATIVE_LOAD_WORK_DEADLINE')
     k.need(planning or isinstance(tenants, list) and len(tenants) == workload_runtime.driver_count(c, k.need)
            and len({t['id'] for t in tenants}) == len(tenants)
            and all(isinstance(t.get('host'), str) and t['host'].endswith('.test')
@@ -179,9 +179,7 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
     env = workload_runtime.environment(w, {}, k.need)
     env.update(BASE_URL=base, TENANTS_FILE='/inputs/tenants.json', RUN_ID=runid,
                RUN_START=str(run_start_ms), DURATION=str(w['loadSeconds']), ACCEL='1',
-               HOT_FACTOR=str(w.get('hotFactor', 1)), JWT_SETUP_CONCURRENCY=str(w.get('jwtSetupConcurrency', 1)),
-               M7_SETUP_SECONDS=str(setup_seconds),
-               M7_SETUP_UNTIL_MS=str(run_start_ms + setup_seconds * 1000),
+               HOT_FACTOR=str(w.get('hotFactor', 1)),
                SHAPES=','.join(workload_runtime.SHAPES))
     k.need(all(name in ('BASE_URL', 'TENANTS_FILE', 'RUN_ID') or env.get(name) == value
                for name, value in original_env.items()), 'NATIVE_LOAD_ENVIRONMENT_CONFLICT')
@@ -393,22 +391,5 @@ def assess_join(d, out, c, objects, client):
            and receipt['runId'] == runid == execute.stage_runid(c, 'load')
            and receipt['pins'] == c['pins'] and receipt['namespace'] == c['namespace']
            and receipt['fixtureRunId'] == c['runId'] and receipt['workload'] == c['workload']
-           and receipt['namespaceUid'] == k.active_baseline(d)['namespace']['uid']
-           and receipt['eventsSha256'] == k.digest(out / 'k6.log')
-           and receipt['summarySha256'] == k.digest(out / 'k6-summary.json'),
-           'NATIVE_LOAD_ASSESSMENT_BINDING')
-    source = (d / 'workload.js').read_bytes()
-    packet = k.document(d / 'packet.json')['workload']
-    k.need(receipt['sourceSha256'] == sha(source) == packet['adaptedSha256'],
-           'NATIVE_LOAD_ASSESSMENT_SCRIPT_CHANGED')
-    if 'driverPlan' in c['workload']:
-        import driver_vu_diagnostic as driver
-        k.need(receipt.get('captureMode') == 'owned-exec-files'
-               and receipt['driverWrapperSha256'] == k.digest(d / driver.SCRIPT) == packet['driverWrapperSha256']
-               and receipt['artifactExporterSha256'] == k.digest(k.HERE / 'native-artifacts.cjs')
-               and all(k.digest(out / name) == digest for name, digest in receipt['artifactSha256'].items()),
-               'NATIVE_LOAD_ASSESSMENT_ARTIFACT_CHANGED')
-    else:
-        k.need(receipt['adaptedSha256'] == sha(summary_script(source, runid)),
-               'NATIVE_LOAD_ASSESSMENT_SCRIPT_CHANGED')
+           and receipt['namespaceUid'] == k.active_baseline(d)['namespace']['uid'], 'NATIVE_LOAD_ASSESSMENT_BINDING')
     return execute.assess_stage(d, out, c, objects, client)

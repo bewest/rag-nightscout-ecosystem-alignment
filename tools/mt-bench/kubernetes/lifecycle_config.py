@@ -79,7 +79,7 @@ def fixture_config(path, capture=False):
     need(c.get('version')==1 and set(c)<=FIELDS, 'CONFIGURATION')
     for key in ('caseDirectory','instrumentDirectory','bindingDirectory','toolsDirectory','coreRepository'):
         need(Path(c[key]).is_absolute() and Path(c[key]).is_dir(), 'DIRECTORY')
-    for key in ('k6','readonlyGuard','observerScript'):
+    for key in ('k6','readonlyGuard'):
         need(Path(c[key]).is_absolute() and Path(c[key]).is_file(), 'TOOL')
     need(helper_directory(c) == Path(__file__).resolve().parent, 'INSTRUMENT_DIRECTORY_MISMATCH')
     if capture:
@@ -173,7 +173,7 @@ def fixture_config(path, capture=False):
              contract.get(population_ceiling.PROTOCOL_FIELD)==population_ceiling.PROTOCOL,
              'POPULATION_BINDING_CHANGED')
         population_preflight={'selection':population,'sourceProtocol':population_ceiling.PROTOCOL}
-    files += [Path(c[key]) for key in ('k6','readonlyGuard','observerScript')]
+    files += [Path(c[key]) for key in ('k6','readonlyGuard')]
     files += [Path(c['toolsDirectory'])/'kubectl']
     files += [Path(__file__).with_name(n) for n in ('lifecycle_config.py','lifecycle.py','attach.py')]
     if capture:

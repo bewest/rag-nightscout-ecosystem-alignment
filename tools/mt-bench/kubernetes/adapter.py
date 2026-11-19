@@ -734,64 +734,9 @@ def stored(d, c, objects, runid, client=None):
     return values
 
 
-def probe_sql_bridge():
-    """Retain bounded failure metadata without SQL, argv or child output."""
-    return r"""const psqlAsync = sql => new Promise((resolve,reject)=>{
-  const began=performance.now();
-  const child=execFile(process.env.K8S_PYTHON,[process.env.K8S_ADAPTER,'clinical-sql',process.env.K8S_RUN_DIRECTORY],
-    {encoding:'utf8',timeout:60000,maxBuffer:32<<20},(err,stdout,stderr)=>{
-      if(!err)return resolve(stdout);
-      const nodeErrorCode=typeof err.code==='string'&&/^ERR_[A-Z_]{1,80}$/.test(err.code)?err.code:null;
-      const value={version:1,verdict:'UNMEASURED',code:'M7_PROBE_SQL_OBSERVATION_UNAVAILABLE',
-        reason:nodeErrorCode==='ERR_CHILD_PROCESS_STDIO_MAXBUFFER'?'OUTPUT_BOUND':err.killed?'TIMEOUT':'CHILD_EXIT',
-        exitCode:Number.isInteger(err.code)?err.code:null,nodeErrorCode,
-        signal:typeof err.signal==='string'&&/^[A-Z0-9]{1,24}$/.test(err.signal)?err.signal:null,
-        timeoutMs:60000,wallMs:performance.now()-began,
-        stdoutBytes:Buffer.byteLength(stdout||''),stderrBytes:Buffer.byteLength(stderr||''),
-        childReportedCodes:[...new Set((stderr||'').match(/\b(?:K8S|M7)_[A-Z_]{1,88}\b/g)||[])].slice(0,16)};
-      // The first transport failure is evidence; later callbacks cannot replace it.
-      // A diagnostic write failure must never turn the failed read into success.
-      try{fs.writeFileSync(path.join(signalDir,'sql-observation-failure.json'),
-        JSON.stringify(value)+'\n',{mode:0o600,flag:'wx'});}catch{}
-      reject(Error(value.code));
-    });
-  child.stdin.end(sql);
-});
-"""
-
-
 def generate_probe(target):
-    result = probe.generate(ROOT, target)
-    source = Path(target).read_text()
-    old = "const [project, envFile, ...composeFiles] = args.compose.split('|');\nconst composeArgs = ['compose', '-p', project, '--env-file', envFile, ...composeFiles.flatMap(f => ['-f', f])];"
-    need(source.count(old) == 1, 'PROBE_COMPOSE_ANCHOR_CHANGED')
-    source = source.replace(old, "if(args.restart!=='0'||!process.env.M7_COMPLETION_SOURCE)throw Error('K8S_PROBE_BOUNDARY');")
-    start = source.index('const psqlAsync =')
-    end = source.index('const pct =', start)
-    source = source[:start] + probe_sql_bridge() + source[end:]
-    # Do not emulate Docker health/restart. Kubernetes role restart is a distinct
-    # operator command while the ordinary stock probe remains connected.
-    start = source.index("  if (args.restart === '1') {")
-    end = source.index('  if(completionSource){oracleCost.observationEndMono', start)
-    source = source[:start] + source[end:]
-    anchor = "const sockets = [], reasons = {}, pending = new Map();"
-    need(source.count(anchor) == 1, 'PROBE_FRAME_ANCHOR_CHANGED')
-    source = source.replace(anchor, "const kubernetesFrames={rows:[],overflow:false};\n" + anchor)
-    anchor = "const at = Date.now(); s.frames.push(at);"
-    need(source.count(anchor) == 1, 'PROBE_FRAME_ANCHOR_CHANGED')
-    source = source.replace(anchor, anchor + "\n    if(kubernetesFrames.rows.length<4096){const ids=(frame?.sgvs||[]).slice(0,1024).map(v=>String(v._id));if((frame?.sgvs||[]).length>1024)kubernetesFrames.overflow=true;kubernetesFrames.rows.push({tenant:t.id,socket:sockets.indexOf(s),ids,at});}else kubernetesFrames.overflow=true;")
-    anchor = "e.completion=result;"
-    need(source.count(anchor) == 1, 'PROBE_CLINICAL_ANCHOR_CHANGED')
-    source = source.replace(anchor, anchor + "e.rawRow=row;")
-    anchor = "requestStartedAt:e.sent,...e.completion"
-    need(source.count(anchor) == 1, 'PROBE_CLINICAL_ANCHOR_CHANGED')
-    source = source.replace(anchor, "requestStartedAt:e.sent,clientProofVersion:e.clientProofVersion,expectedSockets:e.expectedSockets,sentMono:e.sentMono,rawRow:e.rawRow,clientObservations:[...(pending.get(e.tenant+':'+e.date)?.clientFrames?.values()||[])],...e.completion")
-    anchor = "oracleCost.observationEndMono=performance.now();"
-    need(source.count(anchor) == 1, 'PROBE_CLINICAL_ANCHOR_CHANGED')
-    source = source.replace(anchor, "out.kubernetesFrames=kubernetesFrames;" + anchor)
-    need("execFile('docker'" not in source and 'composeArgs' not in source, 'DOCKER_EXECUTION_REMAINED')
-    Path(target).write_text(source)
-    return {**result, 'kubernetesSha256': digest(target), 'restart': 'external exact-role operator action; no Docker health equivalence'}
+    result = probe.generate(ROOT, target, transport=HERE/'probe-kubernetes.cjs')
+    return {**result, 'kubernetesSha256': digest(target), 'restart': 'external role restart'}
 
 
 def prepare(config, inventory_file, render_file, directory):

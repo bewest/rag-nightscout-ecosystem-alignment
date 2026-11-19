@@ -52,31 +52,25 @@ try:
     cfg['baseUrl']='http://127.0.0.1:'+match[1]
     import fixture
     import kube_adapter as k
-    import commissioning_context
     private = live/'fixture'
     location = m['primerLocation']
     if location == 'claim':
         inv = read(d/'inventory.json')
         primer = next(obj for obj in k.manifests(read(d/'render.json')) if k.key(obj)=='Job/primer')
-        tenants = fixture.claim_roster(kub, primer, inv, private, cfg['tenants'], until)
+        tenants, reuse = fixture.claim_roster(kub, primer, inv, private, cfg['tenants'], until)
     else:
+        reuse = 'fresh'
         tenants = fixture.controller_roster(kub, control['candidate']['appImageId'], core, private,
                                            cfg['tenants'], control['primerConcurrency'], until)
     cfg['tenantsFile'] = str(private/'data-roster.private.json')
     write(Path(cfg['tenantsFile']), tenants)
-    write(live/'fixture.json', {'location':location,'reuse':'fresh','tenants':len(tenants)})
+    write(live/'fixture.json', {'location':location,'reuse':reuse,'tenants':len(tenants)})
     instance={'config':str(live/'input.json'),'inventory':str(d/'inventory.json'),'render':str(d/'render.json'),
               'binding':control['bindingDirectory']}
     write(live/'instance.json',instance)
-    def sample(role):
-        target = cfg['roles'][role]
-        script = (K.parent/'m7-joined/settings-context.cjs').read_bytes()
-        return json.loads(subprocess.check_output([*kub, 'exec', '-i', target['workload'], '-c', target['container'],
-                                      '--','node','-',role],input=script,timeout=30))
     selected = control['candidate']
     pair = {'core':selected['coreCommit'], 'deploy':selected['deployCommit']}
-    cfg['completion'] = commissioning_context.completion(sample('evaluator'), sample('realtime'), pair,
-                                                          selected['appImageId'], k.instrument()['sha256'])
+    cfg['completion'] = fixture.completion(kub,cfg['roles'],pair,selected['appImageId'],k.instrument()['sha256'])
     write(live/'input.json',cfg)
     execute('prepare',exp+['prepare',d/'intent.json',live/'instance.json',packet])
     execute('observe',ad+['observe',packet])

@@ -75,7 +75,7 @@ The [source contract](../../../tools/mt-bench/m7-joined/README.md) owns the prec
 current format and bounds. Implementation and controls:
 [count proof](../../../tools/mt-bench/m7-joined/discovery_counts.py),
 [probe ledger](../../../tools/mt-bench/m7-joined/probe-accounting.cjs),
-[generated adaptation](../../../tools/mt-bench/m7-joined/probe_discovery.py),
+[joined probe](../../../tools/mt-bench/m7-joined/joined-probe.cjs),
 [count controls](../../../tools/mt-bench/m7-joined/test_probe_counts.py),
 [discovery producer controls](../../../tools/mt-bench/m7-joined/test_discovery.py),
 typed classification controls (`tools/mt-bench/m7-joined/test_discovery_classification.py`, deleted 2026-11-19 in `70330f8eae`).

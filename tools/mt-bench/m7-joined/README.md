@@ -187,22 +187,19 @@ python3 tools/mt-bench/m7-joined/adapter.py run /absolute/private/m7-cell --k6-i
 python3 tools/mt-bench/m7-joined/adapter.py down /absolute/private/m7-cell
 ```
 
-`build` is unnecessary when the matching image already exists. Docker's resolved
-k6 image ID is recorded and used for execution. No floating tag runs after pinning.
-`prepare` stages local source/TLS/config and installs the owned lockfile dependencies before source helpers execute; it sends no performance traffic.
-It accepts explicit diagnostic seed counts1..10000; campaign ladders constrain
-the performance steps. Binding preparation must expose committed
-`primer provision`/`primer prime`, and either private `primer/tenants.json` or
-`ops/tenants.json` with exact `{version:1,tenants:[{id,host,dataToken,...}]}`.
-Conflicting outputs, legacy `token` fields or missing tokens refuse. Provisioning
-uses the private admin API; restore commissioning precedes API priming, and a
-private local publisher completes custody before remaining roles start. Seeding
-uses DATA APIs. There is no direct tenant-row
-or Vault seeding in the campaign adapter.
+The joined deployment starts admin and serving roles through Compose's completed bootstrap dependency.
+The lab client provisions through the private admin API and primes through DATA APIs. The harness reads
+its private `primer/tenants.json` and exchanges DATA tokens before starting k6.
+
+Set `prepare.fixture-snapshot` to the absolute path of a cold fixture produced by the deployment's
+`demo.sh snapshot` to restore its PostgreSQL, Vault, private settings and primer state into a fresh
+Compose project. The runner records the completed restore in `fixture-restore.json`. Select a fixture
+with the baseline tenant population you intend to exercise. Vary the workload or viewers in each run.
 
 ## Instrument
 
-The source manifest hashes every adapter file and every reused tracked instrument.
+The run records the alignment commit and candidate image identities. Compose and Kubernetes execute
+the same [joined probe](joined-probe.cjs) with their respective SQL transports.
 The existing `capacity/k6/workload.js` supplies seven client shapes: CGM
 entry and Loop devicestatus uploaders, AAPS-style v3 treatments, and follower
 entry/devicestatus/treatment/status reads. The generated workload records two explicit adaptations: current deterministic

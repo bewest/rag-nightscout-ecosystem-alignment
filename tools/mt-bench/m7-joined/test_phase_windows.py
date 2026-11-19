@@ -90,15 +90,14 @@ class PhaseWindows(unittest.TestCase):
         calls,m,captured=self.launch_window(2000)
         self.assertNotIn('--setupSeconds', calls['probe'])
         self.assertEqual(json.loads(calls['probe'][calls['probe'].index('--viewerSetup')+1])['stallSeconds'], 300)
-        self.assertIn('M7_SETUP_SECONDS=900',calls['k6'])
-        self.assertAlmostEqual(calls['timeout'],1235,delta=.1)
+        self.assertFalse(any('M7_SETUP_' in arg for arg in calls['k6']))
+        self.assertAlmostEqual(calls['timeout'],335,delta=.1)
         self.assertEqual(calls['waits'][0],600)
         self.assertEqual(windows.drain_seconds(m,captured,350_000_000_000),450)
         bounded,_,_=self.launch_window(3)
         self.assertLessEqual(bounded['timeout'],3)
         self.assertLessEqual(bounded['waits'][0],3)
-        setup=int(next(x.split('=')[1] for x in bounded['k6'] if x.startswith('M7_SETUP_SECONDS=')))
-        self.assertGreaterEqual(setup,1);self.assertLessEqual(setup,3)
+        self.assertFalse(any('M7_SETUP_' in arg for arg in bounded['k6']))
 
     def test_observer_budgets_follow_window_and_population_and_can_be_overridden(self):
         defaults={'version':1,'maxRounds':16,'maxQueries':1024,'maxBytes':67108864,'roundSeconds':20}

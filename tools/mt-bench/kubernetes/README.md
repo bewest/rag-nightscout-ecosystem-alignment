@@ -954,3 +954,15 @@ are published beside `raw/`. The native receipt includes the namespace,
 labelled cluster trust, host unit and port-forward observations. The load
 report retains scheduling drops, per-executor start times and attributable
 actor transitions alongside the independently judged product components.
+
+The joined disposable binding uses `secrets.sh seed`, waits for the provision Job and role readiness,
+then runs the deployment image's lab client through bounded loopback forwards to admin and API. A private
+controller directory holds the lab credentials. The resulting DATA-only roster drives the workload.
+
+For a cold CSI fixture, commission matching claims and Secrets with the deployment's fixture runbook.
+Use `experiment.py prepare INTENT INSTANCE NEW_PACKET --existing-fixture` on the running, operator-owned
+namespace. The instance selects that namespace, its run label, the rendered inventory and the workload's
+ordinary edge endpoint. Preparation projects DATA credentials from the existing results claim and the
+SQL reader settings from the running roles. The namespace stays with its owner. The resulting packet
+uses the ordinary observe, access and bounded run commands. Four bound native snapshot/clone claims
+identify restored fixture reuse.

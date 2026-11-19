@@ -12,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import time
 import urllib.parse
 import urllib.request
 
@@ -31,10 +32,15 @@ def exchange(base, row, timeout=60):
     return token
 
 
-def attach(rows, base, concurrency=1, *, timeout=60):
+def attach(rows, base, concurrency=1, *, timeout=60, deadline=None):
     """Return the rows with a `jwt` field, in roster order."""
+    def token(row):
+        seconds = min(timeout, deadline-time.time()) if deadline is not None else timeout
+        if seconds <= 0:
+            raise TimeoutError('M7_JWT_SETUP_DEADLINE')
+        return exchange(base, row, seconds)
     with ThreadPoolExecutor(max_workers=max(1, min(int(concurrency), len(rows) or 1))) as pool:
-        tokens = list(pool.map(lambda row: exchange(base, row, timeout), rows))
+        tokens = list(pool.map(token, rows))
     return [{**row, 'jwt': token} for row, token in zip(rows, tokens)]
 
 

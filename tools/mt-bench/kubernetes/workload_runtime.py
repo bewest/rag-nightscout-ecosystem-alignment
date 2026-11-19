@@ -5,7 +5,7 @@ import viewer_plan
 
 SHAPES = dict(w_sgv=1, w_devicestatus=1, w_treatments_v3=1,
               r_sgv=5, r_devicestatus=1, r_treatments=1, r_status=1)
-SELECTORS = ('OFFERED_RPS', 'M7_WORKLOAD_MIX', 'M7_WORKLOAD_SCALE', 'JWT_SETUP_CONCURRENCY')
+SELECTORS = ('OFFERED_RPS', 'M7_WORKLOAD_MIX', 'M7_WORKLOAD_SCALE')
 
 
 def ordinary_count(provisioned, selected, need):
@@ -90,12 +90,10 @@ def environment(w, inherited, need):
     # silently inherit, round or substitute a different workload selection.
     selected = ({'M7_WORKLOAD_MIX': w['workloadMix'], 'M7_WORKLOAD_SCALE': str(w.get('workloadScale', 1))}
                 if 'workloadMix' in w else {'OFFERED_RPS': str(w['offeredRps'])})
-    if 'jwtSetupConcurrency' in w or 'JWT_SETUP_CONCURRENCY' in inherited:
-        selected['JWT_SETUP_CONCURRENCY'] = str(w.get('jwtSetupConcurrency', 1))
     for key in SELECTORS:
         need(key not in inherited or key in selected and inherited[key] == selected[key],
              'WORKLOAD_ENVIRONMENT_CONFLICT')
-    env = {key: value for key, value in inherited.items() if key not in SELECTORS}
+    env = {key: value for key, value in inherited.items() if key not in SELECTORS and key != 'JWT_SETUP_CONCURRENCY'}
     env.update(selected)
     return env
 
