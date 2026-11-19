@@ -54,6 +54,7 @@ import collection_segments
 import vault_refusal
 import workload_inputs
 import primer_options
+from primer_progress import ComposePrimerWait
 import phase_windows
 BASE = ROOT / "tools/mt-bench/compose-baseline"
 REUSED = ["tools/mt-bench/capacity/probe.js", "tools/mt-bench/capacity/k6/workload.js",
@@ -125,7 +126,7 @@ def private_output(path, limit):
     return data, {'observedBytes':size,'retainedBytes':len(data),'truncated':size>len(data),'retention':'tail' if size>len(data) else 'complete'}
 
 
-def _command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, binary=False, phase=None):
+def _command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, binary=False, phase=None, wait_for_primer=None):
     # Raw output belongs only in private phase artifacts; never argv/env in
     # public exceptions. Capture begins before prepared=true or state exists.
     timeout=remaining_seconds(timeout)
@@ -134,16 +135,17 @@ def _command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, bi
     if capture is not None:
         capture['sequence']+=1
         prefix=capture['directory']/(str(capture['sequence']).zfill(4)+'-'+Path(str(argv[0])).name)
+    run = wait_for_primer or subprocess.run
     result=None;failure=None;stdout=b'';stderr=b'';output_counts={}
     try:
         if prefix is None:
-            result=subprocess.run([str(a) for a in argv],cwd=cwd,env=runtime_env() if env is None else env,input=input,
+            result=run([str(a) for a in argv],cwd=cwd,env=runtime_env() if env is None else env,input=input,
                                   stdout=file or subprocess.PIPE,stderr=subprocess.STDOUT if file else subprocess.PIPE,timeout=timeout)
             stdout=result.stdout or b'';stderr=result.stderr or b''
         else:
             with prefix.with_suffix('.stdout').open('wb') as out,prefix.with_suffix('.stderr').open('wb') as err:
                 prefix.with_suffix('.stdout').chmod(0o600);prefix.with_suffix('.stderr').chmod(0o600)
-                result=subprocess.run([str(a) for a in argv],cwd=cwd,env=runtime_env() if env is None else env,input=input,stdout=out,stderr=err,timeout=timeout)
+                result=run([str(a) for a in argv],cwd=cwd,env=runtime_env() if env is None else env,input=input,stdout=out,stderr=err,timeout=timeout)
             stdout,output_counts['stdout']=private_output(prefix.with_suffix('.stdout'),capture.get('maxOutputBytes'))
             stderr,output_counts['stderr']=private_output(prefix.with_suffix('.stderr'),capture.get('maxOutputBytes'))
             if file:file.write(stdout);file.write(stderr)
@@ -180,7 +182,7 @@ def diagnostic_resource_rows(m):
     return rows
 
 
-def command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, binary=False, phase=None):
+def command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, binary=False, phase=None, wait_for_primer=None):
     selected_env = runtime_env() if env is None else env
     if _CLEANUP_NODE_LIMIT.get() and argv and Path(str(argv[0])).name=='node':
         # Teardown must not acquire the diagnostic driver lock or a new actor
@@ -190,7 +192,7 @@ def command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, bin
     role = 'generator' if phase in ('product-prepare', 'generator-client-preflight','completed-oracle') else 'helper'
     if diagnostic_resources._ACTIVE is not None and list(map(str,argv[:2]))==['docker','run']:argv=bounded_k6_argv(argv)
     with diagnostic_resources.command(argv, selected_env, role) as (bounded_argv, bounded_env):
-        return _command(bounded_argv, cwd=cwd, env=bounded_env, input=input, file=file, timeout=timeout, binary=binary, phase=phase)
+        return _command(bounded_argv, cwd=cwd, env=bounded_env, input=input, file=file, timeout=timeout, binary=binary, phase=phase, wait_for_primer=wait_for_primer)
 
 
 def bounded_k6_argv(argv):
@@ -289,7 +291,7 @@ def load(directory, *, resource_limits=True):
     return d, m
 
 
-def compose(d, *args, file=None, input=None, timeout=120):
+def compose(d, *args, file=None, input=None, timeout=120, wait_for_primer=None):
     if diagnostic_resources._ACTIVE is not None:
         args=list(args);i=0
         while i<len(args) and args[i]=='--profile':i+=2
@@ -308,7 +310,7 @@ def compose(d, *args, file=None, input=None, timeout=120):
         except RuntimeError as error:
             resource_cpu_failure(error)
             raise
-    return command(argv, file=file, input=input, timeout=timeout)
+    return command(argv, file=file, input=input, timeout=timeout, wait_for_primer=wait_for_primer)
 
 
 def resources(m, all_containers=True):
@@ -1452,16 +1454,20 @@ def deploy(d, m):
     if m.get("postgresImageId"):
         pg=json.loads(command(["docker","image","inspect",m["postgresImageId"]]))[0]
         require(pg["Id"]==m["postgresImageId"] and config["services"]["postgres"]["image"]==pg["Id"],"M7_POSTGRES_IMAGE_CHANGED")
-    write(d / "frozen.compose.json", config);m["composeSha256"] = digest(d / "frozen.compose.json");write(d / "owner.json", m)
-    stages=[]
     authored=m.get('cadence',{}).get('startupWindows',{})
     startup=workload_inputs.startup_windows(authored,workload_inputs.COMPOSE_STARTUP_DEFAULTS,require)
+    if 'primer' in config['services']:
+        config['services']['primer'].setdefault('environment',{})['NS_PRIMER_STALL_SECONDS']=str(startup['stageSeconds'])
+    write(d / "frozen.compose.json", config);m["composeSha256"] = digest(d / "frozen.compose.json");write(d / "owner.json", m)
+    stages=[]
     for name,scope,args in deployment_plan(config,pgstream=m.get("profile")=="pgstream-sample",primer_concurrency_value=m.get("primerConcurrency",1),platform_verification=bool(m.get("platformStartup")),compose_ready_seconds=startup['composeReadySeconds'],primer_max_tenants=m.get('primerMaxTenants')):
         with deployment_stage(d, stages, name) as stage:
-            timeout = remaining_seconds(authored['stageSeconds']) if 'stageSeconds' in authored else discovery_seconds(m, startup['stageSeconds'])
-            if ('stageSeconds' not in authored and name in ("provision", "prime") and
-                    m.get('discoveryAuthorization', {}).get('executionScope') == 'LOCAL_OWNED_TO_COMPLETION'):
-                timeout = None
+            wait_for_primer = None
+            if name in ('provision', 'prime'):
+                wait_for_primer = ComposePrimerWait(d/'state/primer', name, startup['stageSeconds'], stage)
+                timeout = remaining_seconds(float('inf')) if _COMMAND_DEADLINE.get() is not None else None
+            else:
+                timeout = remaining_seconds(authored['stageSeconds']) if 'stageSeconds' in authored else discovery_seconds(m, startup['stageSeconds'])
             stage['stageTimeoutSeconds']=timeout
             if '--wait-timeout' in args:
                 advertised=startup['composeReadySeconds']
@@ -1482,6 +1488,8 @@ def deploy(d, m):
                 if scope=="local":
                     command(["node",d/"core/deploy/multitenant"/args[0],d/"state"],file=output,
                             **({'timeout':timeout} if 'stageSeconds' in authored else {}))
+                elif wait_for_primer:
+                    compose(d,*args,file=output,timeout=timeout,wait_for_primer=wait_for_primer)
                 else:compose(d,*args,file=output,timeout=timeout)
             if name=="commission" and m.get("vaultRefusalControl"):vault_control(d,m,"deny")
             if name=="prime" and (verified_serving(config) or m.get("primerConcurrency",1)!=1):primer_counts(d,m)

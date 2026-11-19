@@ -177,16 +177,23 @@ class Adapter(unittest.TestCase):
             del spec[name]
             self.green()
 
-    def test_retired_job_only_allows_independent_stored_seed_observation(self):
+    def primer_pod(self):
         job = copy.deepcopy(self.objects['StatefulSet/postgres'])
         job.update(kind='Job', apiVersion='batch/v1')
         job['metadata'].update(name='primer', uid='job-id', resourceVersion='4')
+        job['spec']['template']['spec']['containers'][0]['name'] = 'done'
         self.objects['Job/primer'] = job
         self.client.objects['Job/primer'] = copy.deepcopy(job)
         pod = copy.deepcopy(self.client.pods[-1])
+        pod['spec']['containers'][0]['name'] = 'done'
+        pod['status']['containerStatuses'][0].update(name='done', containerID='containerd://done')
         pod['metadata'].update(name='primer-old', uid='primer-pod-id',
                                ownerReferences=[{'kind':'Job','name':'primer','uid':'job-id','controller':True}])
         self.client.pods.append(pod)
+        return self.client.objects['Job/primer'], pod
+
+    def test_retired_job_only_allows_independent_stored_seed_observation(self):
+        job, pod = self.primer_pod()
         baseline = self.green()
         self.client.pods.pop()
         with self.assertRaisesRegex(k.Refused, 'POD_ROSTER_CHANGED'):
@@ -202,7 +209,7 @@ class Adapter(unittest.TestCase):
         value = inspect()['retiredJobs']['primer-old']
         self.assertEqual((value['podUid'], value['jobUid'], value['condition'], value['reason']),
                          ('primer-pod-id', 'job-id', 'Failed', 'DeadlineExceeded'))
-        self.assertEqual(value['containers']['postgres']['lastObservedExitCode'], 'UNMEASURED')
+        self.assertEqual(value['containers']['done']['lastObservedExitCode'], 'UNMEASURED')
         with tempfile.TemporaryDirectory() as name:
             d = Path(name)
             k.write(d/'run.json', self.c)
@@ -242,6 +249,76 @@ class Adapter(unittest.TestCase):
         self.assertEqual(inspect()['retiredJobs']['primer-old']['condition'], 'Complete')
         self.client.pods.append(pod)
         k.observe(self.c, self.objects, self.client, baseline)
+
+    def test_exported_primer_can_finish_and_retire_across_load_and_recovery(self):
+        import matrix
+        job, pod = self.primer_pod()
+        with tempfile.TemporaryDirectory() as tmp:
+            d = Path(tmp)
+            output = d/'primer'
+            output.mkdir()
+            roster = output/'tenants.json'
+            self.c.update(primerOutput=str(output), tenantsFile=str(roster), tenants=2)
+            k.write(d/'run.json', self.c)
+            initial = self.green()
+            k.write(d/'observation.initial.json', initial)
+            k.write(roster, [{'id': id, 'host': host, 'token':'synthetic'} for id,host in ((A,'a.test'),(B,'b.test'))])
+            receipt = dict(verdict='OBSERVED', runSha256=k.digest(d/'run.json'), namespaceUid=initial['namespace']['uid'],
+                           jobUid='job-id', podUid='primer-pod-id', containerId='containerd://done',
+                           sourceResult={'state':'synthetic-data-primed','tenants':2},dataTenants=2,rosterSha256=k.digest(roster))
+            k.write(output/'result.json', receipt)
+            job['status'] = {'conditions':[{'status':'True','type':'Complete','reason':'CompletionsReached',
+                                           'lastTransitionTime':iso(time.time())}],'succeeded':1}
+            pod['status'].update(phase='Succeeded', conditions=[])
+            pod['status']['containerStatuses'][0].update(ready=False,state={'terminated':{'exitCode':0}})
+            def observe(baseline=initial):
+                point = k.observe(self.c, self.objects, self.client, baseline)
+                matrix.identity(self.c, baseline, point)
+                return point
+            # The kubelet may publish the clean exit ahead of the Job controller.
+            with patch.dict(job['status'], {'conditions':[]}):
+                present = observe()
+                with patch.dict(pod['status']['containerStatuses'][0], {'state':{'terminated':{'exitCode':1}}}):
+                    with self.assertRaisesRegex(k.Refused,'PRIMER_POD_EXIT'):
+                        observe()
+            self.client.pods.pop()
+            # The Pod may disappear between the first Job GET and the Pod LIST.
+            original_get = self.client.get
+            reads = []
+            def delayed_condition(kind,name=None,cleanup=False,*,replacement=False):
+                reply = original_get(kind,name,cleanup)
+                if kind == 'Job' and name == 'primer':
+                    reads.append(kind)
+                    if len(reads) == 1:
+                        reply['status'] = {'active':1}
+                    elif replacement:
+                        reply['metadata']['uid'] = 'other-job'
+                return reply
+            with patch.object(self.client,'get',side_effect=delayed_condition):
+                retired = observe(present)
+            self.assertEqual(len(reads),2)
+            reads.clear()
+            with patch.object(self.client,'get',side_effect=lambda *args,**kw: delayed_condition(*args,**kw,replacement=True)):
+                with self.assertRaisesRegex(k.Refused,'RESOURCE_UID_CHANGED'):
+                    observe(present)
+            self.assertEqual(len(reads),2)
+            self.assertEqual(retired['completedPrimer']['uid'], 'primer-pod-id')
+            self.assertNotIn('primer-old',retired['pods'])
+            self.assertEqual(matrix.node_requests(self.objects,retired,'limits-v1'),matrix.node_requests(self.objects,initial,'limits-v1'))
+            k.write(d/'restart.json',{'status':'OBSERVED','before':initial,'after':retired})
+            self.assertEqual(len(execute.roster(self.c)),2)
+            observe(k.active_baseline(d))
+            with patch.dict(job['status'], {'conditions':[]}):
+                with self.assertRaisesRegex(k.Refused,'POD_RETIREMENT_UNPROVEN'):
+                    observe(retired)
+            k.write(output/'result.json', dict(receipt, podUid='replacement'))
+            with self.assertRaisesRegex(k.Refused, 'PRIMER_ROSTER_CHANGED'):
+                observe()
+            k.write(output/'result.json',receipt)
+            with patch.dict(self.client.pods[0]['metadata'], {'uid':'replacement'}):
+                with self.assertRaisesRegex(k.Refused,'POD_UID_CHANGED'):
+                    observe()
+            observe()
 
     def test_actual_sql_transport_and_readonly_transaction(self):
         with tempfile.TemporaryDirectory() as name:

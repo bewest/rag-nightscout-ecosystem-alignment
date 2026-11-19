@@ -78,6 +78,31 @@ def bind_primer_storage(package, selected):
     shutil.copyfile(k.HERE/'primer_storage.py',package/frozen.PRIMER_STORAGE_PACKAGE)
 
 
+def bind_primer_stall(package, manifest):
+    phases = manifest.get('profile', {}).get('phases', {})
+    startup = k.workload_inputs.startup_selection(phases, k.need)
+    seconds = startup.get('kubernetes', {}).get('primerReadySeconds')
+    if seconds is None:
+        return
+    lib = package/'lib/ns/nightscout.libsonnet'
+    # Override the rendered init environment. Layout and comments in the
+    # source Jsonnet library do not affect the selection.
+    with lib.open('a') as wrapper:
+        wrapper.write("""
++ {
+  new(overrides)::
+    local base = super.new(overrides);
+    local actors = base.primer.job.spec.template.spec.initContainers;
+    local stall = { name: 'NS_PRIMER_STALL_SECONDS', value: '%d' };
+    base + { primer+: { job+: { spec+: { template+: { spec+: {
+      initContainers: [if actor.name == 'primer' then actor + {
+        env: [entry for entry in actor.env if entry.name != stall.name] + [stall],
+      } else actor for actor in actors],
+    } } } } } },
+}
+""" % seconds)
+
+
 def bind_job_completion_wait(package, selected):
     if frozen.JOB_COMPLETE not in selected:
         return
@@ -165,6 +190,7 @@ def materialize(manifest, binding_repo, deploy_repo, out):
     k.write(asset, measured)
     bind_ack_publisher(package, selected)
     bind_primer_storage(package, selected)
+    bind_primer_stall(package, manifest)
     bind_job_completion_wait(package, selected)
     k.write(out/'binding.json', dict(bindingCommit=manifest['bindingCommit'],
             sourceContractSha256=k.digest(asset), patchSha256=k.digest(k.HERE/'binding-input.patch'),

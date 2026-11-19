@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Run the source-owned primer in the commissioned waiting Job and privately export DATA custody."""
 import argparse
+import asyncio
+import fcntl
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -12,6 +15,7 @@ import kube_adapter as k
 from contract import tenant_projection
 import primer_storage
 import primer_options
+from primer_progress import ProgressWindow
 
 
 STATE_READBACK = '''const fs=require('node:fs'),crypto=require('node:crypto');
@@ -42,6 +46,10 @@ def require_roster(d, c, baseline):
            not output.is_symlink() and (output / 'result.json').is_file(), 'PRIMER_RECEIPT_REQUIRED')
     receipt = k.document(output / 'result.json')
     pods = [p for p in baseline['pods'].values() if p['workload'] == 'Job/primer']
+    if not pods and baseline.get('completedPrimer'):
+        initial = k.document(d/'observation.initial.json')
+        pods = [p for p in initial['pods'].values() if p['workload'] == 'Job/primer' and
+                p['uid'] == baseline['completedPrimer']['uid']]
     k.need(len(pods) == 1 and receipt.get('verdict') == 'OBSERVED' and
            receipt.get('runSha256') == k.digest(d / 'run.json') and
            receipt.get('namespaceUid') == baseline['namespace']['uid'] and
@@ -53,6 +61,59 @@ def require_roster(d, c, baseline):
            receipt.get('dataTenants') == c['tenants'] and
            path.is_file() and not path.is_symlink() and receipt.get('rosterSha256') == k.digest(path),
            'PRIMER_ROSTER_CHANGED')
+    return pods[0]
+
+
+async def run_actor(command, cutoff, seconds, total, result):
+    """Watch the durable count across kubectl, including a silent or wedged exec."""
+    window = ProgressWindow(seconds)
+    first = True
+    result['completedTenants'] = None
+    native = None
+
+    def remaining():
+        if cutoff <= time.time():
+            raise k.Refused('K8S_PRIMER_DEADLINE', 'UNMEASURED')
+        stall_left = window.remaining()
+        if not stall_left:
+            raise k.Refused('K8S_PRIMER_PROGRESS_UNMEASURED' if first else 'K8S_PRIMER_STALLED', 'UNMEASURED')
+        return min(stall_left, max(0, cutoff - time.time()))
+
+    with Path(__file__).with_suffix('.cjs').open('rb') as script:
+        actor = await asyncio.create_subprocess_exec(*command, stdin=script, stdout=asyncio.subprocess.PIPE,
+                                                     stderr=subprocess.DEVNULL, limit=4096)
+    try:
+        while True:
+            timeout = remaining()
+            frame = await asyncio.wait_for(actor.stdout.readline(), timeout)
+            if not frame:
+                break
+            value = json.loads(frame)
+            k.need(isinstance(value, dict) and native is None, 'PRIMER_EXEC_OUTCOME_UNMEASURED', 'UNMEASURED')
+            if set(value) != {'checkpoint'}:
+                native = value
+                continue
+            count = value['checkpoint']
+            k.need(type(count) is int and 0 <= count <= total, 'PRIMER_CHECKPOINT_INVALID')
+            if first:
+                window.completed = count  # existing custody on an explicit retry
+                first = False
+            else:
+                window.observe(count)
+            result['completedTenants'] = window.completed
+        timeout = remaining()
+        code = await asyncio.wait_for(actor.wait(), timeout)
+        return native, code
+    except asyncio.TimeoutError:
+        remaining()  # classify the work or stall deadline
+        raise k.Refused('K8S_PRIMER_EXEC_OUTCOME_UNMEASURED', 'UNMEASURED') from None
+    finally:
+        if actor.returncode is None:
+            try:
+                actor.kill()
+            except ProcessLookupError:
+                pass
+            await actor.communicate()
 
 
 def prime(directory, output, concurrency=None, max_tenants=None):
@@ -72,8 +133,27 @@ def prime(directory, output, concurrency=None, max_tenants=None):
     k.need(output.is_absolute(), 'NEW_ABSOLUTE_OUTPUT_REQUIRED')
     if 'primerOutput' in c:
         k.need(str(output) == c['primerOutput'] == str(d / 'primer'), 'PRIMER_OUTPUT_CHANGED')
-    output.mkdir(mode=0o700, exist_ok=False)
-    result = {'verdict': 'UNMEASURED', 'capacityAcceptance': 'NOT_GRANTED'}
+    # Take an OS-released lock for this output. A failed attempt can be retried
+    # against the same live fixture and private checkpoints.
+    output.mkdir(mode=0o700, exist_ok=True)
+    k.need(not output.is_symlink(), 'PRIMER_OUTPUT_CHANGED')
+    lock = os.open(output, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise k.Refused('K8S_PRIMER_OUTPUT_IN_USE') from None
+        if any(output.iterdir()):
+            previous = k.document(output/'result.json')
+            k.need(previous.get('verdict') != 'OBSERVED' and previous.get('runSha256') == k.digest(d/'run.json'),
+                   'PRIMER_OUTPUT_CHANGED')
+        return prime_owned(d, c, objects, output, split, declared, selected)
+    finally:
+        os.close(lock)
+
+
+def prime_owned(d, c, objects, output, split, declared, selected):
+    result = {'verdict': 'UNMEASURED', 'capacityAcceptance': 'NOT_GRANTED', 'runSha256': k.digest(d/'run.json')}
     if declared is not None:
         result[primer_options.FIELD]=selected
     try:
@@ -105,11 +185,9 @@ def prime(directory, output, concurrency=None, max_tenants=None):
                        for row in job['status'].get('conditions', [])), 'PRIMER_JOB_INACTIVE')
         cutoff = min(k.timestamp(c['deadlines']['workUntil']),
                      k.timestamp(job['status']['startTime']) + job['spec']['activeDeadlineSeconds'])
-        if 'dataPrimerSeconds' in c:
-            seconds=c['dataPrimerSeconds']
-            k.need(k.workload_inputs.seconds(seconds),'DATA_PRIMER_WINDOW')
-            cutoff=min(cutoff,time.time()+seconds)
-            result['selectedDataPrimerSeconds']=seconds
+        seconds = c.get('dataPrimerSeconds', k.workload_inputs.KUBERNETES_STARTUP_DEFAULTS['dataPrimerSeconds'])
+        k.need(k.workload_inputs.seconds(seconds), 'DATA_PRIMER_WINDOW')
+        result['selectedDataPrimerSeconds'] = seconds
         context = [c['namespace'], c['runId']]
         options = [str(int(cutoff*1000)), str(c['tenants']),
                    str(selected.get('concurrency',primer_options.DEFAULT_CONCURRENCY))]
@@ -136,22 +214,18 @@ def prime(directory, output, concurrency=None, max_tenants=None):
         # This actor has its own in-container hard stop at the same absolute cutoff.
         command = [c['kubectl'], '--context', c['context'], '--namespace', c['namespace'],
                    '--request-timeout='+str(max(1, int(remaining)+1))+'s',
-                   'exec', '-i', target, '-c', 'done', '--', 'node', '-', *args]
+                   'exec', '-i', target, '-c', 'done', '--', 'env', 'NS_PRIMER_STALL_SECONDS='+str(seconds), 'node', '-', *args]
         try:
-            actor = subprocess.run(command, input=Path(__file__).with_suffix('.cjs').read_bytes(), capture_output=True,
-                                   check=False, timeout=remaining)
-        except (OSError, subprocess.TimeoutExpired):
+            native, exit_code = asyncio.run(run_actor(command, cutoff, seconds, c['tenants'], result))
+        except (OSError, ValueError):
             raise k.Refused('K8S_PRIMER_EXEC_OUTCOME_UNMEASURED', 'UNMEASURED') from None
-        # Only the pinned actor's bounded, classified stdout is evidence. The
-        # transport's stderr may contain arbitrary endpoint details.
-        try:
-            native = json.loads(actor.stdout) if len(actor.stdout) <= 4096 else None
-        except ValueError:
-            native = None
         k.need(isinstance(native, dict) and set(native) <= {
             'error','errorClass','requestClass','notReady','connectionCause','responseError',
             'state','tenants','remaining'}, 'PRIMER_EXEC_OUTCOME_UNMEASURED', 'UNMEASURED')
-        result.update(sourceResult=native, actorExitCode=actor.returncode)
+        result.update(sourceResult=native, actorExitCode=exit_code)
+        if type(native.get('tenants')) is int:
+            result['completedTenants'] = native['tenants']
+        k.need(native.get('error') != 'PRIMER_STALLED', 'PRIMER_STALLED', 'UNMEASURED')
         if split:
             result['observedActiveTenants'] = native.get('tenants')
         if primer_storage.FIELD in c:
@@ -162,7 +236,7 @@ def prime(directory, output, concurrency=None, max_tenants=None):
             except (ValueError, KeyError, OSError, TypeError):
                 result['stateVolume']['after']={'status':'UNMEASURED'}
         partial = native.get('state') == 'synthetic-data-prime-partial'
-        k.need(actor.returncode == 0 and native == {'state': 'synthetic-data-primed', 'tenants': c['tenants']},
+        k.need(exit_code == 0 and native == {'state': 'synthetic-data-primed', 'tenants': c['tenants']},
                'PRIMER_ACTIVE_COVERAGE_INCOMPLETE' if split and partial else 'PRIMER_INCOMPLETE',
                'UNMEASURED' if partial else 'FAIL')
         if primer_storage.FIELD in c:
@@ -172,6 +246,14 @@ def prime(directory, output, concurrency=None, max_tenants=None):
         k.write(output/'tenants.json', projected)
         result.update(verdict='OBSERVED', dataTenants=len(projected), runSha256=k.digest(d/'run.json'),
                       rosterSha256=k.digest(output/'tenants.json'))
+        # Private custody and its identity-bound receipt must survive the Job.
+        k.write(output/'result.json', result)
+        try:
+            client.call(['exec', target, '-c', 'done', '--', 'touch', where+'/.exported'], read=False)
+            result['exportAcknowledgement'] = 'sent'
+        except k.Refused as error:
+            # The exec response can be lost when the acknowledged container exits.
+            result['exportAcknowledgement'] = str(error)
     except k.Refused as error:
         result.update(verdict=error.verdict, code=str(error))
     except RuntimeError as error:

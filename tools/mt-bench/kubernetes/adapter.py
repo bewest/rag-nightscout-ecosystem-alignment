@@ -422,6 +422,15 @@ def check_retired_jobs(c, current, baseline):
     return retired
 
 
+def completed_primer(c, baseline, job_uid):
+    """Bind successful setup to the original Pod and its exported DATA credentials."""
+    import primer
+    directory = Path(c['primerOutput']).parent
+    original = primer.require_roster(directory, c, baseline)
+    need(original.get('controllerUid') == job_uid, 'POD_RETIREMENT_UNPROVEN')
+    return {field: original[field] for field in ('name', 'uid', 'workload', 'nodeName')}
+
+
 BOOTSTRAP_MAP = frozen.HELPER_MAP
 BOOTSTRAP_TARGET = frozen.BOOTSTRAP_TARGET
 BOOTSTRAP_ANNOTATIONS = frozen.HELPER_ANNOTATIONS
@@ -516,6 +525,7 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         need(baseline is not None and not cleanup and restarted_role is None, 'SERVING_BASELINE_REQUIRED')
         need(not ns['metadata'].get('deletionTimestamp'), 'NAMESPACE_TERMINATING')
         result['setupJobs'] = {}
+    primer_terminal = None
     for name, expected in by_key.items():
         if expected['kind'] not in PLURALS:
             continue
@@ -569,6 +579,9 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             need(subset(expected_visible, actual), 'NATIVE_LOAD_RBAC_CHANGED')
         result['objects'][name] = meta(actual)
         result['objects'][name]['maskedPaths'] = masked
+        if name == 'Job/primer':
+            result['objects'][name]['activeDeadlineSeconds'] = actual['spec'].get('activeDeadlineSeconds')
+            primer_terminal = job_terminal(actual)
         if name=='ConfigMap/edge-nginx' and c.get('edgeConfiguration'):
             result['edgeConfiguration']={**c['edgeConfiguration'],'configurationSha256':edge_configuration.readback(expected,actual,need)}
     replicas = client.get('replicasets', cleanup=cleanup)['items']
@@ -636,10 +649,39 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         need(all(result[k] == baseline[k] for k in ('context', 'runId', 'pins')), 'SOURCE_IMAGE_BINDING_CHANGED')
         need(result['namespace']['uid'] == baseline['namespace']['uid'], 'NAMESPACE_UID_CHANGED')
         need(result['objects'].keys() == baseline['objects'].keys() and all(result['objects'][k]['uid'] == baseline['objects'][k]['uid'] for k in result['objects']), 'RESOURCE_UID_CHANGED')
+        previous_primer = next((pod for pod in baseline['pods'].values() if pod['workload'] == 'Job/primer'),
+                               baseline.get('completedPrimer'))
+        current_primer = result['pods'].get(previous_primer['name']) if previous_primer else None
+        if previous_primer and current_primer is None and primer_terminal is None and (serving_sql or 'primerOutput' in c):
+            # The Pod list is newer than the original Job GET. Read its controller
+            # once more to resolve retirement, under the same observation deadline.
+            job = client.get('Job', 'primer', cleanup)
+            owned(c, job)
+            need(key(job) == 'Job/primer' and job['metadata']['uid'] == result['objects']['Job/primer']['uid'],
+                 'RESOURCE_UID_CHANGED')
+            primer_terminal = job_terminal(job)
+            if serving_sql:
+                need(not job['metadata'].get('deletionTimestamp'), 'RESOURCE_TERMINATING')
+                result['setupJobs']['Job/primer'] = primer_terminal
         if serving_sql:
             result['retiredJobs'] = check_retired_jobs(c, result, baseline)
         else:
-            need(result['pods'].keys() == baseline['pods'].keys(), 'POD_ROSTER_CHANGED')
+            expected_pods = set(baseline['pods'])
+            job_complete = primer_terminal and primer_terminal['condition'] == 'Complete'
+            pod_succeeded = current_primer and current_primer['phase'] == 'Succeeded'
+            if baseline.get('completedPrimer'):
+                need(job_complete or pod_succeeded, 'POD_RETIREMENT_UNPROVEN')
+            if 'primerOutput' in c and primer_terminal and not job_complete and not cleanup:
+                raise Refused('K8S_PRIMER_JOB_FAILED')
+            if 'primerOutput' in c and (job_complete or pod_succeeded):
+                if pod_succeeded:
+                    need(all((r.get('state') or {}).get('terminated', {}).get('exitCode') == 0
+                             for r in current_primer['containers'].values()), 'PRIMER_POD_EXIT')
+                finished = completed_primer(c, baseline, result['objects']['Job/primer']['uid'])
+                result['completedPrimer'] = finished
+                if finished['name'] not in result['pods']:
+                    expected_pods.discard(finished['name'])
+            need(set(result['pods']) == expected_pods, 'POD_ROSTER_CHANGED')
         target = c['roles'].get(restarted_role)
         for name, current in result['pods'].items():
             old = baseline['pods'][name]

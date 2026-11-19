@@ -89,7 +89,7 @@ def tier_plan(config):
         },
         'preflight': {
             'sourceAndImage': 'checked before fixture seed on tiered runs',
-            'deploymentPrimer': 'uses the authored work time remaining when priming starts',
+            'deploymentPrimer': 'stageSeconds limits time without durable tenant progress; the owner work cutoff still applies',
             'socketAndJwtSetup': 'setupSeconds selects the separate generator setup window',
             'generatorDrain': 'drainSeconds selects collector drain; the clinical deadline is separate',
             'transportOrGeneratorChange': 'run a smoke point with the same source, image and instrument before seeding a larger discovery point',

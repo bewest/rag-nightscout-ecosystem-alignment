@@ -15,6 +15,7 @@ import candidate
 import run_cleanup
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
 from auto_catalog import auto_catalog
+from primer_progress import ProgressWindow
 cfg=fixture_config(Path(sys.argv[1]))
 d=Path(cfg['caseDirectory']); tool=Path(cfg['toolsDirectory'])
 read=lambda p:json.loads(p.read_bytes())
@@ -136,19 +137,64 @@ def require_pod_uid(name,uid):
     if row is None or row['metadata']['uid']!=uid:
         raise RuntimeError('POD_OWNERSHIP_CHANGED')
 
-def ready(label,typ,timeout,convergence=None):
+def provisioned_count(pod):
+    # Read only the count from the source's atomic custody file, in the active
+    # init container. Existing source images use the same checkpoint.
+    if not any(c['name']=='primer' and 'running' in c['state']
+               for c in pod.get('status',{}).get('initContainerStatuses', [])):
+        return None
+    script = """const fs=require('node:fs');
+const path=(process.env.NS_PRIMER_STATE || '/run/ns-primer')+'/provisioned.json';
+try {
+  const rows=JSON.parse(fs.readFileSync(path));
+  if (!Array.isArray(rows)) throw new Error('PRIMER_CHECKPOINT_INVALID');
+  console.log(rows.length);
+}
+catch(e) { if(e.code!=='ENOENT')throw e; console.log(0); }"""
+    return int(execpod(pod, 'primer', ['node', '-e', script]))
+
+
+def ready(label,typ,timeout,convergence=None,primer_job=None):
     step('wait-'+typ)
     started=time.time()
-    until=min(started+timeout,work,phase_cutoff if phase_cutoff is not None else work)
+    outer=min(work,phase_cutoff if phase_cutoff is not None else work)
+    until=min(started+timeout,outer)
+    progress=None
+    if primer_job is not None:
+        until=outer
+        progress=ProgressWindow(timeout, now=time.monotonic)
+        checkpoint={'selectedSeconds':timeout, 'startedAtEpochSeconds':started, 'completedTenants':0,
+                    'workUntilEpochSeconds':outer, 'jobUid':primer_job['metadata']['uid']}
+        put('startup-window-primer.json',checkpoint)
+        unavailable=False
     stable=producer_startup.StableReady(convergence['stableReadySeconds'] if convergence else 0)
     failures={}
-    while time.time()<until:
+    while time.time()<until and (progress is None or progress.remaining()>0):
         owned()
         found=pods(label)
         if any(x['metadata']['labels'].get('nightscout.org/run-id')!=rid for x in found):raise RuntimeError('FOREIGN_POD')
         ready_pod=None
         identity=None
         for pod in found:
+            if progress is not None:
+                controllers=[owner['uid'] for owner in pod['metadata'].get('ownerReferences',[]) if owner.get('controller')]
+                if controllers != [checkpoint['jobUid']]:
+                    raise RuntimeError('PRIMER_JOB_OWNERSHIP_CHANGED')
+                try:
+                    count=provisioned_count(pod)
+                    if count is not None:
+                        if not 0 <= count <= e['tenantCount']:
+                            raise RuntimeError('PRIMER_CHECKPOINT_INVALID')
+                        unavailable=False
+                        if progress.observe(count):
+                            checkpoint.update(completedTenants=count, lastProgressEpochSeconds=time.time())
+                            put('startup-window-primer.json',checkpoint)
+                except (RuntimeError, subprocess.TimeoutExpired, ValueError) as error:
+                    # A completed init container can disappear between status and
+                    # exec. Recheck Pod readiness. Signals and custody errors escape.
+                    if isinstance(error,RuntimeError) and str(error)!='PRIVATE_STEP_FAILED':
+                        raise
+                    unavailable=True
             s=summary(pod);put('latest-'+typ+'.json',s)
             for v in s['containers']:
                 disposition=producer_startup.disposition(v,convergence)
@@ -173,13 +219,16 @@ def ready(label,typ,timeout,convergence=None):
             if any(x.get('type')=='Ready' and x.get('status')=='True' for x in pod.get('status',{}).get('conditions',[])):
                 ready_pod=pod
                 identity=(s['uid'],tuple((v['name'],v['restartCount']) for v in s['containers']))
-        if stable.observe(identity,time.monotonic()) and time.time()<until:
+        if stable.observe(identity,time.monotonic()) and time.time()<until and (progress is None or progress.remaining()>0):
             if convergence:
                 put('startup-convergence-'+typ+'.json',{'verdict':'READY','uid':identity[0],
                     'effectivePolicy':convergence,'observedStableSeconds':time.monotonic()-stable.started,
                     'recordedFailures':len(failures)})
             return ready_pod
-        time.sleep(min(2,max(0,until-time.time())))
+        delay=min(2,max(0,until-time.time()))
+        time.sleep(delay if progress is None else min(delay,timeout/2,progress.remaining()))
+    if progress is not None and time.time()<outer:
+        raise RuntimeError('PRIMER_PROVISION_PROGRESS_UNMEASURED' if unavailable else 'PRIMER_PROVISION_STALLED')
     if application_topology.readiness_signal(intent,typ,frozen.require) and time.time()<work:
         # The serving workload's readiness window elapsed inside the run's work window.
         # Readiness is a signal under readiness-serve-then-warm: record it, continue.
@@ -201,11 +250,15 @@ def release_job(name):
     job = get('job', name)
     uid, = (row['uid'] for row in uids if row['kind']=='Job' and row['name']==name)
     assert job['metadata']['uid']==uid and job['spec']['suspend'] is True, 'JOB_OWNERSHIP_CHANGED'
-    k(['patch','job',name,'-n',ns,'--type=json','-p',json.dumps([
-        {'op':'test','path':'/metadata/uid','value':uid},
-        {'op':'test','path':'/spec/suspend','value':True},
-        {'op':'replace','path':'/spec/suspend','value':False}])])
-    return job
+    patch=[{'op':'test','path':'/metadata/uid','value':uid},
+           {'op':'test','path':'/spec/suspend','value':True}]
+    if name=='primer':
+        left=int(work-time.time())
+        if left<=0:
+            raise RuntimeError('PRIMER_WORK_DEADLINE')
+        patch.append({'op':'replace','path':'/spec/activeDeadlineSeconds','value':left})
+    patch.append({'op':'replace','path':'/spec/suspend','value':False})
+    return json.loads(k(['patch','job',name,'-n',ns,'--type=json','-o','json','-p',json.dumps(patch)]))
 
 
 def verify_database(job_uid, seconds):
@@ -259,10 +312,8 @@ def start_serving(split):
     pobj = release_job('primer')
     if split:
         workload_ready('serving')
-    else:
-        primer_seconds=min(waits['primerReadySeconds'],pobj['spec']['activeDeadlineSeconds'])
-        with startup_window('primer',primer_seconds):
-            primer=ready('job-name=primer','primer',primer_seconds)
+    primer=ready('job-name=primer','primer',waits['primerReadySeconds'],primer_job=pobj)
+    if not split:
         step('platform verification')
         # done runs source verification before writing the ready marker.
         with startup_window('platform-verify',waits['platformVerifySeconds']) as until:
@@ -279,10 +330,6 @@ def start_serving(split):
                 except RuntimeError:time.sleep(min(2,max(0,until-time.time())))
             else:raise RuntimeError('SOURCE_VERIFICATION_MARKER_DEADLINE')
         install('serving');workload_ready('serving')
-    if split:
-        primer_seconds = min(waits['primerReadySeconds'], pobj['spec']['activeDeadlineSeconds'])
-        with startup_window('primer', primer_seconds):
-            ready('job-name=primer', 'primer', primer_seconds)
 
 
 def execpod(pod,container,args,seconds=None):

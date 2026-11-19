@@ -396,6 +396,13 @@ class Planning(unittest.TestCase):
         value = preload.limits(c, {'Job/primer':expected}, client, {'objects':{'Job/primer':{'uid':'owned-job'}}}, 1800, now)
         self.assertEqual(value['clippedBy'], ['Job/primer'])
         self.assertAlmostEqual(value['effectiveSeconds'], 5, places=5)
+        actual['spec']['activeDeadlineSeconds'] = 90
+        baseline = {'objects':{'Job/primer':{'uid':'owned-job', 'activeDeadlineSeconds':90}}}
+        released = preload.limits(c, {'Job/primer':expected}, client, baseline, 1800, now)
+        self.assertAlmostEqual(released['effectiveSeconds'], 90, places=5)
+        actual['spec']['activeDeadlineSeconds'] = 120
+        with self.assertRaisesRegex(k.Refused, 'PRELOAD_JOB_BOUND_UNMEASURED'):
+            preload.limits(c, {'Job/primer':expected}, client, baseline, 1800, now)
         p = {'phases':{'preloadConvergence':{'contract':preload.shared.CONTRACT, 'seconds':1800, 'intervalSeconds':15}}}
         self.assertEqual(preload.load_command_bound(p, 10000)['seconds'], 10000)
         self.assertEqual(preload.load_command_bound(p, 100)['seconds'], 100)

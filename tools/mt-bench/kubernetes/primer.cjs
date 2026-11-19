@@ -10,7 +10,7 @@ const read = (dir, file) => JSON.parse(fs.readFileSync(path.join(dir, file)));
 const fail = code => { throw Object.assign(new Error(code), { code }); };
 
 const known = new Set((
-  'PRIMER_STATE_IN_USE PRIMER_STATE_LOCK_CHANGED PRIMER_OPTIONS_INVALID PRIMER_CONFIG_INVALID ' +
+  'PRIMER_STALLED PRIMER_CANCELLED PRIMER_STATE_IN_USE PRIMER_STATE_LOCK_CHANGED PRIMER_OPTIONS_INVALID PRIMER_CONFIG_INVALID ' +
   'PRIMER_ORIGIN_INVALID PRIMER_CUSTODY_INVALID PRIMER_ENTRY_OUTCOME_UNCERTAIN ' +
   'PRIMER_CONNECTION_FAILED PRIMER_RESPONSE_INCOMPLETE PRIMER_RESPONSE_INVALID PRIMER_TENANT_WARM_TIMEOUT ' +
   'PRIMER_SUBJECT_TOKEN_MISSING PRIMER_OWNER_SUBJECT_MISSING PRIMER_OWNERSHIP_REFUSED ' +
@@ -32,6 +32,7 @@ const responseErrors = new Set((
 function diagnostic(error, source) {
   const code = [error?.code, error?.message].find(value => known.has(value) || /^PRIMER_DATA_API_REFUSED_[1-5][0-9]{2}$/.test(value || ''));
   const output = { error: code || 'PRIMER_UNCLASSIFIED' };
+  if (code === 'PRIMER_STALLED' && Number.isSafeInteger(error.tenants)) output.tenants = error.tenants;
   if (code === 'SOCKET_IPC_UNAVAILABLE') {
     output.requestClass = 'internal-ownership';
     output.notReady = error.notReady === true;
@@ -101,8 +102,26 @@ async function commission({ app, dir, configDirectory = dir, contractFile, env, 
       saved.some(row => !row.hosts?.[0] || expected.get(row.id) !== row.hosts[0])) fail('K8S_PRIMER_ROSTER_CHANGED');
   const signal = new AbortController();
   const cancel = () => signal.abort();
-  process.once('SIGTERM', cancel);
-  process.once('SIGINT', cancel);
+  const seconds = Number(env.NS_PRIMER_STALL_SECONDS || 3600);
+  if (!Number.isSafeInteger(seconds * 1000) || seconds <= 0) fail('PRIMER_OPTIONS_INVALID');
+  const countSaved = () => fs.existsSync(path.join(dir, 'tenants.json')) ? read(dir, 'tenants.json').tenants.length : 0;
+  let completed = countSaved(), advanced = performance.now(), stalled = false, observationError;
+  const emit = count => {
+    if (env.NS_PRIMER_STALL_SECONDS) process.stdout.write(JSON.stringify({ checkpoint: count }) + '\n');
+  };
+  emit(completed);
+  // Earlier source modules ignore the callback. Sample their atomically replaced roster.
+  const sample = () => {
+    try {
+      const current = countSaved(), now = performance.now();
+      if (now - advanced >= seconds * 1000) { stalled = true; cancel(); }
+      if (current > completed) { completed = current; advanced = now; emit(completed); }
+    } catch (error) { observationError = error; cancel(); }
+  };
+  let interrupted = false;
+  const interrupt = () => { interrupted = true; cancel(); };
+  process.once('SIGTERM', interrupt);
+  process.once('SIGINT', interrupt);
   // Let the original source drain admitted tenants. If the hard cutoff fires,
   // its lock and ambiguous-write journal remain evidence for the owner.
   const left = stop - Date.now();
@@ -112,9 +131,16 @@ async function commission({ app, dir, configDirectory = dir, contractFile, env, 
     fs.writeSync(1, JSON.stringify({ error: 'K8S_PRIMER_DEADLINE' }) + '\n');
     process.exit(124);
   }, left);
+  const sampling = setInterval(sample, Math.max(1, Math.min(5000, seconds * 250)));
   try {
-    const result = await source.prime(config, dir, { ...options, signal: signal.signal });
+    const result = await source.prime(config, dir, { ...options, signal: signal.signal }, count => {
+      clearInterval(sampling);
+      if (count > completed) { completed = count; emit(count); }
+    });
     if (Date.now() >= stop) fail('K8S_PRIMER_DEADLINE');
+    if (interrupted) return { error: 'PRIMER_CANCELLED', tenants: countSaved() };
+    if (observationError) throw observationError;
+    if (stalled) return { error: 'PRIMER_STALLED', tenants: countSaved() };
     if (result.state === 'synthetic-data-primed') {
       const roster = read(dir, 'tenants.json'), roots = new Map(saved.map(row => [row.id, row.rootSecret]));
       if (roster.version !== 1 || result.tenants !== expectedCount || roster.tenants?.length !== expectedCount ||
@@ -127,8 +153,8 @@ async function commission({ app, dir, configDirectory = dir, contractFile, env, 
   } catch (error) {
     return diagnostic(error, source);
   } finally {
-    clearTimeout(hard); clearTimeout(soft);
-    process.removeListener('SIGTERM', cancel); process.removeListener('SIGINT', cancel);
+    clearInterval(sampling); clearTimeout(hard); clearTimeout(soft);
+    process.removeListener('SIGTERM', interrupt); process.removeListener('SIGINT', interrupt);
   }
 }
 

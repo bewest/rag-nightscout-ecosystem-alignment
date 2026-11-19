@@ -50,6 +50,8 @@ def limits(c, objects, client, baseline, seconds, now):
         if terminal is not None and terminal['condition'] == 'Complete':
             continue
         bound = expected['spec'].get('activeDeadlineSeconds')
+        if name == 'Job/primer':
+            bound = baseline['objects'][name].get('activeDeadlineSeconds', bound)
         k.need(type(bound) is int and bound > 0 and actual['spec'].get('activeDeadlineSeconds') == bound
                and isinstance(actual.get('status', {}).get('startTime'), str), 'PRELOAD_JOB_BOUND_UNMEASURED', 'UNMEASURED')
         cutoff = k.timestamp(actual['status']['startTime'])+bound

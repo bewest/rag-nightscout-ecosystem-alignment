@@ -37,7 +37,12 @@ def node_requests(objects, baseline, accounting, config=None):
         node, request = native_join.reserve(config, objects)
         add(nodes.setdefault(node,dict.fromkeys(DIMS,0)),request)
         accounted.add(native_join.JOB)
-    for pod in baseline['pods'].values():
+    pods = list(baseline['pods'].values())
+    finished = baseline.get('completedPrimer')
+    if finished and finished['name'] not in baseline['pods']:
+        # Retain the owner's original reservation on its scheduled node.
+        pods.append(finished)
+    for pod in pods:
         workload = pod['workload']
         k.need(workload in objects and workload not in accounted, 'MATRIX_WORKLOAD_CENSUS')
         accounted.add(workload)
@@ -54,13 +59,26 @@ def identity(c, baseline, current):
     k.need(current.get('context') == c['context'] and current.get('runId') == c['runId'], 'MATRIX_RUN_CHANGED')
     k.need(current['namespace']['uid'] == baseline['namespace']['uid'], 'NAMESPACE_UID_CHANGED')
     for section in ('objects', 'pods'):
-        k.need(current[section].keys() == baseline[section].keys(), 'MATRIX_ROSTER_CHANGED')
+        expected = set(baseline[section])
+        finished = current.get('completedPrimer') if section == 'pods' else None
+        if finished and finished['name'] not in current[section]:
+            old = baseline[section].get(finished['name'], baseline.get('completedPrimer', {}))
+            k.need(old.get('uid') == finished['uid'] and old.get('workload') == 'Job/primer', 'MATRIX_ROSTER_CHANGED')
+            expected.discard(finished['name'])
+        k.need(set(current[section]) == expected, 'MATRIX_ROSTER_CHANGED')
         for name, row in current[section].items():
             old = baseline[section][name]
             k.need(row['uid'] == old['uid'], 'POD_UID_CHANGED' if section == 'pods' else 'RESOURCE_UID_CHANGED')
             if section == 'pods':
-                k.need(all(row[n] == old[n] for n in ('workload', 'nodeName', 'resources', 'imageReferences', 'containers')),
+                k.need(all(row[n] == old[n] for n in ('workload', 'nodeName', 'resources', 'imageReferences')),
                        'MATRIX_PEER_INCARNATION_CHANGED')
+                if finished and name == finished['name'] and row['phase'] == 'Succeeded':
+                    k.need(row['uid'] == finished['uid'] and row['containers'].keys() == old['containers'].keys() and
+                           all((v.get('state') or {}).get('terminated', {}).get('exitCode') == 0 and
+                               all(v[key] == old['containers'][n][key] for key in ('containerID','imageID','restartCount'))
+                               for n,v in row['containers'].items()), 'MATRIX_PEER_INCARNATION_CHANGED')
+                else:
+                    k.need(row['containers'] == old['containers'], 'MATRIX_PEER_INCARNATION_CHANGED')
 
 
 def allocation(value, entries):

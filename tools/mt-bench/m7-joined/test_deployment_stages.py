@@ -16,12 +16,12 @@ class DeploymentStages(unittest.TestCase):
         manifest={'generator':{'servingImageId':'synthetic-image'}, 'tenants':2}
         plan=[('apis','compose',[]),('prime','compose',[]),('remaining-roles','compose',[])]
         called=[]
-        def compose(directory, *args, file, timeout):
+        def compose(directory, *args, file, timeout, **options):
             name=plan[len(called)][0];called.append(name)
             # The controlled child reads the actual persisted entry before it
             # exits. No later role can hide a missing primer entry.
             program="import json,sys;v=json.load(open(sys.argv[1]));assert v[-1]['status']=='STARTED';print('synthetic startup '+v[-1]['name'],flush=True);sys.exit(17 if v[-1]['name']=='prime' else 0)"
-            return adapter.command([sys.executable,'-c',program,root/'deployment-stages.json'],file=file)
+            return adapter.command([sys.executable,'-c',program,root/'deployment-stages.json'],file=file,timeout=timeout,**options)
         patches={'frozen':lambda *a:None,'experiment_host':lambda *a:None,'verify':lambda *a:None,
                  'image':lambda *a:'synthetic-image','verify_generator':lambda *a:None,
                  'deployment_plan':lambda *a,**k:plan,'compose':compose}

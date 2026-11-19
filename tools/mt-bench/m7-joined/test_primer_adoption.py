@@ -44,14 +44,14 @@ class PrimerAdoption(unittest.TestCase):
         from types import SimpleNamespace
         args=SimpleNamespace(profile='pgstream-sample',run_purpose='discovery',primer_concurrency=64,
                              primer_max_tenants=20000,deploy_repo='/synthetic/deploy',deploy_commit='f'*40,
-                             generator_dependencies='/synthetic/dependencies')
+                             generator_dependencies='/synthetic/dependencies', directory='/synthetic/primer')
         proof={'primerSource':{'protocol':primer_options.PROTOCOL}}
         class DriverWouldArm(Exception):pass
         with patch.object(adapter,'selected_resources_profile',return_value='selected'), \
              patch.object(adapter,'commit') as commit, patch.object(adapter,'prepare_image_inputs',return_value=proof) as preflight, \
              patch.object(adapter.diagnostic_resources,'configure',side_effect=DriverWouldArm) as configure:
             with self.assertRaises(DriverWouldArm):adapter.prepare(args)
-        configure.assert_called_once_with('selected')
+        configure.assert_called_once_with('selected', driver_scope=Path(args.directory))
         commit.assert_called_once_with(args.deploy_repo,args.deploy_commit)
         preflight.assert_called_once_with(args)
         self.assertEqual(args.image_input_preflight,proof)

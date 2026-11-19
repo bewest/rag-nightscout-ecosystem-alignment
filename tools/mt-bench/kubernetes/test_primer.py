@@ -1,5 +1,7 @@
 """Verify the host invocation preserves its original Pod, finite Job cutoff and private DATA projection."""
+import asyncio
 import json
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import subprocess
@@ -61,6 +63,10 @@ else:
             fetched = []
             def fetch(argv,read):
                 self.assertFalse(read)
+                if argv[-2:] == ['touch','/run/ns-primer/.exported']:
+                    receipts = [p for p in d.glob('*/result.json') if k.document(p)['verdict'] == 'OBSERVED']
+                    self.assertTrue(any((p.parent/'tenants.json').is_file() for p in receipts))
+                    return b''
                 self.assertEqual(argv[:6], ['exec','waiting','-c','done','--','cat'])
                 fetched.append(argv[-1])
                 return json.dumps(roster if argv[-1].endswith('tenants.json') else {'safe':True}).encode()
@@ -69,15 +75,15 @@ else:
             with patch.object(k,'load',return_value=(d,c,objects)), patch.object(k.candidate,'require'), \
                  patch.object(k,'active_baseline',return_value=observation), patch.object(k,'observe',return_value=observation), \
                  patch.object(k,'selected_pod'), patch.object(k,'Client',return_value=client), \
-                 patch.object(primer.subprocess,'run',return_value=reply) as actor:
+                 patch.object(primer,'run_actor',side_effect=lambda *args: (json.loads(reply.stdout),reply.returncode)) as actor:
                 result = primer.prime(d,d/'attempt',2)
                 self.assertEqual(result['verdict'],'OBSERVED')
                 self.assertEqual(result['selectedDataPrimerSeconds'],7200)
                 argv = actor.call_args.args[0]
-                self.assertEqual(argv[6:15],['exec','-i','waiting','-c','done','--','node','-','owned-ns'])
+                self.assertEqual(argv[6:17],['exec','-i','waiting','-c','done','--','env','NS_PRIMER_STALL_SECONDS=7200','node','-','owned-ns'])
                 self.assertEqual(argv[-3:], [str(int((utc.timestamp()+120)*1000)),'1','2'])
-                self.assertGreater(len(actor.call_args.kwargs['input']),0)
-                self.assertLessEqual(actor.call_args.kwargs['timeout'],120)
+                self.assertAlmostEqual(actor.call_args.args[1],utc.timestamp()+120)
+                self.assertEqual(result['exportAcknowledgement'],'sent')
                 rows = k.document(d/'attempt/tenants.json')
                 self.assertEqual(rows,[{'host':'a.test','id':roster['tenants'][0]['id'],'token':'synthetic-data'}])
                 self.assertEqual((d/'attempt/tenants.json').stat().st_mode & 0o777,0o600)
@@ -118,3 +124,28 @@ else:
                 job['metadata']['uid']='other'
                 self.assertEqual(primer.prime(d,d/'changed',2)['code'],'K8S_PRIMER_JOB_INACTIVE')
                 self.assertEqual(actor.call_count,6)
+
+                reply.returncode = 0
+                reply.stdout = b'{"state":"synthetic-data-primed","tenants":1}'
+                job['metadata']['uid'] = 'j'
+                self.assertEqual(primer.prime(d,d/'failure',2)['verdict'], 'OBSERVED')
+                with self.assertRaisesRegex(k.Refused,'PRIMER_OUTPUT_CHANGED'):
+                    primer.prime(d,d/'failure',2)
+
+    def test_transport_budget_renews_on_durable_counts_only(self):
+        def run(events, stall, work):
+            lines = ['import time']
+            for delay, frame in events:
+                lines += [f'time.sleep({delay!r})', f'print({json.dumps(frame)!r}, flush=True)']
+            return asyncio.run(primer.run_actor([sys.executable, '-c', '\n'.join(lines)],
+                                                 time.time()+work, stall, 4, result))
+        done = {'state':'synthetic-data-primed', 'tenants':4}
+        advances = [(0, {'checkpoint':0})] + [(.16, {'checkpoint':i}) for i in range(1,5)]
+        result = {}
+        self.assertEqual(run(advances + [(0, done)], .4, 5), (done, 0))
+        self.assertEqual(result['completedTenants'], 4)
+        with self.assertRaisesRegex(primer.k.Refused, 'PRIMER_STALLED'):
+            run(advances[:2] + [(.12, {'checkpoint':1})]*5, .4, 5)
+        self.assertEqual(result['completedTenants'], 1)
+        with self.assertRaisesRegex(primer.k.Refused, 'PRIMER_DEADLINE'):
+            run(advances, 3, .4)

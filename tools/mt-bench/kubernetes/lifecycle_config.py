@@ -55,6 +55,10 @@ def startup_preflight(intent, environment, objects):
         if kind not in ('Job','Deployment','StatefulSet'):
             continue
         spec=obj['spec'];pod=spec['template']['spec']
+        if kind=='Job' and name=='primer' and 'primerReadySeconds' in authored:
+            values=[env.get('value') for actor in pod.get('initContainers',[]) if actor['name']=='primer'
+                    for env in actor.get('env',[]) if env['name']=='NS_PRIMER_STALL_SECONDS']
+            need(values==[str(selected['primerReadySeconds'])], 'PRIMER_STALL_WINDOW_CHANGED')
         native[kind+'/'+name]={'activeDeadlineSeconds':spec.get('activeDeadlineSeconds'),
             'containers':{actor['name']:{probe:{key:actor[probe][key] for key in probe_fields if key in actor[probe]}
                                          for probe in ('startupProbe','readinessProbe') if probe in actor}

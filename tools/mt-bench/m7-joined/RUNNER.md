@@ -1362,9 +1362,11 @@ the selected query and byte budget. Exhausted capture stays `UNMEASURED`.
 `--startup-windows` accepts optional `composeReadySeconds`, `stageSeconds` and
 `evaluatorReadySeconds` for fresh Compose discovery. A shared experiment places
 the same object in `profile.phases.startupWindows.compose`. Plans show the
-selected values and their reference defaults. Commands and waits use the lesser
-of the selected window and remaining authorized work. Owner-monitored priming
-and provision use their completion path when `stageSeconds` is omitted.
+selected values and their reference defaults. During provisioning and DATA
+priming, `stageSeconds` is the maximum inactivity between increases in the
+number of tenants saved to the respective checkpoint. Each stage records its
+last completed count. The owner's overall work cutoff still applies. Other
+stages use the lesser of their selected window and remaining authorized work.
 An explicit evaluator window or progress budget derives the readiness capture
 allowance from the effective window, roster, and per-round byte bound. Each
 discovery attempt allows a second capture to confirm readiness. The result

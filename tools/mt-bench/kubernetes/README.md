@@ -133,8 +133,11 @@ python3 -B "$K/experiment.py" run "$NEW_PACKET" "$RELEASED_ALLOCATION" "$ALLOCAT
 With `--await-primer`, prepare the packet before DATA credentials exist. The
 primer runs the image's checked source module inside the original verified
 waiting Pod and uses its private admin and DATA Services. It bounds execution
-by the earlier of the packet and Job deadlines. Set the Job's finite
-`provisionDeadlineSeconds` at commissioning to cover setup and waiting.
+by the earlier of the packet and active Job deadlines. The lifecycle sets the
+primer Job deadline to the remaining owner work budget when it releases the Job.
+An increased durable provisioned or DATA tenant count renews the matching stall
+window. An unchanged checkpoint, a retry and Pod readiness alone leave it running
+toward expiry.
 `--concurrency N` selects the source implementation's bounded concurrency.
 For fresh discovery, set `profile.phases.primerOptions` with `concurrency` and
 optionally `maxTenants`. For example, `{"concurrency":64,"maxTenants":20000}`
@@ -163,7 +166,11 @@ or operating capacity, and incomplete DATA continues to refuse traffic.
 The successful receipt binds the privately exported DATA roster to the run,
 namespace, Job, Pod and container. Access and load verify this receipt.
 Preserve the source lock and uncertain-write journal after an interrupted
-request. Commissioning owns acknowledgement of the waiting Job. A previously
+request. A stalled attempt records its last observed count. While the same
+fixture and its private checkpoints remain available, repeat the primer command
+in the same packet to resume. The lifecycle releases the namespace at cleanup.
+After privately saving the complete roster and its receipt, the primer command
+acknowledges export and the waiting container can exit. A previously
 source-projected roster still uses the original prepare command.
 
 For fresh discovery, `primerStorage` can select `stateMiB` and `secretCodec`
@@ -190,7 +197,7 @@ still stops the run with `READY_DEADLINE_cohort`.
 Fresh intent also accepts positive integer seconds in
 `profile.phases.startupWindows.kubernetes`. Set `workloadReadySeconds` for
 other unselected workload waits, or `primerReadySeconds` and `dataPrimerSeconds`
-for the primer Job and DATA actor. `roleExportSeconds`, `platformVerifySeconds`,
+for the maximum interval between durable provision or DATA checkpoints. `roleExportSeconds`, `platformVerifySeconds`,
 `secretSeedSeconds`, `secretPublishSeconds` and `jobCompleteSeconds` cover the
 separate bootstrap handoffs. `requestSeconds`, `commandSeconds` and `execSeconds`
 control individual controller calls. The lifecycle records the chosen values,

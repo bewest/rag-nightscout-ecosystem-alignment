@@ -236,6 +236,10 @@ def require(k, d, c):
     workload = VERIFICATION_JOB if split else 'Job/primer'
     prefix = 'verification' if split else 'primer'
     witnesses = [p for p in baseline['pods'].values() if p['workload'] == workload]
+    if not split and not witnesses and baseline.get('completedPrimer'):
+        initial = k.document(d/'observation.initial.json')
+        witnesses = [p for p in initial['pods'].values() if p['workload'] == workload and
+                     p['uid'] == baseline['completedPrimer']['uid']]
     if split:
         k.need(value.get('verificationJobUid') == baseline['objects'][workload]['uid'], 'CANDIDATE_FIXTURE_CHANGED')
     k.need(len(witnesses) == 1 and value.get('namespaceUid') == baseline['namespace']['uid'] and

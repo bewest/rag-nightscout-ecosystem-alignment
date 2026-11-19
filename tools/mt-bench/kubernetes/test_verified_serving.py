@@ -46,7 +46,8 @@ class VerifiedServing(unittest.TestCase):
             calls.append('proof-log')
             return json.dumps({} if missing_proof else proof).encode()
 
-        def ready(*_):
+        def ready(*_, primer_job):
+            self.assertEqual(primer_job, job)
             calls.append('primer-ready')
             if slow_primer:
                 raise RuntimeError('READY_DEADLINE_primer')
