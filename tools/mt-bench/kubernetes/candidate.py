@@ -11,7 +11,11 @@ import population_ceiling
 
 ROLES = ['api', 'evaluator', 'realtime']
 FIELDS = ('diagnosticSha256', 'producerBinarySha256', 'nativeCatalogueSha256')
-STARTUP_PROTOCOLS = ('startup-v2', 'startup-v3')
+# v4 extends source-owned role digests with presentation catalogues and tenant
+# floor proof authority. Its admin client still emits the same closed version-1
+# startup receipt; no tenant backfill or structural verification runs here.
+STARTUP_PROTOCOLS = ('startup-v2', 'startup-v3', 'startup-v4')
+NATIVE_RECEIPT_PROTOCOLS = ('startup-v3', 'startup-v4')
 VERIFICATION_JOB = 'Job/verification'
 
 

@@ -308,11 +308,10 @@ def start_serving(split):
         verify_database(verification['metadata']['uid'],
                         min(waits['platformVerifySeconds'], verification['spec']['activeDeadlineSeconds']))
         install('serving')
+        workload_ready('serving')
     install('primer')
     pobj = release_job('primer')
-    if split:
-        workload_ready('serving')
-    primer=ready('job-name=primer','primer',waits['primerReadySeconds'],primer_job=pobj)
+    primer = ready('job-name=primer', 'primer', waits['primerReadySeconds'], primer_job=pobj)
     if not split:
         step('platform verification')
         # done runs source verification before writing the ready marker.

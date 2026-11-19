@@ -1,9 +1,9 @@
 'use strict';
 // Init-container gate: exit 0 once every named Job in this namespace is Complete.
-// `<job>:ready` is released as soon as the Job has a Ready Pod, or is Complete. The primer Job
-// is Ready once platform verification has written its proof, and it completes only after the
-// operator has exported the tenant observations, which need the serving roles. Waiting for its
-// completion would deadlock the roles.
+// `<job>:ready` is released as soon as the Job has a Ready Pod, or is Complete.
+// Legacy primer readiness includes verification; split bindings name the independent
+// verification Job explicitly. The primer completes only after the operator has
+// exported tenant observations. Waiting for its completion would deadlock export.
 // Exits 2 as soon as one is Failed and 3 at the deadline. Uses only the Pod's projected
 // ServiceAccount token (namespace-scoped `get jobs`). It never writes to the cluster.
 //   node -e "$(cat wait-for-jobs.js)" <job> [<job>...]

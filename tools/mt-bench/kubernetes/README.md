@@ -954,7 +954,11 @@ only the exact declared test Job has a separate dynamic census.
 The probe restart signal, both-writer join, 120-second per-write observer,
 all-tenant fixed-target catch-up and full `assess_stage()` path stay in their
 original order. `assess_join()` adds capture/run/script/hash checks. The init
-waiter alone gets `jobs/get` for `provision` and `primer` in its namespace; the
+waiter alone gets `jobs/get` for `provision` and `primer` in its namespace;
+the split verified-serving binding also names `verification` explicitly and
+requires its completion before accepting primer readiness. Its lifecycle waits
+for verification, then serving readiness, then releases the standalone primer.
+Legacy bindings retain their original primer-ready gate. The
 exporter receives no Kubernetes API permission. The test Pod uses component
 `load`, so it does not match the application's
 private admin/internal `operator` selectors; it enters through the existing
@@ -962,6 +966,22 @@ edge ingress. No application NetworkPolicy is broadened. Setup actor lifetimes s
 belong to the current binding and must cover the complete owned point. Keep
 owned namespace/trust cleanup even after Job completion. Fresh native live
 compatibility and capacity qualification remain UNMEASURED.
+
+When the read guard masks native Secret references or projected keys, only the
+named owned native Job or Pod gets a bounded private spec read. Namespace and
+object UIDs bracket that read, and the existing strict declaration comparison
+checks the actual reference, token mounts, resources and security fields. A
+redacted reference never counts as exact evidence. Native load and artifact
+readers use the same adapter. `experiment.candidate_pin(inventory, binding_ref)`
+resolves a split binding's full candidate pin from its hashed materialized
+receipt; pre-entry tools must use that receipt instead of the legacy
+`inventory.candidateContract` field.
+
+Explicit `startup-v4` retains the source client's version-1 startup receipt and
+the native completion-receipt requirement. The source owns v4 role digests,
+presentation catalogue checks and tenant-floor proof authority. The helper does
+not issue a tenant-floor backfill. New-image runtime qualification remains with
+the run owner.
 
 Focused offline controls: `python3 -B -m unittest -v test_native_input test_native_load test_native_files test_native_join` from this
 directory. Set `NS_NATIVE_K6_TEST_BINARY` to an existing pinned local k6 binary

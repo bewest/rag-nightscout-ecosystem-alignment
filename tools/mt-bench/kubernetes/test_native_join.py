@@ -49,6 +49,100 @@ def fixture():
 
 
 class NativeJoin(unittest.TestCase):
+    def test_guarded_native_spec_uses_owned_exact_read_then_rejects_changed_references(self):
+        c, inventory, render, client = fixture()
+        objects = k.validate(c, inventory, render)
+        original_get = client.get
+        direct = []
+        def mask(value):
+            value = copy.deepcopy(value)
+            spec = value.get('spec', {})
+            if value.get('kind') == 'Job':
+                spec = spec['template']['spec']
+            for volume in spec.get('volumes', []):
+                if 'secret' in volume:
+                    volume['secret']['secretName'] = '<redacted>'
+                for source in volume.get('projected', {}).get('sources', []):
+                    for item in source.get('configMap', {}).get('items', []):
+                        item['key'] = '<redacted>'
+            return value
+        def guarded(kind, name=None, cleanup=False):
+            value = original_get(kind, name, cleanup)
+            if kind == 'Job' and name == 'k6':
+                return mask(value)
+            if kind == 'pods':
+                return dict(value, items=[mask(p) if p['metadata']['name']=='k6-owned' else p for p in value['items']])
+            return value
+        def private(args, **kw):
+            self.assertFalse(kw['read']); self.assertEqual(kw['output_limit'], 512*1024)
+            self.assertIn(args[:3], [['get','Job','k6'], ['get','Pod','k6-owned']])
+            direct.append(args)
+            value = client.objects[j.JOB] if args[1]=='Job' else client.pods[-1]
+            return json.dumps(value).encode()
+        client.get = guarded; client.call = private
+        # Disabling the exact read reproduces the masked-reference refusal.
+        with patch.object(j, 'exact_spec', side_effect=lambda _c,_client,obj,*_,**__:obj):
+            with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_JOB_CHANGED'):
+                k.observe(c, objects, client)
+        baseline = k.observe(c, objects, client)
+        job = client.objects[j.JOB]
+        pod = {'apiVersion':'v1','kind':'Pod','metadata':{'name':'k6-owned','namespace':c['namespace'],
+               'uid':'pod-owned','resourceVersion':'12','labels':copy.deepcopy(job['spec']['template']['metadata']['labels']),
+               'ownerReferences':[{'kind':'Job','name':'k6','uid':job['metadata']['uid'],'controller':True}]},
+               'spec':copy.deepcopy(job['spec']['template']['spec']),'status':{'phase':'Pending'}}
+        client.pods.append(pod)
+        k.observe(c, objects, client, baseline)
+        self.assertTrue(any(args[1]=='Pod' for args in direct))
+        # The transport adapter must supply the same exact specs to native_load
+        # and native_files, rather than accepting the guard's masked references.
+        def guarded_call(args, **kw):
+            if kw.get('read') is False:
+                return private(args, **kw)
+            kind = args[1]; name = args[2] if kind in ('namespace','job') else None
+            return json.dumps(guarded('Job' if kind=='job' else kind, name)).encode()
+        client.call = guarded_call
+        transport = j.Kube(c, client)
+        self.assertEqual(transport.json(['get','job','k6'])['spec'], job['spec'])
+        self.assertEqual(transport.json(['get','pods','-l','job-name=k6'])['items'][-1]['spec'], pod['spec'])
+        for target in (job['spec']['template']['spec'], pod['spec']):
+            secret = target['volumes'][0]['secret']
+            old = secret['secretName']; secret['secretName'] = 'wrong-inputs'
+            with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_(JOB|POD)_CHANGED'):
+                k.observe(c, objects, client, baseline)
+            secret['secretName'] = old
+            k.observe(c, objects, client, baseline)
+        source = job['spec']['template']['spec']['volumes'][2]['projected']['sources'][1]['configMap']['items'][0]
+        old = source['key']; source['key'] = 'wrong-ca'
+        with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_JOB_CHANGED'):
+            k.observe(c, objects, client, baseline)
+        source['key'] = old
+        k.observe(c, objects, client, baseline)
+        # A replacement between guarded and private reads cannot inherit custody.
+        masked = mask(job)
+        masked['metadata']['uid'] = 'old-job'
+        with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_ACTOR_REPLACED'):
+            j.exact_spec(c, client, masked, baseline['namespace']['uid'])
+        original_ns = client.objects['Namespace/'+c['namespace']]['metadata']['uid']
+        client.objects['Namespace/'+c['namespace']]['metadata']['uid'] = 'replaced-namespace'
+        count = len(direct)
+        with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_NAMESPACE_CHANGED'):
+            j.exact_spec(c, client, mask(job), original_ns)
+        self.assertEqual(len(direct), count)
+
+    def test_standalone_waiter_requires_independent_verification_and_scoped_rbac(self):
+        c, _, _, _ = fixture()
+        legacy = j.declarations(c)
+        c['pins']['candidate'] = {'verificationJob': 'verification'}
+        standalone = j.declarations(c)
+        waiter = standalone[0]['spec']['template']['spec']['initContainers'][0]
+        self.assertEqual(waiter['command'][-3:], ['provision', 'verification', 'primer:ready'])
+        role = next(row for row in standalone if row['kind'] == 'Role')
+        self.assertEqual(role['rules'], [{'apiGroups': ['batch'], 'resources': ['jobs'],
+                                         'resourceNames': ['provision', 'verification', 'primer'], 'verbs': ['get']}])
+        self.assertEqual(standalone, j.declarations(json.loads(json.dumps(c))))
+        del c['pins']['candidate']
+        self.assertEqual(j.declarations(c), legacy)
+
     def test_persisted_configuration_keeps_exact_native_declaration(self):
         c,_,_,_=fixture()
         restored=json.loads(json.dumps(c,sort_keys=True))

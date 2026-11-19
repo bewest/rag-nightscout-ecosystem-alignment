@@ -11,7 +11,7 @@ from kube_adapter import candidate
 
 
 class VerifiedServing(unittest.TestCase):
-    def attempt(self, condition, *, missing_proof=False, slow_primer=False):
+    def attempt(self, condition, *, missing_proof=False, slow_primer=False, slow_serving=False):
         source = Path(__file__).with_name('lifecycle.py')
         functions = [node for node in ast.parse(source.read_text()).body
                      if isinstance(node, ast.FunctionDef) and node.name in ('start_serving', 'verify_database')]
@@ -52,6 +52,11 @@ class VerifiedServing(unittest.TestCase):
             if slow_primer:
                 raise RuntimeError('READY_DEADLINE_primer')
 
+        def serving_ready(stage):
+            calls.append('ready:'+stage)
+            if slow_serving:
+                raise RuntimeError('READY_DEADLINE_serving')
+
         scope = dict(cfg={'bindingDirectory': '/synthetic'}, read=lambda _: {'platformVerification': 'startup-v3'},
                      Path=Path, candidate=candidate, subprocess=subprocess, startup_window=window,
                      time=SimpleNamespace(time=lambda: 0), rpc=['kubectl'], tool=Path('/synthetic/bin'),
@@ -61,7 +66,7 @@ class VerifiedServing(unittest.TestCase):
                      put=lambda name, value: records.update({name: value}), command=command,
                      install=lambda stage: calls.append('install:'+stage),
                      release_job=lambda name: calls.append('release:'+name) or job,
-                     workload_ready=lambda stage: calls.append('ready:'+stage),
+                     workload_ready=serving_ready,
                      waits={'platformVerifySeconds': 60, 'primerReadySeconds': 90}, ready=ready)
         exec(compile(ast.Module(body=functions, type_ignores=[]), str(source), 'exec'), scope)
         return lambda: scope['start_serving'](True), calls, records
@@ -85,6 +90,16 @@ class VerifiedServing(unittest.TestCase):
         self.assertEqual(records['platform-verification.json']['proof']['status'], 'verified')
         self.assertLess(calls.index('proof-log'), calls.index('install:serving'))
         self.assertLess(calls.index('install:serving'), calls.index('release:primer'))
+        self.assertLess(calls.index('ready:serving'), calls.index('release:primer'))
+
+    def test_unready_serving_blocks_standalone_primer_then_restore(self):
+        launch, calls, _ = self.attempt('Complete', slow_serving=True)
+        with self.assertRaisesRegex(RuntimeError, 'READY_DEADLINE_serving'):
+            launch()
+        self.assertNotIn('release:primer', calls)
+        launch, calls, _ = self.attempt('Complete')
+        launch()
+        self.assertLess(calls.index('ready:serving'), calls.index('release:primer'))
 
     def test_slow_primer_does_not_hold_serving_then_restore(self):
         launch, calls, _ = self.attempt('Complete', slow_primer=True)
@@ -93,4 +108,5 @@ class VerifiedServing(unittest.TestCase):
         self.assertLess(calls.index('ready:serving'), calls.index('primer-ready'))
         restored, calls, _ = self.attempt('Complete')
         restored()
-        self.assertEqual(calls[-2:], ['ready:serving', 'primer-ready'])
+        self.assertLess(calls.index('ready:serving'), calls.index('release:primer'))
+        self.assertEqual(calls[-1], 'primer-ready')

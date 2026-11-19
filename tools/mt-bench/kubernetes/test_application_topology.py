@@ -199,7 +199,7 @@ class ApplicationTopology(unittest.TestCase):
         self.assertFalse(topology.readiness_signal(scope['intent'], 'pgstream', k.need))
 
     def test_startup_proof_has_no_lease_but_keeps_generation_and_native_checks(self):
-        for protocol in ('startup-v2', 'startup-v3'):
+        for protocol in ('startup-v2', 'startup-v3', 'startup-v4'):
             with self.subTest(protocol=protocol):
                 self.check_startup_proof(protocol)
 
@@ -223,14 +223,14 @@ class ApplicationTopology(unittest.TestCase):
             candidate.proof(k, config, proof, now=10)
         config['pins']['candidate']['platformVerification'] = protocol
         candidate.proof(k, config, proof, now=10)
-        config['pins']['candidate']['platformVerification'] = 'startup-v4'
+        config['pins']['candidate']['platformVerification'] = 'startup-v5'
         with self.assertRaisesRegex(k.Refused, 'CANDIDATE_PLATFORM_VERIFICATION_CHANGED'):
             candidate.proof(k, config, proof, now=10)
         config['pins']['candidate']['platformVerification'] = protocol
         candidate.proof(k, config, proof, now=10)
 
     def test_startup_protocol_marker_is_bound_to_source_contract(self):
-        for protocol in ('startup-v2', 'startup-v3'):
+        for protocol in ('startup-v2', 'startup-v3', 'startup-v4'):
             with self.subTest(protocol=protocol):
                 self.check_startup_pins(protocol)
 
@@ -256,7 +256,7 @@ class ApplicationTopology(unittest.TestCase):
         contract['platformVerification'] = protocol
         objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = json.dumps(contract)
         candidate.pins(k, config, self.inventory, objects)
-        selection['platformVerification'] = contract['platformVerification'] = 'startup-v4'
+        selection['platformVerification'] = contract['platformVerification'] = 'startup-v5'
         self.inventory['candidateContract'] = copy.deepcopy(selection)
         objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = json.dumps(contract)
         with self.assertRaisesRegex(k.Refused, 'CANDIDATE_PLATFORM_VERIFICATION_CHANGED'):
