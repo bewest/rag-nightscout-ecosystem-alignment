@@ -223,7 +223,10 @@ def _run_discovery(a,d,m,k6_image,oneoff=None):
                     require(record.value['completedOutput']['verdict']=='PASS','M7_COMPLETED_OUTPUT_ORACLE')
                     raise
                 record.save()
-                require(record.value['completedOutput']['verdict']=='PASS','M7_COMPLETED_OUTPUT_ORACLE')
+                if record.value['completedOutput'].get('clinicalTiming') and record.value['completedOutput']['verdict']=='UNMEASURED':
+                    record.value['strictChecks']['sampledOracle']={'verdict':'UNMEASURED','code':'M7_CLINICAL_OBSERVATION_INCOMPLETE'}
+                else:
+                    require(record.value['completedOutput']['verdict']=='PASS','M7_COMPLETED_OUTPUT_ORACLE')
             counts=record.value.get('oracle')
             from discovery_counts import control_domain
             if control_domain(counts,m['tenants']) is not None:
@@ -335,6 +338,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
     spec=m['project']+'|'+str(d/'env')+'|'+str(d/'frozen.compose.json')
     completion=a.document(d/'completion-source.json') if m['profile']=='pgstream-sample' else {}
     env=a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies'),**({'M7_COMPLETION_SOURCE':json.dumps(completion)} if completion else {}),'M7_RUN_PURPOSE':'discovery','M7_RESTART_ROLES':json.dumps(m['restartRoles']),'M7_EVALUATOR_SERVICES':json.dumps(a.progress_services(d)),'M7_PROGRESS_PYTHON':a.sys.executable,'M7_PROGRESS_ATTRIBUTION':json.dumps(a.progress_attribution(m)),'STOCK_MS':'300000','RECOVERY_MS':'120000'})
+    if completion: env['M7_CLINICAL_WARM_PATH'] = str(d / a.clinical_warm.FILE)
     env.update(workload_inputs.probe_ledger_env(m['cadence']))
     a.psql(d,'SELECT pg_stat_statements_reset();');a.phase_snapshot(d,out,'before-prime')
     windows=phase_windows.start(m,time.monotonic_ns(),int(time.time()*1000))
@@ -342,11 +346,9 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
     process=None;monitor=None;load_started=False;primed=False;probe_stopped=False
     try:
         with (out/'probe.log').open('wb') as probe_log,a.sampling(d,out):
-            process=a.diagnostic_resources.popen(a.subprocess.Popen, [m['generator']['tools']['node']['path'],str(d/'probe.js'),'--base','http://127.0.0.1:'+str(m['port']),'--tenants',str(d/'tenants.private.json'),'--compose',spec,'--runid',runid,'--clients',str(viewer_plan.total(m)),'--per',str(m['cadence'].get('socketsPerTenant',2)),'--open','5','--window',str(m['cadence']['loadSeconds']),'--probeEvery',str(m['cadence'].get('probeEveryMs',3000)),'--restart','1' if m['cadence'].get('restart',True) else '0','--evalTimeout','900','--out',str(out/'probe.json'),'--signal',str(out/'.window'),*(['--setupSeconds',str(windows['setupSeconds'])] if 'setupSeconds' in windows else [])],env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
+            process=a.diagnostic_resources.popen(a.subprocess.Popen, [m['generator']['tools']['node']['path'],str(d/'probe.js'),'--base','http://127.0.0.1:'+str(m['port']),'--tenants',str(d/'tenants.private.json'),'--compose',spec,'--runid',runid,'--clients',str(viewer_plan.total(m)),'--per',str(m['cadence'].get('socketsPerTenant',2)),*viewer_plan.setup_args(m['cadence']),'--window',str(m['cadence']['loadSeconds']),'--probeEvery',str(m['cadence'].get('probeEveryMs',3000)),'--restart','1' if m['cadence'].get('restart',True) else '0','--evalTimeout','900','--out',str(out/'probe.json'),'--signal',str(out/'.window')],env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
             a.job_record(out/'probe-job.json',process,m['owner'],group=True)
-            setup_seconds=(a.remaining_seconds(phase_windows.remaining(windows,'setup',time.monotonic_ns()))
-                           if 'setupSeconds' in windows else a.discovery_seconds(m,600))
-            deadline=a.time.monotonic()+setup_seconds
+            deadline=a.time.monotonic()+a.remaining_seconds(float('inf'))
             while not (out/'.window').is_file() and process.poll() is None and a.time.monotonic()<deadline:a.time.sleep(1)
             primed=(out/'.window').is_file()
             if (out/'probe.json').is_file():
@@ -365,7 +367,11 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
                             argv=k6_command(a,d,m,k6_id,runid)
                             timeout=a.discovery_seconds(m,m['cadence']['loadSeconds']+600)
                             if 'setupSeconds' in windows:
-                                setup=a.remaining_seconds(phase_windows.remaining(windows,'setup',time.monotonic_ns()))
+                                # The k6 JWT window begins when its own actor launches.
+                                windows['setupStartedMonoNs']=time.monotonic_ns()
+                                setup=a.remaining_seconds(windows['setupSeconds'])
+                                windows['setupUntilUnixMs']=int(time.time()*1000 + setup*1000)
+                                a.write(out/'phase-windows.json',windows)
                                 argv=phase_windows.k6_setup(argv,k6_id,setup,windows['setupUntilUnixMs'])
                                 grace=max((row.get('gracefulStopSeconds',30) for row in m['cadence'].get('driverPlan',{}).get('scenarios',{}).values()),default=30)
                                 timeout=a.remaining_seconds(setup+m['cadence']['loadSeconds']+grace+5)
@@ -401,7 +407,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
                 (out/'.restart').touch();start=time.time()
                 drain=(a.remaining_seconds(phase_windows.remaining(windows,'drain',time.monotonic_ns()))
                        if 'drainSeconds' in windows else a.discovery_seconds(m,1500))
-                try:rc=process.wait(timeout=drain)
+                try:rc=a.clinical_warm.wait_compose(a,d,m,process,drain) if completion else process.wait(timeout=drain)
                 except a.subprocess.TimeoutExpired:rc=None
                 record.value['processes']['probe']={'returncode':rc,'startedRecoveryAt':start,'endedAt':time.time(),'timeout':rc is None,'endMonoNs':time.monotonic_ns()};record.save()
             else:

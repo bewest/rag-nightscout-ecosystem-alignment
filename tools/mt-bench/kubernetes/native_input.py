@@ -6,16 +6,42 @@ import hashlib
 import json
 
 import kube_adapter as k
+import workload_runtime
 
-CODECS = ('raw-v1', 'gzip-v1')
+PRIVATE = 'fixture-data-v1'
+CODECS = ('raw-v1', 'gzip-v1', PRIVATE)
 MAX_TENANTS = 10000
 MAX_RAW_BYTES = 4 * 1024**2
 MAX_GZIP_BYTES = 600 * 1024
 MIN_MEMORY_BYTES = 64 * 1024**2
 
 
+def fixture_data(c, job, secret, receipt):
+    pod = job['spec']['template']['spec']
+    main, exporter = pod['containers']
+    script = k.HERE / 'native-fixture-data.cjs'
+    secret['stringData'][script.name] = script.read_text()
+    count = workload_runtime.driver_count(c, k.need)
+    meta = {'codec': PRIVATE, 'fixtureTenants': c['tenants'], 'tenants': count,
+            'sha256': receipt['rosterSha256']}
+    secret['stringData']['fixture-data.json'] = json.dumps(meta)
+    for entry in main['env']:
+        if entry['name'] == 'TENANTS_FILE':
+            entry['value'] = '/roster/tenants.json'
+    main['command'][2] = 'while [ ! -f /roster/tenants.json ]; do sleep 0.1; done\n' + main['command'][2]
+    pod['volumes'].append({'name': 'roster', 'emptyDir': {}})
+    main['volumeMounts'].append({'name': 'roster', 'mountPath': '/roster', 'readOnly': True})
+    exporter['volumeMounts'].append({'name': 'roster', 'mountPath': '/roster'})
+    exporter.setdefault('env', []).append({'name': 'NS_ROSTER_POD_UID', 'valueFrom': {
+        'fieldRef': {'fieldPath': 'metadata.uid'}}})
+    receipt.update(inputTransport=meta, jobSha256=k.hashed(job))
+    return job, secret, receipt
+
+
 def decorate(c, job, secret, receipt, *, codec, resources):
     k.need(codec in CODECS, 'NATIVE_LOAD_INPUT_CODEC')
+    if codec == PRIVATE:
+        return fixture_data(c, job, secret, receipt)
     raw = secret['stringData']['tenants.json'].encode()
     transport = {'codec': codec, 'bytes': len(raw), 'tenants': c['tenants'],
                  'sha256': hashlib.sha256(raw).hexdigest()}

@@ -137,11 +137,12 @@ console.log(JSON.stringify({lateInit:run(900001,0),lateResponse:run(890000,10001
             with a.command_deadline(a.time.time()+outer_seconds):d.discovery_load(a,folder,m,'k6',record)
         return calls,m,a.document(folder/'load/phase-windows.json')
 
-    def test_real_discovery_launch_shares_setup_and_post_writer_drain_clocks(self):
+    def test_real_discovery_launch_separates_viewer_progress_driver_setup_and_drain(self):
         calls,m,captured=self.launch_window(2000)
-        self.assertEqual(calls['probe'][calls['probe'].index('--setupSeconds')+1],'900')
-        self.assertIn('M7_SETUP_SECONDS=750',calls['k6'])
-        self.assertAlmostEqual(calls['timeout'],1085,delta=.1)
+        self.assertNotIn('--setupSeconds', calls['probe'])
+        self.assertEqual(json.loads(calls['probe'][calls['probe'].index('--viewerSetup')+1])['stallSeconds'], 300)
+        self.assertIn('M7_SETUP_SECONDS=900',calls['k6'])
+        self.assertAlmostEqual(calls['timeout'],1235,delta=.1)
         self.assertEqual(calls['waits'][0],600)
         self.assertEqual(windows.drain_seconds(m,captured,350_000_000_000),450)
         bounded,_,_=self.launch_window(3)

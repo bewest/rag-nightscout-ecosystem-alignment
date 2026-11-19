@@ -19,7 +19,7 @@ FRESH={'core-repo','deploy-repo','generator-dependencies','generator-dependency-
        'generator-dependency-receipt-sha256','fixture-project','backend-subnet','edge-subnet','port','receipt','freeze'}
 DERIVED={'core-commit','deploy-commit','image','image-id','postgres-image','tenants','replicas',
          'load-seconds','hot-factor','accel','offered-rps','workload-mix','workload-scale',
-         'logical-polling-clients','probe-every-ms','probe-ledger','evaluator-progress-budget','drain-observation','startup-windows','setup-seconds','drain-seconds','jwt-setup-concurrency','driver-plan','driver-vu-diagnostic','driver-shards',
+         'logical-polling-clients','viewer-setup','probe-every-ms','probe-ledger','evaluator-progress-budget','drain-observation','startup-windows','setup-seconds','drain-seconds','jwt-setup-concurrency','driver-plan','driver-vu-diagnostic','driver-shards',
          'static-workers','static-build-receipt','static-build-receipt-sha256','pgstream-topology'}
 
 def legacy(m,target='kubernetes'):
@@ -86,6 +86,8 @@ def local(m,instance):
     for field, option in (('setupSeconds', 'setup-seconds'), ('drainSeconds', 'drain-seconds'), ('jwtSetupConcurrency', 'jwt-setup-concurrency')):
         if field in w:
             options[option] = w[field]
+    if 'viewerSetup' in w:
+        options['viewer-setup'] = json.dumps(w['viewerSetup'])
     if 'probeLedger' in w:
         options['probe-ledger'] = json.dumps(w['probeLedger'])
     if 'evaluatorProgressBudget' in w:

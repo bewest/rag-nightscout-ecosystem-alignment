@@ -31,6 +31,7 @@ import hashlib
 import json
 import math
 import os
+import clinical_warm
 from pathlib import Path
 
 CONTRACT = 'outcome-evaluator-gate-v1'
@@ -366,6 +367,13 @@ def sampled_oracle(completed_output):
     verdict = completed_output['verdict']
     witnesses = completed_output.get('witnesses')
     count = len(witnesses) if isinstance(witnesses, list) else None
+    timing = completed_output.get('clinicalTiming')
+    if isinstance(timing, dict) and timing.get('contract') == clinical_warm.CONTRACT:
+        if verdict not in ORDER or not count or timing.get('witnesses') != count:
+            return {'verdict': 'UNMEASURED', 'codes': ['M7_CLINICAL_WITNESS_COVERAGE'], 'clinicalTiming': timing}
+        codes = {row.get('clinicalTiming', {}).get('code') for row in witnesses}
+        return {'verdict': verdict, 'codes': sorted(c for c in codes if c),
+                'witnesses': count, 'clinicalTiming': timing}
     if verdict == 'PASS' and count:
         return {'verdict': 'PASS', 'codes': [], 'witnesses': count}
     if verdict == 'FAIL':
@@ -403,7 +411,7 @@ def readiness_component(preload, end, strict=False):
 
 
 def judge(*, ids, points, preload_status, storage_findings, completed_output, catchup_value,
-          authority=None, config=None, attribution=None, preload_strict=False):
+          authority=None, config=None, attribution=None, preload_strict=False, warmth=None):
     """Combine the components. Any FAIL fails; any UNMEASURED is UNMEASURED.
 
     `points` maps 'before'/'midpoint'/'after' to a read point or None. The
@@ -431,6 +439,8 @@ def judge(*, ids, points, preload_status, storage_findings, completed_output, ca
     components['readiness'] = readiness_component(preload_status, classified.get('after'), strict=preload_strict)
     components['storage'] = storage(storage_findings)
     components['sampledOracle'] = sampled_oracle(completed_output)
+    if warmth is not None:
+        components['tenantWarmth'] = warmth
     components['catchup'] = catchup(catchup_value, ids, config=config)
     if authority is not None:
         components['authority'] = authority
@@ -516,13 +526,24 @@ def strict_preload(preload):
     return bool(preload) and preload.get('configuration', {}).get('readiness') == 'require-all'
 
 
+def warm_component(folder, ids, probe):
+    timing = (probe.get('completedOutput') or {}).get('clinicalTiming') or {}
+    path = folder / clinical_warm.FILE
+    if timing.get('contract') == clinical_warm.CONTRACT or path.is_file():
+        return clinical_warm.coverage(path, ids)
+    return None  # Packet predates observation of evaluator warmth.
+
+
 def judge_kubernetes_load(folder, ids, *, config=None, attribution=None):
     """One Kubernetes load stage folder (runtime/packet/load)."""
     folder = Path(folder)
     after = load_point(folder, 'progress-after') or load_point(folder, 'progress-stop')
     preload = _document(folder / 'preload-convergence' / 'result.json')
     probe = _document(folder / 'probe.json') or {}
-    verdict = judge(ids=ids, points={'before': load_point(folder, 'progress-before'),
+    if not probe.get('completedOutput'):
+        probe['completedOutput'] = _document(folder/'clinical-witnesses-partial.json')
+    warmth = warm_component(folder, ids, probe)
+    verdict = judge(warmth=warmth, ids=ids, points={'before': load_point(folder, 'progress-before'),
                                   'midpoint': load_point(folder, 'progress-midpoint'), 'after': after},
                  preload_status=preload.get('status') if preload else None,
                  preload_strict=strict_preload(preload),
@@ -580,9 +601,11 @@ def judge_compose_run(directory, ids, *, config=None, attribution=None):
     load = d / 'load'
     preload = _document(d / 'preload-convergence' / 'result.json')
     probe = _document(load / 'probe.json') or {}
+    if not probe.get('completedOutput'):
+        probe['completedOutput'] = _document(load/'clinical-witnesses-partial.json')
     points = compose_points(load)
     end_label = points.pop('endPoint')
-    verdict = judge(ids=ids, points=points,
+    verdict = judge(warmth=warm_component(d, ids, probe), ids=ids, points=points,
                     preload_status=preload.get('status') if preload else None,
                  preload_strict=strict_preload(preload),
                     storage_findings=_document(load / 'oracle-findings.json'),

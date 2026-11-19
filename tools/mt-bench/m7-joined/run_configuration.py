@@ -141,7 +141,7 @@ def remote_projection(config, overlay, source_acceptance=None):
     require(not set(b).intersection({'tenants','pair','imageId','k6Image','workload','reportMode','pgstreamTopology','diagnosticResourceProfile','diagnosticResourceAllocation','staticTopology','commissioningSlotWalMiB','tenantReadiness'}),
             'M7_CONFIG_REMOTE_MIRROR_REFUSED')
     cadence = dict(r['cadence'])
-    require(not {'setupSeconds','drainSeconds','drainObservation','startupWindows','probeLedger','evaluatorProgressBudget'} & cadence.keys(),
+    require(not {'setupSeconds','drainSeconds','drainObservation','opportunityObservation','startupWindows','probeLedger','evaluatorProgressBudget'} & cadence.keys(),
             'M7_REMOTE_PHASE_WINDOWS_UNSUPPORTED')
     viewers = cadence.get('logicalPollingClients',r['tenants']*cadence['socketsPerTenant'])
     b.update(tenants=r['tenants'], pair=r['pair'], imageId=r['imageId'], reportMode='discovery',

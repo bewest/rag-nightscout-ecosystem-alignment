@@ -1,6 +1,7 @@
 """Select the existing M7 generator inputs, independently of roster and viewers."""
 from workload import REALISTIC_MIX, realistic_cycle_ms
 import workload_inputs
+import viewer_plan
 
 SHAPES = dict(w_sgv=1, w_devicestatus=1, w_treatments_v3=1,
               r_sgv=5, r_devicestatus=1, r_treatments=1, r_status=1)
@@ -25,8 +26,9 @@ def ordinary_roster(c, tenants, need):
 
 def validate(w, need, tenants=None):
     need(isinstance(w, dict) and set(w) <= {'loadSeconds', 'offeredRps', 'workloadMix',
-         'workloadScale', 'logicalPollingClients', 'probeEveryMs', 'hotFactor', 'pointId', 'setupSeconds', 'drainSeconds',
+         'workloadScale', 'logicalPollingClients', 'viewerSetup', 'probeEveryMs', 'hotFactor', 'pointId', 'setupSeconds', 'drainSeconds',
          'driverPlan', 'driverShards', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget','drainObservation'}, 'WORKLOAD_FIELDS')
+    viewer_plan.setup(w, need)
     need(workload_inputs.seconds(w.get('loadSeconds')), 'WORKLOAD_LOAD_SECONDS')
     need(workload_inputs.polling_clients(w.get('logicalPollingClients')), 'WORKLOAD_VIEWERS')
     need(workload_inputs.probe_interval(w.get('probeEveryMs')), 'WORKLOAD_PROBE_INTERVAL')

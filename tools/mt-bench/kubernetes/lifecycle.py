@@ -34,7 +34,8 @@ def command(argv,data=None,timeout=None,private=False):
         rem=min(rem,phase_cutoff-time.time())
     assert rem>0,'CUTOFF'
     if timeout is None:timeout=18 if cleaning else waits['commandSeconds']
-    q=subprocess.run([str(x) for x in argv],input=data,capture_output=True,timeout=min(timeout,rem),env=env)
+    q=subprocess.run([str(x) for x in argv],input=data,capture_output=True,
+                     timeout=ProgressWindow.read_seconds(min(timeout,rem)),env=env)
     if q.returncode:
         import re
         codes=sorted(set(re.findall(rb'\b(?:K8S_|M7_|PRIMER_|BOOTSTRAP_|PLATFORM_|VAULT_|EVALUATOR_)[A-Z0-9_]{2,90}\b',q.stderr+q.stdout)))
@@ -78,7 +79,7 @@ startup_stages = ('foundation','stores','provision','private-admin','primer','se
 def step(stage):
     global current
     current=stage
-    events.append({'stage':stage,'time':timestamp()});put('stages.json',events)
+    events.append({'stage':stage,'time':timestamp(),'monoMs':time.monotonic_ns()/1e6});put('stages.json',events)
 def install(stage):
     step(stage);owned()
     for obj in objects(stage):
@@ -158,84 +159,100 @@ def ready(label,typ,timeout,convergence=None,primer_job=None):
     step('wait-'+typ)
     started=time.time()
     outer=min(work,phase_cutoff if phase_cutoff is not None else work)
-    until=min(started+timeout,outer)
-    progress=None
+    # The optional producer convergence scenario also selects a hard ceiling.
+    until=min(outer, started+convergence['maxSeconds']) if convergence else outer
+    progress=ProgressWindow(timeout, now=time.monotonic)
+    checkpoint={'stallSeconds':timeout, 'startedAtEpochSeconds':started, 'workUntilEpochSeconds':outer}
+    put('startup-window-'+typ+'.json',checkpoint)
     if primer_job is not None:
-        until=outer
-        progress=ProgressWindow(timeout, now=time.monotonic)
         checkpoint={'selectedSeconds':timeout, 'startedAtEpochSeconds':started, 'completedTenants':0,
                     'workUntilEpochSeconds':outer, 'jobUid':primer_job['metadata']['uid']}
         put('startup-window-primer.json',checkpoint)
         unavailable=False
     stable=producer_startup.StableReady(convergence['stableReadySeconds'] if convergence else 0)
     failures={}
-    while time.time()<until and (progress is None or progress.remaining()>0):
-        owned()
-        found=pods(label)
-        if any(x['metadata']['labels'].get('nightscout.org/run-id')!=rid for x in found):raise RuntimeError('FOREIGN_POD')
-        ready_pod=None
-        identity=None
-        for pod in found:
-            if progress is not None:
-                controllers=[owner['uid'] for owner in pod['metadata'].get('ownerReferences',[]) if owner.get('controller')]
-                if controllers != [checkpoint['jobUid']]:
-                    raise RuntimeError('PRIMER_JOB_OWNERSHIP_CHANGED')
-                try:
-                    count=provisioned_count(pod)
-                    if count is not None:
-                        if not 0 <= count <= e['tenantCount']:
-                            raise RuntimeError('PRIMER_CHECKPOINT_INVALID')
-                        unavailable=False
+    try:
+        with progress.bound_reads():
+            while time.time()<until and progress.remaining()>0:
+                owned()
+                found=pods(label)
+                if any(x['metadata']['labels'].get('nightscout.org/run-id')!=rid for x in found):raise RuntimeError('FOREIGN_POD')
+                ready_pod=None
+                identity=None
+                for pod in found:
+                    if primer_job is not None:
+                        controllers=[owner['uid'] for owner in pod['metadata'].get('ownerReferences',[]) if owner.get('controller')]
+                        if controllers != [checkpoint['jobUid']]:
+                            raise RuntimeError('PRIMER_JOB_OWNERSHIP_CHANGED')
+                        try:
+                            count=provisioned_count(pod)
+                            if count is not None:
+                                if not 0 <= count <= e['tenantCount']:
+                                    raise RuntimeError('PRIMER_CHECKPOINT_INVALID')
+                                unavailable=False
+                                if progress.observe(count):
+                                    checkpoint.update(completedTenants=count, lastProgressEpochSeconds=time.time())
+                                    put('startup-window-primer.json',checkpoint)
+                        except (RuntimeError, subprocess.TimeoutExpired, ValueError) as error:
+                            # A completed init container can disappear between status and
+                            # exec. Recheck Pod readiness. Signals and custody errors escape.
+                            if isinstance(error,RuntimeError) and str(error)!='PRIVATE_STEP_FAILED':
+                                raise
+                            unavailable=True
+                    s=summary(pod);put('latest-'+typ+'.json',s)
+                    if primer_job is None:
+                        # Admission, scheduling and per-container startup/ready transitions
+                        # are finite milestones. Restarts and repeated RPCs earn no credit.
+                        status = pod.get('status', {})
+                        count = producer_startup.milestones(status)
                         if progress.observe(count):
-                            checkpoint.update(completedTenants=count, lastProgressEpochSeconds=time.time())
-                            put('startup-window-primer.json',checkpoint)
-                except (RuntimeError, subprocess.TimeoutExpired, ValueError) as error:
-                    # A completed init container can disappear between status and
-                    # exec. Recheck Pod readiness. Signals and custody errors escape.
-                    if isinstance(error,RuntimeError) and str(error)!='PRIVATE_STEP_FAILED':
-                        raise
-                    unavailable=True
-            s=summary(pod);put('latest-'+typ+'.json',s)
-            for v in s['containers']:
-                disposition=producer_startup.disposition(v,convergence)
-                if disposition is None:
-                    continue
-                key=(s['uid'],v['name'],v['restartCount'],disposition)
-                if key not in failures:
-                    current=failure_codes(s['name'],v['name'],s['uid'])
-                    previous=(failure_codes(s['name'],v['name'],s['uid'],previous=True)
-                              if v['previousTermination'] else {'status':'NOT_EXERCISED','codes':[]})
-                    codes=sorted(set(current['codes']+previous['codes']))
-                    hard=disposition=='HARD' or bool(producer_startup.TERMINAL_CODES.intersection(codes))
-                    finding={'pod':s['name'],'uid':s['uid'],'failed':[{'container':v['name'],
-                             'codes':codes,'state':v['state'],'priorTermination':v['previousTermination'],
-                             'restartCount':v['restartCount'],'currentLog':current,'previousLog':previous}],
-                             'disposition':'HARD' if hard else 'RETRY','at':timestamp()}
-                    failures[key]=finding
-                    if len(failures)==1:put('failure-'+typ+'.json',finding)
-                    put('startup-attempts-'+typ+'.json',list(failures.values()))
-                if failures[key]['disposition']=='HARD':
-                    raise RuntimeError('STARTUP_CONTAINER_FAILED_'+typ)
-            if any(x.get('type')=='Ready' and x.get('status')=='True' for x in pod.get('status',{}).get('conditions',[])):
-                ready_pod=pod
-                identity=(s['uid'],tuple((v['name'],v['restartCount']) for v in s['containers']))
-        if stable.observe(identity,time.monotonic()) and time.time()<until and (progress is None or progress.remaining()>0):
-            if convergence:
-                put('startup-convergence-'+typ+'.json',{'verdict':'READY','uid':identity[0],
-                    'effectivePolicy':convergence,'observedStableSeconds':time.monotonic()-stable.started,
-                    'recordedFailures':len(failures)})
-            return ready_pod
-        delay=min(2,max(0,until-time.time()))
-        time.sleep(delay if progress is None else min(delay,timeout/2,progress.remaining()))
-    if progress is not None and time.time()<outer:
+                            checkpoint.update(milestones=count, lastProgressEpochSeconds=time.time())
+                            put('startup-window-'+typ+'.json',checkpoint)
+                    for v in s['containers']:
+                        disposition=producer_startup.disposition(v,convergence)
+                        if disposition is None:
+                            continue
+                        key=(s['uid'],v['name'],v['restartCount'],disposition)
+                        if key not in failures:
+                            current=failure_codes(s['name'],v['name'],s['uid'])
+                            previous=(failure_codes(s['name'],v['name'],s['uid'],previous=True)
+                                      if v['previousTermination'] else {'status':'NOT_EXERCISED','codes':[]})
+                            codes=sorted(set(current['codes']+previous['codes']))
+                            hard=disposition=='HARD' or bool(producer_startup.TERMINAL_CODES.intersection(codes))
+                            finding={'pod':s['name'],'uid':s['uid'],'failed':[{'container':v['name'],
+                                     'codes':codes,'state':v['state'],'priorTermination':v['previousTermination'],
+                                     'restartCount':v['restartCount'],'currentLog':current,'previousLog':previous}],
+                                     'disposition':'HARD' if hard else 'RETRY','at':timestamp()}
+                            failures[key]=finding
+                            if len(failures)==1:put('failure-'+typ+'.json',finding)
+                            put('startup-attempts-'+typ+'.json',list(failures.values()))
+                        if failures[key]['disposition']=='HARD':
+                            raise RuntimeError('STARTUP_CONTAINER_FAILED_'+typ)
+                    if any(x.get('type')=='Ready' and x.get('status')=='True' for x in pod.get('status',{}).get('conditions',[])):
+                        ready_pod=pod
+                        identity=(s['uid'],tuple((v['name'],v['restartCount']) for v in s['containers']))
+                if stable.observe(identity,time.monotonic()) and time.time()<until and progress.remaining()>0:
+                    if convergence:
+                        put('startup-convergence-'+typ+'.json',{'verdict':'READY','uid':identity[0],
+                            'effectivePolicy':convergence,'observedStableSeconds':time.monotonic()-stable.started,
+                            'recordedFailures':len(failures)})
+                    return ready_pod
+                delay=min(2,max(0,until-time.time()))
+                time.sleep(min(delay,timeout/2,progress.remaining()))
+    except subprocess.TimeoutExpired:
+        if progress.remaining()>0 and time.time()<until:
+            raise
+        if primer_job is not None:
+            unavailable=True
+    if primer_job is not None and time.time()<outer:
         raise RuntimeError('PRIMER_PROVISION_PROGRESS_UNMEASURED' if unavailable else 'PRIMER_PROVISION_STALLED')
     if application_topology.readiness_signal(intent,typ,frozen.require) and time.time()<work:
         # The serving workload's readiness window elapsed inside the run's work window.
         # Readiness is a signal under readiness-serve-then-warm: record it, continue.
-        put('readiness-signal-'+typ+'.json',{'verdict':'UNMEASURED','reason':'READY_WINDOW_ELAPSED',
+        put('readiness-signal-'+typ+'.json',{'verdict':'UNMEASURED','reason':'READINESS_STALLED',
             'waitedSeconds':round(time.time()-started,3)})
         return None
-    raise RuntimeError('READY_DEADLINE_'+typ)
+    raise RuntimeError(('READINESS_STALLED_' if time.time()<until else 'READY_DEADLINE_')+typ)
 
 def workload_ready(stage):
     for obj in objects(stage):
@@ -243,8 +260,13 @@ def workload_ready(stage):
         convergence=producer_policy if nm=='pgstream' else None
         timeout=waits['cohortReadySeconds'] if application_topology.serving_workload(intent,stage,obj,frozen.require) else waits['workloadReadySeconds']
         seconds=convergence['maxSeconds'] if convergence else timeout
-        with startup_window(nm,seconds):
-            ready(','.join(k+'='+v for k,v in sel.items()),nm,seconds,convergence)
+        if stage=='stores' and nm=='vault':
+            # The bootstrap Job initializes and unseals Vault. The headless
+            # bootstrap Service routes to the Pod before its Ready condition.
+            probe=obj['spec']['template']['spec']['containers'][0].get('readinessProbe',{})
+            if probe.get('httpGet',{}).get('path')=='/v1/sys/health?uninitcode=200':
+                continue
+        ready(','.join(k+'='+v for k,v in sel.items()),nm,seconds,convergence)
 def release_job(name):
     owned()
     job = get('job', name)
@@ -394,8 +416,7 @@ try:
     put('bootstrap-helper-readback.json',frozen.bootstrap_readback(selected_source,actual,uids,ns,rid))
     install('stores');workload_ready('stores')
     install('provision')
-    with startup_window('provision',waits['provisionReadySeconds']):
-        provision=ready('job-name=provision','provision',waits['provisionReadySeconds'])
+    provision=ready('job-name=provision','provision',waits['provisionReadySeconds'])
     step('owned role export')
     # Keep the two private configuration documents required for the completion oracle only.
     with startup_window('role-export',waits['roleExportSeconds']) as until:
@@ -465,7 +486,22 @@ except Exception as exc:
             observed=json.loads(execpod(pod,'admin',['node','-e',observer]))
             put('admin-classification.json',{k:observed[k] for k in ('status','reason','targetRole','checkPhase','causeCode') if k in observed})
         except Exception as audit:put('admin-observation-refusal.json',{'status':'UNMEASURED','error':str(audit)[:120]})
-    put('first-failure.json',{'stage':current,'code':str(exc)[:500],'time':timestamp()})
+    failure={'stage':current,'code':str(exc)[:500],'time':timestamp()}
+    try:
+        owned()
+        vault, = [pod for pod in pods('nightscout.org/run-id='+rid)
+                  if any(c['name']=='vault' for c in pod['spec']['containers'])]
+        # Ask Vault itself over verified TLS. Status overrides let its CLI
+        # expose initialized/sealed separately even when normal health is 503.
+        raw=execpod(vault,'vault',['env','VAULT_MAX_RETRIES=0','vault','read','-format=json',
+            '-address=https://vault-bootstrap:8200','-ca-cert=/run/ns-ca/ca.crt','sys/health',
+            'sealedcode=200','uninitcode=200'],seconds=4)
+        state=json.loads(raw)
+        if producer_startup.vault_sealed(state):
+            failure['stopReason']='VAULT_SEALED'
+    except (OSError, RuntimeError, AssertionError, ValueError, subprocess.SubprocessError):
+        pass
+    put('first-failure.json',failure)
     raise
 finally:
     # Capture every surviving init/steady termination before exact owned cleanup.

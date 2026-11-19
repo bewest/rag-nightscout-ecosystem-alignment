@@ -39,6 +39,16 @@ else:
         for entrypoint in ('primer.py', 'experiment.py', 'adapter.py'):
             subprocess.run([sys.executable, '-B', str(here/entrypoint), '--help'], check=True, capture_output=True)
 
+    def test_disk_client_state_readback_preserves_bounded_legacy_volume(self):
+        def job(volume):
+            return {'spec':{'template':{'spec':{'volumes':[{'name':'client-state','emptyDir':volume}]}}}}
+        for value in ({'sizeLimit':'16Mi'}, {}, {'medium':'', 'sizeLimit':'16Mi'}):
+            got=primer.client_state_volume(job(value),job(value),'/run/ns-client')
+            self.assertEqual((got['medium'],got['sizeLimit']),('disk',value.get('sizeLimit')))
+        for changed in ({'medium':'Memory'},{'sizeLimit':'1Mi'}):
+            with self.assertRaisesRegex(primer.k.Refused,'PRIMER_STORAGE_READBACK_CHANGED'):
+                primer.client_state_volume(job({}),job(changed),'/run/ns-client')
+
     def test_owned_exec_and_private_export(self):
         k = primer.k
         utc = datetime.now(timezone.utc)

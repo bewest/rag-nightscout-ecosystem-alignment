@@ -107,9 +107,12 @@ class Frozen(unittest.TestCase):
     def test_native_binding_inputs_skip_legacy_patch_and_keep_capture_protocol(self):
         from unittest.mock import patch
         selected = frozen.source(self.manifest)
-        for version, captured in ((None, None), (1, 1), (1, None)):
+        for version, captured, job in ((None, None, None), (1, 1, None), (1, None, None),
+                                      (1, 1, 'verification'), (1, 1, 'dropped')):
             supported = dict(selected, commands={}, postgresIdentities={}, nativeCatalogueSha256='7'*64,
                              sourceFilesSha256={})
+            if job:
+                supported['verificationJob']='verification'
             if version is not None:
                 supported['bindingInputsVersion'] = version
             archive = io.BytesIO()
@@ -119,7 +122,7 @@ class Frozen(unittest.TestCase):
                 member.size = len(payload)
                 output.addfile(member, io.BytesIO(payload))
             calls = []
-            out = self.root/('materialized-'+str(version)+'-'+str(captured))
+            out = self.root/('materialized-'+str(version)+'-'+str(captured)+'-'+str(job))
             def git(argv, **_):
                 if argv[3:5] == ['rev-parse', 'HEAD']:
                     return selected['deployCommit'].encode()
@@ -135,14 +138,16 @@ class Frozen(unittest.TestCase):
                 if str(argv[1]).endswith('source-equivalence.py'):
                     path = out/'bindings/kubernetes/assets/source-contract.json'
                     measured = json.loads(path.read_bytes())
+                    if job=='dropped':
+                        measured.pop('verificationJob',None)
                     if captured is None:
                         measured.pop('bindingInputsVersion', None)
                     k.write(path, measured)
                 return SimpleNamespace(returncode=0)
             with patch.object(experiment.subprocess, 'check_output', side_effect=git), \
                  patch.object(experiment.subprocess, 'run', side_effect=execute):
-                if version == 1 and captured is None:
-                    with self.assertRaisesRegex(k.Refused, 'BINDING_INPUT_PROTOCOL_CHANGED'):
+                if job=='dropped' or version == 1 and captured is None:
+                    with self.assertRaisesRegex(k.Refused, 'CANDIDATE_VERIFICATION_JOB_CHANGED' if job else 'BINDING_INPUT_PROTOCOL_CHANGED'):
                         experiment.materialize(self.manifest, '/synthetic/binding', '/synthetic/deploy', out)
                     self.assertFalse((out/'binding.json').exists())
                 else:

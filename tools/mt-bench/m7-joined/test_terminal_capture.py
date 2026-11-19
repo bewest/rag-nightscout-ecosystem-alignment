@@ -11,6 +11,24 @@ class Terminal(unittest.TestCase):
         return dict(Id='a'*64,Image='sha256:'+'b'*64,RestartCount=3,
             Config=dict(Labels={a.OWNER:'1'*32,'com.docker.compose.project':'owned','com.docker.compose.service':'evaluator'},Env=['DO_NOT_RETAIN=secret']),
             State=dict(Status='exited',Running=False,Pid=0,ExitCode=7,OOMKilled=True,StartedAt='2026-11-18T00:00:00Z',FinishedAt='2026-11-18T00:00:05Z'),HostConfig=dict(Memory=1024**3,NanoCpus=1000000000))
+    def test_only_latest_failed_vault_health_can_classify_the_sealed_stop(self):
+        with TemporaryDirectory() as tmp:
+            d=Path(tmp);m=dict(project='owned',owner='1'*32);row=self.row()
+            row['Config']['Labels']['com.docker.compose.service']='vault'
+            a.write(d/'frozen.compose.json',{'services':{'vault':{'image':row['Image']}}})
+            a.write(d/'owner.json',m)
+            for index,(status,output,code,expected) in enumerate([
+                ('unhealthy','TLS handshake failed',1,None),
+                ('unhealthy','VAULT_SEALED\n',1,'VAULT_SEALED'),
+                ('healthy','',0,None)]):
+                row['State']['Health']={'Status':status,'Log':[
+                    {'Output':'VAULT_SEALED','ExitCode':1},{'Output':output,'ExitCode':code}]}
+                rows=[]
+                with patch.object(a,'assert_owned'),patch.object(a,'resources',return_value=[row]),patch.object(a,'command',return_value=json.dumps(row)):
+                    with self.assertRaisesRegex(RuntimeError,'M7_COMMAND_FAILED'):
+                        with a.deployment_stage(d,rows,'startup-'+str(index)):
+                            raise RuntimeError('M7_COMMAND_FAILED')
+                self.assertEqual(rows[0].get('stopReason'),expected)
     def test_terminal_state_survives_without_cgroup_and_wrong_source_refuses(self):
         with TemporaryDirectory() as tmp:
             d=Path(tmp);m=dict(project='owned',owner='1'*32);row=self.row()

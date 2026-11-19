@@ -66,7 +66,7 @@ def receipt(manifest, authorization):
     return chosen
 
 
-def inspect_pages(raw, services, ids, *, failed_baseline=None, failure_policy=None):
+def inspect_pages(raw, services, ids, *, failed_baseline=None, failure_policy=None, judge_health=True):
     """Validate all returned source rows, without changing their strict verdict.
 
     This only classifies what may be observed during the selected pre-load
@@ -135,12 +135,13 @@ def inspect_pages(raw, services, ids, *, failed_baseline=None, failure_policy=No
                         allowed_failed = 0 if failed_baseline is None else failed_baseline[row['tenant']]
                         # Outcome gate: a typed transient failure is counted, not
                         # refused. Untyped, unknown or hard reasons still refuse.
-                        failure_ok = (progress['failedCompletions'] == allowed_failed or
-                                      outcome_gate.accepts_failure(row, view))
-                        source_need(value['alert'] is None and failure_ok,
-                                    'M7_PRELOAD_EVALUATION_FAILURE')
-                        source_need(value['code'] in PENDING_CODES or value['code'] is None,
-                                    'M7_PRELOAD_SOURCE_REFUSAL')
+                        if judge_health:
+                            failure_ok = (progress['failedCompletions'] == allowed_failed or
+                                          outcome_gate.accepts_failure(row, view))
+                            source_need(value['alert'] is None and failure_ok,
+                                        'M7_PRELOAD_EVALUATION_FAILURE')
+                            source_need(value['code'] in PENDING_CODES or value['code'] is None,
+                                        'M7_PRELOAD_SOURCE_REFUSAL')
                         require(not value['ready'] or value['code'] is None, 'M7_PRELOAD_SOURCE_CONTRACT')
                         # The source can retire acquired/output state while
                         # awaiting replacement, or temporarily gate worker
@@ -293,6 +294,8 @@ def run(a, directory, manifest, *, clock=time):
                 a.write(out/'result.json', result)
                 # Validate/classify every original source row, including rows
                 # after the strict reader's first refusal. Never edit its values.
+                import clinical_warm
+                clinical_warm.record(d/clinical_warm.FILE, raw, services, ids, started/1e6, sample['endedMonoNs']/1e6)
                 observed = inspect_pages(raw, services, ids, failure_policy=p.OUTCOME_FAILURE_POLICY)
                 sample['sourceIdentities'] = observed['identities']
                 sample['cohortCompletion'] = cohort_completion(observed)

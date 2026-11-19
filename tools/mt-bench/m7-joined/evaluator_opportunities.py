@@ -9,6 +9,7 @@ The adapter selects this observer through its explicit idle/load contract flag.
 import evaluator_progress as p
 import evaluator_idle as idle
 import time
+import threading
 import math
 import re
 
@@ -16,6 +17,19 @@ SOURCES=('clock','settings','policy','activity','lifecycle','bootstrap')
 CONTRACT='received-input-v1'
 ROUND_SECONDS=20
 ROUND_BYTES=16777216
+
+
+def round_budget(tenants, requested=None):
+    """Finite observer allocation. Each SQL round covers every 64-row batch."""
+    requested = {} if requested is None else requested
+    p.need(isinstance(requested, dict) and set(requested) <= {'sqlMaxBytes', 'roundSeconds'}
+           and all(p.integer(v, 1) for v in requested.values()), 'M7_OPPORTUNITY_BUDGET_INPUT')
+    # R4c's retained prefix used ~2.2 KiB per tenant and ~0.14s per batch.
+    # Allocate 4 KiB per tenant and one second per batch, with the old floors.
+    defaults = {'sqlMaxBytes': max(ROUND_BYTES, tenants * 4096),
+                'roundSeconds': max(ROUND_SECONDS, (tenants + 63) // 64)}
+    return {'requested': requested, 'effective': {**defaults, **requested},
+            'origin': {key: 'configured' if key in requested else 'roster default' for key in defaults}}
 
 
 def revision(value):
@@ -199,7 +213,9 @@ def capture_windows(windows,count):
         previous=row['inspectionEndNs']
 
 
-def collection_cost(value,windows,tenants):
+def collection_cost(value,windows,tenants,limits=None):
+    if limits is None:
+        limits={'sqlMaxBytes':ROUND_BYTES,'roundSeconds':ROUND_SECONDS}
     p.need(isinstance(value,dict) and set(value)=={'preparation','rounds','scope'},'M7_OPPORTUNITY_COST')
     prep=value['preparation'];costs=value['rounds']
     p.need(isinstance(prep,dict) and prep.get('nodeCalls')==1 and prep.get('sqlQueries')==0,'M7_OPPORTUNITY_COST')
@@ -208,15 +224,18 @@ def collection_cost(value,windows,tenants):
         p.need(all(type(row.get(k)) in (int,float) and math.isfinite(row[k]) and row[k]>=0 for k in ('wallSeconds','observerProcessCpuSeconds')),'M7_OPPORTUNITY_COST')
     for cost,window in zip(costs,windows):
         p.need(cost.get('sqlQueries')==(tenants+63)//64 and cost.get('nodeCalls')==1,'M7_OPPORTUNITY_QUERY_BOUND')
-        p.need(p.integer(cost.get('rawSqlBytes'),1) and cost['rawSqlBytes']<=ROUND_BYTES,'M7_OPPORTUNITY_BYTE_BOUND')
-        p.need(cost['wallSeconds']<=(window['durableEndNs']-window['startNs'])/1e9 and cost['wallSeconds']<=ROUND_SECONDS+.1,'M7_OPPORTUNITY_COST')
+        p.need(p.integer(cost.get('rawSqlBytes'),1) and cost['rawSqlBytes']<=limits['sqlMaxBytes'],'M7_OPPORTUNITY_BYTE_BOUND')
+        p.need(cost['wallSeconds']<=(window['durableEndNs']-window['startNs'])/1e9 and cost['wallSeconds']<=limits['roundSeconds']+.1,'M7_OPPORTUNITY_COST')
 
 
 class Observer(p.Observer):
     """Explicit idle/load caller. Three SQL-before-inspection captures, one clock."""
-    def __init__(self,*args,durable_fetch,binding,preparation_cost,source_sha256,query_sha256,policy=p.POLICY,**observer):
+    def __init__(self,*args,durable_fetch,binding,preparation_cost,source_sha256,query_sha256,round_allocation=None,policy=p.POLICY,**observer):
         super().__init__(*args,policy=policy,**observer)
         p.need(self.phase in ('idle','load'),'M7_OPPORTUNITY_PHASE')
+        self.allocation = round_allocation
+        self.limits = (round_allocation['effective'] if round_allocation else
+                       {'sqlMaxBytes':ROUND_BYTES, 'roundSeconds':ROUND_SECONDS})
         self.durable_fetch,self.binding=durable_fetch,binding
         self.preparation_cost=preparation_cost;self.durable=[];self.windows=[];self.costs=[]
         self.source_sha256,self.query_sha256=source_sha256,query_sha256
@@ -233,6 +252,7 @@ class Observer(p.Observer):
 
     def payload(self,value):
         return {**value,**({'capturePolicy':self.policy} if self.policy!=p.POLICY else {}),
+                **({'opportunityBudget':self.allocation} if self.allocation else {}),
                 'opportunityContract':CONTRACT,'durableBinding':self.binding,'durable':self.durable,'rounds':self.rounds,
                 'durableSourceSha256':self.source_sha256,'durableQuerySha256':self.query_sha256,
                 'captureWindows':self.windows,'durableCollectorCost':{'preparation':self.preparation_cost,'rounds':self.costs,
@@ -248,18 +268,18 @@ class Observer(p.Observer):
             if self.failure:raise self.failure
             capture_windows(self.windows,3)
             p.need(sum(c['sqlQueries'] for c in self.costs)==3*((len(self.ids)+63)//64),'M7_OPPORTUNITY_QUERY_BOUND')
-            p.need(sum(c['rawSqlBytes'] for c in self.costs)<=3*ROUND_BYTES,'M7_OPPORTUNITY_BYTE_BOUND')
+            p.need(sum(c['rawSqlBytes'] for c in self.costs)<=3*self.limits['sqlMaxBytes'],'M7_OPPORTUNITY_BYTE_BOUND')
             if getattr(self,'rest_only',False):
                 from discovery_rest import assess_rest
                 result=assess_rest(self.rounds,self.ids,self.phase,self.durable,self.binding,policy=self.policy)
             else:result=assess(self.rounds,self.ids,self.phase,durable=self.durable,binding=self.binding,policy=self.policy)
-            collection_cost(self.payload(result)['durableCollectorCost'],self.windows,len(self.ids))
+            collection_cost(self.payload(result)['durableCollectorCost'],self.windows,len(self.ids),self.limits)
         except Exception as error:self.failed(error);raise
         self.result=self.payload(result);self.write(self.result)
         if result['verdict']!='PASS' and not getattr(self,'rest_only',False):raise p.Refused('M7_OPPORTUNITY_NOT_OBSERVED')
 
     def __exit__(self,kind,value,traceback):
-        self.stop.set();self.thread.join(timeout=ROUND_SECONDS+25)
+        self.stop.set();self.thread.join(timeout=min(threading.TIMEOUT_MAX, self.limits['roundSeconds'] + 25))
         if kind:
             try:self.failed(p.Refused('M7_EVALUATOR_PROGRESS_BODY_FAILED','FAIL'),{'interruptedBody':True,'bodyFailureType':type(value).__name__,'collectorStillRunning':self.thread.is_alive()})
             except Exception:self.publicationFailed=True
@@ -275,7 +295,7 @@ def pack(value):
             'rounds':[idle._pack_round(r) for r in value.get('rounds',[])]}
 
 
-def verify(value,tenants,services,binding,*,source_sha256=None,query_sha256=None,budget=None):
+def verify(value,tenants,services,binding,*,source_sha256=None,query_sha256=None,budget=None,opportunity_budget=None):
     p.need(value.get('kind')=='evaluator-opportunity-phase-v1' and value.get('opportunityContract')==CONTRACT and value.get('columns')==list(idle.COLUMNS),'M7_OPPORTUNITY_ARTIFACT')
     p.need(value.get('durableBinding')==binding,'M7_OPPORTUNITY_BINDING','FAIL')
     policy=p.capture_policy(budget)
@@ -283,7 +303,12 @@ def verify(value,tenants,services,binding,*,source_sha256=None,query_sha256=None
     for key,expected in [('durableSourceSha256',source_sha256),('durableQuerySha256',query_sha256)]:
         p.need(isinstance(value.get(key),str) and re.fullmatch('[a-f0-9]{64}',value[key]) and (expected is None or value[key]==expected),'M7_OPPORTUNITY_BINDING','FAIL')
     rounds,ids=idle._decode(value,tenants,services,allow_unavailable=True,allow_clinical_stall=value.get('restCollectionPermitted') is True);capture_windows(value.get('captureWindows'),3)
-    collection_cost(value.get('durableCollectorCost'),value['captureWindows'],tenants)
+    limits = None
+    if 'opportunityBudget' in value or opportunity_budget is not None:
+        expected = round_budget(tenants, opportunity_budget)
+        p.need(value.get('opportunityBudget') == expected, 'M7_OPPORTUNITY_BUDGET_CHANGED')
+        limits = expected['effective']
+    collection_cost(value.get('durableCollectorCost'),value['captureWindows'],tenants,limits)
     if value.get('restCollectionPermitted') is True:
         from discovery_rest import assess_rest
         result=assess_rest(rounds,sorted(ids),value.get('phase'),value.get('durable'),binding,policy=policy)

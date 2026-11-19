@@ -186,20 +186,23 @@ restores its private file. The actor verifies the mounted state volume and
 config digest before writing and records filesystem size and usage when
 available. The source retains its original atomic writes and uncertainty journal.
 
-Set `profile.phases.cohortReadySeconds` in a fresh intent to give the serving
-cohort StatefulSet an explicit Pod Ready window. The controller uses the time
-remaining on its original work deadline if that deadline comes first. The
-legacy window is 300 seconds. The lifecycle verifies the hashed intent before
-entry and records the selected window and effective deadline at the wait.
-A cohort that is not Ready when that window ends, while the original work
-deadline still has time, is recorded as `readiness-signal-cohort.json`
-(`UNMEASURED`, with the waited seconds) and the run continues; readiness is a
-signal under the readiness-serve-then-warm decision. Reaching the work deadline
-still stops the run with `READY_DEADLINE_cohort`.
+The lifecycle starts the split binding's platform bootstrap while Vault can
+still be sealed. Once the private admin proof succeeds it starts all serving
+roles, including pgstream, before releasing the tenant provision and DATA
+primer. The verified client's disk-backed state has no default size limit.
+Older bindings keep their own state representation.
+
+`profile.phases.cohortReadySeconds` selects the maximum time without a new
+Kubernetes startup milestone on the serving cohort. The default is 300
+seconds. Pod scheduling, initialization, container startup and readiness can
+extend the wait up to the operator's work cutoff. A stalled cohort records
+`UNMEASURED` and the elapsed time under the readiness-as-signal policy. A
+stalled required infrastructure workload or platform provision Job stops
+startup. The optional pgstream convergence scenario retains its own maximum.
 
 Fresh intent also accepts positive integer seconds in
 `profile.phases.startupWindows.kubernetes`. Set `workloadReadySeconds` for
-other unselected workload waits, or `primerReadySeconds` and `dataPrimerSeconds`
+the other workload readiness stall intervals, or `primerReadySeconds` and `dataPrimerSeconds`
 for the maximum interval between durable provision or DATA checkpoints. `roleExportSeconds`, `platformVerifySeconds`,
 `secretSeedSeconds`, `secretPublishSeconds` and `jobCompleteSeconds` cover the
 separate bootstrap handoffs. `requestSeconds`, `commandSeconds` and `execSeconds`
@@ -270,11 +273,15 @@ each fixture's independent outcome.
 
 Change `population`, `logicalPollingClients`, `workloadScale`, `loadSeconds`,
 `setupSeconds` and `drainSeconds` in the stable workload definition to select
-another point. The explicit setup allowance covers viewer priming and the
-remaining native JWT setup. The entered absolute work cutoff bounds both.
-`drainSeconds` bounds the final wait. The inherited probe checks an individual
-write for up to 120 seconds. A longer requested drain records PARTIAL. A
-shorter run can end at its declared cutoff with an incomplete ledger.
+another point. `setupSeconds` begins with ordinary driver JWT setup.
+Viewer priming uses the separately configurable `workload.viewerSetup`
+progress wait and connection ramp. The [runner guide](../m7-joined/RUNNER.md#phase-clocks-and-local-discovery-to-completion)
+describes the equivalent local `viewer-setup` fields. Commission and recovery
+use polling for stock display coverage. The entered work cutoff bounds both actors.
+`drainSeconds` bounds the final wait. Each sampled accepted write has a
+120-second deadline from the later of HTTP acknowledgement and independently
+observed tenant warmth. A cold write can continue into the remaining drain.
+The result reports missing observations at the cutoff.
 All-writer clinical drain requires its own observation. The frame recorder
 retains its explicit overflow refusal.
 
@@ -807,7 +814,7 @@ another source or changes PENDING to PASS.
 | Fixed topology | Compose preserves the released K1/API1 and K2/API2 structural checks, actual mounted-file/roster/ordinal checks and finite per-instance accounting. Native K2 scaling remains UNMEASURED. Kubernetes supports the existing K1/API1 external-producer binding; another role topology explicitly refuses. |
 | Configured driver | Both transports reuse the same generator, seven-shape wrapper, roster splitter and scenario/shard/phase reducer. Kubernetes runs each native k6 process inside the admitted combined native scope and bounded file/subprocess limits. Missing shard custody, changed VUs/plan and missing/dropped work cannot become a complete pass. Independent valid shard rows survive in partial reduction. |
 | Percentiles | Summary merging preserves counts and shard statistics. Pooled percentiles remain UNMEASURED without an adequate merged sample definition. |
-| Observation | Per-write clinical/client proof retains its strict 120-second contract. A longer finite drain is admitted and reported PARTIAL for that observer. Accepted/stored ordinary writes, witnesses, frames and independent rows retain their own results. No all-writer clinical drain is inferred. |
+| Observation | Per-write clinical/client proof uses the shared warm-relative deadline. The finite drain can censor an outstanding observation. Accepted/stored ordinary writes, witnesses, frames and independent rows retain their own results. No all-writer clinical drain is inferred. |
 | Resource capture | Native driver/controller/observer cgroup CPU, memory/events and lifetime peak are captured before scope exit. Stage controller retains all surviving init/steady container states and resources before exact UID cleanup. Missing/retired counters remain UNMEASURED; independent cluster sampling is still needed for actual init/steady phase peaks. |
 
 Launch a freshly commissioned case with its lifecycle input. The input names
@@ -924,37 +931,24 @@ k6 `image`, measured `shellContract`, explicit `resources` and
 `exporterResources`, existing `nodeName`, `deadlineSeconds`, and
 `imagePullSecrets`. No resource default is chosen. The Job deadline must cover
 the authored setup, load, graceful stop and export margin, and still fit the
-remaining work budget at launch. Optional `inputCodec` selects `raw-v1` (the
-unchanged default) or `gzip-v1`. Raw mode explicitly refuses a large roster that
-exceeds the 900 KiB serialized input Secret bound.
+remaining work budget at launch.
 
-`gzip-v1` transports the exact synthetic DATA `id`/`host`/`token` JSON, without
-changing the workload or using a summary fallback. It caps the roster at 10,000
-rows, decompressed bytes at 4 MiB and gzip bytes at 600 KiB; the complete Secret,
-including base64 and script overhead, must still fit 900 KiB. The immutable
-Secret binds both byte lengths, both SHA256 hashes and the exact tenant count.
-A tokenless `unpack-roster` init container uses the pinned application image's
-Node builtins. It checks bounds before reading/inflating/parsing, uses a hard
-inflate output limit, verifies hashes/count/unique synthetic IDs, and writes
-the original bytes once with mode 0400. Changed, truncated, ambiguous or
-overbound input refuses before k6 starts. It neither retries the workload nor
-rewrites a roster that already exists.
+New cases freeze `inputCodec` as `fixture-data-v1`. The primer issues the DATA
+credentials. After the controller verifies the Job, Pod, namespace and
+exporter identity, it streams the selected DATA identity/token pairs to that
+Pod over private exec stdin. The exporter checks its downward-API Pod UID and
+uses the pinned application's fixture seed and provisioned count to generate
+the IDs and aliases. It verifies the complete ordered projection against the
+controller's digest before publishing a mode-0400 file in a disk-backed
+emptyDir. k6 mounts that volume read-only and starts when the file exists.
+The input Secret contains scripts, launch parameters, counts and a digest.
+Only the original waiter mounts a scoped service-account token.
 
-The init phase follows the existing namespace waiter, reuses the explicit
-`exporterResources` request/limit envelope and enters the same complete Pod
-quota/fit calculation. Its memory request must be at least 64 MiB and ephemeral
-storage request at least 4 MiB. A disk-backed `roster` emptyDir is capped at
-4 MiB, writable only by unpacking and mounted read-only in k6 as
-`TENANTS_FILE=/roster/tenants.json`. The unpacker, k6 and exporter have no API
-token mount; only the original waiter receives its scoped projected token.
-Planning and launch declare the same Pod regardless of roster bytes. A codec
-change requires a fresh uncaptured case and complete current admission.
-
-Offline controls reproduce exact 10,000-row restoration with synthetic
-27-character DATA tokens, the original cached k6 workload SharedArray decoder,
-and small raw/gzip seven-shape scheduling CSV/reducer runs. These establish
-input transport only. Live native compatibility, clinical/product outcomes and
-operating capacity remain UNMEASURED; every existing oracle remains required.
+The same path supports the selected ordinary prefix and a full 10,000-tenant
+roster. DATA tokens stay out of Kubernetes objects, arguments, logs and
+receipts. A fresh case built from an older selection records the requested codec in preflight
+and freezes the private channel. Existing raw-v1 and gzip-v1
+packet declarations keep their recorded codec for historical verification.
 
 The offline preparer appends only a suspended test Job and namespace-local
 waiter RBAC. It keeps every application workload unchanged, adjusts the exact
@@ -974,7 +968,7 @@ Job backoff is zero, replacement waits for Failed, and test Pods have a finite
 termination grace. Runtime application Pod and container identities stay strict;
 only the exact declared test Job has a separate dynamic census.
 
-The probe restart signal, both-writer join, 120-second per-write observer,
+The probe restart signal, both-writer join, per-write clinical observations,
 all-tenant fixed-target catch-up and full `assess_stage()` path stay in their
 original order. `assess_join()` adds capture/run/script/hash checks. The init
 waiter alone gets `jobs/get` for `provision` and `primer` in its namespace;

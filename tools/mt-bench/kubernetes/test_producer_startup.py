@@ -11,6 +11,7 @@ from types import SimpleNamespace
 import unittest
 
 import producer_startup as startup
+from primer_progress import ProgressWindow
 import application_topology
 import frozen
 
@@ -35,7 +36,7 @@ class Startup(unittest.TestCase):
             def pods(_):
                 if clock.now>=400:pod['status']['conditions']=[{'type':'Ready','status':'True'}]
                 return [pod]
-            scope={'time':clock,'work':work,'rid':'run','step':lambda *_:None,'owned':lambda:None,'pods':pods,
+            scope={'ProgressWindow':ProgressWindow,'time':clock,'work':work,'rid':'run','step':lambda *_:None,'owned':lambda:None,'pods':pods,
                    'application_topology':application_topology,'intent':{},'frozen':frozen,
                    'contextmanager':contextmanager,'phase_cutoff':None,
                    'summary':lambda _:observation,'producer_startup':startup,'put':lambda k,v:records.update({k:v})}
@@ -54,7 +55,7 @@ class Startup(unittest.TestCase):
                     # The run's own work deadline is still a hard stop.
                     with self.assertRaisesRegex(RuntimeError,'READY_DEADLINE_cohort'):
                         scope['ready']('cohort','cohort',window)
-            self.assertEqual(records['startup-window-cohort.json']['effectiveWindowSeconds'],min(window,work))
+            self.assertEqual(records['startup-window-cohort.json']['workUntilEpochSeconds'],min(window,work))
         called=[]
         scope.update(ready=lambda *args:called.append(args), waits={'cohortReadySeconds':900,'workloadReadySeconds':600},producer_policy=None,
             objects=lambda stage:[{'kind':kind,'metadata':{'name':name},'spec':{'selector':{'matchLabels':{'role':name}}}}
@@ -88,7 +89,7 @@ class Startup(unittest.TestCase):
                'status': {'conditions': [{'type': 'Ready', 'status': 'True'}]}}
         waiting = {**pod, 'status': {'conditions': []}}
         globals_ = {
-            'application_topology': application_topology, 'intent': {}, 'frozen': frozen,
+            'ProgressWindow': ProgressWindow, 'application_topology': application_topology, 'intent': {}, 'frozen': frozen,
             'time': clock, 'work': 30, 'phase_cutoff': None, 'rid': 'run', 'ns': 'synthetic',
             'producer_startup': startup, 'rpc': ['kubectl'], 'subprocess': subprocess,
             'hashlib':hashlib,'os':os,'live':Path(directory.name),

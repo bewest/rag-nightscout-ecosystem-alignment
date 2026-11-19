@@ -246,7 +246,9 @@ def progress_refusal(error):
 
 
 def progress(d, c, objects, client, *, raw_output=None, until=None, warming=False):
+    import clinical_warm
     with k.observation_deadline(until):
+        warm_start = clinical_warm.now_ms()
         k.deadline(c)
         ids = [r['id'] for r in roster(c)]
         baseline = k.active_baseline(d)
@@ -305,6 +307,13 @@ def progress(d, c, objects, client, *, raw_output=None, until=None, warming=Fals
         if post is not None:
             if primary is not None: post.source_refusal = progress_refusal(primary)
             raise post
+        if raw_output is not None and response.get('transportSucceeded') and raw_output.is_file():
+            folder = raw_output.parent
+            if folder.parent.name == 'preload-convergence':
+                folder = folder.parent.parent
+            clinical_warm.record(folder/clinical_warm.FILE, {'evaluator': raw_output.read_bytes()},
+                                 ['evaluator'], ids, warm_start, clinical_warm.now_ms(),
+                                 terminal=raw_output.name in ('progress-after.private.jsonl', 'progress-stop.private.jsonl'))
         if primary is not None: raise primary
         if selected is not None:value['capturePolicy']=policy
         return value
@@ -518,6 +527,10 @@ def execute(d, c, objects, client, load=False, recovery=False):
     k.write(out / 'before.json', before)
     k.write(out / 'driver.json', readback)
     import preload
+    import clinical_warm
+    env["M7_CLINICAL_WARM_PATH"] = str(out / clinical_warm.FILE)
+    if not recovery and 'servingStartMonoMs' in c:
+        clinical_warm.start(out/clinical_warm.FILE, c['servingStartMonoMs'], 'evaluator role start invocation')
     convergence = preload.run(d, out, c, objects, client, ids=[row['id'] for row in tenants],
                               collect=retained_progress) if load else None
     # preload-is-a-signal: a roster still warming at the end of the phase starts traffic. The
@@ -537,13 +550,12 @@ def execute(d, c, objects, client, load=False, recovery=False):
     runid = stage_runid(c, name)
     (out / 'runid').write_text(runid)
     node = c['driver']['node']
+    viewer_workload = k.viewer_plan.stage_cadence(settings, load)
     argv = [node, str(d / 'probe.cjs'), '--base', c['baseUrl'], '--tenants', c['tenantsFile'], '--runid', runid,
-            '--per', '2', '--clients', str(settings['logicalPollingClients']), '--open', '5', '--window', str(settings['loadSeconds']),
+            '--per', '2', '--clients', str(settings['logicalPollingClients']), *k.viewer_plan.setup_args(viewer_workload), '--window', str(settings['loadSeconds']),
             '--probeEvery', str(settings['probeEveryMs'] if load else 1000), '--restart', '0', '--evalTimeout', '120',
             '--out', str(out / 'probe.json'), '--signal', str(out / '.window')]
     setup = settings.get('setupSeconds', 310)
-    if 'setupSeconds' in settings:
-        argv += ['--setupSeconds', str(setup)]
     if not load:
         argv += ['--maxWrites', '2']
     # Unchanged stock probe, with only SQL transport and external restart changed.
@@ -580,9 +592,9 @@ def execute(d, c, objects, client, load=False, recovery=False):
         midpoint = threading.Thread(target=capture_midpoint, daemon=True)
         midpoint.start()
         if load:
-            prime_until = min(started + setup, k.timestamp(c['deadlines']['workUntil']))
+            work_until = k.timestamp(c['deadlines']['workUntil'])
             while not (out / '.window').exists():
-                k.need(process.poll() is None and time.time() < prime_until, 'PROBE_NOT_PRIMED', 'UNMEASURED')
+                k.need(process.poll() is None and time.time() < work_until, 'PROBE_NOT_PRIMED', 'UNMEASURED')
                 time.sleep(.2)
             # A native k6 already in an operator-owned finite resource scope.
             # No Docker network/volume assumption or new driver Pod is introduced.
@@ -590,7 +602,8 @@ def execute(d, c, objects, client, load=False, recovery=False):
                        DURATION=str(settings['loadSeconds']), ACCEL='1', HOT_FACTOR=str(settings.get('hotFactor', 1)), JWT_SETUP_CONCURRENCY=str(settings.get('jwtSetupConcurrency', 1)),
                        SHAPES='w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status')
             if 'setupSeconds' in settings:
-                setup = int(prime_until - time.time())
+                prime_until = min(time.time() + setup, work_until)
+                setup = min(setup, int(k.deadline(c)))
                 k.need(setup > 0, 'SETUP_WINDOW_EXHAUSTED', 'UNMEASURED')
                 env['M7_SETUP_SECONDS'] = str(setup)
                 env['M7_SETUP_UNTIL_MS'] = str(int(prime_until * 1000))
@@ -618,18 +631,26 @@ def execute(d, c, objects, client, load=False, recovery=False):
                 load_started, load_ended = ordinary_load_window(c, out / 'k6.log', load_process_started, load_process_ended)
             (out / '.restart').touch()
             drain_started = time.time()
+        def tail_read(index, seconds):
+            value = retained_progress(d, out, c, objects, client, 'clinical-tail-%04d' % index,
+                                      until=time.time()+seconds, warming=True)
+            return {key:value[key] for key in ('queries','bytes','wallSeconds')}
+        def wait_probe(seconds):
+            return wait_observed(process, seconds, midpoint_failure)
         if load:
-            # The inherited oracle has a 120 s per-write lookback. Keep that scope explicit.
+            # The operator's remaining drain clock can censor outstanding witnesses.
             requested = settings.get('drainSeconds', 120)
-            k.write(out / 'drain.json', {'requestedSeconds': requested, 'perWriteCollectorLimitSeconds': 120,
-                    'maximumObservableSeconds': min(requested, 120),
-                    'scope': 'PARTIAL' if requested > 120 else 'BOUNDED', 'allWriterDrain': 'UNMEASURED'})
+            k.write(out / 'drain.json', {'requestedSeconds': requested, 'perWriteClinicalDeadlineSeconds': 120,
+                    'deadlineFrom': 'later of HTTP acceptance and evaluator warmth',
+                    'maximumObservableSeconds': min(requested, k.deadline(c)),
+                    'scope': 'remaining operator drain', 'allWriterDrain': 'UNMEASURED'})
             try:
-                wait_observed(process, min(requested, k.deadline(c)), midpoint_failure)
+                clinical_warm.wait_for_probe(process, min(requested, k.deadline(c)), out,
+                                             tail_read, wait=wait_probe)
             except subprocess.TimeoutExpired:
                 raise k.Refused('K8S_PROBE_DRAIN_WINDOW_EXHAUSTED', 'UNMEASURED') from None
         else:
-            wait_observed(process, k.deadline(c), midpoint_failure)
+            clinical_warm.wait_for_probe(process, k.deadline(c), out, tail_read, wait=wait_probe)
         if process.returncode != 0:
             k.need(load, 'PROBE_FAILED', 'UNMEASURED')
             # Both processes have exited. Keep the failed probe's status while

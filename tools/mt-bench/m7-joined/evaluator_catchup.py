@@ -195,6 +195,7 @@ def run(a, directory, manifest, record):
     """
     from types import SimpleNamespace
     import evaluator_idle as idle
+    import clinical_warm
     select(SimpleNamespace(evaluator_catchup=manifest['evaluatorCatchup']), manifest)
     output = directory / 'load/evaluator-catchup.json'
     p.need(not output.exists(), 'M7_DRAIN_OUTPUT_EXISTS')
@@ -202,6 +203,7 @@ def run(a, directory, manifest, record):
              'code': 'M7_DRAIN_NOT_STARTED', 'attribution': a.progress_attribution(manifest),
              'authorityScope': 'sampled runtime generation/health, restore generation and observed control vectors; direct current authority not yet observed is NO-INSTRUMENT',
              'originalLoadVerdict': record.value['strictChecks'].get('load')}
+    last_attempt_ms = None
     try:
         p.need(a._COMMAND_DEADLINE.get() is not None or
                'drainSeconds' in phase_windows.selection(manifest.get('cadence',{})),
@@ -251,6 +253,8 @@ def run(a, directory, manifest, record):
             capture_policy=p.capture_policy(manifest['cadence'].get('evaluatorProgressBudget'))
             value['preparationCost'] = collector.preparation_cost
             def fetch(timeout):
+                nonlocal last_attempt_ms
+                last_attempt_ms = clinical_warm.now_ms()
                 round_until = min(until, time.monotonic_ns() + int(timeout * 1e9))
                 def rpc(*args):
                     # The existing roster reader uses worker threads, which do
@@ -261,7 +265,9 @@ def run(a, directory, manifest, record):
                 with a.command_deadline(min(a._COMMAND_DEADLINE.get(), time.time() + timeout)):
                     snapshot, cost = collector(timeout)
                     try:
-                        view = idle.round_view(a.progress_services(directory), ids, rpc,allow_unavailable=True,allow_clinical_stall=True,policy=capture_policy)
+                        services = a.progress_services(directory)
+                        warm_rpc = clinical_warm.observing(rpc, directory/clinical_warm.FILE, services, ids)
+                        view = idle.round_view(services, ids, warm_rpc,allow_unavailable=True,allow_clinical_stall=True,policy=capture_policy)
                         cost['inspection'] = idle._pack_round(view)
                         o.all_roster([rounds[-1], rounds[-1], view], ids, 'load',allow_clinical_stall=True,policy=capture_policy)
                     except p.Refused as error:
@@ -287,6 +293,8 @@ def run(a, directory, manifest, record):
     except Exception as error:
         safe = str(error) if re.fullmatch(r'M7_[A-Z_]+', str(error)) else 'M7_DRAIN_COLLECTION_REFUSED'
         value.update(verdict='UNMEASURED', code=safe)
+    if last_attempt_ms is not None:
+        clinical_warm.end_drain(directory/clinical_warm.FILE, last_attempt_ms)
     a.write(output, value)
     record.value['catchup'] = {'verdict': value['verdict'], 'code': value.get('code'),
                              'artifact': str(output.relative_to(directory)), 'sha256': a.digest(output),

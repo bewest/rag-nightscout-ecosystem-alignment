@@ -169,7 +169,7 @@ def clinical(load):
     for w in strict.get('witnesses') or []:
         key = 'READY' if w.get('ready') else str(w.get('code'))
         codes[key] = codes.get(key, 0) + 1
-    return {
+    result = {
         'status': 'MEASURED',
         'witnessesWritten': len(samples), 'accepted': len(accepted),
         'refused': sum(1 for x in samples if x.get('refused')),
@@ -191,6 +191,13 @@ def clinical(load):
                  'deadline misses = accepted without a ready observation within the 120 s budget, plus later ones; '
                  'p95 below the minimum witness count is reported but not qualified',
     }
+    timing = strict.get('clinicalTiming', {})
+    if timing.get('contract') == 'clinical-deadline-from-warm-v1':
+        result.update(clinicalTiming=timing, requestToDurableMissingOrOver120s=result['deadlineMisses'],
+                      deadlineMisses=codes.get('M7_COMPLETION_DEADLINE', 0),
+                      scope='sparse probe witnesses; deadlineMisses counts proven warm-relative misses')
+        result['strictCompletion']['scope'] = 'durable stored marker, BG-now and required viewer callbacks by the warm-relative clinical deadline'
+    return result
 
 
 def _source(point):

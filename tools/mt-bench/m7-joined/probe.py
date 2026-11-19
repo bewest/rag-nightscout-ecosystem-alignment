@@ -4,7 +4,7 @@ from pathlib import Path
 from contract import DISCOVERY_MAX_WORKERS, require
 
 
-def generate(root, target, *, serial_exchange=False):
+def generate(root, target, *, serial_exchange=False, host_warm_clock=True):
     baseline = Path(root) / "tools/mt-bench/capacity/probe.js"
     source = baseline.read_text()
     old = "const roles = ['api', 'realtime', 'evaluator', 'tenant-admin'];"
@@ -130,6 +130,59 @@ def generate(root, target, *, serial_exchange=False):
     source=source.replace("    out.restart = restart;\n  }", "    out.restart = restart;\n    }\n  }")
     source=source.replace("  process.exit(0);", "  process.exit(out.sqlObserverFailure && args.restart==='1' ? 1 : 0);")
     source=source.replace("  savePartial();\n  log('window'", "  if(out.sqlObserverFailure)out.window.evaluationMissedWithin120s=null;\n  savePartial();\n  log('window'")
+    if host_warm_clock:
+        # CLOCK_MONOTONIC source and probe run on the same workstation in both transports.
+        source=source.replace("const signalDir = path.dirname(args.signal);", """const timing=process.env.M7_CLINICAL_WARM_PATH?require('./clinical-timing.cjs'):null;
+const clinicalWarm=timing?timing.source(process.env.M7_CLINICAL_WARM_PATH,path.dirname(args.signal)):null;
+const signalDir = path.dirname(args.signal);""")
+        source=source.replace(" evalPending.push(e);", """ if(clinicalWarm){e.warmClinical=true;e.clientProofVersion=3;} evalPending.push(e);""")
+        source=source.replace("e.acked = Date.now();", """e.acked = Date.now(); if(e.warmClinical){e.acceptedMono=performance.now();e.acceptedHostMs=Number(process.hrtime.bigint())/1e6;}""")
+        start=source.index("    while (polling || evalPending.some(")
+        end=source.index("      if(open.length && completionSource)",start)
+        source=source[:start]+"""    for (;;) {
+      if(typeof clinicalWarm!=='undefined' && clinicalWarm)clinicalWarm.refresh();
+      const open=evalPending.filter(e=>e.evaluatedAt===null && (e.warmClinical?
+        timing.shouldPoll(e,clinicalWarm.row(e.tenant),polling,performance.now(),clinicalWarm):Date.now()-e.sent<120000));
+      let waitingForWarm=false;
+      if(typeof clinicalWarm!=='undefined' && clinicalWarm?.inTail()){
+        waitingForWarm=clinicalWarm.needsObservation(evalPending);
+        timing.checkpoint(signalDir,evalPending,pending,clinicalWarm);
+      }
+      if(!polling&&!open.length&&!waitingForWarm)break;
+"""+source[end:]
+        source=source.replace("          if(e.acked===null)continue;", """          if(e.warmClinical){
+            e.lastQueryStartMono=queryStart;
+            if(clinicalWarm.timeLeftMs()<=0)continue;
+          }
+          if(e.acked===null)continue;""")
+        source=source.replace("          if(e.completion.ready){e.evaluatedAt", """          if(e.warmClinical){
+            timing.observe(e,result,queryStart);
+            if(result.ready)e.semanticObservedMono=queryEnd;
+            e.completion=result;
+          }
+          if(e.completion.ready){e.evaluatedAt""")
+        source=source.replace("lag.summary(evalPending,pending,oracleCost)",
+                              "lag.summary(evalPending,pending,oracleCost,clinicalWarm?timing:null)")
+        source=source.replace("    let verdict='FAIL';", """    if(clinicalWarm){
+      clinicalWarm.refresh();
+      out.window.evaluationMissedWithin120s=out.sqlObserverFailure?null:
+        evalPending.filter(e=>e.semanticObservedMono==null || e.semanticObservedMono-e.sentMono>=timing.deadlineMs).length;
+      for(const e of evalPending){
+        const frames=[...(pending.get(e.tenant+':'+e.date)?.clientFrames?.values()||[])];
+        e.clinicalTiming=timing.assess(e,frames,clinicalWarm.row(e.tenant));
+        e.completion={...e.completion,ready:e.clinicalTiming.verdict==='PASS',
+          code:e.clinicalTiming.code,assessedCode:e.semantic?.code,clinicalTiming:e.clinicalTiming};
+      }
+    }
+    let verdict='FAIL';""")
+        source=source.replace("    out.completedOutput={rosterTenants:", """    if(clinicalWarm){
+      const results=evalPending.map(e=>e.clinicalTiming.verdict);
+      verdict=writes.failed || results.includes('FAIL')?'FAIL':
+        results.length && results.every(v=>v==='PASS')?'PASS':'UNMEASURED';
+    }
+    out.completedOutput={rosterTenants:""")
+        source=source.replace("witnessTenantCount:new Set", """...(clinicalWarm?{clinicalTiming:timing.summary(evalPending)}:{}),
+      witnessTenantCount:new Set""")
     if serial_exchange:
         stock="async function exchange (t) {"
         require(source.count(stock)==1,'M7_SERIAL_EXCHANGE_STOCK_ANCHOR')
@@ -178,10 +231,35 @@ def generate(root, target, *, serial_exchange=False):
     viewers_change("],PER,completionSource)", "],viewers[tenants.findIndex(t=>t.id===e.tenant)],completionSource)")
     viewers_change("out.completedOutput={rosterTenants", "out.completedOutput={clientFrames:{verdict:out.window.expectedFrames===0?'NOT_EXERCISED':evalPending.every(e=>e.completion?.ready)?'PASS':'UNMEASURED'},rosterTenants")
     viewers_change("  log('prime', out.prime);", "  out.viewerBindings=sockets.map((s,socket)=>({socket,tenant:tenants[s.index].id}));\n  log('prime', out.prime);")
+    # Keep the stock polling path for the serial-exchange and historical public
+    # calibration actors. Current runners explicitly select the viewer scenario.
+    viewers_change("const sockets = [], reasons = {}, pending = new Map();",
+                   Path(__file__).with_name('viewer-setup.cjs').read_text() +
+                   "\nconst viewerSetup = args.viewerSetup ? JSON.parse(args.viewerSetup) : null;\n"
+                   "const sockets = [], reasons = {}, pending = new Map();")
+    viewers_change("transports: ['polling'], agent,",
+                   "transports: viewerSetup?.transport === 'websocket-first' ? ['websocket','polling'] : ['polling'], "
+                   "tryAllTransports: true, agent,")
+    viewers_change("  const jwts = new Array(tenants.length);\n  let next = 0;",
+                   "  let t0 = Date.now();\n  if (viewerSetup) { await primeViewers(out,viewerSetup); } else {\n"
+                   "  const jwts = new Array(tenants.length);\n  let next = 0;")
+    viewers_change("  const t0 = Date.now();", "  t0 = Date.now();")
+    viewers_change("  out.prime = { sockets:", "  }\n  out.prime = { sockets:")
+    viewers_change("const r1 = Date.now(); retrying = true;",
+                   "const r1 = Date.now(); retrying = !viewerSetup;\n"
+                   "    if(viewerSetup) restart.retryPolicy = {opensPerSecond:viewerSetup.opensPerSecond};")
+    viewers_change("    for (const s of sockets) if (!s.connected) s.socket.connect();", """
+    for (const s of sockets) {
+      if (s.connected) continue;
+      if (viewerSetup && Date.now() - r1 >= RECOVERY) break;
+      s.socket.connect();
+      if (viewerSetup) await sleep(Math.min(Math.ceil(1000/viewerSetup.opensPerSecond),
+                                            Math.max(0,r1+RECOVERY-Date.now())));
+    }""")
     target = Path(target)
     target.write_text(source)
     helpers={}
-    for name in ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs','probe-accounting.cjs','completed-oracle.cjs','native-observation.cjs','client-delivery.cjs','durable-lag.cjs'):
+    for name in ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs','probe-accounting.cjs','completed-oracle.cjs','native-observation.cjs','client-delivery.cjs','durable-lag.cjs',*(['clinical-timing.cjs'] if host_warm_clock else [])):
         data=Path(__file__).with_name(name).read_bytes();target.with_name(name).write_bytes(data)
         helpers[name]=hashlib.sha256(data).hexdigest()
     if serial_exchange:

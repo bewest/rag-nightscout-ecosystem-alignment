@@ -300,7 +300,7 @@ def discovery_authorization(manifest, receipt):
     ack_budget = stream_topology.ack_selection(manifest)
     require(not ack_budget or version==2, 'M7_PGSTREAM_ACK_BOUND_RECEIPT_REQUIRED')
     preload = preload_convergence.receipt(manifest, receipt)
-    selected_budgets={'probeLedger','startupWindows','evaluatorProgressBudget'} & manifest.get('cadence',{}).keys()
+    selected_budgets={'opportunityObservation','probeLedger','startupWindows','evaluatorProgressBudget'} & manifest.get('cadence',{}).keys()
     require(not selected_budgets or version==2,'M7_WORKLOAD_BUDGET_BOUND_RECEIPT_REQUIRED')
     primer=primer_options.selection(primer_options.from_manifest(manifest),lambda ok,code:require(ok,'M7_'+code))
     require(not ('maxTenants' in primer or primer_options.requires_extended(primer)) or version==2,

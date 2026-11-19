@@ -28,7 +28,7 @@ from auto_catalog import auto_catalog
 TIERS = ('smoke', 'discovery', 'acceptance')
 GENERATED_RECEIPT = 'configuration-receipt.json'
 TO_COMPLETION = 'local-owned-to-completion'
-STRUCTURED_OPTIONS = {'diagnostic-resource-allocation', 'driver-plan', 'drain-observation'}
+STRUCTURED_OPTIONS = {'viewer-setup', 'diagnostic-resource-allocation', 'driver-plan', 'opportunity-observation', 'drain-observation'}
 SMOKE_DEFAULTS = {
     'tenants': 8, 'replicas': 1, 'load-seconds': 60, 'warmup-seconds': 5,
     'idle-seconds': 5, 'probe-every-ms': 10000, 'sockets-per-tenant': 1,
@@ -90,7 +90,7 @@ def tier_plan(config):
         'preflight': {
             'sourceAndImage': 'checked before fixture seed on tiered runs',
             'deploymentPrimer': 'stageSeconds limits time without durable tenant progress; the owner work cutoff still applies',
-            'socketAndJwtSetup': 'setupSeconds selects the separate generator setup window',
+            'socketAndJwtSetup': 'viewerSetup selects connection progress and setupSeconds bounds ordinary driver JWT setup',
             'generatorDrain': 'drainSeconds selects collector drain; the clinical deadline is separate',
             'transportOrGeneratorChange': 'run a smoke point with the same source, image and instrument before seeding a larger discovery point',
             'runtime': 'owned readiness, driver export and completion reader checks',
@@ -440,7 +440,7 @@ def partial(root):
             http = http_accounting.assess(metrics)
         except (ValueError, TypeError, AttributeError):
             unreadable.append('load/k6-summary.json')
-    clinical = outcome_gate.sampled_oracle(observations.get('completedOutput') or probe.get('completedOutput'))
+    clinical = outcome_gate.sampled_oracle(probe.get('completedOutput') or retained('load/clinical-witnesses-partial.json') or observations.get('completedOutput'))
     details = {'http': http or {'verdict':'UNMEASURED'}, 'rateOffer': native.get('rateOffer'),
                'storedWrites': outcome_gate.storage(counts), 'selectedClinical': clinical,
                'evaluatorProgress': observations.get('evaluatorProgress', {}).get('load') or
@@ -448,6 +448,8 @@ def partial(root):
                'frames': observations.get('viewerFrames') or {'verdict':'UNMEASURED'}, 'catchup': catchup,
                'outcomeGate': gate.get('verdict', 'UNMEASURED'),
                'components': window or {'verdict':'UNMEASURED'}}
+    if probe.get('viewerSetup'):
+        details['viewerSetup'] = probe['viewerSetup']
     if probe.get('window'):
         details['frameCounts'] = {key: probe['window'].get(key) for key in ('expectedFrames', 'deliveredFrames')}
     if native.get('clinicalVerdict'):
@@ -651,8 +653,8 @@ def execute(directory, rehearsal=False):
 # Reuse is opt-in and starts its own finite window; an entered point is never adopted.
 SESSION_VARIABLE_OPTIONS = frozenset(('freeze', 'receipt', 'warmup-seconds', 'idle-seconds',
     'load-seconds', 'offered-rps', 'hot-factor', 'probe-every-ms', 'sockets-per-tenant',
-    'logical-polling-clients', 'workload-mix', 'workload-scale', 'sampler-interval', 'quiet-load', 'jwt-setup-concurrency',
-    'evaluator-catchup', 'evaluator-opportunities', 'restart-during-load-after-seconds', 'driver-shards', 'driver-vu-diagnostic'))
+    'logical-polling-clients', 'viewer-setup', 'workload-mix', 'workload-scale', 'sampler-interval', 'quiet-load', 'jwt-setup-concurrency',
+    'evaluator-catchup', 'evaluator-opportunities', 'opportunity-observation', 'restart-during-load-after-seconds', 'driver-shards', 'driver-vu-diagnostic'))
 SESSION_PREPARE_ONLY = frozenset(('fixture-project', 'backend-subnet', 'edge-subnet', 'commissioning-slot-wal-mib', 'tenant-readiness',
     'diagnostic-resource-profile', 'diagnostic-resource-allocation', 'generator-dependencies', 'generator-dependency-receipt',
     'generator-dependency-receipt-sha256', 'generator-dependency-preparation',
@@ -716,7 +718,7 @@ def session_observe(directory, owner, name, config_file, history_file):
     require(re.fullmatch(r'[a-z][a-z0-9-]{0,47}', name) is not None, 'M7_SESSION_OBSERVATION_NAME')
     with session_observation_lock(root):
         session, d, m = session_access(root, owner)
-        config, _ = load_config(config_file)
+        config, prepared_argv = load_config(config_file)
         original = a.document(root/'config.json')
         require(config['k6Image'] == original['k6Image'], 'M7_SESSION_RUNTIME_CONFIG_CHANGED')
         stable = lambda options:{k:v for k,v in options.items() if k not in SESSION_VARIABLE_OPTIONS}
@@ -745,8 +747,11 @@ def session_observe(directory, owner, name, config_file, history_file):
                     write(ob/'runtime-before.json',a.resources(m))
             finally:a.diagnostic_resources.configure()
             argv = ['attach','--directory',str(ob/'fixture')]
-            for key,value in config['prepare'].items():
-                if key not in SESSION_PREPARE_ONLY:argv.extend(['--'+key,str(value)])
+            # Reuse the validated tier defaults and JSON serialization for the
+            # attached observer just as for a newly prepared fixture.
+            for flag, value in zip(prepared_argv[::2], prepared_argv[1::2]):
+                if flag[2:] not in SESSION_PREPARE_ONLY:
+                    argv.extend([flag, value])
             for key,value in {'project':m['project'],'source-root':d/'core','state':d/'state',
                     'dependencies-root':d/'dependencies','env-file':d/'env',
                     'compose':d/'frozen.compose.json','runtime-owner':d/'owner.json'}.items():

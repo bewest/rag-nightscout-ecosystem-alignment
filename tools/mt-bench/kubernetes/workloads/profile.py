@@ -52,8 +52,11 @@ def validate(p):
          'ADAPTER_ROSTER_OR_HOT_FACTOR_UNSUPPORTED')
     need(p['history'] == {'mode': 'existing-provisioner-only', 'additionalSeedRows': 0,
                           'retention': 'UNMEASURED'}, 'HISTORY_UNSUPPORTED')
-    need(p['phases']['restart'] is False and p['phases']['reconnectBurstClients'] == 0,
-         'RESTART_IS_SEPARATE_SCENARIO')
+    burst = p['phases'].get('reconnectBurstClients', 0)
+    viewer_setup = workload_runtime.viewer_plan.setup(w)
+    need(p['phases']['restart'] is False and type(burst) is int and
+         (burst == 0 or viewer_setup['scenario'] == 'simultaneous-reconnect' and
+          burst == w['logicalPollingClients']), 'RESTART_IS_SEPARATE_SCENARIO')
     access_setup = p['phases'].get('accessSetupSeconds')
     if 'accessSetupSeconds' in p['phases']:
         need(workload_runtime.workload_inputs.seconds(access_setup), 'ACCESS_SETUP_WINDOW')
@@ -107,12 +110,13 @@ def describe(p):
             'ordinaryWritesPerSecond': sum(v for k, v in rates.items() if k.startswith('w_')),
             'ordinaryReadsPerSecond': sum(v for k, v in rates.items() if k.startswith('r_')),
             'setupJwtExchanges': n, 'stockViewers': w['logicalPollingClients'],
+            'viewerSetup': workload_runtime.viewer_plan.setup(w),
             'probeWritesPerSecondWhileOpen': 1000 / w['probeEveryMs'],
             'probeWrites': 'observed independently; initial write and drain can extend the nominal window',
             'limits': ['realistic-v1 uses sensor cadence when both the uniform and write factors are one; aggregate profiles retain their authored rate',
                        'HTTP logical pollers are not a configured population; shape rates define offered REST',
                        'all ordinary roster tenants are eligible; actual changed/witness sets are observed',
-                       'hotFactor weights the first roster tenant; no extra history seeding, alarm synthesis or reconnect burst is executed'],
+                       'hotFactor weights the first roster tenant; viewerSetup.scenario selects any reconnect burst'],
             'capacityAcceptance': 'NOT_GRANTED'}
 
 

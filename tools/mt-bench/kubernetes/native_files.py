@@ -44,7 +44,7 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
     config = dict(runId=receipt['runId'], sourceSha256=n.sha(script),
                   driverWrapperSha256=n.sha(wrapper), files=files,
                   seconds=receipt['activeDeadlineSeconds'])
-    secret['stringData'] = {'tenants.json': secret['stringData']['tenants.json'],
+    secret['stringData'] = {**secret['stringData'],
                             'workload.js': script.decode(), driver.SCRIPT: wrapper.decode(),
                             'native-artifacts.cjs': (k.HERE / 'native-artifacts.cjs').read_text(),
                             'export.json': json.dumps(config)}
@@ -92,7 +92,7 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
     return job, secret, receipt
 
 
-def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None):
+def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private_data=None):
     """Writer exit -> bounded exec read/hash -> ack -> Job completion.
 
     No terminal-log artifact fallback, upload service or indefinitely waiting
@@ -146,9 +146,23 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None):
                     known[actor]=identity
             receipt['podUid']=row['metadata']['uid']
             k.write(out/'native-load.json',receipt)
+            if private_data is not None and 'running' in states.get('artifact-exporter', {}).get('state', {}):
+                check_namespace()
+                # Only stdin carries issued credentials. The receiver checks
+                # its downward-API Pod UID and the exact DATA digest.
+                raw = kube.call(['exec', '-i', row['metadata']['name'], '-c', 'artifact-exporter',
+                                 '--', 'node', '/inputs/native-fixture-data.cjs', receipt['podUid']],
+                                data=json.dumps(private_data, separators=(',', ':')).encode(),
+                                namespace=ns, timeout=remaining())
+                k.need(raw.strip() in (receipt['rosterSha256'], receipt['rosterSha256'].encode()),
+                       'NATIVE_LOAD_ROSTER_CHANGED')
+                receipt['rosterDelivered'] = True
+                k.write(out/'native-load.json', receipt)
+                private_data = None
             if states.get('k6', {}).get('state', {}).get('terminated') is not None:
                 break
         clock.sleep(min(.5, remaining()))
+    k.need(private_data is None, 'NATIVE_LOAD_ROSTER_UNDELIVERED', 'UNMEASURED')
     check_namespace()
     name, pod_uid = pod['metadata']['name'], pod['metadata']['uid']
     command = ['exec', name, '-c', 'artifact-exporter', '--', 'node', '/inputs/native-artifacts.cjs']

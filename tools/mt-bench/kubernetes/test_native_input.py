@@ -48,6 +48,48 @@ class NativeInput(unittest.TestCase):
         c['tenants'] = count
         return c, job, options, roster(count)
 
+    def test_new_input_uses_no_api_roster_and_binds_selected_data_to_fixture_seed(self):
+        c, job, options, rows = self.package()
+        c['ordinaryRosterTenants'] = 4
+        selected = rows[-4:]
+        rendered, secret, receipt = load.package(c, job, SCRIPT, selected, input_codec=codec.PRIVATE, **options)
+        pod = rendered['spec']['template']['spec']
+        private_file = {'name': 'roster', 'mountPath': '/roster', 'readOnly': True}
+        self.assertIn(private_file, pod['containers'][0]['volumeMounts'])
+        self.assertTrue(all('kube-api' not in [m['name'] for m in actor['volumeMounts']]
+                            for actor in pod['containers']))
+        for row in selected:
+            self.assertNotIn(row['token'], json.dumps([rendered, secret, receipt]))
+        self.assertNotIn('tenants.json', secret['stringData'])
+        self.assertNotIn('data', secret)
+        self.assertEqual(receipt['inputTransport']['tenants'], 4)
+        self.assertEqual(receipt['inputTransport']['fixtureTenants'], 10000)
+        with tempfile.TemporaryDirectory() as area:
+            root = Path(area)
+            # Model the immutable image fixture seed, separately from the
+            # selected and issued DATA credentials supplied on stdin.
+            public = {r['id']:r['host'] for r in rows}
+            (root/'seed.json').write_text(json.dumps(public))
+            (root/'meta.json').write_text(json.dumps(receipt['inputTransport']))
+            code = """const fs=require('fs'), seed=require('./seed.json'), ids=Object.keys(seed);
+            const demo={tenantIds:n=>ids.slice(0,n),tenantAlias:i=>seed[ids[i]]};
+            try {console.log(require(process.argv[1]).install(demo,require('./meta.json'),
+              JSON.parse(fs.readFileSync(0)),'.'));} catch {process.exit(78);}"""
+            pairs = [[r['id'],r['token']] for r in selected]
+            def deliver(pairs):
+                return subprocess.run(['node','-e',code,k.HERE/'native-fixture-data.cjs'],cwd=root,
+                                      input=json.dumps(pairs).encode(),capture_output=True,timeout=5)
+            self.assertEqual(deliver(pairs[:-1]).returncode, 78)
+            self.assertEqual(deliver(list(reversed(pairs))).returncode, 78)
+            self.assertFalse((root/'tenants.json').exists())
+            self.assertEqual(deliver(pairs).stdout.strip().decode(), receipt['rosterSha256'])
+            self.assertEqual(json.loads((root/'tenants.json').read_text()),selected)
+            self.assertEqual((root/'tenants.json').stat().st_mode & 0o777, 0o400)
+            self.assertEqual(deliver(pairs).returncode,78)
+        with self.assertRaisesRegex(k.Refused, 'DATA_FIELDS'):
+            load.package(c, job, SCRIPT, [dict(r, managementToken='fixture') for r in selected],
+                         input_codec=codec.PRIVATE, **options)
+
     def test_raw_compatibility_and_exact_10k_gzip_roundtrip(self):
         c, job, options, rows = self.package()
         with self.assertRaisesRegex(k.Refused, 'INPUT_SECRET_BOUND'):

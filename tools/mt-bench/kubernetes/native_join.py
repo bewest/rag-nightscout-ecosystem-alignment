@@ -332,6 +332,13 @@ def prepare_case(case, selection):
     c=experiment.profile.bind(experiment.workload(manifest),preparing)
     c.update(tier=manifest.get('tier','discovery'),nativeLoad=selection,
              applicationTopology=application_topology.selection(manifest,k.need))
+    # Freeze the private DATA channel on new cases. Existing packets retain
+    # the codec and Job template their original instrument declared.
+    import native_input
+    requested_codec = selection.get('inputCodec')
+    k.need(requested_codec is None or requested_codec in native_input.CODECS, 'NATIVE_LOAD_INPUT_CODEC')
+    selection = dict(selection, inputCodec=native_input.PRIVATE)
+    c[FIELD] = selection
     extra=declarations(c);declared={k.key(obj):obj for obj in extra}
     before=k.manifests(render)
     k.need(not (set(declared)&{k.key(obj) for obj in before}), 'NATIVE_LOAD_RESOURCE_EXISTS')
@@ -366,7 +373,7 @@ def prepare_case(case, selection):
     k.write(case/'lifecycle-input.json',control)
     pre=k.document(case/'preflight.json')
     pre['experiment'].update(experimentSha256=k.digest(case/'intent.json'),renderSha256=k.digest(case/'render.json'))
-    pre['nativeLoad']={'selection':selection,'reservedPodRequests':request,'nodeName':selection['nodeName'],
+    pre['nativeLoad']={'selection':selection,'requestedInputCodec':requested_codec,'reservedPodRequests':request,'nodeName':selection['nodeName'],
                        'liveFit':'UNMEASURED_REQUIRED_AT_ENTRY','jobSha256':k.hashed(declared[JOB])}
     k.write(case/'preflight.json',pre)
     result={'configuration':'STRUCTURAL_PASS','nativeLoad':pre['nativeLoad'],'checks':checks,

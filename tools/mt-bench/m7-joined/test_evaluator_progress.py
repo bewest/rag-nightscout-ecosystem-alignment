@@ -79,6 +79,30 @@ class Progress(unittest.TestCase):
                 self.assertEqual(saved['verdict'],'PASS' if discovery else 'FAIL')
                 if discovery:self.assertEqual(saved['observations'][0]['causeAttribution'],'UNMEASURED')
 
+    def test_ready_tenants_extend_evaluator_wait_until_stall_or_completion(self):
+        import adapter as a
+        from test_preload_convergence import frame
+        for wedged in (True, False):
+            with self.subTest(wedged=wedged), tempfile.TemporaryDirectory() as tmp:
+                d=Path(tmp);clock=ReadinessClock()
+                a.write(d/'tenants.private.json',[{'id':A},{'id':B}])
+                def fetch(*args, **kwargs):
+                    value=frame(code='EVALUATOR_STARTING',acquisitions=0)
+                    for index,row in enumerate(value['view']['tenants']):
+                        if clock.now >= (15 if index==0 else 30) and (index==0 or not wedged):
+                            row.update(ready=True,code=None,cycles=1)
+                            row['progress'].update(completedAcquisitions=1,lastCompletedAgeMs=0)
+                    return json.dumps(value)
+                with patch.object(a,'progress_services',return_value=['evaluator']), patch.object(a,'progress_fetch',side_effect=fetch):
+                    manifest={'runPurpose':'discovery','cadence':{'startupWindows':{'evaluatorReadySeconds':20}}}
+                    if wedged:
+                        with self.assertRaisesRegex(p.Refused,'M7_RUNTIME_NOT_READY'):
+                            a.readiness(d,manifest,clock=clock)
+                        self.assertEqual(clock.now,35)
+                    else:
+                        self.assertEqual(a.readiness(d,manifest,clock=clock)['verdict'],'PASS')
+                        self.assertEqual(clock.now,30.25)
+
     def test_selected_readiness_window_reaches_late_strict_confirmation(self):
         import adapter as a
         ready=self.frame(ids=[A])
