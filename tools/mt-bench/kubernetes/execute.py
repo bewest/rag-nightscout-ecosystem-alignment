@@ -316,8 +316,8 @@ def retained_progress(d, out, c, objects, client, name, *, until=None):
     except Exception as error:
         evidence = {**progress_refusal(error), 'responseRetained':raw.is_file(), 'pins':c['pins']}
         if getattr(error, 'source_refusal', None): evidence['sourceRefusal'] = error.source_refusal
-        k.write(out/(name+'-failure.json'), evidence)
-        raise
+        k.write(out/(name+'-failure.json'), evidence)  # a figure, never a stop
+        return None
     k.write(out/(name+'.json'), value)
     return value
 
@@ -509,11 +509,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
                 break
         if cancel.wait(settings['loadSeconds'] / 2 if load else .5):
             return
-        # The midpoint capture is retained evidence; a run never stops on a verdict.
-        try:
-            retained_progress(d, out, c, objects, client, 'progress-midpoint')
-        except Exception:
-            pass
+        retained_progress(d, out, c, objects, client, 'progress-midpoint')
     observer = catchup.observer(d, c, objects, client, runid, [row['id'] for row in tenants]) if load else None
     log = (out / 'probe.log').open('xb')
     try:
@@ -612,13 +608,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
                                      'loadWindowBasis': 'first ordinary scenario request through configured duration capped at native exit; JWT setup and final drain excluded',
                                      'runId': runid, 'pins': c['pins'],
                                      'context': c['context'], 'namespaceUid': baseline['namespace']['uid']})
-        try:
-            terminal_progress(d, out, c, objects, client, runid, load, baseline['namespace']['uid'])
-        except (k.Refused, k.evaluator_progress.Refused):
-            if not load or not (out/'progress-after-failure.json').is_file():
-                raise
-            # The original refusal and guarded storage readback are retained.
-            # assess_stage can finish the remaining file-based checks.
+        terminal_progress(d, out, c, objects, client, runid, load, baseline['namespace']['uid'])
         if load and c.get('nativeLoad') is not None:
             import native_load
             return native_load.assess_join(d,out,c,objects,client)
@@ -653,10 +643,7 @@ def terminal_progress(d, out, c, objects, client, runid, load, namespace_uid):
             evidence['diagnostic'] = diagnostic  # Bounded, allowlisted row projection from round_view.
         if getattr(error, 'source_refusal', None):
             evidence['sourceRefusal'] = error.source_refusal
-        k.write(out / 'progress-after-failure.json', evidence)
-        if load and not (out/'storage-readback.json').is_file():
-            capture_storage(d, out, c, objects, client, runid, namespace_uid)
-        raise
+        k.write(out / 'progress-after-failure.json', evidence)  # a figure, never a stop
 
 
 def capture_storage(d, out, c, objects, client, runid, namespace_uid):

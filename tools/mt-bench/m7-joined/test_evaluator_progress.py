@@ -276,7 +276,14 @@ class Progress(unittest.TestCase):
         observer=p.Observer(['evaluator'],[A,B],lambda *_:json.dumps(self.frame()).encode(),120,'load',recorded.append)
         with self.assertRaises(ValueError) as caught:
             with observer:raise original
-        self.assertIs(caught.exception,original);self.assertEqual(recorded[0]['verdict'],'FAIL');self.assertEqual(len(recorded[0]['rounds']),1);self.assertTrue(recorded[0]['interruptedBody'])
+        self.assertIs(caught.exception,original);self.assertEqual(recorded[0]['verdict'],'UNMEASURED');self.assertEqual(len(recorded[0]['rounds']),1);self.assertTrue(recorded[0]['interruptedBody'])
+
+    def test_progress_error_is_a_recorded_figure_never_a_refusal(self):
+        # four-product-failures: an unready row (M7_EVALUATOR_PROGRESS_ERROR) is written, the body runs, nothing is raised.
+        recorded=[];ran=[];frame=self.frame();frame['view']['tenants'][0]['ready']=False;frame['view']['tenants'][0]['code']='EVALUATOR_FAILED'
+        observer=p.Observer(['evaluator'],[A,B],lambda *_:json.dumps(frame).encode(),0,'load',recorded.append)
+        with observer:ran.append(True)
+        self.assertEqual(ran,[True]);self.assertEqual(recorded[-1]['code'],'M7_EVALUATOR_PROGRESS_ERROR');self.assertEqual(observer.result['code'],'M7_EVALUATOR_PROGRESS_ERROR')
 
     def test_selected_pages_exact_coverage_and_runtime_stable(self):
         ids=['00000000-0000-4000-8000-'+str(i).zfill(12) for i in range(129)]

@@ -60,17 +60,17 @@ class TerminalEvidence(unittest.TestCase):
                     self.assertFalse((path/'storage-readback.json').exists())
                     sql.assert_not_called()
                 else:
-                    refusal = k.Refused if missing_response or storage in ('expired','identity') else k.evaluator_progress.Refused
                     code = ('K8S_OBSERVATION_LOST' if missing_response else 'K8S_WORK_DEADLINE' if storage=='expired'
                             else 'K8S_NAMESPACE_UID_CHANGED' if storage=='identity' else 'M7_EVALUATOR_PROGRESS_ERROR')
-                    with self.assertRaisesRegex(refusal,code) as caught:
-                        execute.terminal_progress(path,path,config,{},client,'synthetic-run',True,'owned-ns')
+                    # Progress is a figure: the refusal is recorded and the run goes on.
+                    execute.terminal_progress(path,path,config,{},client,'synthetic-run',True,'owned-ns')
                     failure = k.document(path/'progress-after-failure.json')
                     captured = not missing_response and storage!='expired'
                     self.assertEqual(failure['responseRetained'],captured)
-                    self.assertEqual(failure['verdict'],caught.exception.verdict)
-                    self.assertEqual(failure['code'],str(caught.exception))
+                    self.assertEqual(failure['code'],code)
                     self.assertFalse((path/'progress-after.json').exists())
+                    self.assertFalse((path/'storage-readback.json').exists())
+                    execute.capture_storage(path,path,config,{},client,'synthetic-run','owned-ns')
                     if captured:
                         diagnostic = failure.get('diagnostic',failure.get('sourceRefusal',{}).get('diagnostic'))
                         self.assertEqual(diagnostic['failedRow']['code'],'SYNTHETIC_REFUSAL')

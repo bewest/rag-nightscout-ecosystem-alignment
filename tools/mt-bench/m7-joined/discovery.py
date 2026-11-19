@@ -81,14 +81,8 @@ class Record:
             result=fn()
             self.value['strictChecks'][stage]={'verdict':'UNMEASURED','code':'M7_EVALUATOR_AVAILABILITY_UNMEASURED','hardFailure':False} if stage=='readiness' and isinstance(result,dict) and result.get('verdict')=='UNMEASURED' else {'verdict':'PASS'};self.save();return result
         except Exception as error:
-            allowed=incomplete(error);partial=None
-            if str(error)=='M7_EVALUATOR_PROGRESS_ROUNDS' and getattr(error,'verdict',None)=='UNMEASURED':
-                try:partial=partial_progress(self.a,self.d,self.m,stage);allowed=True
-                except Exception as invalid:
-                    self.failure(stage,invalid,True);raise invalid from error
+            allowed=incomplete(error)
             self.failure(stage,error,not allowed)
-            if partial is not None:
-                self.value['strictChecks'][stage]['partialObservation']=partial;self.save()
             if not allowed:raise
     def process(self,stage,fn):
         start=time.time();start_mono=time.monotonic_ns()
@@ -446,37 +440,3 @@ def outcome_record(a,d,m,record):
 
 
 def hard_recovery(value):return value.get('verdict')=='FAIL' and value.get('code') not in SOFT_WORK_FAILURES
-
-
-def partial_progress(a,d,m,stage):
-    """Only genuine, bounded 1/2-round current-source load captures may continue."""
-    import evaluator_progress as progress
-    need=progress.need
-    need(stage=='load','M7_DISCOVERY_PARTIAL_PROGRESS_SCOPE')
-    file=d/stage/'evaluator-progress.json'
-    budget=m.get('cadence',{}).get('evaluatorProgressBudget')
-    policy=progress.capture_policy(budget)
-    max_retained=policy['maxBytesPerPhase'] if budget is not None else 16777216
-    need(file.is_file() and not file.is_symlink() and file.stat().st_size<=max_retained,'M7_DISCOVERY_PARTIAL_PROGRESS_ARTIFACT')
-    value=a.document(file)
-    need(value.get('kind')=='evaluator-progress-phase-v2' and value.get('columns')==list(progress.COLUMNS) and value.get('policy')==policy and value.get('phase')==stage and value.get('verdict')=='UNMEASURED' and value.get('code')=='M7_EVALUATOR_PROGRESS_ROUNDS' and value.get('attribution')==a.progress_attribution(m),'M7_DISCOVERY_PARTIAL_PROGRESS_SCOPE')
-    need(isinstance(value.get('rounds'),list) and 1<=len(value['rounds'])<=2,'M7_DISCOVERY_PARTIAL_PROGRESS_ROUNDS')
-    services=a.progress_services(d);need(1<=len(services)<=progress.POLICY['maxInstances'],'M7_EVALUATOR_PROGRESS_INSTANCE_BOUND')
-    decoded,ids=progress.decode_rounds(value,m['tenants'],services,demand_driven=True)
-    expected=[row['id'] for row in a.document(d/'tenants.private.json')];progress.validate_ids(expected)
-    need(ids==set(expected),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
-    need(sum(r['queries'] for r in decoded)<=policy['maxQueriesPerPhase'] and sum(r['bytes'] for r in decoded)<=policy['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
-    # Check ALL available rounds, not only the first timing refusal. No absent
-    # round, unselected interval or clock witness is manufactured.
-    previous=decoded[0];failed_work=0
-    for current in decoded:
-        need(current['instances']==previous['instances'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
-        for service,rows in previous['allRows'].items():
-            for tenant,before in rows.items():
-                after=current['allRows'][service][tenant]
-                need(before['admitted']==after['admitted'] and all(after[k]>=before[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
-                if not before['admitted']:
-                    need(not after['ready'] and all(after[k]==before[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
-                else:failed_work+=after['failedCompletions']
-        previous=current
-    return {'rounds':len(decoded),'scope':'available snapshots only; missing phase observation remains UNMEASURED','workFailurePresent':failed_work>0,'loadClockProof':'not supplied by load source schema'}

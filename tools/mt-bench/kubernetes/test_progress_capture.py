@@ -69,9 +69,9 @@ class ProgressCapture(unittest.TestCase):
             if self.client.call.called: raise k.Refused('K8S_POD_UID_CHANGED')
             return self.baseline
         with patch.object(k, 'observe', side_effect=changed):
-            with self.assertRaisesRegex(k.Refused, 'POD_UID_CHANGED'):
-                execute.retained_progress(self.d, self.out, self.c, self.objects, self.client, 'progress-before')
+            self.assertIsNone(execute.retained_progress(self.d, self.out, self.c, self.objects, self.client, 'progress-before'))
         error = k.document(self.out/'progress-before-failure.json')
+        self.assertEqual(error['code'], 'K8S_POD_UID_CHANGED')
         self.assertEqual(error['sourceRefusal']['diagnostic']['failedRow']['code'], 'EVALUATOR_CLINICAL_PROGRESS_STALLED')
 
     def initial_configuration(self):
@@ -100,21 +100,11 @@ class ProgressCapture(unittest.TestCase):
         self.stack.enter_context(patch.object(k.shutil, 'which', return_value=str(tool)))
         self.observe = self.stack.enter_context(patch.object(k, 'observe', return_value=self.baseline))
 
-    def cli_without_driver(self):
-        self.initial_configuration();self.out.rmdir()
-        with patch.object(k, 'Client', return_value=self.client),patch.object(k.candidate, 'require'), \
-             patch.object(execute, 'actor', return_value={}),patch.object(execute.subprocess, 'Popen') as driver, \
-             patch.object(sys, 'argv', ['adapter.py', 'load', str(self.d)]):
-            try:
-                k.main()
-            finally:
-                driver.assert_not_called()
-
     def test_actual_client_late_return_retains_bounded_response(self):
         self.actual_client(delay=20)
-        with self.assertRaisesRegex(k.Refused, 'K8S_OBSERVATION_DEADLINE'):
-            execute.retained_progress(self.d, self.out, self.c, self.objects, self.client,
-                                      'progress-before', until=self.clock.now+10)
+        execute.retained_progress(self.d, self.out, self.c, self.objects, self.client,
+                                  'progress-before', until=self.clock.now+10)
+        self.assertEqual(k.document(self.out/'progress-before-failure.json')['code'], 'K8S_OBSERVATION_DEADLINE')
         raw = self.out/'progress-before.private.jsonl'
         self.assertEqual(raw.read_bytes(), json.dumps(page()).encode()+b'\n')
         self.assertEqual(raw.stat().st_mode & 0o777, 0o600)
@@ -129,26 +119,14 @@ class ProgressCapture(unittest.TestCase):
             with self.assertRaisesRegex(k.Refused, 'K8S_OBSERVATION_DEADLINE'):
                 self.client.call(['inert'], read=False, output_limit=1)
 
-    def test_actual_client_records_initial_health_refusal(self):
-        self.frames = [page(False)]
-        self.actual_client()
-        with self.assertRaisesRegex(k.evaluator_progress.Refused, 'M7_EVALUATOR_PROGRESS_ERROR'):
-            self.cli_without_driver()
-        response = k.document(self.out/'progress-before-response.json')
-        self.assertEqual(response['captureBoundary'], 'client-response-sink')
-        self.assertEqual(response['sourceDecode'], 'REFUSED')
-        self.assertTrue(response['transportSucceeded'])
-        self.assertEqual(self.calls, 1)
-        self.assertFalse((self.out/'runid').exists())
-
     def test_actual_client_nonzero_and_authorization_refusals_retain_returned_bytes(self):
         for name, stderr, code in [('exit', b'', 'K8S_OBSERVATION_LOST'),
                                    ('auth', b'EVALUATOR_SCOPE_UNSAFE', 'EVALUATOR_SCOPE_UNSAFE')]:
             with self.subTest(name=name):
                 self.out = self.d/name;self.out.mkdir();self.calls = 0
                 self.actual_client(returncode=1, stderr=stderr)
-                with self.assertRaisesRegex(k.Refused, code):
-                    execute.retained_progress(self.d, self.out, self.c, self.objects, self.client, 'progress')
+                self.assertIsNone(execute.retained_progress(self.d, self.out, self.c, self.objects, self.client, 'progress'))
+                self.assertEqual(k.document(self.out/'progress-failure.json')['code'], code)
                 response = k.document(self.out/'progress-response.json')
                 self.assertEqual(response['processReturnCode'], 1)
                 self.assertFalse(response['transportSucceeded'])
@@ -162,29 +140,27 @@ class ProgressCapture(unittest.TestCase):
                                     'K8S_OBSERVATION_LOST')]:
             with self.subTest(name=name):
                 self.out = self.d/name;self.out.mkdir();self.calls = 0;self.actual_client(**kwargs)
-                with self.assertRaisesRegex(k.Refused, code):
-                    execute.retained_progress(self.d, self.out, self.c, self.objects, self.client, 'progress')
+                self.assertIsNone(execute.retained_progress(self.d, self.out, self.c, self.objects, self.client, 'progress'))
+                self.assertEqual(k.document(self.out/'progress-failure.json')['code'], code)
                 response = k.document(self.out/'progress-response.json')
                 self.assertEqual(response['captureStatus'], 'UNAVAILABLE')
                 self.assertFalse(response['responseRetained'])
                 self.assertEqual(response['sourceDecode'], 'UNMEASURED')
 
-    def test_initial_actual_call_boundary_retains_refusal_before_probe_creation(self):
-        # The actual retained3k point has only a generic refusal: this source
-        # payload is SYNTHETIC and does not assert its missing inner cause.
+    def test_initial_progress_refusal_is_recorded_and_the_stage_goes_on(self):
+        # Progress is a figure (four-product-failures): a refused first capture never stops the stage.
         self.initial_configuration()
         self.frames = [page(False)]
         target = self.d/'load';target.rmdir()
+        class Started(Exception):pass
         with patch.object(k.candidate, 'require'), patch.object(execute, 'actor', return_value={}), \
-             patch.object(execute.subprocess, 'Popen') as process:
-            with self.assertRaisesRegex(k.evaluator_progress.Refused, 'M7_EVALUATOR_PROGRESS_ERROR'):
+             patch.object(execute.subprocess, 'Popen', side_effect=Started):
+            with self.assertRaises(Started):
                 execute.execute(self.d, self.c, self.objects, self.client, load=True)
-        process.assert_not_called()
         failure = k.document(target/'progress-before-failure.json')
+        self.assertEqual(failure['code'], 'M7_EVALUATOR_PROGRESS_ERROR')
         self.assertTrue(failure['responseRetained'])
-        self.assertTrue((target/'progress-before.private.jsonl').is_file())
-        self.assertFalse((target/'runid').exists())
-
+        self.assertTrue((target/'runid').exists())
 
 class Planning(unittest.TestCase):
     def test_legacy_preload_setting_neither_extends_work_window_nor_starts_an_observer(self):

@@ -987,7 +987,11 @@ def terminal_progress(d, m, out):
     def fetch(*args):
         with command_deadline(until):
             return progress_fetch(d, *args)
-    evaluator_progress.round_view(services, ids, retain_raw(out, 'drain', fetch), policy=policy, demand_driven=True)
+    try:
+        evaluator_progress.round_view(services, ids, retain_raw(out, 'drain', fetch), policy=policy, demand_driven=True)
+    except evaluator_progress.Refused as error:
+        # A figure, never a stop: the raw pages are already retained.
+        write(out/'progress-after-failure.json', {'verdict': error.verdict, 'code': str(error)})
 
 
 def service_roster(config):
@@ -2155,7 +2159,7 @@ def run_cell_load(d, m, k6_id, completion, sql_roles, runid, out, accepted):
                    metric(document(out / "k6-summary.json")["metrics"], "writes_refused") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "http_req_failed", "rate") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "dropped_iterations") == 0,
-                   result_probe["window"]["writes"]["failed"] == 0, load_progress.result["verdict"]=="PASS"]
+                   result_probe["window"]["writes"]["failed"] == 0]
     summary = {"pair": m["pair"], "hostIdentity":m["hostIdentity"], "profile":m["profile"], "instrument": m["instrument"]["sha256"], "tenants": m["tenants"], "replicas": m["replicas"],
                "imageId":m["imageId"], "verdict": "PASS" if all(correctness) else "FAIL", "correctness": correctness, "cadence": m["cadence"],
                "viewerFrames":viewer_result, "completedOutput":completed_output or "NOT_SELECTED", "sqlAttribution":attributed if completion else "NOT_SELECTED",

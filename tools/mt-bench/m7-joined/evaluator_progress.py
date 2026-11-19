@@ -225,70 +225,39 @@ def assess(rounds,ids,phase,*,policy=POLICY,discovery_unclassified_rejections=Fa
         judged['demandDriven'] = True
     return {**judged,'version':policy['version'],'phase':phase,'verdict':'PASS','policy':policy,'tenants':len(ids),'instances':first['instances'],'completedWorkDelta':work_delta,'completedTimeDelta':time_delta,'tenantsWithTimeProgress':time_tenants,'minimumCompletedWorkDelta':minimum,'failedCompletionDelta':failure_delta,'queries':sum(r['queries'] for r in rounds),'responseBytes':sum(r['bytes'] for r in rounds),'collectorWallSeconds':sum(r['wallSeconds'] for r in rounds),'scope':'bookend/midpoint successful work; failedCompletionDelta counts unclassified rejected attempts, including superseded windows, not clinical failures; no strict deadline or true cold load cohort claim' if discovery_unclassified_rejections else 'bookend/midpoint successful work; no strict deadline or true cold load cohort claim'}
 
-def readiness_refusal(error):
-    diagnostic=getattr(error,'diagnostic',None)
-    return str(error)=='M7_EVALUATOR_PROGRESS_ERROR' and isinstance(diagnostic,dict) and diagnostic.get('field') in ('ready','code')
-
-
 class Observer:
-    def __init__(self,services,ids,fetch,seconds,phase,write,*,assessor=assess,policy=POLICY,demand_driven=False,midpoint_judge=None,signal_write=None,on_hard_midpoint=None):
-        self.services,self.ids,self.seconds,self.phase,self.write=services,ids,seconds,phase,write
+    """Progress is a figure (decision `four-product-failures`): every outcome is written, nothing is raised."""
+    def __init__(self,services,ids,fetch,seconds,phase,write,*,assessor=assess,policy=POLICY,demand_driven=False):
+        self.services,self.ids,self.fetch,self.seconds,self.phase,self.write=services,ids,fetch,seconds,phase,write
         self.assessor,self.policy=assessor,policy
         self.demand_driven = demand_driven
-        self.rounds=[];self.failure=None;self.stop=threading.Event()
-        # Raw-first: keep each service's latest response bytes before decoding,
-        # so a midpoint refusal can still be classified from the source rows.
-        self.last_raw={};self.midpoint_judge=midpoint_judge;self.signal_write=signal_write
-        self.on_hard_midpoint=on_hard_midpoint;self.midpoint_signal=None
-        def retained(service,*args):
-            value=fetch(service,*args);self.last_raw[service]=value;return value
-        self.fetch=retained
-    def midpoint(self):
-        """Midpoint is a signal; only a hard outcome reason stops the driver."""
-        self.last_raw={};self.observe()
-        if self.midpoint_judge is None:return
-        refusal=self.failure
-        try:decision=self.midpoint_judge(dict(self.last_raw))
-        except Exception as error:decision={'action':'continue','reason':'judge-error','signal':'UNMEASURED','judgeError':type(error).__name__}
-        decision={**decision,'strictRefusal':None if refusal is None else {'code':str(refusal),'verdict':getattr(refusal,'verdict','UNMEASURED')}}
-        self.midpoint_signal=decision
-        if self.signal_write is not None:
-            try:self.signal_write(decision)
-            except Exception:decision['publicationFailed']=True
-        if decision['action']=='stop':
-            if refusal is None:self.failure=Refused('M7_OUTCOME_MIDPOINT_HARD','FAIL')
-            if self.on_hard_midpoint is not None:self.on_hard_midpoint()
-        elif refusal is not None and readiness_refusal(refusal):
-            # Midpoint readiness is a recorded signal, not a phase failure. The
-            # phase then has two strict rounds; the outcome gate judges from the
-            # retained raw pages. Other strict refusals keep their verdict.
-            self.failure=None
+        self.rounds=[];self.failure=None;self.stop=threading.Event();self.thread=None
     def observe(self):
+        if self.failure is not None:return
         try:self.rounds.append(round_view(self.services,self.ids,self.fetch,policy=self.policy,demand_driven=self.demand_driven))
         except Exception as error:self.failure=error
     def failed(self,error,extra=None):
-        self.write({'version':self.policy['version'],'phase':self.phase,'verdict':getattr(error,'verdict','UNMEASURED'),'code':str(error),'policy':self.policy,'rounds':self.rounds,'failedCollection':getattr(error,'collection',None),**(extra or {})})
+        value={'version':self.policy['version'],'phase':self.phase,'verdict':getattr(error,'verdict','UNMEASURED'),'code':str(error)[:200],'policy':self.policy,'rounds':self.rounds,'failedCollection':getattr(error,'collection',None),**(extra or {})}
+        try:self.write(value)
+        except Exception:self.publicationFailed=True
+        self.result={k:v for k,v in value.items() if k!='rounds'}
     def __enter__(self):
         self.observe()
-        if self.failure:
-            self.failed(self.failure);raise self.failure
         def midpoint():
-            if not self.stop.wait(self.seconds/2):self.midpoint()
+            if not self.stop.wait(self.seconds/2):self.observe()
         self.thread=threading.Thread(target=midpoint,daemon=True);self.thread.start();return self
     def __exit__(self,kind,value,traceback):
-        self.stop.set();self.thread.join(timeout=20)
+        self.stop.set()
+        if self.thread is not None:self.thread.join(timeout=20)
         if kind:
-            # Preserve bounded partial observations without replacing the body
-            # exception (for example the actual k6 refusal/failure).
-            try:self.failed(Refused('M7_EVALUATOR_PROGRESS_BODY_FAILED','FAIL'),{'interruptedBody':True,'bodyFailureType':type(value).__name__,'collectorFailure':str(self.failure) if self.failure else None,'collectorStillRunning':self.thread.is_alive()})
-            except Exception:self.publicationFailed=True
+            # Keep partial observations; the body's own exception continues.
+            self.failed(Refused('M7_EVALUATOR_PROGRESS_BODY_FAILED'),{'interruptedBody':True,'bodyFailureType':type(value).__name__,'collectorFailure':str(self.failure) if self.failure else None})
             return False
-        if self.thread.is_alive():
-            error=Refused('M7_EVALUATOR_PROGRESS_COLLECTOR_TIMEOUT');self.failed(error);raise error
-        if self.failure:
-            self.failed(self.failure);raise self.failure
+        if self.thread is not None and self.thread.is_alive():
+            self.failed(Refused('M7_EVALUATOR_PROGRESS_COLLECTOR_TIMEOUT'));return False
         self.observe()
         self.finish()
+        return False
 
     def finish(self):
         try:
@@ -298,7 +267,7 @@ class Observer:
                 extra['demand_driven'] = True
             result=self.assessor(self.rounds,self.ids,self.phase,policy=self.policy,**extra)
         except Exception as error:
-            self.failed(error);raise
+            self.failed(error);return
         self.write({**result,'rounds':self.rounds});self.result=result
 
 
