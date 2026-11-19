@@ -163,6 +163,8 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [connector-pause-gap-accepted](multitenancy-decisions.md#connector-pause-gap-accepted) — A connector started while paused waits for unpause; no data is lost.
 - [deletion-request-auto-pauses](multitenancy-decisions.md#deletion-request-auto-pauses) — An owner's deletion request pauses the site; cancelling restores the earlier state.
 - [preview-deletion-confirmation](multitenancy-decisions.md#preview-deletion-confirmation) — Deletion needs an explicit request and operator confirmation; no mandatory waiting period.
+- [platform-backup-and-test-fixtures](multitenancy-decisions.md#platform-backup-and-test-fixtures) — The deployment manages PostgreSQL and Vault backup, rollback and seeded fixture copies.
+- [tenant-copy-export](multitenancy-decisions.md#tenant-copy-export) — Core exports per-tenant COPY data with a digest manifest and restores it under the tenant fence.
 - [tenant-deletion-key-retention](multitenancy-decisions.md#tenant-deletion-key-retention) — Deletion keeps Transit keys and export artifact 30 days, then the operator destroys keys.
 - [key-destruction-removes-export](multitenancy-decisions.md#key-destruction-removes-export) — Key destruction also removes the export artifact file, in the same audit entry.
 - [export-removal-no-retry](multitenancy-decisions.md#export-removal-no-retry) — A repeat destruction reports the recorded removal outcome; it does not retry.
