@@ -63,6 +63,7 @@ class Case:
         self.node = (read(self.d/'native-run-template.json', {}).get('nativeLoad') or {}).get('nodeName')
         self.runtime = self.d/'runtime'
         inputs = read(self.d/'binding-inputs.json', {})
+        self.input_transport = inputs.get('inputTransport', 'pgstream')
         self.log_roles = sorted(inputs.get('roleEnv') or {})
         workloads = {}
         for obj in manifests(read(self.d/'render.json', [])):
@@ -346,7 +347,7 @@ def delivery(out):
 # retained snapshot with no network.
 PROMETHEUS_IMAGE = 'prom/prometheus@sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996'
 # Steady-window figures; {w} is the window in seconds, evaluated at its end.
-WRITES = 'sum(increase(nightscout_http_request_seconds_count{{method=~"POST|PUT|PATCH|DELETE",status_class="2xx"}}[{w}s]))'
+WRITES = 'sum(increase(nightscout_http_request_seconds_count{{workload="api",method=~"POST|PUT|PATCH|DELETE",status_class="2xx"}}[{w}s]))'
 QUERIES = {
     'targets': 'min_over_time(up[{w}s])',
     'cpuCores': 'rate(process_cpu_seconds_total{{job="roles"}}[{w}s])',
@@ -364,19 +365,21 @@ QUERIES = {
     'statementsPerWriteByRole': 'sum by (role) (increase(nightscout_pg_statements_total[{w}s])) / scalar(' + WRITES + ')',
     'statementsByApplication': 'sum by (role, application_name) (increase(nightscout_pg_statements_total[{w}s]))',
     'statementClientMeanSeconds': 'sum by (role) (increase(nightscout_pg_statement_seconds_total[{w}s])) / sum by (role) (increase(nightscout_pg_statements_total[{w}s]))',
-    'receiptsPerSecond': 'sum by (pod, slice, outcome) (rate(nightscout_pgstream_receipt_seconds_count[{w}s]))',
-    'receiptMeanSeconds': 'sum by (pod, slice) (rate(nightscout_pgstream_receipt_seconds_sum[{w}s])) / sum by (pod, slice) (rate(nightscout_pgstream_receipt_seconds_count[{w}s]))',
-    'receiptP95Seconds': 'histogram_quantile(0.95, sum by (pod, slice, le) (rate(nightscout_pgstream_receipt_seconds_bucket[{w}s])))',
     'httpP95Seconds': 'histogram_quantile(0.95, sum by (method, status_class, le) (rate(nightscout_http_request_seconds_bucket[{w}s])))',
-    'slotConfirmedLagBytesMax': 'max_over_time(ns_slot_confirmed_lag_bytes[{w}s])',
-    'slotConfirmedLagBytesMean': 'avg_over_time(ns_slot_confirmed_lag_bytes[{w}s])',
-    'walsenderSamplesByWait': 'sum by (state, wait_event_type, wait_event) (count_over_time(ns_walsender_senders[{w}s]))',
     'activeBackendsByApplication': 'sum by (application_name, wait_event_type) (avg_over_time(ns_activity_backends{{backend_type="client backend",state="active"}}[{w}s]))',
     'statIoSecondsByBackend': 'sum by (backend_type) (increase(ns_stat_io_read_seconds[{w}s]) + increase(ns_stat_io_write_seconds[{w}s]) + increase(ns_stat_io_fsync_seconds[{w}s]))',
     'statIoReadsByBackend': 'sum by (backend_type) (increase(ns_stat_io_reads[{w}s]))',
     'topStatementsSeconds': 'topk(25, sum by (queryid) (increase(pg_stat_statements_seconds_total[{w}s])))',
     'topStatementsCalls': 'topk(25, sum by (queryid) (increase(pg_stat_statements_calls_total[{w}s])))',
     'statementText': 'max by (queryid, query) (last_over_time(pg_stat_statements_query_id[{w}s]))',
+}
+PGSTREAM_QUERIES = {
+    'receiptsPerSecond': 'sum by (pod, slice, outcome) (rate(nightscout_pgstream_receipt_seconds_count[{w}s]))',
+    'receiptMeanSeconds': 'sum by (pod, slice) (rate(nightscout_pgstream_receipt_seconds_sum[{w}s])) / sum by (pod, slice) (rate(nightscout_pgstream_receipt_seconds_count[{w}s]))',
+    'receiptP95Seconds': 'histogram_quantile(0.95, sum by (pod, slice, le) (rate(nightscout_pgstream_receipt_seconds_bucket[{w}s])))',
+    'slotConfirmedLagBytesMax': 'max_over_time(ns_slot_confirmed_lag_bytes[{w}s])',
+    'slotConfirmedLagBytesMean': 'avg_over_time(ns_slot_confirmed_lag_bytes[{w}s])',
+    'walsenderSamplesByWait': 'sum by (state, wait_event_type, wait_event) (count_over_time(ns_walsender_senders[{w}s]))',
 }
 
 
@@ -453,7 +456,8 @@ def prometheus_figures(case, start, end, local=LocalPrometheus):
     w = max(1, int((end - start) / 1000))
     server = local(load/receipt['file'])
     try:
-        figures = {name: server.query(expr.format(w=w), end / 1000) for name, expr in QUERIES.items()}
+        queries = QUERIES | PGSTREAM_QUERIES if case.input_transport == 'pgstream' else QUERIES
+        figures = {name: server.query(expr.format(w=w), end / 1000) for name, expr in queries.items()}
     finally:
         server.close()
     text = {row['labels'].get('queryid'): row['labels'].get('query') for row in figures.pop('statementText')}
@@ -510,7 +514,7 @@ def summarize(case, out):
     models = read(out/'nodes.json', {})
     every = sorted(set(nodes) | set(models) | set(placement.values()) - {'<none>'})
     return {
-        'run': case.run, 'window': label, 'samples': used,
+        'run': case.run, 'inputTransport': case.input_transport, 'window': label, 'samples': used,
         'nodes': [{'name': node, 'cpuModel': (models.get(node) or {}).get('cpuModel', 'UNMEASURED'),
                    **{k: distribution(v) for k, v in nodes.get(node, {}).items()}} for node in every],
         # Per Pod: each evaluator ordinal separately, with the node it ran on.
@@ -523,7 +527,7 @@ def summarize(case, out):
                                  for c, cell in sorted(roles.items())},
         'podLogs': read(out/'podlogs'/'followers.json'),
         'prometheus': prometheus_figures(case, start, end),
-        'pgstreamDelivery': delivery(out),
+        **({'pgstreamDelivery': delivery(out)} if case.input_transport == 'pgstream' else {}),
     }
 
 
