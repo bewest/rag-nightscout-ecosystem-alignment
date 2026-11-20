@@ -146,6 +146,23 @@ evaluator uses today.
 
 ## Results
 
-*Pending. Session 2 of the concurrent Kubernetes campaign (2026-11-19, until midnight) runs the
-thread split, one CPU profile with receiver trace at 83.33 req/s, pgstream log capture at
-90 req/s, and evaluator K=2 at 90 req/s if the binding change is ready.*
+**2026-11-19, Kubernetes, 1,000 tenants, core `6da24edbb7`** (detail in the
+[execution log](execution-log.md#update--k1-kubernetes-repeats-cpu-model-dependence-and-the-first-evaluator-profile-2026-11-19)):
+
+1. **Thread split — measured.** The evaluator's main thread ran at 96–97% on Xeon 8168 nodes and
+   85–88% on Xeon 8358 nodes at 83–90 req/s; GC threads about 2% each. The ceiling is single-core
+   speed of one thread: on 8358 nodes 90 req/s stays healthy and 120 req/s is constrained.
+2. **Receipt share — open.** A 120 s CPU profile at 83.33 req/s (main thread 93.4% busy) is flat.
+   Socket writes take 15–22% of busy time, then `pg` row handling, the completion hash
+   `canonical` and receiver parsing. The reducer left about 69% of samples unattributed. Reading
+   suggests per-SQL-statement cost is material. That favours **A** (fewer statements per receipt
+   and completion, skip unchanged re-hash) before any topology change, and it does not yet show
+   whether **D** pays.
+3. **Stall reality — partly measured.** No pgstream timeouts, retries, replays or restarts at
+   83–90 req/s; receipt-to-response p99 41 ms. The coupling **C** would add is not yet exercised.
+   Evaluator K=2 renders offline but the harness cannot yet run a multi-Pod evaluator.
+4. **Journal size — not measured.**
+
+**Next measurements:** harness support for a multi-Pod evaluator, then K=2 against K=1 at 90 and
+120 req/s on one CPU model; a profile reducer that attributes samples by call stack to receive,
+evaluate and complete; SQL statements per accepted write; a non-rotating diagnostics sink.
