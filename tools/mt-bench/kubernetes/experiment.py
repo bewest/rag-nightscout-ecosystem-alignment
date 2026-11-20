@@ -145,20 +145,8 @@ def render_checks(instance):
 
 
 def candidate_pin(inventory, binding):
-    """Resolve the candidate contract for pre-entry and prepare from the binding as selected."""
-    if 'verification' not in inventory.get('workloads', {}):
-        return inventory['candidateContract']
-    asset = Path(binding)/'bindings/kubernetes/assets/source-contract.json'
-    source_contract = k.document(asset)
-    k.need(source_contract['platformVerification'] in k.candidate.STARTUP_PROTOCOLS,
-           'VERIFIED_SERVING_BINDING_OPTIONS')
-    pin = {key: source_contract[key] for key in
-           ('platformVerification', 'sourceAcceptance', 'nativeCatalogueSha256')}
-    pin.update({key:source_contract[key] for key in
-                (primer_options.FIELD, primer_options.PROTOCOL_FIELD, frozen.ACK_BUDGET)
-                if key in source_contract})
-    pin.update(verificationJob='verification', imageConfigId=source_contract['localImageId'])
-    return pin
+    """Resolve the candidate contract for pre-entry and prepare."""
+    return inventory['candidateContract']
 
 
 def prepare(manifest_path, instance, out, *, await_primer=False, existing_fixture=False):
@@ -177,11 +165,7 @@ def prepare(manifest_path, instance, out, *, await_primer=False, existing_fixtur
     # The candidate's image digests are the run identity; Kubernetes pulls by digest.
     delivery = frozen.candidate(m)
     selected = frozen.source(m)
-    split = 'verification' in inventory.get('workloads', {})
     selected_candidate = None if 'seed' in inventory else candidate_pin(inventory, instance['binding'])
-    if split:
-        k.need(frozen.PRIMER_STORAGE not in selected and population_ceiling.FIELD not in selected,
-               'VERIFIED_SERVING_BINDING_OPTIONS')
     pins = dict(pair=dict(core=selected['coreCommit'], deploy=selected['deployCommit']),
                 bindingCommit=m['bindingCommit'], instrument=k.instrument()['sha256'],
                 appImage=delivery['app'], appImageId=delivery['appImageId'],
@@ -219,12 +203,6 @@ def prepare(manifest_path, instance, out, *, await_primer=False, existing_fixtur
     checks = render_checks(instance)
     k.need(c['storageMode'] in ('disposable', 'existing-claim'), 'EXPERIMENT_STORAGE')
     k.need('verificationProof' not in config, 'CANDIDATE_VERIFICATION_PROOF_SCOPE')
-    if 'verificationProof' in instance:
-        k.need(split, 'CANDIDATE_VERIFICATION_PROOF_SCOPE')
-        captured = frozen.read_ref(instance['verificationProof'])
-        k.need(set(captured) == {'proof','jobUid','podUid','containerId'}, 'CANDIDATE_FIXTURE_CHANGED')
-        k.candidate.proof(k, c, captured['proof'])
-        c['verificationProof'] = captured
     if 'roleDocuments' in instance:
         docs = instance['roleDocuments']
         measured = k.completion_source(c, docs['evaluator'], docs['realtime'], **({'native_receipt':docs['nativeReceipt']} if 'nativeReceipt' in docs else {}))

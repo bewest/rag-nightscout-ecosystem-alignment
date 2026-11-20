@@ -918,10 +918,7 @@ named owned native Job or Pod gets a bounded private spec read. Namespace and
 object UIDs bracket that read, and the existing strict declaration comparison
 checks the actual reference, token mounts, resources and security fields. A
 redacted reference never counts as exact evidence. Native load and artifact
-readers use the same adapter. `experiment.candidate_pin(inventory, binding_ref)`
-resolves a split binding's full candidate pin from its hashed materialized
-receipt; pre-entry tools must use that receipt instead of the legacy
-`inventory.candidateContract` field.
+readers use the same adapter.
 
 Explicit `startup-v4` retains the source client's version-1 startup receipt and
 the native completion-receipt requirement. The source owns v4 role digests,
