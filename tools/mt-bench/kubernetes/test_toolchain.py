@@ -47,6 +47,19 @@ class Toolchain(unittest.TestCase):
                 m=self.manifest();m['topology']['apiReplicas']=count
                 with self.assertRaisesRegex(ValueError,'TOPOLOGY'):t.legacy(m,'compose')
 
+    def test_history_projects_same_recipe_with_baseline_and_workload_preserved(self):
+        selected=dict(coreCommit='1'*40,deployCommit='2'*40,localImageId='sha256:'+'6'*64,sourceAcceptance='PENDING')
+        m = self.manifest()
+        with patch.object(t.frozen, 'source', return_value=selected):
+            baseline = t.local(m, {'prepare':{}})
+            self.assertNotIn('history', baseline)
+            recipe = dict(mode='synthetic-sgv-6h-v1', anchorUnixMs=1795202700000)
+            m['profile']['history'] = recipe
+            populated = t.local(m, {'prepare':{}})
+            self.assertEqual(populated, dict(baseline, history=recipe))
+            self.assertEqual(t.legacy(m)['profile']['history'], recipe)
+            self.assertEqual(t.legacy(m)['profile']['workload'], m['profile']['workload'])
+
     def test_shared_primer_selections_project_once(self):
         selected=dict(coreCommit='1'*40,deployCommit='2'*40,localImageId='sha256:'+'6'*64,sourceAcceptance='PENDING')
         m=self.manifest()
