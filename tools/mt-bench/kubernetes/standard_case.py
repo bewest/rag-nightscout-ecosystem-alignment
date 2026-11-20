@@ -189,11 +189,13 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
                tenantsFile=str(output/'runtime/fixture/data-roster.private.json'), deadlines={kind:(now+timedelta(seconds=env[seconds])).isoformat().replace('+00:00','Z')
                for kind,seconds in [('workUntil','workDeadlineSeconds'),('cleanupUntil','cleanupDeadlineSeconds')]})
     k.write(output/'native-run-template.json', run)
+    fixture_identity = {'mode':'fresh'} if fixture is None else {'mode':fixture['mode'], 'directory':str(fixture['directory'])}
+    fixture_identity['history'] = profile['history']
     k.write(output/'preflight.json',{'offline':'PASS','commissioning':'PREFLIGHT_ONLY',
         'trialEnvelope':{'placementMode':'scheduler','resourceAccounting':'requests-v1'},'experiment':{'runId':run_id,
         'namespace':namespace,'renderSha256':k.digest(output/'render.json'),'experimentSha256':k.digest(output/'intent.json')},
         'identity':{'alignmentCommit':alignment,'bindingCommit':binding_head,'candidate':candidate,
-                    'fixture':{'mode':fixture['mode'], 'directory':str(fixture['directory'])} if fixture else {'mode':'fresh'}},
+                    'fixture':fixture_identity},
         'topology':{'inputTransport':transport, 'apiReplicas':inventory['workloads']['api']['replicas'],
                     'evaluatorSlices':inventory['slices']['evaluator'], 'realtimeSlices':inventory['slices']['realtime']}})
     selected_control = {key:control[key] for key in ('version','toolsDirectory','k6','readonlyGuard','pullSecretCommand') if key in control}

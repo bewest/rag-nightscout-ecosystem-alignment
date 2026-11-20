@@ -104,6 +104,7 @@ class StandardCase(unittest.TestCase):
                 taint = ['--reserved-worker-taint','worker=reserved'] if i == 0 else []
                 result = json.loads(subprocess.check_output(cmd + taint))
                 self.assertFalse(result['runtimeStarted'])
+                self.assertEqual(result['identity']['fixture']['history'], profile['history'])
                 final = k.document(output/'intent.json')
                 fixed = k.document(output/'lifecycle-bound.json')
                 self.assertNotIn('snapshotDirectory', fixed)
