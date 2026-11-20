@@ -58,7 +58,7 @@ RULES = [
     (r'_evaluator$', r'^SELECT projection->\$3->\$4 AS output', 'consumers', 'output physical read'),
     (r'_evaluator$', r'tenant_registry_revision|^SELECT current_database\(\)|^SELECT pg_backend_pid\(\)', 'registry', 'registry revision / datastore identity'),
     (r'^nsdemo_lifetime_evaluator$', r'operation-window-snapshot|^BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY$|^COMMIT$', 'observe', 'generation-scope observe txn'),
-    (r'_evaluator$', r'^(BEGIN ISOLATION LEVEL READ COMMITTED|BEGIN READ ONLY|BEGIN|COMMIT|ROLLBACK)$', 'txn-control', 'BEGIN/COMMIT/ROLLBACK'),
+    (r'_evaluator$', r'^(BEGIN ISOLATION LEVEL READ COMMITTED|BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY|BEGIN READ ONLY|BEGIN|COMMIT|ROLLBACK)$', 'txn-control', 'BEGIN/COMMIT/ROLLBACK (incl. read-only port BEGIN)'),
     (r'_evaluator$', r'^SELECT set_config\(|pg_try_advisory_xact_lock_shared\(\$1::bigint\)|commit-generation-lock|operation-window-current', 'fences', 'lifecycle fence: set_config, shared/commit locks, operation-window read'),
     (r'^nsdemo_outbox$', r'evaluator-notification-deadlines', 'consumers', 'outbox: notification deadlines'),
     (r'^nsdemo_outbox$', r'.', 'consumers', 'outbox: producer state/requests/fence/txn'),
