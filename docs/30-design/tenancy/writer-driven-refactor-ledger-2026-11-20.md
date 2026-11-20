@@ -21,7 +21,7 @@ An item moves up only when a measurement or a blocker needs it.
 | item | why | source |
 |---|---|---|
 | Pending mark in the write transaction, post-commit hint, periodic sweep, window recompute, completion generation fence | the transport itself | S1 `45823c5f0` |
-| Index-bounded window read: one typed time column per windowed table, matching single-tenant window semantics | the window read is O(history) as built (412 ms at 26 weeks) | S1b |
+| Index-bounded window read: entries `"date"` bigint, devicestatus/treatments `created_at` text COLLATE "C", one statement | flat about 12 ms PostgreSQL per read from 1 to 26 weeks (was up to 914 ms) | S1b `4f83b0a56` |
 | api → realtime `/storage` events; journal reader and writes removed | `/storage` without the evaluator in the path | S2 `6a1ca6a3f` |
 | `lib/internal-hints/` sender and v1 contracts, wired at `postgres-intent-common.js:70` | one post-commit point covers the api's five write sites | S3 `dcdb168cb` |
 | A cuts: read ports, dbsize gate, consumer wake on owed work, fewer wrappers and fences | 171.5 → about 76 statements per write, carried into either design | join `9af05fb32` |
@@ -58,3 +58,10 @@ The first two may be promoted by S4 measurements; the rest wait.
 - The completion trusted scan folded into the completion transaction (A1, skipped).
 - `set_config` folded into the write-lock statement, shared with the api (A1, skipped).
 - Items S1b lists under "refactor later".
+- From S1b:
+  - other numeric generated columns (`sgv`, `mbg`, treatments/devicestatus `"date"`) have the same
+    non-leakproof `numeric_ge` limit under row-level security;
+  - a byte bound via the stored `storage_bytes`;
+  - the unbounded profile read;
+  - stream bootstrap still pages;
+  - regenerate the entries schema fixture whose header says "the document is the record".
