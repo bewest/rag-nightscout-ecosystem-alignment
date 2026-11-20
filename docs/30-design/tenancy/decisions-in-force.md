@@ -103,6 +103,7 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [tenant-live-add](multitenancy-decisions.md#tenant-live-add) — Running evaluator and realtime pick up newly provisioned tenants without restart (separate lane).
 - [registry-connector-definitions](multitenancy-decisions.md#registry-connector-definitions) — Connector definitions are durable tenant configuration; endpoint and credential values stay in tenant secrets.
 - [operator-repair-scope](multitenancy-decisions.md#operator-repair-scope) — Use provision for creation, inspect for diagnosis and known-good backups for exceptional recovery. Factory reset preserves clinical data and credentials.
+- [one-call-usable-provisioning](multitenancy-decisions.md#one-call-usable-provisioning) — One bulk admin call returns usable tenants (owner, subject, credential in the provisioning transaction); fixtures reused by key; sized for about half of runs seeding fresh (2026-11-20).
 - [deployment-ingress-peer-list-trust](multitenancy-decisions.md#deployment-ingress-peer-list-trust) — One explicit peer list serves tenant selection and `TRUST_PROXY`; empty refuses startup.
 - [edge-forwarded-headers-left](multitenancy-decisions.md#edge-forwarded-headers-left) — The edge keeps forwarding its headers; core's selector refusal is the control.
 - [failed-login-delay-core](multitenancy-decisions.md#failed-login-delay-core) — Failed authentication delays the next request as on a single site, keyed on the real client address.
