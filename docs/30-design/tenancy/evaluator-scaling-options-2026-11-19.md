@@ -201,6 +201,20 @@ identifier `evaluator-profile-20261119`).**
     enabling K evaluators without slot coupling. A singleton intake would reach roughly 500–800
     writes/s on today's code, extrapolated linearly.
 
-**Next measurements:** harness support for a multi-Pod evaluator, then K=2 against K=1 at 90 and
-120 req/s on one CPU model; a profile reducer that attributes samples by call stack to receive,
-evaluate and complete; SQL statements per accepted write; a non-rotating diagnostics sink.
+**K=2 against K=1 (2026-11-19, Kubernetes, Xeon 8168, option C as patched; detail in the
+[execution log](execution-log.md#update--evaluator-k2-against-k1-at-1000-tenants-on-kubernetes-2026-11-19)).**
+
+- **Stall reality — measured.** At 90 req/s K=2 brings durable p95 from 51.84 s to 12.65 s (one
+  pair). At 120 req/s it reduces late outputs from 103 to 25 and 32 but still fails the clinical
+  deadline. No pgstream timeouts, retries or restarts appeared; the coupling shows instead as the
+  walsender waiting on pgstream in 15 of 16 samples with slot lag at 113–123 MB, while each
+  evaluator main thread had 24–31% to spare.
+- **What this means for the options (read-derived).** C buys roughly one notch of rate on slow
+  cores and then hands the bottleneck to the single stop-and-wait delivery path. Further K will not
+  help until delivery is parallel or pipelined: per-slice delivery (D, E, F or G), or more pgstream
+  workers with ordering kept per tenant. A remains worthwhile because it lowers the per-write
+  PostgreSQL cost that K=2 raised (2.1 → 3.0 cores at 90 req/s).
+
+**Next measurements:** per-batch pgstream delivery latency at 120 req/s with K=2; a progress
+instrument that reads K>1 on Kubernetes; the steady journal size per tenant; a profile on a
+fixture with realistic history.
