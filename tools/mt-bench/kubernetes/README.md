@@ -594,13 +594,13 @@ the rate at fixed population, change that scale, or use
 `workload.driverPlan.writeRateScale` for writes alone. The describe command
 prints the seven offered rates for the selected point.
 
-Current P platform receipts select `platformVerification: "startup-v2"` in both
-the source contract and candidate inventory. Their role rows contain exactly
-`role` and `generation`, without an expiry lease. Legacy candidate contracts
-retain the expiry check. A topology selection alone does not change proof
-semantics. Offline profile controls do not qualify private HTTP transport,
-replacement or clinical/client behavior on a live cluster; those observations
-belong to the lane's frozen baseline and retained run evidence.
+On the simplified platform, the migration Job prepares PostgreSQL. API,
+evaluator and realtime check isolation on their own database connections.
+Kubernetes checks tenant-admin through its private readiness endpoint.
+For a fresh disposable fixture, the in-cluster primer provisions tenants and
+seeds DATA through the private Services. For archived candidates, the runner
+interprets the startup contract recorded in their receipts. See the
+[platform verification decision](../../../docs/30-design/tenancy/multitenancy-decisions.md#platform-verification-removal).
 
 Focused controls use real scratch Jsonnet renders and patched commissioner code:
 
