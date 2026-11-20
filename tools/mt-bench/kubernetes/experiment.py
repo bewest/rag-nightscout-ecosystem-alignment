@@ -14,7 +14,6 @@ import execute
 import frozen
 import edge_configuration
 import matrix
-import primer_storage
 import primer_options
 import population_ceiling
 import application_topology
@@ -133,15 +132,6 @@ def prepare(manifest_path, instance, out, *, await_primer=False, existing_fixtur
     tier = m.get('tier', 'discovery')
     k.need(config.get('tier', tier) == tier, 'INSTANCE_TIER_CHANGED')
     c = profile.bind(p, dict(config, pins=pins, tier=tier))
-    k.need(config.get(frozen.PRIMER_STORAGE, selected.get(frozen.PRIMER_STORAGE))==selected.get(frozen.PRIMER_STORAGE),
-           'PRIMER_STORAGE_CONFIGURATION_CHANGED')
-    if frozen.PRIMER_STORAGE in selected:
-        c[frozen.PRIMER_STORAGE]=selected[frozen.PRIMER_STORAGE]
-        k.need('primerStorageReceipt' in instance and 'primerStorageReceipt' not in config, 'PRIMER_STORAGE_PUBLISH_PROOF_REQUIRED')
-        c['primerStorageReceipt']=frozen.read_ref(instance['primerStorageReceipt'])
-        primer_storage.verify_receipt(c[frozen.PRIMER_STORAGE],c['primerStorageReceipt'])
-    else:
-        k.need('primerStorageReceipt' not in instance and 'primerStorageReceipt' not in config, 'PRIMER_STORAGE_UNDECLARED')
     k.need('edgeConfiguration' not in config or config['edgeConfiguration']==edge,'EDGE_CONFIGURATION_CHANGED')
     if edge is not None:c['edgeConfiguration']=edge
     k.need('producerAckReadback' not in config, 'PGSTREAM_ACK_READBACK_UNDECLARED')

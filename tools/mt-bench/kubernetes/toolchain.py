@@ -28,7 +28,7 @@ def legacy(m,target='kubernetes'):
         return copy.deepcopy(m)
     frozen.require(m.get('kind')=='multitenant-experiment' and m.get('version')==1 and
         set(m)<= {'version','kind','application','profile','topology','deploymentJobs','local','kubernetes','tier',
-                  frozen.ACK_BUDGET,frozen.PRIMER_STORAGE},'MANIFEST')
+                  frozen.ACK_BUDGET},'MANIFEST')
     transport=m.get('kubernetes',{})
     frozen.require(isinstance(transport,dict) and set(transport)<={'edge',application_topology.FIELD},'KUBERNETES_FIELDS')
     application_topology.selection(transport,frozen.require)
@@ -52,7 +52,6 @@ def legacy(m,target='kubernetes'):
                 **({application_topology.FIELD:transport[application_topology.FIELD]}
                    if target=='kubernetes' and application_topology.FIELD in transport else {}),
                 **({frozen.ACK_BUDGET: m[frozen.ACK_BUDGET]} if frozen.ACK_BUDGET in m else {}),
-                **({frozen.PRIMER_STORAGE: m[frozen.PRIMER_STORAGE]} if frozen.PRIMER_STORAGE in m else {}),
                 **({'deploymentJobs':copy.deepcopy(m['deploymentJobs'])} if 'deploymentJobs'in m else {}))
 
 def local(m,instance):

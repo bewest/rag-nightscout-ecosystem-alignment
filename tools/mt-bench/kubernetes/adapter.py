@@ -37,7 +37,6 @@ import viewer_plan
 import workload
 import workload_inputs
 import resource_budget
-import primer_storage
 import edge_configuration
 import application_topology
 
@@ -204,7 +203,6 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
     if 'dataPrimerSeconds' in c:
         need(workload_inputs.seconds(c['dataPrimerSeconds']), 'DATA_PRIMER_WINDOW')
     objs = manifests(rendered)
-    primer_storage.check_render(c, objs)
     if 'edgeConfiguration' in inventory or 'edgeConfiguration' in c:
         need(isinstance(c.get('edgeConfiguration'),dict),'EDGE_CONFIGURATION_CHANGED')
         edge=edge_configuration.check({'edge':c['edgeConfiguration'].get('requested')},inventory,objs,need)

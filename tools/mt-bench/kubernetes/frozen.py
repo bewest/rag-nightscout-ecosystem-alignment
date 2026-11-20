@@ -12,7 +12,6 @@ import population_ceiling
 
 ACK_BUDGET = 'pgstreamNotifierAckTimeoutMs'
 ACK_PACKAGE = ('scripts/producer_ack_publish.py', 'scripts/producer_wire.py')
-PRIMER_STORAGE = 'primerStorage'
 JOB_COMPLETE = 'provisionJobCompleteSeconds'
 
 
@@ -66,12 +65,6 @@ def source(manifest):
         require(tier == 'discovery' and type(budget) is int and 0 < budget <= (2**63 - 1) // 1_000_000,
                 'PGSTREAM_ACK_BUDGET')
         chosen[ACK_BUDGET] = budget
-    if PRIMER_STORAGE in manifest:
-        storage = manifest[PRIMER_STORAGE]
-        require(tier == 'discovery' and isinstance(storage, dict) and set(storage)=={'stateMiB','secretCodec'}
-                and type(storage['stateMiB']) is int and 0 < storage['stateMiB'] <= (2**53-1)//1048576
-                and storage['secretCodec'] in ('raw-v1','gzip-v1'), 'PRIMER_STORAGE_SELECTION')
-        chosen[PRIMER_STORAGE] = storage
     primer = primer_options.from_profile(manifest.get('profile',{}), require)
     population=population_ceiling.from_profile(manifest.get('profile',{}),require)
     if population is not None:
@@ -97,7 +90,6 @@ def contract(manifest, observed):
     # provenance (commits, receipt hashes, acceptance words) is recorded, not compared.
     require(all(observed.get(k) == v for k, v in chosen.items() if k not in PROVENANCE), 'CONTRACT_CONFIGURATION_CHANGED')
     require((ACK_BUDGET in observed) == (ACK_BUDGET in chosen), 'PGSTREAM_ACK_UNDECLARED')
-    require((PRIMER_STORAGE in observed) == (PRIMER_STORAGE in chosen), 'PRIMER_STORAGE_UNDECLARED')
     require((JOB_COMPLETE in observed) == (JOB_COMPLETE in chosen),'STARTUP_JOB_COMPLETE_UNDECLARED')
     require((primer_options.FIELD in observed) == (primer_options.FIELD in chosen), 'PRIMER_OPTIONS_UNDECLARED')
     require(observed.get(population_ceiling.FIELD)==chosen.get(population_ceiling.FIELD),'POPULATION_CEILING_CHANGED')

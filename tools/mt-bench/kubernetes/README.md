@@ -48,8 +48,7 @@ log. Put that Job in `stages/verification.json` when preparing the case. The
 lifecycle waits for it before installing serving workloads and then launches the
 lab provisioning client. The attach phase reuses the captured proof and
 checks the native database source independently. The primer's private results
-live on its `/run/ns-client` volume. Set its size with the renderer's
-`primerStorage` input, such as `64Mi`.
+live on its `/run/ns-client` volume.
 
 The primer verifies DATA credentials for the full `population.provisionedTenants`
 roster. Set `population.ordinaryRosterTenants` to the number of consecutive entries
@@ -148,16 +147,6 @@ in the same packet to resume. The lifecycle releases the namespace at cleanup.
 After privately saving the complete roster and its receipt, the primer command
 acknowledges export and the waiting container can exit. A previously
 source-projected roster still uses the original prepare command.
-
-For fresh discovery, `primerStorage` can select `stateMiB` and `secretCodec`
-in the experiment manifest. For example, `{"stateMiB":32,"secretCodec":"gzip-v1"}`
-selects a 32 MiB primer state volume and lossless transport of the primer
-configuration. `raw-v1` uses the source bytes directly. The materialized
-publisher checks the exact data size of every role Secret before publication.
-The primer installer checks the original config's byte count and SHA-256, then
-restores its private file. The actor verifies the mounted state volume and
-config digest before writing and records filesystem size and usage when
-available. The source retains its original atomic writes and uncertainty journal.
 
 The lifecycle starts the split binding's platform bootstrap while Vault can
 still be sealed. Once the private admin proof succeeds it starts all serving
