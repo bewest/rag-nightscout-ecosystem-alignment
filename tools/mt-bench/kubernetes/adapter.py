@@ -161,22 +161,14 @@ def resource_accounting(c):
     return resource_budget.selection(c, need)
 
 
-EVALUATOR = 'StatefulSet/evaluator'
-
-
 def replica_scope(obj):
+    # One Pod per replica for every Deployment and StatefulSet (api replicas,
+    # realtime and evaluator K>1 alike): observe() counts, places and checks
+    # readiness of each Pod against `replicas` (ROLE_POD_UNMEASURED). How many
+    # slices a role may have is the binding's and the application's bound, not
+    # the census's.
     count = obj['spec'].get('replicas', 1)
-    if obj['metadata']['name'] == 'cohort':
-        need(obj['kind'] == 'StatefulSet' and count == 1, 'ONE_COHORT_REPLICA')
-    elif key(obj) == EVALUATOR:
-        # Evaluator slices (binding `slices.evaluator`): one Pod per ordinal, each
-        # counted, placed and observed on its own (`role_pods`).
-        need(type(count) is int and 1 <= count <= evaluator_progress.POLICY['maxInstances'],
-             'EVALUATOR_SLICES_UNSUPPORTED:' + str(count))
-    else:
-        # Role selection and the Pod census still require one Pod per workload.
-        # This is an instrument capability, not a shared-socket cohort rule.
-        need(count == 1, 'WORKLOAD_REPLICA_CENSUS_UNSUPPORTED:' + key(obj))
+    need(type(count) is int and count >= 1, 'WORKLOAD_REPLICAS_INVALID:' + key(obj))
 
 
 def subset(expected, actual):

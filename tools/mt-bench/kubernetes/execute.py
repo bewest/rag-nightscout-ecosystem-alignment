@@ -291,7 +291,8 @@ def progress(d, c, objects, client, *, raw_output=None, until=None):
                 return raw
         value, primary, post = None, None, None
         try:
-            value = k.evaluator_progress.round_view(list(services), ids, fetch, demand_driven=True, policy=policy)
+            # A static slice answers only for its own tenants: each ordinal is asked for its share.
+            value = k.evaluator_progress.round_view(list(services), ids, fetch, demand_driven=True, policy=policy, sliced=True)
         except BaseException as error:
             primary = error
         try:
@@ -428,7 +429,7 @@ def policy(d, c, objects, client):
     before=k.observe(c,objects,client,initial)
     primer=[p for p in before['pods'].values() if p['workload']=='Job/primer' and p['containers'].get('done',{}).get('ready')]
     k.need(len(primer)==1,'POLICY_PRIMER_WAITING_REQUIRED','UNMEASURED')
-    denied_pod,denied_container=k.selected_pod(c,before,'api')
+    denied_pod,denied_container=k.role_pods(c,before,'api')[0]  # any api Pod is a denied source
     targets=[(primer[0]['name'],'done'),(denied_pod,denied_container),(primer[0]['name'],'done')]
     script="const net=require('node:net');let done=false;const finish=outcome=>{if(done)return;done=true;socket.destroy();console.log(JSON.stringify({outcome}));};const socket=net.connect({host:'admin',port:1342});socket.setTimeout(2000);socket.once('connect',()=>finish('connected'));socket.once('timeout',()=>finish('timeout'));socket.once('error',()=>finish('error'));"
     samples=[]

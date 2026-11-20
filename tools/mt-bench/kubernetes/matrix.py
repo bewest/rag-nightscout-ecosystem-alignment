@@ -46,8 +46,8 @@ def node_requests(objects, baseline, accounting, config=None):
     native, seen = set(accounted), {}
     for pod in pods:
         workload = pod['workload']
-        # One budget per Pod: a StatefulSet with replicas K (evaluator K>1) has K Pods, each
-        # budgeted on its own node; any other workload still has at most one Pod.
+        # One budget per Pod: a Deployment or StatefulSet with replicas K has K Pods, each
+        # budgeted on its own node.
         replicas = objects[workload]['spec'].get('replicas', 1) if workload in objects else 0
         seen[workload] = seen.get(workload, 0) + 1
         k.need(workload in objects and workload not in native and seen[workload] <= replicas,

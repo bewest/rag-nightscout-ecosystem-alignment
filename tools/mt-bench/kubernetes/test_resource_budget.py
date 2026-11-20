@@ -53,19 +53,15 @@ class ResourceBudget(unittest.TestCase):
         with self.assertRaisesRegex(k.Refused, 'UNBUDGETED_CONTAINER'):
             k.validate(c, inv, rendered)
 
-    def test_socket_cohort_and_other_replica_capability_have_distinct_refusals(self):
+    def test_every_workload_is_counted_one_pod_per_replica(self):
         c, inv, rendered, client = fixture()
-        rendered[1]['spec']['replicas'] = 2
-        with self.assertRaisesRegex(k.Refused, 'ONE_COHORT_REPLICA'):
+        rendered[2]['spec']['replicas'] = 0
+        with self.assertRaisesRegex(k.Refused, 'WORKLOAD_REPLICAS_INVALID:StatefulSet/postgres'):
             k.validate(c, inv, rendered)
-        rendered[1]['spec']['replicas'] = 1
         rendered[2]['spec']['replicas'] = 2
-        with self.assertRaisesRegex(k.Refused, 'WORKLOAD_REPLICA_CENSUS_UNSUPPORTED:StatefulSet/postgres'):
-            k.validate(c, inv, rendered)
-        rendered[2]['spec']['replicas'] = 1
         objects = k.validate(c, inv, rendered)
-        client.objects['StatefulSet/postgres']['spec']['replicas'] = 2
-        with self.assertRaisesRegex(k.Refused, 'WORKLOAD_REPLICA_CENSUS_UNSUPPORTED'):
+        # Two replicas declared, one Pod present: the census refuses rather than measure half the role.
+        with self.assertRaisesRegex(k.Refused, 'ROLE_POD_UNMEASURED:postgres'):
             k.observe(c, objects, client)
 
     def test_quantity_forms_and_invalid_values(self):

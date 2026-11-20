@@ -1,4 +1,5 @@
 """Bounded private evaluator completion observations; never triggers work."""
+import hashlib
 import json
 import math
 import re
@@ -54,6 +55,34 @@ def due_fields(row):
 def validate_ids(ids):
     need(isinstance(ids,list) and 1<=len(ids)<=POLICY['maxTenants'] and len(set(ids))==len(ids) and all(isinstance(v,str) and UUID.fullmatch(v) for v in ids),'M7_EVALUATOR_PROGRESS_TENANTS')
 
+SLICE_RULE='sha256-modulo-v1'
+SERVICE=re.compile(r'evaluator(?:-([2-8]))?')
+
+def bucket(tenant,members):
+    """Core lib/pool-membership/slice.js bucket(): the first 8 bytes of
+    sha256(tenant id, UTF-8) as an unsigned big-endian integer, modulo K."""
+    need(isinstance(tenant,str) and UUID.fullmatch(tenant) and type(members) is int and 1<=members<=1024,'M7_EVALUATOR_PROGRESS_SLICE')
+    return int.from_bytes(hashlib.sha256(tenant.encode('utf-8')).digest()[:8],'big')%members
+
+def service_ordinal(service):
+    """Compose service names: evaluator is ordinal 0, evaluator-<i+1> is ordinal i."""
+    match=SERVICE.fullmatch(service) if isinstance(service,str) else None
+    need(match is not None,'M7_EVALUATOR_PROGRESS_INSTANCE_BOUND')
+    return int(match[1] or 1)-1
+
+def partition(services,ids):
+    """Each static slice answers only for the tenants it owns (core
+    evaluator-inspection.js refuses a foreign selector), so a sliced read asks
+    each ordinal for exactly its sha256-modulo-v1 share. Together the shares
+    cover every id once. An empty share is unmeasured: the ordinal's runtime
+    identity could not be read."""
+    ordinals={service:service_ordinal(service) for service in services}
+    need(sorted(ordinals.values())==list(range(len(services))),'M7_EVALUATOR_PROGRESS_INSTANCE_BOUND')
+    shares={service:[] for service in services};by_ordinal={v:k for k,v in ordinals.items()}
+    for tenant in ids:shares[by_ordinal[bucket(tenant,len(services))]].append(tenant)
+    need(all(shares.values()),'M7_EVALUATOR_PROGRESS_SLICE_EMPTY')
+    return shares
+
 REFUSAL_ROW_MAX_BYTES=4096
 _MISSING=object()
 
@@ -85,32 +114,38 @@ def _refusal_row(row,service,runtime_id):
         return {'evidence':'UNMEASURED','code':'M7_REFUSAL_ROW_BOUND'}
     return value
 
-def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_clinical_stall=False,*,policy=POLICY,demand_driven=False):
+def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_clinical_stall=False,*,policy=POLICY,demand_driven=False,sliced=False):
     """fetch(service,ids,query_budget,byte_budget) returns private JSONL bytes.
 
     The selected source roster sets the concurrent instance count. The source
-    helper pages 128 per request; bounds apply across all instances.
+    helper pages 128 per request; bounds apply across all instances. With
+    sliced=True and K>1 each service is asked only for its own share
+    (partition()); otherwise every service is asked for every id.
     """
     validate_ids(ids);need(1<=len(services)<=POLICY['maxInstances'],'M7_EVALUATOR_PROGRESS_INSTANCE_BOUND')
     need(len(set(services))==len(services),'M7_EVALUATOR_PROGRESS_INSTANCE_BOUND')
-    started=time.monotonic();max_queries=math.ceil(len(ids)/128)
-    need(max_queries*len(services)*3<=policy['maxQueriesPerPhase'],'M7_EVALUATOR_PROGRESS_QUERY_BOUND')
+    sliced=sliced and len(services)>1
+    asked=partition(services,ids) if sliced else {service:ids for service in services}
+    pages={service:math.ceil(len(chosen)/128) for service,chosen in asked.items()}
+    started=time.monotonic()
+    need(sum(pages.values())*3<=policy['maxQueriesPerPhase'],'M7_EVALUATOR_PROGRESS_QUERY_BOUND')
     budget=policy['maxBytesPerPhase']//(3*len(services))
     need(budget>0,'M7_EVALUATOR_PROGRESS_BYTE_BOUND')
     with ThreadPoolExecutor(max_workers=len(services)) as executor:
-        futures={service:executor.submit(fetch,service,ids,max_queries,budget) for service in services}
+        futures={service:executor.submit(fetch,service,asked[service],pages[service],budget) for service in services}
         raw={service:future.result() for service,future in futures.items()}
     identities={};owners={};all_rows={};bytes_seen=0;queries=0;known=set(ids)
     for instance_index,(service,data) in enumerate(raw.items()):
         if isinstance(data,str):data=data.encode()
         need(isinstance(data,bytes) and len(data)<=budget,'M7_EVALUATOR_PROGRESS_BYTE_BOUND')
         bytes_seen+=len(data);seen=set();runtime_id=None;ordinal=None;static_configuration=None;all_rows[service]={}
+        mine=set(asked[service])
         for page_index,line in enumerate(data.splitlines()):
             queries+=1;need(len(line)<=POLICY['responseMaxBytes']+8192,'M7_EVALUATOR_PROGRESS_RESPONSE_BOUND')
             try:page=json.loads(line)
             except (ValueError,UnicodeError):raise Refused('M7_EVALUATOR_PROGRESS_RESPONSE')
             selected=page.get('selected');view=page.get('view',{});rows=view.get('tenants')
-            need(isinstance(selected,list) and 1<=len(selected)<=128 and len(set(selected))==len(selected) and set(selected)<=known and not seen.intersection(selected),'M7_EVALUATOR_PROGRESS_SELECTOR')
+            need(isinstance(selected,list) and 1<=len(selected)<=128 and len(set(selected))==len(selected) and set(selected)<=mine and not seen.intersection(selected),'M7_EVALUATOR_PROGRESS_SELECTOR')
             seen.update(selected)
             rid=view.get('runtimeId');position=view.get('configured',{}).get('ordinal')
             need(isinstance(rid,str) and UUID.fullmatch(rid) and integer(position),'M7_EVALUATOR_PROGRESS_CONTRACT')
@@ -157,6 +192,8 @@ def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_c
                         error.diagnostic={'field':'jobs','predicate':'SIX_FIXED_BOOLEAN_FLAGS_REQUIRED','failedRow':_refusal_row(row,service,runtime_id)}
                         raise
                 all_rows[service][tenant]=value
+                # A sliced read asks only owned tenants: a refusal to admit one is a coverage failure.
+                need(not sliced or value['admitted'],'M7_EVALUATOR_PROGRESS_COVERAGE','UNMEASURED' if warming else 'FAIL')
                 if not value['admitted']:
                     need(not value['ready'] and (not demand_driven or not any((value['jobState'] or {}).values())),
                          'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
@@ -171,19 +208,21 @@ def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_c
                 first_release=(demand_driven or warming or allow_unavailable and value['jobState'] is not None) and all(value[k]==0 for k in ('completedAcquisitions','completedTimeCycles'))
                 contract(age is not None or first_release,'lastCompletedAgeMs','COMPLETION_AGE_OR_FIRST_RELEASE_REQUIRED')
                 owners[tenant]=value
-        need(seen==known,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
+        need(seen==mine,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
         identities[service]={'runtimeId':runtime_id,'ordinal':ordinal,**({'static':static_configuration} if static_configuration else {})}
     need(len({v['runtimeId'] for v in identities.values()})==len(services) and len({v['ordinal'] for v in identities.values()})==len(services),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     need(set(owners)==known,'M7_EVALUATOR_PROGRESS_COVERAGE','UNMEASURED' if warming else 'FAIL')
-    need(queries==max_queries*len(services),'M7_EVALUATOR_PROGRESS_QUERY_BOUND')
-    return {'instances':identities,'owners':owners,'allRows':all_rows,'queries':queries,'bytes':bytes_seen,'wallSeconds':time.monotonic()-started}
+    need(queries==sum(pages.values()),'M7_EVALUATOR_PROGRESS_QUERY_BOUND')
+    value={'instances':identities,'owners':owners,'allRows':all_rows,'queries':queries,'bytes':bytes_seen,'wallSeconds':time.monotonic()-started}
+    if sliced:value['slices']={'rule':SLICE_RULE,'count':len(services)}
+    return value
 
-def round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_clinical_stall=False,*,policy=POLICY,demand_driven=False):
+def round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_clinical_stall=False,*,policy=POLICY,demand_driven=False,sliced=False):
     captured={};started=time.monotonic()
     def measured(service,*args):
         value=fetch(service,*args);captured[service]=value.encode() if isinstance(value,str) else value
         return value
-    try:return _round_view(services,ids,measured,warming,allow_unavailable,allow_clinical_stall,policy=policy,demand_driven=demand_driven)
+    try:return _round_view(services,ids,measured,warming,allow_unavailable,allow_clinical_stall,policy=policy,demand_driven=demand_driven,sliced=sliced)
     except Refused as error:
         error.collection={'queries':sum(len(v.splitlines()) for v in captured.values() if isinstance(v,bytes)),
                           'bytes':sum(len(v) for v in captured.values() if isinstance(v,bytes)),
@@ -198,6 +237,16 @@ def assess(rounds,ids,phase,*,policy=POLICY,discovery_unclassified_rejections=Fa
     need(sum(r['queries'] for r in rounds)<=policy['maxQueriesPerPhase'] and sum(r['bytes'] for r in rounds)<=policy['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
     first=rounds[0];minimum=None;time_tenants=0;failure_delta=0;work_delta=0;time_delta=0
     previous=first
+    # A sliced round (round_view sliced=True, K>1) holds each service's own
+    # share; the shares together must cover every id exactly once.
+    sliced=first.get('slices')
+    need(all(r.get('slices')==sliced for r in rounds),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+    if sliced:
+        need(sliced=={'rule':SLICE_RULE,'count':len(first['allRows'])},'M7_EVALUATOR_STATIC_CONFIGURATION','FAIL')
+        for r in rounds:
+            covered=[tenant for rows in r['allRows'].values() for tenant in rows]
+            need(len(covered)==len(set(covered)) and set(covered)==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
+            need(all(bucket(tenant,sliced['count'])==service_ordinal(service) for service,rows in r['allRows'].items() for tenant in rows),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     for current in rounds[1:]:
         need(current['instances']==first['instances'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
         need(set(current['owners'])==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
@@ -206,7 +255,7 @@ def assess(rounds,ids,phase,*,policy=POLICY,discovery_unclassified_rejections=Fa
             need((a['service'],a['runtimeId'])==(b['service'],b['runtimeId']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             need(all(b[k]>=a[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
         for service,rows in previous['allRows'].items():
-            need(set(current['allRows'].get(service,{}))==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
+            need(set(current['allRows'].get(service,{}))==(set(rows) if sliced else set(ids)),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
             for tenant,a in rows.items():
                 b=current['allRows'][service][tenant]
                 need(a['admitted']==b['admitted'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
