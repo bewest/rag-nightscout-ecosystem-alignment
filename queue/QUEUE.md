@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 411 |
+| items | 412 |
 | runnable gates | 452 |
-| explicit `no-gate:` markers | 413 |
+| explicit `no-gate:` markers | 414 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 413 of the 865 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 414 of the 866 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 76 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-ANDROID-LAB |
+| `not-started` | 77 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-ANDROID-LAB, PERF-IMAGE-DIGEST-CACHE |
 | `in-progress` | 30 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-BENCH-BASELINE, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-TENANT-LIVE-ADD, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST, MT-D6-SLOT-READER |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 1 | WS-LAB |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 111 items
+`parcel: tenancy` &mdash; 112 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8488,6 +8488,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-AUTHZ-COST` | API authorization cost: permission snapshot, batched audit, bounded lifetime sessions and signature-proof reuse | `in-progress` | `codex/m7-join-20261111` | n/a | 0 run + 1 no-gate |
 | `MT-EVAL-COST` | Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order | `in-flight-upstream` | `codex/eval-cost-20261111` | n/a | 0 run + 1 no-gate |
 | `MT-D6-SLOT-READER` | D6: qualify default stream-fed clinical materialization and output recovery | `in-progress` | `codex/streamlined-runtime-20261116` | n/a | 0 run + 1 no-gate |
+| `PERF-IMAGE-DIGEST-CACHE` | Remote and capacity run bundles reference image exports by digest instead of saving a copy per run | `not-started` | `claude/deploy-candidate-fixture-20261119` | n/a | 0 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
 
@@ -12044,6 +12045,30 @@ alarm-readiness items, and the seam branch refresh.
 - `reports/tenancy/capacity-2026-11-11/README.md`
 
 **Notes.** 2026-11-13: event-driven reset (release decisions event-driven-reset). One capability owner and one successor M7 coordinator; old polling tuning and paid retry are stopped. Maintained upstream CDC is evaluated before more custom transport. Proposed model: evaluator owns raw changes and durable due state; realtime consumes durable output/alarm and viewer/auth lifecycle, initially co-located as useful. Existing acquired-input checkpoints do not prove clinical completion. Prototype and delivery guarantees retain their exact measured scope; this item remains in-progress, not production accepted. The pgstream-flow report records final v1.6.0 local positives and deliberate red controls on frozen aba583199e9ab8a4bb907adc46dc9262a3dcedf5. Notifier liveness, schema/control routing, actual process recovery, overlapping- owner/restore fencing, authority lifecycle and WAL-cap recovery remain open. Same capability lane owns actual evaluator/realtime integration under the communication guide criteria: durable receipt/completion, notifier health, schema/control routing, OS-process restart and stale-owner fencing, with matching deploy wiring. Internal clinical/config/output payloads are allowed within the trusted worker boundary; no sanitized-marker infrastructure is required solely for internal isolation. Fresh execution uses the same lane handoff and one owner; coordinator owns the final joined freeze. 2026-11-16: the stream-fed target now joins bounded engine-sufficient clinical history and an independent raw mutation tail in the existing checkpoint machinery. Warm reads stay read-only; raw client publication keeps current operation/authority/restore fences. Completed output omits duplicate clinical rows. Receipt pruning follows completed engine time, not the logical write stamp; exact bounded transitions remove redundant copying and serialization. The pgstream-idiomatic report's streamlined-runtime section records source/image, focused/default-client/operator recovery evidence, retained failed campaigns and the selected final freeze. Original failed operating captures retain their scope. Future observation measures durable completion/due outcomes rather than forcing stable RAM generations or TIME counters. This item remains in-progress with no read-only gate: functional qualification or offered load does not establish capacity or a release. Runtime owns source/deploy/image/full acceptance and canonical records; performance owns every entered operating experiment and resource cleanup. Independent scoped discovery with truthful source acceptance PENDING does not wait for unrelated full acceptance or optional metrics.
+
+### `PERF-IMAGE-DIGEST-CACHE` &mdash; Remote and capacity run bundles reference image exports by digest instead of saving a copy per run
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `nightscout-deploy` |
+| branch | `claude/deploy-candidate-fixture-20261119` |
+| base | `claude/deploy-candidate-fixture-20261119@a8ad951` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** Harness only. tools/perf-cloud on the deploy line (pgstream-caller.mjs carries app.tar and postgres.tar as LARGE bundle files; pgstream-batch verifies them) and the lane-local export drivers that run docker image save into each run's bundle/ directory. No product source, no image content and no run semantics change: a run still names exactly the image it ran.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** harness tooling, nothing ships to operators
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED. Instrument to build: a read-only check over a fresh run directory that (a) finds no image .tar inside the run, only a reference naming the image digest, and (b) finds exactly one cached export per digest whose recomputed digest matches the reference. Control: a run directory holding a per-run docker image save copy must make it exit non-zero.
+
+**Notes.** Why (disk audit 2026-11-19, measured on this workstation; raw inventory retained locally as artifacts/disk-audit-20261119 under the workspace root, not in Git). Run outputs and artifacts grew about 110 GB between 2026-11-12 and 11-18. 359 image .tar files held 50.3 GB, of which 33.3 GB were byte- identical copies in 40 groups; the largest group was one postgres.tar saved 33 times (0.49 GB each). A one-off hardlink pass recovered 28.9 GB on /mnt/data and 37.6 GB on /home, but every new run re-saves the same images. Shape: export once to a content-addressed store keyed by image digest (outside any run directory), and have each run bundle record the digest and resolve it at transfer time; remote transfer sends a digest only when the receiver lacks it. Retention of the store follows the run records that cite a digest. Companion reductions (not this item): record a source snapshot as commit plus lockfile hash instead of a copied tree with node_modules (about 21 GB of node_modules in run outputs), and compress execution logs at run close.
 
 ---
 

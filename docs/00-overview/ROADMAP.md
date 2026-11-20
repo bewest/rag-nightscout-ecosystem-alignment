@@ -219,6 +219,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 1 | `MT-TENANT-EXTENDED-SETTINGS` | Tenant environment carries plugin extended settings so the stale-data alarm can  | `in-flight-upstream` | &mdash; |
 | 1 | `MT-TENANT-REGISTRY` | Tenant registry in PostgreSQL; provisioning separated from bootstrap and lab pri | `in-progress` | &mdash; |
 | 1 | `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `in-flight-upstream` | &mdash; |
+| 1 | `PERF-IMAGE-DIGEST-CACHE` | Remote and capacity run bundles reference image exports by digest instead of sav | `not-started` | &mdash; |
 | 1 | `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | &mdash; |
 | 1 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | &mdash; |
 | 1 | `T33-REM` | T3.3 remainder - the shared enclave, and language/levels per tenant | `blocked` | &mdash; |

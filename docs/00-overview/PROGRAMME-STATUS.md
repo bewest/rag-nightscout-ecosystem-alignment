@@ -28,8 +28,8 @@ state is not evidence that a gate ran or that a milestone was promoted.
 |---|---|---:|---:|---:|
 | **Remedial** | `phase0`, `register-open`, `docs-truth` | 205 | 39 | 8 |
 | **Modernization** | `release-train` | 55 | 8 | 2 |
-| **Multitenant** | `tenancy`, `platform` | 149 | 29 | 26 |
-| | **total** | **411** | **76** | **36** |
+| **Multitenant** | `tenancy`, `platform` | 150 | 30 | 26 |
+| | **total** | **412** | **77** | **36** |
 
 <!-- END GENERATED: horizons -->
 
@@ -277,7 +277,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | `phase0` | 3 |  |  |  |  |  |  | 18 |  | 1 |  |  |  | **22** |
 | `release-train` | 8 | 2 | 1 |  |  |  | 22 | 15 | 2 | 1 |  |  | 4 | **55** |
 | `register-open` | 29 | 3 | 1 | 1 | 5 | 2 | 55 | 58 | 5 |  |  | 5 |  | **164** |
-| `tenancy` | 21 | 23 |  |  | 6 | 23 | 6 |  |  | 10 | 1 | 15 | 6 | **111** |
+| `tenancy` | 22 | 23 |  |  | 6 | 23 | 6 |  |  | 10 | 1 | 15 | 6 | **112** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
 | `platform` | 8 | 2 |  |  |  | 2 | 1 |  |  | 25 |  |  |  | **38** |
@@ -316,14 +316,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 373 | 91% |
+| Maintainer | 374 | 91% |
 | SECURITY reviewer | 17 | 4% |
 | Maintainer + a second human | 8 | 2% |
 | SAFETY reviewer | 6 | 1% |
 | Unassigned | 3 | 1% |
 | Whoever edits it next | 3 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **411** | |
+| **total** | **412** | |
 
 <!-- END GENERATED: reviewer-load -->
 

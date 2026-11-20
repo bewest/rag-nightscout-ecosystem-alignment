@@ -27572,3 +27572,42 @@ items:
       establish capacity or a release. Runtime owns source/deploy/image/full acceptance and canonical records;
       performance owns every entered operating experiment and resource cleanup. Independent scoped discovery
       with truthful source acceptance PENDING does not wait for unrelated full acceptance or optional metrics.
+
+  - id: PERF-IMAGE-DIGEST-CACHE
+    title: "Remote and capacity run bundles reference image exports by digest instead of saving a copy per run"
+    parcel: tenancy
+    repo: nightscout-deploy
+    branch: claude/deploy-candidate-fixture-20261119
+    base: claude/deploy-candidate-fixture-20261119@a8ad951
+    state: not-started
+    blast_radius: >
+      Harness only. tools/perf-cloud on the deploy line (pgstream-caller.mjs carries app.tar and
+      postgres.tar as LARGE bundle files; pgstream-batch verifies them) and the lane-local export
+      drivers that run docker image save into each run's bundle/ directory. No product source, no
+      image content and no run semantics change: a run still names exactly the image it ran.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: harness tooling, nothing ships to operators
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED. Instrument to build: a read-only check over a fresh run directory that
+          (a) finds no image .tar inside the run, only a reference naming the image digest, and
+          (b) finds exactly one cached export per digest whose recomputed digest matches the reference.
+          Control: a run directory holding a per-run docker image save copy must make it exit non-zero.
+    blocks_on: []
+    evidence: []
+    notes: >
+      Why (disk audit 2026-11-19, measured on this workstation; raw inventory retained locally as
+      artifacts/disk-audit-20261119 under the workspace root, not in Git). Run outputs and artifacts
+      grew about 110 GB between 2026-11-12 and 11-18. 359 image .tar files held 50.3 GB, of which
+      33.3 GB were byte-identical copies in 40 groups; the largest group was one postgres.tar saved
+      33 times (0.49 GB each). A one-off hardlink pass recovered 28.9 GB on /mnt/data and 37.6 GB on
+      /home, but every new run re-saves the same images. Shape: export once to a content-addressed
+      store keyed by image digest (outside any run directory), and have each run bundle record the
+      digest and resolve it at transfer time; remote transfer sends a digest only when the receiver
+      lacks it. Retention of the store follows the run records that cite a digest. Companion
+      reductions (not this item): record a source snapshot as commit plus lockfile hash instead of a
+      copied tree with node_modules (about 21 GB of node_modules in run outputs), and compress
+      execution logs at run close.
