@@ -97,7 +97,7 @@ class Catalog:
     @contextlib.contextmanager
     def _locked(self):
         self.path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-        with open(str(self.path) + '.lock', 'a') as lock:
+        with open(str(self.path) + '.lock', 'a', opener=lambda p, f: os.open(p, f, 0o600)) as lock:
             fcntl.flock(lock, fcntl.LOCK_EX)
             data = json.loads(self.path.read_bytes()) if self.path.exists() else {'version': 1, 'entries': {}}
             need(data.get('version') == 1, 'CATALOG_VERSION')

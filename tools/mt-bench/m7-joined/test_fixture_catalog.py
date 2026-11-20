@@ -81,6 +81,7 @@ class CatalogFile(unittest.TestCase):
         self.assertIsNone(self.catalog.lookup(key(), 'compose'))
         self.assertIsNone(self.catalog.lookup(key(tenants=9), 'kubernetes'))
         self.assertEqual(self.catalog.path.stat().st_mode & 0o777, 0o600)
+        self.assertEqual(Path(str(self.catalog.path) + '.lock').stat().st_mode & 0o777, 0o600)
 
     def test_a_building_record_is_not_a_hit_and_refuses_a_second_live_builder(self):
         self.catalog.reserve(key(), 'kubernetes')
