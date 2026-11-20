@@ -34,13 +34,13 @@ class PrimerProgress(unittest.TestCase):
 import json, os, sys, time
 from pathlib import Path
 state, operation, mode = sys.argv[1:]
-path = Path(state) / ('provisioned.json' if operation == 'provision' else 'tenants.json')
+path = Path(state) / 'tenants.json'  # provision and prime both checkpoint the roster
 for count in range(1, 6):
     if mode == 'retry':
         print('alive and retrying', flush=True)
     rows = [{'id': str(i)} for i in range(count if mode == 'advance' else 1)]
     with path.with_suffix('.new').open('w') as stream:
-        json.dump(rows if operation == 'provision' else {'tenants': rows}, stream)
+        json.dump({'tenants': rows}, stream)
         stream.flush()
         os.fsync(stream.fileno())
     os.replace(path.with_suffix('.new'), path)
@@ -54,8 +54,7 @@ for count in range(1, 6):
                     if mode == 'retry':
                         # A finished tenant in a prior run is a baseline.
                         rows = [{'id': '0'}]
-                        name = 'provisioned.json' if operation == 'provision' else 'tenants.json'
-                        adapter.write(root/name, rows if operation == 'provision' else {'tenants': rows})
+                        adapter.write(root/'tenants.json', {'tenants': rows})
                     wait = ComposePrimerWait(root, operation, 1, receipt)
                     argv = [sys.executable, '-c', child_source, root, operation, mode]
                     started = time.monotonic()

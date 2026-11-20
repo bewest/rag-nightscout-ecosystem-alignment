@@ -58,6 +58,10 @@ def jwt_setup_concurrency(value, discovery=False):
     return value
 
 
+# A roster JWT must outlive the run by this much to be used without an exchange.
+JWT_RUN_MARGIN_SECONDS = 600
+
+
 def k6_tenants(d, m, deadline=None):
     """Exchange every tenant's JWT once, before k6 starts (bounded by jwtSetupConcurrency)."""
     import jwt_tenants
@@ -65,7 +69,10 @@ def k6_tenants(d, m, deadline=None):
     roster = document(d/"tenants.private.json")
     # Ids only (no credentials): the assessor's roster after cleanup removes the private files.
     write(d/"load"/"roster.json", [row["id"] for row in roster])
-    rows = jwt_tenants.attach(roster, "http://127.0.0.1:" + str(m["port"]), concurrency, deadline=deadline)
+    cadence = m.get("cadence", {})
+    run_seconds = sum(cadence.get(key, 0) for key in ("warmupSeconds", "idleSeconds", "loadSeconds", "drainSeconds"))
+    rows = jwt_tenants.attach(roster, "http://127.0.0.1:" + str(m["port"]), concurrency, deadline=deadline,
+                              covers_until=int(time.time()) + run_seconds + JWT_RUN_MARGIN_SECONDS)
     return jwt_tenants.write(d/"load"/"k6-tenants.private.json", rows)
 
 
@@ -1068,9 +1075,10 @@ def application_database(d):
 
 
 def primer_counts(d,m):
-    """Read independent custody and database counts before workers or load start."""
+    """Read the roster and independent database counts before workers or load start. The
+    one-call primer loads no data (one-call-usable-provisioning): per-tenant data rows are
+    checked by the bench's own data load (populated history) and the load oracle, not here."""
     state=d/"state/primer"
-    issued=document(state/"provisioned.json")
     seed=document(state/"config.json").get("seed")
     if seed is None:
         require(verified_serving(document(d/"frozen.compose.json")), "M7_PRIMER_SEED_COUNT")
@@ -1083,23 +1091,22 @@ def primer_counts(d,m):
     require(len(expected)==m["tenants"],"M7_PRIMER_SEED_COUNT")
     accepted=document(state/"tenants.json")
     tenant_projection(accepted,m["tenants"])
-    complete=document(state/"primed.json")
-    uncertain=state/"entry-requests.json"
-    require(not uncertain.exists() or document(uncertain)=={"version":1,"tenants":{}},"M7_PRIMER_ENTRY_UNCERTAIN")
-    require(len(issued)==len(expected) and {row["id"] for row in issued}==expected and
-            {row["id"] for row in accepted["tenants"]}==expected and
-            complete=={"state":"synthetic-data-primed","tenants":len(expected)},"M7_PRIMER_CUSTODY_COUNT")
-    raw=psql(d,"SELECT tenant_id::text,count(*) FROM nsdemo_entries.entries WHERE doc->>'device'='synthetic-compose-demo' GROUP BY 1;",application_database(d))
-    stored={}
+    require({row["id"] for row in accepted["tenants"]}==expected,"M7_PRIMER_CUSTODY_COUNT")
+    # Independent of the roster: each tenant is active in the registry and its roster subject has
+    # a credential row (written in the provisioning transaction with the bootstrap block).
+    raw=psql(d,"SELECT r.tenant_id::text,s.subject_id FROM nsdemo_registry.tenant_registry r "
+               "JOIN nsdemo_legacy.legacy_credential_subjects s ON s.tenant_id=r.tenant_id WHERE r.state='active';",
+             application_database(d))
+    subjects={}
     for line in raw.splitlines():
-        tenant,count=line.split("\t")
-        require(tenant not in stored,"M7_PRIMER_DATABASE_DUPLICATE_GROUP")
-        stored[tenant]=int(count)
-    ok=set(stored)==expected and all(count==1 for count in stored.values())
-    result={"verdict":"PASS" if ok else "FAIL","requestedTenants":len(expected),"provisionedTenants":len(issued),
-            "acceptedAndSavedTenants":len(accepted["tenants"]),"persistedTenants":len(stored),
-            "persistedEntries":sum(stored.values()),"perTenantEntries":stored,
-            "scope":"PRIVATE synthetic commissioning only; accepted means HTTP success plus saved custody; SQL is independent"}
+        tenant,subject=line.split("\t")
+        subjects.setdefault(tenant,set()).add(subject)
+    usable={row["id"] for row in accepted["tenants"] if row.get("subject") in subjects.get(row["id"],set())}
+    ok=usable==expected and set(subjects)==expected
+    result={"verdict":"PASS" if ok else "FAIL","requestedTenants":len(expected),
+            "acceptedAndSavedTenants":len(accepted["tenants"]),"persistedTenants":len(set(subjects)&expected),
+            "usableTenants":len(usable),
+            "scope":"PRIVATE synthetic commissioning only; accepted means a bulk provisioning result plus saved roster; SQL is independent"}
     write(d/"primer-counts.private.json",result)
     require(ok,"M7_PRIMER_DATABASE_COUNT_MISMATCH")
     return result

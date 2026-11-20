@@ -1,4 +1,9 @@
-"""Exchange each tenant's access token for a JWT once, before k6 starts.
+"""Give each tenant a data JWT once, before k6 starts.
+
+A roster row that already carries the provisioning call's JWT (`jwt`, `jwtExpiresAt` in
+epoch seconds) is used as is when it stays valid until `covers_until` (the end of the run
+plus a margin); any other row exchanges its access token. A freshly seeded roster makes no
+exchange; a reused fixture older than the JWT lifetime (8 h) still exchanges.
 
 The k6 workload loads the resulting tenants file once into a SharedArray and its
 setup() returns nothing, so driver memory does not grow with roster x VUs. The
@@ -32,9 +37,17 @@ def exchange(base, row, timeout=60):
     return token
 
 
-def attach(rows, base, concurrency=1, *, timeout=60, deadline=None):
+def covers(row, covers_until):
+    """True when the row's own JWT is still valid at covers_until (epoch seconds)."""
+    return (covers_until is not None and isinstance(row.get('jwt'), str) and bool(row['jwt'])
+            and type(row.get('jwtExpiresAt')) is int and row['jwtExpiresAt'] >= covers_until)
+
+
+def attach(rows, base, concurrency=1, *, timeout=60, deadline=None, covers_until=None):
     """Return the rows with a `jwt` field, in roster order."""
     def token(row):
+        if covers(row, covers_until):
+            return row['jwt']
         seconds = min(timeout, deadline-time.time()) if deadline is not None else timeout
         if seconds <= 0:
             raise TimeoutError('M7_JWT_SETUP_DEADLINE')

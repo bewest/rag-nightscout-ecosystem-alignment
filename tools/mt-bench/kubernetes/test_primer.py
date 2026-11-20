@@ -81,7 +81,7 @@ else:
                 fetched.append(argv[-1])
                 return json.dumps(roster if argv[-1].endswith('tenants.json') else {'safe':True}).encode()
             client = SimpleNamespace(get=lambda *args:job,call=fetch)
-            reply = SimpleNamespace(returncode=0,stdout=b'{"state":"synthetic-data-primed","tenants":1}')
+            reply = SimpleNamespace(returncode=0,stdout=b'{"state":"synthetic-tenants-usable","tenants":1}')
             with patch.object(k,'load',return_value=(d,c,objects)), patch.object(k.candidate,'require'), \
                  patch.object(k,'active_baseline',return_value=observation), patch.object(k,'observe',return_value=observation), \
                  patch.object(k,'selected_pod'), patch.object(k,'Client',return_value=client), \
@@ -136,7 +136,7 @@ else:
                 self.assertEqual(actor.call_count,6)
 
                 reply.returncode = 0
-                reply.stdout = b'{"state":"synthetic-data-primed","tenants":1}'
+                reply.stdout = b'{"state":"synthetic-tenants-usable","tenants":1}'
                 job['metadata']['uid'] = 'j'
                 self.assertEqual(primer.prime(d,d/'failure',2)['verdict'], 'OBSERVED')
                 with self.assertRaisesRegex(k.Refused,'PRIMER_OUTPUT_CHANGED'):
@@ -149,7 +149,7 @@ else:
                 lines += [f'time.sleep({delay!r})', f'print({json.dumps(frame)!r}, flush=True)']
             return asyncio.run(primer.run_actor([sys.executable, '-c', '\n'.join(lines)],
                                                  time.time()+work, stall, 4, result))
-        done = {'state':'synthetic-data-primed', 'tenants':4}
+        done = {'state':'synthetic-tenants-usable', 'tenants':4}
         advances = [(0, {'checkpoint':0})] + [(.16, {'checkpoint':i}) for i in range(1,5)]
         result = {}
         self.assertEqual(run(advances + [(0, done)], .4, 5), (done, 0))

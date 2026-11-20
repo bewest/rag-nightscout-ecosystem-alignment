@@ -21,8 +21,8 @@ class Cluster:
     def __init__(self, pods=0, retain=True):
         self.calls, self.pods, self.retain, self.policy, self.contents = [], pods, retain, {}, set()
         self.secrets = [{'metadata': {'name': n}, 'type': 'Opaque', 'data': {'k': 'c3ludGhldGlj'}}
-                        for n in ('ns-postgres-password', 'ns-ca', 'ns-vault-tls', 'ns-config-api', 'ns-credentials-vault',
-                                  'registry-pull', 'default-token')]
+                        for n in ('ns-postgres-password', 'ns-ca', 'ns-vault-tls', 'ns-signing-secret', 'ns-config-api',
+                                  'ns-credentials-vault', 'registry-pull', 'default-token')]
     def __call__(self, args, body=None):
         self.calls.append((args, body))
         if args[:2] == ['get', 'pods']:
@@ -77,7 +77,8 @@ class FixtureCopy(unittest.TestCase):
         self.assertTrue(all(h.startswith('handle-content-') for h in manifest['handles'].values()))
         self.assertEqual((manifest['driver'], manifest['postgresImage'], manifest['coreCommit']),
                          ('dobs.csi.digitalocean.com', PG, 'a'*40))
-        self.assertEqual(manifest['secrets'], sorted(['ns-postgres-password', 'ns-ca', 'ns-vault-tls',
+        # The deployment signing Secret travels with the fixture (deployment-signing-secret amendment).
+        self.assertEqual(manifest['secrets'], sorted(['ns-postgres-password', 'ns-ca', 'ns-vault-tls', 'ns-signing-secret',
                                                       'ns-config-api', 'ns-credentials-vault']))
         self.assertEqual(set(cluster.policy.values()), {'Retain'})
         self.assertTrue(all(fc.FIXTURE_LABEL in c[0][-1] for c in cluster.calls if c[0][0] == 'patch'))
@@ -91,7 +92,7 @@ class FixtureCopy(unittest.TestCase):
     def test_restore_creates_the_seed_secrets_and_refuses_another_population_or_postgres_image(self):
         _, chosen, _ = self.seeded()
         cluster = Cluster()
-        self.assertEqual(len(fc.import_secrets(cluster, 'ns-synth-restore-1', 'restore-1', chosen['directory'])), 5)
+        self.assertEqual(len(fc.import_secrets(cluster, 'ns-synth-restore-1', 'restore-1', chosen['directory'])), 6)
         self.assertTrue(all(b['metadata']['labels'] == {fc.LABEL: 'restore-1'} for _, b in cluster.calls))
         manifest = fc.read_manifest(chosen['directory'])
         fc.check_restore(manifest, 8, PG)

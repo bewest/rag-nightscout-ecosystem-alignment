@@ -108,8 +108,8 @@ class ComposePrimerWait(ComposeProgressWait):
 
     def __init__(self, state, operation, seconds, stage):
         super().__init__(seconds, 'M7_PRIMER_STALLED')
-        self.provision = operation == 'provision'
-        self.path = state / ('provisioned.json' if self.provision else 'tenants.json')
+        # provision and prime are the same bulk call; both checkpoint the roster after each batch.
+        self.path = state / 'tenants.json'
         self.checkpoint_version = None
         self.stage = stage
         self.stage['primerStallSeconds'] = seconds
@@ -128,8 +128,7 @@ class ComposePrimerWait(ComposeProgressWait):
             try:
                 with self.path.open() as stream:
                     value = json.load(stream)
-                rows = value if self.provision else value['tenants']
-                count = len({row['id'] for row in rows})
+                count = len({row['id'] for row in value['tenants']})
             except (ValueError, TypeError, KeyError):
                 raise RuntimeError('M7_PRIMER_CHECKPOINT_INVALID') from None
             self.stage['completedTenants'] = max(self.stage['completedTenants'], count)

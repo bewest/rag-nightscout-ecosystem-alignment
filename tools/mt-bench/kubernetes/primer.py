@@ -22,9 +22,8 @@ from primer_progress import ProgressWindow
 STATE_READBACK = '''const fs=require('node:fs'),crypto=require('node:crypto');
 const dir='/run/ns-primer',m=fs.statfsSync(dir),config=fs.readFileSync(dir+'/config.json');
 const sizes={};
-for(const name of ['config.json','expected-verification.json','provisioned.json','verified.json',
-  'prime.lock','tenants.json','tenants.json.new','entry-requests.json','entry-requests.json.new',
-  'management-requests.json','management-requests.json.new','primed.json']){
+for(const name of ['config.json','expected-verification.json','verified.json',
+  'prime.lock','tenants.json','tenants.json.new']){
   try{sizes[name]=fs.statSync(dir+'/'+name).size;}catch(error){if(error.code!=='ENOENT')throw error;}
 }
 console.log(JSON.stringify({type:m.type,bytes:m.bsize*m.blocks,freeBytes:m.bsize*m.bavail,
@@ -68,7 +67,7 @@ def require_roster(d, c, baseline):
            receipt.get('podUid') == pods[0]['uid'] and
            receipt.get('containerId') == pods[0]['containers']['done']['containerID'] and
            receipt.get(primer_options.FIELD) == c.get(primer_options.FIELD) and
-           receipt.get('sourceResult') == {'state':'synthetic-data-primed', 'tenants':c['tenants']} and
+           receipt.get('sourceResult') == {'state':'synthetic-tenants-usable', 'tenants':c['tenants']} and
            receipt.get('dataTenants') == c['tenants'] and
            path.is_file() and not path.is_symlink() and receipt.get('rosterSha256') == k.digest(path),
            'PRIMER_ROSTER_CHANGED')
@@ -261,8 +260,8 @@ def prime_owned(d, c, objects, output, split, declared, selected):
                 result['stateVolume']['after']={'status':error.verdict, 'code':str(error)}
             except (ValueError, KeyError, OSError, TypeError):
                 result['stateVolume']['after']={'status':'UNMEASURED'}
-        partial = native.get('state') == 'synthetic-data-prime-partial'
-        k.need(exit_code == 0 and native == {'state': 'synthetic-data-primed', 'tenants': c['tenants']},
+        partial = native.get('state') == 'synthetic-tenants-partial'
+        k.need(exit_code == 0 and native == {'state': 'synthetic-tenants-usable', 'tenants': c['tenants']},
                'PRIMER_ACTIVE_COVERAGE_INCOMPLETE' if split and partial else 'PRIMER_INCOMPLETE',
                'UNMEASURED' if partial else 'FAIL')
         if primer_storage.FIELD in c:

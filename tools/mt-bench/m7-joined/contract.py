@@ -59,7 +59,11 @@ def tenant_projection(document, count):
     for row in rows:
         require(isinstance(row, dict) and UUID.fullmatch(row.get("id", "")) and isinstance(row.get("host"), str)
                 and re.fullmatch(r"[a-z0-9.-]+", row["host"]) and isinstance(row.get("dataToken"), str) and row["dataToken"], "M7_PRIMER_DATA_TOKEN_REQUIRED")
-        result.append({"id": row["id"], "host": row["host"], "token": row["dataToken"]})
+        projected = {"id": row["id"], "host": row["host"], "token": row["dataToken"]}
+        # The provisioning call's data JWT and its expiry (seconds), when the roster carries both.
+        if isinstance(row.get("jwt"), str) and row["jwt"] and type(row.get("jwtExpiresAt")) is int:
+            projected.update(jwt=row["jwt"], jwtExpiresAt=row["jwtExpiresAt"])
+        result.append(projected)
     require(len({r["id"] for r in result}) == count and len({r["host"] for r in result}) == count, "M7_PRIMER_DUPLICATE")
     return result
 

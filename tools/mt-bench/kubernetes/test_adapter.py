@@ -237,7 +237,7 @@ class Adapter(unittest.TestCase):
             k.write(roster, [{'id': id, 'host': host, 'token':'synthetic'} for id,host in ((A,'a.test'),(B,'b.test'))])
             receipt = dict(verdict='OBSERVED', runSha256=k.digest(d/'run.json'), namespaceUid=initial['namespace']['uid'],
                            jobUid='job-id', podUid='primer-pod-id', containerId='containerd://done',
-                           sourceResult={'state':'synthetic-data-primed','tenants':2},dataTenants=2,rosterSha256=k.digest(roster))
+                           sourceResult={'state':'synthetic-tenants-usable','tenants':2},dataTenants=2,rosterSha256=k.digest(roster))
             k.write(output/'result.json', receipt)
             job['status'] = {'conditions':[{'status':'True','type':'Complete','reason':'CompletionsReached',
                                            'lastTransitionTime':iso(time.time())}],'succeeded':1}

@@ -548,7 +548,8 @@ def execute(d, c, objects, client, load=False, recovery=False):
             # Each tenant's JWT is exchanged once here, before k6 starts; k6 loads the file once.
             import jwt_tenants
             ordinary = jwt_tenants.attach(ordinary, c['baseUrl'], settings.get('jwtSetupConcurrency', 1),
-                                         deadline=min(time.time()+setup, work_until))
+                                         deadline=min(time.time()+setup, work_until),
+                                         covers_until=int(time.time()) + settings['loadSeconds'] + settings.get('drainSeconds', 0) + 600)
             env['TENANTS_FILE'] = str(jwt_tenants.write(out / 'k6-tenants.private.json', ordinary))
             load_process_started = time.time()
             if 'driverPlan' in settings:
