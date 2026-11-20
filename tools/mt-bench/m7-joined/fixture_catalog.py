@@ -31,11 +31,11 @@ import time
 DEFAULT = Path('/mnt/data/nightscout-workspace/artifacts/fixtures/catalog.json')
 PLATFORMS = ('compose', 'kubernetes')
 TRANSPORTS = ('pgstream', 'writer-driven')
-# Transports whose restored state is independent of evaluator K. None yet: at deploy 086669a
-# bootstrap still refuses a restore at another K for every transport (bootstrap.js
-# BOOTSTRAP_EVALUATOR_ROSTER_CHANGED_RECREATE_DEMO, complete.json records the K) and Compose copies
-# NS_EVALUATOR_WORKERS with the snapshot's settings. Add 'writer-driven' once that check is scoped to pgstream.
-K_FREE_TRANSPORTS = frozenset()
+# Transports whose restored state is independent of evaluator K: one writer-driven seed serves
+# K=1 and K=2 (decision statefulset-ordinal-scaling, amended 2026-11-20). The deploy bootstrap's
+# BOOTSTRAP_EVALUATOR_ROSTER_CHANGED_RECREATE_DEMO applies to pgstream only (deploy join 2026-11-20);
+# pgstream keeps K in the key because its database carries one subscription per evaluator.
+K_FREE_TRANSPORTS = frozenset({'writer-driven'})
 IMAGE_ID = re.compile(r'sha256:[0-9a-f]{64}')
 SEED = re.compile(r'[a-z0-9][a-z0-9-]{0,39}')
 

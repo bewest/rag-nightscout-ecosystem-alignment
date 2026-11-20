@@ -97,7 +97,10 @@ def check_restore(manifest, tenants, postgres_image, slices=1, input_transport='
     need(manifest.get('inputTransport', 'pgstream') == input_transport, 'INPUT_TRANSPORT_CHANGED')
     need(manifest['tenants'] == tenants, 'TENANTS_CHANGED')
     need(manifest['postgresImage'] == postgres_image, 'POSTGRES_IMAGE_CHANGED')
-    need(manifest.get('evaluatorSlices', 1) == slices, 'EVALUATOR_SLICES_CHANGED')
+    # Only pgstream binds a fixture to evaluator K (its Secrets carry one receiver per slice);
+    # a writer-driven fixture restores at any K (decision statefulset-ordinal-scaling, amended).
+    if input_transport == 'pgstream':
+        need(manifest.get('evaluatorSlices', 1) == slices, 'EVALUATOR_SLICES_CHANGED')
 
 
 def storage(binding_storage):

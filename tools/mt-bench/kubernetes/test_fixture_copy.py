@@ -100,6 +100,12 @@ class FixtureCopy(unittest.TestCase):
             fc.check_restore(manifest, 8, PG, input_transport='writer-driven')
         record = fc.slices_record({'inputTransport':'writer-driven', 'slices':{'evaluator':2}})
         fc.check_restore({**manifest, **record}, 8, PG, 2, 'writer-driven')
+        # K-free: a writer-driven fixture seeded at K=2 (or K=1) restores at K=1 and K=2.
+        fc.check_restore({**manifest, **record}, 8, PG, 1, 'writer-driven')
+        fc.check_restore({**manifest, 'inputTransport': 'writer-driven'}, 8, PG, 2, 'writer-driven')
+        # pgstream stays bound to K.
+        with self.assertRaisesRegex(fc.Refused, 'EVALUATOR_SLICES_CHANGED'):
+            fc.check_restore(manifest, 8, PG, 2)
         with self.assertRaisesRegex(fc.Refused, 'INPUT_TRANSPORT_CHANGED'):
             fc.check_restore({**manifest, **record}, 8, PG, 2)
         with self.assertRaisesRegex(fc.Refused, 'TENANTS_CHANGED'):

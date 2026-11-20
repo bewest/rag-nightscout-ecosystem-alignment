@@ -32,11 +32,14 @@ class Key(unittest.TestCase):
         self.assertEqual(key(history=ordinary), key())
 
     def test_evaluator_k_leaves_the_key_only_for_a_k_free_transport(self):
-        self.assertEqual(key(transport='writer-driven')['evaluatorSlices'], 1)
-        with mock.patch.object(fc, 'K_FREE_TRANSPORTS', frozenset({'writer-driven'})):
-            self.assertNotIn('evaluatorSlices', key(transport='writer-driven'))
-            self.assertEqual(key(transport='writer-driven', evaluator_slices=3), key(transport='writer-driven'))
-            self.assertIn('evaluatorSlices', key())
+        # Writer-driven fixtures are K-free: one seed serves K=1 and K=2.
+        self.assertIn('writer-driven', fc.K_FREE_TRANSPORTS)
+        self.assertNotIn('evaluatorSlices', key(transport='writer-driven'))
+        self.assertEqual(fc.digest(key(transport='writer-driven', evaluator_slices=2)), fc.digest(key(transport='writer-driven')))
+        self.assertEqual(key(transport='writer-driven')['transport'], 'writer-driven')
+        # pgstream keeps K.
+        self.assertEqual(key()['evaluatorSlices'], 1)
+        self.assertNotEqual(fc.digest(key(evaluator_slices=2)), fc.digest(key()))
 
     def test_malformed_inputs_refuse(self):
         for change in ({'tenants': 0}, {'image': 'registry/app:tag'}, {'transport': 'mongo'}, {'seed': '/abs/dir'},
