@@ -2019,12 +2019,9 @@ def run(d,m,k6_image,oneoff=None):
 
 
 def static_runtime_contract(d,m):
-    import yaml
     config=document(d/'frozen.compose.json')
     state_docs=static_topology.state_documents(m,config,d/'state')
     state_result=static_topology.verify_documents(m,state_docs)
-    producer=yaml.safe_load((d/'state/pgstream/pgstream.yaml').read_text())
-    state_result['producer']=static_topology.verify_producer(m,state_docs,producer)
     write(d/'static-runtime-documents.json',state_result)
     state_path=d/'static-runtime-plan.private.json';write(state_path,state_docs)
     with private_commands(d/'source-node-checks'/'static-runtime-plan'/uuid.uuid4().hex, max_output_bytes=262144):

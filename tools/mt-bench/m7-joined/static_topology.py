@@ -236,26 +236,6 @@ def state_documents(manifest, config, state):
     return {'contract': 1, 'processes': processes}
 
 
-def verify_producer(manifest, documents, data):
-    from urllib.parse import urlsplit
-    value = validate(manifest)
-    require(value is not None, 'M7_STATIC_SELECTION_REQUIRED')
-    evaluator = next(p for p in documents['processes'] if p['name'] == 'evaluator')['files']['/run/ns-config/config.json']
-    try:
-        replica = data['source']['postgres']['replication']
-        database = urlsplit(data['source']['postgres']['url'])
-        batch = data['target']['webhooks']['notifier']['transaction_batch']
-        receivers = [f'http://{service("evaluator", i)}:19913/pgstream' for i in range(value['workers'])]
-        require(batch['slice_receivers'] == receivers and replica['replication_slot'] == evaluator['pgstream']['slot']
-                and replica['plugin']['include_transactions'] is True
-                and database.path[1:] == evaluator['datastore']['database']
-                and database.hostname == evaluator['datastore']['hostname'], 'M7_STATIC_PRODUCER_SOURCE')
-    except (KeyError, TypeError, ValueError):
-        raise RuntimeError('M7_STATIC_PRODUCER_SOURCE') from None
-    return {'status': 'VERIFIED', 'receivers': receivers, 'slot': replica['replication_slot'],
-            'scope': 'Actual configured producer source/targets. Subscription effects and physical source identity retain their native runtime checks.'}
-
-
 def verify_runtime(manifest, config, rows):
     from contract import OWNER
     instances = verify_config(manifest, config)

@@ -18,13 +18,10 @@ class SourceNodeCapture(unittest.TestCase):
         return a._command([str(Path(shutil.which('node')).resolve()), '-e', code], phase=kwargs.get('phase'))
 
     def call(self, root, phase, contract=None):
-        (root / 'state/pgstream').mkdir(parents=True)
-        (root / 'state/pgstream/pgstream.yaml').write_text('{}')
         a.write(root / 'frozen.compose.json', {})
         with ExitStack() as stack:
             stack.enter_context(patch.object(a.static_topology, 'state_documents', return_value={}))
             stack.enter_context(patch.object(a.static_topology, 'verify_documents', return_value={'status': 'VERIFIED'}))
-            stack.enter_context(patch.object(a.static_topology, 'verify_producer', return_value={'status': 'VERIFIED'}))
             return (contract or a.static_runtime_contract)(root, {})
 
     def criterion(self, root, phase, contract=None):
