@@ -721,26 +721,23 @@ def observe_sql(d, c, objects, output, client):
     pod, container, before = capture()
     write(output / 'before.json', before)
     query = """SELECT s.system_identifier::text, c.timeline_id, current_database(),
-      EXISTS(SELECT 1 FROM pg_catalog.pg_replication_slots WHERE slot_name='nsdemo_pgstream'
-             AND slot_type='logical' AND database=current_database()),
       count(e.tenant_id), count(DISTINCT e.tenant_id)
       FROM pg_catalog.pg_control_system() s CROSS JOIN pg_catalog.pg_control_checkpoint() c
       LEFT JOIN nsdemo_entries.entries e ON e.doc->>'device'='synthetic-compose-demo'
       GROUP BY s.system_identifier,c.timeline_id;"""
     fields = postgres_read(client, pod, container, query).strip().split('\t')
-    need(len(fields) == 6 and re.fullmatch('[0-9]{1,20}', fields[0]) and
+    need(len(fields) == 5 and re.fullmatch('[0-9]{1,20}', fields[0]) and
          fields[1].isdigit() and int(fields[1]) > 0 and fields[2] == 'nightscout_compose_test'
-         and fields[3] in ('t', 'f') and all(n.isdigit() for n in fields[4:]), 'SQL_OBSERVATION_UNMEASURED', 'UNMEASURED')
+         and all(n.isdigit() for n in fields[3:]), 'SQL_OBSERVATION_UNMEASURED', 'UNMEASURED')
     _, _, after = capture()
     write(output / 'after.json', after)
     epoch = {'system_id': fields[0], 'timeline': int(fields[1]), 'database': fields[2]}
     if 'candidate' in c['pins']:
         expected = document(d / 'candidate-verification.json')['proof']['nativeSource']
-        need(all(epoch[key] == expected[key] for key in epoch) and fields[3] == 't' and
-             expected['slot'] == 'nsdemo_pgstream', 'CANDIDATE_NATIVE_SOURCE_CHANGED')
+        need(all(epoch[key] == expected[key] for key in epoch), 'CANDIDATE_NATIVE_SOURCE_CHANGED')
     row = {'verdict': 'OBSERVED', 'scope': 'stored source-primer seed rows in the fixture database',
            'runSha256': digest(d / 'run.json'), 'source': c['pins']['pair'], 'nativeSource': epoch,
-           'logicalSlotPresent': fields[3] == 't', 'storedRows': int(fields[4]), 'storedTenants': int(fields[5]),
+           'storedRows': int(fields[3]), 'storedTenants': int(fields[4]),
            'setupJobs': after['setupJobs'], 'dataCredentials': 'UNMEASURED', 'capacityAcceptance': 'NOT_GRANTED'}
     write(output / 'result.json', row)
     return row

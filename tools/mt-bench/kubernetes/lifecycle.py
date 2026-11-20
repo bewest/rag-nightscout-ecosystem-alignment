@@ -201,7 +201,7 @@ def ready(label,typ,timeout,convergence=None,want=1):
                             previous=(failure_codes(s['name'],v['name'],s['uid'],previous=True)
                                       if v['previousTermination'] else {'status':'NOT_EXERCISED','codes':[]})
                             codes=sorted(set(current['codes']+previous['codes']))
-                            hard=disposition=='HARD' or bool(producer_startup.TERMINAL_CODES.intersection(codes))
+                            hard=disposition=='HARD'
                             finding={'pod':s['name'],'uid':s['uid'],'failed':[{'container':v['name'],
                                      'codes':codes,'state':v['state'],'priorTermination':v['previousTermination'],
                                      'restartCount':v['restartCount'],'currentLog':current,'previousLog':previous}],
@@ -242,7 +242,7 @@ def ready(label,typ,timeout,convergence=None,want=1):
 def workload_ready(stage):
     for obj in objects(stage):
         nm=obj['metadata']['name']; sel=obj['spec']['selector']['matchLabels']
-        convergence=producer_policy if nm=='pgstream' else None
+        convergence=None
         timeout=waits['cohortReadySeconds'] if application_topology.serving_workload(intent,stage,obj,frozen.require) else waits['workloadReadySeconds']
         seconds=convergence['maxSeconds'] if convergence else timeout
         if stage=='stores' and nm=='vault':
@@ -321,8 +321,8 @@ try:
             # The copied PostgreSQL, Vault and roster need the Secrets they were seeded with.
             fixture_copy.import_secrets(lambda a,b=None:k(a,b,private=True),ns,rid,reuse['directory'])
         else:
-            # The seed renders pgstream's receivers for the binding's evaluator K (inventory
-            # seed.environment, K>1 only); an inherited NS_EVALUATOR_WORKERS never reaches it.
+            # The seed takes the binding's evaluator K from the inventory (seed.environment);
+            # an inherited NS_EVALUATOR_WORKERS never reaches it.
             seed_env={key:value for key,value in env.items() if key not in ('NS_EVALUATOR_WORKERS', 'NS_INPUT_TRANSPORT')}
             seed_env.update(fixture_copy.seed_environment(read(d/'inventory.json')))
             command(['bash',secret_script,'seed',ns,e['images']['app']],timeout=waits['secretSeedSeconds'],private=True,

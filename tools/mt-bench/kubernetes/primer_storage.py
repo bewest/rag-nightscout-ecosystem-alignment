@@ -63,7 +63,7 @@ def verify_receipt(selected, receipt):
             0<receipt['configBytes']<=receipt['initialRoleBytes']<selected['stateMiB']*MIB and
             0<receipt['secretBytes']<=SECRET_LIMIT,'PUBLISH_PROOF_CHANGED')
     sizes = receipt.get('roleSecretBytes')
-    require(isinstance(sizes,dict) and set(sizes)=={*ROLES,'primer','pgstream'} and
+    require(isinstance(sizes,dict) and set(sizes)=={*ROLES,'primer'} and
             all(type(size) is int and 0<size<=SECRET_LIMIT for size in sizes.values()) and
             sizes['primer']==receipt['secretBytes'], 'PUBLISH_PROOF_CHANGED')
 
@@ -77,8 +77,6 @@ def whole_bundle(root, primer_bytes):
     for role in ('api', 'evaluator', 'realtime'):
         for kind in ('config', 'env', 'operation'):
             sizes['admin']+=(root/'admin/verification'/f'{role}.{kind}.json').stat().st_size
-    effective = root/'pgstream/pgstream.effective.yaml'
-    sizes['pgstream']=(effective if effective.is_file() else root/'pgstream/pgstream.yaml').stat().st_size
     for role, value in sizes.items():
         require(0 < value <= SECRET_LIMIT, 'ROLE_SECRET_SIZE:'+role)
     return sizes

@@ -92,14 +92,14 @@ class FixtureCopy(unittest.TestCase):
         cluster = Cluster()
         self.assertEqual(len(fc.import_secrets(cluster, 'ns-synth-restore-1', 'restore-1', chosen['directory'])), 5)
         self.assertTrue(all(b['metadata']['labels'] == {fc.LABEL: 'restore-1'} for _, b in cluster.calls))
-        manifest = fc.read_manifest(chosen['directory'])
-        fc.check_restore(manifest, 8, PG)
+        seeded = fc.read_manifest(chosen['directory'])
+        # A fixture without the writer-driven record (a pgstream seed) is refused.
         with self.assertRaisesRegex(fc.Refused, 'INPUT_TRANSPORT_CHANGED'):
-            fc.check_restore(manifest, 8, PG, input_transport='writer-driven')
+            fc.check_restore(seeded, 8, PG)
+        manifest = {**seeded, **fc.slices_record({'inputTransport':'writer-driven'})}
+        fc.check_restore(manifest, 8, PG)
         record = fc.slices_record({'inputTransport':'writer-driven', 'slices':{'evaluator':2}})
         fc.check_restore({**manifest, **record}, 8, PG, 2, 'writer-driven')
-        with self.assertRaisesRegex(fc.Refused, 'INPUT_TRANSPORT_CHANGED'):
-            fc.check_restore({**manifest, **record}, 8, PG, 2)
         with self.assertRaisesRegex(fc.Refused, 'TENANTS_CHANGED'):
             fc.check_restore(manifest, 3000, PG)
         with self.assertRaisesRegex(fc.Refused, 'POSTGRES_IMAGE_CHANGED'):

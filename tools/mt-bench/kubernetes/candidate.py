@@ -4,7 +4,6 @@ import hashlib
 import json
 import re
 import time
-from producer_wire import ACK_BUDGET, WIRE_DIRECTORY, WIRE_NAME, valid_timeout
 import primer_storage
 import primer_options
 import population_ceiling
@@ -74,7 +73,6 @@ def pins(k, c, inventory, objects):
         k.need(selected.get('platformVerification') in (None, *STARTUP_PROTOCOLS) and
                selected.get('platformVerification') == contract.get('platformVerification'),
                'CANDIDATE_PLATFORM_VERIFICATION_CHANGED')
-    k.need((ACK_BUDGET in contract) == ('producerAckReadback' in c), 'PGSTREAM_ACK_READBACK_SCOPE')
     k.need(contract.get(primer_storage.FIELD)==c.get(primer_storage.FIELD) and
            (primer_storage.FIELD in contract)==('primerStorageReceipt' in c), 'PRIMER_STORAGE_PUBLISH_SCOPE')
     k.need(contract.get(primer_options.FIELD)==c.get(primer_options.FIELD), 'PRIMER_OPTIONS_CHANGED')
@@ -93,20 +91,10 @@ def pins(k, c, inventory, objects):
         primer_options.require_source(chosen, contract.get(primer_options.PROTOCOL_FIELD), k.need)
     if primer_storage.FIELD in contract:
         primer_storage.verify_receipt(c[primer_storage.FIELD],c['primerStorageReceipt'])
-    if ACK_BUDGET in contract:
-        receipt = c['producerAckReadback']
-        k.need(isinstance(receipt, dict) and valid_timeout(contract[ACK_BUDGET])
-               and valid_timeout(receipt.get('sourceTimeoutMs'))
-               and receipt.get('sourceContractSha256') == (selected['sourceContractSha256'] if split else hashlib.sha256(overlay['source-contract.json'].encode()).hexdigest())
-               and receipt.get('effectiveTimeoutMs') == contract[ACK_BUDGET]
-               and all(isinstance(receipt.get(key), str) and k.HEX.fullmatch(receipt[key])
-                       for key in ('sourceWireSha256', 'effectiveWireSha256'))
-               and receipt.get('runId') == c['runId'] and receipt.get('namespace') == c['namespace'],
-               'PGSTREAM_ACK_READBACK_CHANGED')
     k.need(re.fullmatch(r'sha256:[a-f0-9]{64}', runtime.get('postgresImageId', '')) and
            re.fullmatch(r'[^\s@]+@sha256:[a-f0-9]{64}', runtime.get('postgresImage', '')) and
            runtime['postgresImage'] == inventory.get('images', {}).get('postgres'), 'CANDIDATE_POSTGRES_IMAGE_CHANGED')
-    app_containers = {'api', 'evaluator', 'realtime', 'tenant-admin', 'pgstream', 'admin', 'ui',
+    app_containers = {'api', 'evaluator', 'realtime', 'tenant-admin', 'admin', 'ui',
                       'install-config', 'wait-stores', 'bootstrap', 'vault-kubernetes-auth', 'done', 'primer'}
     for obj in objects.values():
         spec = obj.get('spec', {}).get('template', {}).get('spec', {})
@@ -146,10 +134,10 @@ def proof(k, c, value, now=None):
     k.need(k.HEX.fullmatch(value.get('nativeSelectionSha256', '')) and
            k.HEX.fullmatch(value.get('selectionSha256', '')), 'CANDIDATE_GENERATION_CHANGED')
     native = value.get('nativeSource')
-    k.need(isinstance(native, dict) and set(native) == {'system_id', 'timeline', 'database', 'slot'} and
+    k.need(isinstance(native, dict) and set(native) == {'system_id', 'timeline', 'database'} and
            re.fullmatch(r'[0-9]{1,20}', native.get('system_id', '')) and type(native.get('timeline')) is int and
            native['timeline'] > 0 and native.get('database') == 'nightscout_compose_test' and
-           native.get('slot') == 'nsdemo_pgstream' and re.fullmatch(r'[a-zA-Z0-9_-]{1,100}', value.get('nativeGeneration', '')),
+           re.fullmatch(r'[a-zA-Z0-9_-]{1,100}', value.get('nativeGeneration', '')),
            'CANDIDATE_NATIVE_SOURCE_CHANGED')
     roster = value.get('roles')
     # The serving roles this run uses must be verified; the platform may verify
@@ -172,12 +160,6 @@ def observe(k, d, c, objects, client):
     baseline = k.active_baseline(d)
     reused = verified_serving(c) and c.get('verificationProof') is not None
     before = baseline if reused else k.observe(c, objects, client, baseline)
-    if 'producerAckReadback' in c:
-        name, container = verify_ack_owner(k, c, before)
-        wire = WIRE_DIRECTORY + '/' + WIRE_NAME
-        digest = client.call(['exec', name, '-c', container, '--', 'sha256sum', wire], read=False)
-        expected = [c['producerAckReadback']['effectiveWireSha256'].encode(), wire.encode()]
-        k.need(digest.split() == expected, 'PGSTREAM_ACK_WIRE_CHANGED')
     split = verified_serving(c)
     workload = VERIFICATION_JOB if split else 'Job/primer'
     witnesses = [p for p in before['pods'].values() if p['workload'] == workload]
@@ -208,11 +190,10 @@ def observe(k, d, c, objects, client):
     checked_at = time.time()
     proof(k, c, value, now=checked_at)
     population_readback=population_ceiling.capture(k,c,before,client)
-    source = k.sql(d, c, objects, '''SELECT s.system_identifier::text,c.timeline_id::integer,current_database(),
-      EXISTS(SELECT 1 FROM pg_catalog.pg_replication_slots WHERE slot_name='nsdemo_pgstream' AND slot_type='logical' AND database=current_database())
+    source = k.sql(d, c, objects, '''SELECT s.system_identifier::text,c.timeline_id::integer,current_database()
       FROM pg_catalog.pg_control_system() s CROSS JOIN pg_catalog.pg_control_checkpoint() c;''', client).strip().split('	')
     native = value['nativeSource']
-    k.need(source == [native['system_id'], str(native['timeline']), native['database'], 't'], 'CANDIDATE_NATIVE_SOURCE_CHANGED')
+    k.need(source == [native['system_id'], str(native['timeline']), native['database']], 'CANDIDATE_NATIVE_SOURCE_CHANGED')
     if not reused:
         k.observe(c, objects, client, before)
     row = {'version': 1, 'proof': value, 'capturedAt': datetime.fromtimestamp(checked_at, timezone.utc).isoformat().replace('+00:00', 'Z'),
@@ -235,7 +216,6 @@ def require(k, d, c):
     value = k.document(file)
     baseline = k.active_baseline(d)
     population_ceiling.verify_capture(k,c,baseline,value.get('populationCeilingReadback'))
-    verify_ack_owner(k, c, baseline)
     split = verified_serving(c)
     workload = VERIFICATION_JOB if split else 'Job/primer'
     prefix = 'verification' if split else 'primer'
@@ -251,14 +231,3 @@ def require(k, d, c):
            value.get(prefix+'ContainerId') == witnesses[0]['containers']['done']['containerID'] and
            value.get('adminServiceUid') == baseline['objects']['Service/admin']['uid'], 'CANDIDATE_FIXTURE_CHANGED')
     proof(k, c, value.get('proof'), now=k.timestamp(value.get('capturedAt', '')))
-
-
-def verify_ack_owner(k, c, observed):
-    receipt = c.get('producerAckReadback')
-    if receipt is None:
-        return
-    name, container = k.selected_pod(c, observed, 'pgstream')
-    pod = observed['pods'][name]
-    k.need(receipt['namespaceUid'] == observed['namespace']['uid'] and receipt['podUid'] == pod['uid']
-           and receipt['containerId'] == pod['containers'][container]['containerID'], 'PGSTREAM_ACK_OWNER_CHANGED')
-    return name, container

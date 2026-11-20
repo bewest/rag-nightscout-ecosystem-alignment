@@ -26,12 +26,9 @@ class EdgeConfiguration(unittest.TestCase):
             self.assertNotIn('diagnostic-resource-allocation',local['prepare'])
             self.assertNotIn('diagnostic-resource-profile',local['prepare'])
             self.assertNotIn('edge',toolchain.legacy(original,'compose'))
-            self.assertEqual(toolchain.legacy(original)['edge'],original['kubernetes']['edge'])
+            # The legacy intent reached Kubernetes only through the external pgstream service.
+            with self.assertRaisesRegex(ValueError,'KUBERNETES_TOPOLOGY_UNSUPPORTED'):toolchain.legacy(original)
             with tempfile.TemporaryDirectory() as directory:
-                out=Path(directory)/'projection'
-                toolchain.project(original,{},'kubernetes',out)
-                self.assertEqual(k.document(out/'binding-inputs.json'),{'edge':original['kubernetes']['edge']})
-                self.assertEqual(k.document(out/'manifest.json')['edge'],original['kubernetes']['edge'])
                 with patch.object(subprocess,'run'):
                     result=toolchain.project(original,{'prepare':{}},'compose',Path(directory)/'local')
                 self.assertEqual(result['notApplicable'],['kubernetes.edge'])

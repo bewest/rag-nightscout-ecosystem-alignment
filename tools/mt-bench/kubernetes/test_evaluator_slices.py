@@ -240,13 +240,18 @@ class Bound(unittest.TestCase):
 
 class SeedAndFixtureK(unittest.TestCase):
     def test_seed_environment_follows_the_binding(self):
-        self.assertEqual(fixture_copy.seed_environment({}), {})
-        k2 = {'slices': {'evaluator': 2}, 'seed': {'environment': {'NS_EVALUATOR_WORKERS': '2'}}}
-        self.assertEqual(fixture_copy.seed_environment(k2), {'NS_EVALUATOR_WORKERS': '2'})
+        writer = {'NS_INPUT_TRANSPORT': 'writer-driven'}
+        k1 = {'inputTransport': 'writer-driven', 'seed': {'environment': writer}}
+        self.assertEqual(fixture_copy.seed_environment(k1), writer)
+        k2 = {'inputTransport': 'writer-driven', 'slices': {'evaluator': 2},
+              'seed': {'environment': {'NS_EVALUATOR_WORKERS': '2', **writer}}}
+        self.assertEqual(fixture_copy.seed_environment(k2), {'NS_EVALUATOR_WORKERS': '2', **writer})
         with self.assertRaisesRegex(fixture_copy.Refused, 'SEED_EVALUATOR_SLICES'):
-            fixture_copy.seed_environment({'slices': {'evaluator': 2}})
-        self.assertEqual(fixture_copy.slices_record({}), {})
-        self.assertEqual(fixture_copy.slices_record(k2), {'evaluatorSlices': 2})
+            fixture_copy.seed_environment({'inputTransport': 'writer-driven', 'slices': {'evaluator': 2}, 'seed': {'environment': writer}})
+        with self.assertRaisesRegex(fixture_copy.Refused, 'SEED_INPUT_TRANSPORT'):
+            fixture_copy.seed_environment({'seed': {'environment': {}}})
+        self.assertEqual(fixture_copy.slices_record(k1), {'inputTransport': 'writer-driven'})
+        self.assertEqual(fixture_copy.slices_record(k2), {'evaluatorSlices': 2, 'inputTransport': 'writer-driven'})
 
     def test_restore_refuses_a_fixture_seeded_for_another_k(self):
         tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
@@ -254,7 +259,7 @@ class SeedAndFixtureK(unittest.TestCase):
         parts = fixture_copy.PARTS
         manifest = {'version': 1, 'handles': dict.fromkeys(parts, 'h'), 'sizes': dict.fromkeys(parts, '1Gi'),
                     'driver': 'dobs.csi.digitalocean.com', 'tenants': 1000, 'postgresImage': 'pg',
-                    'snapshotClass': 's', 'storageClass': 'c'}
+                    'snapshotClass': 's', 'storageClass': 'c', 'inputTransport': 'writer-driven'}
         for name, value in ((fixture_copy.MANIFEST, manifest), (fixture_copy.SECRETS, [])):
             (directory/name).write_text(json.dumps(value)); (directory/name).chmod(0o600)
         chosen = {'mode': 'restore', 'directory': str(directory)}

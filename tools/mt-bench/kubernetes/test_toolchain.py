@@ -11,7 +11,7 @@ class Toolchain(unittest.TestCase):
     def manifest(self):
         p=json.loads((t.k.HERE/'workloads/realistic-500.json').read_bytes());p.pop('referencePins')
         return dict(version=1,kind='multitenant-experiment',application=dict(candidate=dict(app='r/app@sha256:'+'1'*64,appImageId='sha256:'+'2'*64,postgres='r/pg@sha256:'+'5'*64,postgresImageId='sha256:'+'4'*64,coreCommit='1'*40,deployCommit='2'*40),bindingCommit='3'*40),
-                    profile=p,topology=dict(apiReplicas=1,evaluatorWorkers=1,pgstreamTopology='external'),
+                    profile=p,topology=dict(apiReplicas=1,evaluatorWorkers=1,inputTransport='writer-driven'),
                     local=dict(k6Image='sha256:'+'5'*64,prepare=dict(profile='pgstream-sample',**{'run-purpose':'discovery','completion-contract':'evaluator-work-v2'})))
     def test_one_intent_projects_scales_and_refuses_topology_or_second_fact(self):
         selected=dict(coreCommit='1'*40,deployCommit='2'*40,localImageId='sha256:'+'6'*64,sourceAcceptance='PENDING')
@@ -19,13 +19,12 @@ class Toolchain(unittest.TestCase):
             for n in (500,1000,3000,10000):
                 m=self.manifest();m['profile']['population'].update(provisionedTenants=n,ordinaryRosterTenants=n)
                 m['profile']['workload']['logicalPollingClients']=n
-                local=t.local(m,dict(prepare={}));remote=t.legacy(m)
+                local=t.local(m,dict(prepare={}));remote=t.legacy(m,'compose')
                 self.assertEqual(local['prepare']['tenants'],remote['profile']['population']['provisionedTenants'])
                 self.assertEqual(local['prepare']['logical-polling-clients'],n)
-                self.assertEqual(local['prepare']['pgstream-topology'],'external-service-v1')
-            m=self.manifest();m['topology']['evaluatorWorkers']=2
-            with self.assertRaisesRegex(ValueError,'KUBERNETES_TOPOLOGY_UNSUPPORTED'):t.legacy(m)
-            print('RED_RESTORED unsupported K2; K1 restored')
+                self.assertEqual(local['prepare']['input-transport'],'writer-driven')
+            # A legacy manifest no longer reaches Kubernetes (it did only through the external pgstream service).
+            with self.assertRaisesRegex(ValueError,'KUBERNETES_TOPOLOGY_UNSUPPORTED'):t.legacy(self.manifest())
             m=self.manifest();m['local']['prepare']['tenants']=2
             with self.assertRaisesRegex(ValueError,'DUPLICATE_LOCAL_FACT'):t.local(m,dict(prepare={}))
             print('RED_RESTORED duplicate workload fact')
@@ -69,8 +68,8 @@ class Toolchain(unittest.TestCase):
             m['profile']['history'] = recipe
             populated = t.local(m, {'prepare':{}})
             self.assertEqual(populated, dict(baseline, history=recipe))
-            self.assertEqual(t.legacy(m)['profile']['history'], recipe)
-            self.assertEqual(t.legacy(m)['profile']['workload'], m['profile']['workload'])
+            self.assertEqual(t.legacy(m,'compose')['profile']['history'], recipe)
+            self.assertEqual(t.legacy(m,'compose')['profile']['workload'], m['profile']['workload'])
 
     def test_shared_primer_selections_project_once(self):
         selected=dict(coreCommit='1'*40,deployCommit='2'*40,localImageId='sha256:'+'6'*64,sourceAcceptance='PENDING')
@@ -80,7 +79,7 @@ class Toolchain(unittest.TestCase):
         with patch.object(t.frozen,'source',return_value=selected):
             projected=t.local(m,dict(prepare={}))['prepare']
             self.assertEqual((projected['primer-concurrency'],projected['primer-max-tenants']),(64,20000))
-            self.assertEqual(t.legacy(m)['profile']['phases']['primerOptions'],selection)
+            self.assertEqual(t.legacy(m,'compose')['profile']['phases']['primerOptions'],selection)
             m['local']['prepare']['primer-concurrency']=64
             with self.assertRaisesRegex(ValueError,'DUPLICATE_LOCAL_FACT'):t.local(m,dict(prepare={}))
 
@@ -94,7 +93,7 @@ class Toolchain(unittest.TestCase):
         m['profile']['phases']['reconnectBurstClients'] = m['profile']['workload']['logicalPollingClients']
         with patch.object(t.frozen, 'source', return_value=selected):
             self.assertEqual(json.loads(t.local(m, {'prepare': {}})['prepare']['viewer-setup']), settings)
-            workload = t.legacy(m)['profile']['workload']
+            workload = t.legacy(m,'compose')['profile']['workload']
             self.assertEqual(t.k.viewer_plan.setup(workload), settings)
             commission = t.k.viewer_plan.stage_cadence(workload, False)
             self.assertEqual(t.k.viewer_plan.setup(commission), dict(settings, scenario='ordinary'))
@@ -110,7 +109,7 @@ class Toolchain(unittest.TestCase):
         with patch.object(t.frozen,'source',return_value=selected):
             m=self.manifest();m['profile']['workload']['drainObservation']=selection
             self.assertEqual(json.loads(t.local(m,dict(prepare={}))['prepare']['drain-observation']),selection)
-            self.assertEqual(t.legacy(m)['profile']['workload']['drainObservation'],selection)
+            self.assertEqual(t.legacy(m,'compose')['profile']['workload']['drainObservation'],selection)
             for invalid in (None,{'roundSeconds':True},{'roundSeconds':0},{'unknown':1},{'sqlMaxBytes':2**53}):
                 m['profile']['workload']['drainObservation']=invalid
                 with self.assertRaisesRegex(ValueError,'WORKLOAD_DRAIN_OBSERVATION'):t.local(m,dict(prepare={}))

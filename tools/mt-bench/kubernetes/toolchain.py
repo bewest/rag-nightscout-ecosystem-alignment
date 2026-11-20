@@ -20,7 +20,7 @@ FRESH={'core-repo','deploy-repo','generator-dependencies','generator-dependency-
 DERIVED={'core-commit','deploy-commit','image','image-id','postgres-image','tenants','replicas',
          'load-seconds','hot-factor','accel','offered-rps','workload-mix','workload-scale',
          'logical-polling-clients','viewer-setup','probe-every-ms','probe-ledger','evaluator-progress-budget','drain-observation','startup-windows','setup-seconds','drain-seconds','jwt-setup-concurrency','driver-plan','driver-headroom','driver-shards',
-         'static-workers','pgstream-topology','input-transport'}
+         'static-workers','input-transport'}
 
 def legacy(m,target='kubernetes'):
     if m.get('kind')=='k8s-frozen-experiment':
@@ -28,7 +28,7 @@ def legacy(m,target='kubernetes'):
         return copy.deepcopy(m)
     frozen.require(m.get('kind')=='multitenant-experiment' and m.get('version')==1 and
         set(m)<= {'version','kind','application','profile','topology','deploymentJobs','local','kubernetes','tier',
-                  frozen.ACK_BUDGET,frozen.PRIMER_STORAGE},'MANIFEST')
+                  frozen.PRIMER_STORAGE},'MANIFEST')
     transport=m.get('kubernetes',{})
     frozen.require(isinstance(transport,dict) and set(transport)<={'edge',application_topology.FIELD},'KUBERNETES_FIELDS')
     application_topology.selection(transport,frozen.require)
@@ -36,22 +36,16 @@ def legacy(m,target='kubernetes'):
     app=m['application']
     frozen.require(set(app)<= {'candidate','alignmentCommit','bindingCommit','bootstrapHelper'},'APPLICATION_FIELDS')
     topology=m['topology']
-    mode = topology.get('inputTransport', 'pgstream')
-    shape = {'apiReplicas', 'evaluatorWorkers'} | ({'inputTransport'} if 'inputTransport' in topology else set())
-    if mode == 'pgstream':
-        shape.add('pgstreamTopology')
-    frozen.require(mode in ('pgstream', 'writer-driven') and set(topology) == shape and
-                   discovery_api_replicas(topology['apiReplicas']) and discovery_workers(topology['evaluatorWorkers']) and
-                   (mode == 'writer-driven' or topology['pgstreamTopology'] in ('colocated', 'external')), 'TOPOLOGY')
-    if target=='kubernetes':
-        frozen.require(mode == 'pgstream' and topology['apiReplicas'] == topology['evaluatorWorkers'] == 1 and
-                       topology['pgstreamTopology'] == 'external', 'KUBERNETES_TOPOLOGY_UNSUPPORTED')
+    frozen.require(topology.get('inputTransport') == 'writer-driven'
+                   and set(topology) == {'apiReplicas', 'evaluatorWorkers', 'inputTransport'} and
+                   discovery_api_replicas(topology['apiReplicas']) and discovery_workers(topology['evaluatorWorkers']), 'TOPOLOGY')
+    # This legacy manifest reached Kubernetes only through the external pgstream service.
+    frozen.require(target != 'kubernetes', 'KUBERNETES_TOPOLOGY_UNSUPPORTED')
     return dict(version=1,kind='k8s-frozen-experiment',**copy.deepcopy(app),profile=copy.deepcopy(m['profile']),
                 **({'tier': m['tier']} if 'tier' in m else {}),
                 **({'edge':edge} if target=='kubernetes' and edge is not None else {}),
                 **({application_topology.FIELD:transport[application_topology.FIELD]}
                    if target=='kubernetes' and application_topology.FIELD in transport else {}),
-                **({frozen.ACK_BUDGET: m[frozen.ACK_BUDGET]} if frozen.ACK_BUDGET in m else {}),
                 **({frozen.PRIMER_STORAGE: m[frozen.PRIMER_STORAGE]} if frozen.PRIMER_STORAGE in m else {}),
                 **({'deploymentJobs':copy.deepcopy(m['deploymentJobs'])} if 'deploymentJobs'in m else {}))
 
@@ -62,10 +56,6 @@ def local(m,instance):
     frozen.require(not (set(options)&(DERIVED|FRESH)),'DUPLICATE_LOCAL_FACT')
     fresh=instance['prepare'];frozen.require(set(fresh)<=FRESH,'INSTANCE_FIELDS')
     options.update(fresh)
-    if frozen.ACK_BUDGET in selected:
-        frozen.require(m['topology'].get('pgstreamTopology')=='external', 'PGSTREAM_ACK_TOPOLOGY')
-        frozen.require('pgstream-notifier-ack-timeout-ms' not in options, 'DUPLICATE_LOCAL_FACT')
-        options['pgstream-notifier-ack-timeout-ms'] = selected[frozen.ACK_BUDGET]
     p=profile.validate(dict(original['profile'],referencePins=dict(core=selected['coreCommit'],deploy=selected['deployCommit'],bindingCommit=original['bindingCommit'])))
     frozen.require(p['population']['ordinaryRosterTenants'] == p['population']['provisionedTenants'],
                    'COMPOSE_ORDINARY_ROSTER_SUBSET_UNSUPPORTED')
@@ -84,10 +74,7 @@ def local(m,instance):
         'tenants':p['population']['provisionedTenants'],'replicas':t['apiReplicas'],
         'load-seconds':w['loadSeconds'],'hot-factor':w.get('hotFactor',1),'accel':1,'logical-polling-clients':w['logicalPollingClients'],
         'probe-every-ms':w['probeEveryMs']})
-    if t.get('inputTransport') == 'writer-driven':
-        options['input-transport'] = 'writer-driven'
-    else:
-        options['pgstream-topology'] = {'external':'external-service-v1','colocated':'colocated-v1'}[t['pgstreamTopology']]
+    options['input-transport'] = 'writer-driven'
     options.update({('workload-mix' if key=='workloadMix' else 'workload-scale' if key=='workloadScale' else 'offered-rps'):w[key]
                     for key in ('workloadMix','workloadScale','offeredRps') if key in w})
     for field, option in (('setupSeconds', 'setup-seconds'), ('drainSeconds', 'drain-seconds'), ('jwtSetupConcurrency', 'jwt-setup-concurrency')):
@@ -108,8 +95,7 @@ def local(m,instance):
         options.update({'driver-plan':json.dumps(w['driverPlan']),'driver-shards':w.get('driverShards',1)})
     if 'driverHeadroom' in w:
         options['driver-headroom'] = w['driverHeadroom']
-    if t.get('inputTransport') == 'writer-driven' or t['evaluatorWorkers']>1 or t['apiReplicas']>1:
-        options['static-workers']=t['evaluatorWorkers']
+    options['static-workers']=t['evaluatorWorkers']
     # Import the existing local adapter under its expected name in an isolated
     # subprocess. Both historical modules are called adapter.py; never let the
     # Python module cache silently select the other transport.

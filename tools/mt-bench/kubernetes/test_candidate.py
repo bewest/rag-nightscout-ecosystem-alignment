@@ -19,22 +19,6 @@ class CandidateControls(unittest.TestCase):
             with self.assertRaisesRegex(k.Refused, 'COMPLETION_RECEIPT_REQUIRED'):
                 k.completion_source(c, '/missing/evaluator', '/missing/realtime')
 
-    def test_ack_readback_binds_the_owned_running_container(self):
-        c = {'pins': {'candidate': {}}, 'roles': {'pgstream': {'workload': 'Deployment/pgstream', 'container': 'pgstream'}},
-             'producerAckReadback': {'namespaceUid': 'owned', 'podUid': 'pod', 'containerId': 'stream',
-                                     'effectiveWireSha256': 'a'*64}}
-        observed = {'namespace': {'uid': 'owned'}, 'pods': {'stream-pod': {
-            'name': 'stream-pod', 'uid': 'pod', 'workload': 'Deployment/pgstream',
-            'containers': {'pgstream': {'ready': True, 'containerID': 'stream'}}}}}
-        self.assertEqual(candidate.verify_ack_owner(k, c, observed), ('stream-pod', 'pgstream'))
-        with tempfile.TemporaryDirectory() as tmp, patch.object(k, 'observe', return_value=observed), \
-                patch.object(k, 'active_baseline', return_value=observed):
-            with self.assertRaisesRegex(k.Refused, 'PGSTREAM_ACK_WIRE_CHANGED'):
-                candidate.observe(k, Path(tmp), c, {}, SimpleNamespace(call=lambda *a, **kw: b'wrong'))
-        observed['pods']['stream-pod']['containers']['pgstream']['containerID'] = 'replacement'
-        with self.assertRaisesRegex(k.Refused, 'PGSTREAM_ACK_OWNER_CHANGED'):
-            candidate.verify_ack_owner(k, c, observed)
-
     def test_source_config_and_actual_image(self):
         c, inv, *_ = fixture()
         p = c['pins']
@@ -79,14 +63,13 @@ class CandidateControls(unittest.TestCase):
         proof = dict(version=1, credentialBoundary='admin-private-api',
                      coreCommit=p['pair']['core'], deployCommit=p['pair']['deploy'], diagnosticSha256='1'*64,
                      fixture={'namespace': c['namespace'], 'runId': c['runId']},
-                     nativeSource={'system_id': '123', 'timeline': 1, 'database': 'nightscout_compose_test', 'slot': 'nsdemo_pgstream'},
+                     nativeSource={'system_id': '123', 'timeline': 1, 'database': 'nightscout_compose_test'},
                      nativeGeneration='test-generation', nativeSelectionSha256='2'*64, selectionSha256='3'*64,
                      roles=[dict(role=role, generation='4'*64, expiresAt='2026-11-19T00:00:00Z') for role in candidate.ROLES])
         candidate.proof(k, c, proof, now=1)
         cases = [
             (None, 'ADMIN_PROOF_REQUIRED'),
             (dict(proof, fixture={'namespace': c['namespace'], 'runId': 'foreign'}), 'FIXTURE_CHANGED'),
-            (dict(proof, nativeSource=dict(proof['nativeSource'], slot='wrong_slot')), 'NATIVE_SOURCE_CHANGED'),
             (dict(proof, roles=proof['roles'][1:]), 'VERIFICATION_CHANGED'),
         ]
         for bad, code in cases:

@@ -22,8 +22,7 @@ def separate_fixture():
     prototype = base['spec']['template']['spec']['containers'][0]
     rendered = [old[0]]
     c['roles'] = {**topology.role_mapping(topology.SEPARATE),
-                  'postgres': {'workload': 'StatefulSet/postgres', 'container': 'postgres'},
-                  'pgstream': {'workload': 'Deployment/pgstream', 'container': 'pgstream'}}
+                  'postgres': {'workload': 'StatefulSet/postgres', 'container': 'postgres'}}
     for name, kind in topology.SEPARATE_WORKLOADS.items():
         obj = copy.deepcopy(base)
         obj['kind'] = kind
@@ -79,14 +78,14 @@ class ApplicationTopology(unittest.TestCase):
     def validate(self):
         return k.validate(self.c, self.inventory, self.rendered)
 
-    def test_inventory_roles_and_cleanup_cover_all_twelve_workloads(self):
+    def test_inventory_roles_and_cleanup_cover_all_eleven_workloads(self):
         objects = self.validate()
         baseline = k.observe(self.c, objects, self.client)
-        self.assertEqual(len(baseline['pods']), 12)
+        self.assertEqual(len(baseline['pods']), 11)
         for role in topology.ROLES:
             self.assertEqual(k.selected_pod(self.c, baseline, role), (role+'-pod', role))
         plan = k.cleanup_plan(self.c, baseline, k.observe(self.c, objects, self.client, baseline))
-        self.assertEqual(len(plan['actions']), 12)
+        self.assertEqual(len(plan['actions']), 11)
         self.assertEqual({row['object']['kind']+'/'+row['object']['name'] for row in plan['actions']},
                          {kind+'/'+name for name, kind in topology.SEPARATE_WORKLOADS.items()})
         self.assertTrue(all(row['stdin']['preconditions']['uid'] for row in plan['actions']))
@@ -163,10 +162,8 @@ class ApplicationTopology(unittest.TestCase):
     def test_common_intent_projects_explicit_profile_into_renderer_inputs(self):
         manifest = test_toolchain.Toolchain().manifest()
         manifest['kubernetes'] = {topology.FIELD: topology.SEPARATE}
-        legacy = toolchain.legacy(manifest)
-        self.assertEqual(legacy[topology.FIELD], topology.SEPARATE)
+        # The legacy intent reached Kubernetes only through the external pgstream service.
         self.assertNotIn(topology.FIELD, toolchain.legacy(manifest, 'compose'))
-        manifest['topology']['evaluatorWorkers'] = 2
         with self.assertRaisesRegex(ValueError, 'KUBERNETES_TOPOLOGY_UNSUPPORTED'):
             toolchain.legacy(manifest)
 
@@ -188,9 +185,7 @@ class ApplicationTopology(unittest.TestCase):
         scope['workload_ready']('serving')
         observed = {row[1]: row[2] for row in called}
         self.assertEqual({role: observed[role] for role in topology.ROLES}, {role: 900 for role in topology.ROLES})
-        self.assertEqual(observed['pgstream'], 300)
         self.assertTrue(all(topology.readiness_signal(scope['intent'], role, k.need) for role in topology.ROLES))
-        self.assertFalse(topology.readiness_signal(scope['intent'], 'pgstream', k.need))
 
     def test_startup_proof_has_no_lease_but_keeps_generation_and_native_checks(self):
         for protocol in ('startup-v2', 'startup-v3', 'startup-v4'):
@@ -203,7 +198,7 @@ class ApplicationTopology(unittest.TestCase):
         proof = {'version': 1, 'credentialBoundary': 'admin-private-api',
                  'coreCommit': config['pins']['pair']['core'], 'deployCommit': config['pins']['pair']['deploy'],
                  'diagnosticSha256': '1'*64, 'fixture': {'namespace': config['namespace'], 'runId': config['runId']},
-                 'nativeSource': {'system_id': '123', 'timeline': 1, 'database': 'nightscout_compose_test', 'slot': 'nsdemo_pgstream'},
+                 'nativeSource': {'system_id': '123', 'timeline': 1, 'database': 'nightscout_compose_test'},
                  'nativeGeneration': 'synthetic', 'nativeSelectionSha256': '2'*64, 'selectionSha256': '3'*64,
                  'roles': [{'role': role, 'generation': '4'*64} for role in candidate.ROLES]}
         candidate.proof(k, config, proof, now=10)

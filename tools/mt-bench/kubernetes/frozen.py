@@ -11,8 +11,6 @@ import subprocess
 import primer_options
 import population_ceiling
 
-ACK_BUDGET = 'pgstreamNotifierAckTimeoutMs'
-ACK_PACKAGE = ('scripts/producer_ack_publish.py', 'scripts/producer_wire.py')
 PRIMER_STORAGE = 'primerStorage'
 PRIMER_STORAGE_PACKAGE = 'scripts/primer_storage.py'
 JOB_COMPLETE = 'provisionJobCompleteSeconds'
@@ -70,11 +68,6 @@ def source(manifest):
         chosen.update(imageSourceAcceptance=status, sourceAcceptance='PENDING',
                       runtimeBootstrapHelper={**BOOTSTRAP_HELPER, 'baseSha256': BOOTSTRAP_ORIGINAL,
                                               'sourcePath': BOOTSTRAP_PATH, 'mountPath': BOOTSTRAP_TARGET})
-    if ACK_BUDGET in manifest:
-        budget = manifest[ACK_BUDGET]
-        require(tier == 'discovery' and type(budget) is int and 0 < budget <= (2**63 - 1) // 1_000_000,
-                'PGSTREAM_ACK_BUDGET')
-        chosen[ACK_BUDGET] = budget
     if PRIMER_STORAGE in manifest:
         storage = manifest[PRIMER_STORAGE]
         require(tier == 'discovery' and isinstance(storage, dict) and set(storage)=={'stateMiB','secretCodec'}
@@ -107,7 +100,6 @@ def contract(manifest, observed):
     require(all(observed.get(k) == v for k, v in chosen.items() if k not in PROVENANCE), 'CONTRACT_CONFIGURATION_CHANGED')
     require(all((key in observed) == (key in chosen) for key in ('runtimeBootstrapHelper','imageSourceAcceptance')),
             'BOOTSTRAP_HELPER_UNDECLARED')
-    require((ACK_BUDGET in observed) == (ACK_BUDGET in chosen), 'PGSTREAM_ACK_UNDECLARED')
     require((PRIMER_STORAGE in observed) == (PRIMER_STORAGE in chosen), 'PRIMER_STORAGE_UNDECLARED')
     require((JOB_COMPLETE in observed) == (JOB_COMPLETE in chosen),'STARTUP_JOB_COMPLETE_UNDECLARED')
     require((primer_options.FIELD in observed) == (primer_options.FIELD in chosen), 'PRIMER_OPTIONS_UNDECLARED')

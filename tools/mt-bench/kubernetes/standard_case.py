@@ -155,9 +155,9 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     for document in (run, intent):
         document.pop('applicationTopology', None)
         document['primerLocation'] = 'claim' if inventory['results']['primer'].get('claim') else 'pod'
-    transport = inventory.get('inputTransport', 'pgstream')
-    if transport == 'writer-driven':
-        run['roles'].pop('pgstream', None)
+    transport = inventory['inputTransport']
+    k.need(transport == 'writer-driven', 'INPUT_TRANSPORT')
+    run['roles'].pop('pgstream', None)
     for target in run['roles'].values():
         name = target['workload'].split('/', 1)[1]
         target['workload'] = inventory['workloads'][name]['kind'] + '/' + name

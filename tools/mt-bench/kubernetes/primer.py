@@ -13,7 +13,6 @@ import time
 
 import kube_adapter as k
 from contract import tenant_projection
-import commissioning_wal
 import primer_storage
 import primer_options
 from primer_progress import ProgressWindow
@@ -75,14 +74,12 @@ def require_roster(d, c, baseline):
     return pods[0]
 
 
-async def run_actor(command, cutoff, seconds, total, result, sample=None):
+async def run_actor(command, cutoff, seconds, total, result):
     """Watch the durable count across kubectl, including a silent or wedged exec."""
     window = ProgressWindow(seconds)
     first = True
     result['completedTenants'] = None
     native = None
-    slot_sample = None
-    sampled_at = None
 
     def remaining():
         if cutoff <= time.time():
@@ -114,14 +111,6 @@ async def run_actor(command, cutoff, seconds, total, result, sample=None):
             else:
                 window.observe(count)
             result['completedTenants'] = window.completed
-            # Observe WAL in parallel so a slow SQL read cannot hold the
-            # progress/timeout loop. The terminal observe() rechecks identities.
-            if (sample and count < total and (slot_sample is None or slot_sample.done())
-                    and (sampled_at is None or time.monotonic()-sampled_at >= 5)):
-                if slot_sample is not None:
-                    await slot_sample
-                sampled_at = time.monotonic()
-                slot_sample = asyncio.create_task(asyncio.to_thread(sample))
         timeout = remaining()
         code = await asyncio.wait_for(actor.wait(), timeout)
         return native, code
@@ -135,8 +124,6 @@ async def run_actor(command, cutoff, seconds, total, result, sample=None):
             except ProcessLookupError:
                 pass
             await actor.communicate()
-        if slot_sample is not None:
-            await slot_sample
 
 
 def prime(directory, output, concurrency=None, max_tenants=None):
@@ -237,12 +224,7 @@ def prime_owned(d, c, objects, output, split, declared, selected):
                    '--request-timeout='+str(max(1, int(remaining)+1))+'s',
                    'exec', '-i', target, '-c', 'done', '--', 'env', 'NS_PRIMER_STALL_SECONDS='+str(seconds), 'node', '-', *args]
         try:
-            sample=None
-            if split:
-                pg, container=k.selected_pod(c,before,'postgres')
-                sample=commissioning_wal.sampler(
-                    lambda query:k.postgres_read(client,pg,container,query,timeout=3),result)
-            native, exit_code = asyncio.run(run_actor(command, cutoff, seconds, c['tenants'], result, sample))
+            native, exit_code = asyncio.run(run_actor(command, cutoff, seconds, c['tenants'], result))
         except (OSError, ValueError):
             raise k.Refused('K8S_PRIMER_EXEC_OUTCOME_UNMEASURED', 'UNMEASURED') from None
         k.need(isinstance(native, dict) and set(native) <= {
