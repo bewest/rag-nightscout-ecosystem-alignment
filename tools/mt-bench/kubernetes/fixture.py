@@ -19,7 +19,9 @@ def reader_pod(job, inventory, location, seconds):
                   volumeMounts=[{'name': 'client-state', 'mountPath': '/results', 'readOnly': True}])
     pod = {'apiVersion': 'v1', 'kind': 'Pod',
            'metadata': {**template['metadata'], 'generateName': 'fixture-reader-', 'namespace': inventory['namespace']},
-           'spec': {**spec, 'containers': [reader], 'activeDeadlineSeconds': seconds}}
+           # The reader's node PID 1 ignores SIGTERM: a 1 s grace lets read_roster's 15 s delete finish before
+           # the observe census, which refuses a Pod without a rendered controller (K8S_POD_CONTROLLER).
+           'spec': {**spec, 'containers': [reader], 'activeDeadlineSeconds': seconds, 'terminationGracePeriodSeconds': 1}}
     if location == 'claim':
         claim = results.get('claim')
         if not claim or state.get('persistentVolumeClaim', {}).get('claimName') != claim:
