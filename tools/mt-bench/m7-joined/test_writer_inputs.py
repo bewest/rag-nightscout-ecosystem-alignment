@@ -83,6 +83,46 @@ class Writer(unittest.TestCase):
             result = assessor.assess(value.events({(TENANT, *FIRST): 1}, 3), [TENANT])
             self.assertEqual(result['components']['clinical']['classifications'], {'UNMEASURED': 1})
 
+    def test_completed_clock_below_the_write_floor_never_covers_it(self):
+        # Control: a -completed row whose work_completed[1] is below the work
+        # version observed with the write is UNMEASURED, or LATE once its
+        # window is still behind the write after the deadline.
+        for evaluated, want in ((103, {'UNMEASURED': 1}), (100, {'LATE': 1})):
+            with self.subTest(evaluated=evaluated):
+                value = observer()
+                value.capture([row([(FIRST, 101)], evaluated, 909, 910)], 1, 2)
+                value.capture([row([(FIRST, 101)], evaluated, 909, 910)], 129, 130)
+                self.assertIsNone(value.inputs[(TENANT, *FIRST)]['durableBy'])
+                result = assessor.assess(value.events({(TENANT, *FIRST): 1}, 200), [TENANT])
+                self.assertEqual(result['components']['clinical']['classifications'], want)
+        value = observer()
+        value.capture([row([(FIRST, 101)], 103, 910, 910)], 1, 2)
+        result = assessor.assess(value.events({(TENANT, *FIRST): 1}, 200), [TENANT])
+        self.assertEqual(result['components']['clinical']['classifications'], {'ON_TIME': 1})
+
+    def test_output_at_a_stale_restore_generation_never_covers(self):
+        # Control: after a restore the tenant generation moves; a completed row
+        # still at the old generation (or an output_restore_generation that
+        # differs, which the SQL reports as outputOK false) covers nothing.
+        for change in (dict(generation=4), dict(outputOK=False)):
+            with self.subTest(change=change):
+                value = observer()
+                value.capture([dict(row([(FIRST, 101)], 103, 920, 920), **change)], 1, 2)
+                self.assertIsNone(value.inputs.get((TENANT, *FIRST), {}).get('durableBy'))
+                result = assessor.assess(value.events({(TENANT, *FIRST): 1}, 200), [TENANT])
+                self.assertEqual(result['components']['clinical']['classifications'], {'UNMEASURED': 1})
+
+    def test_contract_digest_is_core_native_lifecycle_contract(self):
+        # Reproduced on core 1385543c6 (Compose, 2026-11-20): the -completed rows
+        # carry this digest for these names. The three-part digest never matched.
+        config = {'kind': 'evaluator-work-v2', 'checkpoint': 'nsdemo_eval_checkpoint', 'entries': 'nsdemo_entries',
+                  'clock': 'nsdemo_clock', 'consumer': 'evaluator-compose-demo-completed',
+                  'writerDriven': {'lifecycle': 'nsdemo_control', 'devicestatus': 'nsdemo_devicestatus',
+                                   'treatments': 'nsdemo_treatments'}}
+        _, sql = inputs.writer_queries(config, 'run')
+        self.assertIn("'43be2b0db3cf705661472516fe1c71be755f7a4e9cc2c0a28fd86d03a9466fb9'", sql)
+        self.assertNotIn('bfeeefc290016c52a1a66cd06ce511b06015fa3f27e5ad34ea18a50c142de1e4', sql)
+
     def test_compose_writer_receives_sql_attribution_without_stream_identity(self):
         roles = commissioning_context.sql_logins({'inputTransport': 'writer-driven', 'sqlRoles': ['evaluator']},
                                                 {'sqlRoles': ['realtime']})
