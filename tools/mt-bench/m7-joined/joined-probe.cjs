@@ -249,6 +249,7 @@ function open (index, jwt) {
   out.viewerBindings=sockets.map((s,socket)=>({socket,tenant:tenants[s.index].id}));
   log('prime', out.prime);savePartial();
   fs.writeFileSync(path.join(signalDir,'prime.json'),JSON.stringify(out.prime)); if(!discovery&&out.prime.primed!==TOTAL)throw new Error('M7_ESTABLISHED_SOCKETS_INCOMPLETE');
+  const writerBaseline = completionSource?.writerDriven ? JSON.parse(await psqlAsync(completionOracle.writerBaseline(completionSource))) : null;
   fs.writeFileSync(args.signal, String(Date.now()));
 
   // Window: probe writes, write->frame and write->evaluation.
@@ -282,6 +283,14 @@ function open (index, jwt) {
           e.lastQueryStartMono=queryStart;
           const row=rows.get(e.tenant);if(!row)continue;
           if(e.stamp===null)e.stamp=row.stamp;
+          if(e.writerTarget && e.writerTarget.work===undefined && row.writer?.generation===e.writerTarget.generation &&
+             row.writer.phase==='active' && JSON.stringify(row.writer.identity)===JSON.stringify(e.writerTarget.identity)){
+            const docs=row.stored?.filter(doc=>doc.date===e.date);
+            if(docs?.length===1 && Number.isSafeInteger(docs[0].srvModified) && row.state?.observed?.clock!==undefined){
+              e.writerTarget.stamp=docs[0].srvModified;
+              e.writerTarget.work=row.state.observed.clock;
+            }
+          }
           if(completionSource.native&&!e.nativeTarget){try{e.nativeTarget=require('./native-observation.cjs').snapshot(row,completionSource);}catch{}}
           const proof=pending.get(e.tenant+':'+e.date);
           const durable=completionOracle.assessDurable(row,e,completionSource);
@@ -313,7 +322,12 @@ function open (index, jwt) {
     const t = tenants[i]; const date = Date.now() - 60000 + (k % 1000);
     const p = { sentMono:performance.now(), sent: Date.now(), seen: new Set(), latencies: [], expected: viewers[i] };
     pending.set(t.id + ':' + date, p);
-    const e = { clientProofVersion:3, expectedSockets:sockets.flatMap((s,i)=>s.index===tenants.indexOf(t)?[i]:[]), date, sentMono:p.sentMono, tenant: t.id, sent: p.sent, acked: null, stamp: null, evaluatedAt: null }; evalPending.push(e);
+    const e = { clientProofVersion:3, expectedSockets:sockets.flatMap((s,i)=>s.index===tenants.indexOf(t)?[i]:[]), date, sentMono:p.sentMono, tenant: t.id, sent: p.sent, acked: null, stamp: null, evaluatedAt: null };
+    if(writerBaseline){
+      const [generation,before]=writerBaseline.tenants[t.id]||[];
+      e.writerTarget={identity:writerBaseline.identity,generation,before};
+    }
+    evalPending.push(e);
     const attempt=accounting?accounting.begin(t.id):null;
     writers.push(request('POST', t, '/api/v1/entries?token=' + encodeURIComponent(t.token),
       [{ type: 'sgv', sgv: 100 + (date % 50), date, dateString: new Date(date).toISOString(), direction: 'Flat', device: args.runid + '-probe' }]).then(r => {
@@ -459,7 +473,7 @@ function open (index, jwt) {
     out.completedOutput={clientFrames:{verdict:out.window.expectedFrames===0?'NOT_EXERCISED':evalPending.every(e=>e.completion?.ready)?'PASS':'UNMEASURED'},rosterTenants:tenants.length,witnessTenants:[...new Set(evalPending.map(e=>e.tenant))],
       clinicalTiming,witnessTenantCount:new Set(evalPending.map(e=>e.tenant)).size,
       ...(out.sqlObserverFailure?{observerFailure:out.sqlObserverFailure}:{}),
-      witnesses:evalPending.map(e=>({tenant:e.tenant,date:e.date,stamp:e.stamp,acceptedAt:e.acked,requestToAcceptanceMs:e.clinicalTiming.requestToAcceptanceMs,requestStartedAt:e.sent,
+      witnesses:evalPending.map(e=>({tenant:e.tenant,date:e.date,stamp:e.stamp,...(e.writerTarget?{writerTarget:e.writerTarget}:{}),acceptedAt:e.acked,requestToAcceptanceMs:e.clinicalTiming.requestToAcceptanceMs,requestStartedAt:e.sent,
         ...(transport.frames ? {clientProofVersion:e.clientProofVersion,expectedSockets:e.expectedSockets,sentMono:e.sentMono,
           rawRow:e.rawRow,clientObservations:[...(pending.get(e.tenant+':'+e.date)?.clientFrames?.values()||[])]} : {}),...e.completion})),
       probeCadenceMs:PROBE,scope:'sampled stored/output/client witnesses and selected BG-now mean; witnessTenants is the exercised subset, not all-roster clinical equivalence; uploader separate from ordinary k6 workload; any planned restart is qualified by its separate receipt'};

@@ -19,6 +19,7 @@ def sha(value):
 def validate_prepare(args):
     import adapter as a
     cadence = a.cadence_options(args)
+    a.stream_topology.options(args)
     static = a.static_topology.option(args)
     commissioning_wal.option(args)
     a.stream_topology.ack_option(args)
@@ -50,7 +51,7 @@ def from_args(args, instrument):
             'cadence': cadence, 'primerConcurrency': args.primer_concurrency,
             **({'primerMaxTenants': args.primer_max_tenants} if getattr(args,'primer_max_tenants',None) is not None else {}),
             'jwtSetupConcurrency': args.jwt_setup_concurrency,
-            'pgstreamTopology': args.pgstream_topology,
+            **a.stream_topology.options(args, include_default=True),
             'completionContract': args.completion_contract,
             'diagnostics':a.profile_provenance.selection(args.diagnostics,args.diagnostics_interval_ms)}
 
@@ -62,7 +63,8 @@ def from_manifest(m):
             'instrument': m['instrument']['sha256'], 'postgresImageId': m.get('postgresImageId'),
             'primerConcurrency': m.get('primerConcurrency',1), 'jwtSetupConcurrency': m.get('jwtSetupConcurrency',1),
             **({'primerMaxTenants':m['primerMaxTenants']} if 'primerMaxTenants' in m else {}),
-            'pgstreamTopology': m.get('pgstreamTopology',a.stream_topology.COLOCATED),
+            **({'inputTransport': a.stream_topology.WRITER} if a.stream_topology.selection(m) == a.stream_topology.WRITER
+               else {'pgstreamTopology': a.stream_topology.selection(m)}),
             'diagnostics':m.get('diagnostics',a.profile_provenance.selection())}
 
 

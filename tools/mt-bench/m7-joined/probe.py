@@ -4,7 +4,7 @@ from pathlib import Path
 import shutil
 
 HELPERS = ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs','probe-accounting.cjs',
-           'completed-oracle.cjs','native-observation.cjs','client-delivery.cjs','durable-lag.cjs','clinical-timing.cjs')
+           'completed-oracle.cjs','accepted-writer-baseline.sql','native-observation.cjs','client-delivery.cjs','durable-lag.cjs','clinical-timing.cjs')
 
 
 def generate(root, target, *, transport=None):

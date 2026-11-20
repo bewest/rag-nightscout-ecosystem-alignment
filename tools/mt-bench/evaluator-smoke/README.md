@@ -6,13 +6,15 @@ The baseline comparison is a figure, never a gate
 ([performance-signals-not-gates](../../../docs/30-design/tenancy/multitenancy-decisions.md#performance-signals-not-gates)).*
 
 One command builds (or reuses) the image for a core commit, runs a small Compose multitenant
-deployment through the [m7-joined runner](../m7-joined/RUNNER.md)'s smoke tier (16 tenants, K=1
-evaluator, 180 s of realistic-v1 load at rate multiplier 24), and reports:
+deployment through the [m7-joined runner](../m7-joined/RUNNER.md)'s smoke tier (by default 16 tenants, one API, one evaluator, one realtime process, 180 s of realistic-v1 load at rate multiplier 24), and reports:
 
 - evaluator SQL statements per accepted write, by database role (`nsdemo_evaluator`,
   `nsdemo_lifetime_evaluator`, `nsdemo_outbox`, `nsdemo_suppression`) and by phase (receipt,
   dispatch, settings, acquisition, completion, consumers, observe, txn-control, fences, registry,
   unattributed), with PostgreSQL executor ms per write;
+- statements and PostgreSQL executor ms from the API and API lifecycle database roles, divided by
+  the same accepted-write count. These include ordinary reads during the workload. The evaluator
+  totals keep their original scope for comparison with earlier runs;
 - evaluator main-thread CPU ms per accepted write (`/proc/<pid>/task/<pid>/stat`, sampled each
   second through `docker exec`, interpolated at the same SQL window bounds);
 - the same figures beside the committed [`baseline.json`](baseline.json).
@@ -29,6 +31,23 @@ python3 tools/mt-bench/evaluator-smoke/smoke.py run --image <ref with core/deplo
 python3 tools/mt-bench/evaluator-smoke/smoke.py reduce <dir>/run                 # re-reduce a retained run
 python3 tools/mt-bench/evaluator-smoke/smoke.py reduce <dir>/run --empty-rules   # negative control
 ```
+
+For the writer-driven smoke, supply the joined image with its core and deploy revision labels.
+The launcher selects two APIs, two evaluator slices and two realtime slices. Add `--plan-only`
+to record the effective configuration and candidate identity before starting the fixture.
+Use a fresh output directory for each invocation.
+
+```bash
+python3 tools/mt-bench/evaluator-smoke/smoke.py run --input-transport writer-driven \
+  --image "$JOINED_IMAGE" --out "$NEW_OUTPUT"
+```
+
+With `--core`, writer-driven runs build against deploy `edc6c5df1e8c` by default.
+`--replicas` changes the API count. `--static-workers` sets the slices per evaluator and
+realtime role. The summary reports CPU for each evaluator and sums CPU per accepted write across
+the fleet when every slice covers the measurement window. SQL figures combine all processes using
+each database role. For matched history, pass the same five-minute UTC `--history-anchor-ms`
+to both arms. The fixture writes and verifies 72 synthetic readings per tenant before traffic.
 
 `--out` is private (synthetic credentials) and must be outside any checkout. The image is
 `ns-evaluator-smoke:<core12>-<deploy12>`, built like deploy's `tools/compose-overlay.sh` plus

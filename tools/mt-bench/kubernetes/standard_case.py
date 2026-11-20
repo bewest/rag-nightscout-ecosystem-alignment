@@ -215,6 +215,9 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     for document in (run, intent):
         document.pop('applicationTopology', None)
         document['primerLocation'] = 'claim' if inventory['results']['primer'].get('claim') else 'pod'
+    transport = inventory.get('inputTransport', 'pgstream')
+    if transport == 'writer-driven':
+        run['roles'].pop('pgstream', None)
     for target in run['roles'].values():
         name = target['workload'].split('/', 1)[1]
         target['workload'] = inventory['workloads'][name]['kind'] + '/' + name
@@ -235,7 +238,7 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
         library = binding/'bindings/kubernetes/lib'
         k.write(output/'stages/fixture-claims.json',
                 fixture_copy.render(jsonnet,library,namespace,run_id,fixture,tenants,candidate['postgres'],
-                                    fixture_copy.evaluator_slices(inventory)))
+                                    fixture_copy.evaluator_slices(inventory), transport))
         if fixture['mode'] == 'seed':
             k.write(output/'stages/fixture-snapshots.json',
                     fixture_copy.snapshot_objects(jsonnet,library,namespace,run_id,fixture))
@@ -251,10 +254,15 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
                tenantsFile=str(output/'runtime/fixture/data-roster.private.json'), deadlines={kind:(now+timedelta(seconds=env[seconds])).isoformat().replace('+00:00','Z')
                for kind,seconds in [('workUntil','workDeadlineSeconds'),('cleanupUntil','cleanupDeadlineSeconds')]})
     k.write(output/'native-run-template.json', run)
+    fixture_identity = {'mode':'fresh'} if fixture is None else {'mode':fixture['mode'], 'directory':str(fixture['directory'])}
+    fixture_identity['history'] = profile['history']
     k.write(output/'preflight.json',{'offline':'PASS','commissioning':'PREFLIGHT_ONLY',
         'trialEnvelope':{'placementMode':'scheduler','resourceAccounting':'requests-v1'},'experiment':{'runId':run_id,
         'namespace':namespace,'renderSha256':k.digest(output/'render.json'),'experimentSha256':k.digest(output/'intent.json')},
-        'identity':{'alignmentCommit':alignment,'candidate':candidate}})
+        'identity':{'alignmentCommit':alignment,'bindingCommit':binding_head,'candidate':candidate,
+                    'fixture':fixture_identity},
+        'topology':{'inputTransport':transport, 'apiReplicas':inventory['workloads']['api']['replicas'],
+                    'evaluatorSlices':inventory['slices']['evaluator'], 'realtimeSlices':inventory['slices']['realtime']}})
     selected_control = {key:control[key] for key in ('version','toolsDirectory','k6','readonlyGuard','pullSecretCommand') if key in control}
     selected_control.update(caseDirectory=str(output),bindingDirectory=str(binding),instrumentDirectory=str(k.ROOT),
                             schedulerPlacement=True,coreRepository=str(core),runTemplate=lc.ref(output/'native-run-template.json'),
@@ -267,4 +275,6 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     instance = {'config':str(output/'native-run-template.json'),'render':str(output/'render.json'),
                 'inventory':str(output/'inventory.json'),'binding':str(binding)}
     experiment.prepare(output/'intent.json',instance,output/'offline-final',await_primer=True)
-    return experiment.launch(output/'lifecycle-input.json', True)
+    result = experiment.launch(output/'lifecycle-input.json', True)
+    preflight = k.document(output/'preflight.json')
+    return {**result, 'identity':preflight['identity'], 'topology':preflight['topology']}

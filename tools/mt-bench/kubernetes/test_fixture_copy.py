@@ -95,6 +95,12 @@ class FixtureCopy(unittest.TestCase):
         self.assertTrue(all(b['metadata']['labels'] == {fc.LABEL: 'restore-1'} for _, b in cluster.calls))
         manifest = fc.read_manifest(chosen['directory'])
         fc.check_restore(manifest, 8, PG)
+        with self.assertRaisesRegex(fc.Refused, 'INPUT_TRANSPORT_CHANGED'):
+            fc.check_restore(manifest, 8, PG, input_transport='writer-driven')
+        record = fc.slices_record({'inputTransport':'writer-driven', 'slices':{'evaluator':2}})
+        fc.check_restore({**manifest, **record}, 8, PG, 2, 'writer-driven')
+        with self.assertRaisesRegex(fc.Refused, 'INPUT_TRANSPORT_CHANGED'):
+            fc.check_restore({**manifest, **record}, 8, PG, 2)
         with self.assertRaisesRegex(fc.Refused, 'TENANTS_CHANGED'):
             fc.check_restore(manifest, 3000, PG)
         with self.assertRaisesRegex(fc.Refused, 'POSTGRES_IMAGE_CHANGED'):
@@ -216,6 +222,6 @@ class KeyedFixture(unittest.TestCase):
     def test_a_restore_refuses_a_fixture_recorded_under_another_key(self):
         self.run_keyed('build', 'seed-a')
         manifest = fc.read_manifest(self.prepared[0][1]['directory'])
-        fc.check_restore(manifest, 8, PG, 1, self.key)
+        fc.check_restore(manifest, 8, PG, 1, key=self.key)
         with self.assertRaisesRegex(fc.Refused, 'KEY_CHANGED'):
-            fc.check_restore(manifest, 8, PG, 1, {**self.key, 'tenants': 9})
+            fc.check_restore(manifest, 8, PG, 1, key={**self.key, 'tenants': 9})

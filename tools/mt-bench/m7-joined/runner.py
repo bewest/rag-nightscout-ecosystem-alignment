@@ -22,6 +22,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import adapter as a
 import workload_inputs
+import populated_history as history
 import point_results
 from contract import require
 from auto_catalog import auto_catalog
@@ -171,7 +172,8 @@ def load_config(path):
 def validate_config(config):
     require(config.get('version') == 1, 'M7_RUNNER_CONFIG_VERSION')
     common = {'version', 'prepare', 'k6Image', 'workSeconds', 'cleanupSeconds'}
-    keys = set(config) - {'tier', 'smokeBaseline'}
+    history.validate(config.get('history', history.BASELINE))
+    keys = set(config) - {'tier', 'smokeBaseline', 'history'}
     require(keys in (common | {'helperHead'}, common | {'helperInstrument'}), 'M7_RUNNER_CONFIG_FIELDS')
     tier = config.get('tier')
     require('tier' not in config or tier in TIERS, 'M7_RUNNER_TIER')
@@ -703,6 +705,26 @@ def execution_window(root,config):
     return state
 
 
+def prepare_history(output, d, config, until, *, verify_only=False, after=False):
+    spec = config.get('history', history.BASELINE)
+    if spec == history.BASELINE and 'fixture-snapshot' not in config.get('prepare', {}):
+        return
+    m = a.document(d/'owner.json')
+    with a.command_deadline(until):
+        a.assert_owned(m)
+        database = a.application_database(d)
+        def read(query):
+            return a.psql(d, 'BEGIN READ ONLY;\n'+query+'\nROLLBACK;', database,
+                          timeout=history.remaining(until, 120))
+        if spec == history.BASELINE:
+            history.require(not history.census(read, int(time.time()*1000), 0), 'SNAPSHOT_MISMATCH')
+            return
+        receipt = history.run(spec, a.document(d/'tenants.private.json'), 'http://127.0.0.1:'+str(m['port']),
+                              read, until, 0 if after else history.window(m['cadence']),
+                              verify_only=verify_only or 'fixture-snapshot' in config['prepare'])
+        write(output/('populated-history-after.json' if after else 'populated-history.json'), receipt)
+
+
 def execute(directory, rehearsal=False):
     root = Path(directory).resolve()
     config, _ = load_config(root / 'config.json')
@@ -717,7 +739,10 @@ def execute(directory, rehearsal=False):
         stage(root, 'preflight', ['preflight', str(d), '--k6-image', config['k6Image']])
         # Essential source/runtime/instrument checks stay in adapter preflight.
         optional_preflight(root, d)
+        prepare_history(root, d, config, state.get('stopWorkAt'))
         stage(root, 'run', ['run', str(d), '--k6-image', config['k6Image']])
+        if state.get('stopWorkAt') is None and config.get('history', history.BASELINE) != history.BASELINE:
+            prepare_history(root, d, config, None, verify_only=True, after=True)
         if config.get('tier') == 'smoke':
             from tier_smoke import assess
             assess(root, config.get('smokeBaseline'))
@@ -764,6 +789,7 @@ def session_start(config_file, directory):
         require(not m.get('attached'), 'M7_SESSION_ORIGINAL_OWNER_REQUIRED')
         (root/'observations').mkdir(mode=0o700)
         state = a.document(root/'execution.json')
+        prepare_history(root, d, config, state['stopWorkAt'])
         value = {'version':1, 'owner':state['owner'], 'startedAt':state['startedAt'],
             'stopWorkAt':state['stopWorkAt'], 'cleanupAt':state['cleanupAt'],
             'runtimeOwnerSha256':a.digest(d/'owner.json'), 'runtimeOwner':m['owner'],
@@ -809,6 +835,8 @@ def session_observe(directory, owner, name, config_file, history_file=None):
         config, prepared_argv = load_config(config_file)
         original = a.document(root/'config.json')
         require(config['k6Image'] == original['k6Image'], 'M7_SESSION_RUNTIME_CONFIG_CHANGED')
+        require(config.get('history', history.BASELINE) == original.get('history', history.BASELINE),
+                'M7_SESSION_HISTORY_CHANGED')
         stable = lambda options:{k:v for k,v in options.items() if k not in SESSION_VARIABLE_OPTIONS}
         require(stable(config['prepare']) == stable(original['prepare']), 'M7_SESSION_RUNTIME_CONFIG_CHANGED')
         ob = root/'observations'/name
@@ -839,7 +867,10 @@ def session_observe(directory, owner, name, config_file, history_file=None):
             stage(root,name+'-attach',argv)
             stage(root,name+'-preflight',['preflight',str(ob/'fixture'),'--k6-image',config['k6Image']])
             optional_preflight(ob,ob/'fixture')
+            prepare_history(ob, ob/'fixture', config, session['stopWorkAt'], verify_only=True)
             stage(root,name+'-run',['run',str(ob/'fixture'),'--k6-image',config['k6Image']])
+            if session['stopWorkAt'] is None and config.get('history', history.BASELINE) != history.BASELINE:
+                prepare_history(ob, ob/'fixture', config, None, verify_only=True, after=True)
         except BaseException as error:
             failure = {'code':code(error),'errorType':type(error).__name__}
         finally:

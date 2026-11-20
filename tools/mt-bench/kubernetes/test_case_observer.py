@@ -221,8 +221,30 @@ class Capture(unittest.TestCase):
         self.assertEqual(value['window'], {'basis': 'controller load window', 'startMs': 1000000.0, 'endMs': 1600500.0, 'seconds': 600})
         self.assertEqual({at for _, at in FakePrometheus.queries}, {1600.5})
         self.assertTrue(all('[600s]' in expr for expr, _ in FakePrometheus.queries))
-        self.assertEqual(set(value['figures']), set(o.QUERIES) - {'statementText'})
+        self.assertEqual(set(value['figures']), (set(o.QUERIES) | set(o.PGSTREAM_QUERIES)) - {'statementText'})
         self.assertEqual(value['figures']['topStatementsSeconds'], [{'labels': {'queryid': '7'}, 'value': 2.5, 'query': 'SELECT $1'}])
+
+    def test_writer_driven_summary_uses_api_writes_and_skips_cdc(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        baseline = case(tmp.name, None)
+        out = Path(tmp.name)
+        (out/'samples.jsonl').touch()
+        (baseline.d/'binding-inputs.json').write_text(json.dumps({'inputTransport': 'writer-driven'}))
+        c = o.Case(baseline.d)
+        summary = o.summarize(c, out)
+        self.assertEqual(summary['inputTransport'], 'writer-driven')
+        self.assertNotIn('pgstreamDelivery', summary)
+        packet = c.runtime/'packet'/'load'
+        packet.mkdir(parents=True)
+        (packet/'metrics-snapshot.json').write_text(json.dumps({'verdict': 'OBSERVED', 'file': 'metrics-tsdb.tar'}))
+        FakePrometheus.queries = []
+        figures = o.prometheus_figures(c, 0, 10000, local=FakePrometheus)['figures']
+        self.assertIn('pendingOldestAgeMaxSeconds', figures)
+        self.assertTrue(set(figures).isdisjoint(o.PGSTREAM_QUERIES))
+        write_queries = [q for q, _ in FakePrometheus.queries if 'nightscout_http_request_seconds_count' in q]
+        self.assertEqual(len(write_queries), 2)
+        self.assertTrue(all('workload="api"' in q for q in write_queries))
 
     def test_delivery_span_and_gap_from_receiver_trace(self):
         tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)

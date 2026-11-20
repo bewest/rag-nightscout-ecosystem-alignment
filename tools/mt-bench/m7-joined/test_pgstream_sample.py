@@ -196,6 +196,8 @@ class Sample(unittest.TestCase):
             d=Path(temp);calls=[]
             args=SimpleNamespace(core_repo='core',deploy_repo='deploy',core_commit='a'*40,deploy_commit='b'*40,image='sha256:'+'c'*64,postgres_image='sha256:'+'d'*64,tenants=4,replicas=1,quiet_load=3,freeze=str(d/'freeze.json'),profile='pgstream-sample',backend_subnet='10.221.0.0/28',edge_subnet='10.221.1.0/28',fixture_project='ns-rest-joined-baseline')
             if restored_count is not None:
+                (d/'source-snapshot').mkdir()
+                (d/'source-snapshot/deployment.env').write_text('NS_API_REPLICAS=1\n')
                 args.fixture_snapshot = str(d/'source-snapshot')
             def git(repo,*argv):
                 if argv[:2]==('worktree','add'):(d/'core/deploy/multitenant').mkdir(parents=True)

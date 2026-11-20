@@ -20,7 +20,7 @@ FRESH={'core-repo','deploy-repo','generator-dependencies','generator-dependency-
 DERIVED={'core-commit','deploy-commit','image','image-id','postgres-image','tenants','replicas',
          'load-seconds','hot-factor','accel','offered-rps','workload-mix','workload-scale',
          'logical-polling-clients','viewer-setup','probe-every-ms','probe-ledger','evaluator-progress-budget','drain-observation','startup-windows','setup-seconds','drain-seconds','jwt-setup-concurrency','driver-plan','driver-headroom','driver-shards',
-         'static-workers','pgstream-topology'}
+         'static-workers','pgstream-topology','input-transport'}
 
 def legacy(m,target='kubernetes'):
     if m.get('kind')=='k8s-frozen-experiment':
@@ -36,12 +36,16 @@ def legacy(m,target='kubernetes'):
     app=m['application']
     frozen.require(set(app)<= {'candidate','alignmentCommit','bindingCommit','bootstrapHelper'},'APPLICATION_FIELDS')
     topology=m['topology']
-    frozen.require(set(topology)=={'apiReplicas','evaluatorWorkers','pgstreamTopology'} and
-        discovery_api_replicas(topology['apiReplicas']) and
-        discovery_workers(topology['evaluatorWorkers']) and
-        topology['pgstreamTopology'] in ('colocated','external'),'TOPOLOGY')
+    mode = topology.get('inputTransport', 'pgstream')
+    shape = {'apiReplicas', 'evaluatorWorkers'} | ({'inputTransport'} if 'inputTransport' in topology else set())
+    if mode == 'pgstream':
+        shape.add('pgstreamTopology')
+    frozen.require(mode in ('pgstream', 'writer-driven') and set(topology) == shape and
+                   discovery_api_replicas(topology['apiReplicas']) and discovery_workers(topology['evaluatorWorkers']) and
+                   (mode == 'writer-driven' or topology['pgstreamTopology'] in ('colocated', 'external')), 'TOPOLOGY')
     if target=='kubernetes':
-        frozen.require(topology=={'apiReplicas':1,'evaluatorWorkers':1,'pgstreamTopology':'external'},'KUBERNETES_TOPOLOGY_UNSUPPORTED')
+        frozen.require(mode == 'pgstream' and topology['apiReplicas'] == topology['evaluatorWorkers'] == 1 and
+                       topology['pgstreamTopology'] == 'external', 'KUBERNETES_TOPOLOGY_UNSUPPORTED')
     return dict(version=1,kind='k8s-frozen-experiment',**copy.deepcopy(app),profile=copy.deepcopy(m['profile']),
                 **({'tier': m['tier']} if 'tier' in m else {}),
                 **({'edge':edge} if target=='kubernetes' and edge is not None else {}),
@@ -59,7 +63,7 @@ def local(m,instance):
     fresh=instance['prepare'];frozen.require(set(fresh)<=FRESH,'INSTANCE_FIELDS')
     options.update(fresh)
     if frozen.ACK_BUDGET in selected:
-        frozen.require(m['topology']['pgstreamTopology']=='external', 'PGSTREAM_ACK_TOPOLOGY')
+        frozen.require(m['topology'].get('pgstreamTopology')=='external', 'PGSTREAM_ACK_TOPOLOGY')
         frozen.require('pgstream-notifier-ack-timeout-ms' not in options, 'DUPLICATE_LOCAL_FACT')
         options['pgstream-notifier-ack-timeout-ms'] = selected[frozen.ACK_BUDGET]
     p=profile.validate(dict(original['profile'],referencePins=dict(core=selected['coreCommit'],deploy=selected['deployCommit'],bindingCommit=original['bindingCommit'])))
@@ -79,8 +83,11 @@ def local(m,instance):
         'image':selected['localImageId'],'image-id':selected['localImageId'],'postgres-image':original['candidate']['postgresImageId'],
         'tenants':p['population']['provisionedTenants'],'replicas':t['apiReplicas'],
         'load-seconds':w['loadSeconds'],'hot-factor':w.get('hotFactor',1),'accel':1,'logical-polling-clients':w['logicalPollingClients'],
-        'probe-every-ms':w['probeEveryMs'],
-        'pgstream-topology':{'external':'external-service-v1','colocated':'colocated-v1'}[t['pgstreamTopology']]})
+        'probe-every-ms':w['probeEveryMs']})
+    if t.get('inputTransport') == 'writer-driven':
+        options['input-transport'] = 'writer-driven'
+    else:
+        options['pgstream-topology'] = {'external':'external-service-v1','colocated':'colocated-v1'}[t['pgstreamTopology']]
     options.update({('workload-mix' if key=='workloadMix' else 'workload-scale' if key=='workloadScale' else 'offered-rps'):w[key]
                     for key in ('workloadMix','workloadScale','offeredRps') if key in w})
     for field, option in (('setupSeconds', 'setup-seconds'), ('drainSeconds', 'drain-seconds'), ('jwtSetupConcurrency', 'jwt-setup-concurrency')):
@@ -101,7 +108,7 @@ def local(m,instance):
         options.update({'driver-plan':json.dumps(w['driverPlan']),'driver-shards':w.get('driverShards',1)})
     if 'driverHeadroom' in w:
         options['driver-headroom'] = w['driverHeadroom']
-    if t['evaluatorWorkers']>1 or t['apiReplicas']>1:
+    if t.get('inputTransport') == 'writer-driven' or t['evaluatorWorkers']>1 or t['apiReplicas']>1:
         options['static-workers']=t['evaluatorWorkers']
     # Import the existing local adapter under its expected name in an isolated
     # subprocess. Both historical modules are called adapter.py; never let the
@@ -109,6 +116,8 @@ def local(m,instance):
     config=dict(version=1,helperInstrument=None,k6Image=defaults['k6Image'],
                 workSeconds=p['phases']['workSeconds'],cleanupSeconds=p['phases']['cleanupSeconds'],prepare=options,
                 **({'tier': original['tier']} if 'tier' in original else {}))
+    if p['history'] != profile.history.BASELINE:
+        config['history'] = p['history']
     return config
 
 def project(m,instance,target,out):

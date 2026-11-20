@@ -406,6 +406,12 @@ def run(packet, grant_path, expected_digest, group=None):
                                                 namespaceUid=k.active_baseline(d)['namespace']['uid']))
         k.candidate.require(k, d, c)
         execute.authority(d, c)
+        if c.get('history', profile.history.BASELINE) != profile.history.BASELINE:
+            receipt = profile.history.run(c['history'], execute.roster(c), c['baseUrl'],
+                        lambda query: k.sql(d, c, objects, query, client),
+                        k.timestamp(c['deadlines']['workUntil']), profile.history.window(c['workload']),
+                        verify_only=c.get('restoredHistory', False))
+            k.write(attempt/'populated-history.json', receipt)
         outcome['load'] = execute.execute(d, c, objects, client, load=True)
         outcome['verdict'] = outcome['load']['verdict']
     except Exception as exc:
