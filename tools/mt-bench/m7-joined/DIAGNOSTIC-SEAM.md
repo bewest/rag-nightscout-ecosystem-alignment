@@ -110,59 +110,6 @@ its original diagnostic code rather than waiting for the traffic deadline. Pytho
 retains that safe terminal code and reports process termination or exit timeout
 separately. This does not force process exit or change the traffic budget.
 
-## Explicit independent pgstream topology
-
-Fresh `pgstream-sample` discovery configurations for a separately managed Go
-service select `--pgstream-topology external-service-v1` (the resource profile option was retired 2026-11-19).
-The default remains `colocated-v1`; a standalone Compose service under that
-selection refuses. The new selection validates the exact pinned core schema,
-canonical frozen service command, source/image identity and separate process
-instrumentation. The existing paired producer and core CLI source-contract check
-still applies. It does not imply image or runtime acceptance.
-
-The new resource profile explicitly divides the former evaluator allocation:
-
-| Role | CPU limit | Memory limit |
-|---|---:|---:|
-| Evaluator Node | 125 millicpus | 256 MiB |
-| Independent pgstream Go | 125 millicpus | 256 MiB |
-
-All other role, driver, oneoff and host-heap limits remain the existing policy.
-The complete one-replica roster reserves 3875 millicpus, 8192 MiB container memory
-and 1024 MiB host V8 heaps. This is a bounded diagnostic policy; whether these
-quotas are adequate for a workload is UNMEASURED. A constrained generator or
-service is a finding, not capacity acceptance. The old profile retains its
-250 millicpu/512 MiB evaluator allocation and refuses the new Go role.
-
-The explicit `local-diagnostic-external-pgstream-evaluator250-4cpu-8g-v1`
-variant changes only evaluator CPU to 250 millicpus. Evaluator memory remains
-256 MiB; the independent Go service remains at 125 millicpus/256 MiB. Its full
-reservation is 4,000 millicpus, 8,192 MiB container memory and 1,024 MiB host V8
-heaps. It is a separate diagnostic profile for a CPU comparison, not evidence
-that the original profile passes. The frozen configuration and actual container
-limits must match that selection. Capture effective `cpu.max` separately;
-requested CPU is not a measurement of the kernel's quota rounding.
-
-Deployment includes the independent service in the maintained role roster.
-Preflight requires Node counters in the evaluator container and Go counters in
-the pgstream container, with exact image/command and running-container birth
-checks. Reduction requires both roles and stable process births across each
-window. Go logs use the existing bounded collector; Node diagnostics environment
-flags are validated only for Node roles. Raw log, source and runtime receipts
-retain their existing homes. Old captures remain on their original helper.
-
-The opt-in `local-diagnostic-external-pgstream-evaluator250-memory512-4cpu-8448m-v1`
-variant keeps evaluator CPU at 250 millicpus and changes only its container
-memory and memory-plus-swap limit from 256 to 512 MiB relative to evaluator250.
-It reserves 4000 millicpus and 8448 MiB across the selected services, declared
-oneoff overlaps and standalone k6, plus the unchanged 1024 MiB host V8 heap
-allowance. Native host RSS remains separately observed. The old profiles retain
-their 8192 MiB ceiling. This local finite memory discriminator grants no capacity
-and changes no default or remote allocation. The existing 8192 MiB batch
-reservation explicitly refuses this larger variant; it must not underreserve it.
-Timeline preloads, mounts and extra observations are separate instrument changes
-and must be sealed and reported, not called a pure performance comparison.
-
 The timeline preload observes canonical module loads after the paired entrypoint
 applies its ordinary private environment. It does not import core or PostgreSQL
 modules during preloading. Runtime wrapping retains static export descriptors

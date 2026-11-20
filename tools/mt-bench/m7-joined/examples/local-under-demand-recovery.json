@@ -26,7 +26,6 @@
     "probe-every-ms": 1000,
     "sampler-interval": 2,
     "quiet-load": 3,
-    "pgstream-topology": "external-service-v1",
     "diagnostics": "on",
     "maximum-run-minutes": 25,
     "fixture-project": "ns-local-recovery-new-attempt",
@@ -42,6 +41,7 @@
     "primer-concurrency": 16,
     "jwt-setup-concurrency": 8,
     "completion-contract": "evaluator-work-v2",
+    "static-workers": 1,
     "evaluator-opportunities": "received-input-v1",
     "evaluator-catchup": "fixed-target-v1",
     "restart-during-load-after-seconds": 30

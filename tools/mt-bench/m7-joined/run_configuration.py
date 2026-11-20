@@ -21,8 +21,6 @@ def validate_prepare(args):
     cadence = a.cadence_options(args)
     a.stream_topology.options(args)
     static = a.static_topology.option(args)
-    commissioning_wal.option(args)
-    a.stream_topology.ack_option(args)
     require(args.measurement_mode=='accepted','M7_CONFIG_DISCOVERY_MEASUREMENT_MODE')
     require(workload_inputs.tenants(args.tenants)
             and (discovery_api_replicas(args.replicas) if args.run_purpose=='discovery'
@@ -44,27 +42,26 @@ def from_args(args, instrument):
     import adapter as a
     # This is semantic input, independent of transport paths and observed limits.
     cadence = validate_prepare(args)
-    return {**commissioning_wal.option(args), **a.stream_topology.ack_option(args), **({'tenantReadiness':args.tenant_readiness} if getattr(args,'tenant_readiness',None) else {}), **a.static_topology.option(args), **({'apiCauseObservation':'on'} if getattr(args,'api_cause_observation','off')=='on' else {}),'version': 1, 'pair': {'core': args.core_commit, 'deploy': args.deploy_commit},
+    return {**({'tenantReadiness':args.tenant_readiness} if getattr(args,'tenant_readiness',None) else {}), **a.static_topology.option(args), **({'apiCauseObservation':'on'} if getattr(args,'api_cause_observation','off')=='on' else {}),'version': 1, 'pair': {'core': args.core_commit, 'deploy': args.deploy_commit},
             'imageId': args.image_id or args.image, 'instrument': instrument,
             'postgresImageId': args.postgres_image, 'profile': args.profile,
             'runPurpose': args.run_purpose, 'tenants': args.tenants, 'replicas': args.replicas,
             'cadence': cadence, 'primerConcurrency': args.primer_concurrency,
             **({'primerMaxTenants': args.primer_max_tenants} if getattr(args,'primer_max_tenants',None) is not None else {}),
             'jwtSetupConcurrency': args.jwt_setup_concurrency,
-            **a.stream_topology.options(args, include_default=True),
+            **a.stream_topology.options(args),
             'completionContract': args.completion_contract,
             'diagnostics':a.profile_provenance.selection(args.diagnostics,args.diagnostics_interval_ms)}
 
 
 def from_manifest(m):
     import adapter as a
-    return {**commissioning_wal.from_manifest(m), **a.stream_topology.ack_selection(m), **({'tenantReadiness':m['tenantReadiness']} if m.get('tenantReadiness') else {}), **({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),
+    return {**commissioning_wal.from_manifest(m), **({'tenantReadiness':m['tenantReadiness']} if m.get('tenantReadiness') else {}), **({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),
             **({'apiCauseObservation':'on'} if m.get('apiCause') else {}),'version': 1, **{k: m.get(k) for k in ('pair','imageId','profile','runPurpose','tenants','replicas','cadence','completionContract')},
             'instrument': m['instrument']['sha256'], 'postgresImageId': m.get('postgresImageId'),
             'primerConcurrency': m.get('primerConcurrency',1), 'jwtSetupConcurrency': m.get('jwtSetupConcurrency',1),
             **({'primerMaxTenants':m['primerMaxTenants']} if 'primerMaxTenants' in m else {}),
-            **({'inputTransport': a.stream_topology.WRITER} if a.stream_topology.selection(m) == a.stream_topology.WRITER
-               else {'pgstreamTopology': a.stream_topology.selection(m)}),
+            'inputTransport': a.stream_topology.selection(m),
             'diagnostics':m.get('diagnostics',a.profile_provenance.selection())}
 
 

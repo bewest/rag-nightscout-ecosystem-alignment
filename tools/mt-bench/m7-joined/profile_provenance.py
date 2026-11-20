@@ -10,7 +10,7 @@ from contract import require
 from role_instances import FAMILIES
 
 FLAGS = ('NS_M7_DIAGNOSTICS', 'NS_M7_DIAGNOSTICS_INTERVAL_MS')
-LOG_ROLES = ('api','api-2','api-3','api-4','realtime','realtime-2','evaluator','pgstream','admin','feed-reader','tenant-admin','postgres','vault','nginx','socket-edge')
+LOG_ROLES = ('api','api-2','api-3','api-4','realtime','realtime-2','evaluator','admin','feed-reader','tenant-admin','postgres','vault','nginx','socket-edge')
 
 def log_roles(config):
     # Every actual fixed-roster instance participates; no guessed CLI count.
@@ -28,7 +28,7 @@ def selection(mode='off', interval=5000):
 def select_environment(config, chosen):
     log_roles(config)
     for role, spec in config['services'].items():
-        if role in log_roles(config) and role not in ('postgres','vault','nginx','pgstream'):
+        if role in log_roles(config) and role not in ('postgres','vault','nginx'):
             environment = spec.setdefault('environment',{})
             require(isinstance(environment,dict),'M7_DIAGNOSTICS_ENV_INVALID')
             require(not any(k.startswith('NS_M7_DIAGNOSTICS') and k not in FLAGS for k in environment),'M7_DIAGNOSTICS_ENV_INVALID')
@@ -38,7 +38,7 @@ def select_environment(config, chosen):
 def verify_environment(config, chosen):
     seen = 0
     for role,spec in config['services'].items():
-        if role in log_roles(config) and role not in ('postgres','vault','nginx','pgstream'):
+        if role in log_roles(config) and role not in ('postgres','vault','nginx'):
             seen += 1
             require(all(spec.get('environment',{}).get(k)==v for k,v in chosen['environment'].items()),'M7_DIAGNOSTICS_ENV_MISMATCH')
     require(seen > 0,'M7_DIAGNOSTICS_ENV_UNMEASURED')
@@ -136,14 +136,14 @@ def runtime_environment(containers, chosen, config=None,pgstream=False):
     seen=set()
     for row in containers:
         role=row['Config']['Labels'].get('com.docker.compose.service')
-        if (role in log_roles(config) if config is not None else role in LOG_ROLES) and role not in ('postgres','vault','nginx','pgstream') and row.get('State',{}).get('Running'):
+        if (role in log_roles(config) if config is not None else role in LOG_ROLES) and role not in ('postgres','vault','nginx') and row.get('State',{}).get('Running'):
             require(role not in seen,'M7_DIAGNOSTICS_RUNTIME_ROSTER_MISMATCH')
             seen.add(role)
             env=dict(value.split('=',1) for value in row['Config'].get('Env',[]) if '=' in value)
             require(all(env.get(k)==v for k,v in chosen['environment'].items()),'M7_DIAGNOSTICS_RUNTIME_MISMATCH')
     require(bool(seen),'M7_DIAGNOSTICS_RUNTIME_UNMEASURED')
     if config is not None:
-        expected={role for role in config['services'] if role in log_roles(config) and role not in ('postgres','vault','nginx','pgstream') and not(pgstream and role=='feed-reader')}
+        expected={role for role in config['services'] if role in log_roles(config) and role not in ('postgres','vault','nginx') and not(pgstream and role=='feed-reader')}
         require(seen==expected,'M7_DIAGNOSTICS_RUNTIME_ROSTER_MISMATCH')
 
 def identity(diagnostics, config):

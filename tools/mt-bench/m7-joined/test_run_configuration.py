@@ -36,7 +36,7 @@ def packet(value):
     receipt={'version':2,'kind':'joined-diagnostic','status':'AUTHORIZED_DIAGNOSTIC',
              'purpose':'BOUNDED_DISCOVERY','pair':r['pair'],'imageId':r['imageId'],'instrument':'d'*64,
              'functionalAcceptanceAtAuthorization':'PENDING','sourceAcceptance':{'status':'PENDING'},
-             'configurationSha256':rc.sha(r),'execution':{k:value[k] for k in ('workSeconds','cleanupSeconds','k6Image')},'limits':{'tenants':r['tenants'],'apiReplicas':1,'trafficSeconds':r['cadence']['loadSeconds']}}
+             'configurationSha256':rc.sha(r),'execution':{k:value[k] for k in ('workSeconds','cleanupSeconds','k6Image')},'limits':{'tenants':r['tenants'],'apiReplicas':1,'trafficSeconds':r['cadence']['loadSeconds'],'staticWorkers':r['staticTopology']['workers']}}
     return m,receipt
 
 
@@ -63,9 +63,9 @@ class Configuration(unittest.TestCase):
 
     def test_legacy_pending_and_strict_acceptance_stay_compatible(self):
         m,r=packet(config());r.pop('version');r.pop('sourceAcceptance');r.pop('configurationSha256');r.pop('purpose')
-        self.assertEqual(c.receipt_scope(m,r,'run')['functionalAcceptance'],'UNACCEPTED')
-        with self.assertRaisesRegex(RuntimeError,'RECEIPT_REQUIRED'):
-            c.receipt_scope(m,{**r,'functionalAcceptanceAtAuthorization':'PASS'},'run')
+        # A version-1 receipt cannot authorize a writer-driven run.
+        with self.assertRaisesRegex(RuntimeError,'STATIC_RECEIPT|WRITER_CONFIGURATION_REQUIRED'):
+            c.receipt_scope(m,r,'run')
         strict={'pair':m['pair'],'kind':'joined-acceptance','status':'PASS','evidenceSha256':'a'*64}
         self.assertEqual(c.receipt_scope({**m,'runPurpose':'acceptance'},strict,'run')['kind'],'accepted-capacity')
         with tempfile.TemporaryDirectory() as tmp:
@@ -114,7 +114,7 @@ class Configuration(unittest.TestCase):
     def test_invalid_bounds_and_cross_fields_before_output(self):
         # Discovery reference sizes are overridable; array representation
         # overflow remains invalid instead of the former 10000/80000 examples.
-        for changes in ({'tenants':2**32},{'replicas':2},{'logical-polling-clients':2**32},
+        for changes in ({'tenants':2**32},{'replicas':0},{'logical-polling-clients':2**32},
                         {'offered-rps':float('inf')},{'probe-every-ms':0},
                         {'backend-subnet':'10.247.237.0/24'},{'sampler-interval':61}):
             cfg=config();cfg['prepare'].update(changes)

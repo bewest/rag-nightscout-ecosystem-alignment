@@ -23,7 +23,7 @@ def validate(manifest):
     require(isinstance(pair, dict) and set(pair) == {'core', 'deploy'}
             and all(isinstance(v, str) and re.fullmatch(r'[0-9a-f]{40}', v) for v in pair.values()), 'M7_STATIC_SOURCE_PAIR')
     require(manifest.get('profile') == 'pgstream-sample' and manifest.get('runPurpose') == 'discovery'
-            and stream_topology.selection(manifest) in (stream_topology.EXTERNAL, stream_topology.WRITER)
+            and stream_topology.selection(manifest) == stream_topology.WRITER
             and manifest.get('completionContract') == 'evaluator-work-v2'
             and discovery_api_replicas(manifest.get('replicas')),
             'M7_STATIC_DIAGNOSTIC_SCOPE')
@@ -201,11 +201,7 @@ def verify_documents(manifest, documents):
         if item['role'] == 'evaluator':
             hostname = env.get('NS_EVALUATOR_SLICES') == str(value['workers'])  # hostname ordinal form
             require((hostname or 'NS_PGSTREAM_EVALUATOR_SLICE' in env) and json.loads(env.get('NS_REALTIME_SLICE_PEERS', 'null')) == peer_list, 'M7_STATIC_PRIVATE_PEERS')
-            stream = conf.get('pgstream', {})
-            receiver = f'http://evaluator-{item["ordinal"]}.evaluator:19913/' if hostname else f'http://{name}:19913/'
-            require(stream.get('receiver', {}).get('url') in (receiver, None if hostname else receiver), 'M7_STATIC_RECEIVER')
-            signatures.append({'postgres': conf.get('postgres'), 'datastore': conf.get('datastore'), 'consumer': conf.get('consumer'),
-                               **{key: stream.get(key) for key in ('slot', 'generation', 'streamRole', 'transactionRows')}})
+            signatures.append({'postgres': conf.get('postgres'), 'datastore': conf.get('datastore'), 'consumer': conf.get('consumer')})
         elif item['role'] == 'realtime':
             require('NS_REALTIME_SLICE' in env, 'M7_STATIC_DOCUMENT_ORDINAL')
     require(signatures and all(v == signatures[0] for v in signatures) and all(signatures[0].get(k) for k in ('slot', 'generation', 'streamRole', 'consumer')),
