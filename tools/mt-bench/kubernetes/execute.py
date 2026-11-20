@@ -491,6 +491,19 @@ def execute(d, c, objects, client, load=False, recovery=False):
     out.mkdir(mode=0o700)
     k.write(out / 'before.json', before)
     k.write(out / 'driver.json', readback)
+    # A restored 1,000-tenant writer-driven evaluator runs its startup sweep first and can miss the
+    # helper's 5 s inspection RPC; wait (unretained, bounded) until every slice answers, then take the bookend.
+    ready = {'attempts': 0, 'startedAt': time.time(), 'failures': []}
+    while time.time() - ready['startedAt'] < 180:
+        ready['attempts'] += 1
+        try:
+            progress(d, c, objects, client)
+            ready['answeredAt'] = time.time()
+            break
+        except Exception as error:
+            ready['failures'].append({'at': time.time(), **progress_refusal(error)})
+            time.sleep(10)
+    k.write(out / 'progress-before-readiness.json', ready)
     retained_progress(d, out, c, objects, client, 'progress-before')
     runid = stage_runid(c, name)
     (out / 'runid').write_text(runid)
