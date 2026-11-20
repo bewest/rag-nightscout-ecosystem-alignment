@@ -27,7 +27,7 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 
 ### Roles, listeners and horizontal shape
 
-- [statefulset-ordinal-scaling](multitenancy-decisions.md#statefulset-ordinal-scaling) — Evaluator and realtime are StatefulSets, ordinal from the hostname, K = replicas (one env value), one headless Service; api is a Deployment; cohort and participant manifest deleted. Evaluator K is bound at seed: one seed per K until the transport decision (amended 2026-11-20).
+- [statefulset-ordinal-scaling](multitenancy-decisions.md#statefulset-ordinal-scaling) — Evaluator and realtime are StatefulSets, ordinal from the hostname, K = replicas (one env value), one headless Service; api is a Deployment; cohort and participant manifest deleted. Evaluator K is bound at seed only under pgstream; writer-driven fixtures are K-free, one seed serves any K (amended 2026-11-20).
 - [d5](multitenancy-decisions.md#d5) — One core; stateless `api`, change-driven `evaluator`, fan-out `realtime`, connector `vcpool`; `single` keeps its server.
 - [d16](multitenancy-decisions.md#d16) — Separate data, owner and operator sockets, multiplexed by tenant, not duplicated per tenant.
 - [d21](multitenancy-decisions.md#d21) — One executable: `single`, `multitenant <role>[,<role>…]` and operator tools.
@@ -104,7 +104,7 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [tenant-live-add](multitenancy-decisions.md#tenant-live-add) — Running evaluator and realtime pick up newly provisioned tenants without restart (separate lane).
 - [registry-connector-definitions](multitenancy-decisions.md#registry-connector-definitions) — Connector definitions are durable tenant configuration; endpoint and credential values stay in tenant secrets.
 - [operator-repair-scope](multitenancy-decisions.md#operator-repair-scope) — Use provision for creation, inspect for diagnosis and known-good backups for exceptional recovery. Factory reset preserves clinical data and credentials.
-- [deployment-signing-secret](multitenancy-decisions.md#deployment-signing-secret) — Vault keeps only the per-tenant `data` key; tenant signing keys derive in process from one deployment secret (file via Vault Agent or Secret); no signing key in PostgreSQL; issuance never calls Vault; one Kubernetes Secret delivers the signing secret; the api `ns-access+jwt` data verifier and `verifyLegacyCredential` retire (2026-11-20).
+- [deployment-signing-secret](multitenancy-decisions.md#deployment-signing-secret) — Vault keeps only the per-tenant `data` key; tenant signing keys derive in process from one deployment secret (file via Vault Agent or Secret); no signing key in PostgreSQL; issuance never calls Vault; one Kubernetes Secret delivers the signing secret; the api `ns-access+jwt` data verifier, `verifyLegacyCredential` and the api `access` namespace retire (2026-11-20).
 - [one-call-usable-provisioning](multitenancy-decisions.md#one-call-usable-provisioning) — One bulk admin call returns usable tenants (owner, subject, credential in the provisioning transaction); fixtures reused by key; sized for about half of runs seeding fresh (2026-11-20).
 - [deployment-ingress-peer-list-trust](multitenancy-decisions.md#deployment-ingress-peer-list-trust) — One explicit peer list serves tenant selection and `TRUST_PROXY`; empty refuses startup.
 - [edge-forwarded-headers-left](multitenancy-decisions.md#edge-forwarded-headers-left) — The edge keeps forwarding its headers; core's selector refusal is the control.
