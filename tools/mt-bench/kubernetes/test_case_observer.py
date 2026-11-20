@@ -203,18 +203,18 @@ class Capture(unittest.TestCase):
         tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
         c = case(tmp.name, None)
         self.assertEqual(o.prometheus_figures(c, 0, 1000, local=FakePrometheus)['verdict'], 'UNMEASURED')
-        (c.d/'load').mkdir()
-        (c.d/'load'/'metrics-snapshot.json').write_text(json.dumps({'verdict': 'UNMEASURED', 'code': 'K8S_METRICS_SNAPSHOT_UNMEASURED'}))
+        (c.d/'runtime'/'packet'/'load').mkdir(parents=True)
+        (c.d/'runtime'/'packet'/'load'/'metrics-snapshot.json').write_text(json.dumps({'verdict': 'UNMEASURED', 'code': 'K8S_METRICS_SNAPSHOT_UNMEASURED'}))
         value = o.prometheus_figures(c, 0, 1000, local=FakePrometheus)
         self.assertEqual((value['verdict'], value['reason']), ('UNMEASURED', 'K8S_METRICS_SNAPSHOT_UNMEASURED'))
 
     def test_prometheus_figures_at_the_steady_bookends(self):
         tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
         c = case(tmp.name, None)
-        (c.d/'load').mkdir()
-        (c.d/'load'/'metrics-snapshot.json').write_text(json.dumps({'verdict': 'OBSERVED', 'file': 'metrics-tsdb.tar', 'sha256': 'ab'}))
+        (c.d/'runtime'/'packet'/'load').mkdir(parents=True)
+        (c.d/'runtime'/'packet'/'load'/'metrics-snapshot.json').write_text(json.dumps({'verdict': 'OBSERVED', 'file': 'metrics-tsdb.tar', 'sha256': 'ab'}))
         # No k6 executor windows: the controller's load window is the bookend.
-        (c.d/'load'/'window.json').write_text(json.dumps({'loadStartedAt': 1000.0, 'loadEndedAt': 1600.5}))
+        (c.d/'runtime'/'packet'/'load'/'window.json').write_text(json.dumps({'loadStartedAt': 1000.0, 'loadEndedAt': 1600.5}))
         FakePrometheus.queries = []
         value = o.prometheus_figures(c, None, None, local=FakePrometheus)
         self.assertEqual(value['verdict'], 'OBSERVED')
@@ -227,10 +227,11 @@ class Capture(unittest.TestCase):
     def test_delivery_span_and_gap_from_receiver_trace(self):
         tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
         logs = Path(tmp.name)/'podlogs'; logs.mkdir()
-        line = lambda at, ms, pos: ('2026-11-20T00:00:00Z PGSTREAM_RECEIVER_TRACE ' + json.dumps(
-            {'at': at, 'request': 1, 'event': 'response-finished', 'elapsedMs': ms, 'position': pos, 'rows': 3, 'status': 200, 'dropped': 0}) + '\n')
+        # Core acknowledges with 204 (measured live, case a2-k1); 200 is accepted too, a 503 refusal is not a delivery.
+        line = lambda at, ms, pos, status=204: ('2026-11-20T00:00:00Z PGSTREAM_RECEIVER_TRACE ' + json.dumps(
+            {'at': at, 'request': 1, 'event': 'response-finished', 'elapsedMs': ms, 'position': pos, 'rows': 3, 'status': status, 'dropped': 0}) + '\n')
         (logs/'evaluator-0.evaluator.log').write_text(line(1010, 10, '0/A') + line(1100, 20, '0/B') + 'other line\n')
-        (logs/'evaluator-1.evaluator.log').write_text(line(1030, 25, '0/A') + line(1090, 5, '0/B'))
+        (logs/'evaluator-1.evaluator.log').write_text(line(1030, 25, '0/A', 200) + line(1090, 5, '0/B') + line(5000, 5, '0/C', 503))
         value = o.delivery(Path(tmp.name))
         self.assertEqual(value['batches'], 2)
         self.assertEqual(value['deliverySpanMs']['max'], 30)   # 0/A: received 1000, last response 1030

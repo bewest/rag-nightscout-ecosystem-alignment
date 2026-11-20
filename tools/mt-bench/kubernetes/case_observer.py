@@ -16,7 +16,7 @@ Database and process figures (event-loop lag and utilization, evaluator phase ti
 pending-work age, statements per write by role, slot lag, walsender waits, pg_stat_statements,
 pg_stat_io, receipt round trip) come from the run's own Prometheus when the binding input sets
 `labMetrics.enabled`: the controller retains a TSDB snapshot before teardown
-(load/metrics-tsdb.tar, execute.metrics_snapshot) and `summarize` evaluates PromQL on it at the
+(runtime/packet/load/metrics-tsdb.tar, execute.metrics_snapshot) and `summarize` evaluates PromQL on it at the
 steady-window bookends with a local, network-less Prometheus of the same version. Without the
 component those figures are UNMEASURED; the observer no longer samples /proc, pg_stat_activity or
 pg_stat_statements by exec.
@@ -327,7 +327,8 @@ def delivery(out):
             except ValueError:
                 continue
             dropped += row.get('dropped', 0) or 0
-            if row.get('event') != 'response-finished' or not row.get('position') or row.get('status') != 200:
+            # Core acknowledges an accepted body with 204 (lib/pgstream/evaluator.js); any 2xx is a delivery.
+            if row.get('event') != 'response-finished' or not row.get('position') or not 200 <= (row.get('status') or 0) < 300:
                 continue
             cell = batches.setdefault(row['position'], {})
             cell[pod] = (row['at'] - row['elapsedMs'], row['at'], row.get('rows'))
@@ -379,9 +380,17 @@ QUERIES = {
 }
 
 
+def load_directory(case):
+    """The controller's load stage output: runtime/packet/load in a launched case (load/ in older layouts)."""
+    for path in (case.d/'runtime'/'packet'/'load', case.d/'load'):
+        if path.is_dir():
+            return path
+    return case.d/'runtime'/'packet'/'load'
+
+
 def load_window(case):
     """Fallback bookends: the controller's load window (seconds), as ms."""
-    value = read(case.d/'load'/'window.json') or {}
+    value = read(load_directory(case)/'window.json') or {}
     if value.get('loadStartedAt') and value.get('loadEndedAt'):
         return value['loadStartedAt'] * 1000, value['loadEndedAt'] * 1000
     return None, None
@@ -429,9 +438,10 @@ class LocalPrometheus:
 
 def prometheus_figures(case, start, end, local=LocalPrometheus):
     """PromQL at the steady-window bookends over the retained snapshot; UNMEASURED when absent."""
-    receipt = read(case.d/'load'/'metrics-snapshot.json')
+    load = load_directory(case)
+    receipt = read(load/'metrics-snapshot.json')
     if receipt is None:
-        return {'verdict': 'UNMEASURED', 'reason': 'no load/metrics-snapshot.json (labMetrics off or no load stage)'}
+        return {'verdict': 'UNMEASURED', 'reason': 'no metrics-snapshot.json in the load stage (labMetrics off or no load stage)'}
     if receipt.get('verdict') != 'OBSERVED':
         return {'verdict': 'UNMEASURED', 'reason': receipt.get('code')}
     basis = 'k6 executor start to steady end'
@@ -441,7 +451,7 @@ def prometheus_figures(case, start, end, local=LocalPrometheus):
     if start is None or end <= start:
         return {'verdict': 'UNMEASURED', 'reason': 'no steady window'}
     w = max(1, int((end - start) / 1000))
-    server = local(case.d/'load'/receipt['file'])
+    server = local(load/receipt['file'])
     try:
         figures = {name: server.query(expr.format(w=w), end / 1000) for name, expr in QUERIES.items()}
     finally:
