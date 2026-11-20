@@ -2284,6 +2284,17 @@ def diagnose(d,m):
         raise
 
 
+def fixture_capture(d,m,snapshot):
+    """Stop the deployed project and copy PostgreSQL, Vault and private state (deployment `fixture.js snapshot`)."""
+    require(not m.get('attached') and m.get('prepared'),'M7_FIXTURE_CAPTURE_SCOPE')
+    compose(d,"--profile","ops","stop",timeout=180)
+    overlay=d/"core/deploy/multitenant"
+    captured=json.loads(command(["node",overlay/"fixture.js","snapshot",str(Path(snapshot).resolve())],cwd=overlay,
+                                env=runtime_env({"NS_DEMO_IMAGE":m["imageId"]}),timeout=1800,phase="fixture-capture"))
+    write(d/"fixture-capture.json",captured)
+    return captured
+
+
 def down(d,m):
     return _down(d,m)
 
@@ -2388,8 +2399,9 @@ def parser():
     attached.add_argument('--compose',action='append',required=True,help='Existing source Compose files, in original order')
     attached.add_argument('--dependencies-root',help='Explicit runtime-owned lockfile installation root; defaults to the source root')
     attached.add_argument('--runtime-owner',help='Canonical preparation owner.json to bind the explicit source/dependency roots and generator provenance')
-    for cmd in ("verify", "build", "deploy", "run", "preflight", "diagnose", "control", "down", "host-identity", "source-preflight"):
+    for cmd in ("verify", "build", "deploy", "run", "preflight", "diagnose", "control", "down", "host-identity", "source-preflight", "fixture-capture"):
         own = sub.add_parser(cmd);own.add_argument("directory")
+        if cmd == "fixture-capture":own.add_argument("snapshot",help="New private directory for the cold copy")
         if cmd in ("run","preflight"):own.add_argument("--k6-image", required=True)
         if cmd in ("deploy","preflight","run"):own.add_argument("--work-deadline",type=float,help="Existing runner absolute work cutoff; never starts a new window")
     check = sub.add_parser("check-campaign");check.add_argument("summary")
@@ -2446,6 +2458,7 @@ def main():
                     'M7_DRAIN_WORK_DEADLINE_REQUIRED')
         if until is not None:require(math.isfinite(until) and 0<until-time.time()<=deadline_limit,'M7_COMMAND_DEADLINE')
         with command_deadline(until):run(d,m,args.k6_image)
+    elif args.command == "fixture-capture":fixture_capture(d,m,args.snapshot)
     elif args.command == "diagnose":diagnose(d,m)
     elif args.command == "control":control(d, m)
     elif args.command == "down":down(d, m)

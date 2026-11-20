@@ -56,7 +56,8 @@ try:
     location = 'pod' if m['primerLocation'] == 'controller' else m['primerLocation']
     inventory = read(d/'inventory.json')
     primer = next(obj for obj in k.manifests(read(d/'render.json')) if k.key(obj) == 'Job/primer')
-    tenants, reuse = fixture.read_roster(kub, primer, inventory, private, cfg['tenants'], until, location)
+    held = read(live/'fixture-reader.json') if (live/'fixture-reader.json').exists() else None
+    tenants, reuse = fixture.read_roster(kub, primer, inventory, private, cfg['tenants'], until, location, held)
     cfg['tenantsFile'] = str(private/'data-roster.private.json')
     write(Path(cfg['tenantsFile']), tenants)
     write(live/'fixture.json', {'location':location,'reuse':reuse,'tenants':len(tenants)})

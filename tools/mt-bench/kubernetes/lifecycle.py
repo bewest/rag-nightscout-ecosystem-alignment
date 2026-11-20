@@ -330,6 +330,12 @@ try:
     workload_ready('private-admin')
     workload_ready('serving')
     install('primer')
+    if intent['primerLocation']=='claim' and not (reuse and reuse['mode']=='seed'):
+        # Fault 2: the reader shares the primer's attachment instead of re-attaching after its detach.
+        import fixture
+        primer_job=next(o for o in objects('primer') if o['kind']=='Job' and o['metadata']['name']=='primer')
+        put('fixture-reader.json',fixture.hold_reader(fixture.runner(rpc+['-n',ns],work),primer_job,read(d/'inventory.json'),
+                                                       min(work,time.time()+waits['primerReadySeconds'])))
     if intent['primerLocation']=='claim':
         wait_job('primer', waits['primerReadySeconds'])
     if reuse and reuse['mode']=='seed':
@@ -340,7 +346,7 @@ try:
         put('fixture-capture.json',fixture_copy.capture(k,ns,rid,reuse,read(d/'stages/fixture-snapshots.json'),
             {'tenants':e['tenantCount'],'appImage':e['images']['app'],'postgresImage':e['images']['postgres'],
              'coreCommit':cfg['candidate']['coreCommit'],'deployCommit':cfg['candidate']['deployCommit'],
-             'alignmentCommit':cfg['alignmentCommit'],
+             'alignmentCommit':cfg['alignmentCommit'],**({'key':reuse['key']} if 'key' in reuse else {}),
              **fixture_copy.slices_record(read(d/'inventory.json'))},work))
         step('fixture captured')
         raise SystemExit(0)

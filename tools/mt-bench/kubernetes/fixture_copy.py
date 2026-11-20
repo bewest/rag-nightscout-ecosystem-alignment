@@ -85,9 +85,11 @@ def slices_record(inventory):
     return {'evaluatorSlices': count} if count != 1 else {}
 
 
-def check_restore(manifest, tenants, postgres_image, slices=1):
+def check_restore(manifest, tenants, postgres_image, slices=1, key=None):
     """A restore never grows or shrinks the roster and keeps the PostgreSQL data format.
-    Its Secrets carry the seed's pgstream receivers, so evaluator K must match too."""
+    Its Secrets carry the seed's pgstream receivers, so evaluator K must match too. A keyed
+    restore also refuses a fixture recorded under another key (a catalog pointing elsewhere)."""
+    need(key is None or manifest.get('key') == key, 'KEY_CHANGED')
     need(manifest['tenants'] == tenants, 'TENANTS_CHANGED')
     need(manifest['postgresImage'] == postgres_image, 'POSTGRES_IMAGE_CHANGED')
     need(manifest.get('evaluatorSlices', 1) == slices, 'EVALUATOR_SLICES_CHANGED')
@@ -112,7 +114,7 @@ def render(jsonnet, library, namespace, run_id, chosen, tenants=None, postgres_i
             a(namespace), a(CLAIMS), a(chosen['sizes']), a(chosen['storageClass']), a(labels)))
     else:
         manifest = read_manifest(chosen['directory'])
-        check_restore(manifest, tenants, postgres_image, slices)
+        check_restore(manifest, tenants, postgres_image, slices, chosen.get('key'))
         items = _jsonnet(jsonnet, library,
             'std.flattenArrays(std.objectValues(f.imported(%s,%s,%s,%s,%s,%s))) + '
             'std.objectValues(f.claims(%s,"VolumeSnapshot",%s,%s,%s,%s,%s))' % (
@@ -227,4 +229,9 @@ if __name__ == '__main__':
         raise SystemExit('delete FIXTURE_DIR KUBE_CONTEXT')
     run = lambda args, body=None: subprocess.run(['kubectl', '--context', sys.argv[3], *args], check=True,
                                                  capture_output=True, timeout=180).stdout
-    print(json.dumps(delete(run, sys.argv[2], time.time() + 300), indent=2))
+    result = delete(run, sys.argv[2], time.time() + 300)
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent/'m7-joined'))
+    import fixture_catalog
+    # The catalog stops offering this fixture; the next lookup for its key builds again.
+    result['catalogRetired'] = fixture_catalog.Catalog().retire(sys.argv[2])
+    print(json.dumps(result, indent=2))

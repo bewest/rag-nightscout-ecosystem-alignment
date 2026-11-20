@@ -296,5 +296,59 @@ class ReaderDetach(unittest.TestCase):
         self.assertEqual((value['attachedAtCreate'], value['waitedSeconds']), (['csi-a'], 10))
 
 
+class ReaderHeld(unittest.TestCase):
+    """Fault 2: the reader is bound to the primer Pod's node before the primer exits, so the RWO
+    volume is never detached and re-attached between them."""
+    job = {'metadata': {'name': 'primer'}, 'spec': {'activeDeadlineSeconds': 600, 'template': {
+        'metadata': {'labels': {'nightscout.org/run-id': 'r'}},
+        'spec': {'containers': [{'name': 'primer', 'image': 'app', 'imagePullPolicy': 'IfNotPresent',
+                                 'securityContext': {}, 'resources': {}}],
+                 'nodeSelector': {'kubernetes.io/hostname': 'n1'},
+                 'volumes': [{'name': 'client-state', 'persistentVolumeClaim': {'claimName': 'fixture-primer-results'}}]}}}}
+    inventory = {'namespace': 'ns', 'results': {'primer': {'claim': 'fixture-primer-results', 'file': 'tenants.json'}}}
+
+    def test_reader_is_created_on_the_scheduled_primer_node(self):
+        clock, calls, polls = Clock(), [], iter([[], [{'spec': {}}], [{'spec': {'nodeName': 'n1'}}]])
+        def run(args, input=None, **kwargs):
+            calls.append(args[:2])
+            if args[:2] == ['get', 'pods']:
+                return subprocess.CompletedProcess(args, 0, json.dumps({'items': next(polls)}).encode())
+            body = json.loads(input)
+            calls.append(body)
+            return subprocess.CompletedProcess(args, 0, json.dumps({'metadata': {'name': 'fixture-reader-x', 'uid': 'u'}}).encode())
+        held = reader.hold_reader(run, self.job, self.inventory, clock.now + 3600, clock)
+        pod = calls[-1]
+        self.assertEqual((held['name'], held['node']), ('fixture-reader-x', 'n1'))
+        self.assertEqual(pod['spec']['nodeName'], 'n1')
+        self.assertEqual(pod['spec']['volumes'], [{'name': 'client-state', 'persistentVolumeClaim':
+                         {'claimName': 'fixture-primer-results', 'readOnly': True}}])
+        self.assertNotIn(['get', 'volumeattachments'], calls)
+        with self.assertRaisesRegex(RuntimeError, 'PRIMER_UNSCHEDULED'):
+            reader.hold_reader(lambda args, **kw: subprocess.CompletedProcess(args, 0, b'{"items": []}'),
+                               self.job, self.inventory, clock.now + 5, clock)
+
+    def test_a_held_reader_is_read_without_a_new_pod_or_attachment_wait(self):
+        calls = []
+        def fake(argv, **kwargs):
+            args = argv[3:]
+            calls.append(args[:2])
+            if args[:2] == ['get', 'pod']:
+                body = {'metadata': {'uid': 'u'}, 'status': {'conditions': [{'type': 'Ready', 'status': 'True'}]}}
+            elif args[0] == 'exec':
+                body = {'version': 1, 'tenants': []}
+            else:
+                body = {'items': []}
+            return subprocess.CompletedProcess(argv, 0, json.dumps(body).encode())
+        directory = Path(tempfile.mkdtemp())/'fixture'
+        inventory = {**self.inventory, 'storage': {'claims': {}}}
+        with patch.object(reader.subprocess, 'run', side_effect=fake), \
+             patch('contract.tenant_projection', return_value=[]):
+            reader.read_roster(['kubectl', '-n', 'ns'], self.job, inventory, directory, 0, 1e12, 'claim',
+                               {'name': 'fixture-reader-x', 'uid': 'u', 'node': 'n1'})
+        self.assertNotIn(['create', '-f'], calls)
+        self.assertNotIn(['get', 'volumeattachments'], calls)
+        self.assertTrue((directory/'reader-held.json').is_file())
+
+
 if __name__ == '__main__':
     unittest.main()
