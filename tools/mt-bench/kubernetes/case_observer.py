@@ -11,6 +11,12 @@ OUT_DIR/samples.jsonl, one row per interval: stage, placement (Pod NODE PHASE), 
 node the case uses, `kubectl top pods --containers` (one line per Pod and container, so each
 evaluator ordinal is its own row) and, during traffic, the replication slot lag.
 OUT_DIR/nodes.json: /proc/cpuinfo `model name` per node, read once from one running case Pod there.
+During traffic each row also holds, per evaluator Pod, the CPU ticks of every thread of PID 1
+(`threads`, from /proc/1/task, with /proc/uptime as the clock), and five walsender samples from
+pg_stat_activity 0.2 s apart (`walsender`). OUT_DIR/pg_stat_statements-{start,latest,end}.json:
+pg_stat_statements at the first traffic sample, every fourth traffic sample and the first sample
+after traffic (the binding preloads it; the observer creates the extension in database `postgres`,
+never in the application database).
 OUT_DIR/podlogs/: only when the case's binding input sets `roleEnv` (diagnostics requested), one
 `kubectl logs -f --timestamps` follower per Pod and container of each named role, started when the
 Pod runs and stopped at teardown, each file bounded by --log-cap-bytes (so container log rotation
@@ -36,6 +42,15 @@ SLOT_SQL = ("SELECT json_build_object('active',active,'confirmedLagBytes',"
             "pg_wal_lsn_diff(pg_current_wal_lsn(),restart_lsn)) FROM pg_replication_slots "
             "WHERE slot_name='nsdemo_pgstream' AND NOT temporary")
 TRAFFIC = 'attach released runtime'
+WALSENDER_SQL = ("SELECT coalesce(json_agg(json_build_object('pid',pid,'state',state,'waitEventType',wait_event_type,"
+                 "'waitEvent',wait_event)),'[]') FROM pg_stat_activity WHERE backend_type='walsender'")
+PGSS_SQL = "SELECT json_build_object('at',now(),'rows',coalesce(json_agg(row_to_json(s)),'[]')) FROM pg_stat_statements s"
+# PID 1's threads: tid, name, utime and stime ticks (fields 14 and 15 of stat), with /proc/uptime as the clock.
+THREADS_JS = ("const fs=require('fs');const tasks=fs.readdirSync('/proc/1/task').map(t=>{const s=fs.readFileSync('/proc/1/task/'+t+'/stat','utf8');"
+              "const r=s.slice(s.lastIndexOf(')')+2).split(' ');return [Number(t),s.slice(s.indexOf('(')+1,s.lastIndexOf(')')),Number(r[11]),Number(r[12])];});"
+              "process.stdout.write(JSON.stringify({uptime:Number(fs.readFileSync('/proc/uptime','utf8').split(' ')[0]),tasks}))")
+CLOCK_TICKS = 100  # Linux USER_HZ on the x86-64 kernels these nodes run
+EVALUATOR = {'app.kubernetes.io/component': 'evaluator'}
 
 
 def read(path, default=None):
@@ -213,14 +228,52 @@ def sample(case, kubectl, state):
             if found:
                 state['nodes'][node] = found
                 write_json(state['out']/'nodes.json', state['nodes'])
+    postgres = any(p['metadata']['name'] == 'postgres-0' and p.get('status', {}).get('phase') == 'Running' for p in pods)
     if row['stage'] == TRAFFIC:
-        postgres = [p for p in pods if p['metadata']['name'] == 'postgres-0']
         if postgres:
             raw = kubectl('exec', 'postgres-0', '-c', 'postgres', '--', 'psql', '-X', '-qAt', '-U', 'postgres',
                           '-d', 'postgres', '-c', SLOT_SQL)
             row['slot'] = json.loads(raw) if raw.strip() else 'ABSENT'
+            row['walsender'] = measured(lambda: walsender(kubectl))
+        row['threads'] = {p['metadata']['name']: measured(lambda p=p: threads(kubectl, p['metadata']['name']))
+                          for p in pods if labelled(p, EVALUATOR) and p.get('status', {}).get('phase') == 'Running'}
+        state['traffic'] = state.get('traffic', 0) + 1
+        if postgres and (state['traffic'] == 1 or state['traffic'] % 4 == 0):
+            statements(kubectl, state['out'], 'start' if state['traffic'] == 1 else 'latest')
+    elif state.get('traffic') and not state.get('statementsEnd') and postgres:
+        state['statementsEnd'] = True
+        statements(kubectl, state['out'], 'end')
     follow(case, kubectl, state, pods, terminating)
     return row
+
+
+def measured(read):
+    try:
+        return read()
+    except (subprocess.SubprocessError, OSError, ValueError) as error:
+        return {'error': type(error).__name__}
+
+
+def threads(kubectl, pod):
+    return json.loads(kubectl('exec', pod, '-c', 'evaluator', '--', 'node', '-e', THREADS_JS, timeout=20))
+
+
+def walsender(kubectl, count=5):
+    argv = ['exec', 'postgres-0', '-c', 'postgres', '--', 'psql', '-X', '-qAt', '-U', 'postgres', '-d', 'postgres']
+    for i in range(count):
+        argv += ['-c', WALSENDER_SQL] + (['-c', 'SELECT pg_sleep(0.2)'] if i < count - 1 else [])
+    return [json.loads(line) for line in kubectl(*argv, timeout=20).splitlines() if line.startswith('[')]
+
+
+def statements(kubectl, out, name):
+    """One pg_stat_statements snapshot; a failure is recorded, never raised."""
+    try:
+        raw = kubectl('exec', 'postgres-0', '-c', 'postgres', '--', 'psql', '-X', '-qAt', '-U', 'postgres', '-d', 'postgres',
+                      '-c', 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements', '-c', PGSS_SQL, timeout=60)
+        value = json.loads(raw.strip().splitlines()[-1])
+    except (subprocess.SubprocessError, OSError, ValueError, IndexError) as error:
+        value = {'at': now(), 'error': type(error).__name__, 'verdict': 'UNMEASURED'}
+    write_json(Path(out)/('pg_stat_statements-%s.json' % name), value)
 
 
 def follow(case, kubectl, state, pods, terminating):
@@ -307,10 +360,102 @@ def window(case):
     return ('stage ' + TRAFFIC, None, None)
 
 
+def thread_shares(samples):
+    """Per Pod: share of one core used by PID 1's main thread (tid 1 in the Pod's PID namespace) and
+    by its other threads, between consecutive samples of the same process."""
+    result = {}
+    for pod, series in samples.items():
+        main, other, names = [], [], {}
+        for a, b in zip(series, series[1:]):
+            seconds = b['uptime'] - a['uptime']
+            before = {t[0]: t for t in a['tasks']}
+            if seconds <= 0 or 1 not in before:
+                continue
+            busy = {tid: (u + s - before[tid][2] - before[tid][3]) / CLOCK_TICKS / seconds
+                    for tid, name, u, s in b['tasks'] if tid in before}
+            main.append(round(busy.get(1, 0), 4))
+            other.append(round(sum(v for tid, v in busy.items() if tid != 1), 4))
+            for tid, name, _, _ in b['tasks']:
+                if tid != 1 and tid in busy:
+                    names.setdefault(name, []).append(busy[tid])
+        result[pod] = {'mainThreadCores': distribution(main), 'otherThreadsCores': distribution(other),
+                       'busiestOtherThreads': sorted(((n, round(median(v), 4)) for n, v in names.items()), key=lambda x: -x[1])[:5]}
+    return result
+
+
+def walsender_waits(rows):
+    counts = {}
+    for row in rows:
+        for snapshot in row:
+            for sender in snapshot if isinstance(snapshot, list) else []:
+                key = '%s:%s' % (sender.get('waitEventType'), sender.get('waitEvent'))
+                counts[key] = counts.get(key, 0) + 1
+    return {'samples': sum(len(r) for r in rows if isinstance(r, list)), 'byWaitEvent': dict(sorted(counts.items(), key=lambda x: -x[1]))}
+
+
+def statement_delta(out, top=25):
+    first = read(out/'pg_stat_statements-start.json')
+    last = read(out/'pg_stat_statements-end.json')
+    if not last or 'rows' not in last:
+        last = read(out/'pg_stat_statements-latest.json')
+    if not first or not last or 'rows' not in first or 'rows' not in last:
+        return {'verdict': 'UNMEASURED', 'start': (first or {}).get('error'), 'end': (last or {}).get('error')}
+    total = next((k for k in ('total_exec_time', 'total_time') if last['rows'] and k in last['rows'][0]), 'total_exec_time')
+    key = lambda r: (r.get('queryid'), r.get('dbid'), r.get('userid'), r.get('toplevel'))
+    before = {key(r): r for r in first['rows']}
+    deltas = []
+    for r in last['rows']:
+        b = before.get(key(r), {})
+        calls = r.get('calls', 0) - b.get('calls', 0)
+        if calls > 0:
+            deltas.append({'queryid': r.get('queryid'), 'calls': calls, 'totalMs': round(r.get(total, 0) - b.get(total, 0), 3),
+                           'rows': r.get('rows', 0) - b.get('rows', 0), 'query': (r.get('query') or '')[:160]})
+    deltas.sort(key=lambda d: -d['totalMs'])
+    return {'from': first['at'], 'to': last['at'], 'statements': len(deltas), 'calls': sum(d['calls'] for d in deltas),
+            'totalMs': round(sum(d['totalMs'] for d in deltas), 3), 'top': deltas[:top],
+            'scope': 'all databases; snapshots bracket the traffic stage, not the k6 steady window exactly'}
+
+
+TRACE = b'PGSTREAM_RECEIVER_TRACE '
+
+
+def delivery(out):
+    """Per pgstream transaction batch (commit position), from the evaluator receivers' own trace
+    (NS_PGSTREAM_RECEIVER_TRACE=1 in roleEnv): first receipt to last response across the slices that
+    received it, and the gap from one batch's last response to the next batch's first receipt.
+    Receiver wall clocks on different nodes are not aligned; the trace drops lines above 100/s."""
+    logs = out/'podlogs'
+    batches, dropped = {}, 0
+    for path in sorted(logs.glob('*.evaluator.log')) if logs.is_dir() else []:
+        pod = path.name.split('.')[0]
+        for line in path.read_bytes().splitlines():
+            at = line.find(TRACE)
+            if at < 0:
+                continue
+            try:
+                row = json.loads(line[at + len(TRACE):])
+            except ValueError:
+                continue
+            dropped += row.get('dropped', 0) or 0
+            if row.get('event') != 'response-finished' or not row.get('position') or row.get('status') != 200:
+                continue
+            cell = batches.setdefault(row['position'], {})
+            cell[pod] = (row['at'] - row['elapsedMs'], row['at'], row.get('rows'))
+    if not batches:
+        return {'verdict': 'UNMEASURED', 'reason': 'no receiver trace in podlogs (roleEnv NS_PGSTREAM_RECEIVER_TRACE=1)'}
+    ordered = sorted(batches.values(), key=lambda c: min(v[0] for v in c.values()))
+    spans = [max(v[1] for v in c.values()) - min(v[0] for v in c.values()) for c in ordered]
+    gaps = [min(v[0] for v in b.values()) - max(v[1] for v in a.values()) for a, b in zip(ordered, ordered[1:])]
+    return {'batches': len(ordered), 'slicesPerBatch': distribution([len(c) for c in ordered]),
+            'deliverySpanMs': distribution(spans), 'interBatchGapMs': distribution(gaps), 'droppedTraceLines': dropped,
+            'scope': 'read-derived from receiver timestamps; includes evaluator receipt time; clocks unaligned across nodes'}
+
+
 def summarize(case, out):
     out = Path(out)
     label, start, end = window(case)
     pods, roles, nodes, placement = {}, {}, {}, {}
+    thread_samples, walsender_rows = {}, []
     used = 0
     for line in (out/'samples.jsonl').read_text().splitlines():
         row = json.loads(line)
@@ -320,6 +465,11 @@ def summarize(case, out):
         if start is not None and not (start <= at < end) or start is None and row.get('stage') != TRAFFIC:
             continue
         used += 1
+        for pod, value in (row.get('threads') or {}).items():
+            if isinstance(value, dict) and 'tasks' in value:
+                thread_samples.setdefault(pod, []).append(value)
+        if isinstance(row.get('walsender'), list):
+            walsender_rows.append(row['walsender'])
         for entry in row.get('placement', []):
             name, node, _ = entry.split()
             placement[name] = node
@@ -363,6 +513,10 @@ def summarize(case, out):
                                      'workingSetMiB': distribution(cell['workingSetMiB'])}
                                  for c, cell in sorted(roles.items())},
         'podLogs': read(out/'podlogs'/'followers.json'),
+        'evaluatorThreads': thread_shares(thread_samples),
+        'walsender': walsender_waits(walsender_rows),
+        'pgStatStatements': statement_delta(out),
+        'pgstreamDelivery': delivery(out),
     }
 
 

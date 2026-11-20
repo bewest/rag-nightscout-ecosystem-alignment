@@ -2,6 +2,7 @@
 fixture K, and the reader's detach wait. Synthetic replies only; no cluster."""
 import copy
 import json
+import os
 from pathlib import Path
 import subprocess
 import tempfile
@@ -224,6 +225,17 @@ class Progress(unittest.TestCase):
         broken[2]['allRows']['evaluator'][B] = broken[2]['allRows']['evaluator-2'].pop(B)
         with self.assertRaisesRegex(k.evaluator_progress.Refused, 'COVERAGE'):
             k.evaluator_progress.assess(broken, [A, B], 'load', demand_driven=True)
+
+
+class Bound(unittest.TestCase):
+    @unittest.skipUnless(os.environ.get('NS_DEPLOY_DIR'), 'NS_DEPLOY_DIR unset: the deploy tree holds the bound')
+    def test_progress_reader_bound_equals_the_deploy_bound(self):
+        # One evaluator K bound: deploy bindings/compose/multitenant/evaluator-workers.js MAX_WORKERS
+        # (its own tests hold the Kubernetes assert and input schema to it).
+        module = Path(os.environ['NS_DEPLOY_DIR'])/'bindings/compose/multitenant/evaluator-workers.js'
+        value = subprocess.run(['node', '-e', 'process.stdout.write(String(require(process.argv[1]).MAX_WORKERS))', str(module)],
+                               check=True, capture_output=True, text=True).stdout
+        self.assertEqual(int(value), k.evaluator_progress.POLICY['maxInstances'])
 
 
 class SeedAndFixtureK(unittest.TestCase):

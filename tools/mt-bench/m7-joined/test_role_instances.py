@@ -37,6 +37,18 @@ def rows(c, m):
 
 
 class Instances(unittest.TestCase):
+    def test_evaluator_hostname_ordinal_and_k(self):
+        c = config(3)
+        for ordinal, name in enumerate(('evaluator', 'evaluator-2', 'evaluator-3')):
+            c['services'][name].update(hostname='evaluator-%d' % ordinal, environment={'NS_EVALUATOR_SLICES': '3'})
+        self.assertEqual([v['ordinal'] for k, v in r.roster(c).items() if v['role'] == 'evaluator'], [0, 1, 2])
+        for change in (lambda x: x['evaluator-2'].update(hostname='evaluator-0'),
+                       lambda x: x['evaluator-3']['environment'].update(NS_EVALUATOR_SLICES='2'),
+                       lambda x: x['evaluator']['environment'].update(NS_PGSTREAM_EVALUATOR_SLICE='{}')):
+            bad = copy.deepcopy(c); change(bad['services'])
+            with self.assertRaisesRegex(RuntimeError, 'M7_INSTANCE_DECLARED_ORDINAL'):
+                r.roster(bad)
+
     def test_actual_config_roster_k1_k2_n1_n2_and_wrong_ordinal_refusal(self):
         for k in (1, 2):
             for apis in (1, 2):

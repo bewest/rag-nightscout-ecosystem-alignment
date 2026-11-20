@@ -147,3 +147,83 @@ class Observer(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class Traffic(Fake):
+    """A case in traffic: PostgreSQL and two evaluator ordinals answer the capture reads."""
+
+    def __init__(self):
+        super().__init__({})
+        ev = {'app': 'ev', 'app.kubernetes.io/component': 'evaluator'}
+        self.pods = [pod('evaluator-0', 'node-a', ev, ['evaluator']), pod('evaluator-1', 'node-a', ev, ['evaluator']),
+                     pod('postgres-0', 'node-a', {'app': 'pg'}, ['postgres'])]
+        self.ticks, self.calls, self.statements = {}, 0, 0
+
+    def __call__(self, *args, timeout=12):
+        if args[0] == 'exec' and args[3] == 'postgres' and 'psql' in args:
+            start = args.index('psql')
+            sql = [args[i + 1] for i, a in enumerate(args) if a == '-c' and i > start]
+            if sql == [o.SLOT_SQL]:
+                return json.dumps({'active': True, 'confirmedLagBytes': 1000, 'retainedWalBytes': 2000})
+            if o.WALSENDER_SQL in sql:
+                return '\n'.join(json.dumps([{'pid': 7, 'state': 'active', 'waitEventType': 'IPC' if i else 'Client',
+                                              'waitEvent': 'WalSenderWriteData' if not i else 'x'}]) + ('\n' if i < 4 else '')
+                                 for i in range(5))
+            if o.PGSS_SQL in sql:
+                self.statements += 1
+                return json.dumps({'at': 'T%d' % self.statements, 'rows': [
+                    {'queryid': '1', 'dbid': 5, 'userid': 9, 'toplevel': True, 'calls': 10 * self.statements,
+                     'total_exec_time': 4.0 * self.statements, 'rows': self.statements, 'query': 'SELECT $1'}]}) + '\n'
+        if args[0] == 'exec' and args[3] == 'evaluator' and args[-2] == '-e':
+            name = args[1]
+            seen = self.ticks.setdefault(name, 0)
+            self.ticks[name] += 1
+            # Per second of uptime: main thread 0.9 core, one helper thread 0.1.
+            return json.dumps({'uptime': 100 + seen, 'tasks': [[1, 'node', 90 * seen, 0], [7, 'V8 Worker', 10 * seen, 0]]})
+        return super().__call__(*args, timeout=timeout)
+
+
+class Capture(unittest.TestCase):
+    def test_threads_walsender_and_statement_snapshots_are_recorded_and_reduced(self):
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        c = case(tmp.name, None)
+        out = Path(tmp.name)/'out'; out.mkdir()
+        fake, state = Traffic(), {'out': out, 'nodes': {}, 'followers': {}, 'cap': 1}
+        rows = [o.sample(c, fake, state) for _ in range(4)]
+        self.assertTrue((out/'pg_stat_statements-start.json').is_file() and (out/'pg_stat_statements-latest.json').is_file())
+        (c.runtime/'stages.json').write_text(json.dumps([{'stage': 'observe correctness'}]))
+        o.sample(c, fake, state)
+        self.assertTrue((out/'pg_stat_statements-end.json').is_file())
+        self.assertEqual(set(rows[0]['threads']), {'evaluator-0', 'evaluator-1'})
+        with (out/'samples.jsonl').open('w') as f:
+            for row in rows:
+                f.write(json.dumps(row) + '\n')
+        summary = o.summarize(c, out)
+        self.assertEqual(summary['evaluatorThreads']['evaluator-1']['mainThreadCores']['median'], 0.9)
+        self.assertEqual(summary['evaluatorThreads']['evaluator-1']['otherThreadsCores']['median'], 0.1)
+        self.assertEqual(summary['evaluatorThreads']['evaluator-0']['busiestOtherThreads'], [('V8 Worker', 0.1)])
+        self.assertEqual(summary['walsender']['byWaitEvent']['Client:WalSenderWriteData'], 4)
+        self.assertEqual(summary['walsender']['samples'], 20)
+        statements = summary['pgStatStatements']
+        self.assertEqual((statements['calls'], statements['totalMs']), (20, 8.0))  # start T1 to end T3
+
+    def test_statement_snapshot_failure_is_recorded_not_raised(self):
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        def broken(*args, timeout=12):
+            raise subprocess.CalledProcessError(1, 'psql')
+        o.statements(broken, Path(tmp.name), 'start')
+        self.assertEqual(json.loads((Path(tmp.name)/'pg_stat_statements-start.json').read_text())['verdict'], 'UNMEASURED')
+        self.assertEqual(o.statement_delta(Path(tmp.name))['verdict'], 'UNMEASURED')
+
+    def test_delivery_span_and_gap_from_receiver_trace(self):
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        logs = Path(tmp.name)/'podlogs'; logs.mkdir()
+        line = lambda at, ms, pos: ('2026-11-20T00:00:00Z PGSTREAM_RECEIVER_TRACE ' + json.dumps(
+            {'at': at, 'request': 1, 'event': 'response-finished', 'elapsedMs': ms, 'position': pos, 'rows': 3, 'status': 200, 'dropped': 0}) + '\n')
+        (logs/'evaluator-0.evaluator.log').write_text(line(1010, 10, '0/A') + line(1100, 20, '0/B') + 'other line\n')
+        (logs/'evaluator-1.evaluator.log').write_text(line(1030, 25, '0/A') + line(1090, 5, '0/B'))
+        value = o.delivery(Path(tmp.name))
+        self.assertEqual(value['batches'], 2)
+        self.assertEqual(value['deliverySpanMs']['max'], 30)   # 0/A: received 1000, last response 1030
+        self.assertEqual(value['interBatchGapMs']['median'], 50)  # 0/B first receipt 1080 - 1030
+        self.assertEqual(o.delivery(Path(tmp.name)/'none')['verdict'], 'UNMEASURED')

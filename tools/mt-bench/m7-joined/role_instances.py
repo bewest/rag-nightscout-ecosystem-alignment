@@ -12,7 +12,14 @@ def instance(service):
     return {'service': service, 'role': match[1], 'ordinal': int(match[2] or 1) - 1}
 
 
-def assignment(item, env, instances):
+def assignment(item, env, instances, spec=None):
+    # Decision statefulset-ordinal-scaling: an evaluator slice is its hostname ordinal
+    # (hostname evaluator-<i>) and K (NS_EVALUATOR_SLICES); the retired JSON form below is
+    # still read for retained runs.
+    if 'NS_EVALUATOR_SLICES' in env:
+        count = sum(i['role'] == 'evaluator' for i in instances.values())
+        require(item['role'] == 'evaluator' and 'NS_PGSTREAM_EVALUATOR_SLICE' not in env and env['NS_EVALUATOR_SLICES'] == str(count)
+                and (spec is None or spec.get('hostname') == 'evaluator-%d' % item['ordinal']), 'M7_INSTANCE_DECLARED_ORDINAL')
     for field, family in (('NS_REALTIME_SLICE', 'realtime'), ('NS_PGSTREAM_EVALUATOR_SLICE', 'evaluator')):
         raw = env.get(field)
         if raw is None:
@@ -57,7 +64,7 @@ def roster(config, replicas=None):
         for key, value in (('ordinal', item['ordinal']), ('count', count)):
             actual = labels.get('org.nightscout.static-ownership.' + key)
             require(actual is None or actual == str(value), 'M7_INSTANCE_DECLARED_ORDINAL')
-        assignment(item, spec.get('environment') or {}, result)
+        assignment(item, spec.get('environment') or {}, result, spec)
     return dict(sorted(result.items(), key=lambda p: (FAMILIES.index(p[1]['role']), p[1]['ordinal'])))
 
 
