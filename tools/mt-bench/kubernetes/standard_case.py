@@ -36,7 +36,7 @@ def resolve_image(reference, inspect=None):
 
 
 def prepare(template_case, binding, profile_path, output, *, app_image, postgres_image=None,
-            namespace_prefix=NAMESPACE_PREFIX, core=None, taint=None, inspect=None, fixture=None):
+            namespace_prefix=NAMESPACE_PREFIX, core=None, taint=None, inspect=None, fixture=None, node_name=None, resources_file=None, binding_extra=None):
     output = output.resolve()
     inputs = (template_case, binding)
     k.need(all(not output.is_relative_to(path.resolve()) for path in inputs),
@@ -47,7 +47,7 @@ def prepare(template_case, binding, profile_path, output, *, app_image, postgres
         raise k.Refused('K8S_STANDARD_CASE_EXISTS','UNMEASURED') from None
     try:
         return _materialize(template_case,binding,profile_path,output,core,taint,
-                            app_image,postgres_image,namespace_prefix,inspect,fixture)
+                            app_image,postgres_image,namespace_prefix,inspect,fixture,node_name,resources_file,binding_extra)
     except Exception as error:
         failed = output.with_name(output.name+'.failed-'+str(time.time_ns()))
         output.rename(failed)
@@ -64,7 +64,7 @@ def prepare(template_case, binding, profile_path, output, *, app_image, postgres
 
 
 def _materialize(template_case, binding, profile_path, output, core, taint,
-                 app_image, postgres_image, namespace_prefix, inspect, fixture=None):
+                 app_image, postgres_image, namespace_prefix, inspect, fixture=None, node_name=None, resources_file=None, binding_extra=None):
     template_case = template_case.resolve()
     binding = binding.resolve()
     output = output.resolve()
@@ -100,6 +100,11 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
         k.need(equal and key and value, 'STANDARD_RESERVED_WORKER_TAINT')
         placement = {'tolerations':[{'key':key,'value':value,'operator':'Equal','effect':'NoSchedule'}]}
         selection.update(placement)
+    if node_name:
+        # Pin every rendered workload and the native load Job to one named node (one case per node).
+        k.need(k.NAME.fullmatch(node_name), 'STANDARD_NODE_NAME')
+        placement = {**placement, 'nodeSelector': {'kubernetes.io/hostname': node_name}}
+        selection['nodeName'] = node_name
     phases = profile['phases']
     traffic = profile['workload']
     grace = max(v.get('gracefulStopSeconds', 30) for v in traffic['driverPlan']['scenarios'].values())
@@ -121,12 +126,18 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     tenants = profile['population']['provisionedTenants']
     images = {'app': candidate['app'], 'postgres': candidate['postgres']}
     binding_inputs.pop('resources', None)
+    if resources_file:
+        # One-change arm: explicit per-container requests/limits for named containers.
+        binding_inputs['resources'] = k.document(Path(resources_file))
     binding_inputs.pop('applicationTopology', None)
     binding_inputs['primerConcurrency'] = phases.get('primerOptions', {}).get('concurrency', control['primerConcurrency'])
     binding_inputs.update(runId=run_id, namespace=namespace, tenantCount=tenants, images=images,
                           placement=placement, placementByWorkload={}, provisionDeadlineSeconds=outer,
                           sourceCommit=source['coreCommit'], imageDeployCommit=source['deployCommit'],
                           bindingIdentity=intent['bindingCommit'],resourceAccounting='requests-v1')
+    if binding_extra:
+        # Extra binding inputs (e.g. roleEnv on a binding that supports it), merged last.
+        binding_inputs.update(k.document(Path(binding_extra)))
     k.write(output/'binding-inputs.json',binding_inputs)
     bundled = Path(control['toolsDirectory'])/'jsonnet-0.21.0/jsonnet'
     jsonnet = str(bundled) if bundled.is_file() else shutil.which('jsonnet')
