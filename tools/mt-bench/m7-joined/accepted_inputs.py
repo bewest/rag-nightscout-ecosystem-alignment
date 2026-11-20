@@ -16,6 +16,8 @@ from collections import Counter
 from itertools import chain
 
 KIND = 'accepted-input-events-v2'
+# core lib/pgstream/intake-profile.js CODEC, GENERATION_DOMAIN
+LIFECYCLE_CODEC = ('canonical-maintenance-active-plus2-v1', 'positive-int8-complete-pair-max-4611686018427387902-v1')
 HERE = Path(__file__).resolve().parent
 
 
@@ -36,8 +38,7 @@ def query(config, run):
             'M7_INPUT_NATIVE_SOURCE_REQUIRED')
     consumer = native.get('inputConsumer', '')
     # The product's work-contract digest selects rows; older captures predate receipts.
-    parts = ['evaluator-work-v2', config.get('checkpoint'), consumer,
-             'canonical-maintenance-active-plus2-v1', 'positive-int8-complete-pair-max-4611686018427387902-v1']
+    parts = ['evaluator-work-v2', config.get('checkpoint'), consumer, *LIFECYCLE_CODEC]
     digest = (native.get('receipt') or {}).get('contractDigest') or hashlib.sha256(
         json.dumps(parts, separators=(',', ':')).encode()).hexdigest()
     sql = (HERE/'accepted-inputs.sql').read_text()
@@ -68,7 +69,10 @@ def writer_queries(config, run):
     bindings.update({k: writer.get(k) for k in ('lifecycle', 'devicestatus', 'treatments')})
     require(all(isinstance(v, str) and re.fullmatch('[a-z][a-z0-9_]{0,62}', v) for v in bindings.values()),
             'M7_INPUT_SOURCE_BINDING')
-    parts = [config['kind'], config['checkpoint'], consumer.removesuffix('-completed')]
+    # Core selects the native lifecycle contract whenever the evaluator has a
+    # lifecycle namespace, which writer-driven mode requires:
+    # typed-checkpoint.js digest=native?.contractDigest, native-selection.js contractDigest.
+    parts = [config['kind'], config['checkpoint'], consumer.removesuffix('-completed'), *LIFECYCLE_CODEC]
     bindings.update(identity=DB_IDENTITY, consumer=consumer, run=run,
                     digest=hashlib.sha256(json.dumps(parts, separators=(',', ':')).encode()).hexdigest())
     # Pin the source before the first writer starts. A surviving marker from a
