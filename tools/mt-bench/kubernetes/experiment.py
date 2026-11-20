@@ -502,6 +502,7 @@ def main():
     standard.add_argument('--reserved-worker-taint', metavar='KEY=VALUE', help='Tolerate the reserved worker for this run')
     standard.add_argument('--node-name', help='Pin every workload and the load Job to this node (nodeSelector kubernetes.io/hostname)')
     standard.add_argument('--resources', type=Path, help='JSON per-container resources (requests/limits) for a one-change arm')
+    standard.add_argument('--binding-input', type=Path, help='JSON object merged into the binding inputs last (for example roleEnv)')
     reuse = standard.add_mutually_exclusive_group()
     reuse.add_argument('--fixture-seed', type=Path, metavar='NEW_DIR', help='seed a CSI snapshot fixture; its private record goes to this new directory; no traffic')
     reuse.add_argument('--fixture-restore', type=Path, metavar='DIR', help='restore the CSI snapshot fixture recorded in DIR into the fresh namespace')
@@ -519,7 +520,8 @@ def main():
         return standard_case.prepare(a.template_case,a.binding,a.profile,a.output,app_image=a.app_image,
                                      postgres_image=a.postgres_image,namespace_prefix=a.namespace_prefix,
                                      core=a.core,taint=a.reserved_worker_taint,fixture=chosen,
-                                     node_name=a.node_name,resources_file=a.resources)
+                                     node_name=a.node_name,resources_file=a.resources,
+                                     binding_extra=a.binding_input)
     if a.action == 'launch':
         return launch(a.config, a.prepare_only)
     if a.action == 'binding':

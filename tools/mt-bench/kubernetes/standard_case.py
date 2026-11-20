@@ -36,7 +36,7 @@ def resolve_image(reference, inspect=None):
 
 
 def prepare(template_case, binding, profile_path, output, *, app_image, postgres_image=None,
-            namespace_prefix=NAMESPACE_PREFIX, core=None, taint=None, inspect=None, fixture=None, node_name=None, resources_file=None):
+            namespace_prefix=NAMESPACE_PREFIX, core=None, taint=None, inspect=None, fixture=None, node_name=None, resources_file=None, binding_extra=None):
     output = output.resolve()
     inputs = (template_case, binding)
     k.need(all(not output.is_relative_to(path.resolve()) for path in inputs),
@@ -47,7 +47,7 @@ def prepare(template_case, binding, profile_path, output, *, app_image, postgres
         raise k.Refused('K8S_STANDARD_CASE_EXISTS','UNMEASURED') from None
     try:
         return _materialize(template_case,binding,profile_path,output,core,taint,
-                            app_image,postgres_image,namespace_prefix,inspect,fixture,node_name,resources_file)
+                            app_image,postgres_image,namespace_prefix,inspect,fixture,node_name,resources_file,binding_extra)
     except Exception as error:
         failed = output.with_name(output.name+'.failed-'+str(time.time_ns()))
         output.rename(failed)
@@ -64,7 +64,7 @@ def prepare(template_case, binding, profile_path, output, *, app_image, postgres
 
 
 def _materialize(template_case, binding, profile_path, output, core, taint,
-                 app_image, postgres_image, namespace_prefix, inspect, fixture=None, node_name=None, resources_file=None):
+                 app_image, postgres_image, namespace_prefix, inspect, fixture=None, node_name=None, resources_file=None, binding_extra=None):
     template_case = template_case.resolve()
     binding = binding.resolve()
     output = output.resolve()
@@ -135,6 +135,9 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
                           placement=placement, placementByWorkload={}, provisionDeadlineSeconds=outer,
                           sourceCommit=source['coreCommit'], imageDeployCommit=source['deployCommit'],
                           bindingIdentity=intent['bindingCommit'],resourceAccounting='requests-v1')
+    if binding_extra:
+        # Extra binding inputs (e.g. roleEnv on a binding that supports it), merged last.
+        binding_inputs.update(k.document(Path(binding_extra)))
     k.write(output/'binding-inputs.json',binding_inputs)
     bundled = Path(control['toolsDirectory'])/'jsonnet-0.21.0/jsonnet'
     jsonnet = str(bundled) if bundled.is_file() else shutil.which('jsonnet')
