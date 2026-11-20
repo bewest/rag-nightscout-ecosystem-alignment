@@ -5,16 +5,19 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http
 (async()=>{
  const target=path.resolve(process.argv[2]),d=path.dirname(target),realRequire=createRequire(target),o=realRequire('./completed-oracle.cjs');
  const unavailable=process.argv[3]==='sql-unavailable';
+ const writer=process.argv[3]==='writer-driven';
+ const identity=['12345',1,'synthetic'];
  const ids=['11111111-1111-4111-8111-111111111111','22222222-2222-4222-8222-222222222222'];
  const tenants=ids.map((id,i)=>({id,host:(i?'b':'a')+'.example.test',token:'synthetic-'+i}));
  const binding={kind:'evaluator-work-v2',pair:{core:'1'.repeat(40),deploy:'2'.repeat(40)},imageId:'sha256:'+'3'.repeat(64),instrument:'4'.repeat(64)};
- const config=o.source({pgstream:{},consumer:'evaluator-sample',postgres:{namespaces:{clock:'synthetic_clock',checkpoint:'synthetic_checkpoint',entries:'synthetic_entries'}}},{completedOutput:{namespace:'synthetic_checkpoint',consumer:'evaluator-sample'}},binding);
+ const intake=writer?{inputTransport:'writer-driven',trustedWorker:{activity:'synthetic_control'}}:{pgstream:{}};
+ const config=o.source({...intake,consumer:'evaluator-sample',postgres:{namespaces:{clock:'synthetic_clock',checkpoint:'synthetic_checkpoint',entries:'synthetic_entries',devicestatus:'synthetic_devicestatus',treatments:'synthetic_treatments'}}},{completedOutput:{namespace:'synthetic_checkpoint',consumer:'evaluator-sample'}},binding);
  const stored=new Map(ids.map(t=>[t,[]])),sockets=[];let ordinal=0,queries=0;
  const server=http.createServer((req,res)=>{
    const tenant=tenants.find(t=>t.host===req.headers.host);assert(tenant);
    if(req.url.startsWith('/api/v2/authorization/request/')){res.end(JSON.stringify({token:'synthetic-jwt'}));return;}
    let body='';req.on('data',v=>body+=v);req.on('end',()=>{
-     const doc={...JSON.parse(body)[0],_id:'synthetic-stored-'+(++ordinal)};stored.get(tenant.id).push(doc);res.end('{}');
+     const doc={...JSON.parse(body)[0],_id:'synthetic-stored-'+(++ordinal)};if(writer)doc.srvModified=stored.get(tenant.id).length+1;stored.get(tenant.id).push(doc);res.end('{}');
      for(const socket of sockets.filter(s=>s.tenant===tenant.id))socket.deliver('dataUpdate',{sgvs:[{_id:doc._id,mills:doc.date,mgdl:doc.sgv}]});
    });
  });
@@ -22,8 +25,15 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http
  function row(tenant){
    const docs=stored.get(tenant),last=docs.at(-1);if(!last)return null;
    const clock=String(docs.length),sgv={_id:last._id,mills:last.date,mgdl:last.sgv},observed=[clock,null,null,null,null,null];
-   return {tenant,stamp:clock,reader:binding,stored:docs,typed:{version:2,contractDigest:createHash('sha256').update(JSON.stringify(['evaluator-work-v2','synthetic_checkpoint','evaluator-sample'])).digest('hex'),observed,completed:observed,identity:'5'.repeat(64),digest:'6'.repeat(64),revision:clock,generation:null,enabled:true,arrayBounds:true,bodyMetadataAbsent:true},
+   const result={tenant,stamp:clock,reader:binding,stored:docs,typed:{version:2,contractDigest:createHash('sha256').update(JSON.stringify(['evaluator-work-v2','synthetic_checkpoint','evaluator-sample'])).digest('hex'),observed,completed:observed,identity:'5'.repeat(64),digest:'6'.repeat(64),revision:clock,generation:null,enabled:true,arrayBounds:true,bodyMetadataAbsent:true},
      state:{kind:'evaluator-work-v2',observed:{clock},completed:{clock},output:{tenant,identity:'5'.repeat(64),inputCheckpoint:clock,outputRevision:docs.length,contentDigest:'6'.repeat(64),restoreGeneration:null,result:{properties:{bgnow:{mean:last.sgv,last:last.sgv,mills:last.date,sgvs:[sgv]}}},frame:{sgvs:[sgv]}}}};
+   if(writer){
+     result.writer={identity,generation:'1',phase:'active',evaluated:clock};
+     result.typed.generation='1';
+     result.state.output.restoreGeneration='1';
+     Object.assign(result.state.output.result,{generation:'1',progress:'level-window',checkpoint:clock});
+   }
+   return result;
  }
  const io=(url,options)=>{
    assert.deepEqual(Array.from(options.transports),['websocket','polling']);
@@ -33,7 +43,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http
  };
  fs.writeFileSync(path.join(d,'tenants.json'),JSON.stringify(tenants));
  const argv=['node',target,'--base','http://127.0.0.1:'+server.address().port,'--tenants',path.join(d,'tenants.json'),'--runid','synthetic-pipeline','--per','1','--clients','2','--viewerSetup',JSON.stringify({opensPerSecond:100,transport:'websocket-first',scenario:'ordinary',stallSeconds:3}),'--probeEvery','1','--maxWrites','2','--restart','0','--out',path.join(d,'probe.json'),'--signal',path.join(d,'.window')];
- const child={execFile(exe,args,opts,callback){assert.equal(exe,'synthetic-python');assert.equal(args[1],'clinical-sql');assert.equal(opts.timeout,60000);queries++;return {stdin:{end(query){assert(query.startsWith('SELECT '));if(unavailable){setImmediate(()=>callback(Object.assign(Error('observer unavailable'),{code:1}),'',''));return;}setImmediate(()=>callback(null,ids.filter(id=>query.includes("'"+id+"'")).map(row).filter(Boolean).map(r=>JSON.stringify(r)).join('\n')));}}};}};
+ const child={execFile(exe,args,opts,callback){assert.equal(exe,'synthetic-python');assert.equal(args[1],'clinical-sql');assert.equal(opts.timeout,60000);queries++;return {stdin:{end(query){assert(query.startsWith('SELECT '));if(writer&&query.includes('json_object_agg')){setImmediate(()=>callback(null,JSON.stringify({identity,tenants:Object.fromEntries(ids.map(id=>[id,['1','0']]))})));return;}if(unavailable){setImmediate(()=>callback(Object.assign(Error('observer unavailable'),{code:1}),'',''));return;}setImmediate(()=>callback(null,ids.filter(id=>query.includes("'"+id+"'")).map(row).filter(Boolean).map(r=>JSON.stringify(r)).join('\n')));}}};}};
  let watchdog;
  try{
    await new Promise((resolve,reject)=>{
