@@ -9,6 +9,9 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http
  const identity=['12345',1,'synthetic'];
  const ids=['11111111-1111-4111-8111-111111111111','22222222-2222-4222-8222-222222222222'];
  const tenants=ids.map((id,i)=>({id,host:(i?'b':'a')+'.example.test',token:'synthetic-'+i}));
+ // A writer-driven evaluator selects core's native lifecycle contract, so its -completed row
+ // carries the five-part digest (core native-selection.js; alignment 0424f7b3df).
+ const digestFields=['evaluator-work-v2','synthetic_checkpoint','evaluator-sample',...(writer?['canonical-maintenance-active-plus2-v1','positive-int8-complete-pair-max-4611686018427387902-v1']:[])];
  const binding={kind:'evaluator-work-v2',pair:{core:'1'.repeat(40),deploy:'2'.repeat(40)},imageId:'sha256:'+'3'.repeat(64),instrument:'4'.repeat(64)};
  const intake=writer?{inputTransport:'writer-driven',trustedWorker:{activity:'synthetic_control'}}:{pgstream:{}};
  const config=o.source({...intake,consumer:'evaluator-sample',postgres:{namespaces:{clock:'synthetic_clock',checkpoint:'synthetic_checkpoint',entries:'synthetic_entries',devicestatus:'synthetic_devicestatus',treatments:'synthetic_treatments'}}},{completedOutput:{namespace:'synthetic_checkpoint',consumer:'evaluator-sample'}},binding);
@@ -25,7 +28,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http
  function row(tenant){
    const docs=stored.get(tenant),last=docs.at(-1);if(!last)return null;
    const clock=String(docs.length),sgv={_id:last._id,mills:last.date,mgdl:last.sgv},observed=[clock,null,null,null,null,null];
-   const result={tenant,stamp:clock,reader:binding,stored:docs,typed:{version:2,contractDigest:createHash('sha256').update(JSON.stringify(['evaluator-work-v2','synthetic_checkpoint','evaluator-sample'])).digest('hex'),observed,completed:observed,identity:'5'.repeat(64),digest:'6'.repeat(64),revision:clock,generation:null,enabled:true,arrayBounds:true,bodyMetadataAbsent:true},
+   const result={tenant,stamp:clock,reader:binding,stored:docs,typed:{version:2,contractDigest:createHash('sha256').update(JSON.stringify(digestFields)).digest('hex'),observed,completed:observed,identity:'5'.repeat(64),digest:'6'.repeat(64),revision:clock,generation:null,enabled:true,arrayBounds:true,bodyMetadataAbsent:true},
      state:{kind:'evaluator-work-v2',observed:{clock},completed:{clock},output:{tenant,identity:'5'.repeat(64),inputCheckpoint:clock,outputRevision:docs.length,contentDigest:'6'.repeat(64),restoreGeneration:null,result:{properties:{bgnow:{mean:last.sgv,last:last.sgv,mills:last.date,sgvs:[sgv]}}},frame:{sgvs:[sgv]}}}};
    if(writer){
      result.writer={identity,generation:'1',phase:'active',evaluated:clock};
