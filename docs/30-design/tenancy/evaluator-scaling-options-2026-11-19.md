@@ -163,6 +163,44 @@ evaluator uses today.
    Evaluator K=2 renders offline but the harness cannot yet run a multi-Pod evaluator.
 4. **Journal size — not measured.**
 
+**Profile attribution and SQL per write (2026-11-19, from retained evidence; local evidence
+identifier `evaluator-profile-20261119`).**
+
+- **Profile split — measured.** An inclusive call-stack reducer assigns every busy sample to a
+  phase, and an empty-rules negative control removes every named phase. At 83.33 req/s:
+
+  | phase | % of busy |
+  |---|---:|
+  | receive | 10.7 |
+  | acquisition | 20.9 |
+  | completion | 5.1 |
+  | consumers | 4.2 |
+  | settings | 4.5 |
+  | wrapper and fence SQL, phase hidden by async boundaries | 21.0 |
+  | inbound row parsing, no caller | 12.2 |
+
+  PostgreSQL client frames take **35–42% of busy time**, about 4 ms per write at both rates. The
+  plugin pass is under 3% and the dataloader 2.3–2.5% on this fixture, whose tenants hold very
+  little history.
+- **Statements per write — measured, Compose.** The evaluator's four database roles issue 164–173
+  statements per accepted write from 1,000 to 5,000 tenants. That count does not grow with tenant
+  count; it falls only when cycles merge under backlog. About 20 statements do domain work.
+  - The rest are transaction control (41.5) and fences (30.2) on the evaluator role, observe
+    transactions (14.7), trusted scans (8.9) and outbox/suppression bookkeeping (about 55).
+  - A one-tenant receipt is 13 statements.
+  - Kubernetes cases kept no statement statistics.
+- **What this means for the options (read-derived arithmetic on measured shares).**
+  - **A first.** Fewer `BEGIN`/`COMMIT` wrappers around single reads, folded fences (restore
+    fencing keeps its semantics and needs a control that can fail), deduplicated trusted scans,
+    merged outbox transactions, settings cached per revision, no re-hash of unchanged output, and
+    keep-alive for realtime hints. Together these are estimated at about 25% of busy, roughly 1.3×
+    headroom.
+  - **B** can move at most 25–28% of busy time (acquisition JS, settings, the hash). It needs a
+    profile on a fixture with realistic history before it is judged.
+  - **D** removes only receipt work, about 11% (19% at most), from each evaluator. It pays only by
+    enabling K evaluators without slot coupling. A singleton intake would reach roughly 500–800
+    writes/s on today's code, extrapolated linearly.
+
 **Next measurements:** harness support for a multi-Pod evaluator, then K=2 against K=1 at 90 and
 120 req/s on one CPU model; a profile reducer that attributes samples by call stack to receive,
 evaluate and complete; SQL statements per accepted write; a non-rotating diagnostics sink.
