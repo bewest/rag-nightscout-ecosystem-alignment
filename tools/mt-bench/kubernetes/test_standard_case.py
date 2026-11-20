@@ -110,8 +110,8 @@ class StandardCase(unittest.TestCase):
                 self.assertNotIn('snapshotDirectory', fixed)
                 self.assertEqual(final['profile']['population']['provisionedTenants'], tenants)
                 self.assertEqual(final['profile']['workload']['workloadScale'], scale)
-                self.assertNotIn('invalid', final['profile']['proposedEnvelope']['clusterLimits'])
-                self.assertEqual(final['profile']['proposedEnvelope']['nativeLimits'],
+                self.assertNotIn('proposedEnvelope', final['profile'])
+                self.assertEqual(fixed['nativeLimits'],
                                  k.document(template/'lifecycle-input.json')['nativeLimits'])
                 objs = k.manifests(k.document(output/'render.json'))
                 quota, = [obj for obj in objs if obj['kind']=='ResourceQuota']
@@ -145,13 +145,15 @@ class StandardCase(unittest.TestCase):
                 edge, = [o for o in objs if o['kind']=='Service' and o['metadata']['name']=='edge']
                 self.assertIn(target, ['http://edge:'+str(port['port']) for port in edge['spec']['ports']])
                 for obj in objs:
-                    if obj['kind']=='Deployment':
+                    if obj['kind'] in ('Deployment','StatefulSet'):
                         pod = k.template(obj)['spec']
                         self.assertNotIn('wait-for-jobs',[actor['name'] for actor in pod.get('initContainers',[])])
                         for actor in pod['containers']:
                             if actor['name'] in ('api','evaluator','realtime','tenant-admin'):
-                                self.assertEqual(actor['readinessProbe']['exec'],actor['livenessProbe']['exec'])
-                                self.assertEqual(actor['readinessProbe']['exec'],actor['startupProbe']['exec'])
+                                startup = '/healthz/ready' if actor['name']=='tenant-admin' else '/healthz/isolation'
+                                for probe, endpoint in [('startupProbe',startup), ('readinessProbe','/healthz/ready'),
+                                                        ('livenessProbe','/healthz/live')]:
+                                    self.assertEqual(actor[probe]['httpGet'], {'path':endpoint, 'port':'int-role'})
                 declared = k.document(paths['BINDING']/'bindings/kubernetes/lib/ns/typical-requests.json')
                 for actor in job['spec']['template']['spec']['containers']+job['spec']['template']['spec']['initContainers']:
                     self.assertEqual(actor['resources'], {'requests':declared[actor['name']]})
