@@ -16,7 +16,7 @@ import workload_runtime
 
 KIND = 'm7-k6-summary-chunk-v1'
 MAX_SUMMARY_BYTES = 4 * 1024 * 1024
-MAX_LOG_BYTES = 8 * 1024 * 1024
+MAX_LOG_BYTES = 64 * 1024 * 1024
 MAX_INPUT_BYTES = 900 * 1024  # below the Kubernetes Secret limit, including JSON overhead
 CHUNK_CHARS = 8192
 

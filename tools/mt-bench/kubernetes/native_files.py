@@ -16,7 +16,7 @@ import kube_adapter as k
 import scheduling
 import workload_runtime
 
-FILES = {'k6.log': 8 * 1024**2, 'k6-native.log': 8 * 1024**2,
+FILES = {'k6.log': 64 * 1024**2, 'k6-native.log': 64 * 1024**2,
          'k6-summary.json': 4 * 1024**2, 'file-limits.txt': 16384}
 
 
