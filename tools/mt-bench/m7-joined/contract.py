@@ -294,6 +294,7 @@ def discovery_authorization(manifest, receipt):
     primer=primer_options.selection(primer_options.from_manifest(manifest),lambda ok,code:require(ok,'M7_'+code))
     require(not ('maxTenants' in primer or primer_options.requires_extended(primer)) or version==2,
             'M7_PRIMER_OPTIONS_BOUND_RECEIPT_REQUIRED')
+    require(stream_topology.selection(manifest) != stream_topology.WRITER or version==2, 'M7_WRITER_CONFIGURATION_REQUIRED')
     if version==1:return dict(UNACCEPTED_SCOPE)
     from run_configuration import sha
     import static_topology
@@ -301,6 +302,7 @@ def discovery_authorization(manifest, receipt):
     resolved=manifest.get('runConfiguration')
     require(isinstance(resolved,dict) and receipt.get('configurationSha256')==sha(resolved),
             'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
+    require(resolved.get('inputTransport') == manifest.get('inputTransport'), 'M7_INPUT_TRANSPORT_CHANGED')
     require(stream_topology.ack_selection(resolved) == ack_budget, 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(primer_options.from_manifest(resolved)==primer,'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(resolved.get('staticTopology') == manifest.get('staticTopology'), 'M7_STATIC_CONFIGURATION_MISMATCH')

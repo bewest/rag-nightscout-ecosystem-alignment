@@ -18,8 +18,16 @@ def assignment(item, env, instances, spec=None):
     # still read for retained runs.
     if 'NS_EVALUATOR_SLICES' in env:
         count = sum(i['role'] == 'evaluator' for i in instances.values())
-        require(item['role'] == 'evaluator' and 'NS_PGSTREAM_EVALUATOR_SLICE' not in env and env['NS_EVALUATOR_SLICES'] == str(count)
-                and (spec is None or spec.get('hostname') == 'evaluator-%d' % item['ordinal']), 'M7_INSTANCE_DECLARED_ORDINAL')
+        require(env['NS_EVALUATOR_SLICES'] == str(count) and 'NS_PGSTREAM_EVALUATOR_SLICE' not in env,
+                'M7_INSTANCE_DECLARED_ORDINAL')
+        if item['role'] == 'evaluator':
+            require(spec is None or spec.get('hostname') == 'evaluator-%d' % item['ordinal'], 'M7_INSTANCE_DECLARED_ORDINAL')
+        else:
+            require(env.get('NS_INPUT_TRANSPORT') == 'writer-driven', 'M7_INSTANCE_DECLARED_ORDINAL')
+    if item['role'] == 'realtime' and 'NS_SLICE_ORDINAL' in env:
+        count = sum(row['role'] == 'realtime' for row in instances.values())
+        require(env['NS_SLICE_ORDINAL'] == str(item['ordinal']) and env.get('NS_SLICE_COUNT') == str(count),
+                'M7_INSTANCE_DECLARED_ORDINAL')
     for field, family in (('NS_REALTIME_SLICE', 'realtime'), ('NS_PGSTREAM_EVALUATOR_SLICE', 'evaluator')):
         raw = env.get(field)
         if raw is None:
@@ -98,7 +106,8 @@ def runtime(rows, expected, manifest):
         env = dict(value.split('=', 1) for value in row.get('Config', {}).get('Env', []) if '=' in value)
         # The ordinary binding loads env.json inside the process. Inspect Env
         # can expose a conflicting selector, but absence does not prove it is unloaded.
-        assignment(item, env, expected)
+        spec = {'hostname':row['Config'].get('Hostname')} if manifest.get('inputTransport') == 'writer-driven' else None
+        assignment(item, env, expected, spec)
         ids.add(row['Id'])
         result[service] = row
     require(set(result) == set(expected), 'M7_INSTANCE_RUNTIME_ROSTER')

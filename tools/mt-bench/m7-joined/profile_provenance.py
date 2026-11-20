@@ -160,4 +160,7 @@ def identity(diagnostics, config):
            'diagnostics':diagnostics,'topology':{'binding':'registry-default','secretsBackend':'vault-server','vaultAgentOverlay':False,
            'realtimeWorkers':sum(name=='realtime' or re.fullmatch(r'realtime-\d+',name) is not None for name in roles),
            'evaluatorWorkers':sum(name=='evaluator' or re.fullmatch(r'evaluator-\d+',name) is not None for name in roles)}}
+    mode = roles.get('bootstrap', {}).get('environment', {}).get('NS_INPUT_TRANSPORT')
+    if mode == 'writer-driven':
+        value['topology'].update(inputTransport=mode, apiReplicas=sum(name == 'api' or re.fullmatch(r'api-\d+',name) is not None for name in roles))
     return {**value,'sha256':hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()}
