@@ -42,7 +42,7 @@ python3 tools/mt-bench/evaluator-smoke/smoke.py run --input-transport writer-dri
   --image "$JOINED_IMAGE" --out "$NEW_OUTPUT"
 ```
 
-With `--core`, writer-driven runs build against deploy `086669a9a3bb` by default.
+With `--core`, writer-driven runs build against deploy `edc6c5df1e8c` by default.
 `--replicas` changes the API count. `--static-workers` sets the slices per evaluator and
 realtime role. The summary reports CPU for each evaluator and sums CPU per accepted write across
 the fleet when every slice covers the measurement window. SQL figures combine all processes using

@@ -42,7 +42,7 @@ import main_thread  # noqa: E402
 import statement_phase  # noqa: E402
 
 DEFAULT_DEPLOY = 'f57a8c335be9895c0ce4596d8a73275444b16541'  # nightscout-deploy; image inputs equal at 09f2223
-WRITER_DEPLOY = '086669a9a3bb8d32534e864f686f1d677aacfb57'
+WRITER_DEPLOY = 'edc6c5df1e8cdf693493f5b4bb5d89e591afbb75'
 K6_IMAGE = 'sha256:eeb0db19cd8d263aa57346cdbc7ea18e6fcfb2ba9497746a7ae82ceefc8c9fa5'  # grafana/k6:1.3.0
 POSTGRES_IMAGE = 'sha256:21e7e1665c3dd2fdd80ebd9ce6d36fb160d6a4129683b315b6492a71d87bfda7'
 BASELINE = HERE / 'baseline.json'
