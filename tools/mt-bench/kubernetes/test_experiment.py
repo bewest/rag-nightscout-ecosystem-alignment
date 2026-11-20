@@ -26,14 +26,13 @@ class Frozen(unittest.TestCase):
             all.some(x=>x.kind==='ConfigMap'&&x.metadata.name==='application') &&
             !all.some(x=>x.kind==='Job') ? [] : ['wrong partition']}]};
         """)
-        receipt=self.ref('binding.json',{'files':{}})
         render=self.root/'render.json';inventory=self.root/'inventory.json'
         policy={'apiVersion':'networking.k8s.io/v1','kind':'NetworkPolicy','metadata':{'name':'native-load-to-edge'}}
         job={'apiVersion':'batch/v1','kind':'Job','metadata':{'name':'k6'}}
         contents={'application':{'apiVersion':'v1','kind':'ConfigMap','metadata':{'name':'application'}},
                   'nativeLoadResources':[job,policy]}
         k.write(render,contents);k.write(inventory,{'nativeLoad':{'version':1}})
-        instance={'render':str(render),'inventory':str(inventory),'bindingReceipt':receipt}
+        instance={'render':str(render),'inventory':str(inventory),'binding':str(self.root)}
         self.assertEqual(experiment.render_checks(instance),['native-partition'])
         contents['nativeLoadResources'].append(dict(job,metadata={'name':'unaccounted'}))
         k.write(render,contents)
@@ -42,67 +41,42 @@ class Frozen(unittest.TestCase):
         contents['nativeLoadResources'].pop();k.write(render,contents)
         self.assertEqual(experiment.render_checks(instance),['native-partition'])
 
-    def test_split_candidate_pin_uses_hashed_binding_and_refuses_contract_tamper(self):
-        package = self.root/'bindings/kubernetes/assets'
-        package.mkdir(parents=True)
-        asset = package/'source-contract.json'
-        contract = {'platformVerification':'startup-v4','sourceAcceptance':'PENDING',
-                    'nativeCatalogueSha256':'1'*64,'localImageId':self.image}
-        k.write(asset, contract)
-        receipt = self.ref('binding.json', {'sourceContractSha256':k.digest(asset),
-                                           'files':{'assets/source-contract.json':k.digest(asset)}})
-        inventory = {'workloads':{'verification':{}}}
-        pin = experiment.candidate_pin(inventory, receipt)
-        self.assertEqual(pin['verificationJob'], 'verification')
-        self.assertEqual(pin['imageConfigId'], self.image)
-        self.assertEqual(pin['platformVerification'], 'startup-v4')
-        k.write(asset, dict(contract, localImageId='sha256:'+'0'*64))
-        with self.assertRaisesRegex(k.Refused, 'CANDIDATE_SOURCE_IMAGE_CHANGED'):
-            experiment.candidate_pin(inventory, receipt)
-        k.write(asset, contract)
-        self.assertEqual(experiment.candidate_pin(inventory, receipt), pin)
-        self.assertEqual(experiment.candidate_pin({'candidateContract':pin}, {}), pin)
-
     def setUp(self):
         scratch = tempfile.TemporaryDirectory()
         self.addCleanup(scratch.cleanup)
         self.root = Path(scratch.name)
         self.pair = dict(core='1'*40, deploy='2'*40)
         self.image = 'sha256:'+'3'*64
-        self.build = dict(schemaVersion=1, status='BUILT_VERIFIED_LOCAL', localImageId=self.image,
-                          coreCommit=self.pair['core'], deployCommit=self.pair['deploy'],
-                          runtime=dict(binarySha256='4'*64, producerHelpSucceeded=True),
-                          labels={'org.opencontainers.image.revision':self.pair['core'],
-                                  'org.nightscout.deploy.revision':self.pair['deploy']})
-        build = self.ref('build',self.build)
-        self.pending = dict(status='FROZEN_DIAGNOSTIC_ONLY', sourceAcceptance='PENDING',
-                            coreCommit=self.pair['core'], deployCommit=self.pair['deploy'], imageId=self.image,
-                            imageReceiptSha256=build['sha256'], capacityAcceptance='NOT_GRANTED')
-        self.manifest = dict(version=1, kind='k8s-frozen-experiment', sourceReceipt=self.ref('owner',self.pending),
-                             buildReceipt=build, bindingCommit='5'*40, postgresImageId='sha256:'+'6'*64)
+        # bf55167272: the run's candidate comes from run parameters (image references,
+        # digests and labelled commits); no source, build or delivery receipt is read.
+        self.candidate = dict(app='registry.example.test/app@sha256:'+'3'*64, appImageId=self.image,
+                              postgres='registry.example.test/postgres@sha256:'+'6'*64,
+                              postgresImageId='sha256:'+'6'*64,
+                              coreCommit=self.pair['core'], deployCommit=self.pair['deploy'])
+        self.manifest = dict(version=1, kind='k8s-frozen-experiment', candidate=self.candidate,
+                             bindingCommit='5'*40)
 
     def ref(self, name, value):
         p = self.root/name
         k.write(p,value)
         return dict(path=str(p), sha256=k.digest(p))
 
-    def test_source_receipt_provenance_is_recorded_not_reproved(self):
+    def test_candidate_digest_is_run_identity_and_commits_are_recorded_not_compared(self):
+        # brittle-check-removal: run identity is the image digest plus the run configuration.
         baseline = frozen.source(self.manifest)
-        self.assertEqual(baseline['sourceAcceptance'], 'PENDING')
-        # Receipt words and cross-receipt pairs no longer refuse a run.
-        for value in (dict(self.pending, coreCommit='a'*40), dict(self.pending, status='ACCEPTANCE_SELECTION'),
-                      dict(self.pending, imageReceiptSha256='a'*64)):
-            other = frozen.source(dict(self.manifest, sourceReceipt=self.ref('other', value)))
-            self.assertEqual({**other, 'diagnosticSha256': None}, {**baseline, 'diagnosticSha256': None})
-        # A PASS receipt for another image never labels this source PASS.
-        other = dict(self.pending, kind='joined-acceptance', status='PASS', imageId='sha256:'+'a'*64)
-        self.assertEqual(frozen.source(dict(self.manifest, sourceReceipt=self.ref('other', other)))['sourceAcceptance'], 'PENDING')
-        with self.assertRaisesRegex(ValueError, 'EVIDENCE_CHANGED'):
-            frozen.source(dict(self.manifest, sourceReceipt=dict(self.manifest['sourceReceipt'],sha256='0'*64)))
+        self.assertEqual((baseline['localImageId'], baseline['sourceAcceptance']), (self.image, 'PENDING'))
+        # A candidate without digest-pinned references or full commits refuses.
+        for field, value in (('app', 'registry.example.test/app:latest'), ('appImageId', 'sha256:short'),
+                             ('coreCommit', 'abc'), ('postgres', None)):
+            with self.subTest(field=field), self.assertRaisesRegex(frozen.Refused, 'K8S_EXPERIMENT_CANDIDATE'):
+                frozen.source(dict(self.manifest, candidate=dict(self.candidate, **{field: value})))
+        with self.assertRaisesRegex(frozen.Refused, 'FROZEN_ACCEPTANCE_REQUIRED'):
+            frozen.source(dict(self.manifest, tier='acceptance'))
         selected = {**baseline, 'nativeCatalogueSha256': '7'*64}
         self.assertEqual(frozen.contract(self.manifest, {**selected, 'coreCommit': 'b'*40}), baseline)
         with self.assertRaisesRegex(ValueError, 'CONTRACT_CONFIGURATION_CHANGED'):
             frozen.contract(self.manifest, {**selected, 'localImageId': 'sha256:'+'b'*64})
+        self.assertEqual(frozen.contract(self.manifest, selected), baseline)
 
     def test_native_binding_inputs_skip_legacy_patch_and_keep_capture_protocol(self):
         from unittest.mock import patch
