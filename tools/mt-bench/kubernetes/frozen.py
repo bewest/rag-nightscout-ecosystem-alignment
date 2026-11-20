@@ -13,7 +13,6 @@ import population_ceiling
 ACK_BUDGET = 'pgstreamNotifierAckTimeoutMs'
 ACK_PACKAGE = ('scripts/producer_ack_publish.py', 'scripts/producer_wire.py')
 PRIMER_STORAGE = 'primerStorage'
-PRIMER_STORAGE_PACKAGE = 'scripts/primer_storage.py'
 JOB_COMPLETE = 'provisionJobCompleteSeconds'
 
 

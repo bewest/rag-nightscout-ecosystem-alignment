@@ -40,42 +40,6 @@ def bind_ack_publisher(package, selected):
     shutil.copyfile(k.M7/'producer_wire.py', package/frozen.ACK_PACKAGE[1])
 
 
-def bind_primer_storage(package, selected):
-    if frozen.PRIMER_STORAGE not in selected:
-        return
-    options = selected[frozen.PRIMER_STORAGE]
-    lib = package/'lib/ns/nightscout.libsonnet'
-    text = lib.read_text()
-    volume = "{ name: 'config-' + role, emptyDir: { medium: 'Memory', sizeLimit: '1Mi' } },"
-    k.need(text.count(volume)==1, 'PRIMER_STORAGE_VOLUME_SEAM')
-    size = primer_storage.volume_size(options['stateMiB'])
-    text = text.replace(volume, volume.replace("sizeLimit: '1Mi'", f"sizeLimit: if role == 'primer' then '{size}' else '1Mi'"))
-    if options['secretCodec']=='gzip-v1':
-        start = "const input='/run/ns-secret/'+role;"
-        marker = "const source=from+'/'+name,destination=to+'/'+name;"
-        command = "      command: ['node', '-e', |||\n"
-        end = '      |||] + roles,'
-        k.need(all(text.count(anchor)==1 for anchor in (start, marker, command, end)),
-               'PRIMER_STORAGE_INSTALL_SEAM')
-        source = (k.HERE/'primer_config_unpack.cjs').read_text().rstrip()
-        unpack = start+'\n'+source+f"\nif(role==='primer')restorePrimerConfig(input,dir,{options['stateMiB']*primer_storage.MIB});"
-        copy = "if(role==='primer'&&from===input&&['config.json.gz','config.digest.json'].includes(name))continue;\n"+marker
-        text = text.replace(command, "      local installer = |||\n").replace(end, '      |||,\n'
-            "      command: ['node', '-e', if std.member(roles, 'primer') then\n"
-            f'        std.strReplace(std.strReplace(installer, {json.dumps(start)}, {json.dumps(unpack)}),\n'
-            f'                       {json.dumps(marker)}, {json.dumps(copy)})\n'
-            '      else installer] + roles,')
-    lib.write_text(text)
-    publisher = package/'scripts/secrets.sh'
-    text = publisher.read_text()
-    publish = '  for role in api realtime evaluator tenant-admin ui admin primer; do'
-    k.need(text.count(publish)==1, 'PRIMER_STORAGE_PUBLISH_SEAM')
-    insert = '''  primer_binding=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-  python3 -B "$primer_binding/scripts/primer_storage.py" "$primer_binding/assets/source-contract.json" "$work/primer"\n'''
-    publisher.write_text(text.replace(publish,insert+publish))
-    shutil.copyfile(k.HERE/'primer_storage.py',package/frozen.PRIMER_STORAGE_PACKAGE)
-
-
 def bind_primer_stall(package, manifest):
     phases = manifest.get('profile', {}).get('phases', {})
     startup = k.workload_inputs.startup_selection(phases, k.need)
