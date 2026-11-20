@@ -45,14 +45,14 @@ def unentered_failure(kind, error, trace):
     finally:
         sys.__excepthook__(kind, error, trace)
 sys.excepthook = unentered_failure
-def command(argv,data=None,timeout=None,private=False):
+def command(argv,data=None,timeout=None,private=False,environment=None):
     rem=cleanup-time.time() if cleaning else work-time.time()
     if not cleaning and phase_cutoff is not None:
         rem=min(rem,phase_cutoff-time.time())
     assert rem>0,'CUTOFF'
     if timeout is None:timeout=18 if cleaning else waits['commandSeconds']
     q=subprocess.run([str(x) for x in argv],input=data,capture_output=True,
-                     timeout=ProgressWindow.read_seconds(min(timeout,rem)),env=env)
+                     timeout=ProgressWindow.read_seconds(min(timeout,rem)),env=environment or env)
     if q.returncode:
         import re
         codes=sorted(set(re.findall(rb'\b(?:K8S_|M7_|PRIMER_|BOOTSTRAP_|PLATFORM_|VAULT_|EVALUATOR_)[A-Z0-9_]{2,90}\b',q.stderr+q.stdout)))
@@ -157,7 +157,7 @@ def require_pod_uid(name,uid):
     if row is None or row['metadata']['uid']!=uid:
         raise RuntimeError('POD_OWNERSHIP_CHANGED')
 
-def ready(label,typ,timeout,convergence=None):
+def ready(label,typ,timeout,convergence=None,want=1):
     step('wait-'+typ)
     started=time.time()
     outer=min(work,phase_cutoff if phase_cutoff is not None else work)
@@ -180,6 +180,7 @@ def ready(label,typ,timeout,convergence=None):
                     put('placement-'+typ+'.json', placements)
                 ready_pod=None
                 identity=None
+                ready_ids=[]
                 for pod in found:
                     s=summary(pod);put('latest-'+typ+'.json',s)
                     # Admission, scheduling and per-container startup/ready transitions
@@ -212,6 +213,10 @@ def ready(label,typ,timeout,convergence=None):
                     if any(x.get('type')=='Ready' and x.get('status')=='True' for x in pod.get('status',{}).get('conditions',[])):
                         ready_pod=pod
                         identity=(s['uid'],tuple((v['name'],v['restartCount']) for v in s['containers']))
+                        ready_ids.append(identity)
+                if want>1:
+                    # Every replica (evaluator slices) must be Ready, not just one.
+                    identity=producer_startup.replica_identity(ready_ids,want)
                 if stable.observe(identity,time.monotonic()) and time.time()<until and progress.remaining()>0:
                     if convergence:
                         put('startup-convergence-'+typ+'.json',{'verdict':'READY','uid':identity[0],
@@ -245,7 +250,7 @@ def workload_ready(stage):
             probe=obj['spec']['template']['spec']['containers'][0].get('readinessProbe',{})
             if probe.get('httpGet',{}).get('path')=='/v1/sys/health?uninitcode=200':
                 continue
-        ready(','.join(k+'='+v for k,v in sel.items()),nm,seconds,convergence)
+        ready(','.join(k+'='+v for k,v in sel.items()),nm,seconds,convergence,obj['spec'].get('replicas',1))
 def wait_job(name, seconds):
     owned()
     with startup_window(name, seconds) as until:
@@ -304,7 +309,12 @@ try:
             # The copied PostgreSQL, Vault and roster need the Secrets they were seeded with.
             fixture_copy.import_secrets(lambda a,b=None:k(a,b,private=True),ns,rid,reuse['directory'])
         else:
-            command(['bash',secret_script,'seed',ns,e['images']['app']],timeout=waits['secretSeedSeconds'],private=True)
+            # The seed renders pgstream's receivers for the binding's evaluator K (inventory
+            # seed.environment, K>1 only); an inherited NS_EVALUATOR_WORKERS never reaches it.
+            seed_env={key:value for key,value in env.items() if key!='NS_EVALUATOR_WORKERS'}
+            seed_env.update(fixture_copy.seed_environment(read(d/'inventory.json')))
+            command(['bash',secret_script,'seed',ns,e['images']['app']],timeout=waits['secretSeedSeconds'],private=True,
+                    environment=seed_env)
     if reuse:
         step('fixture claims');owned()
         uids.extend(fixture_copy.create(k,ns,objects('fixture-claims')));put('created.json',uids)
@@ -330,7 +340,8 @@ try:
         put('fixture-capture.json',fixture_copy.capture(k,ns,rid,reuse,read(d/'stages/fixture-snapshots.json'),
             {'tenants':e['tenantCount'],'appImage':e['images']['app'],'postgresImage':e['images']['postgres'],
              'coreCommit':cfg['candidate']['coreCommit'],'deployCommit':cfg['candidate']['deployCommit'],
-             'alignmentCommit':cfg['alignmentCommit']},work))
+             'alignmentCommit':cfg['alignmentCommit'],
+             **fixture_copy.slices_record(read(d/'inventory.json'))},work))
         step('fixture captured')
         raise SystemExit(0)
     step('attach released runtime')

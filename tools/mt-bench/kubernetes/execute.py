@@ -249,14 +249,22 @@ def progress(d, c, objects, client, *, raw_output=None, until=None):
         baseline = k.active_baseline(d)
         before = k.observe(c, objects, client, baseline)
         k.deadline(c)
-        pod, container = k.selected_pod(c, before, 'evaluator')
+        # One progress instance per evaluator Pod, named as Compose names its slices.
+        pods = k.role_pods(c, before, 'evaluator')
+        services = dict(zip(k.evaluator_services(len(pods)), pods))
         selected=c.get('workload',{}).get('evaluatorProgressBudget')
         policy=k.evaluator_progress.capture_policy(selected)
         helper = (k.M7 / 'evaluator-progress.cjs').read_text()
-        response, response_path = {'captureStatus':'UNAVAILABLE'}, None
-        if raw_output is not None:
-            response_path = raw_output.with_name(raw_output.name.removesuffix('.private.jsonl')+'-response.json')
+        captures = {}
+        for service in services:
+            # K=1 keeps the original file names; ordinal i>0 adds its service name.
+            raw_path = raw_output if raw_output is None or service == 'evaluator' else \
+                raw_output.with_name(raw_output.name.removesuffix('.private.jsonl')+'-'+service+'.private.jsonl')
+            captures[service] = ({'captureStatus':'UNAVAILABLE'}, raw_path, raw_path and
+                                 raw_path.with_name(raw_path.name.removesuffix('.private.jsonl')+'-response.json'))
         def fetch(role, selected, queries, budget):
+            pod, container = services[role]
+            response, raw_output, response_path = captures[role]
             prefix = 'const M7_PROGRESS_IDS=' + json.dumps(selected) + ';const M7_PROGRESS_QUERY_BUDGET=' + str(queries) + ';const M7_PROGRESS_BYTE_BUDGET=' + str(budget) + ';\n'
             def retain(raw, returncode, boundary='client-response-sink'):
                 fd = os.open(raw_output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
@@ -283,7 +291,7 @@ def progress(d, c, objects, client, *, raw_output=None, until=None):
                 return raw
         value, primary, post = None, None, None
         try:
-            value = k.evaluator_progress.round_view(['evaluator'], ids, fetch, demand_driven=True, policy=policy)
+            value = k.evaluator_progress.round_view(list(services), ids, fetch, demand_driven=True, policy=policy)
         except BaseException as error:
             primary = error
         try:
@@ -292,9 +300,11 @@ def progress(d, c, objects, client, *, raw_output=None, until=None):
             k.deadline(c)
         except BaseException as error:
             post = error
-        if response_path is not None:
+        for response, raw_path, response_path in captures.values():
+            if response_path is None:
+                continue
             response.update(postObservation='VERIFIED' if post is None else 'REFUSED',
-                            responseRetained=raw_output.is_file(), sourceDecode='REFUSED' if
+                            responseRetained=raw_path.is_file(), sourceDecode='REFUSED' if
                             isinstance(primary, k.evaluator_progress.Refused) else 'UNMEASURED' if primary else 'PASS')
             if primary is not None: response['sourceRefusal'] = progress_refusal(primary)
             if post is not None: response['postRefusal'] = progress_refusal(post)

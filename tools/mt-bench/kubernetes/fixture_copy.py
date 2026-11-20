@@ -68,10 +68,29 @@ def read_manifest(directory):
     return manifest
 
 
-def check_restore(manifest, tenants, postgres_image):
-    """A restore never grows or shrinks the roster and keeps the PostgreSQL data format."""
+def evaluator_slices(inventory):
+    return inventory.get('slices', {}).get('evaluator', 1)
+
+
+def seed_environment(inventory):
+    """The seed environment the binding records (`NS_EVALUATOR_WORKERS` for evaluator K>1)."""
+    value = dict(inventory.get('seed', {}).get('environment', {}))
+    need(value.get('NS_EVALUATOR_WORKERS', '1') == str(evaluator_slices(inventory)), 'SEED_EVALUATOR_SLICES')
+    return value
+
+
+def slices_record(inventory):
+    """Recorded in the fixture manifest only for K>1, so K=1 manifests are unchanged."""
+    count = evaluator_slices(inventory)
+    return {'evaluatorSlices': count} if count != 1 else {}
+
+
+def check_restore(manifest, tenants, postgres_image, slices=1):
+    """A restore never grows or shrinks the roster and keeps the PostgreSQL data format.
+    Its Secrets carry the seed's pgstream receivers, so evaluator K must match too."""
     need(manifest['tenants'] == tenants, 'TENANTS_CHANGED')
     need(manifest['postgresImage'] == postgres_image, 'POSTGRES_IMAGE_CHANGED')
+    need(manifest.get('evaluatorSlices', 1) == slices, 'EVALUATOR_SLICES_CHANGED')
 
 
 def storage(binding_storage):
@@ -83,7 +102,7 @@ def _jsonnet(jsonnet, library, code):
                                                'local f=import "ns/fixture.libsonnet";' + code], timeout=30))
 
 
-def render(jsonnet, library, namespace, run_id, chosen, tenants=None, postgres_image=None):
+def render(jsonnet, library, namespace, run_id, chosen, tenants=None, postgres_image=None, slices=1):
     """Objects created before the stores, from the deploy binding's fixture.libsonnet: empty
     claims (seed) or Retain contents, VolumeSnapshots and clones (restore)."""
     a = json.dumps
@@ -93,7 +112,7 @@ def render(jsonnet, library, namespace, run_id, chosen, tenants=None, postgres_i
             a(namespace), a(CLAIMS), a(chosen['sizes']), a(chosen['storageClass']), a(labels)))
     else:
         manifest = read_manifest(chosen['directory'])
-        check_restore(manifest, tenants, postgres_image)
+        check_restore(manifest, tenants, postgres_image, slices)
         items = _jsonnet(jsonnet, library,
             'std.flattenArrays(std.objectValues(f.imported(%s,%s,%s,%s,%s,%s))) + '
             'std.objectValues(f.claims(%s,"VolumeSnapshot",%s,%s,%s,%s,%s))' % (
@@ -183,7 +202,8 @@ def capture(k, namespace, run_id, chosen, snapshots, provenance, until):
     with (directory/MANIFEST).open('x') as out:
         (directory/MANIFEST).chmod(0o600)
         json.dump(manifest, out, indent=2)
-    return {key: manifest[key] for key in ('fixtureId', 'driver', 'sizes', 'secrets', 'tenants', 'postgresImage')}
+    return {key: manifest[key] for key in ('fixtureId', 'driver', 'sizes', 'secrets', 'tenants', 'postgresImage',
+                                           'evaluatorSlices') if key in manifest}
 
 
 def delete(k, directory, until):

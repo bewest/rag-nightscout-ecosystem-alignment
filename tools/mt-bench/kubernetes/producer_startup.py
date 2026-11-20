@@ -97,6 +97,11 @@ class StableReady:
         return identity is not None and now - self.started >= self.seconds
 
 
+def replica_identity(identities, want):
+    """Several replicas (evaluator slices) are ready together only when all `want` are Ready."""
+    return tuple(sorted(identities)) if len(identities) >= want else None
+
+
 def milestones(status):
     conditions = sum(c.get('status')=='True' for c in status.get('conditions', [])
                      if c.get('type') in ('PodScheduled','PodReadyToStartContainers','Initialized'))
