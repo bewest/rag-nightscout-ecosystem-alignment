@@ -8,15 +8,18 @@
 Reads only; never creates, scales or deletes. Stops at verified absence or the cleanup deadline.
 
 OUT_DIR/samples.jsonl, one row per interval: stage, placement (Pod NODE PHASE), node top for every
-node the case uses, `kubectl top pods --containers` (one line per Pod and container, so each
-evaluator ordinal is its own row) and, during traffic, the replication slot lag.
-OUT_DIR/nodes.json: /proc/cpuinfo `model name` per node, read once from one running case Pod there.
-During traffic each row also holds, per evaluator Pod, the CPU ticks of every thread of PID 1
-(`threads`, from /proc/1/task, with /proc/uptime as the clock), and five walsender samples from
-pg_stat_activity 0.2 s apart (`walsender`). OUT_DIR/pg_stat_statements-{start,latest,end}.json:
-pg_stat_statements at the first traffic sample, every fourth traffic sample and the first sample
-after traffic (the binding preloads it; the observer creates the extension in database `postgres`,
-never in the application database).
+node the case uses and `kubectl top pods --containers` (one line per Pod and container, so each
+evaluator ordinal is its own row). API reads only; no exec.
+OUT_DIR/nodes.json: /proc/cpuinfo `model name` per node, read once from one running case Pod there
+(the observer's only exec).
+Database and process figures (event-loop lag and utilization, evaluator phase time per slice,
+pending-work age, statements per write by role, slot lag, walsender waits, pg_stat_statements,
+pg_stat_io, receipt round trip) come from the run's own Prometheus when the binding input sets
+`labMetrics.enabled`: the controller retains a TSDB snapshot before teardown
+(load/metrics-tsdb.tar, execute.metrics_snapshot) and `summarize` evaluates PromQL on it at the
+steady-window bookends with a local, network-less Prometheus of the same version. Without the
+component those figures are UNMEASURED; the observer no longer samples /proc, pg_stat_activity or
+pg_stat_statements by exec.
 OUT_DIR/podlogs/: only when the case's binding input sets `roleEnv` (diagnostics requested), one
 `kubectl logs -f --timestamps` follower per Pod and container of each named role, started when the
 Pod runs and stopped at teardown, each file bounded by --log-cap-bytes (so container log rotation
@@ -37,20 +40,7 @@ from statistics import median
 LABEL = 'nightscout.org/run-id'
 HERE = Path(__file__).resolve().parent
 MODEL = re.compile(r'^model name\s*:\s*(.+)$', re.M)
-SLOT_SQL = ("SELECT json_build_object('active',active,'confirmedLagBytes',"
-            "pg_wal_lsn_diff(pg_current_wal_lsn(),confirmed_flush_lsn),'retainedWalBytes',"
-            "pg_wal_lsn_diff(pg_current_wal_lsn(),restart_lsn)) FROM pg_replication_slots "
-            "WHERE slot_name='nsdemo_pgstream' AND NOT temporary")
 TRAFFIC = 'attach released runtime'
-WALSENDER_SQL = ("SELECT coalesce(json_agg(json_build_object('pid',pid,'state',state,'waitEventType',wait_event_type,"
-                 "'waitEvent',wait_event)),'[]') FROM pg_stat_activity WHERE backend_type='walsender'")
-PGSS_SQL = "SELECT json_build_object('at',now(),'rows',coalesce(json_agg(row_to_json(s)),'[]')) FROM pg_stat_statements s"
-# PID 1's threads: tid, name, utime and stime ticks (fields 14 and 15 of stat), with /proc/uptime as the clock.
-THREADS_JS = ("const fs=require('fs');const tasks=fs.readdirSync('/proc/1/task').map(t=>{const s=fs.readFileSync('/proc/1/task/'+t+'/stat','utf8');"
-              "const r=s.slice(s.lastIndexOf(')')+2).split(' ');return [Number(t),s.slice(s.indexOf('(')+1,s.lastIndexOf(')')),Number(r[11]),Number(r[12])];});"
-              "process.stdout.write(JSON.stringify({uptime:Number(fs.readFileSync('/proc/uptime','utf8').split(' ')[0]),tasks}))")
-CLOCK_TICKS = 100  # Linux USER_HZ on the x86-64 kernels these nodes run
-EVALUATOR = {'app.kubernetes.io/component': 'evaluator'}
 
 
 def read(path, default=None):
@@ -228,52 +218,8 @@ def sample(case, kubectl, state):
             if found:
                 state['nodes'][node] = found
                 write_json(state['out']/'nodes.json', state['nodes'])
-    postgres = any(p['metadata']['name'] == 'postgres-0' and p.get('status', {}).get('phase') == 'Running' for p in pods)
-    if row['stage'] == TRAFFIC:
-        if postgres:
-            raw = kubectl('exec', 'postgres-0', '-c', 'postgres', '--', 'psql', '-X', '-qAt', '-U', 'postgres',
-                          '-d', 'postgres', '-c', SLOT_SQL)
-            row['slot'] = json.loads(raw) if raw.strip() else 'ABSENT'
-            row['walsender'] = measured(lambda: walsender(kubectl))
-        row['threads'] = {p['metadata']['name']: measured(lambda p=p: threads(kubectl, p['metadata']['name']))
-                          for p in pods if labelled(p, EVALUATOR) and p.get('status', {}).get('phase') == 'Running'}
-        state['traffic'] = state.get('traffic', 0) + 1
-        if postgres and (state['traffic'] == 1 or state['traffic'] % 4 == 0):
-            statements(kubectl, state['out'], 'start' if state['traffic'] == 1 else 'latest')
-    elif state.get('traffic') and not state.get('statementsEnd') and postgres:
-        state['statementsEnd'] = True
-        statements(kubectl, state['out'], 'end')
     follow(case, kubectl, state, pods, terminating)
     return row
-
-
-def measured(read):
-    try:
-        return read()
-    except (subprocess.SubprocessError, OSError, ValueError) as error:
-        return {'error': type(error).__name__}
-
-
-def threads(kubectl, pod):
-    return json.loads(kubectl('exec', pod, '-c', 'evaluator', '--', 'node', '-e', THREADS_JS, timeout=20))
-
-
-def walsender(kubectl, count=5):
-    argv = ['exec', 'postgres-0', '-c', 'postgres', '--', 'psql', '-X', '-qAt', '-U', 'postgres', '-d', 'postgres']
-    for i in range(count):
-        argv += ['-c', WALSENDER_SQL] + (['-c', 'SELECT pg_sleep(0.2)'] if i < count - 1 else [])
-    return [json.loads(line) for line in kubectl(*argv, timeout=20).splitlines() if line.startswith('[')]
-
-
-def statements(kubectl, out, name):
-    """One pg_stat_statements snapshot; a failure is recorded, never raised."""
-    try:
-        raw = kubectl('exec', 'postgres-0', '-c', 'postgres', '--', 'psql', '-X', '-qAt', '-U', 'postgres', '-d', 'postgres',
-                      '-c', 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements', '-c', PGSS_SQL, timeout=60)
-        value = json.loads(raw.strip().splitlines()[-1])
-    except (subprocess.SubprocessError, OSError, ValueError, IndexError) as error:
-        value = {'at': now(), 'error': type(error).__name__, 'verdict': 'UNMEASURED'}
-    write_json(Path(out)/('pg_stat_statements-%s.json' % name), value)
 
 
 def follow(case, kubectl, state, pods, terminating):
@@ -360,62 +306,6 @@ def window(case):
     return ('stage ' + TRAFFIC, None, None)
 
 
-def thread_shares(samples):
-    """Per Pod: share of one core used by PID 1's main thread (tid 1 in the Pod's PID namespace) and
-    by its other threads, between consecutive samples of the same process."""
-    result = {}
-    for pod, series in samples.items():
-        main, other, names = [], [], {}
-        for a, b in zip(series, series[1:]):
-            seconds = b['uptime'] - a['uptime']
-            before = {t[0]: t for t in a['tasks']}
-            if seconds <= 0 or 1 not in before:
-                continue
-            busy = {tid: (u + s - before[tid][2] - before[tid][3]) / CLOCK_TICKS / seconds
-                    for tid, name, u, s in b['tasks'] if tid in before}
-            main.append(round(busy.get(1, 0), 4))
-            other.append(round(sum(v for tid, v in busy.items() if tid != 1), 4))
-            for tid, name, _, _ in b['tasks']:
-                if tid != 1 and tid in busy:
-                    names.setdefault(name, []).append(busy[tid])
-        result[pod] = {'mainThreadCores': distribution(main), 'otherThreadsCores': distribution(other),
-                       'busiestOtherThreads': sorted(((n, round(median(v), 4)) for n, v in names.items()), key=lambda x: -x[1])[:5]}
-    return result
-
-
-def walsender_waits(rows):
-    counts = {}
-    for row in rows:
-        for snapshot in row:
-            for sender in snapshot if isinstance(snapshot, list) else []:
-                key = '%s:%s' % (sender.get('waitEventType'), sender.get('waitEvent'))
-                counts[key] = counts.get(key, 0) + 1
-    return {'samples': sum(len(r) for r in rows if isinstance(r, list)), 'byWaitEvent': dict(sorted(counts.items(), key=lambda x: -x[1]))}
-
-
-def statement_delta(out, top=25):
-    first = read(out/'pg_stat_statements-start.json')
-    last = read(out/'pg_stat_statements-end.json')
-    if not last or 'rows' not in last:
-        last = read(out/'pg_stat_statements-latest.json')
-    if not first or not last or 'rows' not in first or 'rows' not in last:
-        return {'verdict': 'UNMEASURED', 'start': (first or {}).get('error'), 'end': (last or {}).get('error')}
-    total = next((k for k in ('total_exec_time', 'total_time') if last['rows'] and k in last['rows'][0]), 'total_exec_time')
-    key = lambda r: (r.get('queryid'), r.get('dbid'), r.get('userid'), r.get('toplevel'))
-    before = {key(r): r for r in first['rows']}
-    deltas = []
-    for r in last['rows']:
-        b = before.get(key(r), {})
-        calls = r.get('calls', 0) - b.get('calls', 0)
-        if calls > 0:
-            deltas.append({'queryid': r.get('queryid'), 'calls': calls, 'totalMs': round(r.get(total, 0) - b.get(total, 0), 3),
-                           'rows': r.get('rows', 0) - b.get('rows', 0), 'query': (r.get('query') or '')[:160]})
-    deltas.sort(key=lambda d: -d['totalMs'])
-    return {'from': first['at'], 'to': last['at'], 'statements': len(deltas), 'calls': sum(d['calls'] for d in deltas),
-            'totalMs': round(sum(d['totalMs'] for d in deltas), 3), 'top': deltas[:top],
-            'scope': 'all databases; snapshots bracket the traffic stage, not the k6 steady window exactly'}
-
-
 TRACE = b'PGSTREAM_RECEIVER_TRACE '
 
 
@@ -451,11 +341,125 @@ def delivery(out):
             'scope': 'read-derived from receiver timestamps; includes evaluator receipt time; clocks unaligned across nodes'}
 
 
+# The binding's Prometheus image (deploy lab-metrics.libsonnet), run locally on a copy of the
+# retained snapshot with no network.
+PROMETHEUS_IMAGE = 'prom/prometheus@sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996'
+# Steady-window figures; {w} is the window in seconds, evaluated at its end.
+WRITES = 'sum(increase(nightscout_http_request_seconds_count{{method=~"POST|PUT|PATCH|DELETE",status_class="2xx"}}[{w}s]))'
+QUERIES = {
+    'targets': 'min_over_time(up[{w}s])',
+    'cpuCores': 'rate(process_cpu_seconds_total{{job="roles"}}[{w}s])',
+    'eventLoopUtilization': 'rate(nodejs_eventloop_utilization_histogram_sum[{w}s]) / rate(nodejs_eventloop_utilization_histogram_count[{w}s])',
+    'eventLoopLagMeanSeconds': 'avg_over_time(nodejs_eventloop_lag_mean_seconds[{w}s])',
+    'eventLoopLagP99MaxSeconds': 'max_over_time(nodejs_eventloop_lag_p99_seconds[{w}s])',
+    'phaseBusySecondsPerSecond': 'sum by (pod, slice, phase) (rate(nightscout_evaluator_phase_seconds_sum[{w}s]))',
+    'phaseMeanSeconds': 'sum by (pod, slice, phase) (rate(nightscout_evaluator_phase_seconds_sum[{w}s])) / sum by (pod, slice, phase) (rate(nightscout_evaluator_phase_seconds_count[{w}s]))',
+    'phaseP95Seconds': 'histogram_quantile(0.95, sum by (pod, slice, phase, le) (rate(nightscout_evaluator_phase_seconds_bucket[{w}s])))',
+    'pendingOldestAgeMaxSeconds': 'max_over_time(nightscout_evaluator_pending_oldest_age_seconds[{w}s])',
+    'pendingOldestAgeMeanSeconds': 'avg_over_time(nightscout_evaluator_pending_oldest_age_seconds[{w}s])',
+    'queuedCyclesMax': 'max_over_time(nightscout_evaluator_queued_cycles[{w}s])',
+    'evaluatorTenants': 'max_over_time(nightscout_evaluator_tenants[{w}s])',
+    'apiWrites2xx': WRITES,
+    'statementsPerWriteByRole': 'sum by (role) (increase(nightscout_pg_statements_total[{w}s])) / scalar(' + WRITES + ')',
+    'statementsByApplication': 'sum by (role, application_name) (increase(nightscout_pg_statements_total[{w}s]))',
+    'statementClientMeanSeconds': 'sum by (role) (increase(nightscout_pg_statement_seconds_total[{w}s])) / sum by (role) (increase(nightscout_pg_statements_total[{w}s]))',
+    'receiptsPerSecond': 'sum by (pod, slice, outcome) (rate(nightscout_pgstream_receipt_seconds_count[{w}s]))',
+    'receiptMeanSeconds': 'sum by (pod, slice) (rate(nightscout_pgstream_receipt_seconds_sum[{w}s])) / sum by (pod, slice) (rate(nightscout_pgstream_receipt_seconds_count[{w}s]))',
+    'receiptP95Seconds': 'histogram_quantile(0.95, sum by (pod, slice, le) (rate(nightscout_pgstream_receipt_seconds_bucket[{w}s])))',
+    'httpP95Seconds': 'histogram_quantile(0.95, sum by (method, status_class, le) (rate(nightscout_http_request_seconds_bucket[{w}s])))',
+    'slotConfirmedLagBytesMax': 'max_over_time(ns_slot_confirmed_lag_bytes[{w}s])',
+    'slotConfirmedLagBytesMean': 'avg_over_time(ns_slot_confirmed_lag_bytes[{w}s])',
+    'walsenderSamplesByWait': 'sum by (state, wait_event_type, wait_event) (count_over_time(ns_walsender_senders[{w}s]))',
+    'activeBackendsByApplication': 'sum by (application_name, wait_event_type) (avg_over_time(ns_activity_backends{{backend_type="client backend",state="active"}}[{w}s]))',
+    'statIoSecondsByBackend': 'sum by (backend_type) (increase(ns_stat_io_read_seconds[{w}s]) + increase(ns_stat_io_write_seconds[{w}s]) + increase(ns_stat_io_fsync_seconds[{w}s]))',
+    'statIoReadsByBackend': 'sum by (backend_type) (increase(ns_stat_io_reads[{w}s]))',
+    'topStatementsSeconds': 'topk(25, sum by (queryid) (increase(pg_stat_statements_seconds_total[{w}s])))',
+    'topStatementsCalls': 'topk(25, sum by (queryid) (increase(pg_stat_statements_calls_total[{w}s])))',
+    'statementText': 'max by (queryid, query) (last_over_time(pg_stat_statements_query_id[{w}s]))',
+}
+
+
+def load_window(case):
+    """Fallback bookends: the controller's load window (seconds), as ms."""
+    value = read(case.d/'load'/'window.json') or {}
+    if value.get('loadStartedAt') and value.get('loadEndedAt'):
+        return value['loadStartedAt'] * 1000, value['loadEndedAt'] * 1000
+    return None, None
+
+
+class LocalPrometheus:
+    """A network-less Prometheus on a private copy of the snapshot; queried through docker exec."""
+
+    def __init__(self, archive, run=subprocess.run):
+        import tarfile, tempfile, uuid
+        self.run = run
+        self.dir = tempfile.mkdtemp(prefix='case-observer-tsdb-')
+        with tarfile.open(archive) as tar:
+            tar.extractall(self.dir, filter='data')
+        self.name = 'case-observer-tsdb-' + uuid.uuid4().hex[:12]
+        self.run(['docker', 'run', '-d', '--rm', '--name', self.name, '--network', 'none', '--user', '%d:%d' % (os.getuid(), os.getgid()),
+                  '-v', self.dir + ':/prometheus', PROMETHEUS_IMAGE, '--config.file=/etc/prometheus/prometheus.yml',
+                  '--storage.tsdb.path=/prometheus', '--storage.tsdb.retention.time=100y', '--web.listen-address=127.0.0.1:9090'],
+                 check=True, capture_output=True, timeout=120)
+        for _ in range(120):
+            if self.get('/-/ready', check=False):
+                return
+            time.sleep(1)
+        raise OSError('LOCAL_PROMETHEUS_NOT_READY')
+
+    def get(self, path, check=True):
+        r = self.run(['docker', 'exec', self.name, 'wget', '-qO-', 'http://127.0.0.1:9090' + path],
+                     capture_output=True, text=True, timeout=60)
+        if check and r.returncode:
+            raise OSError('LOCAL_PROMETHEUS_QUERY_FAILED')
+        return r.stdout if r.returncode == 0 else None
+
+    def query(self, expr, at):
+        from urllib.parse import urlencode
+        body = json.loads(self.get('/api/v1/query?' + urlencode({'query': expr, 'time': '%.3f' % at})))
+        return [{'labels': {k: v for k, v in row['metric'].items() if k not in ('instance', 'server')},
+                 'value': None if row['value'][1] in ('NaN', '+Inf', '-Inf') else float(row['value'][1])}
+                for row in body['data']['result']]
+
+    def close(self):
+        import shutil
+        self.run(['docker', 'rm', '-f', self.name], capture_output=True, timeout=60)
+        shutil.rmtree(self.dir, ignore_errors=True)
+
+
+def prometheus_figures(case, start, end, local=LocalPrometheus):
+    """PromQL at the steady-window bookends over the retained snapshot; UNMEASURED when absent."""
+    receipt = read(case.d/'load'/'metrics-snapshot.json')
+    if receipt is None:
+        return {'verdict': 'UNMEASURED', 'reason': 'no load/metrics-snapshot.json (labMetrics off or no load stage)'}
+    if receipt.get('verdict') != 'OBSERVED':
+        return {'verdict': 'UNMEASURED', 'reason': receipt.get('code')}
+    basis = 'k6 executor start to steady end'
+    if start is None:
+        start, end = load_window(case)
+        basis = 'controller load window'
+    if start is None or end <= start:
+        return {'verdict': 'UNMEASURED', 'reason': 'no steady window'}
+    w = max(1, int((end - start) / 1000))
+    server = local(case.d/'load'/receipt['file'])
+    try:
+        figures = {name: server.query(expr.format(w=w), end / 1000) for name, expr in QUERIES.items()}
+    finally:
+        server.close()
+    text = {row['labels'].get('queryid'): row['labels'].get('query') for row in figures.pop('statementText')}
+    for name in ('topStatementsSeconds', 'topStatementsCalls'):
+        for row in figures[name]:
+            row['query'] = (text.get(row['labels'].get('queryid')) or '')[:160]
+    return {'verdict': 'OBSERVED', 'window': {'basis': basis, 'startMs': start, 'endMs': end, 'seconds': w},
+            'snapshotSha256': receipt.get('sha256'), 'figures': figures,
+            'scope': 'event-loop utilization is the main thread\'s non-idle wall share, not /proc CPU; '
+                     'statements per write divide every observed pool\'s statements by api 2xx write requests'}
+
+
 def summarize(case, out):
     out = Path(out)
     label, start, end = window(case)
     pods, roles, nodes, placement = {}, {}, {}, {}
-    thread_samples, walsender_rows = {}, []
     used = 0
     for line in (out/'samples.jsonl').read_text().splitlines():
         row = json.loads(line)
@@ -465,11 +469,6 @@ def summarize(case, out):
         if start is not None and not (start <= at < end) or start is None and row.get('stage') != TRAFFIC:
             continue
         used += 1
-        for pod, value in (row.get('threads') or {}).items():
-            if isinstance(value, dict) and 'tasks' in value:
-                thread_samples.setdefault(pod, []).append(value)
-        if isinstance(row.get('walsender'), list):
-            walsender_rows.append(row['walsender'])
         for entry in row.get('placement', []):
             name, node, _ = entry.split()
             placement[name] = node
@@ -513,9 +512,7 @@ def summarize(case, out):
                                      'workingSetMiB': distribution(cell['workingSetMiB'])}
                                  for c, cell in sorted(roles.items())},
         'podLogs': read(out/'podlogs'/'followers.json'),
-        'evaluatorThreads': thread_shares(thread_samples),
-        'walsender': walsender_waits(walsender_rows),
-        'pgStatStatements': statement_delta(out),
+        'prometheus': prometheus_figures(case, start, end),
         'pgstreamDelivery': delivery(out),
     }
 

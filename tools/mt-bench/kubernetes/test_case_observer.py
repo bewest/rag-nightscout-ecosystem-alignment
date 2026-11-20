@@ -150,70 +150,79 @@ if __name__ == '__main__':
 
 
 class Traffic(Fake):
-    """A case in traffic: PostgreSQL and two evaluator ordinals answer the capture reads."""
+    """A case in traffic: PostgreSQL and two evaluator ordinals; records every exec."""
 
     def __init__(self):
         super().__init__({})
         ev = {'app': 'ev', 'app.kubernetes.io/component': 'evaluator'}
         self.pods = [pod('evaluator-0', 'node-a', ev, ['evaluator']), pod('evaluator-1', 'node-a', ev, ['evaluator']),
                      pod('postgres-0', 'node-a', {'app': 'pg'}, ['postgres'])]
-        self.ticks, self.calls, self.statements = {}, 0, 0
+        self.execs = []
 
     def __call__(self, *args, timeout=12):
-        if args[0] == 'exec' and args[3] == 'postgres' and 'psql' in args:
-            start = args.index('psql')
-            sql = [args[i + 1] for i, a in enumerate(args) if a == '-c' and i > start]
-            if sql == [o.SLOT_SQL]:
-                return json.dumps({'active': True, 'confirmedLagBytes': 1000, 'retainedWalBytes': 2000})
-            if o.WALSENDER_SQL in sql:
-                return '\n'.join(json.dumps([{'pid': 7, 'state': 'active', 'waitEventType': 'IPC' if i else 'Client',
-                                              'waitEvent': 'WalSenderWriteData' if not i else 'x'}]) + ('\n' if i < 4 else '')
-                                 for i in range(5))
-            if o.PGSS_SQL in sql:
-                self.statements += 1
-                return json.dumps({'at': 'T%d' % self.statements, 'rows': [
-                    {'queryid': '1', 'dbid': 5, 'userid': 9, 'toplevel': True, 'calls': 10 * self.statements,
-                     'total_exec_time': 4.0 * self.statements, 'rows': self.statements, 'query': 'SELECT $1'}]}) + '\n'
-        if args[0] == 'exec' and args[3] == 'evaluator' and args[-2] == '-e':
-            name = args[1]
-            seen = self.ticks.setdefault(name, 0)
-            self.ticks[name] += 1
-            # Per second of uptime: main thread 0.9 core, one helper thread 0.1.
-            return json.dumps({'uptime': 100 + seen, 'tasks': [[1, 'node', 90 * seen, 0], [7, 'V8 Worker', 10 * seen, 0]]})
+        if args[0] == 'exec':
+            self.execs.append(args)
+            return ''
         return super().__call__(*args, timeout=timeout)
 
 
+class FakePrometheus:
+    """Stands in for LocalPrometheus: answers each query from a table, records the bookend."""
+    queries = []
+
+    def __init__(self, archive):
+        self.archive = archive
+
+    def query(self, expr, at):
+        FakePrometheus.queries.append((expr, at))
+        if expr.startswith('max by (queryid, query)'):
+            return [{'labels': {'queryid': '7', 'query': 'SELECT $1'}, 'value': 1.0}]
+        if expr.startswith('topk(25, sum by (queryid) (increase(pg_stat_statements_seconds_total'):
+            return [{'labels': {'queryid': '7'}, 'value': 2.5}]
+        return [{'labels': {'pod': 'evaluator-0'}, 'value': 0.5}]
+
+    def close(self):
+        pass
+
+
 class Capture(unittest.TestCase):
-    def test_threads_walsender_and_statement_snapshots_are_recorded_and_reduced(self):
+    def test_traffic_samples_make_no_exec(self):
+        # The hand capture (/proc threads, walsender, pg_stat_statements, slot) is retired on
+        # Kubernetes: with the node's CPU model known, a traffic sample makes no exec at all.
         tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
         c = case(tmp.name, None)
         out = Path(tmp.name)/'out'; out.mkdir()
-        fake, state = Traffic(), {'out': out, 'nodes': {}, 'followers': {}, 'cap': 1}
+        fake = Traffic()
+        state = {'out': out, 'nodes': {'node-a': {'cpuModel': 'X'}}, 'followers': {}, 'cap': 1}
         rows = [o.sample(c, fake, state) for _ in range(4)]
-        self.assertTrue((out/'pg_stat_statements-start.json').is_file() and (out/'pg_stat_statements-latest.json').is_file())
-        (c.runtime/'stages.json').write_text(json.dumps([{'stage': 'observe correctness'}]))
-        o.sample(c, fake, state)
-        self.assertTrue((out/'pg_stat_statements-end.json').is_file())
-        self.assertEqual(set(rows[0]['threads']), {'evaluator-0', 'evaluator-1'})
-        with (out/'samples.jsonl').open('w') as f:
-            for row in rows:
-                f.write(json.dumps(row) + '\n')
-        summary = o.summarize(c, out)
-        self.assertEqual(summary['evaluatorThreads']['evaluator-1']['mainThreadCores']['median'], 0.9)
-        self.assertEqual(summary['evaluatorThreads']['evaluator-1']['otherThreadsCores']['median'], 0.1)
-        self.assertEqual(summary['evaluatorThreads']['evaluator-0']['busiestOtherThreads'], [('V8 Worker', 0.1)])
-        self.assertEqual(summary['walsender']['byWaitEvent']['Client:WalSenderWriteData'], 4)
-        self.assertEqual(summary['walsender']['samples'], 20)
-        statements = summary['pgStatStatements']
-        self.assertEqual((statements['calls'], statements['totalMs']), (20, 8.0))  # start T1 to end T3
+        self.assertEqual(fake.execs, [])
+        self.assertFalse(any(key in row for row in rows for key in ('threads', 'walsender', 'slot')))
+        self.assertEqual(list(out.glob('pg_stat_statements-*.json')), [])
 
-    def test_statement_snapshot_failure_is_recorded_not_raised(self):
+    def test_prometheus_figures_need_a_snapshot(self):
         tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
-        def broken(*args, timeout=12):
-            raise subprocess.CalledProcessError(1, 'psql')
-        o.statements(broken, Path(tmp.name), 'start')
-        self.assertEqual(json.loads((Path(tmp.name)/'pg_stat_statements-start.json').read_text())['verdict'], 'UNMEASURED')
-        self.assertEqual(o.statement_delta(Path(tmp.name))['verdict'], 'UNMEASURED')
+        c = case(tmp.name, None)
+        self.assertEqual(o.prometheus_figures(c, 0, 1000, local=FakePrometheus)['verdict'], 'UNMEASURED')
+        (c.d/'load').mkdir()
+        (c.d/'load'/'metrics-snapshot.json').write_text(json.dumps({'verdict': 'UNMEASURED', 'code': 'K8S_METRICS_SNAPSHOT_UNMEASURED'}))
+        value = o.prometheus_figures(c, 0, 1000, local=FakePrometheus)
+        self.assertEqual((value['verdict'], value['reason']), ('UNMEASURED', 'K8S_METRICS_SNAPSHOT_UNMEASURED'))
+
+    def test_prometheus_figures_at_the_steady_bookends(self):
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        c = case(tmp.name, None)
+        (c.d/'load').mkdir()
+        (c.d/'load'/'metrics-snapshot.json').write_text(json.dumps({'verdict': 'OBSERVED', 'file': 'metrics-tsdb.tar', 'sha256': 'ab'}))
+        # No k6 executor windows: the controller's load window is the bookend.
+        (c.d/'load'/'window.json').write_text(json.dumps({'loadStartedAt': 1000.0, 'loadEndedAt': 1600.5}))
+        FakePrometheus.queries = []
+        value = o.prometheus_figures(c, None, None, local=FakePrometheus)
+        self.assertEqual(value['verdict'], 'OBSERVED')
+        self.assertEqual(value['window'], {'basis': 'controller load window', 'startMs': 1000000.0, 'endMs': 1600500.0, 'seconds': 600})
+        self.assertEqual({at for _, at in FakePrometheus.queries}, {1600.5})
+        self.assertTrue(all('[600s]' in expr for expr, _ in FakePrometheus.queries))
+        self.assertEqual(set(value['figures']), set(o.QUERIES) - {'statementText'})
+        self.assertEqual(value['figures']['topStatementsSeconds'], [{'labels': {'queryid': '7'}, 'value': 2.5, 'query': 'SELECT $1'}])
 
     def test_delivery_span_and_gap_from_receiver_trace(self):
         tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
