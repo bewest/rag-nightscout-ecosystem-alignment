@@ -1,14 +1,12 @@
 """Profile controls use the actual adapter census and UID cleanup planner."""
 import ast
 import copy
-import json
 from contextlib import contextmanager
 from pathlib import Path
 import unittest
 
 import application_topology as topology
 import kube_adapter as k
-import candidate
 import frozen
 import toolchain
 from test_adapter import fixture
@@ -191,74 +189,6 @@ class ApplicationTopology(unittest.TestCase):
         self.assertEqual(observed['pgstream'], 300)
         self.assertTrue(all(topology.readiness_signal(scope['intent'], role, k.need) for role in topology.ROLES))
         self.assertFalse(topology.readiness_signal(scope['intent'], 'pgstream', k.need))
-
-    def test_startup_proof_has_no_lease_but_keeps_generation_and_native_checks(self):
-        for protocol in ('startup-v2', 'startup-v3', 'startup-v4'):
-            with self.subTest(protocol=protocol):
-                self.check_startup_proof(protocol)
-
-    def check_startup_proof(self, protocol):
-        config = self.c
-        config['pins']['candidate'] = {'diagnosticSha256': '1'*64, 'platformVerification': protocol}
-        proof = {'version': 1, 'credentialBoundary': 'admin-private-api',
-                 'coreCommit': config['pins']['pair']['core'], 'deployCommit': config['pins']['pair']['deploy'],
-                 'diagnosticSha256': '1'*64, 'fixture': {'namespace': config['namespace'], 'runId': config['runId']},
-                 'nativeSource': {'system_id': '123', 'timeline': 1, 'database': 'nightscout_compose_test', 'slot': 'nsdemo_pgstream'},
-                 'nativeGeneration': 'synthetic', 'nativeSelectionSha256': '2'*64, 'selectionSha256': '3'*64,
-                 'roles': [{'role': role, 'generation': '4'*64} for role in candidate.ROLES]}
-        candidate.proof(k, config, proof, now=10)
-        proof['roles'][0]['generation'] = 'wrong'
-        with self.assertRaisesRegex(k.Refused, 'CANDIDATE_GENERATION_CHANGED'):
-            candidate.proof(k, config, proof, now=10)
-        proof['roles'][0]['generation'] = '4'*64
-        candidate.proof(k, config, proof, now=10)
-        config['pins']['candidate'].pop('platformVerification')
-        with self.assertRaisesRegex(k.Refused, 'DEADLINE_FORMAT'):
-            candidate.proof(k, config, proof, now=10)
-        config['pins']['candidate']['platformVerification'] = protocol
-        candidate.proof(k, config, proof, now=10)
-        config['pins']['candidate']['platformVerification'] = 'startup-v5'
-        with self.assertRaisesRegex(k.Refused, 'CANDIDATE_PLATFORM_VERIFICATION_CHANGED'):
-            candidate.proof(k, config, proof, now=10)
-        config['pins']['candidate']['platformVerification'] = protocol
-        candidate.proof(k, config, proof, now=10)
-
-    def test_startup_protocol_marker_is_bound_to_source_contract(self):
-        for protocol in ('startup-v2', 'startup-v3', 'startup-v4'):
-            with self.subTest(protocol=protocol):
-                self.check_startup_pins(protocol)
-
-    def check_startup_pins(self, protocol):
-        config = self.c
-        p = config['pins']
-        selection = dict(diagnosticSha256='0'*64, producerBinarySha256='1'*64, nativeCatalogueSha256='2'*64,
-                         imageConfigId=p['appImageId'], sourceAcceptance='PENDING', platformVerification=protocol)
-        p.update(candidate=selection, postgresImage='example.invalid/postgres@sha256:'+'7'*64,
-                 postgresImageId='sha256:'+'8'*64)
-        self.inventory.update(candidateContract=copy.deepcopy(selection), images={'postgres': p['postgresImage']})
-        contract = dict(selection, coreCommit=p['pair']['core'], deployCommit=p['pair']['deploy'], localImageId=p['appImageId'])
-        objects = {'ConfigMap/provision-scripts': {'data': {'source-contract.json': json.dumps(contract)}}}
-        candidate.pins(k, config, self.inventory, objects)
-        contract.pop('platformVerification')
-        objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = json.dumps(contract)
-        with self.assertRaisesRegex(k.Refused, 'CANDIDATE_PLATFORM_VERIFICATION_CHANGED'):
-            candidate.pins(k, config, self.inventory, objects)
-        contract['platformVerification'] = 'startup-v3' if protocol == 'startup-v2' else 'startup-v2'
-        objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = json.dumps(contract)
-        with self.assertRaisesRegex(k.Refused, 'CANDIDATE_PLATFORM_VERIFICATION_CHANGED'):
-            candidate.pins(k, config, self.inventory, objects)
-        contract['platformVerification'] = protocol
-        objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = json.dumps(contract)
-        candidate.pins(k, config, self.inventory, objects)
-        selection['platformVerification'] = contract['platformVerification'] = 'startup-v5'
-        self.inventory['candidateContract'] = copy.deepcopy(selection)
-        objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = json.dumps(contract)
-        with self.assertRaisesRegex(k.Refused, 'CANDIDATE_PLATFORM_VERIFICATION_CHANGED'):
-            candidate.pins(k, config, self.inventory, objects)
-        selection['platformVerification'] = contract['platformVerification'] = protocol
-        self.inventory['candidateContract'] = copy.deepcopy(selection)
-        objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = json.dumps(contract)
-        candidate.pins(k, config, self.inventory, objects)
 
 
 if __name__ == '__main__':

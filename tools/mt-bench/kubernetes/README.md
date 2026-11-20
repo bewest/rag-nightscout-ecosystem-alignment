@@ -920,12 +920,6 @@ checks the actual reference, token mounts, resources and security fields. A
 redacted reference never counts as exact evidence. Native load and artifact
 readers use the same adapter.
 
-Explicit `startup-v4` retains the source client's version-1 startup receipt and
-the native completion-receipt requirement. The source owns v4 role digests,
-presentation catalogue checks and tenant-floor proof authority. The helper does
-not issue a tenant-floor backfill. New-image runtime qualification remains with
-the run owner.
-
 Focused offline controls: `python3 -B -m unittest -v test_native_input test_native_load test_native_files test_native_join` from this
 directory. Set `NS_NATIVE_K6_TEST_BINARY` to an existing pinned local k6 binary
 to execute the real summary/event export control; it opens no network listener.

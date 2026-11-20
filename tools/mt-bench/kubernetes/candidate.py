@@ -11,10 +11,6 @@ import population_ceiling
 
 ROLES = ['api', 'evaluator', 'realtime']
 FIELDS = ('diagnosticSha256', 'producerBinarySha256', 'nativeCatalogueSha256')
-# v4 extends source-owned role digests with presentation catalogues and tenant
-# floor proof authority. Its admin client still emits the same closed version-1
-# startup receipt; no tenant backfill or structural verification runs here.
-STARTUP_PROTOCOLS = ('startup-v2', 'startup-v3', 'startup-v4')
 NATIVE_RECEIPT_PROTOCOLS = ('startup-v3', 'startup-v4')
 VERIFICATION_JOB = 'Job/verification'
 
@@ -67,13 +63,9 @@ def pins(k, c, inventory, objects):
     except (ValueError, KeyError):
         raise k.Refused('K8S_CANDIDATE_CONTRACT_REQUIRED') from None
     if split:
-        k.need(contract == {'coreCommit':runtime['pair']['core'], 'deployCommit':runtime['pair']['deploy']} and
-               selected.get('platformVerification') in STARTUP_PROTOCOLS, 'CANDIDATE_PLATFORM_VERIFICATION_CHANGED')
-        contract = selected
-    else:
-        k.need(selected.get('platformVerification') in (None, *STARTUP_PROTOCOLS) and
-               selected.get('platformVerification') == contract.get('platformVerification'),
+        k.need(contract == {'coreCommit':runtime['pair']['core'], 'deployCommit':runtime['pair']['deploy']},
                'CANDIDATE_PLATFORM_VERIFICATION_CHANGED')
+        contract = selected
     k.need((ACK_BUDGET in contract) == ('producerAckReadback' in c), 'PGSTREAM_ACK_READBACK_SCOPE')
     k.need(contract.get(primer_storage.FIELD)==c.get(primer_storage.FIELD) and
            (primer_storage.FIELD in contract)==('primerStorageReceipt' in c), 'PRIMER_STORAGE_PUBLISH_SCOPE')
@@ -134,10 +126,6 @@ def images(k, c, observation):
 
 
 def proof(k, c, value, now=None):
-    p = c['pins']
-    selected = p['candidate']
-    k.need(selected.get('platformVerification') in (None, *STARTUP_PROTOCOLS),
-           'CANDIDATE_PLATFORM_VERIFICATION_CHANGED')
     k.need(isinstance(value, dict) and value.get('version') == 1 and
            value.get('credentialBoundary') == 'admin-private-api', 'CANDIDATE_ADMIN_PROOF_REQUIRED')
     if verified_serving(c):
@@ -159,10 +147,7 @@ def proof(k, c, value, now=None):
            len(names) == len(set(names)) and set(ROLES) <= set(names), 'CANDIDATE_VERIFICATION_CHANGED')
     for row in roster:
         k.need(k.HEX.fullmatch(row.get('generation', '')), 'CANDIDATE_GENERATION_CHANGED')
-        startup = selected.get('platformVerification') in STARTUP_PROTOCOLS
-        if startup:
-            k.need(set(row) == {'role', 'generation'}, 'CANDIDATE_VERIFICATION_CHANGED')
-        elif now is not None:
+        if now is not None:
             k.need(k.timestamp(row.get('expiresAt', '')) > now, 'CANDIDATE_VERIFICATION_EXPIRED')
 
 
