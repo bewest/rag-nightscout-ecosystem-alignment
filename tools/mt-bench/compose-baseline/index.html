@@ -1159,8 +1159,6 @@
       
         
       
-        
-      
     
     
     
@@ -2874,66 +2872,6 @@
   
   
   
-    <a href="../../queue/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    queue/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
     <a href="../../review/index.html" class="md-nav__link">
       
   
@@ -3854,7 +3792,7 @@
 
 
 <h1 id="compose-baseline-mt-bench-baseline-harness">compose-baseline: MT-BENCH-BASELINE harness<a class="headerlink" href="#compose-baseline-mt-bench-baseline-harness" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>ee1621b38</code>.</em></p>
+<p><em>Living document, last changed 2026-11-19 at <code>88288834f</code>.</em></p>
 <p><em>Contributor-facing. Measures the one-host multitenant Compose reference (core <code>deploy/multitenant</code>)
 at 1, 10, 50 and 200 synthetic tenants with one hot tenant, and records the numbers. It claims no
 limits. Results: <a href="../../../reports/tenancy/bench-baseline-2026-11-10/index.html"><code>reports/tenancy/bench-baseline-2026-11-10/</code></a>.</em></p>
@@ -3870,7 +3808,7 @@ limits. Results: <a href="../../../reports/tenancy/bench-baseline-2026-11-10/ind
 <tbody>
 <tr>
 <td>p50/p95/p99 latency per client shape, failure rate, dropped iterations</td>
-<td>k6 (<code>k6/workload.js</code>, <code>grafana/k6:1.3.0</code>)</td>
+<td>k6 (<code>../capacity/k6/workload.js</code>, <code>grafana/k6:1.3.0</code>)</td>
 <td><code>k6-summary.json</code>, <code>k6.log</code></td>
 </tr>
 <tr>
@@ -3988,15 +3926,17 @@ answers 401, as a single-tenant site without careportal does (<code>lib/api/trea
 its own volumes; <code>teardown</code> removes the volumes and the private state and keeps the raw output.
 <code>NS_BENCH_WORK</code> must be outside the core checkout (<code>prepare.js</code> refuses state inside it).</p>
 <h3 id="another-base-url-kubernetes-binding">Another base URL (Kubernetes binding)<a class="headerlink" href="#another-base-url-kubernetes-binding" title="Permanent link">&para;</a></h3>
-<p><code>k6/workload.js</code> and <code>probes/fanout.js</code> take the base URL and a tenants file
-(<code>[{id, host, token}]</code>, data tokens, private) and nothing else; Host selects the tenant. Against a
-deployment the harness did not create:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>host<span class="w"> </span>-v<span class="w"> </span><span class="nv">$PWD</span>/tools/mt-bench/compose-baseline/k6:/scripts:ro<span class="w"> </span>-v<span class="w"> </span><span class="nv">$OUT</span>:/out<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">BASE_URL</span><span class="o">=</span>https://bench.example.test<span class="w"> </span>-e<span class="w"> </span><span class="nv">TENANTS_FILE</span><span class="o">=</span>/out/tenants.private.json<span class="w"> </span>-e<span class="w"> </span><span class="nv">RUN_ID</span><span class="o">=</span>bench-<span class="k">$(</span>date<span class="w"> </span>+%s<span class="k">)</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">RUN_START</span><span class="o">=</span><span class="k">$((</span><span class="w"> </span><span class="k">$(</span>date<span class="w"> </span>+%s<span class="k">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">1000</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="m">86400000</span><span class="w"> </span><span class="k">))</span><span class="w"> </span>-e<span class="w"> </span><span class="nv">DURATION</span><span class="o">=</span><span class="m">300</span><span class="w"> </span>-e<span class="w"> </span><span class="nv">ACCEL</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>-e<span class="w"> </span><span class="nv">HOT_FACTOR</span><span class="o">=</span><span class="m">10</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span>grafana/k6:1.3.0<span class="w"> </span>run<span class="w"> </span>--summary-export<span class="w"> </span>/out/k6-summary.json<span class="w"> </span>/scripts/workload.js
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nv">NODE_PATH</span><span class="o">=</span><span class="nv">$NS_BENCH_CORE</span>/node_modules<span class="w"> </span><span class="nv">SKIP_RECONNECT</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>node<span class="w"> </span>tools/mt-bench/compose-baseline/probes/fanout.js<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span>--base<span class="w"> </span>https://bench.example.test<span class="w"> </span>--tenants<span class="w"> </span><span class="nv">$OUT</span>/tenants.private.json<span class="w"> </span>--runid<span class="w"> </span>&lt;same<span class="w"> </span>RUN_ID&gt;<span class="w"> </span>--duration<span class="w"> </span><span class="m">300</span><span class="w"> </span>--out<span class="w"> </span><span class="nv">$OUT</span>/fanout.json
+<p><code>../capacity/k6/workload.js</code> and <code>probes/fanout.js</code> take the base URL and a tenants file
+(<code>[{id, host, token}]</code>, data tokens, private) and nothing else; Host selects the tenant. k6 reads
+each tenant's JWT from the file, so exchange them first. Against a deployment the harness did not create:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python3<span class="w"> </span>tools/mt-bench/m7-joined/jwt_tenants.py<span class="w"> </span><span class="nv">$OUT</span>/tenants.private.json<span class="w"> </span>https://bench.example.test<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="nv">$OUT</span>/k6-tenants.private.json
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>host<span class="w"> </span>-v<span class="w"> </span><span class="nv">$PWD</span>/tools/mt-bench/capacity/k6:/scripts:ro<span class="w"> </span>-v<span class="w"> </span><span class="nv">$OUT</span>:/out<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">BASE_URL</span><span class="o">=</span>https://bench.example.test<span class="w"> </span>-e<span class="w"> </span><span class="nv">TENANTS_FILE</span><span class="o">=</span>/out/k6-tenants.private.json<span class="w"> </span>-e<span class="w"> </span><span class="nv">RUN_ID</span><span class="o">=</span>bench-<span class="k">$(</span>date<span class="w"> </span>+%s<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">RUN_START</span><span class="o">=</span><span class="k">$((</span><span class="w"> </span><span class="k">$(</span>date<span class="w"> </span>+%s<span class="k">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">1000</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="m">86400000</span><span class="w"> </span><span class="k">))</span><span class="w"> </span>-e<span class="w"> </span><span class="nv">DURATION</span><span class="o">=</span><span class="m">300</span><span class="w"> </span>-e<span class="w"> </span><span class="nv">ACCEL</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>-e<span class="w"> </span><span class="nv">HOT_FACTOR</span><span class="o">=</span><span class="m">10</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">SHAPES</span><span class="o">=</span>w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span>grafana/k6:1.3.0<span class="w"> </span>run<span class="w"> </span>--summary-export<span class="w"> </span>/out/k6-summary.json<span class="w"> </span>/scripts/workload.js
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="nv">NODE_PATH</span><span class="o">=</span><span class="nv">$NS_BENCH_CORE</span>/node_modules<span class="w"> </span><span class="nv">SKIP_RECONNECT</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>node<span class="w"> </span>tools/mt-bench/compose-baseline/probes/fanout.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">  </span>--base<span class="w"> </span>https://bench.example.test<span class="w"> </span>--tenants<span class="w"> </span><span class="nv">$OUT</span>/tenants.private.json<span class="w"> </span>--runid<span class="w"> </span>&lt;same<span class="w"> </span>RUN_ID&gt;<span class="w"> </span>--duration<span class="w"> </span><span class="m">300</span><span class="w"> </span>--out<span class="w"> </span><span class="nv">$OUT</span>/fanout.json
 </code></pre></div>
 <p>The oracle, the samplers and the realtime restart are Compose-specific (they <code>docker exec</code> into the
 postgres container and <code>docker compose restart</code> realtime); a Kubernetes run needs its own operator

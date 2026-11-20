@@ -1159,8 +1159,6 @@
       
         
       
-        
-      
     
     
     
@@ -2965,66 +2963,6 @@
   
   
   
-    <a href="../../queue/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    queue/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
     <a href="../../review/index.html" class="md-nav__link">
       
   
@@ -3873,6 +3811,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#standard-discovery-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard discovery runs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#placement-and-fit" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3928,7 +3877,7 @@
 
 
 <h1 id="kubernetes-boundary-for-the-m7-synthetic-instrument">Kubernetes boundary for the M7 synthetic instrument<a class="headerlink" href="#kubernetes-boundary-for-the-m7-synthetic-instrument" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-18 at <code>c22139bfb</code>.</em></p>
+<p><em>Living document, last changed 2026-11-19 at <code>ebe69c635</code>.</em></p>
 <p>This adapter prepares and observes one independently owned Kubernetes fixture.
 It reuses the <a href="../m7-joined/RUNNER.html">existing M7 workload, stock client and oracles</a>.
 Preparation and offline controls start no services. An operator or explicitly
@@ -3992,9 +3941,7 @@ the full roster. Its probes, access checks and tenant-wide observers can reach
 tenants outside the ordinary subset. Storage checks require both k6 write counters
 for every selected tenant and query marker-tagged rows across the full database.
 An ordinary row on an unselected tenant fails the check. Probe writes on any
-provisioned tenant reconcile against the separate probe ledger. Evaluator preload convergence
-is a recorded signal by default. Set <code>readiness: require-all</code> in the selected
-preload phase to require full convergence in experiments that depend on it.</p>
+provisioned tenant reconcile against the separate probe ledger.</p>
 <p>The optional <code>bootstrapHelper</code> manifest entry selects the reviewed deploy source
 commit and SHA-256 of <code>bootstrap.js</code>. The constructor verifies the original
 image file, extracts the corrected file from Git and installs it in an immutable
@@ -4120,36 +4067,8 @@ completion continue to use their existing predicates and clocks.</p>
 <p>Set optional <code>workload.evaluatorProgressBudget</code> with <code>maxQueriesPerPhase</code> and
 <code>maxBytesPerPhase</code> to select a different three-round evaluator capture budget.
 The packet retains the exact policy and keeps an exhausted capture <code>UNMEASURED</code>.</p>
-<p>For a fresh discovery workload, opt into an observation phase before ordinary
-traffic with <code>profile.phases.preloadConvergence</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span><span class="nt">"contract"</span><span class="p">:</span><span class="s2">"strict-preload-convergence-v1"</span><span class="p">,</span><span class="nt">"seconds"</span><span class="p">:</span><span class="mi">1800</span><span class="p">,</span><span class="nt">"intervalSeconds"</span><span class="p">:</span><span class="mi">15</span><span class="p">}</span>
-</code></pre></div>
-<p>Include this selected time in <code>profile.phases.workSeconds</code>. The phase observes
-the real source without dispatching work, retains every strict sample and saves
-exact source bytes privately before decoding. It requires two complete strict
-whole-cohort ready views with completed acquisition credit, then runs the normal
-initial strict check fresh before creating the driver. The selected phase,
-original work, cleanup and active Job cutoffs bound all observations. A late
-response cannot admit traffic. The packet records the effective window, stop
-reason, raw bytes, capture policy, source identities and command bound.</p>
-<p>Historical failed-completion counts remain visible and prevent a qualification
-pass. Unchanged valid historical counts can admit execution; an increase,
-decrease, reset, poison, unknown source code or identity change refuses it.
-This phase does not change the later clinical or load assessment. Omit the
-selection to retain immediate initial readiness behavior; that check now also
-retains its raw response and bounded refusal evidence.</p>
-<p>Set <code>profile.phases.accessSetupSeconds</code> to give the first and last selected
-socket witnesses an explicit warm-up window. The native client connects to
-both exact hosts without credentials first. It retries any refusal (HTTP 403 or
-a transport error) until the warm window ends and records each host's attempts
-and elapsed time. A host that never connects is recorded as <code>UNMEASURED</code> with
-its last status and the run continues; the witness never reports PASS on
-missing evidence. The runner then checks both own-token exchanges, both
-cross-tenant refusals, and the connected zero-foreign-frame observation. A
-socket that cannot be observed is recorded as an <code>UNMEASURED</code> case and the
-overall access verdict is <code>UNMEASURED</code>; a foreign frame, an accepted wrong
-credential or a cross-tenant read still stops the run. The access window has
-its own budget and remains within the fixture's entered work cutoff.</p>
+<p>An initial read records the owned evaluator's progress and tenant scope before traffic starts. A tenant without input may have zero completed acquisitions. Legacy profiles may still contain <code>phases.preloadConvergence</code>; the standard load ignores that field.</p>
+<p>The access witness checks both own-token exchanges, both cross-tenant refusals, and foreign frames on the selected socket connections. Missing socket observations yield <code>UNMEASURED</code>. A foreign frame, an accepted wrong credential or a cross-tenant read stops the run.</p>
 <p>For an independent database observation within the original work deadline, run
 <code>adapter.py observe-sql PACKET NEW_DIRECTORY</code>. It counts the source primer's
 stored seed rows and distinct tenants, checks the candidate database epoch and
@@ -4174,12 +4093,7 @@ Viewer priming uses the separately configurable <code>workload.viewerSetup</code
 progress wait and connection ramp. The <a href="../m7-joined/RUNNER.html#phase-clocks-and-local-discovery-to-completion">runner guide</a>
 describes the equivalent local <code>viewer-setup</code> fields. Commission and recovery
 use polling for stock display coverage. The entered work cutoff bounds both actors.
-<code>drainSeconds</code> bounds the final wait. Each sampled accepted write has a
-120-second deadline from the later of HTTP acknowledgement and independently
-observed tenant warmth. A cold write can continue into the remaining drain.
-The result reports missing observations at the cutoff.
-All-writer clinical drain requires its own observation. The frame recorder
-retains its explicit overflow refusal.</p>
+<code>drainSeconds</code> bounds the final wait. The clinical deadline is 120 seconds from input acceptance. Every accepted input that owes clinical work must have durable output by the end of drain. The frame recorder retains its overflow refusal.</p>
 <p>Read <code>experiment/result.json</code>, <code>load/failure.json</code> when present, and
 <code>experiment/observations/reduction.json</code> before fixture cleanup. These retain
 first failure, offered work, stored writes, selected clinical witnesses, frames
@@ -4225,7 +4139,7 @@ exists. Terminal totals stay UNMEASURED when the summary is missing.</p>
 </tr>
 </tbody>
 </table>
-<p><code>claims.cjs</code> reruns <code>completed-oracle.cjs</code> over raw independent SQL rows and actual
+<p>The removed <code>claims.cjs</code> reran <code>completed-oracle.cjs</code> over raw independent SQL rows and actual
 stock-client observations. This proves the existing selected BG-now bucket
 mean/last, typed durable output, stored row and client frame properties for the
 witness subset. It does not establish all clinical properties. The original
@@ -4239,9 +4153,9 @@ SHA256s, pullable application manifest reference, application image config ID
 and this adapter's content instrument. A local image config ID is not a registry
 manifest digest. Runtime observations preserve Kubernetes <code>imageID</code> separately;
 the environment owner must establish its image/source mapping.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>identity
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/check_export.py<span class="w"> </span>/absolute/binding-export<span class="w"> </span>/absolute/new/offline-join
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>prepare<span class="w"> </span>/absolute/private/run.json<span class="w"> </span>/absolute/private/inventory.json<span class="w"> </span>/absolute/private/render.json<span class="w"> </span>/absolute/new/run
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>identity
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/check_export.py<span class="w"> </span>/absolute/binding-export<span class="w"> </span>/absolute/new/offline-join
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>prepare<span class="w"> </span>/absolute/private/run.json<span class="w"> </span>/absolute/private/inventory.json<span class="w"> </span>/absolute/private/render.json<span class="w"> </span>/absolute/new/run
 </code></pre></div>
 <p>For the C3 candidate, carry the exported inventory's <code>candidateContract</code> into
 <code>pins.candidate</code> and add the commissioned <code>postgresImage</code> and <code>postgresImageId</code>.
@@ -4345,8 +4259,8 @@ can use an existing delegated scope; the adapter installs no service. Include
 both actors in headroom accounting; a shared host is recorded as shared.</p>
 <p>Source projections read private exports; redirect their output only to private
 files and merge the safe <code>completion</code> object into <code>run.json</code> before preparation:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>completion-source<span class="w"> </span>/absolute/private/run.json<span class="w"> </span>/absolute/private/evaluator/config.json<span class="w"> </span>/absolute/private/realtime/config.json
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>tenant-projection<span class="w"> </span>/absolute/private/provisioned.json<span class="w"> </span><span class="m">2</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>completion-source<span class="w"> </span>/absolute/private/run.json<span class="w"> </span>/absolute/private/evaluator/config.json<span class="w"> </span>/absolute/private/realtime/config.json
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>tenant-projection<span class="w"> </span>/absolute/private/provisioned.json<span class="w"> </span><span class="m">2</span>
 </code></pre></div>
 <p>Every command below that contacts Kubernetes or sends synthetic application
 traffic needs the environment owner's concrete finite allocation and explicit
@@ -4436,10 +4350,6 @@ prepared <code>run.json</code> hash and exact namespace UID must match the alloc
 <td><code>nodeCeilings: {nodeName: {millicpus, memoryBytes, ephemeralBytes}}</code></td>
 <td>This batch's allowed container limits on each existing worker, after peer allowances</td>
 </tr>
-<tr>
-<td><code>actorCeilings: {hostId: {millicpus, memoryBytes}}</code></td>
-<td>This batch's combined native driver/observer allocation per host</td>
-</tr>
 </tbody>
 </table>
 <p>For each resource dimension the planner compares each init phase, including
@@ -4463,10 +4373,11 @@ original uncertainty evidence is retained. These measurements supply no
 availability SLO or capacity promotion. The continuity join also requires
 unchanged peer Pod/container incarnations and a native load interval spanning
 the exact role restart; probe setup time alone cannot establish continuity.</p>
-<p>Load assessment also joins the original M7 HTTP accounting, offered-work and
+<p>Load assessment also joins the original M7 HTTP accounting and
 settings-fingerprint reducers. Every selected scenario and JWT setup must have
-observed attempts, settled expected responses, source-counter reconciliation,
-no dropped work and an observed matching source-derived settings fingerprint.
+observed attempts, settled expected responses, source-counter reconciliation
+and an observed matching source-derived settings fingerprint. Drops are a figure
+by operation (decision driver-sized-from-offer).
 Missing evidence refuses its dependent load qualification. The independent
 storage, clinical and frame checks remain required; HTTP counters alone cannot
 establish those outcomes. Raw functional findings survive at
@@ -4478,9 +4389,9 @@ Pod durability. Source acceptance and comprehensive application acceptance remai
 with the joined candidate's existing owner. Performance is reported separately
 from correctness, and capacity acceptance stays <code>NOT_GRANTED</code> throughout.</p>
 <p>Focused controls, using synthetic API replies and loopback/fake process boundaries:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/mt-bench/kubernetes<span class="w"> </span>-p<span class="w"> </span><span class="s1">'test_*.py'</span><span class="w"> </span>-v
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>node<span class="w"> </span>tools/mt-bench/kubernetes/claims.test.cjs
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>node<span class="w"> </span>tools/mt-bench/kubernetes/access.test.cjs
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/mt-bench/kubernetes<span class="w"> </span>-p<span class="w"> </span><span class="s1">'test_*.py'</span><span class="w"> </span>-v
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>node<span class="w"> </span>tools/mt-bench/kubernetes/claims.test.cjs
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>node<span class="w"> </span>tools/mt-bench/kubernetes/access.test.cjs
 </code></pre></div>
 <p>The <a href="workloads/index.html">workload profiles</a> bind both aggregate commissioning
 and realistic per-shape demand through this same prepare/load/assess path.
@@ -4493,9 +4404,7 @@ all ordinary shape rates without changing roster or viewers. An aggregate
 Every writer tenant retains independent accepted/stored count checks, including
 tenants with no viewer. Every accepted probe requires its distinct retained
 clinical witness. Client evidence is required for the declared viewer assignment;
-zero viewers is explicitly NOT_EXERCISED for client frames. Selected clinical
-probe outcomes and evaluator progress do not qualify ordinary all-writer intake,
-due work or fixed-target drain. The operating collector owner retains that work.
+zero viewers is explicitly NOT_EXERCISED for client frames. The accepted-input observer reconciles run-marked inputs against the ordinary and probe ledgers and checks durable completion through drain.
 <code>load/k6.log</code> contains structured event witnesses; <code>k6-native.log</code> preserves the
 full terminal summary separately so its size cannot displace the demand marker.</p>
 <h2 id="scheduling-requests-and-optional-service-limits">Scheduling requests and optional service limits<a class="headerlink" href="#scheduling-requests-and-optional-service-limits" title="Permanent link">&para;</a></h2>
@@ -4520,7 +4429,7 @@ change refuses. Hard-map keys, pod counts, scopes and other fields remain exact;
 unknown dimensions and masked values have no inferred equality. Resource
 readback refusals retain only the safe resource kind/name beside the code.</p>
 <p>Use a <strong>new</strong> copy of the released commissioner source with
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/kubernetes/commissioning-accounting.patch"><code>commissioning-accounting.patch</code></a>. The patch
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/kubernetes/commissioning-accounting.patch"><code>commissioning-accounting.patch</code></a>. The patch
 header identifies the base source hash; retained instruments are unchanged. From
 the new staging directory containing <code>bin/preflight.py</code>, apply the patch with
 <code>git apply /absolute/helper/tools/mt-bench/kubernetes/commissioning-accounting.patch</code>.
@@ -4553,19 +4462,33 @@ existing UID preconditions for every workload. Each separated serving role uses
 the existing <code>cohortReadySeconds</code> serving window; an elapsed readiness window
 inside the work deadline produces a role-specific UNMEASURED signal. Clinical
 completion, authority and isolation gates retain their existing requirements.</p>
-<p>For a scheduler-placed fixture, set <code>schedulerPlacement</code> in the lifecycle
-configuration and record <code>placementMode</code> as <code>scheduler</code> in the bound preflight
-envelope. Use the binding's <code>placement</code> and <code>placementByWorkload</code> inputs for
-native affinity, spread preferences and any existing-worker restrictions.
-The four serving roles can use preferred anti-affinity on their existing
-component and run labels. Their private Services stay stable across workers.
-Use digest-pinned images with the fixture's private pull credential.</p>
-<p>The lifecycle records the scheduler's Pod conditions. Before ordinary traffic,
-the attachment retains the actual Pod UIDs and assigned nodes in
-<code>scheduler-placement.json</code>. The deploy fit check uses current node usage
-and a complete Pod request census. Bound fixture Pods already count toward
-that census. The finite grant follows the observed placement and the normal
-roster checks reject changes before traffic.</p>
+<h3 id="standard-discovery-runs">Standard discovery runs<a class="headerlink" href="#standard-discovery-runs" title="Permanent link">&para;</a></h3>
+<p>Select a completed discovery case as the read-only template for tools, credentials
+and deployment topology. Supply the frozen package (source/build/delivery
+receipts), its captured deploy binding, a workload profile and a fresh case
+directory. Each point uses the same entrypoint and the same deploy request
+defaults, including the k6 Job. The directory basename identifies the run.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>standard<span class="w"> </span><span class="s2">"</span><span class="nv">$TEMPLATE_CASE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$PACKAGE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$PROFILE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$CASE</span><span class="s2">"</span><span class="w"> </span>--binding<span class="w"> </span><span class="s2">"</span><span class="nv">$BINDING</span><span class="s2">"</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>describe<span class="w"> </span><span class="s2">"</span><span class="nv">$CASE</span><span class="s2">/intent.json"</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>launch<span class="w"> </span><span class="s2">"</span><span class="nv">$CASE</span><span class="s2">/lifecycle-bound.json"</span>
+</code></pre></div>
+<p>The first command prepares and checks the run offline. An error leaves its
+partial output and reason in a sibling <code>*.failed-*/prepare-error.json</code>. The
+same case name can then be retried. The binding defaults to <code>$PACKAGE/binding</code>.
+Use <code>--core</code> to select the checkout for a new frozen core revision. The runtime
+creates unpinned Pods. Add <code>--reserved-worker-taint KEY=VALUE</code> to the first
+command to allow the existing reserved worker to participate. Kubernetes assigns
+the nodes and the runner records Pod UID, assigned node, Pending conditions and
+observed FailedScheduling events. <code>K8S_POD_UNSCHEDULABLE</code> reports the observed
+placement refusal when the readiness window expires.</p>
+<p>Change <code>population.provisionedTenants</code> and <code>population.ordinaryRosterTenants</code>
+in the profile to vary population. For realistic-v1, keeping <code>workloadScale</code>
+constant keeps per-tenant cadence constant. To compare populations at the same
+aggregate rate, multiply <code>workload.workloadScale</code> by the ratio of the old to
+new ordinary roster size, and hold <code>workload.logicalPollingClients</code> fixed. To step
+the rate at fixed population, change that scale, or use
+<code>workload.driverPlan.writeRateScale</code> for writes alone. The describe command
+prints the seven offered rates for the selected point.</p>
 <p>Current P platform receipts select <code>platformVerification: "startup-v2"</code> in both
 the source contract and candidate inventory. Their role rows contain exactly
 <code>role</code> and <code>generation</code>, without an expiry lease. Legacy candidate contracts
@@ -4581,12 +4504,14 @@ belong to the lane's frozen baseline and retained run evidence.</p>
 <p>The external-fixture controls report a skip when their source is absent. A skipped
 commissioner or binding control does not qualify a runtime configuration.</p>
 <h3 id="placement-and-fit">Placement and fit<a class="headerlink" href="#placement-and-fit" title="Permanent link">&para;</a></h3>
-<p>Runs rely on Kubernetes for placement and fit: authored requests, the namespace
-ResourceQuota and LimitRange, and the scheduler. The per-run owned-worker,
+<p>Kubernetes places standard runs using each Pod’s declared requests. A standard
+namespace quota accounts for the rendered requests and Pod count, with room
+for each controller to overlap a replacement. A LimitRange supplies omitted
+container requests. Explicit requests and Pod placement remain with Kubernetes. The per-run owned-worker,
 provision/serving phase-fit, node-memory and private provision-source proofs were
 removed on 2026-11-18 under decision
 <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#k8s-platform-proofs-to-deploy">k8s-platform-proofs-to-deploy</a>;
-the one fit check and image publication belong to nightscout-deploy. Reserving a
+the standalone fit report and image publication belong to nightscout-deploy. Reserving a
 worker follows <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#reserved-k8s-worker">reserved-k8s-worker</a>.
 <code>commissioning-accounting.patch</code> still carries an opt-in <code>resourcePhasePlan</code> hunk
 for the operator's commissioner; do not select it, because its <code>phase_fit</code> module
@@ -4594,7 +4519,7 @@ is gone.</p>
 <h2 id="outcome-evaluator-gate-on-kubernetes">Outcome evaluator gate on Kubernetes<a class="headerlink" href="#outcome-evaluator-gate-on-kubernetes" title="Permanent link">&para;</a></h2>
 <p>Decision <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#outcome-evaluator-gate">outcome-evaluator-gate</a>
 replaces the lifetime <code>failedCompletions == 0</code> rule and the instant midpoint
-readiness rule. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/m7-joined/outcome_gate.py">outcome_gate.py</a> is the one frozen gate; its
+readiness rule. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/m7-joined/outcome_gate.py">outcome_gate.py</a> is the one frozen gate; its
 identity is the SHA-256 of that file. Tenants, rate, windows, budgets and
 <code>deadlineMs</code> (default 120000) are configuration under the same identity.</p>
 <table>
@@ -4608,7 +4533,7 @@ identity is the SHA-256 of that file. Tenants, rate, windows, budgets and
 <tbody>
 <tr>
 <td>failed completions (lifetime counters at the end point)</td>
-<td>untyped, <code>unknown</code>, hard or unrecognised reason; a transient reason resolved or still open past the deadline</td>
+<td>untyped, <code>unknown</code>, hard or unrecognised reason, or a transient failure still open past the deadline</td>
 <td>typed rows without reasons or resolution fields; a transient still open at the end inside the deadline; no end point</td>
 </tr>
 <tr>
@@ -4617,9 +4542,9 @@ identity is the SHA-256 of that file. Tenants, rate, windows, budgets and
 <td>one point only</td>
 </tr>
 <tr>
-<td>readiness</td>
-<td>preload refused; an owner not ready, with a code or with an alert at the end point</td>
-<td>preload not selected or not retained; no end point</td>
+<td>evaluator health</td>
+<td>hard evaluator code or alert at the end point</td>
+<td>missing end point</td>
 </tr>
 <tr>
 <td>storage</td>
@@ -4632,71 +4557,27 @@ identity is the SHA-256 of that file. Tenants, rate, windows, budgets and
 <td>missing</td>
 </tr>
 <tr>
-<td>all-tenant catch-up</td>
-<td>a tenant pending once the window after writer join exceeds the deadline; a completion whose lower bound exceeds it; input changed</td>
-<td>not captured; pending inside the deadline</td>
+<td>catch-up per accepted input</td>
+<td>missing durable output at the end of drain or measured after the deadline</td>
+<td>incomplete input coverage, timing or durable evidence</td>
 </tr>
 </tbody>
 </table>
-<p>A declared transient reason (<code>verification-pending</code>, <code>startup-warming</code>) that
-completed inside the deadline is counted by reason and passes. Until the
+<p>Resolved <code>verification-pending</code> and <code>startup-warming</code> failures are counted by reason.
+Their maximum resolution time describes the process lifetime. The clinical deadline
+uses the current run's HTTP acknowledgement and tenant-bound durable output.
+On replay, the gate checks distinct input identities against each writer's accepted
+count and compares individual keys wherever the writer records are available. Until the
 source declares <code>view.failureReasonContract = evaluator-failure-reasons-v1</code>
 with <code>progress.failureReasons</code>, <code>unresolvedFailure</code> and
 <code>maxFailureResolutionMs</code>, every failed completion is untyped and fails.</p>
 <p>The midpoint is a signal. The runner records <code>load/progress-midpoint-signal.json</code> and stops
 the driver only for a hard reason (a FAIL above, or an evaluation alert). A
 not-ready owner at the midpoint continues. Raw responses are written before
-any decoder reads them (<code>progress-*.private.jsonl</code>; after an early load stop, <code>progress-stop.private.jsonl</code>, then <code>stored-counts.json</code>, recorded in <code>stop-evidence.json</code>). The verdict is <code>`load/outcome-gate.json</code>, summarised in <code>result.json</code>; a FAIL refuses the stage as <code>OUTCOME_GATE_FAIL</code> after both are written<code>; HTTP
-latency over every k6 shard summary is reported beside it (exact pooled
-count and mean; per-shard quantile ranges; pooled quantiles UNMEASURED).
-An idle tenant need not increment its completion counters in every load window.
-After the existing runtime, ownership, foreign-counter and reset checks pass,
-an absent per-tenant work increase remains</code>evaluatorProgress.verdict=UNMEASURED<code>with</code>counterStability=PASS<code>and observed counter deltas. It does not prevent
-the mandatory native fixed-target outcome check from running. That outcome
-judges the captured accepted-input floor and boundary-known due work; no idle
-completion credit is invented. Reported collector cost counts actual captured
-rounds, including when the strict midpoint produced only a retained signal.</code>outcome_rereduce.py` re-reduces a retained run into a new file beside it and
-refuses if any original file changes.</p>
-<p>Run configuration <code>outcomeGate: {"midpointStop": "never"}</code> records the midpoint
-without stopping the driver; <code>deadlineMs</code> and <code>catchup</code> (default <code>true</code>) are
-also configuration.</p>
-<p>The all-tenant catch-up (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/kubernetes/catchup.py">catchup.py</a>) runs in a load stage that
-selects <code>drainSeconds</code>, after the driver and probe exit and before terminal
-progress. It is the Compose fixed-floor reader on the Kubernetes access path:
-<code>completed-oracle.cjs</code> builds the progress query and snapshot from the run's
-completion source; each round reads storage through <code>postgres_read</code>
-(<code>BEGIN READ ONLY … ROLLBACK</code>) and the evaluator inspection through the pinned
-exec, inside one owned-namespace <code>observe</code> bracket; <code>evaluator_catchup.observe</code>
-classifies every tenant. Raw SQL and inspection responses are written to
-<code>load/catchup/round-NNNN-*.private.jsonl</code> before decoding; the result is
-<code>load/evaluator-catchup.json</code>. Its window is the drain time left after the
-writers join, clipped by the work deadline; no time left gives UNMEASURED
-<code>M7_DRAIN_DEADLINE</code> without a read.</p>
-<p>The collector uses one all-roster progress SELECT in one read-only PostgreSQL
-transaction per round. PostgreSQL streams the SELECT through a cursor, fetching up to
-128 rows at a time. Its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/m7-joined/progress-transport.cjs">progress-only wire projection</a>
-omits repeated constant reader metadata and JSON field names, then restores the
-independent typed/state fields before calling the unchanged strict
-<code>completed-oracle.progressSnapshot</code>. Native source, restore, contract, vector,
-output identity and timing checks remain in that reader. Clinical queries and
-clinical/client assessors keep their original complete projection.</p>
-<p><code>workload.drainObservation.roundSeconds</code> selects the inactivity window
-(default 20 s). Each completed census request, new selected SQL row or new
-inspection page lets collection continue inside the operator's drain and work
-deadlines. <code>sqlMaxBytes</code> allows bytes between completed SQL rows (default
-16 MiB). Polls use <code>intervalSeconds</code> (default 5 s). After the boundary,
-<code>maxRounds</code>, <code>maxQueries</code> and <code>maxBytes</code> bound consecutive captures without
-progress toward the original fixed targets. Receipts count every SQL and
-inspection read and its returned bytes. The clinical deadline remains 120 s.
-Common experiment intents project these settings into the local runner's
-<code>--drain-observation</code> option.</p>
-<p>The bounded local differential control is
-<code>catchup_scale_control.py --output &lt;new-absolute-directory&gt; --node &lt;pinned-node&gt;
---postgres-image &lt;cached-sha256-image-id&gt;</code>. It owns one networkless disposable
-PostgreSQL fixture, with CPU/memory, container deadline and exact-ID cleanup;
-it runs each 1k/10k representation twice and checks strict native snapshot
-equivalence plus failing source/generation/restore/coverage/typed-state controls.
-Its local SQL/observer costs do not qualify Kubernetes transport or capacity.</p>
+any decoder reads them (<code>progress-*.private.jsonl</code>; after an early load stop, <code>progress-stop.private.jsonl</code>, then <code>stored-counts.json</code>, recorded in <code>stop-evidence.json</code>). The runner publishes <code>load/outcome-gate.json</code> and a stage summary in <code>result.json</code> before returning a failure or missing measurement. It also reports HTTP latency over all k6 shard summaries, including the exact pooled count and mean, plus the quantile range across shards.
+The progress reader checks the evaluator's runtime identity, owner and foreign counters across captured rounds. It records the observed work delta, including zero for idle tenants. The workload outcome combines these checks with storage, sampled clinical results and per-input catch-up. A missing component leaves the load stage <code>UNMEASURED</code>.</p>
+<p><code>assessor.py &lt;load&gt;</code> re-reduces a retained run into a new file beside it and refuses if any original file changes. Set <code>outcomeGate.midpointStop</code> to <code>never</code> to record a hard midpoint signal and continue collecting evidence.</p>
+<p>The accepted-input observer starts before the probe and follows run-marked writes through drain. Its Kubernetes transport brackets each read-only SQL transaction with checks of the owned namespace and Pods. Each call honors the observer timeout and the entered work deadline. The observer reconciles its inputs against the workload and probe acceptance counts. Tenants with no accepted input owe no output. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/kubernetes/catchup.py">Kubernetes transport</a> · <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#deadline-from-acceptance">Deadline and drain decision</a></p>
 <h2 id="one-intent-for-compose-and-kubernetes">One intent for Compose and Kubernetes<a class="headerlink" href="#one-intent-for-compose-and-kubernetes" title="Permanent link">&para;</a></h2>
 <p><code>toolchain.py</code> projects a version 1 <code>multitenant-experiment</code> into the existing
 Compose runner or Kubernetes experiment contract. It starts no actor. Immutable
@@ -4783,7 +4664,7 @@ another source or changes PENDING to PASS.</p>
 </tr>
 <tr>
 <td>Observation</td>
-<td>Per-write clinical/client proof uses the shared warm-relative deadline. The finite drain can censor an outstanding observation. Accepted/stored ordinary writes, witnesses, frames and independent rows retain their own results. No all-writer clinical drain is inferred.</td>
+<td>Clinical timing starts at acceptance. The load outcomes report per-input durable coverage at the end of the finite drain, alongside stored writes, witnesses and frames.</td>
 </tr>
 <tr>
 <td>Resource capture</td>
@@ -4794,8 +4675,7 @@ another source or changes PENDING to PASS.</p>
 <p>Launch a freshly commissioned case with its lifecycle input. The input names
 the selected alignment checkout in <code>instrumentDirectory</code>, the current
 <code>caseDirectory</code> (intent, environment, inventory, render, preflight and stages),
-and the operator's binding, run template, snapshot, tools, delivery and finite
-allocation. All paths come from these inputs. Set <code>instrumentDirectory</code> once.
+and the operator's binding, run template, tools, delivery and controller allocation. All paths come from these inputs. Set <code>instrumentDirectory</code> once.
 Capture records the runtime digest. An explicit <code>instrumentSha256</code> pins a
 particular runtime. Test source edits leave that digest stable.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>launch<span class="w"> </span><span class="s2">"</span><span class="nv">$CASE</span><span class="s2">/lifecycle-input.json"</span>
@@ -4804,8 +4684,7 @@ particular runtime. Test source edits leave that digest stable.</p>
 <code>$CASE/lifecycle-bound.json</code> with exclusive creation. Pass the bound file to
 the same command to enter it, or add <code>--prepare-only</code> again to check it. The
 selected checkout performs capture, lifecycle, native-scope attach, packet
-preparation and scheduler readback. The operating owner supplies current fit
-and custody at entry. The controller keeps the existing UID-conditioned
+preparation and scheduler readback. The operating owner supplies custody at entry. The controller keeps the existing UID-conditioned
 cleanup on failure.</p>
 <p>When the stock probe's SQL transport fails, <code>sql-observation-failure.json</code>
 retains the first child's exit/timeout/output-bound classification, reported
@@ -4862,15 +4741,16 @@ custody, and emits the existing <code>k6.log</code> and <code>k6-summary.json</c
 Its appended <code>handleSummary</code> exports k6's actual counters/trends in framed
 chunks; it changes no workload function and includes no JWT setup data.</p>
 <p><code>native_join.py</code> adds an opt-in <code>nativeLoad</code> selection to the existing execution,
-census and fit path. The controller, probe, SQL, completed clinical output, frames and native fixed-target
-catch-up collectors still run on the workstation. <code>assess_join()</code> verifies the
+census and fit path. The controller, probe, SQL, completed clinical output, frames and the accepted-input
+observer still run on the workstation. <code>assess_join()</code> verifies the
 capture/run/script bindings and calls the unchanged <code>execute.assess_stage()</code>;
 Job completion alone leaves the outcome gate UNMEASURED. The 120-second clinical
 contract and accepted-versus-stored accounting remain required. All-writer
 post-stop WAL/ACK coverage stays UNMEASURED. Owned namespace and cluster-trust
 cleanup remain the operating owner's responsibility; Job TTL is insufficient.</p>
-<p>One-shard <code>driverPlan</code> selections preserve the existing <code>k6-vu-driver.js</code>,
-<code>configured_environment()</code> and <code>driver.retain()</code> accounting. <code>scheduling-v1</code>
+<p>One-shard <code>driverPlan</code> selections use <code>k6-vu-driver.js</code> and
+<code>driver_accounting.configured_environment()</code> / <code>retain()</code>. VUs come from the offer with
+<code>workload.driverHeadroom</code> (default 2 on Kubernetes). <code>scheduling-v1</code>
 retains the original gzipped raw CSV, including the original byte/row bounds;
 <code>summary-v1</code> selects its existing summary contract. Multiple shards refuse
 before a Kubernetes read or actor creation.</p>
@@ -4888,8 +4768,8 @@ The exporter contributes its explicit requests/limits to Pod fit and quota.</p>
 /absolute/case /absolute/selection.json</code>, then the normal lifecycle capture and
 fresh entry checks. Selection requires <code>version: 1</code>, <code>mode: "job-v1"</code>, immutable
 k6 <code>image</code>, measured <code>shellContract</code>, explicit <code>resources</code> and
-<code>exporterResources</code>, existing <code>nodeName</code>, <code>deadlineSeconds</code>, and
-<code>imagePullSecrets</code>. No resource default is chosen. The Job deadline must cover
+<code>exporterResources</code>, <code>deadlineSeconds</code>, and <code>imagePullSecrets</code>. An authored <code>nodeName</code> is optional
+for legacy pinned cases. The standard command selects deploy defaults. The Job deadline must cover
 the authored setup, load, graceful stop and export margin, and still fit the
 remaining work budget at launch.</p>
 <p>New cases freeze <code>inputCodec</code> as <code>fixture-data-v1</code>. The primer issues the DATA
@@ -4911,8 +4791,7 @@ packet declarations keep their recorded codec for historical verification.</p>
 waiter RBAC. It keeps every application workload unchanged, adjusts the exact
 Pod request/quota/envelope, and runs the original application binding checks
 beside the test Job's own exact declaration checks. Do not install the lane K
-serving stack or change the application tuple. The complete test Pod is added
-prospectively to the existing node fit check before its creation is enabled.</p>
+serving stack or change the application tuple. Kubernetes places the complete test Pod when the Job is released.</p>
 <p><code>execute.execute()</code> retains the concurrent stock probe and midpoint observer.
 Only the opted-in configured-load call goes to the native Job; its original
 wrapper/accounting supplies schedule start/end markers. The declared suspended
@@ -4923,9 +4802,7 @@ UNMEASURED and retains the original failure. No failed workload is replayed.
 Job backoff is zero, replacement waits for Failed, and test Pods have a finite
 termination grace. Runtime application Pod and container identities stay strict;
 only the exact declared test Job has a separate dynamic census.</p>
-<p>The probe restart signal, both-writer join, per-write clinical observations,
-all-tenant fixed-target catch-up and full <code>assess_stage()</code> path stay in their
-original order. <code>assess_join()</code> adds capture/run/script/hash checks. The init
+<p>The accepted-input observer runs across probe and driver traffic. After both writers exit, the controller reconciles storage, checks remaining clinical work through drain, captures terminal progress and calls <code>assess_stage()</code>. <code>assess_join()</code> adds capture/run/script/hash checks. The init
 waiter alone gets <code>jobs/get</code> for <code>provision</code> and <code>primer</code> in its namespace;
 the split verified-serving binding also names <code>verification</code> explicitly and
 requires its completion before accepting primer readiness. Its lifecycle waits
@@ -4976,6 +4853,34 @@ runtime. The 10,000-row decoder control imports the original driver/workload and
 checks its original named SharedArray; it issues no HTTP requests or setup.
 These controls qualify the adapter boundary, not Kubernetes/application behavior
 or capacity.</p>
+<p>For an isolated standard point, use the existing experiment launcher with
+<code>caseDirectory=.../RUN_ID/raw/RUN_ID</code>. The terminal result and cleanup receipt
+are published beside <code>raw/</code>. The native receipt includes the namespace,
+labelled cluster trust, host unit and port-forward observations. The load
+report retains scheduling drops, per-executor start times and attributable
+actor transitions alongside the independently judged product components.</p>
+<p>The joined disposable binding uses <code>secrets.sh seed</code>, waits for the provision Job and role readiness,
+then runs the deployment's primer as an init container using the private admin and API Services.
+The reader mounts the same disposable results volume read-only and transfers the DATA roster for
+the workload. Kubernetes removes the volume when the fixture Pod is deleted.</p>
+<p>For a cold CSI fixture, commission matching claims and Secrets with the deployment's fixture runbook.
+Use <code>experiment.py prepare INTENT INSTANCE NEW_PACKET --existing-fixture</code> on the running, operator-owned
+namespace. The instance selects that namespace, its run label, the rendered inventory and the workload's
+ordinary edge endpoint. Preparation projects DATA credentials from the existing results claim and the
+SQL reader settings from the running roles. The namespace stays with its owner. The resulting packet
+uses the ordinary observe, access and bounded run commands. Four bound native snapshot/clone claims
+identify restored fixture reuse.</p>
+<p>To reuse a fixture across fresh standard namespaces, add <code>--fixture-seed NEW_DIR</code> (with
+<code>--storage-class</code> and <code>--snapshot-class</code>) to <code>experiment.py standard</code> for one seed run. It
+provisions and primes on four labelled claims, stops every role, snapshots the claims through CSI,
+sets their contents to Retain under the <code>nightscout.org/fixture</code> label and writes the handles, the
+original Secrets, the PostgreSQL image digest and the source commits to <code>NEW_DIR</code> (private). It
+runs no traffic. Each later run adds <code>--fixture-restore DIR</code>: the controller creates those
+Secrets, binds the handles in the new namespace (<code>fixture.imported</code>), clones the claims and starts
+through the ordinary provision Job and primer. A restore refuses another population or PostgreSQL
+image. Cleanup deletes the namespace and the run's labelled contents; <code>fixture_copy.py delete DIR
+CONTEXT</code> ends the fixture and the CSI driver deletes the provider snapshots. Snapshots and restored
+volumes are billed storage.</p>
 
 
 

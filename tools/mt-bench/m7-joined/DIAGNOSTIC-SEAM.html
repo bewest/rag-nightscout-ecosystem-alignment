@@ -1159,8 +1159,6 @@
       
         
       
-        
-      
     
     
     
@@ -3077,66 +3075,6 @@
   
   
   
-    <a href="../../queue/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    queue/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
     <a href="../../review/index.html" class="md-nav__link">
       
   
@@ -3990,7 +3928,7 @@
 
 
 <h1 id="fresh-image-functional-diagnostic-before-full-acceptance">Fresh-image functional diagnostic before full acceptance<a class="headerlink" href="#fresh-image-functional-diagnostic-before-full-acceptance" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-18 at <code>4570cf55b</code>.</em></p>
+<p><em>Living document, last changed 2026-11-19 at <code>88288834f</code>.</em></p>
 <p>This is an explicit diagnostic authorization/result scope. It does <strong>not</strong> fabricate
 joined acceptance, unlock a capacity run or satisfy pilot/ladder gates. The remote
 controller owns all cloud activity and enforces its current maintainer-authorized spending/deadline policy. This instrument creates
@@ -4087,8 +4025,7 @@ retains that safe terminal code and reports process termination or exit timeout
 separately. This does not force process exit or change the traffic budget.</p>
 <h2 id="explicit-independent-pgstream-topology">Explicit independent pgstream topology<a class="headerlink" href="#explicit-independent-pgstream-topology" title="Permanent link">&para;</a></h2>
 <p>Fresh <code>pgstream-sample</code> discovery configurations for a separately managed Go
-service select <code>--pgstream-topology external-service-v1</code> and
-<code>--diagnostic-resource-profile local-diagnostic-external-pgstream-4cpu-8g-v1</code>.
+service select <code>--pgstream-topology external-service-v1</code> (the resource profile option was retired 2026-11-19).
 The default remains <code>colocated-v1</code>; a standalone Compose service under that
 selection refuses. The new selection validates the exact pinned core schema,
 canonical frozen service command, source/image identity and separate process

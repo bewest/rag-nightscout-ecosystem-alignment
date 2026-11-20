@@ -1159,8 +1159,6 @@
       
         
       
-        
-      
     
     
     
@@ -2874,66 +2872,6 @@
   
   
   
-    <a href="../../queue/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    queue/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
     <a href="../../review/index.html" class="md-nav__link">
       
   
@@ -3768,7 +3706,15 @@
 
 
 <h1 id="external-traffic-generator--isolated-profile">External traffic generator — isolated profile<a class="headerlink" href="#external-traffic-generator--isolated-profile" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>be962719d</code>.</em></p>
+<p><em>Living document, last changed 2026-11-19 at <code>88288834f</code>.</em></p>
+<blockquote>
+<p><strong>NOT RUNNABLE (2026-11-19).</strong> This path imports <code>tools/mt-bench/m7-joined</code> modules that the
+simplification round deleted: <code>evaluator_idle</code>, plus adapter seams built on the idle and opportunity family (<code>enabled_idle</code>, <code>opportunity_collector</code>). Every module here raises <code>ImportError</code> at import, and its
+tests skip, rather than half-work. Maintainer decision: port later, do not delete. The port target
+is the single assessor (<code>m7-joined/assessor.py</code>) and its raw event format (accepted, stored, output,
+frame, access, datastore, readback); the k6 roster now carries each tenant's JWT
+(<code>m7-joined/jwt_tenants.py</code>). The round's base, <code>ea2231e834</code>, still has the deleted modules.</p>
+</blockquote>
 <p>Contributor-facing source capability. Runtime and cloud behavior are <strong>UNMEASURED</strong>
 until the remote owner runs a reviewed smoke. The current colocated pilot is unchanged.</p>
 <p>The new <code>joined-external-generator-v1</code> profile uses one application/PostgreSQL host

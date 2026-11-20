@@ -1159,8 +1159,6 @@
       
         
       
-        
-      
     
     
     
@@ -2874,66 +2872,6 @@
   
   
   
-    <a href="../../queue/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    queue/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
     <a href="../../review/index.html" class="md-nav__link">
       
   
@@ -3809,7 +3747,15 @@
 
 
 <h1 id="remote-postgresql-stream-calibration">Remote PostgreSQL stream calibration<a class="headerlink" href="#remote-postgresql-stream-calibration" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-17 at <code>9926a8219</code>.</em></p>
+<p><em>Living document, last changed 2026-11-19 at <code>88288834f</code>.</em></p>
+<blockquote>
+<p><strong>NOT RUNNABLE (2026-11-19).</strong> This path imports <code>tools/mt-bench/m7-joined</code> modules that the
+simplification round deleted: <code>orchestration_binding</code>, <code>evaluator_idle</code>, <code>evaluator_opportunities</code>, <code>discovery_rest</code>, <code>diagnostic_resources</code>, <code>experiment_batch</code> and <code>completed-oracle-v2-control.cjs</code>, plus adapter seams built on them (<code>opportunity_collector</code>, <code>enabled_idle</code>, the resource wrappers, the local remote projection in <code>run_configuration.py</code>). Every module here raises <code>ImportError</code> at import, and its
+tests skip, rather than half-work. Maintainer decision: port later, do not delete. The port target
+is the single assessor (<code>m7-joined/assessor.py</code>) and its raw event format (accepted, stored, output,
+frame, access, datastore, readback); the k6 roster now carries each tenant's JWT
+(<code>m7-joined/jwt_tenants.py</code>). The round's base, <code>ea2231e834</code>, still has the deleted modules.</p>
+</blockquote>
 <p>This is a separate diagnostic extension of the existing external-generator path.
 It preserves sealed M7 and the existing external profile. Its unchanged default prepares1000 tenants and2000 logical stock polling clients.
 Explicit file plans admit10,1000,3000,5000 or10000 tenants with two clients per tenant.

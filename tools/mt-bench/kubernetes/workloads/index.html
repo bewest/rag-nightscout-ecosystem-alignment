@@ -1159,8 +1159,6 @@
       
         
       
-        
-      
     
     
     
@@ -2979,66 +2977,6 @@
   
   
   
-    <a href="../../../queue/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    queue/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
     <a href="../../../review/index.html" class="md-nav__link">
       
   
@@ -3925,7 +3863,7 @@
 
 
 <h1 id="bounded-kubernetes-workload-inputs">Bounded Kubernetes workload inputs<a class="headerlink" href="#bounded-kubernetes-workload-inputs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-18 at <code>47c318ecb</code>.</em></p>
+<p><em>Living document, last changed 2026-11-19 at <code>6875c6708</code>.</em></p>
 <p>Living contributor-facing instrument guide. Definitions are <strong>read-derived</strong> from
 the existing M7 generator and frozen C2 core
 <code>6463f24eea02a9e4355d988b1353f238f21d3609</code>; local generator/retained-data controls
@@ -4000,21 +3938,21 @@ read back; they are not assumed empty or production-sized.</p>
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/kubernetes/workloads/small.json">small.json</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/kubernetes/workloads/small.json">small.json</a></td>
 <td>22 s / 1 request/s</td>
 <td>22 s per tenant</td>
 <td>300 s globally</td>
 <td>Small-path diagnostic and native generator shape control</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/kubernetes/workloads/representative-mix.json">representative-mix.json</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/kubernetes/workloads/representative-mix.json">representative-mix.json</a></td>
 <td>330 s / 1 request/s</td>
 <td>22 s per tenant</td>
 <td>300 s globally</td>
 <td>Selected request mix across a nominal five-minute wall-clock interval; ordinary ingestion remains accelerated</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/kubernetes/workloads/stress-discovery.json">stress-discovery.json</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/kubernetes/workloads/stress-discovery.json">stress-discovery.json</a></td>
 <td>22 s / 10 requests/s</td>
 <td>2.2 s per tenant</td>
 <td>1 s globally</td>
@@ -4039,19 +3977,19 @@ adapter; it does not round a fractional aggregate rate to an integer.</p>
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/kubernetes/workloads/realistic-500.json">realistic-500.json</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/kubernetes/workloads/realistic-500.json">realistic-500.json</a></td>
 <td style="text-align: right;">500 / 50</td>
 <td style="text-align: right;">6.9444</td>
 <td style="text-align: right;">1,800 s</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/kubernetes/workloads/realistic-1000.json">realistic-1000.json</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/kubernetes/workloads/realistic-1000.json">realistic-1000.json</a></td>
 <td style="text-align: right;">1,000 / 100</td>
 <td style="text-align: right;">13.8889</td>
 <td style="text-align: right;">1,800 s</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/kubernetes/workloads/realistic-3000.json">realistic-3000.json</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/kubernetes/workloads/realistic-3000.json">realistic-3000.json</a></td>
 <td style="text-align: right;">3,000 / 300</td>
 <td style="text-align: right;">41.6667</td>
 <td style="text-align: right;">1,800 s</td>
@@ -4091,16 +4029,9 @@ remain scoped to the independent probe writes; only assigned viewers require
 client observations. Zero viewers records client delivery NOT_EXERCISED.
 The bounded raw frame recorder refuses overflow; a longer or larger run does
 not silently turn lost frame evidence into a pass.</p>
-<p>Each original aggregate JSON contains a <strong>proposed</strong>, unadmitted cluster limit of 1.8 CPU,
-3 GiB memory, 3.25 GiB ephemeral storage and 2 GiB image-cache reserve; these are
-the existing tiny binding/preflight input envelope, not measured sizing. Actual
-per-role/init/sidecar budgets, node headroom, quota, image delivery and namespace
-custody remain in the commissioning inventory. Proposed combined native
-driver/observer upper bounds are 1.2 CPU and 1.25 GiB, compatible with the current
-commissioning scope control; smaller bounded plans are allowed and no minimum
-sizing is inferred. The existing adapter verifies the
-actual finite actor scope and resource inventory. A declaration cannot grant a
-window; shared-node contention and native actor contention remain recorded.</p>
+<p>Workload profiles carry no resource envelope. Kubernetes requests come from the
+render; the scheduler decides placement (decisions <code>generous-run-resources</code>,
+<code>requests-typical-scheduler-decides</code>).</p>
 <p>Small/stress reserve a 900-second work window and representative-mix 1,200
 seconds, followed by 600 seconds for exact owned cleanup. These bounds include
 setup/prime, load and observation/drain; unchanged source timeouts can consume
@@ -4174,8 +4105,8 @@ Output keeps source/placement/actor identity, independent HTTP and stored result
 selected clinical coverage, delivered frames, available stage latency/freshness
 and 10-second scheduling-count curves. Every retained input is checksummed.
 It does not mutate originals. A lost witness fails coverage even if the recorded
-top-level clinical verdict says PASS; dropped iterations fail offered-work
-coverage without erasing accepted/stored/selected-clinical observations. That is
+top-level clinical verdict says PASS; dropped iterations are a figure by
+operation and erase no accepted/stored/selected-clinical observation. That is
 coverage accounting, not a performance SLO or capacity gate.</p>
 <p>Capture before-prime, steady/load, drain and recovery bookends separately. For
 each load point report configured and issued rates, latency p50/p95/p99/max by

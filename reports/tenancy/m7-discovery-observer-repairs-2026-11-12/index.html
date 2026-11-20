@@ -11542,8 +11542,6 @@
       
         
       
-        
-      
     
     
     
@@ -12146,7 +12144,7 @@
 
 
 <h1 id="discovery-observation-repairs-b750-and-b1000">Discovery observation repairs: B750 and B1000<a class="headerlink" href="#discovery-observation-repairs-b750-and-b1000" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>1cf83cf01</code>.</em></p>
+<p><em>Living document, last changed 2026-11-19 at <code>a9d1721bd</code>.</em></p>
 <p><strong>Reproduced instrumentation defects; fixed on alignment branches.</strong> Both
 original B runs remain failed/PARTIAL under their executed instrument. Neither
 this record nor the prospective classifiers grant capacity acceptance. Captured
@@ -12223,12 +12221,12 @@ nonfinite, negative, malformed or unsafe counts refuse before SQL. Valid finite
 integral numeric counters are preserved. The shared acceptance helper is unchanged.</p>
 <p>The <a href="../../../tools/mt-bench/m7-joined/index.html">source contract</a> owns the precise
 current format and bounds. Implementation and controls:
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/m7-joined/discovery_counts.py">count proof</a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/m7-joined/probe-accounting.cjs">probe ledger</a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/m7-joined/probe_discovery.py">generated adaptation</a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/m7-joined/test_probe_counts.py">count controls</a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/m7-joined/test_discovery.py">discovery producer controls</a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/m7-joined/test_discovery_classification.py">typed classification controls</a>.</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/m7-joined/discovery_counts.py">count proof</a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/m7-joined/probe-accounting.cjs">probe ledger</a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/m7-joined/joined-probe.cjs">joined probe</a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/m7-joined/test_probe_counts.py">count controls</a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/m7-joined/test_discovery.py">discovery producer controls</a>,
+typed classification controls (<code>tools/mt-bench/m7-joined/test_discovery_classification.py</code>, deleted 2026-11-19 in <code>70330f8eae</code>).</p>
 <h2 id="executed-controls-and-limits">Executed controls and limits<a class="headerlink" href="#executed-controls-and-limits" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

@@ -2583,6 +2583,8 @@
       
         
       
+        
+      
     
     
     
@@ -3458,6 +3460,34 @@
     
   
     Multitenant execution log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="k1-capacity-test-plan-2026-11-19.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposed K=1 capacity study
   
 
     
@@ -5141,8 +5171,6 @@
       
         
       
-        
-      
     
     
     
@@ -5872,7 +5900,7 @@
 
 
 <h1 id="multitenant-decisions-in-force">Multitenant decisions in force<a class="headerlink" href="#multitenant-decisions-in-force" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-19 at <code>3c32caced</code>.</em></p>
+<p><em>Living document, last changed 2026-11-19 at <code>2e886c446</code>.</em></p>
 <p><em>Generated-by-review index, dated 2026-11-18, of the 214 anchored rows in <a href="multitenancy-decisions.html">multitenancy-decisions.md</a> at alignment source commit <code>a0a8c3956d</code>; unanchored table rows are not indexed.</em>
 <em>Each row is classed as in force, superseded or unclear from its text, citing the later row behind the judgement; the classification is read-derived.</em>
 <em>Each row's text in multitenancy-decisions.md remains the authority. This page restates no detail: follow the link before acting on a row.</em></p>
@@ -5892,11 +5920,12 @@
 <li><a href="multitenancy-decisions.html#exclusive-application-postgres-ownership">exclusive-application-postgres-ownership</a> — Nightscout owns its PostgreSQL namespaces; other direct database writers are unsupported.</li>
 <li><a href="multitenancy-decisions.html#view-reads-total-order">view-reads-total-order</a> — Sort-key ties break on the per-tenant insertion ordinal, in SQL and in process.</li>
 <li><a href="multitenancy-decisions.html#write-clock-history-arms">write-clock-history-arms</a> — The write clock serves only v3 history no-missed-write (arms settled by <a href="multitenancy-decisions.html#multitenant-requires-write-clock">multitenant-requires-write-clock</a>).</li>
-<li><a href="multitenancy-decisions.html#multitenant-requires-write-clock">multitenant-requires-write-clock</a> — Arm (a) per-tenant clock row is kept; multitenant requires <code>writeClock</code>; floor checks move to <code>admin</code>.</li>
+<li><a href="multitenancy-decisions.html#multitenant-requires-write-clock">multitenant-requires-write-clock</a> — Arm (a) per-tenant clock row is kept; multitenant requires <code>writeClock</code>; floor checks move to <code>admin</code> (narrowed by <a href="multitenancy-decisions.html#platform-verification-removal">platform-verification-removal</a>: floors are operation postconditions).</li>
 <li><a href="multitenancy-decisions.html#stream-native-coverage-direction">stream-native-coverage-direction</a> — Evaluate committed-stream transaction coverage instead of the clock seal; replacement is proposed, unqualified.</li>
 </ul>
 <h3 id="roles-listeners-and-horizontal-shape">Roles, listeners and horizontal shape<a class="headerlink" href="#roles-listeners-and-horizontal-shape" title="Permanent link">&para;</a></h3>
 <ul>
+<li><a href="multitenancy-decisions.html#statefulset-ordinal-scaling">statefulset-ordinal-scaling</a> — Evaluator and realtime are StatefulSets, slice = ordinal, K = replicas; api is a Deployment; cohort and participant manifest deleted.</li>
 <li><a href="multitenancy-decisions.html#d5">d5</a> — One core; stateless <code>api</code>, change-driven <code>evaluator</code>, fan-out <code>realtime</code>, connector <code>vcpool</code>; <code>single</code> keeps its server.</li>
 <li><a href="multitenancy-decisions.html#d16">d16</a> — Separate data, owner and operator sockets, multiplexed by tenant, not duplicated per tenant.</li>
 <li><a href="multitenancy-decisions.html#d21">d21</a> — One executable: <code>single</code>, <code>multitenant &lt;role&gt;[,&lt;role&gt;…]</code> and operator tools.</li>
@@ -5918,14 +5947,20 @@
 </ul>
 <h3 id="platformapplication-boundary-startup-and-simplification">Platform/application boundary, startup and simplification<a class="headerlink" href="#platformapplication-boundary-startup-and-simplification" title="Permanent link">&para;</a></h3>
 <ul>
+<li><a href="multitenancy-decisions.html#platform-verification-removal">platform-verification-removal</a> — No configuration-digest certificate and no per-tenant verified floor; migration Job plus schema check; a range of single-concern health endpoints.</li>
+<li><a href="multitenancy-decisions.html#config-few-dozen-env">config-few-dozen-env</a> — A few dozen environment settings (about 74 is fine) plus minimal PostgreSQL bookkeeping; per-role JSON documents retire.</li>
+<li><a href="multitenancy-decisions.html#stream-source-identity-in-data">stream-source-identity-in-data</a> — No deployment pin of the database's stream identity; per-tenant stream state, existing recovery and the restart policy handle a replaced database.</li>
+<li><a href="multitenancy-decisions.html#predictable-fixes-then-test">predictable-fixes-then-test</a> — Predictable simplifications run affected tests only, no per-item break-it control; qualify the joined candidate once.</li>
+<li><a href="multitenancy-decisions.html#provisioning-secrets-in">provisioning-secrets-in</a> — Secrets flow into Jobs and roles, never out of a Pod; one apply converges.</li>
+<li><a href="multitenancy-decisions.html#metrics-endpoint-deferred">metrics-endpoint-deferred</a> — <strong>deferred</strong>: no <code>/metrics</code> work now; Prometheus when it makes a run easier.</li>
 <li><a href="multitenancy-decisions.html#platform-application-boundary">platform-application-boundary</a> — Application assumes a verified platform and fails closed; it never re-verifies the platform while serving.</li>
 <li><a href="multitenancy-decisions.html#brittle-check-removal">brittle-check-removal</a> — Checks that refuse for anything other than a product property are removed; run identity is image digest plus run configuration.</li>
 <li><a href="multitenancy-decisions.html#unclear-rows-resolved">unclear-rows-resolved</a> — The six Unclear questions resolved toward removal (desired count, writer census, revision wake, cost step A, idle witness, move readiness).</li>
 <li><a href="multitenancy-decisions.html#architecture-justified-removal">architecture-justified-removal</a> — Machinery from an obsolete design is removed on architecture grounds with correctness controls, no measurement.</li>
 <li><a href="multitenancy-decisions.html#serial-machinery-retirement">serial-machinery-retirement</a> — Remove serial machinery the streaming design no longer needs, rather than tune it.</li>
 <li><a href="multitenancy-decisions.html#operable-architecture-first">operable-architecture-first</a> — Simplified, runnable, operable architecture first; performance work is lower priority meanwhile.</li>
-<li><a href="multitenancy-decisions.html#boot-independent-of-tenants">boot-independent-of-tenants</a> — Serving boot is independent of tenant count; expensive platform verification runs on <code>admin</code>.</li>
-<li><a href="multitenancy-decisions.html#catalogue-verification-admin-owned">catalogue-verification-admin-owned</a> — Admin verifies the catalogue once per deployment; serving keeps one cheap fail-closed check.</li>
+<li><a href="multitenancy-decisions.html#boot-independent-of-tenants">boot-independent-of-tenants</a> — Serving boot is independent of tenant count; expensive platform verification runs on <code>admin</code> (narrowed by <a href="multitenancy-decisions.html#platform-verification-removal">platform-verification-removal</a>: no verification record or proof).</li>
+<li><a href="multitenancy-decisions.html#catalogue-verification-admin-owned">catalogue-verification-admin-owned</a> — Admin verifies the catalogue once per deployment; serving keeps one cheap fail-closed check (narrowed by <a href="multitenancy-decisions.html#platform-verification-removal">platform-verification-removal</a>: migration Job plus schema-version check).</li>
 <li><a href="multitenancy-decisions.html#vcpool-proof-role">vcpool-proof-role</a> — <code>vcpool</code> checks the platform proof at start like the other serving roles.</li>
 <li><a href="multitenancy-decisions.html#stable-evaluator-runtime">stable-evaluator-runtime</a> — Evaluator runs on a stable schema; relevant DDL after startup stops it with a typed code.</li>
 <li><a href="multitenancy-decisions.html#migration-rehearsal-separate">migration-rehearsal-separate</a> — Migrations are rehearsed as scheduled maintenance, separate from performance and acceptance runs.</li>
@@ -5948,7 +5983,7 @@
 <li><a href="multitenancy-decisions.html#deployment-plan-contract">deployment-plan-contract</a> — One deployment plan in deploy, checked against a contract core publishes.</li>
 <li><a href="multitenancy-decisions.html#core-static-plan-retired">core-static-plan-retired</a> — Core's static Compose plan retires; core tests use a small registry-mode fixture plan.</li>
 <li><a href="multitenancy-decisions.html#deploy-repo-readme">deploy-repo-readme</a> — The deploy README addresses operators: what runs, how to run it, the pinned core commit.</li>
-<li><a href="multitenancy-decisions.html#k1-per-role-deployments">k1-per-role-deployments</a> — Kubernetes: one Deployment per role, <code>Recreate</code>, per-role Services; migrations as Jobs before serving.</li>
+<li><a href="multitenancy-decisions.html#k1-per-role-deployments">k1-per-role-deployments</a> — Kubernetes: one Deployment per role, <code>Recreate</code>, per-role Services; migrations as Jobs before serving (narrowed by <a href="multitenancy-decisions.html#statefulset-ordinal-scaling">statefulset-ordinal-scaling</a>: evaluator and realtime are StatefulSets).</li>
 <li><a href="multitenancy-decisions.html#kubernetes-idiomatic-operations">kubernetes-idiomatic-operations</a> — Use Kubernetes ordering, digests, quotas, probes and in-cluster Jobs instead of re-proving guarantees.</li>
 <li><a href="multitenancy-decisions.html#k8s-platform-proofs-to-deploy">k8s-platform-proofs-to-deploy</a> — Kubernetes runs stop selecting opt-in platform proofs; one fit check and image publication move to deploy.</li>
 <li><a href="multitenancy-decisions.html#tanka-binding-parallel">tanka-binding-parallel</a> — The Kubernetes binding is a Tanka-style Jsonnet environment in <code>nightscout-deploy</code>.</li>
@@ -5963,7 +5998,7 @@
 <li><a href="multitenancy-decisions.html#static-mode-lab-flag">static-mode-lab-flag</a> — A role refuses a <code>tenants</code> list unless <code>MULTITENANT_STATIC_TENANTS=lab</code>; static mode then retires.</li>
 <li><a href="multitenancy-decisions.html#tenant-live-add">tenant-live-add</a> — Running evaluator and realtime pick up newly provisioned tenants without restart (separate lane).</li>
 <li><a href="multitenancy-decisions.html#registry-connector-definitions">registry-connector-definitions</a> — Connector definitions are durable tenant configuration; endpoint and credential values stay in tenant secrets.</li>
-<li><a href="multitenancy-decisions.html#tenant-ensure-and-factory-reset">tenant-ensure-and-factory-reset</a> — Audited <code>ensure</code> and <code>factory reset</code> operations; reset never erases clinical data or credentials.</li>
+<li><a href="multitenancy-decisions.html#operator-repair-scope">operator-repair-scope</a> — Use provision for creation, inspect for diagnosis and known-good backups for exceptional recovery. Factory reset preserves clinical data and credentials.</li>
 <li><a href="multitenancy-decisions.html#deployment-ingress-peer-list-trust">deployment-ingress-peer-list-trust</a> — One explicit peer list serves tenant selection and <code>TRUST_PROXY</code>; empty refuses startup.</li>
 <li><a href="multitenancy-decisions.html#edge-forwarded-headers-left">edge-forwarded-headers-left</a> — The edge keeps forwarding its headers; core's selector refusal is the control.</li>
 <li><a href="multitenancy-decisions.html#failed-login-delay-core">failed-login-delay-core</a> — Failed authentication delays the next request as on a single site, keyed on the real client address.</li>
@@ -6026,6 +6061,8 @@
 <li><a href="multitenancy-decisions.html#connector-pause-gap-accepted">connector-pause-gap-accepted</a> — A connector started while paused waits for unpause; no data is lost.</li>
 <li><a href="multitenancy-decisions.html#deletion-request-auto-pauses">deletion-request-auto-pauses</a> — An owner's deletion request pauses the site; cancelling restores the earlier state.</li>
 <li><a href="multitenancy-decisions.html#preview-deletion-confirmation">preview-deletion-confirmation</a> — Deletion needs an explicit request and operator confirmation; no mandatory waiting period.</li>
+<li><a href="multitenancy-decisions.html#platform-backup-and-test-fixtures">platform-backup-and-test-fixtures</a> — The deployment manages PostgreSQL and Vault backup, rollback and seeded fixture copies.</li>
+<li><a href="multitenancy-decisions.html#tenant-copy-export">tenant-copy-export</a> — Core exports per-tenant COPY data with a digest manifest and restores it under the tenant fence.</li>
 <li><a href="multitenancy-decisions.html#tenant-deletion-key-retention">tenant-deletion-key-retention</a> — Deletion keeps Transit keys and export artifact 30 days, then the operator destroys keys.</li>
 <li><a href="multitenancy-decisions.html#key-destruction-removes-export">key-destruction-removes-export</a> — Key destruction also removes the export artifact file, in the same audit entry.</li>
 <li><a href="multitenancy-decisions.html#export-removal-no-retry">export-removal-no-retry</a> — A repeat destruction reports the recorded removal outcome; it does not retry.</li>

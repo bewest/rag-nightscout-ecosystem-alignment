@@ -2583,6 +2583,8 @@
       
         
       
+        
+      
     
     
     
@@ -3823,6 +3825,34 @@
     
   
     Multitenant execution log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="k1-capacity-test-plan-2026-11-19.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposed K=1 capacity study
   
 
     
@@ -5506,8 +5536,6 @@
       
         
       
-        
-      
     
     
     
@@ -6602,7 +6630,7 @@
 
 
 <h1 id="multitenancy-decisions-and-architectural-contracts">Multitenancy decisions and architectural contracts<a class="headerlink" href="#multitenancy-decisions-and-architectural-contracts" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-19 at <code>3c32caced</code>.</em></p>
+<p><em>Living document, last changed 2026-11-19 at <code>3b66ca28f</code>.</em></p>
 <p><em>Contributor-facing living decision reference. Consolidated 2026-11-06 from the
 maintainer's D1–D23 decisions and their later amendments. This is a read-derived
 reorganization, not new implementation acceptance or a new decision. The
@@ -6614,7 +6642,7 @@ amendment; the <a href="durable-event-delivery-contract-2026-11-06.html">durable
 owns B7's consumer/recovery rules. Later <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">release decisions</a>
 own promotion-bar, compatibility and lifecycle decisions. Their amendments take
 precedence over earlier journal text. The <a href="multitenant-delivery-dashboard.html">dashboard</a>
-owns milestone claims, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/queue/work-queue.yaml">queue</a> owns item state
+owns milestone claims, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/queue/work-queue.yaml">queue</a> owns item state
 and gates, and <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
 owns integration/publication status. Read the <a href="index.html">tenancy guide</a> for the
 current execution plan; archived “next” instructions are historical.</p>
@@ -7897,7 +7925,7 @@ deployment has run.</p>
 <td><a id="internal-service-contracts"></a><strong>Internal APIs use shared transport with separate service contracts, request/response schemas, named clients and documentation. Each listener owns an explicit operation set; a component with a public contract opens a second listener/port for its private contract. Unix sockets and explicitly configured internal HTTP are supported. HTTP access policy belongs to the deployment; no new bearer authentication convention is introduced.</strong></td>
 <td>maintainer, 2026-11-09, internal IPC/API refactor discussion</td>
 <td>Realtime authority/writes, alarm delivery, lifecycle participant coordination; public/private listener separation</td>
-<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/66bb31e0c30a831179e278754123e3ae998ade7f/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
+<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
 </tr>
 </tbody>
 </table>
@@ -8369,10 +8397,10 @@ deployment has run.</p>
 <td></td>
 </tr>
 <tr>
-<td><a id="tenant-ensure-and-factory-reset"></a><strong>Two operator operations, both audited. <code>ensure</code> (create or repair) recreates what is missing when no stored data depends on it, and refuses with a clear reason when data is encrypted under a missing key (restore the key from backup instead). <code>factory reset</code> returns a tenant's operational and configuration state to the deployment defaults and never erases clinical data; it therefore keeps the keys that protect that data. Factory reset preserves login and connector credentials; credential revocation remains a separate explicit operation. Inspect stays as built. A provisioning retry keeps reading PostgreSQL only; controllers call inspect.</strong></td>
-<td>maintainer, 2026-11-12 ("factory reset doesn't or shouldn't erase clinical data, just resets operational/configuration conditions"; "ensure and factory reset are intended for operators"); credential scope confirmed 2026-11-13 (chose "Preserve credentials")</td>
-<td>proposed <code>MT-PROVISION-OPERATOR</code></td>
-<td>Measured on leaf <code>claude/provision-operator-20261112</code> <code>866301df</code>: with the data key deleted, retry answers <code>existing</code> and inspect reports it incomplete. Credential preservation is decided; exact settings and operational reset boundaries remain to be designed and measured.</td>
+<td><a id="tenant-ensure-and-factory-reset"></a><em>Superseded for operator repair by <a href="#operator-repair-scope">operator-repair-scope</a>. The November 12 factory-reset intent and credential-preservation decision continue under that row.</em></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 <tr>
 <td><a id="legacy-decision-reuse-60s"></a><strong>Amends <a href="#legacy-decision-reuse-window">legacy-decision-reuse-window</a>: when legacy decision reuse is enabled, its default window is 60 s (still settable, ceiling 60 s), and a cache miss skips the second authority-state read when the first is only milliseconds old, so a miss costs the same as no cache. Reuse covers the legacy credentials only: API_SECRET and Nightscout subject access tokens, including tokens exchanged from them. New access tokens (<code>ns-access+jwt</code>) and human sessions never pass through it. It stays off by default until the 1,000-tenant results justify it.</strong></td>
@@ -8901,6 +8929,76 @@ sets the limit (reproduced). The Codex coordinator brief that dispatches this wo
 <td><a id="deadline-from-acceptance"></a><strong>The 120 s clinical deadline runs from acceptance of the input, always; no gate depends on whether a tenant is warm. Catch-up is judged per accepted input: every accepted input has its durable output by the end of drain. A tenant with no input owes no work. Startup slowness appears as acceptance-to-output time, which is what an operator sees; a recurring startup miss is a defect to fix, not a measurement carve-out. Warm observers, warm controls, and the preload, idle and opportunity refusals leave the run path.</strong></td>
 <td>Maintainer, 2026-11-19</td>
 <td>Supersedes <a href="#clinical-deadline-from-warm">clinical-deadline-from-warm</a>; restores the deadline clause of <a href="#outcome-evaluator-gate">outcome-evaluator-gate</a>; applies <a href="#preload-is-a-signal">preload-is-a-signal</a>, <a href="#unclear-rows-resolved">unclear-rows-resolved</a> (5) and the demand-driven direction (work follows input, not the roster). Basis (reproduced, generous-resources campaign): on the final freeze, Compose and Kubernetes 1,000 had no miss before warm (slowest durable result 1.1 s and 4.8 s), while building and controlling warm evidence took a lane, an observer branch and four live control projects, and left a passing Compose run UNMEASURED on <code>M7_TENANT_WARM_UNMEASURED</code>. The one miss on the final freeze (replication sender stall) fails under either rule.</td>
+</tr>
+<tr>
+<td><a id="four-product-failures"></a><strong>A run fails only on four product properties: an accepted write not stored; a clinical output later than 120 s after acceptance or missing at end of drain; cross-tenant access or an authorization breach; an unhealthy datastore. Everything else (driver drops, Pending Pods, scheduler placement, readback differences, missing counter files, tool versions, uncommitted harness files) is a reported figure or an UNMEASURED field and never stops or voids the run. Run identity is the alignment commit, the image digest and the run configuration; the harness hashes no files, directories or binaries and re-proves nothing the platform guarantees.</strong></td>
+<td>Maintainer, 2026-11-19</td>
+<td>Narrows <a href="#repeated-standard-point">repeated-standard-point</a> and applies <a href="#brittle-check-removal">brittle-check-removal</a>. Basis (read from the generous-resources campaign records): of about nine runs at 1,000 tenants or more, three reached a product verdict; the rest stopped on harness fit, reserve, executor-skew, observer-deadline or fixed-memory checks. At <code>af8eecee</code> the harness carried 1,538 distinct refusal codes, of which a 120-code sample found about 12% guarding a product property.</td>
+</tr>
+<tr>
+<td><a id="ack-path-tenant-independent"></a><strong>A webhook acknowledgement waits only on that transaction's durable receipt. Recovery of one tenant never blocks acknowledgement or work for another tenant; tenant admission happens after receipt, from the wake; the receiver does not share a connection pool with evaluation. A registry change invalidates only the tenants it addresses. Fixed now on architecture grounds, with restore-fencing controls; cold-start lock waits are measured alongside.</strong></td>
+<td>Maintainer, 2026-11-19</td>
+<td>Applies <a href="#architecture-justified-removal">architecture-justified-removal</a>, <a href="#tenant-defect-tenant-scoped">tenant-defect-tenant-scoped</a> and <a href="#boot-independent-of-tenants">boot-independent-of-tenants</a>. Basis (read-derived at core <code>5d248eac</code>): one advisory lock key per consumer is taken exclusively by per-tenant snapshot recovery (<code>lib/pgstream/snapshot-recovery.js:95</code>) and in shared mode by every acknowledgement (<code>lib/storage/clinical-stream-sql.js:40</code>); serial demand admission runs inside the response (<code>lib/server/serve/evaluator-preview.js:214</code>). Leading, unconfirmed hypothesis for the intermittent replication sender timeout.</td>
+</tr>
+<tr>
+<td><a id="credential-rotation-next-request"></a><strong>Revocation applies from the next request, as on a single site: credential rotation (tenant <code>API_SECRET</code> / root rotation, subject token reissue), subject deletion and role changes. A request is authorized once, at admission (one credential verification and one authority read); nothing is re-read after the upload or queue wait. The tenant activity gate still applies at the write: suspend and restore fencing refuse it, and a paused tenant keeps accepting uploads (<a href="#activity-adopted-semantics-wiring">activity-adopted-semantics-wiring</a>). Each realtime socket write is forwarded as its own admitted api request; a connection's own authority relies on the connect-time and periodic checks. A write admitted before a concurrent revocation is not an authorization breach.</strong></td>
+<td>Maintainer, 2026-11-19 (amended the same day, Amendment 1: all revocation, not only rotation)</td>
+<td>Applies <a href="#serial-machinery-retirement">serial-machinery-retirement</a> and <a href="#d23">d23</a>; meets the condition of <a href="#authority-recheck-deferred">authority-recheck-deferred</a> (retires machinery, adds no cache or epoch); the effect-time re-check was a multitenant-only tightening (see <a href="#permission-tightening-applies-to-both">permission-tightening-applies-to-both</a>). The race window is one request's lifetime (upload plus REST queue wait, <code>rest-admission.js:27-33</code>). Basis (read-derived at core <code>5d248eac9</code>): <code>lib/server/serve/api-admission.js:17-31</code> re-runs authenticate and authorize inside every write transaction; <code>lib/server/realtime/authority.js:59</code> keeps a per-permission fallback of up to nine SQL reads per socket. Lanes Z1/Z2, brief <code>BRIEF-claude-authz-once-2026-11-19.md</code> (local).</td>
+</tr>
+<tr>
+<td><a id="platform-verification-removal"></a><strong>The platform-verification certificate and per-tenant floor verification are removed. A serving role no longer compares a digest of its configuration with a row that admin publishes, and the api no longer requires an admin-certified floor for each tenant. Schema readiness is the migration Job plus the existing schema-version check (<code>lib/migrations/postgres-check.js</code>). A serving role keeps one cheap check on its own connection that it cannot bypass row-level security, because that protects isolation. The insertion and write-clock floors are postconditions that provisioning, restore and migration establish in their own transactions for the tenants they touch; a migration that changes floors does so in one set-based statement, never tenant by tenant. Each role exposes a range of internal health endpoints, one concern each (process alive, role can serve, datastore reachable, schema current), and operators compose liveness, readiness and orchestration from them; a role never turns a missing platform proof into a boot refusal.</strong></td>
+<td>Maintainer, 2026-11-19 ("overcomplicated machinery, unjustified by design or idiomatic cloud-native behavior, and mixed concerns, let's remove and simplify"; "it's ok for there to be a range/spectrum of different internal health checks across different API endpoints")</td>
+<td>Multitenant. Supersedes the verification-record clause (2) of <a href="#boot-independent-of-tenants">boot-independent-of-tenants</a>, the "issues the platform proof" clause of <a href="#catalogue-verification-admin-owned">catalogue-verification-admin-owned</a> and "recorded in verified state" in <a href="#multitenant-requires-write-clock">multitenant-requires-write-clock</a>; their other clauses stand. Restore fencing, isolation and authorization are unchanged. Basis (read-derived at core <code>5d248eac9</code>): the contract digest covers each connection's hostname, port and user and the feature selection (<code>lib/server/serve/platform-verification.js:14,61-79</code>), so a config-only edit refuses boot; each tenant's floor row joins the api's <code>contract_digest</code> (<code>tenant-floor-verification.js:75</code>), so an api contract change answers 503 for every tenant until the serial backfill (<code>platform-verification-admin.js:142-143</code>) reaches it. 30 <code>lib</code> files and 39 test files name the mechanism (grep). Kubernetes <code>httpGet</code>, <code>tcpSocket</code> and <code>grpc</code> probes reach TCP only, so on Kubernetes the endpoints are served on each role's TCP port; a Unix socket stays available to <code>exec</code> probes and Compose. The image's existing <code>nightscout healthcheck</code> subcommand (<code>lib/cli/commands/healthcheck.js</code>, already <code>--role</code> aware) selects any of these endpoints over TCP or the Unix socket, so Compose and any <code>exec</code> probe use it and the deploy repo's own <code>health.js</code> retires; an <code>exec</code> probe starts a Node process each period, so Kubernetes uses <code>httpGet</code> where the period is short (maintainer, 2026-11-19: "our container has a subcommand based suite of entrypoints"). Brief <code>BRIEF-claude-platform-simplify-2026-11-19.md</code> (local).</td>
+</tr>
+<tr>
+<td><a id="statefulset-ordinal-scaling"></a><strong>Evaluator and realtime run as StatefulSets: each Pod's slice is its ordinal, parsed from the hostname (or the pod-index label), and K is one environment or ConfigMap value rendered from the same Tanka variable that sets <code>replicas</code> (the Prometheus hashmod-shard pattern). A Pod whose ordinal is K or higher owns nothing by construction; the application adds no refusal for it, and keeping <code>replicas</code> and K equal is the platform's job. The baseline runs one evaluator and one realtime Pod. Realtime keeps the mixed-layout lock because its durable delivery receipts assume one owner per tenant. A rolling change of realtime K is deferred together with the scaling design. The api is a Deployment behind a Service. At K=1 behaviour is the same as today. Once scaling and performance behaviour are proved, horizontal scale means changing the replica count of the same manifests and the same code (a restart, per <a href="#static-hash-ownership">static-hash-ownership</a>). Duplicate per-slice Deployments are rejected. The <code>cohort</code> application topology and the participant manifest with fixed instance ids are deleted. Compose passes the slice index and count to each service as environment settings. Evaluator K&gt;1 is out of scope for the reproducible-runs work: pgstream delivers to one receiver, so the evaluator stays at K=1 until a separate evaluator discussion settles routing (<a href="#private-stream-router">private-stream-router</a>, deferred).</strong></td>
+<td>Maintainer, 2026-11-19 ("statefulset relying on ordinal is much simpler, less complex and cloud native"); amended the same day: hostname ordinal plus a rendered K, no ordinal refusal, rolling K change, evaluator K=1</td>
+<td>Multitenant. Narrows <a href="#k1-per-role-deployments">k1-per-role-deployments</a>: Deployments remain for api and tenant-admin. Basis (read-derived at deploy <code>0d4573c</code>): the default is still <code>applicationTopology: 'cohort'</code> (<code>bindings/kubernetes/lib/ns/nightscout.libsonnet:74</code>) and asserts one cohort Pod (<code>:112</code>); instance identity comes from <code>lib/server/serve/operation-cohort-manifest.js</code> and <code>role-topology.js</code> in core.</td>
+</tr>
+<tr>
+<td><a id="config-few-dozen-env"></a><strong>Deployment configuration is a few dozen environment settings with documented defaults, plus minimal bookkeeping in PostgreSQL; the present count of about 74 is in that range, so the work is retiring the documents, not cutting settings. The per-role JSON documents and their plan-contract schemas (about 500 properties) retire; a role derives what it needs from its environment and its own identity. Secrets arrive as mounted files (a Kubernetes Secret or the Vault Agent sink). Per-tenant values are unchanged (<a href="#d15">d15</a>, <a href="#d22">d22</a>).</strong></td>
+<td>Maintainer, 2026-11-19 ("we were expecting maybe a few dozen environment flags, and perhaps some minor bookkeeping in postgres, not hundreds")</td>
+<td>Multitenant; single-tenant already reads the environment. Basis (measured by grep at core <code>5d248eac9</code>): 74 distinct <code>NS_*</code>/<code>MULTITENANT_*</code> tokens in <code>lib</code> and <code>bin</code>; 8 schemas under <code>lib/server/serve/plan-contract/schema/</code>. Most of the surface is expected to go with <a href="#platform-verification-removal">platform-verification-removal</a> and <a href="#statefulset-ordinal-scaling">statefulset-ordinal-scaling</a>, so this lane follows them.</td>
+</tr>
+<tr>
+<td><a id="metrics-endpoint-deferred"></a><strong>deferred: No <code>/metrics</code> endpoint work now. Prometheus is adopted when it makes a run or an operator task easier. The run's verdicts keep coming from per-input events, which aggregates cannot replace.</strong></td>
+<td>Maintainer, 2026-11-19 ("unclear that this accelerates velocity towards our objectives")</td>
+<td>The objectives it is weighed against: vary load, request rate and tenant count to understand scaling and capacity, and establish a stable reproducible baseline for qualification. Resource figures already come from kube-state-metrics/cAdvisor per <a href="#kubernetes-idiomatic-operations">kubernetes-idiomatic-operations</a>.</td>
+</tr>
+<tr>
+<td><a id="provisioning-secrets-in"></a><strong>Secrets flow into jobs and roles, never out. Credentials (PostgreSQL role passwords, Vault material) exist before apply: a seed step in labs, Vault or External Secrets in production. Migration and provisioning Jobs only read mounted Secrets, for example to run <code>CREATE ROLE … PASSWORD</code> from one; role configuration comes from environment settings (<a href="#config-few-dozen-env">config-few-dozen-env</a>). Nothing is copied out of a Pod, there is no operator acknowledgement, and one apply converges.</strong></td>
+<td>Maintainer, 2026-11-19 ("recommendation approved, simplify, cloud-native shape")</td>
+<td>Multitenant. Rejected: a Job that writes Secrets through the Kubernetes API (keeps the mixed concerns and gives a Job broad write access); Vault dynamic database credentials now (more moving parts than reproducible runs need; allowed later). Retires <code>bindings/kubernetes/scripts/secrets.sh publish</code>, the provision Job's <code>done</code> container and its <code>/state/.ready</code> and <code>/state/.exported</code> markers (read-derived at deploy <code>0d4573c</code>). Within <a href="#boot-independent-of-tenants">boot-independent-of-tenants</a>, admin's elevated database credentials still reach no orchestration Job.</td>
+</tr>
+<tr>
+<td><a id="stream-source-identity-in-data"></a><strong>The deployment no longer pins the database's stream identity (<code>nativeSelection</code>/<code>nativeSource</code> in role documents, checked by <code>lib/tenant-lifecycle/native-selection.js</code>). The identity the saved stream state already records per tenant in PostgreSQL (system identifier, timeline, database, slot) stays the only one. A replaced database (restore, point-in-time recovery, failover) is handled by the existing recovery: a source mismatch resets and re-bootstraps that tenant, a missing slot goes through snapshot recovery, and a role that exits is restarted by the platform's restart policy. No new code and no refusal that needs a config change.</strong></td>
+<td>Maintainer, 2026-11-19 ("it's ok if an entire DB restore invalidates a database and causes evaluator to crash and restart, and then it recovers automatically … isn't this a separation of concerns, orchestration issue? this is why we have a restart policy")</td>
+<td>Multitenant. Basis (read-derived at core <code>d83c5cc4d</code>): data-level identity <code>lib/storage/clinical-stream-state.js:54,132</code>; reset on source mismatch <code>lib/storage/postgres-durable-replay.js:339-346</code>; absent slot <code>lib/pgstream/snapshot-recovery.js:80</code>; deployment pin <code>native-selection.js:33-37</code>, written by deploy <code>registry-bootstrap.js:29</code> from the live database (<code>bootstrap.js:134</code>), which is why role documents were copied out of a Pod (lane P mismatch 1, <code>HANDOFF-platform-p-2026-11-19.md</code>, local). Settles recommission's use of the pin the same way. Lane C deletes it.</td>
+</tr>
+<tr>
+<td><a id="predictable-fixes-then-test"></a><strong>Predictable simplifications land together and are tested together. A lane that deletes or simplifies machinery whose outcome is predictable runs the affected tests and keeps them green; it writes no per-item break-it control. The joined candidate is then qualified once on both platforms. A new red-then-green control is written only for a changed product behaviour whose outcome is not predictable, or when qualification fails and the cause must be isolated.</strong></td>
+<td>Maintainer, 2026-11-19 ("we don't need specific break-it tests for all of these predictable fixes as it introduces overhead and process drag, let's get all the predictable issues solved quickly and then test")</td>
+<td>Applies <a href="#serial-machinery-retirement">serial-machinery-retirement</a> ("a predictable simplification … needs correctness controls, not a performance arm") and the targeted-tests-per-lane rule of the simplification brief. The four product properties of <a href="#four-product-failures">four-product-failures</a> are measured at qualification, not per lane. Narrows AGENTS.md section 3 rule 3 ("a gate that has never failed is not yet evidence") for these lanes: it still governs new gates.</td>
+</tr>
+<tr>
+<td><a id="platform-backup-and-test-fixtures"></a><strong>The deployment owns whole-installation backup and rollback. Use PostgreSQL backups or storage snapshots together with the matching Vault state. For synthetic fixtures, start with a cold physical copy of PostgreSQL, Vault and primer state. Reuse the seeded fixture through ordinary migration and readiness. Grant restore authority in the restore drill only.</strong></td>
+<td>Maintainer, 2026-11-19</td>
+<td>Multitenant. Compose can copy stopped volumes. Kubernetes can use a supported VolumeSnapshot or PVC clone. Logical dump and restore remains a future fixture option. <a href="#stream-source-identity-in-data">Stream identity</a> still governs a replaced PostgreSQL instance.</td>
+</tr>
+<tr>
+<td><a id="tenant-copy-export"></a><strong>Core exports a tenant as per-table PostgreSQL COPY data and a SHA-256 manifest. Restore into an installation keeps the original IDs and ciphertext, applies history corrections and enforces the tenant generation fence.</strong></td>
+<td>Maintainer, 2026-11-19</td>
+<td>Multitenant. <a href="#tenant-deletion-key-retention">Key retention</a> and <a href="#key-destruction-removes-export">export removal</a> continue to govern the artifact.</td>
+</tr>
+<tr>
+<td><a id="operator-repair-scope"></a><strong>Retire the unselected multitenant admin <code>ensure</code> implementation.</strong> Use <code>provision</code> for a new tenant and idempotent retries. <code>inspect</code> diagnoses missing state. Keep the pre-key fence, residue checks, and refusal to overwrite incomplete data. Exceptional loss of key material requires the original key backup. For other metadata damage, recover authoritative state in an isolated restore and assess a targeted repair. The joined candidate has no automatic single-row repair. Factory reset is a separate operator design for resetting configuration and operational state while preserving clinical data, keys and credentials. Credential revocation remains explicit.</td>
+<td>Maintainer, 2026-11-19. Last-resort repair must have a justified purpose in the current architecture. Multitenant only.</td>
+<td>Read-derived from core <code>e0fab6c09</code> and <code>1604b87a8</code>. The earlier test deliberately deleted a key that <code>ensure</code> could never replace. The PostgreSQL creation transaction writes settings and history together. First-time key metadata repair depended on a prior successful <code>ensure</code> audit. No supported writer was found that produces either isolated missing-row state. An operator loses the historical targeted-repair path for out-of-band damage. In-place logical restore preserves current owner configuration. Registry public keys are outside the tenant COPY inventory. No serving performance gain is claimed.</td>
+</tr>
+<tr>
+<td><a id="driver-sized-from-offer"></a><strong>The load driver is sized from the offer, not fixed. Per operation, k6 <code>preAllocatedVUs = max(2, ceil(rate × 0.25 s × H))</code> and <code>maxVUs = max(4, ceil(rate × 5 s × H))</code>, where rate is that operation's offered requests/s and H is a platform headroom factor chosen per deployment target (default 1.5 local Compose, 2 Kubernetes, 3 remote generator or droplet). The 5 s term means a drop only occurs when server latency exceeds about 5 s × H at that rate. Driver drops, late starts and issued/completed counts are reported as figures by operation only; there is no offered-work PASS/FAIL grade. A driver that reaches its memory or CPU allocation is reported as the bound for that point.</strong></td>
+<td>Maintainer, 2026-11-19</td>
+<td>Applies <a href="#four-product-failures">four-product-failures</a> and <a href="#generous-run-resources">generous-run-resources</a>; replaces the fixed 2 preallocated / 4 maximum per operation and the 2/4 versus 8/8 comparison proposed in the K=1 capacity plan. Basis (reproduced, paired baseline): Kubernetes repeats dropped 1, 140 and 49 starts, 125 of the 140 with four same-operation iterations already in flight, while every accepted input was stored and timely. Predicted totals at H=2: 1,000 tenants realistic (13.89 req/s) 14 preallocated / 144 maximum; 3,000 (41.67) 23 / 419; 10,000 (138.89) 72 / 1,394; 1,000 at 240 req/s 122 / 2,405 (as rendered by the G1 harness); maximum VUs are created only when latency requires them.</td>
 </tr>
 </tbody>
 </table>

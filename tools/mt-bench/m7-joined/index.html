@@ -1159,8 +1159,6 @@
       
         
       
-        
-      
     
     
     
@@ -3019,66 +3017,6 @@
   
   
   
-    <a href="../../queue/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    queue/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
     <a href="../../review/index.html" class="md-nav__link">
       
   
@@ -3927,10 +3865,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#shared-compose-namespace-and-epoch-custody" class="md-nav__link">
+  <a href="#compose-project-and-cleanup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Shared Compose namespace and epoch custody
+        Compose project and cleanup
       
     </span>
   </a>
@@ -3999,17 +3937,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#baseline-idle-safety-boundary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Baseline idle-safety boundary
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#sql-snapshot-request-bounds" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4047,17 +3974,6 @@
     <span class="md-ellipsis">
       
         Bounded commissioning on a fresh capacity point
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#receipt-selected-serial-exchange-diagnostic" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Receipt-selected serial exchange diagnostic
       
     </span>
   </a>
@@ -4170,7 +4086,7 @@
 
 
 <h1 id="joined-m7-capacity-adapter">Joined M7 capacity adapter<a class="headerlink" href="#joined-m7-capacity-adapter" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-18 at <code>4570cf55b</code>.</em></p>
+<p><em>Living document, last changed 2026-11-19 at <code>a9d1721bd</code>.</em></p>
 <p>This prepares the <strong>next</strong> measurement; it does not establish a capacity result.
 The prior capacity record and authorization/allocation profiles retain their own
 source scope. No prior working-tree lib mount or bootstrap patch is reused here.
@@ -4301,55 +4217,11 @@ workload's own load average is measured instead of rejecting its expected CPU.
 Host inventories include container IDs/labels, image IDs, load, RAM, Docker/context,
 kernel and process names/CPU/RSS, never command arguments/environments. Only local
 Unix-socket Docker contexts are supported: host metrics must describe that daemon.</p>
-<h3 id="shared-compose-namespace-and-epoch-custody">Shared Compose namespace and epoch custody<a class="headerlink" href="#shared-compose-namespace-and-epoch-custody" title="Permanent link">&para;</a></h3>
-<p><code>orchestration_binding.py</code> is the shared command boundary for existing-fixture
-upgrades and resumes. It does not schedule a run or replace the existing finite
-GO, host ownership, PID/birth checks or guard. Artifact stages import this source
-module instead of copying a <code>COMPOSE</code> shell array. The tracked instrument inventory
-requires this module. Remote source packs must retain the complete tracked
-<code>tools/mt-bench/m7-joined/</code> prefix, including this module; a prefix import and
-manifest digest check belong before any provider allocation.</p>
-<p>The command factory requires the immutable project, raw frozen Compose <code>name</code>,
-<code>NS_DEMO_PROJECT</code> and current owner record to agree. <code>adapter.compose</code> uses this
-cheap check and the frozen file hashes on every call. It renders actual Compose
-configuration only for container lifecycle mutations; private SQL and inspector
-polls do not acquire a new Docker-config measurement cost. Missing anchors refuse;
-there is no fallback to the owner record alone.</p>
-<p>Before the first effect, the integration owner:</p>
-<ol>
-<li>Uses <code>stamp_candidate</code> to add the single <code>org.nightscout.m7.attempt</code> nonce to
-   <strong>new</strong> candidate declarations only. Historical fixture declarations and owner
-   labels remain unchanged. A later resume can retain a prior attempt's labels
-   as its recorded original epoch; it does not recreate resources to retag them.</li>
-<li>Uses read-only <code>image_metadata</code> and <code>make_binding</code> to freeze original and
-   candidate epochs, exact source/image identities, state roots, environment and
-   Compose hashes. An absent/null Compose command is resolved from the exact
-   pinned image's OCI command, not inferred from a running container. Preserve
-   historical <code>configFiles</code> when original containers used another frozen path.</li>
-<li>Writes a unique <code>begin_journal</code> with actual full inspected original IDs. Bind
-   <code>binding['sha256']</code> and its attempt nonce into the existing root GO. The
-   supplied <code>authorize</code> callback must revalidate that authority before effects.</li>
-<li>Calls <code>checked_run</code> for Compose creation/replacement. It builds the only
-   project/env/config prefix, checks actual expanded configuration, writes intent
-   before effect, and records created IDs even when the command fails. No shell
-   namespace override is accepted. Calls <code>checked_ids</code> for exact existing
-   container start/restart/stop; these retain the recorded epoch's declaration.</li>
-<li>Calls <code>cleanup_recorded</code> from the existing guard/finally path. It inspects
-   recorded full IDs directly and validates each against its <strong>own</strong> epoch.
-   Discovery admits only the current attempt label plus owner, project, source,
-   config-file, creation and exact command/mount/environment proofs. Foreign or
-   unknown IDs are refused while proven owned IDs still stop. A declaration,
-   capture, log or journal-write failure is never authority for a broad project
-   stop. Cleanup preserves volumes and does not read mutable project/env/config
-   files; a metadata failure remains explicit even when owned stopping succeeds.</li>
-</ol>
-<p>Use the new journal API for an upgrade/resume integration; do not fall back to a
-project-wide <code>down</code> or reinterpret old containers using new candidate declarations.
-The focused <code>test_orchestration_binding.py</code> controls exercise wrong project,
-source, owner, state mount, missing/swapped attempt, original/candidate epoch,
-failed capture/stdout/journal persistence and foreign-ID refusal before effects.
-All mutation calls in those controls are injected. Actual stopped-fixture
-qualification uses only <code>ps</code>, <code>inspect</code>, image inspection and <code>compose config</code>.</p>
+<h3 id="compose-project-and-cleanup">Compose project and cleanup<a class="headerlink" href="#compose-project-and-cleanup" title="Permanent link">&para;</a></h3>
+<p>Every Compose call is <code>docker compose -p &lt;project&gt; --env-file &lt;run&gt;/env -f &lt;run&gt;/frozen.compose.json</code>,
+built by <code>adapter.compose_prefix</code>. The project name is unique to the run; cleanup is <code>down -v</code> on that project
+and one absence check on its label (decision <code>simple-run-cleanup</code>). The run records the alignment commit and image
+digest; no file, binding or epoch hashing precedes a Compose call (decision <code>four-product-failures</code>).</p>
 <h2 id="jwt-setup-concurrency">JWT setup concurrency<a class="headerlink" href="#jwt-setup-concurrency" title="Permanent link">&para;</a></h2>
 <p>Local preparation, attachment and campaign commands accept
 <code>--jwt-setup-concurrency 1..64</code>, with serial default 1. The cell owner manifest
@@ -4378,20 +4250,16 @@ Select a changed concurrency only when preparing a new coordinator-adopted run.<
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>python3<span class="w"> </span>tools/mt-bench/m7-joined/adapter.py<span class="w"> </span>run<span class="w"> </span>/absolute/private/m7-cell<span class="w"> </span>--k6-image<span class="w"> </span>PINNED_OR_LOCALLY_RESOLVED_K6_IMAGE
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>python3<span class="w"> </span>tools/mt-bench/m7-joined/adapter.py<span class="w"> </span>down<span class="w"> </span>/absolute/private/m7-cell
 </code></pre></div>
-<p><code>build</code> is unnecessary when the matching image already exists. Docker's resolved
-k6 image ID is recorded and used for execution. No floating tag runs after pinning.
-<code>prepare</code> stages local source/TLS/config and installs the owned lockfile dependencies before source helpers execute; it sends no performance traffic.
-It accepts explicit diagnostic seed counts1..10000; campaign ladders constrain
-the performance steps. Binding preparation must expose committed
-<code>primer provision</code>/<code>primer prime</code>, and either private <code>primer/tenants.json</code> or
-<code>ops/tenants.json</code> with exact <code>{version:1,tenants:[{id,host,dataToken,...}]}</code>.
-Conflicting outputs, legacy <code>token</code> fields or missing tokens refuse. Provisioning
-uses the private admin API; restore commissioning precedes API priming, and a
-private local publisher completes custody before remaining roles start. Seeding
-uses DATA APIs. There is no direct tenant-row
-or Vault seeding in the campaign adapter.</p>
+<p>The joined deployment starts admin and serving roles through Compose's completed bootstrap dependency.
+The lab client provisions through the private admin API and primes through DATA APIs. The harness reads
+its private <code>primer/tenants.json</code> and exchanges DATA tokens before starting k6.</p>
+<p>Set <code>prepare.fixture-snapshot</code> to the absolute path of a cold fixture produced by the deployment's
+<code>demo.sh snapshot</code> to restore its PostgreSQL, Vault, private settings and primer state into a fresh
+Compose project. The runner records the completed restore in <code>fixture-restore.json</code>. Select a fixture
+with the baseline tenant population you intend to exercise. Vary the workload or viewers in each run.</p>
 <h2 id="instrument">Instrument<a class="headerlink" href="#instrument" title="Permanent link">&para;</a></h2>
-<p>The source manifest hashes every adapter file and every reused tracked instrument.
+<p>The run records the alignment commit and candidate image identities. Compose and Kubernetes execute
+the same <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/m7-joined/joined-probe.cjs">joined probe</a> with their respective SQL transports.
 The existing <code>capacity/k6/workload.js</code> supplies seven client shapes: CGM
 entry and Loop devicestatus uploaders, AAPS-style v3 treatments, and follower
 entry/devicestatus/treatment/status reads. The generated workload records two explicit adaptations: current deterministic
@@ -4462,52 +4330,11 @@ transaction cohorts and subscribed raw mutation delivery remain required.
 Realtime consumes completed clinical output, while the raw mutation tail remains
 independent of bounded clinical membership. Bootstrap, cache loss, stream gaps
 and missing history may read SQL.</p>
-<p>Private inspection samples every selected owner and foreign row without starting
-work. Every tenant must have one admitted, ready, error-free owner. Runtime IDs,
-owner placement, counter rewinds, failed completions and foreign work remain
-checked. Component <code>generation</code> fences disposable RAM; cache eviction/recreation
-may change it without a process restart. Due work may run as acquisition after
-cache loss. Neither stable RAM generation, zero acquisition growth, TIME callback
-classification nor all job flags being clear is a clinical requirement.</p>
-<p>The current progress policy is module3 and idle-safety assessor module5.
-Successful work counters combine acquisition and TIME completions. These counters
-are diagnostics, not durable clinical proof. The separate legacy v1 progress
-policy retains its original strict semantics. Existing receipts and captured
-failures remain unchanged; reproduce historical outcomes with their original
-instrument. Current policy and assessment versions prevent an old receipt from
-silently becoming current qualification.</p>
-<h3 id="baseline-idle-safety-boundary">Baseline idle-safety boundary<a class="headerlink" href="#baseline-idle-safety-boundary" title="Permanent link">&para;</a></h3>
-<p>Without an explicit durable opportunity selection, idle reports sampled work
-safety with <code>timeWitness:false</code>. <code>DUE_WORK_COMPLETED</code> means successful work was
-observed after a sampled due opportunity; it does not certify clinical output or
-that the callback was TIME. A quiet sample reports <code>TIME_NOT_EXERCISED</code>. Missing
-or ambiguous due observations remain UNMEASURED. Pending job flags are diagnostic;
-newer owed work must not erase an older completion. Missing due work may receive
-one bounded point observation after the original cost bookends; that observation
-never enters original-window throughput. It need not have a specific callback
-kind or an exact legacy-body count. Foreign pending work still refuses.</p>
-<p>For <code>pgstream-sample</code> discovery, <code>--evaluator-opportunities received-input-v1</code>
-selects the existing trusted SQL collector for <strong>idle and load</strong>. It captures
-three SQL-before-inspection snapshots with the existing reader/source/image
-binding and budgets. Assessment version2 reads <code>work_due_at</code> and
-<code>work_completed_at</code> from the existing typed checkpoint in the same query as
-accepted/completed vectors and output restore metadata. A sampled due is complete
-when a later durable completion crosses that due and the original due is retired
-or replaced by a strictly later one. Output content/revision may remain unchanged;
-a later real deadline remains eligible. RAM generation and acquisition/TIME
-counters cannot substitute for this check. Missing timing leaves the dependent
-timer claim UNMEASURED; independently measured input coverage remains visible.</p>
-<p>Durable vector, output revision, completion-time and restore rewinds still refuse.
-These observations establish scoped checkpoint progress, not independent current
-restore/owner-authority proof, clinical equivalence, stock-client delivery,
-per-write deadlines or capacity acceptance. Existing source/native/operator and
-client checks own those claims. No new telemetry service is required.</p>
-<p>Selectors retain the existing bounds: 128 IDs per inspection request, 10000 IDs,
-4 instances, 1024 requests and 64MiB response bytes per phase. Original raw/gzip
-captures, source/image/instrument attribution and observer costs stay private.
-Clock brackets reject wall jumps and overlapping observations. Idle always
-attempts its AFTER cost snapshot in <code>finally</code>; missing bookends remain missing.
-The durable opportunity observer needs no additional completion-tail query.</p>
+<p>Private inspection samples owner and foreign rows throughout ordinary traffic and at
+the end of drain. Runtime IDs, owner placement, counter rewinds, evaluator health and
+foreign work remain checked. The acceptance observer reconciles per-input acknowledgements
+against durable output and stored-write counts. Idle tenants owe no work.
+<a href="RUNNER.html#outcome-evaluator-gate">Run and gate configuration</a></p>
 <p>Restart recovery remains a separate bounded observation of changed process IDs
 and successful fresh acquisition. It does not establish clinical recovery by
 itself. The existing local under-demand recovery capability and operator drill
@@ -4525,7 +4352,7 @@ cannot substitute for SQL timestamps. SQL execution time remains distinct from
 database-role CPU; wall stamps support correlation, not a cross-host clock claim.</p>
 <h3 id="discovery-runs">Discovery runs<a class="headerlink" href="#discovery-runs" title="Permanent link">&para;</a></h3>
 <p><code>prepare --run-purpose discovery</code> freezes an explicit observational route;
-<code>acceptance</code> remains the default. Discovery preserves raw strict idle/work
+<code>acceptance</code> remains the default. Discovery preserves evaluator source and scope
 verdicts, including UNMEASURED and failed work-completion counters, and executes
 the existing bounded HTTP load despite incomplete socket priming. Missing
 <code>.window</code> stops/drains the owned probe before HTTP load; it does not manufacture
@@ -4552,8 +4379,7 @@ before recovery. No observation route grants functional or capacity acceptance.<
 <code>discovery-transport-control.py --repo &lt;transport&gt; --commit &lt;full commit&gt;</code> tests
 the actual Record producer against an immutable transport validator without
 executing commands, applications or networks.</p>
-<p>Discovery classification is explicit. Missing final-tail opportunity is retained
-as UNMEASURED and does not suppress load. A missing midpoint may continue only
+<p>Discovery classifies partial load observations separately. A missing midpoint may continue only
 with a current-source, correctly attributed, fixed-phase 1/2-round artifact;
 its available owner/foreign/reset/selector/budget invariants still apply (and
 idle clock brackets, when present in that source schema). Zero/extra rounds,
@@ -4616,12 +4442,6 @@ The public history stamp is observed separately. Clinical completion can advance
 while an unchanged output keeps its original captured input floor and revision.
 Explicit lifecycle invalidation may reset the snapshot position to <code>0/0</code>; accepted
 commit positions retain their own source, generation and coverage fences.
-Native opportunity assessment and fixed-target drain use captured accepted-input
-floors, metadata and due work. New accepted input invalidates a frozen quiet
-target; pending work cannot pass. The drain declares <code>writerIntakeCoverage</code>
-UNMEASURED because this port has no post-writer WAL high-watermark together with
-the configured-slot acknowledgement fence. Public history does not supply that
-proof. Historical non-native readers retain their original target semantics.
 The reader checks the actual stored marker, BG-now result and stock callback;
 metadata alone does not qualify clinical equivalence or raw delivery.</p>
 <p>The unqualified selected-intake/profile reader and its mechanism-only control
@@ -4687,55 +4507,6 @@ exchanges in setup and stock-client probes remain separate from this scenario
 target. Keep accepted/persisted writes and evaluator/client witnesses separate.
 Raw k6 <code>iterations</code> and <code>dropped_iterations</code> remain distinct; a metric absent
 from the capture stays unmeasured.</p>
-<h3 id="receipt-selected-serial-exchange-diagnostic">Receipt-selected serial exchange diagnostic<a class="headerlink" href="#receipt-selected-serial-exchange-diagnostic" title="Permanent link">&para;</a></h3>
-<p><code>prepare</code> and <code>attach</code> accept <code>--serial-exchange-diagnostic</code> only for a3000-tenant
-<code>pgstream-sample</code> discovery. The genuine <code>AUTHORIZED_DIAGNOSTIC</code> receipt and owner
-manifest must both contain exactly:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span><span class="nt">"serialExchangeDiagnostic"</span><span class="p">:{</span><span class="nt">"tenants"</span><span class="p">:</span><span class="mi">64</span><span class="p">,</span><span class="nt">"phaseSeconds"</span><span class="p">:</span><span class="mi">120</span><span class="p">,</span><span class="nt">"requestSeconds"</span><span class="p">:</span><span class="mi">60</span><span class="p">}}</span>
-</code></pre></div>
-<p>The existing <code>run</code> entry point keeps canonical readiness, warmup and strict idle.
-It then uses one Node actor and one fixed HTTP-agent configuration to exchange the
-same first64 ordered tenant records before and after the original16-worker JWT
-setup and two-per-tenant stock polling priming. Each phase has a120second budget,
-each request a60second maximum, and the first non200 stops that phase without
-retry. A BEFORE refusal skips stock setup. An AFTER refusal retains the priming
-result. Stock setup retains safe aggregate attempt, retry, HTTP-status and transport
-counts while keeping its original16 workers and retry behavior. Both serial phases
-return diagnostic evidence and close every stock socket and agent.</p>
-<p>This route never releases <code>.window</code>, sends a probe write, starts k6 or records an
-ordinary310second measurement. The summary remains <code>PARTIAL</code>, with
-<code>diagnosticOnly:true</code> and <code>ordinaryTraffic:NOT_RUN</code>. The ordinary route and its
-default generated probe bytes are unchanged when the flag is absent.</p>
-<p><code>load/binding.private.json</code> binds the actual owner/source/image/instrument,
-ordered credential file, actor bytes and Node executable hashes. Both phases
-recheck those inputs. <code>load/exchange-phases/{before,after}.json</code> contains bounded
-status, allowlisted error class, tenant index/hash, clock and elapsed observations;
-it contains no returned JWT, credential, raw response body or request URL. Existing
-owned-process/job sampling stays at <code>load/probe-job.json</code> and <code>load/loadgen.jsonl</code>.
-The selected probe wait is bounded900seconds and remains subject to integration's
-shorter finite deadline; a600second external sampler does not prove coverage of a
-longer diagnostic. No PostgreSQL statistics reset is added between the paired phases.
-The unchanged clinical, source, image, ownership and process guards remain in force.</p>
-<p>Bound oneoff launches use <code>make_binding(..., oneoff_root=..., oneoff_images={'k6': pinned_id})</code>
-and <code>checked_oneoff(binding, kind, argv, scope, runner, authorize, journal_file)</code>.
-The only kinds are <code>k6-version</code>, <code>k6-help</code> and <code>k6-load</code>. <code>argv</code> is the existing
-source-generated Docker command. <code>scope</code> contains <code>directory</code>, attachment <code>owner</code>
-and pinned <code>imageId</code>. The helper verifies the attachment/project, binds the exact
-command, image defaults, mount and environment layout, prewrites intent, then adds
-the attempt label and exclusive CID file. The optional <code>oneoff</code> callback passed to
-<code>sample_preflight</code> or <code>run</code> covers only these explicit launch sites; it does not
-intercept reads or change generated scripts. Its <code>stop()</code> uses <code>checked_ids</code> for
-recorded oneoff IDs. Journal cleanup also recovers attempt-qualified live IDs when
-CLI output or capture failed; completed <code>--rm</code> absence is allowed.</p>
-<p>Remote producer command suffixes use immutable named stages:
-<code>make_binding(..., run_stages={name: {'epoch': epoch, 'argv': source_tail,
-'sourceFile': producer_path}})</code>. The source tail starts with
-<code>--profile ops run</code>, includes one declared role, and uses the existing bounded run
-options. The producer file hash, exact suffix and semantic command layout are
-sealed. Pass <code>stage=name</code>, matching <code>epoch</code>, <code>roles</code> and <code>options</code> to
-<code>compose_argv</code> or <code>checked_run</code>. Unknown stages, changed source/options/roles and
-namespace overrides refuse before effects. A default service command has no
-suffix. These APIs retain the caller's finite authorization and PID guard.</p>
 <h3 id="clinical-sender-and-early-request-diagnostic-source-qualified">Clinical sender and early-request diagnostic (source qualified)<a class="headerlink" href="#clinical-sender-and-early-request-diagnostic-source-qualified" title="Permanent link">&para;</a></h3>
 <p>The clinical completion criterion remains open. This instrument separates the
 actual maintained Go notifier's message admission/handoff, each HTTP attempt,
@@ -4779,13 +4550,13 @@ run needs measured wall/monotonic alignment and qualified primary process births
 <p>Minimal independent source review uses a fresh owned extraction of the archive
 whose SHA256 is in the manifest, and the explicitly verified Go 1.26.7 executable.
 Check the original file digests and unchanged go.mod/go.sum before applying:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># From the verified fresh source root; CLINICAL_PATCH is an absolute path.</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>patch<span class="w"> </span>--batch<span class="w"> </span>--fuzz<span class="o">=</span><span class="m">0</span><span class="w"> </span>-p1<span class="w"> </span>--input<span class="w"> </span><span class="s2">"</span><span class="nv">$CLINICAL_PATCH</span><span class="s2">"</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GOTOOLCHAIN</span><span class="o">=</span><span class="nb">local</span><span class="w"> </span><span class="nv">GOPROXY</span><span class="o">=</span>https://proxy.golang.org<span class="w"> </span><span class="nv">GOSUMDB</span><span class="o">=</span>sum.golang.org
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GOPRIVATE</span><span class="o">=</span><span class="w"> </span><span class="nv">GONOPROXY</span><span class="o">=</span><span class="w"> </span><span class="nv">GONOSUMDB</span><span class="o">=</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="c1"># Use owned GOMODCACHE/GOCACHE directories; retrieve only pinned public modules.</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="s2">"</span><span class="nv">$CLINICAL_GO</span><span class="s2">"</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>-mod<span class="o">=</span><span class="nb">readonly</span><span class="w"> </span>-count<span class="o">=</span><span class="m">1</span><span class="w"> </span>-timeout<span class="o">=</span>30s<span class="w"> </span>./pkg/wal/processor/webhook/notifier
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="s2">"</span><span class="nv">$CLINICAL_GO</span><span class="s2">"</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>-mod<span class="o">=</span><span class="nb">readonly</span><span class="w"> </span>-race<span class="w"> </span>-count<span class="o">=</span><span class="m">1</span><span class="w"> </span>-timeout<span class="o">=</span>30s<span class="w"> </span>./pkg/wal/processor/webhook/notifier
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># From the verified fresh source root; CLINICAL_PATCH is an absolute path.</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>patch<span class="w"> </span>--batch<span class="w"> </span>--fuzz<span class="o">=</span><span class="m">0</span><span class="w"> </span>-p1<span class="w"> </span>--input<span class="w"> </span><span class="s2">"</span><span class="nv">$CLINICAL_PATCH</span><span class="s2">"</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GOTOOLCHAIN</span><span class="o">=</span><span class="nb">local</span><span class="w"> </span><span class="nv">GOPROXY</span><span class="o">=</span>https://proxy.golang.org<span class="w"> </span><span class="nv">GOSUMDB</span><span class="o">=</span>sum.golang.org
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GOPRIVATE</span><span class="o">=</span><span class="w"> </span><span class="nv">GONOPROXY</span><span class="o">=</span><span class="w"> </span><span class="nv">GONOSUMDB</span><span class="o">=</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="c1"># Use owned GOMODCACHE/GOCACHE directories; retrieve only pinned public modules.</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="s2">"</span><span class="nv">$CLINICAL_GO</span><span class="s2">"</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>-mod<span class="o">=</span><span class="nb">readonly</span><span class="w"> </span>-count<span class="o">=</span><span class="m">1</span><span class="w"> </span>-timeout<span class="o">=</span>30s<span class="w"> </span>./pkg/wal/processor/webhook/notifier
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="s2">"</span><span class="nv">$CLINICAL_GO</span><span class="s2">"</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>-mod<span class="o">=</span><span class="nb">readonly</span><span class="w"> </span>-race<span class="w"> </span>-count<span class="o">=</span><span class="m">1</span><span class="w"> </span>-timeout<span class="o">=</span>30s<span class="w"> </span>./pkg/wal/processor/webhook/notifier
 </code></pre></div>
 <p>Focused Node/Python controls, from the alignment root:</p>
 <p>The startup control needs the actual application archive plus its exact deployment
@@ -4840,8 +4611,8 @@ no public flag to bypass admission or resource ownership.</p>
 <p>These focused controls import the application and deployment modules from explicit
 worktrees. They do not launch a service or establish deployed recovery, clinical
 equivalence, or an operating envelope.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/materializer-default-control.cjs<span class="w"> </span><span class="s2">"</span><span class="nv">$CORE_WORKTREE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$DEPLOY_WORKTREE</span><span class="s2">"</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/materializer-row-control.cjs<span class="w"> </span><span class="s2">"</span><span class="nv">$CORE_WORKTREE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NATIVE_DECODER_JSONL</span><span class="s2">"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/materializer-default-control.cjs<span class="w"> </span><span class="s2">"</span><span class="nv">$CORE_WORKTREE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$DEPLOY_WORKTREE</span><span class="s2">"</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/materializer-row-control.cjs<span class="w"> </span><span class="s2">"</span><span class="nv">$CORE_WORKTREE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NATIVE_DECODER_JSONL</span><span class="s2">"</span>
 </code></pre></div>
 <p>The default control checks the maintained route and wire exports without a route
 override: all six clinical tables enter the decoder, XIDs are enabled, delivery
@@ -4891,6 +4662,7 @@ identity and checksum beside the capture. These controls preserve source-level
 boundary evidence; the integrator owns the final joined runtime acceptance.</p>
 <h2 id="single-host-qualification-allocation">Single-host qualification allocation<a class="headerlink" href="#single-host-qualification-allocation" title="Permanent link">&para;</a></h2>
 <h3 id="authored-resource-and-nginx-allocations">Authored resource and nginx allocations<a class="headerlink" href="#authored-resource-and-nginx-allocations" title="Permanent link">&para;</a></h3>
+<p><strong>Retired 2026-11-19:</strong> the <code>diagnostic-resource-profile</code> and <code>diagnostic-resource-allocation</code> options were deleted; Compose services always run uncapped and the host's <code>MemAvailable</code> is recorded once at run entry (<code>run-before-host.json</code>). The text below is historical.</p>
 <p><code>--diagnostic-resource-allocation</code> accepts one exact version-1 JSON allocation
 with <code>services</code>, <code>driver</code>, <code>ceiling</code> and <code>edge</code> fields. It replaces reference
 CPU/memory sizing when preparing a fresh fixture. Named profiles retain their
@@ -5001,6 +4773,7 @@ controller; local rendering and receiver controls do not establish a remote run.
 The existing <a href="../../../docs/30-design/tenancy/deployment-and-rig-testing.html#configurable-limits-and-restrictions">restriction policy</a>
 separates these instrument boundaries from application and acceptance claims.</p>
 <h3 id="named-qualification-profile">Named qualification profile<a class="headerlink" href="#named-qualification-profile" title="Permanent link">&para;</a></h3>
+<p><strong>Retired 2026-11-19:</strong> the <code>diagnostic-resource-profile</code> and <code>diagnostic-resource-allocation</code> options were deleted; Compose services always run uncapped and the host's <code>MemAvailable</code> is recorded once at run entry (<code>run-before-host.json</code>). The text below is historical.</p>
 <p><code>--diagnostic-resource-profile local-qualification-external-pgstream-6cpu-10g-v1</code>
 selects one proposed allocation for local synthetic qualification with
 <code>external-service-v1</code>. It is not a measured supported envelope. Keep tenant
@@ -5076,14 +4849,6 @@ diagnostic receipt and frozen serving environments carry that selection. The
 <code>platform-verify</code> job calls the private admin API after commission and before API
 launch. Its process receives no database or Vault credential. Older deployment
 pins keep their original stage sequence.</p>
-<p>For a bounded local startup experiment, select <code>--api-warm-cause startup-v1</code>
-with the existing discovery receipt and resource allocation. It supports small
-fixtures before a 10,000-tenant point. This source-bound observer samples actual
-API process heap use, V8 heap ceiling, cgroup memory ceiling/current use and safe
-startup counts once per second, retaining the first samples and a bounded recent
-window. It adds file I/O and count-sampling overhead; it is not a matched CPU
-baseline. No tenant identifier, credential, request body or glucose value is
-emitted. <code>warm-v1</code> keeps its original 10,000-tenant refusal-correlation scope.</p>
 <p><code>deployment-stages.json</code> records each entry before effects and its elapsed time,
 verdict and safe first error in <code>finally</code>, including a throwing primer. New
 <code>startup-primer-boundary.json</code> keeps the exact API birth, process exit and Docker
