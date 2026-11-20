@@ -92,6 +92,15 @@ class CatalogTests(unittest.TestCase):
         self.assertIsNone(row["work"]["issued"])
         self.assertEqual(row["work"]["dropped"], 0)
 
+    def test_clinical_comes_from_runner_selected_clinical_when_probe_reports_timings_only(self):
+        self.assertEqual(project(self.run, "run")["oracles"]["clinical"], "UNMEASURED")
+        write(self.run, "result.json", {"status": "OBSERVED", "runtime": "REUSED",
+                                        "partial": {"observations": {"selectedClinical": {"verdict": "PASS"}}}})
+        self.assertEqual(project(self.run, "run")["oracles"]["clinical"], "PASS")
+        write(self.run, "result.json", {"status": "OBSERVED", "runtime": "REUSED",
+                                        "partial": {"observations": {"selectedClinical": {"verdict": "FAIL"}}}})
+        self.assertEqual(project(self.run, "run")["oracles"]["clinical"], "FAIL")
+
     def test_startup_failure_is_retained_with_unknown_work(self):
         path = self.artifacts / "lane" / "startup"
         write(path, "result.json", {"status": "FAILED_PARTIAL", "phase": "deploy",
