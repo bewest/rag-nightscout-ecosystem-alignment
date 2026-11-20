@@ -46,8 +46,9 @@ experiments. Pass the output location explicitly; preserve existing captures
 and live cleanup paths.
 
 ```bash
-# a fresh MongoDB on its own port; never a real site
-docker run -d --name wc-mongo-$$ -p 27151:27017 mongo:7.0
+# a fresh MongoDB on its own port; never a real site. Use the CI edges: mongo:8.0 (ceiling, default)
+# and mongo:5.0 (floor) when the claim spans versions. Raise the open-file limit: full tiers exhaust the default.
+docker run -d --name wc-mongo-$$ --ulimit nofile=64000:64000 -p 27151:27017 mongo:8.0
 WC_WORKTREE=/mnt/data/nightscout-workspace/worktrees/cgm-remote-monitor/example-lane WC_MONGO=mongodb://127.0.0.1:27151 \
   node tools/qc/write-contract-matrix.js --out /mnt/data/nightscout-workspace/artifacts/example-lane/run01/after.json
 node tools/qc/write-contract-matrix.js --compare tools/qc/results/write-contract-matrix/<pin>.json /mnt/data/nightscout-workspace/artifacts/example-lane/run01/after.json
@@ -95,4 +96,9 @@ of the record.
 - A test tier can miss shared-database interference. Run the full `npm test` before "ready".
 - The local `mongod` on 27017 is an old version; use a container and read `db.version()` before
   labelling a run.
+- A lab MongoDB started with Docker's default open-file limit dies mid-tier with WiredTiger
+  `Too many open files` (errno 24), and every later test fails `ECONNREFUSED` (reproduced 2026-11-20,
+  `mongo:7.0.43`, 56 min into the full core integration tier). Always pass
+  `--ulimit nofile=64000:64000`. Test MongoDB at the CI edges only (5.0 floor, 8.0 ceiling; core
+  `.github/workflows/main.yml`), not an in-between series.
 - `ENOSPC` from a watcher is usually the inotify limit, not disk.
