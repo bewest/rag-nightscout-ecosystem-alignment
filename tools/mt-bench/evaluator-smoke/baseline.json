@@ -1,0 +1,232 @@
+{
+ "version": 1,
+ "kind": "evaluator-statement-smoke-v1",
+ "candidate": {
+  "reference": "ns-evaluator-smoke:bee2589b62c3-f57a8c335be9",
+  "imageId": "sha256:6c23df42a702d1dcfa5ccc9bb4d3264596e20b01ab2c95366e7b0849092a127e",
+  "core": "bee2589b62c36964ef2e0818c13957a57d320b49",
+  "deploy": "f57a8c335be9895c0ce4596d8a73275444b16541"
+ },
+ "runnerSmokeVerdict": "PASS",
+ "runnerOracles": {
+  "stored": "GREEN",
+  "clinical": "PASS",
+  "fixtureOwnership": "PASS",
+  "viewerTenantBindings": "PASS"
+ },
+ "acceptedWrites": {
+  "http": 501,
+  "probeStored": 20,
+  "total": 521,
+  "byShape": {
+   "w_sgv": 231,
+   "w_devicestatus": 231,
+   "w_treatments_v3": 39
+  }
+ },
+ "windowSeconds": 187.3,
+ "cycles": {
+  "completedWorkDelta": 519,
+  "completedTimeDelta": 0
+ },
+ "statementsPerWrite": {
+  "total": 171.89,
+  "byRole": {
+   "nsdemo_evaluator": 98.38,
+   "nsdemo_lifetime_evaluator": 14.83,
+   "nsdemo_outbox": 46.12,
+   "nsdemo_suppression": 12.55
+  },
+  "byPhase": {
+   "receipt": 6.99,
+   "dispatch": 3.1,
+   "settings": 9.04,
+   "acquisition": 3.98,
+   "completion": 1.99,
+   "consumers": 62.58,
+   "observe": 14.82,
+   "txn-control": 41.42,
+   "fences": 27.7,
+   "registry": 0.26
+  }
+ },
+ "executionMsPerWrite": {
+  "total": 4.005,
+  "byRole": {
+   "nsdemo_evaluator": 2.519,
+   "nsdemo_lifetime_evaluator": 0.105,
+   "nsdemo_outbox": 1.253,
+   "nsdemo_suppression": 0.128
+  },
+  "byPhase": {
+   "receipt": 1.314,
+   "dispatch": 0.052,
+   "settings": 0.123,
+   "acquisition": 0.099,
+   "completion": 0.686,
+   "consumers": 1.392,
+   "observe": 0.104,
+   "txn-control": 0.076,
+   "fences": 0.122,
+   "registry": 0.037
+  }
+ },
+ "attributedShare": 1.0,
+ "mainThread": {
+  "status": "MEASURED",
+  "clkTck": 100,
+  "windowSeconds": 187.3,
+  "mainThreadSeconds": 8.89,
+  "mainThreadBusyShare": 0.0475,
+  "mainThreadMsPerWrite": 17.063,
+  "processMsPerWrite": 21.574,
+  "scope": "utime+stime of the evaluator main thread (/proc/<pid>/task/<pid>/stat) between the SQL statement reads; 1 s sampling, linear interpolation at the bounds"
+ },
+ "shapes": [
+  {
+   "phase": "receipt",
+   "label": "receipt fence lifecycle read",
+   "perWrite": 1.996
+  },
+  {
+   "phase": "receipt",
+   "label": "input row SELECT ... FOR UPDATE (journal tail)",
+   "perWrite": 0.998
+  },
+  {
+   "phase": "receipt",
+   "label": "input row UPDATE via jsonb_to_recordset",
+   "perWrite": 0.998
+  },
+  {
+   "phase": "receipt",
+   "label": "work-state SELECT ... FOR UPDATE",
+   "perWrite": 0.998
+  },
+  {
+   "phase": "receipt",
+   "label": "work-state UPDATE (observed/pending)",
+   "perWrite": 0.998
+  },
+  {
+   "phase": "receipt",
+   "label": "recovery-key shared locks (unnest)",
+   "perWrite": 0.998
+  },
+  {
+   "phase": "dispatch",
+   "label": "nextDue min(work_due_at)",
+   "perWrite": 3.098
+  },
+  {
+   "phase": "settings",
+   "label": "trusted-worker scan (tenant_activity/settings/policy)",
+   "perWrite": 9.038
+  },
+  {
+   "phase": "acquisition",
+   "label": "dbstats SUM(pg_column_size)",
+   "perWrite": 0.996
+  },
+  {
+   "phase": "acquisition",
+   "label": "reconcile warm checkpoint read",
+   "perWrite": 0.996
+  },
+  {
+   "phase": "acquisition",
+   "label": "durable.begin read",
+   "perWrite": 0.996
+  },
+  {
+   "phase": "acquisition",
+   "label": "snapshot BEGIN REPEATABLE READ",
+   "perWrite": 0.996
+  },
+  {
+   "phase": "completion",
+   "label": "completed row UPDATE (output projection)",
+   "perWrite": 0.996
+  },
+  {
+   "phase": "completion",
+   "label": "completed row SELECT ... FOR UPDATE",
+   "perWrite": 0.996
+  },
+  {
+   "phase": "consumers",
+   "label": "outbox: producer state/requests/fence/txn",
+   "perWrite": 44.165
+  },
+  {
+   "phase": "consumers",
+   "label": "suppression: privilege check, read, fence/txn",
+   "perWrite": 12.555
+  },
+  {
+   "phase": "consumers",
+   "label": "notification-pending read/clear",
+   "perWrite": 3.908
+  },
+  {
+   "phase": "consumers",
+   "label": "outbox: notification deadlines",
+   "perWrite": 1.956
+  },
+  {
+   "phase": "observe",
+   "label": "generation-scope observe txn",
+   "perWrite": 14.821
+  },
+  {
+   "phase": "txn-control",
+   "label": "BEGIN/COMMIT/ROLLBACK",
+   "perWrite": 41.418
+  },
+  {
+   "phase": "fences",
+   "label": "lifecycle fence: set_config, shared/commit locks, operation-window read",
+   "perWrite": 27.699
+  },
+  {
+   "phase": "registry",
+   "label": "registry revision / datastore identity",
+   "perWrite": 0.265
+  }
+ ],
+ "rules": "default",
+ "scope": "pg_stat_statements top-level calls of the four evaluator roles between the load bookends, divided by HTTP-accepted writes plus stored probe writes; executor time, not CPU",
+ "workload": {
+  "tenants": 16,
+  "load-seconds": 180,
+  "workload-scale": 24
+ },
+ "repeats": [
+  {
+   "run": "bee2589b6-r1",
+   "acceptedWrites": 521,
+   "statementsPerWrite": 171.57,
+   "executionMsPerWrite": 4.04,
+   "mainThreadMsPerWrite": null,
+   "runnerSmokeVerdict": "FAIL"
+  },
+  {
+   "run": "bee2589b6-r2",
+   "acceptedWrites": 521,
+   "statementsPerWrite": 171.46,
+   "executionMsPerWrite": 3.908,
+   "mainThreadMsPerWrite": 16.737,
+   "runnerSmokeVerdict": "FAIL"
+  },
+  {
+   "run": "bee2589b6-r3",
+   "acceptedWrites": 521,
+   "statementsPerWrite": 171.89,
+   "executionMsPerWrite": 4.005,
+   "mainThreadMsPerWrite": 17.063,
+   "runnerSmokeVerdict": "PASS"
+  }
+ ],
+ "evidence": "local retained evidence evaluator-less-work-20261120/m-smoke/bee2589b6-r{1,2,3}; r1 main thread UNMEASURED (sampler started late); r1 and r2 runner verdict FAIL from the smoke clinical-projection defect fixed in b090aa6e26, their stored, ownership and binding oracles PASS and selected clinical PASS",
+ "measuredAt": "2026-11-20"
+}

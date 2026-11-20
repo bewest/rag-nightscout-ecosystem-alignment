@@ -421,7 +421,10 @@ def local(evidence):
         "oracles": {
             "cleanup": "PASS" if evidence.obj("cleanup.json").get("status") == "ABSENT" else "UNMEASURED",
             "stored": verdict(summary.get("oracle")),
-            "clinical": verdict(summary.get("completedOutput")),
+            # Since 3960218880 the probe reports timings only; the runner judges the sampled
+            # witnesses into partial.observations.selectedClinical. Older runs keep the probe verdict.
+            "clinical": verdict(get(summary, "completedOutput", "verdict")
+                                or get(partial, "observations", "selectedClinical")),
             "isolation": verdict(summary.get("isolation")),
             "ownership": "PASS" if summary.get("ownershipVerified") is True else "UNMEASURED",
             "authority": verdict(summary.get("authority")),

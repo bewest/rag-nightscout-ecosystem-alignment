@@ -34,12 +34,26 @@ def sql_deltas(current, baseline):
     return deltas
 
 
+def selected_clinical(root):
+    from runner import partial
+    try:
+        value = partial(root)['observations']['selectedClinical']['verdict']
+    except (KeyError, TypeError, OSError, ValueError):
+        return 'UNMEASURED'
+    return value if value in ('PASS', 'FAIL', 'UNMEASURED') else 'UNMEASURED'
+
+
 def assess(root, baseline_file=None):
     from runner import write
     result = project(root, root.name)
     checks = result['oracles']
+    clinical = checks['clinical']
+    if clinical == 'UNMEASURED':
+        # The probe reports timings only (since 3960218880); the runner judges its sampled
+        # witnesses. result.json is written after this assessment, so judge them here.
+        clinical = selected_clinical(root)
     exercised = {
-        'stored': checks['stored'], 'clinical': checks['clinical'],
+        'stored': checks['stored'], 'clinical': clinical,
         'fixtureOwnership': checks['ownership'], 'viewerTenantBindings': checks['clientFrames'],
     }
     signal_report = {key: signal for key, signal in result['signals'].items() if key.startswith('db.')}
