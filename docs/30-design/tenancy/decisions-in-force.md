@@ -27,7 +27,7 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 
 ### Roles, listeners and horizontal shape
 
-- [statefulset-ordinal-scaling](multitenancy-decisions.md#statefulset-ordinal-scaling) — Evaluator and realtime are StatefulSets, slice = ordinal, K = replicas; api is a Deployment; cohort and participant manifest deleted.
+- [statefulset-ordinal-scaling](multitenancy-decisions.md#statefulset-ordinal-scaling) — Evaluator and realtime are StatefulSets, ordinal from the hostname, K = replicas (one env value), one headless Service; api is a Deployment; cohort and participant manifest deleted. Evaluator K is bound at seed: one seed per K until the transport decision (amended 2026-11-20).
 - [d5](multitenancy-decisions.md#d5) — One core; stateless `api`, change-driven `evaluator`, fan-out `realtime`, connector `vcpool`; `single` keeps its server.
 - [d16](multitenancy-decisions.md#d16) — Separate data, owner and operator sockets, multiplexed by tenant, not duplicated per tenant.
 - [d21](multitenancy-decisions.md#d21) — One executable: `single`, `multitenant <role>[,<role>…]` and operator tools.
@@ -54,7 +54,7 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [stream-source-identity-in-data](multitenancy-decisions.md#stream-source-identity-in-data) — No deployment pin of the database's stream identity; per-tenant stream state, existing recovery and the restart policy handle a replaced database.
 - [predictable-fixes-then-test](multitenancy-decisions.md#predictable-fixes-then-test) — Predictable simplifications run affected tests only, no per-item break-it control; qualify the joined candidate once.
 - [provisioning-secrets-in](multitenancy-decisions.md#provisioning-secrets-in) — Secrets flow into Jobs and roles, never out of a Pod; one apply converges.
-- [prometheus-metrics-narrow](multitenancy-decisions.md#prometheus-metrics-narrow) — `prom-client` `/metrics` on an internal port, opt-in, both modes; no tenant-id labels; one Prometheus Pod plus `postgres_exporter` per lab run, TSDB snapshot retained; per-input events still decide verdicts; no OTel tracing now. Supersedes metrics-endpoint-deferred.
+- [prometheus-metrics-narrow](multitenancy-decisions.md#prometheus-metrics-narrow) — official Prometheus Node client (`@prometheus-io/client`), `/metrics` on an internal port, opt-in, multitenant roles only (not the classic server); no tenant-id labels; one Prometheus Pod plus `postgres_exporter` per lab run, TSDB snapshot retained; per-input events still decide verdicts; no OTel tracing now. Supersedes metrics-endpoint-deferred.
 - [platform-application-boundary](multitenancy-decisions.md#platform-application-boundary) — Application assumes a verified platform and fails closed; it never re-verifies the platform while serving.
 - [brittle-check-removal](multitenancy-decisions.md#brittle-check-removal) — Checks that refuse for anything other than a product property are removed; run identity is image digest plus run configuration.
 - [unclear-rows-resolved](multitenancy-decisions.md#unclear-rows-resolved) — The six Unclear questions resolved toward removal (desired count, writer census, revision wake, cost step A, idle witness, move readiness).
