@@ -41,7 +41,6 @@ from contract import DISCOVERY_MAX_API_REPLICAS, DISCOVERY_MAX_WORKERS  # noqa: 
 import main_thread  # noqa: E402
 import statement_phase  # noqa: E402
 
-DEFAULT_DEPLOY = 'f57a8c335be9895c0ce4596d8a73275444b16541'  # nightscout-deploy; image inputs equal at 09f2223
 WRITER_DEPLOY = 'edc6c5df1e8cdf693493f5b4bb5d89e591afbb75'
 K6_IMAGE = 'sha256:eeb0db19cd8d263aa57346cdbc7ea18e6fcfb2ba9497746a7ae82ceefc8c9fa5'  # grafana/k6:1.3.0
 POSTGRES_IMAGE = 'sha256:21e7e1665c3dd2fdd80ebd9ce6d36fb160d6a4129683b315b6492a71d87bfda7'
@@ -125,10 +124,9 @@ def free_subnets():
     raise SystemExit('SMOKE_NO_FREE_SUBNET')
 
 
-def config(core, deploy, core_repo, deploy_repo, project, workload, *, transport='pgstream', replicas=None, workers=None):
-    default_count = 2 if transport == 'writer-driven' else 1
-    replicas = default_count if replicas is None else replicas
-    workers = default_count if workers is None else workers
+def config(core, deploy, core_repo, deploy_repo, project, workload, *, replicas=None, workers=None):
+    replicas = 2 if replicas is None else replicas
+    workers = 2 if workers is None else workers
     backend, edge = free_subnets()
     head = sh(['git', '-C', str(ALIGNMENT), 'rev-parse', 'HEAD'])
     return {
@@ -144,8 +142,7 @@ def config(core, deploy, core_repo, deploy_repo, project, workload, *, transport
             'workload-mix': 'realistic-v1', 'workload-scale': workload['workload-scale'],
             'primer-concurrency': 4, 'jwt-setup-concurrency': 4, 'fixture-project': project,
             'maximum-run-minutes': 40, 'backend-subnet': backend, 'edge-subnet': edge, 'quiet-load': os.cpu_count() or 1,
-            **({'input-transport': 'writer-driven'} if transport == 'writer-driven'
-               else {'pgstream-topology': 'external-service-v1'}),
+            'input-transport': 'writer-driven',
             'completion-contract': 'evaluator-work-v2', 'static-workers': workers,
         },
     }
@@ -285,7 +282,7 @@ def main():
         p.add_argument('--deploy-commit', help='Deploy revision for an image built from --core')
         p.add_argument('--scratch', help='private directory for build worktrees and logs (default: --out)')
         if name == 'run':
-            p.add_argument('--input-transport', choices=('pgstream', 'writer-driven'), default='pgstream')
+            p.add_argument('--input-transport', choices=('writer-driven',), default='writer-driven')
             p.add_argument('--replicas', type=int, choices=range(1, DISCOVERY_MAX_API_REPLICAS + 1), help='API processes (writer-driven defaults to 2)')
             p.add_argument('--static-workers', type=int, choices=range(1, DISCOVERY_MAX_WORKERS + 1), help='Evaluator and realtime slices per role (writer-driven defaults to 2)')
             p.add_argument('--history-anchor-ms', type=int, help='Seed 72 SGVs per tenant ending at this shared five-minute UTC anchor')
@@ -320,7 +317,7 @@ def main():
     if a.cmd == 'build':
         require(a.core, 'SMOKE_CORE_REQUIRED')
         scratch = Path(a.scratch or '.').resolve()
-        tag, image_id, how = build(resolve(a.core, core_repo), a.deploy_commit or DEFAULT_DEPLOY, core_repo, deploy_repo, scratch)
+        tag, image_id, how = build(resolve(a.core, core_repo), a.deploy_commit or WRITER_DEPLOY, core_repo, deploy_repo, scratch)
         return print(json.dumps({'image': tag, 'imageId': image_id, 'origin': how}))
     # run
     require(bool(a.core) != bool(a.image), 'SMOKE_CORE_XOR_IMAGE')
@@ -332,7 +329,7 @@ def main():
     out.mkdir(parents=True, mode=0o700)
     t0 = time.monotonic()
     if a.core:
-        deploy = a.deploy_commit or (WRITER_DEPLOY if a.input_transport == 'writer-driven' else DEFAULT_DEPLOY)
+        deploy = a.deploy_commit or WRITER_DEPLOY
         tag, image_id, how = build(resolve(a.core, core_repo), deploy, core_repo, deploy_repo, Path(a.scratch or out))
     else:
         tag = a.image
@@ -353,7 +350,7 @@ def main():
     (out / 'image.json').write_text(json.dumps({'image': tag, 'imageId': image_id, 'origin': how, 'core': core, 'deploy': deploy}) + '\n')
     cfg = out / 'config.json'
     configuration = config(core, deploy, core_repo, deploy_repo, project, workload,
-                           transport=a.input_transport, replicas=a.replicas, workers=a.static_workers)
+                           replicas=a.replicas, workers=a.static_workers)
     cfg.write_text(json.dumps(configuration, indent=1) + '\n')
     if a.plan_only:
         plan = sh([sys.executable, str(RUNNER), 'plan', str(cfg), '--candidate', tag])
