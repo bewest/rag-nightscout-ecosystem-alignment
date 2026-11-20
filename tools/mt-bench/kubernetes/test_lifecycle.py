@@ -26,12 +26,12 @@ class Lifecycle(unittest.TestCase):
             for stage in l.STAGES:put(case/'stages'/(stage+'.json'),{'items':[]})
             put(p/'binding/binding.json',{'files':{}})
             template=put(p/'template.json',{a:{'hostId':'same','resources':{'millicpus':1000,'memoryBytes':1024**3}} for a in ('driver','observer')})
-            delivery=put(p/'delivery.json',{});absence=put(p/'absence.json',{'verifiedAt':'synthetic'})
+            absence=put(p/'absence.json',{'verifiedAt':'synthetic'})
             cfg=dict(version=1,caseDirectory=str(case),instrumentDirectory=str(Path(l.__file__).resolve().parents[3]),
                      bindingDirectory=str(p/'binding'),toolsDirectory=str(p/'tools'),snapshotDirectory=str(p/'snapshot'),
                      coreRepository=str(p/'core'),k6=str(p/'k6'),readonlyGuard=str(p/'ro'),observerScript=str(p/'observer'),
                      nativeLimits={'millicpus':4000,'memoryBytes':4*1024**3},primerConcurrency=8,
-                     runTemplate=l.ref(template),delivery=l.ref(delivery),cacheAbsence=l.ref(absence))
+                     runTemplate=l.ref(template),cacheAbsence=l.ref(absence))
             path=put(p/'control.json',cfg)
             def external(argv,**kw):return '1'*40 if argv[0]=='git' else json.dumps({'sha256':'2'*64}).encode()
             with patch.object(l.subprocess,'check_output',side_effect=external), patch('experiment.workload'):
