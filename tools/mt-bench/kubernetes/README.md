@@ -63,18 +63,6 @@ for every selected tenant and query marker-tagged rows across the full database.
 An ordinary row on an unselected tenant fails the check. Probe writes on any
 provisioned tenant reconcile against the separate probe ledger.
 
-The optional `bootstrapHelper` manifest entry selects the reviewed deploy source
-commit and SHA-256 of `bootstrap.js`. The constructor verifies the original
-image file, extracts the corrected file from Git and installs it in an immutable
-ConfigMap. Only the provision Job's bootstrap init container mounts the file.
-The package labels the effective diagnostic instance PENDING and retains the
-base image's own source acceptance. For an early readback after foundation
-creation, run `adapter.py bootstrap-map PACKET NAMESPACE_UID` against the
-commissioner's recorded UID. Initial observation checks the same ConfigMap,
-Job, actual Pod and bootstrap container. When the read guard masks words in
-this public file, kubectl compares its known source, UID and resource version
-locally and emits a Boolean. A missing or changed readback stops the check.
-
 For a discovery fixture with an external producer, the optional manifest field
 `pgstreamNotifierAckTimeoutMs` selects a positive acknowledgment budget in
 milliseconds. The publisher projects the one field from the private bootstrap
@@ -725,9 +713,7 @@ python3 -B "$K/toolchain.py" kubernetes "$INTENT" "$FRESH_INSTANCE" "$NEW_PROJEC
 The Compose projection emits the normal `config.json` and existing diagnostic
 receipt template. The execution owner binds its fresh receipt and uses the
 existing `runner.py`. Kubernetes emits `manifest.json` for `experiment.py`.
-Historical direct configurations remain supported. The C3 Kubernetes-only
-`bootstrapHelper` override refuses on Compose; select the local source owner's
-own compatible diagnostic image receipt there. A projection never substitutes
+Historical direct configurations remain supported. A projection never substitutes
 another source or changes PENDING to PASS.
 
 | Capability | Integrated scope and limit |

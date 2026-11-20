@@ -196,10 +196,6 @@ def prepare(manifest_path, instance, out, *, await_primer=False, existing_fixtur
     if c.get('nativeLoad') is not None:
         c['nativeLoadCustodyFile']=str(out.resolve()/'load/native-load.json')
     objects = k.validate(c, inventory, render)
-    if selected_candidate:
-        frozen.check_bootstrap_render(m, objects.values())
-        k.need(all(selected_candidate.get(key) == selected.get(key) for key in
-                   ('runtimeBootstrapHelper', 'imageSourceAcceptance', 'sourceAcceptance')), 'BOOTSTRAP_HELPER_SCOPE')
     checks = render_checks(instance)
     k.need(c['storageMode'] in ('disposable', 'existing-claim'), 'EXPERIMENT_STORAGE')
     k.need('verificationProof' not in config, 'CANDIDATE_VERIFICATION_PROOF_SCOPE')
@@ -260,9 +256,6 @@ def run(packet, grant_path, expected_digest, group=None):
     attempt.mkdir(mode=0o700, exist_ok=False)
     outcome = dict(verdict='UNMEASURED', tier=c.get('tier', 'discovery'),
                    capacityAcceptance='NOT_GRANTED', experimentSha256=c['experimentSha256'])
-    selection = c['pins'].get('candidate', {})
-    if 'runtimeBootstrapHelper' in selection:
-        outcome.update({key: selection[key] for key in ('runtimeBootstrapHelper', 'imageSourceAcceptance', 'sourceAcceptance')})
     try:
         k.need(not (d/'load').exists(), 'STAGE_OUTPUT_EXISTS')
         client = k.Client(c)
@@ -282,7 +275,6 @@ def run(packet, grant_path, expected_digest, group=None):
         k.need(k.re.fullmatch(r'http://127\.0\.0\.1:[0-9]{1,5}', c['baseUrl'])
                and 0 < execute.urlparse(c['baseUrl']).port <= 65535, 'LOOPBACK_FORWARD_REQUIRED')
         k.write(attempt/'allocation.json', dict(sha256=expected_digest, accounting=usage,
-                                                bootstrapHelper=k.active_baseline(d).get('bootstrapHelper'),
                                                 namespaceUid=k.active_baseline(d)['namespace']['uid']))
         k.candidate.require(k, d, c)
         execute.authority(d, c)
@@ -326,12 +318,6 @@ def require_preflight(pre, config):
     expected['renderSha256'] = config['pins']['renderSha256']
     k.need(pre.get('offline') == 'PASS' and pre.get('commissioning') == 'PREFLIGHT_ONLY', 'MATRIX_PREFLIGHT_REQUIRED')
     k.need(pre.get('experiment') == expected, 'PREFLIGHT_EXPERIMENT_CHANGED')
-    selection = config['pins'].get('candidate', {})
-    keys = ('runtimeBootstrapHelper', 'imageSourceAcceptance', 'sourceAcceptance')
-    if 'runtimeBootstrapHelper' in selection or 'runtimeBootstrapHelper' in pre:
-        k.need('runtimeBootstrapHelper' in selection and selection.get('sourceAcceptance') == 'PENDING'
-               and all(key in pre and pre[key] == selection.get(key) for key in keys),
-               'PREFLIGHT_BOOTSTRAP_HELPER_CHANGED')
 
 
 def failure(exc):

@@ -34,7 +34,7 @@ def legacy(m,target='kubernetes'):
     application_topology.selection(transport,frozen.require)
     edge=edge_configuration.selection(transport.get('edge'),frozen.require)
     app=m['application']
-    frozen.require(set(app)<= {'candidate','alignmentCommit','bindingCommit','bootstrapHelper'},'APPLICATION_FIELDS')
+    frozen.require(set(app)<= {'candidate','alignmentCommit','bindingCommit'},'APPLICATION_FIELDS')
     topology=m['topology']
     mode = topology.get('inputTransport', 'pgstream')
     shape = {'apiReplicas', 'evaluatorWorkers'} | ({'inputTransport'} if 'inputTransport' in topology else set())
@@ -57,7 +57,6 @@ def legacy(m,target='kubernetes'):
 
 def local(m,instance):
     original=legacy(m,'compose');selected=frozen.source(original)
-    frozen.require('bootstrapHelper' not in original,'LOCAL_BOOTSTRAP_HELPER_UNSUPPORTED')
     defaults=m['local'];options=copy.deepcopy(defaults['prepare'])
     frozen.require(not (set(options)&(DERIVED|FRESH)),'DUPLICATE_LOCAL_FACT')
     fresh=instance['prepare'];frozen.require(set(fresh)<=FRESH,'INSTANCE_FIELDS')

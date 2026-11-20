@@ -15,7 +15,6 @@ import signal
 import shutil
 import subprocess
 import sys
-import tempfile
 import time
 from datetime import datetime, timezone
 from types import SimpleNamespace
@@ -261,19 +260,6 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
         item = c.get(actor, {})
         need(isinstance(item.get('hostId'), str) and item['hostId'] and item.get('sharedHost') is True, 'ACTOR_ATTRIBUTION')
         need(all(type(item.get('resources', {}).get(k)) is int and item['resources'][k] > 0 for k in ('millicpus', 'memoryBytes')), 'ACTOR_BUDGET')
-    selected = p.get('candidate', {})
-    helper = selected.get('runtimeBootstrapHelper')
-    visible_helper = by_key.get('ConfigMap/' + BOOTSTRAP_MAP)
-    need(bool(visible_helper) == bool(helper), 'BOOTSTRAP_HELPER_SCOPE')
-    if helper:
-        annotations = visible_helper['metadata'].get('annotations', {})
-        need(selected.get('sourceAcceptance') == 'PENDING' and
-             helper.get('baseSha256') == frozen.BOOTSTRAP_ORIGINAL and
-             all(helper.get(key) == val for key, val in frozen.BOOTSTRAP_HELPER.items()) and
-             selected.get('imageSourceAcceptance') in ('PASS', 'PENDING') and
-             all(annotations.get(key) == val for key, val in frozen.HELPER_ANNOTATIONS.items()) and
-             hashlib.sha256(visible_helper['data']['bootstrap.js'].encode()).hexdigest() == helper['sha256'],
-             'BOOTSTRAP_HELPER_SCOPE')
     if 'seed' not in inventory:
         candidate.pins(sys.modules[__name__], c, inventory, by_key)
     return by_key
@@ -407,63 +393,6 @@ def completed_primer(c, baseline, job_uid):
     return {field: original[field] for field in ('name', 'uid', 'workload', 'nodeName')}
 
 
-BOOTSTRAP_MAP = frozen.HELPER_MAP
-BOOTSTRAP_TARGET = frozen.BOOTSTRAP_TARGET
-BOOTSTRAP_ANNOTATIONS = frozen.HELPER_ANNOTATIONS
-
-
-def helper_annotations(want, actual):
-    for key in BOOTSTRAP_ANNOTATIONS:
-        need(actual.get('annotations', {}).get(key) == want.get('annotations', {}).get(key),
-             'BOOTSTRAP_HELPER_ANNOTATION_CHANGED')
-
-
-def helper_map(c, expected, actual, client):
-    """Positive equality for one public source blob. Guarded output contains only a boolean."""
-    owned(c, actual)
-    identity = meta(actual)
-    need(key(actual) == 'ConfigMap/' + BOOTSTRAP_MAP and actual.get('immutable') is True
-         and not actual['metadata'].get('deletionTimestamp') and not actual.get('binaryData') and
-         set(actual.get('data', {})) == {'bootstrap.js'}, 'BOOTSTRAP_HELPER_MAP_CHANGED')
-    helper_annotations(expected['metadata'], actual['metadata'])
-    source = expected['data']['bootstrap.js']
-    digest = hashlib.sha256(source.encode()).hexdigest()
-    need(actual['metadata']['annotations']['nightscout.org/bootstrap-helper-sha256'] == digest, 'BOOTSTRAP_HELPER_SOURCE_CHANGED')
-    if actual['data']['bootstrap.js'] != source:
-        # The existing read guard redacts some field-like words even in public
-        # JavaScript source. Compare the known Git blob inside kubectl and only
-        # return whether this exact UID, resource version and data key match.
-        quote = json.dumps
-        predicate = ('{{and (eq .metadata.uid ' + quote(identity['uid']) +
-                     ') (eq .metadata.resourceVersion ' + quote(identity['resourceVersion']) +
-                     ') (eq (index .data "bootstrap.js") ' + quote(source) + ')}}')
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.gotmpl') as file:
-            file.write(predicate)
-            file.flush()
-            answer = client.call(['get', 'configmap', BOOTSTRAP_MAP, '-o', 'go-template-file=' + file.name])
-        need(answer.strip() == b'true', 'BOOTSTRAP_HELPER_SOURCE_CHANGED')
-    return {'configMapUid': identity['uid'], 'sha256': digest, 'instanceAcceptance': 'PENDING'}
-
-
-def capture_bootstrap_map(d, c, objects, namespace_uid, client):
-    contract = objects.get('ConfigMap/' + BOOTSTRAP_MAP)
-    need(contract and c['pins'].get('candidate', {}).get('sourceAcceptance') == 'PENDING', 'BOOTSTRAP_HELPER_SCOPE')
-    output = d / 'bootstrap-map.json'
-    need(not output.exists(), 'BOOTSTRAP_HELPER_PROOF_EXISTS')
-    def namespace():
-        obj = client.get('namespace', c['namespace'])
-        need(obj['metadata']['name'] == c['namespace'] and obj['metadata']['uid'] == namespace_uid and
-             obj['metadata'].get('labels', {}).get(c['ownerLabel']) == c['runId'] and
-             not obj['metadata'].get('deletionTimestamp'), 'NAMESPACE_UID_CHANGED')
-    namespace()
-    live = client.get('ConfigMap', BOOTSTRAP_MAP)
-    receipt = helper_map(c, contract, live, client)
-    namespace()
-    receipt.update(namespaceUid=namespace_uid, runSha256=digest(d / 'run.json'))
-    write(output, receipt)
-    return receipt
-
-
 def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=None, serving_sql=False, measure_actors=False):
     import native_join
     ns = client.get('namespace', c['namespace'], cleanup)
@@ -490,8 +419,6 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             if name in SETUP_JOBS:
                 result['setupJobs'][name] = job_terminal(actual)
         need(key(actual) == name, 'RESOURCE_NAME_CHANGED')
-        if name == 'ConfigMap/' + BOOTSTRAP_MAP:
-            result['bootstrapHelper'] = helper_map(c, expected, actual, client)
         # Kubernetes holds the applied spec; it is recorded, not re-compared
         # (decision four-product-failures: nothing the platform guarantees is re-proved).
         if actual['kind'] in WORKLOADS:
@@ -545,17 +472,6 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             'imageReferences': {r['name']: r['image'] for r in declared}, 'containers': containers,
             'ready': any(r.get('type') == 'Ready' and r.get('status') == 'True' for r in statuses.get('conditions', [])),
             'phase': statuses.get('phase')}
-    if 'bootstrapHelper' in result:
-        target = [p for p in result['pods'].values() if p['workload'] == 'Job/provision']
-        need(len(target) == 1 or serving_sql and baseline is not None, 'BOOTSTRAP_HELPER_POD_REQUIRED')
-        if target:
-            state = target[0]['containers']['bootstrap']
-            result['bootstrapHelper'].update(jobUid=result['objects']['Job/provision']['uid'],
-                podUid=target[0]['uid'], containerId=state['containerID'],
-                lastObservedExitCode=(state.get('state') or {}).get('terminated', {}).get('exitCode', 'UNMEASURED'))
-        if baseline is not None:
-            need(baseline.get('bootstrapHelper', {}).get('configMapUid') == result['bootstrapHelper']['configMapUid'],
-                 'BOOTSTRAP_HELPER_UID_CHANGED')
     candidate.images(sys.modules[__name__], c, result)
     for role, selection in c['roles'].items():
         selected = [r for r in result['pods'].values() if r['workload'] == selection['workload']]
@@ -841,9 +757,6 @@ def main():
     for name in ('observe', 'sql', 'clinical-sql', 'commission', 'recovery', 'access', 'policy', 'load', 'cleanup-plan', 'assess', 'candidate-proof'):
         p = sub.add_parser(name)
         p.add_argument('directory')
-    p = sub.add_parser('bootstrap-map')
-    p.add_argument('directory')
-    p.add_argument('namespace_uid')
     p = sub.add_parser('observe-sql')
     p.add_argument('directory')
     p.add_argument('output')
@@ -882,8 +795,6 @@ def main():
         return result
     d, c, objects = load(args.directory, cleanup=args.command == 'cleanup-plan')
     client = Client(c)
-    if args.command == 'bootstrap-map':
-        return capture_bootstrap_map(d, c, objects, args.namespace_uid, client)
     if args.command == 'observe-sql':
         return observe_sql(d, c, objects, args.output, client)
     if args.command == 'forward-plan':
@@ -898,12 +809,6 @@ def main():
     if args.command == 'observe':
         file = d / 'observation.initial.json'
         observation = observe(c, objects, client, document(file) if file.exists() else None)
-        if (d / 'bootstrap-map.json').exists():
-            earlier = document(d / 'bootstrap-map.json')
-            need(earlier['runSha256'] == digest(d / 'run.json') and
-                 earlier['namespaceUid'] == observation['namespace']['uid'] and
-                 all(earlier[key] == observation['bootstrapHelper'][key] for key in
-                     ('sha256','instanceAcceptance','configMapUid')), 'BOOTSTRAP_HELPER_UID_CHANGED')
         need(not file.exists(), 'INITIAL_OBSERVATION_EXISTS')
         write(file, observation)
         return observation

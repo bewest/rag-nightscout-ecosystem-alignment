@@ -29,10 +29,6 @@ class Toolchain(unittest.TestCase):
             m=self.manifest();m['local']['prepare']['tenants']=2
             with self.assertRaisesRegex(ValueError,'DUPLICATE_LOCAL_FACT'):t.local(m,dict(prepare={}))
             print('RED_RESTORED duplicate workload fact')
-            m=self.manifest();m['application']['bootstrapHelper']={}
-            with self.assertRaisesRegex(ValueError,'LOCAL_BOOTSTRAP_HELPER_UNSUPPORTED'):t.local(m,dict(prepare={}))
-            self.assertNotIn('bootstrapHelper',t.local(self.manifest(),dict(prepare={}))['prepare'])
-            print('RED_RESTORED transport-specific helper scope')
 
     def test_discovery_api_topology_semantics_preserve_native_execution_boundary(self):
         selected=dict(coreCommit='1'*40,deployCommit='2'*40,localImageId='sha256:'+'6'*64,sourceAcceptance='PENDING')
