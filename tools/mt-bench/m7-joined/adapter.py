@@ -1896,7 +1896,10 @@ def observe_progress(d,m,out,phase):
     args=(progress_services(d),ids,fetch,m['cadence'][phase+'Seconds'],phase,lambda value:write_progress(out,value,m))
     observer={}  # a run reports its verdict; it never stops on it
     policy=evaluator_progress.capture_policy(m['cadence'].get('evaluatorProgressBudget'))
-    value=evaluator_progress.Observer(*args,policy=policy,demand_driven=True,**observer);value.failure_policy=evaluator_progress.OUTCOME_FAILURE_POLICY
+    # Core evaluator-inspection.js refuses a selector naming a tenant outside the
+    # static slice, so each ordinal is asked only for its own share (as Kubernetes does).
+    sliced=(m.get('staticTopology') or {}).get('workers',1)>1
+    value=evaluator_progress.Observer(*args,policy=policy,demand_driven=True,sliced=sliced,**observer);value.failure_policy=evaluator_progress.OUTCOME_FAILURE_POLICY
     return value
 
 
