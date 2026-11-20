@@ -191,10 +191,17 @@ The joined deployment starts admin and serving roles through Compose's completed
 The lab client provisions through the private admin API and primes through DATA APIs. The harness reads
 its private `primer/tenants.json` and exchanges DATA tokens before starting k6.
 
-Set `prepare.fixture-snapshot` to the absolute path of a cold fixture produced by the deployment's
-`demo.sh snapshot` to restore its PostgreSQL, Vault, private settings and primer state into a fresh
-Compose project. The runner records the completed restore in `fixture-restore.json`. Select a fixture
-with the baseline tenant population you intend to exercise. Vary the workload or viewers in each run.
+Set `prepare.fixture` to `reuse` (and optionally `prepare.fixture-seed` to a seed name) to start from
+a cold fixture found by key (`fixture_catalog.py`: tenant count, seed name, core migrations tree,
+application and PostgreSQL image ids, input transport, populated history and, for a K-bound transport,
+`static-workers`). On a catalog hit the runner restores that copy of PostgreSQL, Vault, private
+settings and primer state into the fresh Compose project. On a miss it first builds the fixture in a
+sibling point `DIRECTORY-seed`: an ordinary deploy (bootstrap, roles, provision, prime) without
+traffic, `adapter.py fixture-capture` (stop the project, deployment `fixture.js snapshot` into the
+catalog directory), cleanup, register. `runner.py fixture-build CONFIG DIRECTORY` builds and
+registers ahead of time. The point records the lookup in `fixture-key.json` and the restore in
+`fixture-restore.json`. A hand-named `prepare.fixture-snapshot` is refused. Vary the workload or
+viewers in each run; a different population or image is a different key.
 
 ## Instrument
 

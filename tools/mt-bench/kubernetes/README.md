@@ -974,14 +974,21 @@ SQL reader settings from the running roles. The namespace stays with its owner. 
 uses the ordinary observe, access and bounded run commands. Four bound native snapshot/clone claims
 identify restored fixture reuse.
 
-To reuse a fixture across fresh standard namespaces, add `--fixture-seed NEW_DIR` (with
-`--storage-class` and `--snapshot-class`) to `experiment.py standard` for one seed run. It
-provisions and primes on four labelled claims, stops every role, snapshots the claims through CSI,
-sets their contents to Retain under the `nightscout.org/fixture` label and writes the handles, the
-original Secrets, the PostgreSQL image digest and the source commits to `NEW_DIR` (private). It
-runs no traffic. Each later run adds `--fixture-restore DIR`: the controller creates those
-Secrets, binds the handles in the new namespace (`fixture.imported`), clones the claims and starts
-through the ordinary provision Job and primer. A restore refuses another population or PostgreSQL
-image. Cleanup deletes the namespace and the run's labelled contents; `fixture_copy.py delete DIR
-CONTEXT` ends the fixture and the CSI driver deletes the provider snapshots. Snapshots and restored
-volumes are billed storage.
+To reuse a fixture across fresh standard namespaces, add `--fixture reuse` to `experiment.py
+standard`. The harness computes the fixture key (`m7-joined/fixture_catalog.py`: tenant count,
+`--fixture-seed NAME`, the core migrations tree at the image's core commit, the application and
+PostgreSQL image ids, the input transport, the populated-history spec and, for a K-bound
+transport, evaluator K) and looks it up in the local catalog (`$NS_FIXTURE_CATALOG`, default
+`/mnt/data/nightscout-workspace/artifacts/fixtures/catalog.json`, outside Git). On a hit the case
+restores that fixture: the controller creates the seed's Secrets, binds the retained handles in the
+new namespace (`fixture.imported`), clones the claims and starts through the ordinary provision Job
+and primer. On a miss it first runs a seed case at `OUTPUT-seed` (live, no traffic): it provisions
+and primes on four labelled claims (`--storage-class`, `--snapshot-class`), stops every role,
+snapshots the claims through CSI, sets their contents to Retain under the `nightscout.org/fixture`
+label, writes the handles, the original Secrets and the key to a private catalog directory, and
+registers it; then it prepares the restore. `--fixture build` builds and registers the key's
+fixture ahead of time and prepares nothing else (a hit returns at once). A restore refuses another
+key, population, PostgreSQL image or evaluator K. Cleanup deletes the namespace and the run's
+labelled contents; `fixture_copy.py delete DIR CONTEXT` ends the fixture (the CSI driver deletes
+the provider snapshots) and retires its catalog entry. `python3 m7-joined/fixture_catalog.py list`
+shows the catalog. Snapshots and restored volumes are billed storage.

@@ -5,6 +5,7 @@ from pathlib import Path
 import shutil
 import tempfile
 import unittest
+from unittest import mock
 
 import fixture_copy as fc
 import run_cleanup as rc
@@ -145,3 +146,76 @@ class FixtureCopy(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class KeyedFixture(unittest.TestCase):
+    """`standard --fixture reuse|build`: the catalog decides between restore and build-then-register."""
+    def setUp(self):
+        import standard_case
+        import fixture_catalog
+        self.sc, self.root = standard_case, Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.root)
+        self.catalog = fixture_catalog.Catalog(self.root/'catalog.json')
+        self.key = fixture_catalog.key(tenants=8, image='sha256:' + 'a'*64, postgres_image='sha256:' + 'b'*64,
+                                       schema='migrations-tree:' + 'c'*40)
+        self.prepared, self.launched = [], []
+        def prepare(template, binding, profile, output, *, fixture, **options):
+            self.prepared.append((output.name, fixture))
+            return {'case': output.name}
+        def fixture_key(*args, **kwargs):
+            return self.key
+        patches = [mock.patch.object(self.sc, 'prepare', prepare), mock.patch.object(self.sc, 'fixture_key', fixture_key)]
+        for p in patches:
+            p.start()
+            self.addCleanup(p.stop)
+
+    def launch(self, bound):
+        # What the seed lifecycle leaves behind: the captured manifest and Secrets in the fixture directory.
+        _, chosen = self.prepared[-1]
+        cluster = Cluster(pods=1)
+        snapshots = {'items': [{'kind': 'VolumeSnapshot', 'metadata': {'name': n, 'namespace': NS}} for n in fc.SNAPSHOTS.values()]}
+        fc.capture(cluster, NS, RID, chosen, snapshots, {'tenants': 8, 'postgresImage': PG, 'key': chosen['key']}, 1e12)
+        self.launched.append(bound)
+
+    def run_keyed(self, action, name, launch=None):
+        return self.sc.keyed(action, self.root, self.root, self.root/'profile.json', self.root/name, catalog=self.catalog,
+                             storage_class='do-block-storage', snapshot_class='do-block-storage',
+                             launch=launch or self.launch, app_image='x')
+
+    def test_a_miss_builds_registers_and_restores_then_the_next_run_hits(self):
+        self.assertEqual(self.run_keyed('reuse', 'run-1'), {'case': 'run-1'})
+        (seed_case, seed), (restore_case, restore) = self.prepared
+        self.assertEqual((seed_case, seed['mode'], seed['key']), ('run-1-seed', 'seed', self.key))
+        self.assertEqual((restore_case, restore['mode'], restore['lookup']), ('run-1', 'restore', 'miss'))
+        self.assertEqual(restore['directory'], seed['directory'])
+        self.assertEqual(len(self.launched), 1)
+        self.prepared.clear()
+        self.run_keyed('reuse', 'run-2')
+        [(case, chosen)] = self.prepared
+        self.assertEqual((case, chosen['mode'], chosen['lookup'], chosen['directory']), ('run-2', 'restore', 'hit', seed['directory']))
+        self.assertEqual(len(self.launched), 1)
+        record = self.catalog.lookup(self.key, 'kubernetes')
+        self.assertEqual(sorted(record['identity']['volumeSnapshotContents'].values()), sorted('content-' + n for n in fc.SNAPSHOTS.values()))
+
+    def test_build_ahead_registers_without_a_restore_and_is_idempotent(self):
+        self.assertEqual(self.run_keyed('build', 'seed-a')['fixture'], 'miss')
+        self.assertEqual([c for c, f in self.prepared], ['seed-a'])
+        self.assertEqual(self.run_keyed('build', 'seed-b')['fixture'], 'hit')
+        self.assertEqual(len(self.launched), 1)
+
+    def test_a_failed_build_is_recorded_and_the_next_lookup_builds_again(self):
+        def broken(bound):
+            raise RuntimeError('K8S_JOB_FAILED_PROVISION')
+        with self.assertRaisesRegex(RuntimeError, 'PROVISION'):
+            self.run_keyed('reuse', 'run-1', launch=broken)
+        self.assertIsNone(self.catalog.lookup(self.key, 'kubernetes'))
+        self.prepared.clear()
+        self.run_keyed('reuse', 'run-2')
+        self.assertEqual([f['mode'] for c, f in self.prepared], ['seed', 'restore'])
+
+    def test_a_restore_refuses_a_fixture_recorded_under_another_key(self):
+        self.run_keyed('build', 'seed-a')
+        manifest = fc.read_manifest(self.prepared[0][1]['directory'])
+        fc.check_restore(manifest, 8, PG, 1, self.key)
+        with self.assertRaisesRegex(fc.Refused, 'KEY_CHANGED'):
+            fc.check_restore(manifest, 8, PG, 1, {**self.key, 'tenants': 9})

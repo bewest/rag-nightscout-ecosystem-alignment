@@ -340,7 +340,7 @@ try:
         put('fixture-capture.json',fixture_copy.capture(k,ns,rid,reuse,read(d/'stages/fixture-snapshots.json'),
             {'tenants':e['tenantCount'],'appImage':e['images']['app'],'postgresImage':e['images']['postgres'],
              'coreCommit':cfg['candidate']['coreCommit'],'deployCommit':cfg['candidate']['deployCommit'],
-             'alignmentCommit':cfg['alignmentCommit'],
+             'alignmentCommit':cfg['alignmentCommit'],**({'key':reuse['key']} if 'key' in reuse else {}),
              **fixture_copy.slices_record(read(d/'inventory.json'))},work))
         step('fixture captured')
         raise SystemExit(0)
