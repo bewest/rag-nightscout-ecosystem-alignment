@@ -233,12 +233,7 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
             for container in t['spec'].get('containers', []) + t['spec'].get('initContainers', []):
                 resource_budget.validate_container(container, accounting, need)
     need(workload_inputs.tenants(c.get('tenants', 2)) and c.get('tenants', 2) >= 2, 'DIAGNOSTIC_TENANT_ROSTER')
-    if 'Job/verification' in by_key:
-        actors = template(by_key['Job/primer'])['spec'].get('initContainers', [])
-        primer = [actor for actor in actors if actor['name'] == 'primer']
-        need(len(primer) == 1 and primer[0].get('args') == ['--tenant-count', str(c.get('tenants', 2))],
-             'DIAGNOSTIC_TENANTS_CHANGED')
-    elif 'seed' not in inventory and c.get('tenants', 2) != 2:
+    if 'seed' not in inventory and c.get('tenants', 2) != 2:
         count = c['tenants']
         provision = by_key.get('Job/provision')
         need(workload_inputs.tenants(count) and count >= 2 and provision is not None, 'DIAGNOSTIC_TENANT_ROSTER')
@@ -339,7 +334,7 @@ def controller(obj):
     return refs[0]
 
 
-SETUP_JOBS = {'Job/primer', 'Job/provision', 'Job/verification'}
+SETUP_JOBS = {'Job/primer', 'Job/provision'}
 
 
 def job_terminal(job):
@@ -732,8 +727,6 @@ def cleanup_plan(c, observation, current):
 
 def completion_source(c, evaluator_config, realtime_config, native_receipt=None):
     binding = {'kind': 'evaluator-work-v2', 'pair': c['pins']['pair'], 'imageId': c['pins']['appImageId'], 'instrument': c['pins']['instrument']}
-    need(native_receipt is not None or c['pins'].get('candidate',{}).get('platformVerification') not in candidate.NATIVE_RECEIPT_PROTOCOLS,
-         'COMPLETION_RECEIPT_REQUIRED')
     code = "const fs=require('fs'),o=require(process.argv[1]);const v=JSON.parse(fs.readFileSync(0,'utf8'));console.log(JSON.stringify(o.source(v.evaluator,v.realtime,v.binding,v.receipt)));"
     result = subprocess.run([c['driver']['node'], '-e', code, str(M7 / 'completed-oracle.cjs')], input=json.dumps({'evaluator': document(evaluator_config), 'realtime': document(realtime_config), 'binding': binding, **({'receipt':document(native_receipt)} if native_receipt is not None else {})}).encode(), capture_output=True, timeout=10)
     need(result.returncode == 0, 'COMPLETION_SOURCE_REFUSED')

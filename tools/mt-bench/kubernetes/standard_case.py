@@ -209,7 +209,7 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     rendered = k.document(output/'render.json')
     inventory = k.document(output/'inventory.json')
     profile.pop('proposedEnvelope', None)
-    stages = {name:[] for name in lc.stages_for(inventory)}
+    stages = {name:[] for name in lc.STAGES}
     workload_stages = {'postgres':'stores', 'vault':'stores', 'provision':'provision',
                        'admin':'private-admin', 'primer':'primer'}
     for document in (run, intent):

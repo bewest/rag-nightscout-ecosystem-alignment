@@ -874,11 +874,7 @@ termination grace. Runtime application Pod and container identities stay strict;
 only the exact declared test Job has a separate dynamic census.
 
 The accepted-input observer runs across probe and driver traffic. After both writers exit, the controller reconciles storage, checks remaining clinical work through drain, captures terminal progress and calls `assess_stage()`. `assess_join()` adds capture/run/script/hash checks. The init
-waiter alone gets `jobs/get` for `provision` and `primer` in its namespace;
-the split verified-serving binding also names `verification` explicitly and
-requires its completion before accepting primer readiness. Its lifecycle waits
-for verification, then serving readiness, then releases the standalone primer.
-Legacy bindings retain their original primer-ready gate. The
+waiter alone gets `jobs/get` for `provision` and `primer` in its namespace. The
 exporter receives no Kubernetes API permission. The test Pod uses component
 `load`, so it does not match the application's
 private admin/internal `operator` selectors. One additional owned

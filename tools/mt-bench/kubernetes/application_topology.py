@@ -48,8 +48,6 @@ def validate(config, inventory, objects, need):
                 and not (config.get('nativeLoad') is not None and obj['kind']=='Job' and obj['metadata']['name']=='k6')]
     workloads = {obj['metadata']['name']: obj for obj in rendered}
     expected = dict(SEPARATE_WORKLOADS)
-    if 'verification' in inventory.get('workloads', {}):
-        expected['verification'] = 'Job'
     need(len(rendered) == len(expected) and set(workloads) == set(expected),
          'APPLICATION_WORKLOAD_ROSTER')
     for name, kind in expected.items():

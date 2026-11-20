@@ -12,13 +12,6 @@ from test_adapter import fixture
 
 
 class CandidateControls(unittest.TestCase):
-    def test_v4_preserves_the_required_native_completion_receipt(self):
-        for protocol in ('startup-v3', 'startup-v4'):
-            c = {'pins': {'pair': {'core':'1'*40,'deploy':'2'*40}, 'appImageId':'sha256:'+'3'*64,
-                          'instrument':'4'*64, 'candidate':{'platformVerification':protocol}}}
-            with self.assertRaisesRegex(k.Refused, 'COMPLETION_RECEIPT_REQUIRED'):
-                k.completion_source(c, '/missing/evaluator', '/missing/realtime')
-
     def test_ack_readback_binds_the_owned_running_container(self):
         c = {'pins': {'candidate': {}}, 'roles': {'pgstream': {'workload': 'Deployment/pgstream', 'container': 'pgstream'}},
              'producerAckReadback': {'namespaceUid': 'owned', 'podUid': 'pod', 'containerId': 'stream',

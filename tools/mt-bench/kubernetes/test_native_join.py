@@ -112,20 +112,6 @@ class NativeJoin(unittest.TestCase):
             j.exact_spec(c, client, mask(job), original_ns)
         self.assertEqual(len(direct), count)
 
-    def test_standalone_waiter_requires_independent_verification_and_scoped_rbac(self):
-        c, _, _, _ = fixture()
-        legacy = j.declarations(c)
-        c['pins']['candidate'] = {'verificationJob': 'verification'}
-        standalone = j.declarations(c)
-        waiter = standalone[0]['spec']['template']['spec']['initContainers'][0]
-        self.assertEqual(waiter['command'][-3:], ['provision', 'verification', 'primer:ready'])
-        role = next(row for row in standalone if row['kind'] == 'Role')
-        self.assertEqual(role['rules'], [{'apiGroups': ['batch'], 'resources': ['jobs'],
-                                         'resourceNames': ['provision', 'verification', 'primer'], 'verbs': ['get']}])
-        self.assertEqual(standalone, j.declarations(json.loads(json.dumps(c))))
-        del c['pins']['candidate']
-        self.assertEqual(j.declarations(c), legacy)
-
     def test_persisted_configuration_keeps_exact_native_declaration(self):
         c,_,_,_=fixture()
         restored=json.loads(json.dumps(c,sort_keys=True))
