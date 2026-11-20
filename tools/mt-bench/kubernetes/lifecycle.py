@@ -311,7 +311,7 @@ try:
         else:
             # The seed renders pgstream's receivers for the binding's evaluator K (inventory
             # seed.environment, K>1 only); an inherited NS_EVALUATOR_WORKERS never reaches it.
-            seed_env={key:value for key,value in env.items() if key!='NS_EVALUATOR_WORKERS'}
+            seed_env={key:value for key,value in env.items() if key not in ('NS_EVALUATOR_WORKERS', 'NS_INPUT_TRANSPORT')}
             seed_env.update(fixture_copy.seed_environment(read(d/'inventory.json')))
             command(['bash',secret_script,'seed',ns,e['images']['app']],timeout=waits['secretSeedSeconds'],private=True,
                     environment=seed_env)
