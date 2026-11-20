@@ -282,9 +282,10 @@ if not scheduler:assert read(Path(cfg['cacheAbsence']['path']))['verifiedAt']
 producer_policy=producer_startup.policy(intent['profile']['phases'].get('producerStartup'),e['workDeadlineSeconds'])
 selected_source=frozen.source(intent)
 nsuid=trustuid=None;events=[];uids=[];current='create-namespace'
+# Module level: the cleanup's native-unit absence check reads it after attach() has run.
+native_scope = 'ns-' + rid + '-native.scope'
 def attach(*args):
     limits=cfg['nativeLimits']
-    native_scope = 'ns-' + rid + '-native.scope'
     put('native-unit.json', {'unit': native_scope})
     command(['systemd-run','--user','--scope','--quiet','--unit='+native_scope,
              '-p','CPUQuota='+str(limits['millicpus']/10)+'%',
