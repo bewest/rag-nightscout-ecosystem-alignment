@@ -1,5 +1,7 @@
 # Proposed K=1 capacity study
 
+The November 19–20 campaign used this plan. Its [measured endpoints, population comparisons and fixture timings](../../../reports/tenancy/k1-capacity-2026-11-19/README.md) are recorded separately.
+
 Find the highest **achieved** ordinary request rate at each tested population for which all accepted writes reach storage, clinical output arrives within 120 seconds of acceptance, every input has durable output by end of drain, isolation and authorization hold, and the datastore stays healthy. Report that point alongside the first constrained point and the evidence for its cause. Ten thousand tenants is a point of interest. A lower, repeatable breakpoint answers the question too. [Product criteria](multitenancy-decisions.md#four-product-failures) · [Capacity tiers](multitenancy-decisions.md#capacity-test-tiers)
 
 ## Reference builds and workloads
