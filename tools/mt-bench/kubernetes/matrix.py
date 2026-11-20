@@ -43,9 +43,15 @@ def node_requests(objects, baseline, accounting, config=None):
     if finished and finished['name'] not in baseline['pods']:
         # Retain the owner's original reservation on its scheduled node.
         pods.append(finished)
+    native, seen = set(accounted), {}
     for pod in pods:
         workload = pod['workload']
-        k.need(workload in objects and workload not in accounted, 'MATRIX_WORKLOAD_CENSUS')
+        # One budget per Pod: a StatefulSet with replicas K (evaluator K>1) has K Pods, each
+        # budgeted on its own node; any other workload still has at most one Pod.
+        replicas = objects[workload]['spec'].get('replicas', 1) if workload in objects else 0
+        seen[workload] = seen.get(workload, 0) + 1
+        k.need(workload in objects and workload not in native and seen[workload] <= replicas,
+               'MATRIX_WORKLOAD_CENSUS')
         accounted.add(workload)
         spec = k.template(objects[workload])['spec']
         total = nodes.setdefault(pod['nodeName'], dict.fromkeys(DIMS, 0))

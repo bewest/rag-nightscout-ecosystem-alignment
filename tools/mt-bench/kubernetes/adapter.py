@@ -161,10 +161,18 @@ def resource_accounting(c):
     return resource_budget.selection(c, need)
 
 
+EVALUATOR = 'StatefulSet/evaluator'
+
+
 def replica_scope(obj):
     count = obj['spec'].get('replicas', 1)
     if obj['metadata']['name'] == 'cohort':
         need(obj['kind'] == 'StatefulSet' and count == 1, 'ONE_COHORT_REPLICA')
+    elif key(obj) == EVALUATOR:
+        # Evaluator slices (binding `slices.evaluator`): one Pod per ordinal, each
+        # counted, placed and observed on its own (`role_pods`).
+        need(type(count) is int and 1 <= count <= evaluator_progress.POLICY['maxInstances'],
+             'EVALUATOR_SLICES_UNSUPPORTED:' + str(count))
     else:
         # Role selection and the Pod census still require one Pod per workload.
         # This is an instrument capability, not a shared-socket cohort rule.
@@ -559,8 +567,9 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
     candidate.images(sys.modules[__name__], c, result)
     for role, selection in c['roles'].items():
         selected = [r for r in result['pods'].values() if r['workload'] == selection['workload']]
-        need(len(selected) == 1, 'ROLE_POD_UNMEASURED:' + role, 'UNMEASURED')
-        need(selected[0]['nodeName'], 'NODE_UNMEASURED', 'UNMEASURED')
+        need(len(selected) == by_key[selection['workload']]['spec'].get('replicas', 1),
+             'ROLE_POD_UNMEASURED:' + role, 'UNMEASURED')
+        need(all(r['nodeName'] for r in selected), 'NODE_UNMEASURED', 'UNMEASURED')
     if measure_actors and baseline is not None:
         # Ordinary window bookends compare the same owned workload across
         # pods. SQL/observer reads and intentional restart controls still bind
@@ -640,6 +649,28 @@ def selected_pod(c, observation, role):
     found = [v for v in observation['pods'].values() if v['workload'] == selection['workload']]
     need(len(found) == 1 and found[0]['containers'][selection['container']]['ready'], 'ROLE_NOT_READY', 'UNMEASURED')
     return found[0]['name'], selection['container']
+
+
+def ordinal(name):
+    tail = name.rsplit('-', 1)[-1]
+    return int(tail) if tail.isdigit() else -1
+
+
+def role_pods(c, observation, role):
+    """Every Pod of a role's workload in StatefulSet ordinal order, each ready (K=1: one Pod)."""
+    selection = c['roles'].get(role)
+    found = sorted((name for name, v in observation['pods'].items() if v.get('workload') == selection['workload']),
+                   key=ordinal) if selection else []
+    if len(found) < 2:
+        return [selected_pod(c, observation, role)]  # K=1: the single-Pod path, unchanged
+    need(all(observation['pods'][name]['containers'][selection['container']]['ready'] for name in found),
+         'ROLE_NOT_READY', 'UNMEASURED')
+    return [(name, selection['container']) for name in found]
+
+
+def evaluator_services(count):
+    """Compose receiver names by ordinal: evaluator, evaluator-2, ... (deploy evaluator-workers.js)."""
+    return ['evaluator'] + ['evaluator-%d' % (i + 1) for i in range(1, count)]
 
 
 def load(directory, cleanup=False):

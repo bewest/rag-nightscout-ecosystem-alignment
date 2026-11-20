@@ -169,7 +169,8 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     if fixture:
         library = binding/'bindings/kubernetes/lib'
         k.write(output/'stages/fixture-claims.json',
-                fixture_copy.render(jsonnet,library,namespace,run_id,fixture,tenants,candidate['postgres']))
+                fixture_copy.render(jsonnet,library,namespace,run_id,fixture,tenants,candidate['postgres'],
+                                    fixture_copy.evaluator_slices(inventory)))
         if fixture['mode'] == 'seed':
             k.write(output/'stages/fixture-snapshots.json',
                     fixture_copy.snapshot_objects(jsonnet,library,namespace,run_id,fixture))

@@ -112,6 +112,23 @@ class Matrix(unittest.TestCase):
         m.allocation(self.value, self.entries)
         print('RED_RESTORED K8S_MATRIX_WORKLOAD_CENSUS')
 
+    def test_statefulset_replicas_each_take_one_pod_budget(self):
+        _, _, objects, baseline = self.entries[0]
+        pod = next(p for p in baseline['pods'].values() if p['workload'] == 'StatefulSet/cohort')
+        _, one = m.allocation(self.value, self.entries)
+        baseline['pods']['cohort-extra'] = dict(copy.deepcopy(pod), name='cohort-extra')
+        # A second Pod of a one-replica workload is still refused.
+        with self.assertRaisesRegex(k.Refused, 'MATRIX_WORKLOAD_CENSUS'):
+            m.allocation(self.value, self.entries)
+        objects['StatefulSet/cohort']['spec']['replicas'] = 2
+        _, two = m.allocation(self.value, self.entries)
+        spec = k.template(objects['StatefulSet/cohort'])['spec']
+        per_pod = k.resource_budget.pod_budget(spec, k.resource_accounting(self.a), k.need)['millicpus']
+        self.assertEqual(two['nodes']['synthetic-node']['millicpus'] - one['nodes']['synthetic-node']['millicpus'], per_pod)
+        baseline['pods']['cohort-third'] = dict(copy.deepcopy(pod), name='cohort-third')
+        with self.assertRaisesRegex(k.Refused, 'MATRIX_WORKLOAD_CENSUS'):
+            m.allocation(self.value, self.entries)
+
     def test_suspended_job_uses_no_node_budget_until_it_runs(self):
         _, _, objects, baseline = self.entries[0]
         _, initial = m.allocation(self.value, self.entries)

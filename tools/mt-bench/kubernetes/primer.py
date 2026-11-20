@@ -185,7 +185,7 @@ def prime_owned(d, c, objects, output, split, declared, selected):
         initial = k.active_baseline(d)
         before = k.observe(c, objects, client, initial)
         for role in c['roles']:
-            k.selected_pod(c, before, role)
+            k.role_pods(c, before, role)
         waiting = [p for p in before['pods'].values() if p['workload'] == 'Job/primer' and p['containers']['done']['ready']]
         k.need(len(waiting) == 1, 'PRIMER_WAIT_REQUIRED')
         pod = waiting[0]

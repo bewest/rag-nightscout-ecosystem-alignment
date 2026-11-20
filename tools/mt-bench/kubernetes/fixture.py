@@ -36,6 +36,26 @@ def reader_pod(job, inventory, location, seconds):
     return pod
 
 
+DETACH_SECONDS = 90
+
+
+def wait_detached(run, claim, cutoff, seconds=DETACH_SECONDS, clock=time):
+    """Before a second Pod mounts an RWO claim the primer just released: wait (bounded) until no
+    VolumeAttachment names its volume. A reader attached during the primer's detach can be
+    reported attached without a device and stall in FailedMount (fixture-restore fault 2)."""
+    volume = run(['get', 'pvc', claim, '-o', 'jsonpath={.spec.volumeName}']).stdout.decode().strip()
+    started = clock.time()
+    until = min(cutoff, started + seconds)
+    while True:
+        rows = json.loads(run(['get', 'volumeattachments', '-o', 'json']).stdout)['items']
+        held = sorted(r['metadata']['name'] for r in rows
+                      if (r.get('spec', {}).get('source') or {}).get('persistentVolumeName') == volume)
+        if not held or clock.time() >= until:
+            # A figure, not a stop: past the bound the reader is created as before.
+            return {'volume': volume, 'waitedSeconds': round(clock.time() - started, 3), 'attachedAtCreate': held}
+        clock.sleep(2)
+
+
 def read_roster(kubectl, job, inventory, directory, count, cutoff, location):
     from contract import tenant_projection
     directory.mkdir(mode=0o700, parents=True, exist_ok=False)
@@ -48,6 +68,9 @@ def read_roster(kubectl, job, inventory, directory, count, cutoff, location):
 
     seconds = min(job['spec']['activeDeadlineSeconds'], max(1, math.ceil(cutoff - time.time())))
     pod = reader_pod(job, inventory, location, seconds)
+    if location == 'claim':
+        detach = wait_detached(run, inventory['results']['primer']['claim'], cutoff)
+        (directory/'reader-detach.json').write_text(json.dumps(detach) + '\n')
     created = json.loads(run(['create', '-f', '-', '-o', 'json'], input=json.dumps(pod).encode()).stdout)
     name = created['metadata']['name']
     try:
