@@ -276,14 +276,16 @@ def assess(rounds,ids,phase,*,policy=POLICY,discovery_unclassified_rejections=Fa
 
 class Observer:
     """Progress is a figure (decision `four-product-failures`): every outcome is written, nothing is raised."""
-    def __init__(self,services,ids,fetch,seconds,phase,write,*,assessor=assess,policy=POLICY,demand_driven=False):
+    def __init__(self,services,ids,fetch,seconds,phase,write,*,assessor=assess,policy=POLICY,demand_driven=False,sliced=False):
         self.services,self.ids,self.fetch,self.seconds,self.phase,self.write=services,ids,fetch,seconds,phase,write
         self.assessor,self.policy=assessor,policy
         self.demand_driven = demand_driven
+        # Static slices (K>1) each answer only for their own tenants.
+        self.sliced = sliced
         self.rounds=[];self.failure=None;self.stop=threading.Event();self.thread=None
     def observe(self):
         if self.failure is not None:return
-        try:self.rounds.append(round_view(self.services,self.ids,self.fetch,policy=self.policy,demand_driven=self.demand_driven))
+        try:self.rounds.append(round_view(self.services,self.ids,self.fetch,policy=self.policy,demand_driven=self.demand_driven,sliced=self.sliced))
         except Exception as error:self.failure=error
     def failed(self,error,extra=None):
         value={'version':self.policy['version'],'phase':self.phase,'verdict':getattr(error,'verdict','UNMEASURED'),'code':str(error)[:200],'policy':self.policy,'rounds':self.rounds,'failedCollection':getattr(error,'collection',None),**(extra or {})}

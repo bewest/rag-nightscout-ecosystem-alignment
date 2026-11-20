@@ -78,7 +78,10 @@ function contractDigest(config){
  if(config.native?.receipt)return config.native.receipt.contractDigest;
  const fields=[config.kind,config.checkpoint,config.consumer.replace(/-completed$/,'')];
  // Historical native captures predate source receipts and retain their codec.
- if(config.native)fields.push('canonical-maintenance-active-plus2-v1','positive-int8-complete-pair-max-4611686018427387902-v1');
+ // A writer-driven evaluator always runs with its lifecycle namespace, so core
+ // selects the same native contract (native-selection.js contractDigest,
+ // typed-checkpoint.js digest=native?.contractDigest).
+ if(config.native||config.writerDriven)fields.push('canonical-maintenance-active-plus2-v1','positive-int8-complete-pair-max-4611686018427387902-v1');
  return createHash('sha256').update(JSON.stringify(fields)).digest('hex');
 }
 function typedState(row,config,progress=false){

@@ -37,7 +37,7 @@ test('native receipt agrees with the pinned source selection module',{skip:!proc
  const bad=structuredClone(config);delete bad.native;assert.throws(()=>oracle.expectedContractDigest(bad),/NATIVE_BINDING/);
 });
 test('restoring the legacy-only digest calculation rejects the current native receipt',()=>{
- const fs=require('node:fs'),source=fs.readFileSync(require.resolve('./completed-oracle.cjs'),'utf8'),needle="if(config.native)fields.push('canonical-maintenance-active-plus2-v1','positive-int8-complete-pair-max-4611686018427387902-v1');";
+ const fs=require('node:fs'),source=fs.readFileSync(require.resolve('./completed-oracle.cjs'),'utf8'),needle="if(config.native||config.writerDriven)fields.push('canonical-maintenance-active-plus2-v1','positive-int8-complete-pair-max-4611686018427387902-v1');";
  assert.equal(source.split(needle).length,2);const mod={exports:{}};Function('require','module',source.replace(needle,''))(require,mod);
  const criterion=api=>assert.equal(api.assess(row,witness,clients,2,config).ready,true);
  criterion(oracle);assert.throws(()=>criterion(mod.exports),assert.AssertionError);assert.equal(mod.exports.assess(row,witness,clients,2,config).code,'M7_COMPLETION_TYPED_STATE');criterion(oracle);

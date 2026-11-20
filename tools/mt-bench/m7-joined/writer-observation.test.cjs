@@ -18,7 +18,10 @@ row.stamp = '103';
 row.stored[0].srvModified = 101;
 witness.stamp = '103';
 witness.writerTarget = {identity:row.writer.identity, generation:'1', before:'100', stamp:101, work:'910'};
-row.typed.contractDigest = createHash('sha256').update(JSON.stringify([config.kind, config.checkpoint, evaluator.consumer])).digest('hex');
+// Core's native lifecycle contract (native-selection.js), which a writer-driven evaluator selects.
+const CODEC = ['canonical-maintenance-active-plus2-v1', 'positive-int8-complete-pair-max-4611686018427387902-v1'];
+row.typed.contractDigest = createHash('sha256').update(JSON.stringify([config.kind, config.checkpoint, evaluator.consumer, ...CODEC])).digest('hex');
+const threePartDigest = createHash('sha256').update(JSON.stringify([config.kind, config.checkpoint, evaluator.consumer])).digest('hex');
 row.state.observed = {clock:'920'};
 row.state.completed = {clock:'910'};
 row.typed.observed = ['920', null, null, null, null, null];
@@ -39,6 +42,7 @@ if (process.argv[2] === 'fixture') {
     ['different database', r=>{r.writer.identity[2]='other';}, 'M7_COMPLETION_STATE'],
     ['wrong transport', r=>{r.state.output.result.progress='current-snapshot';}, 'M7_COMPLETION_STATE'],
     ['stale timing marker', r=>{r.stored[0].srvModified=100;}, 'M7_COMPLETION_STATE'],
+    ['contract without the lifecycle codec', r=>{r.typed.contractDigest=threePartDigest;}, 'M7_COMPLETION_TYPED_STATE'],
     ['corrupt clinical value', r=>{r.state.output.result.properties.bgnow.mean++;}, 'M7_COMPLETION_BG_NOW'],
   ]) {
     const changed=structuredClone(row);
