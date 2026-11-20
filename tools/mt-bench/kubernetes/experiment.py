@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-"""Prepare a portable binding, bind a fresh allocation, or execute one bounded load."""
+"""Bind a fresh allocation, or execute one bounded load."""
 import argparse
-import io
 import json
 import os
 from pathlib import Path
 import shutil
 import subprocess
 import sys
-import tarfile
 
 import kube_adapter as k
 from auto_catalog import auto_catalog
@@ -111,102 +109,6 @@ def bind_job_completion_wait(package, selected):
     wait='k wait --for=condition=complete job/provision --timeout=30s >/dev/null'
     k.need(text.count(wait)==1,'PROVISION_JOB_COMPLETE_SEAM')
     publisher.write_text(text.replace(wait,wait.replace('30s',f"{selected[frozen.JOB_COMPLETE]}s")))
-
-
-def materialize(manifest, binding_repo, deploy_repo, out):
-    selected = frozen.source(manifest)
-    def git(repo, *args):
-        return subprocess.check_output(['git', '-C', repo, *args])
-    # The deploy checkout supplies the captured contract; its head is recorded,
-    # not compared. Image identity is the selected digest.
-    deploy_head = git(deploy_repo, 'rev-parse', 'HEAD').decode().strip()
-    archive = git(binding_repo, 'archive', manifest['bindingCommit'], 'bindings/kubernetes')
-    with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
-        schema = 'bindings/kubernetes/inputs.schema.json'
-        supported = json.load(tar.extractfile('bindings/kubernetes/assets/source-contract.json'))
-        if 'verificationJob' in supported:
-            k.need(supported['verificationJob']=='verification','CANDIDATE_VERIFICATION_JOB_CHANGED')
-            split=True
-        else:
-            # Earlier split bindings predate verificationJob and declare this
-            # legacy input in their frozen schema. Keep those sources runnable.
-            inputs = json.load(tar.extractfile(schema)) if schema in tar.getnames() else {}
-            split = inputs.get('properties', {}).get('primerStorage', {}).get('type') == 'string'
-    if split:
-        k.need(population_ceiling.FIELD not in selected, 'POPULATION_CEILING_UNSUPPORTED_BY_BINDING')
-        k.need(frozen.PRIMER_STORAGE not in selected, 'USE_BINDING_PRIMER_STORAGE_INPUT')
-    options = selected.get(primer_options.FIELD, {})
-    protocol = None
-    if not split or primer_options.requires_extended(options):
-        prime_source = git(deploy_repo, 'show', selected['deployCommit']+':'+primer_options.SOURCE_PATH)
-        protocol = primer_options.source_protocol(prime_source)
-        primer_options.require_source(options, protocol, k.need)
-    population=selected.get(population_ceiling.FIELD)
-    population_files=None
-    population_support=None
-    if population is not None:
-        try:
-            population_files={name:git(deploy_repo,'show',selected['deployCommit']+':'+population_ceiling.SOURCE_PREFIX+name)
-                              for name in population_ceiling.SOURCE_FILES}
-        except subprocess.SubprocessError:
-            k.need(False,'POPULATION_SOURCE_UNSUPPORTED')
-        population_ceiling.source_hashes(population_files,k.need)
-        try:
-            population_support=json.loads(git(binding_repo,'show',manifest['bindingCommit']+
-                                              ':bindings/kubernetes/assets/population-ceiling-source.json'))
-        except (subprocess.SubprocessError,ValueError):
-            k.need(False,'POPULATION_BINDING_UNSUPPORTED')
-        hashes=population_ceiling.source_hashes(population_files,k.need)
-        k.need(population_support.get('protocol')==population_ceiling.PROTOCOL and
-               all(population_support.get('sourceFilesSha256',{}).get(name)==value for name,value in hashes.items()),
-               'POPULATION_BINDING_SOURCE_CHANGED')
-    out.mkdir(mode=0o700, parents=True, exist_ok=False)
-    with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
-        tar.extractall(out, filter='data')
-    package = out / 'bindings/kubernetes'
-    asset = package / 'assets/source-contract.json'
-    supported = k.document(asset)
-    support_path=package/'assets/population-ceiling-source.json'
-    if support_path.is_file():population_support=k.document(support_path)
-    native_inputs = supported.get('bindingInputsVersion') == 1
-    if not native_inputs:
-        subprocess.run(['git', 'apply', '--directory=bindings/kubernetes', str(k.HERE / 'binding-input.patch')],
-                       cwd=out, check=True)
-    subprocess.run([sys.executable, package/'check/source-equivalence.py', '--capture',
-                    '--compose', Path(deploy_repo).resolve()/'bindings/compose',
-                    '--image', selected['localImageId']], check=True)
-    measured = k.document(asset)
-    if 'verificationJob' in supported:
-        k.need(measured.get('verificationJob')==supported['verificationJob'],'CANDIDATE_VERIFICATION_JOB_CHANGED')
-    if split:
-        k.need(all(measured[key] == selected[key] for key in ('coreCommit', 'deployCommit', 'localImageId')),
-               'CANDIDATE_SOURCE_IMAGE_CHANGED')
-    if native_inputs:
-        k.need(measured.get('bindingInputsVersion') == 1, 'BINDING_INPUT_PROTOCOL_CHANGED')
-    # The binding can only create the commands and database identities it knows.
-    for key in ('commands', 'postgresIdentities'):
-        k.need(split or measured[key] == supported[key], 'UNSUPPORTED_BINDING_CAPABILITY:' + key)
-    measured['capturedDeployHead'] = deploy_head
-    if protocol:
-        measured[primer_options.PROTOCOL_FIELD] = protocol
-    if population_files is not None:
-        measured['populationSource']=population_ceiling.probe_image(
-            lambda argv,timeout:subprocess.check_output(argv,timeout=timeout,text=True),
-            selected['localImageId'],population_files,population,k.need)
-        measured[population_ceiling.PROTOCOL_FIELD]=population_ceiling.PROTOCOL
-    frozen.install_bootstrap_helper(manifest, deploy_repo, package, measured)
-    measured.update(selected)
-    k.write(asset, measured)
-    bind_ack_publisher(package, selected)
-    bind_primer_storage(package, selected)
-    bind_primer_stall(package, manifest)
-    bind_job_completion_wait(package, selected)
-    k.write(out/'binding.json', dict(bindingCommit=manifest['bindingCommit'],
-            sourceContractSha256=k.digest(asset), patchSha256=k.digest(k.HERE/'binding-input.patch'),
-            **({'bindingInputsVersion': 1, 'patchApplied': False} if native_inputs else {}),
-            files={str(p.relative_to(package)):k.digest(p) for p in sorted(package.rglob('*')) if p.is_file()},
-            sourceAcceptance=selected['sourceAcceptance'], capacityAcceptance='NOT_GRANTED'))
-    return package
 
 
 def workload(m):
@@ -484,8 +386,7 @@ def launch(path, prepare_only):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest='action', required=True)
-    for name, fields in {'binding': ('manifest','binding_repo','deploy_repo','output'),
-                         'describe': ('manifest',), 'prepare': ('manifest','instance','output'),
+    for name, fields in {'describe': ('manifest',), 'prepare': ('manifest','instance','output'),
                          'run': ('packet','allocation','sha256'), 'launch': ('config',)}.items():
         command = commands.add_parser(name)
         for field in fields:
@@ -534,8 +435,6 @@ def main():
         return standard_case.prepare(a.template_case, a.binding, a.profile, a.output, **options)
     if a.action == 'launch':
         return launch(a.config, a.prepare_only)
-    if a.action == 'binding':
-        return str(materialize(k.document(a.manifest), a.binding_repo, a.deploy_repo, a.output.resolve()))
     if a.action == 'describe':
         return profile.describe(workload(k.document(a.manifest)))
     if a.action == 'prepare':

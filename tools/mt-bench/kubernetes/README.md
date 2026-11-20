@@ -32,18 +32,7 @@ jq -n --slurpfile p "$K/workloads/realistic-1000.json" \
     profile:($p[0] | del(.referencePins) | .workload.setupSeconds=360 |
              .workload.drainSeconds=180)}' > "$NEW_MANIFEST"
 python3 -B "$K/experiment.py" describe "$NEW_MANIFEST"
-python3 -B "$K/experiment.py" binding "$NEW_MANIFEST" "$BINDING_REPO" "$IMAGE_DEPLOY_REPO" "$NEW_BINDING"
 ```
-
-The binder exports the selected Git tree into a fresh directory, runs the
-original image constructor with its read-only filesystem and disabled network,
-and compares installed deployment bytes, role commands, SQL identities and
-native catalogue against the supported single-cohort binding. The generated
-`bindings/kubernetes/assets/source-contract.json` carries the measured producer,
-image, source and owner receipt. `binding.json` identifies every materialized
-file. A changed deployment protocol or catalogue requires a compatibility review.
-An unknown commit with compatible measured inputs follows the same path. The
-source receipt may carry a bounded diagnostic PENDING or joined source PASS.
 
 The execution owner renders the package with its private commissioning overlay.
 The accompanying private patch is supplied in the local release packet. Apply
