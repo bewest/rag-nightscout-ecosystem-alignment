@@ -23,6 +23,7 @@ ROWS = [  # role, text, calls before, calls after
     (S, 'SELECT has_table_privilege($1)', 0, 5),
     (E, 'SELECT something_new()', 0, 10),
     ('nsdemo_api', 'INSERT INTO entries', 0, 999),
+    ('nsdemo_lifetime_api', 'COMMIT', 11, 12),
 ]
 
 
@@ -61,6 +62,7 @@ class StatementPhase(unittest.TestCase):
         self.assertEqual(r['phases']['consumers']['perWrite'], 4.5)
         self.assertEqual(r['phases']['unattributed']['calls'], 10)
         self.assertNotIn('nsdemo_api', r['roles'])
+        self.assertEqual(r['api'], {'calls': 1000, 'ms': 1000.0, 'perWrite': 100.0, 'msPerWrite': 100.0})
         self.assertEqual(r['windowSeconds'], 60.0)
 
     def test_negative_control_empty_rules_attributes_nothing(self):

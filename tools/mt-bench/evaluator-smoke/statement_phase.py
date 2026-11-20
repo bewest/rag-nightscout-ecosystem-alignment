@@ -30,7 +30,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / 'm7-joined'))
-from statement_units import statements, _delta, _timing  # noqa: E402
+from statement_units import UNITS, statements, _delta, _timing  # noqa: E402
 
 EVALUATOR_ROLES = ('nsdemo_evaluator', 'nsdemo_lifetime_evaluator', 'nsdemo_outbox', 'nsdemo_suppression')
 PHASES = ['receipt', 'dispatch', 'settings', 'acquisition', 'completion', 'consumers', 'observe',
@@ -117,7 +117,11 @@ def _per(n, writes, digits=2):
 def reduce_rows(before, after, writes, rules=DEFAULT_RULES):
     delta = _delta(before, after, 'M7_SMOKE_STATEMENT')
     shapes, roles = {}, {}
+    api = {'calls': 0, 'ms': 0.0}
     for (role, _, _), row in delta.items():
+        if role in UNITS['api'][1]:
+            api['calls'] += row['calls']
+            api['ms'] += row['executionMs']
         if role not in EVALUATOR_ROLES or row['calls'] <= 0:
             continue
         text = bytes.fromhex(row['textHex']).decode('utf8', 'replace')
@@ -145,6 +149,7 @@ def reduce_rows(before, after, writes, rules=DEFAULT_RULES):
         'roles': {k: view(v) for k, v in sorted(roles.items())},
         'phases': {k: view(v) for k, v in sorted(phases.items(), key=lambda kv: order.get(kv[0], 99))},
         'total': view({'calls': calls, 'ms': ms}),
+        'api': view(api),
         'attributedShare': round(1 - phases.get('unattributed', {}).get('calls', 0) / calls, 4) if calls else None,
         'shapes': sorted(({'phase': c['phase'], 'label': c['label'], 'roles': sorted(c['roles']), 'calls': c['calls'],
                            'perWrite': _per(c['calls'], writes, 3), 'msPerWrite': _per(c['ms'], writes, 4)}

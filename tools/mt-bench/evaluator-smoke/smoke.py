@@ -157,17 +157,19 @@ def reduce(run, empty_rules=False):
         'runnerSmokeVerdict': smoke.get('verdict', 'UNMEASURED'), 'runnerOracles': smoke.get('oracles'),
         'acceptedWrites': sql['acceptedWrites'], 'windowSeconds': sql['windowSeconds'], 'cycles': sql['cycles'],
         'statementsPerWrite': {'total': sql['total']['perWrite'],
+                               'api': sql['api']['perWrite'],
                                'byRole': {k: v['perWrite'] for k, v in sql['roles'].items()},
                                'byPhase': {k: v['perWrite'] for k, v in sql['phases'].items()}},
         'executionMsPerWrite': {'total': sql['total']['msPerWrite'],
+                                'api': sql['api']['msPerWrite'],
                                 'byRole': {k: v['msPerWrite'] for k, v in sql['roles'].items()},
                                 'byPhase': {k: v['msPerWrite'] for k, v in sql['phases'].items()}},
         'attributedShare': sql['attributedShare'],
         'mainThread': cpu,
         'shapes': sql['shapes'],
         'rules': 'empty (negative control)' if empty_rules else 'default',
-        'scope': 'pg_stat_statements top-level calls of the four evaluator roles between the load bookends, '
-                 'divided by HTTP-accepted writes plus stored probe writes; executor time, not CPU',
+        'scope': 'Totals and phases cover four evaluator roles. API figures cover nsdemo_api and nsdemo_lifetime_api '
+                 'over the same window, including reads. Both use HTTP-accepted writes plus stored probe writes.',
     }
 
 
@@ -184,8 +186,11 @@ def compare(summary, baseline):
                                    'delta': round(x - y, 3) if None not in (x, y) else None,
                                    'ratio': round(x / y, 3) if None not in (x, y) and y else None}
         return out
-    pick = lambda s: {'statementsPerWrite': s['statementsPerWrite'], 'executionMsPerWrite': {'total': s['executionMsPerWrite']['total']},
-                      'mainThreadMsPerWrite': s['mainThread'].get('mainThreadMsPerWrite')}
+    def pick(s):
+        times = s['executionMsPerWrite']
+        return {'statementsPerWrite': s['statementsPerWrite'],
+                'executionMsPerWrite': {key: times[key] for key in ('total', 'api') if key in times},
+                'mainThreadMsPerWrite': s['mainThread'].get('mainThreadMsPerWrite')}
     return {'kind': 'evaluator-statement-smoke-comparison-v1', 'gate': False,
             'baselineCandidate': baseline.get('candidate'), 'observedCandidate': summary.get('candidate'),
             'workloadMatches': baseline.get('workload') == summary.get('workload'),
@@ -207,9 +212,10 @@ def markdown(summary, comparison=None):
         lines.append(f"| role {k} | {v} | {base.get('statementsPerWrite.byRole.' + k, {}).get('baseline', '')} |")
     for k, v in s['statementsPerWrite']['byPhase'].items():
         lines.append(f"| phase {k} | {v} | {base.get('statementsPerWrite.byPhase.' + k, {}).get('baseline', '')} |")
-    lines.append(f"| **total** | **{s['statementsPerWrite']['total']}** | {base.get('statementsPerWrite.total', {}).get('baseline', '')} |")
+    lines.append(f"| **evaluator total** | **{s['statementsPerWrite']['total']}** | {base.get('statementsPerWrite.total', {}).get('baseline', '')} |")
+    lines.append(f"| API and API lifecycle roles | {s['statementsPerWrite']['api']} | {base.get('statementsPerWrite.api', {}).get('baseline', '')} |")
     m = s['mainThread']
-    lines += ['', f"executor ms per write {s['executionMsPerWrite']['total']}; main thread: {m.get('status')} "
+    lines += ['', f"executor ms per write (evaluator / API) {s['executionMsPerWrite']['total']} / {s['executionMsPerWrite']['api']}; main thread: {m.get('status')} "
               f"{m.get('mainThreadMsPerWrite', '')} ms per write (busy share {m.get('mainThreadBusyShare', '')}, "
               f"whole process {m.get('processMsPerWrite', '')} ms per write); attributed share {s['attributedShare']}"]
     if comparison:

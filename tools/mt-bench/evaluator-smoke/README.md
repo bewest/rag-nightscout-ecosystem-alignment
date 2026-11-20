@@ -13,6 +13,9 @@ evaluator, 180 s of realistic-v1 load at rate multiplier 24), and reports:
   `nsdemo_lifetime_evaluator`, `nsdemo_outbox`, `nsdemo_suppression`) and by phase (receipt,
   dispatch, settings, acquisition, completion, consumers, observe, txn-control, fences, registry,
   unattributed), with PostgreSQL executor ms per write;
+- statements and PostgreSQL executor ms from the API and API lifecycle database roles, divided by
+  the same accepted-write count. These include ordinary reads during the workload. The evaluator
+  totals keep their original scope for comparison with earlier runs;
 - evaluator main-thread CPU ms per accepted write (`/proc/<pid>/task/<pid>/stat`, sampled each
   second through `docker exec`, interpolated at the same SQL window bounds);
 - the same figures beside the committed [`baseline.json`](baseline.json).
