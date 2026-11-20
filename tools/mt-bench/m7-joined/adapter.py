@@ -565,7 +565,7 @@ def attach(args):
         runtime_directory=Path(runtime.get('directory','')).resolve()
         require(owner_path==runtime_directory/'owner.json' and runtime.get('prepared') is True
                 and runtime.get('project')==m['project'] and runtime.get('pair')==m['pair']
-                and runtime.get('imageId')==m['imageId'] and stream_topology.selection(runtime)==stream_topology.selection(m), 'M7_ATTACH_RUNTIME_OWNER_MISMATCH')
+                and runtime.get('imageId')==m['imageId'] and runtime.get('inputTransport','pgstream')==m.get('inputTransport','pgstream'), 'M7_ATTACH_RUNTIME_OWNER_MISMATCH')
         if bound_primer or 'primerMaxTenants' in runtime or primer_options.requires_extended(primer_options.from_manifest(runtime)):
             require(runtime.get('primerConcurrency',1)==m['primerConcurrency'] and
                     runtime.get('primerMaxTenants')==m.get('primerMaxTenants'),'M7_PRIMER_OPTIONS_RUNTIME_CHANGED')

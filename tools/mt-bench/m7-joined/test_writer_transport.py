@@ -1,5 +1,4 @@
 """Writer transport uses the public discovery configuration and the actual service roster."""
-import json
 import tempfile
 import unittest
 from pathlib import Path
