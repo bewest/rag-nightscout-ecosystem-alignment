@@ -147,3 +147,93 @@ class Observer(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class Traffic(Fake):
+    """A case in traffic: PostgreSQL and two evaluator ordinals; records every exec."""
+
+    def __init__(self):
+        super().__init__({})
+        ev = {'app': 'ev', 'app.kubernetes.io/component': 'evaluator'}
+        self.pods = [pod('evaluator-0', 'node-a', ev, ['evaluator']), pod('evaluator-1', 'node-a', ev, ['evaluator']),
+                     pod('postgres-0', 'node-a', {'app': 'pg'}, ['postgres'])]
+        self.execs = []
+
+    def __call__(self, *args, timeout=12):
+        if args[0] == 'exec':
+            self.execs.append(args)
+            return ''
+        return super().__call__(*args, timeout=timeout)
+
+
+class FakePrometheus:
+    """Stands in for LocalPrometheus: answers each query from a table, records the bookend."""
+    queries = []
+
+    def __init__(self, archive):
+        self.archive = archive
+
+    def query(self, expr, at):
+        FakePrometheus.queries.append((expr, at))
+        if expr.startswith('max by (queryid, query)'):
+            return [{'labels': {'queryid': '7', 'query': 'SELECT $1'}, 'value': 1.0}]
+        if expr.startswith('topk(25, sum by (queryid) (increase(pg_stat_statements_seconds_total'):
+            return [{'labels': {'queryid': '7'}, 'value': 2.5}]
+        return [{'labels': {'pod': 'evaluator-0'}, 'value': 0.5}]
+
+    def close(self):
+        pass
+
+
+class Capture(unittest.TestCase):
+    def test_traffic_samples_make_no_exec(self):
+        # The hand capture (/proc threads, walsender, pg_stat_statements, slot) is retired on
+        # Kubernetes: with the node's CPU model known, a traffic sample makes no exec at all.
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        c = case(tmp.name, None)
+        out = Path(tmp.name)/'out'; out.mkdir()
+        fake = Traffic()
+        state = {'out': out, 'nodes': {'node-a': {'cpuModel': 'X'}}, 'followers': {}, 'cap': 1}
+        rows = [o.sample(c, fake, state) for _ in range(4)]
+        self.assertEqual(fake.execs, [])
+        self.assertFalse(any(key in row for row in rows for key in ('threads', 'walsender', 'slot')))
+        self.assertEqual(list(out.glob('pg_stat_statements-*.json')), [])
+
+    def test_prometheus_figures_need_a_snapshot(self):
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        c = case(tmp.name, None)
+        self.assertEqual(o.prometheus_figures(c, 0, 1000, local=FakePrometheus)['verdict'], 'UNMEASURED')
+        (c.d/'runtime'/'packet'/'load').mkdir(parents=True)
+        (c.d/'runtime'/'packet'/'load'/'metrics-snapshot.json').write_text(json.dumps({'verdict': 'UNMEASURED', 'code': 'K8S_METRICS_SNAPSHOT_UNMEASURED'}))
+        value = o.prometheus_figures(c, 0, 1000, local=FakePrometheus)
+        self.assertEqual((value['verdict'], value['reason']), ('UNMEASURED', 'K8S_METRICS_SNAPSHOT_UNMEASURED'))
+
+    def test_prometheus_figures_at_the_steady_bookends(self):
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        c = case(tmp.name, None)
+        (c.d/'runtime'/'packet'/'load').mkdir(parents=True)
+        (c.d/'runtime'/'packet'/'load'/'metrics-snapshot.json').write_text(json.dumps({'verdict': 'OBSERVED', 'file': 'metrics-tsdb.tar', 'sha256': 'ab'}))
+        # No k6 executor windows: the controller's load window is the bookend.
+        (c.d/'runtime'/'packet'/'load'/'window.json').write_text(json.dumps({'loadStartedAt': 1000.0, 'loadEndedAt': 1600.5}))
+        FakePrometheus.queries = []
+        value = o.prometheus_figures(c, None, None, local=FakePrometheus)
+        self.assertEqual(value['verdict'], 'OBSERVED')
+        self.assertEqual(value['window'], {'basis': 'controller load window', 'startMs': 1000000.0, 'endMs': 1600500.0, 'seconds': 600})
+        self.assertEqual({at for _, at in FakePrometheus.queries}, {1600.5})
+        self.assertTrue(all('[600s]' in expr for expr, _ in FakePrometheus.queries))
+        self.assertEqual(set(value['figures']), set(o.QUERIES) - {'statementText'})
+        self.assertEqual(value['figures']['topStatementsSeconds'], [{'labels': {'queryid': '7'}, 'value': 2.5, 'query': 'SELECT $1'}])
+
+    def test_delivery_span_and_gap_from_receiver_trace(self):
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        logs = Path(tmp.name)/'podlogs'; logs.mkdir()
+        # Core acknowledges with 204 (measured live, case a2-k1); 200 is accepted too, a 503 refusal is not a delivery.
+        line = lambda at, ms, pos, status=204: ('2026-11-20T00:00:00Z PGSTREAM_RECEIVER_TRACE ' + json.dumps(
+            {'at': at, 'request': 1, 'event': 'response-finished', 'elapsedMs': ms, 'position': pos, 'rows': 3, 'status': status, 'dropped': 0}) + '\n')
+        (logs/'evaluator-0.evaluator.log').write_text(line(1010, 10, '0/A') + line(1100, 20, '0/B') + 'other line\n')
+        (logs/'evaluator-1.evaluator.log').write_text(line(1030, 25, '0/A', 200) + line(1090, 5, '0/B') + line(5000, 5, '0/C', 503))
+        value = o.delivery(Path(tmp.name))
+        self.assertEqual(value['batches'], 2)
+        self.assertEqual(value['deliverySpanMs']['max'], 30)   # 0/A: received 1000, last response 1030
+        self.assertEqual(value['interBatchGapMs']['median'], 50)  # 0/B first receipt 1080 - 1030
+        self.assertEqual(o.delivery(Path(tmp.name)/'none')['verdict'], 'UNMEASURED')

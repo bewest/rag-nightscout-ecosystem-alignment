@@ -8,9 +8,18 @@
 Reads only; never creates, scales or deletes. Stops at verified absence or the cleanup deadline.
 
 OUT_DIR/samples.jsonl, one row per interval: stage, placement (Pod NODE PHASE), node top for every
-node the case uses, `kubectl top pods --containers` (one line per Pod and container, so each
-evaluator ordinal is its own row) and, during traffic, the replication slot lag.
-OUT_DIR/nodes.json: /proc/cpuinfo `model name` per node, read once from one running case Pod there.
+node the case uses and `kubectl top pods --containers` (one line per Pod and container, so each
+evaluator ordinal is its own row). API reads only; no exec.
+OUT_DIR/nodes.json: /proc/cpuinfo `model name` per node, read once from one running case Pod there
+(the observer's only exec).
+Database and process figures (event-loop lag and utilization, evaluator phase time per slice,
+pending-work age, statements per write by role, slot lag, walsender waits, pg_stat_statements,
+pg_stat_io, receipt round trip) come from the run's own Prometheus when the binding input sets
+`labMetrics.enabled`: the controller retains a TSDB snapshot before teardown
+(runtime/packet/load/metrics-tsdb.tar, execute.metrics_snapshot) and `summarize` evaluates PromQL on it at the
+steady-window bookends with a local, network-less Prometheus of the same version. Without the
+component those figures are UNMEASURED; the observer no longer samples /proc, pg_stat_activity or
+pg_stat_statements by exec.
 OUT_DIR/podlogs/: only when the case's binding input sets `roleEnv` (diagnostics requested), one
 `kubectl logs -f --timestamps` follower per Pod and container of each named role, started when the
 Pod runs and stopped at teardown, each file bounded by --log-cap-bytes (so container log rotation
@@ -31,10 +40,6 @@ from statistics import median
 LABEL = 'nightscout.org/run-id'
 HERE = Path(__file__).resolve().parent
 MODEL = re.compile(r'^model name\s*:\s*(.+)$', re.M)
-SLOT_SQL = ("SELECT json_build_object('active',active,'confirmedLagBytes',"
-            "pg_wal_lsn_diff(pg_current_wal_lsn(),confirmed_flush_lsn),'retainedWalBytes',"
-            "pg_wal_lsn_diff(pg_current_wal_lsn(),restart_lsn)) FROM pg_replication_slots "
-            "WHERE slot_name='nsdemo_pgstream' AND NOT temporary")
 TRAFFIC = 'attach released runtime'
 
 
@@ -213,12 +218,6 @@ def sample(case, kubectl, state):
             if found:
                 state['nodes'][node] = found
                 write_json(state['out']/'nodes.json', state['nodes'])
-    if row['stage'] == TRAFFIC:
-        postgres = [p for p in pods if p['metadata']['name'] == 'postgres-0']
-        if postgres:
-            raw = kubectl('exec', 'postgres-0', '-c', 'postgres', '--', 'psql', '-X', '-qAt', '-U', 'postgres',
-                          '-d', 'postgres', '-c', SLOT_SQL)
-            row['slot'] = json.loads(raw) if raw.strip() else 'ABSENT'
     follow(case, kubectl, state, pods, terminating)
     return row
 
@@ -307,6 +306,166 @@ def window(case):
     return ('stage ' + TRAFFIC, None, None)
 
 
+TRACE = b'PGSTREAM_RECEIVER_TRACE '
+
+
+def delivery(out):
+    """Per pgstream transaction batch (commit position), from the evaluator receivers' own trace
+    (NS_PGSTREAM_RECEIVER_TRACE=1 in roleEnv): first receipt to last response across the slices that
+    received it, and the gap from one batch's last response to the next batch's first receipt.
+    Receiver wall clocks on different nodes are not aligned; the trace drops lines above 100/s."""
+    logs = out/'podlogs'
+    batches, dropped = {}, 0
+    for path in sorted(logs.glob('*.evaluator.log')) if logs.is_dir() else []:
+        pod = path.name.split('.')[0]
+        for line in path.read_bytes().splitlines():
+            at = line.find(TRACE)
+            if at < 0:
+                continue
+            try:
+                row = json.loads(line[at + len(TRACE):])
+            except ValueError:
+                continue
+            dropped += row.get('dropped', 0) or 0
+            # Core acknowledges an accepted body with 204 (lib/pgstream/evaluator.js); any 2xx is a delivery.
+            if row.get('event') != 'response-finished' or not row.get('position') or not 200 <= (row.get('status') or 0) < 300:
+                continue
+            cell = batches.setdefault(row['position'], {})
+            cell[pod] = (row['at'] - row['elapsedMs'], row['at'], row.get('rows'))
+    if not batches:
+        return {'verdict': 'UNMEASURED', 'reason': 'no receiver trace in podlogs (roleEnv NS_PGSTREAM_RECEIVER_TRACE=1)'}
+    ordered = sorted(batches.values(), key=lambda c: min(v[0] for v in c.values()))
+    spans = [max(v[1] for v in c.values()) - min(v[0] for v in c.values()) for c in ordered]
+    gaps = [min(v[0] for v in b.values()) - max(v[1] for v in a.values()) for a, b in zip(ordered, ordered[1:])]
+    return {'batches': len(ordered), 'slicesPerBatch': distribution([len(c) for c in ordered]),
+            'deliverySpanMs': distribution(spans), 'interBatchGapMs': distribution(gaps), 'droppedTraceLines': dropped,
+            'scope': 'read-derived from receiver timestamps; includes evaluator receipt time; clocks unaligned across nodes'}
+
+
+# The binding's Prometheus image (deploy lab-metrics.libsonnet), run locally on a copy of the
+# retained snapshot with no network.
+PROMETHEUS_IMAGE = 'prom/prometheus@sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996'
+# Steady-window figures; {w} is the window in seconds, evaluated at its end.
+WRITES = 'sum(increase(nightscout_http_request_seconds_count{{method=~"POST|PUT|PATCH|DELETE",status_class="2xx"}}[{w}s]))'
+QUERIES = {
+    'targets': 'min_over_time(up[{w}s])',
+    'cpuCores': 'rate(process_cpu_seconds_total{{job="roles"}}[{w}s])',
+    'eventLoopUtilization': 'rate(nodejs_eventloop_utilization_histogram_sum[{w}s]) / rate(nodejs_eventloop_utilization_histogram_count[{w}s])',
+    'eventLoopLagMeanSeconds': 'avg_over_time(nodejs_eventloop_lag_mean_seconds[{w}s])',
+    'eventLoopLagP99MaxSeconds': 'max_over_time(nodejs_eventloop_lag_p99_seconds[{w}s])',
+    'phaseBusySecondsPerSecond': 'sum by (pod, slice, phase) (rate(nightscout_evaluator_phase_seconds_sum[{w}s]))',
+    'phaseMeanSeconds': 'sum by (pod, slice, phase) (rate(nightscout_evaluator_phase_seconds_sum[{w}s])) / sum by (pod, slice, phase) (rate(nightscout_evaluator_phase_seconds_count[{w}s]))',
+    'phaseP95Seconds': 'histogram_quantile(0.95, sum by (pod, slice, phase, le) (rate(nightscout_evaluator_phase_seconds_bucket[{w}s])))',
+    'pendingOldestAgeMaxSeconds': 'max_over_time(nightscout_evaluator_pending_oldest_age_seconds[{w}s])',
+    'pendingOldestAgeMeanSeconds': 'avg_over_time(nightscout_evaluator_pending_oldest_age_seconds[{w}s])',
+    'queuedCyclesMax': 'max_over_time(nightscout_evaluator_queued_cycles[{w}s])',
+    'evaluatorTenants': 'max_over_time(nightscout_evaluator_tenants[{w}s])',
+    'apiWrites2xx': WRITES,
+    'statementsPerWriteByRole': 'sum by (role) (increase(nightscout_pg_statements_total[{w}s])) / scalar(' + WRITES + ')',
+    'statementsByApplication': 'sum by (role, application_name) (increase(nightscout_pg_statements_total[{w}s]))',
+    'statementClientMeanSeconds': 'sum by (role) (increase(nightscout_pg_statement_seconds_total[{w}s])) / sum by (role) (increase(nightscout_pg_statements_total[{w}s]))',
+    'receiptsPerSecond': 'sum by (pod, slice, outcome) (rate(nightscout_pgstream_receipt_seconds_count[{w}s]))',
+    'receiptMeanSeconds': 'sum by (pod, slice) (rate(nightscout_pgstream_receipt_seconds_sum[{w}s])) / sum by (pod, slice) (rate(nightscout_pgstream_receipt_seconds_count[{w}s]))',
+    'receiptP95Seconds': 'histogram_quantile(0.95, sum by (pod, slice, le) (rate(nightscout_pgstream_receipt_seconds_bucket[{w}s])))',
+    'httpP95Seconds': 'histogram_quantile(0.95, sum by (method, status_class, le) (rate(nightscout_http_request_seconds_bucket[{w}s])))',
+    'slotConfirmedLagBytesMax': 'max_over_time(ns_slot_confirmed_lag_bytes[{w}s])',
+    'slotConfirmedLagBytesMean': 'avg_over_time(ns_slot_confirmed_lag_bytes[{w}s])',
+    'walsenderSamplesByWait': 'sum by (state, wait_event_type, wait_event) (count_over_time(ns_walsender_senders[{w}s]))',
+    'activeBackendsByApplication': 'sum by (application_name, wait_event_type) (avg_over_time(ns_activity_backends{{backend_type="client backend",state="active"}}[{w}s]))',
+    'statIoSecondsByBackend': 'sum by (backend_type) (increase(ns_stat_io_read_seconds[{w}s]) + increase(ns_stat_io_write_seconds[{w}s]) + increase(ns_stat_io_fsync_seconds[{w}s]))',
+    'statIoReadsByBackend': 'sum by (backend_type) (increase(ns_stat_io_reads[{w}s]))',
+    'topStatementsSeconds': 'topk(25, sum by (queryid) (increase(pg_stat_statements_seconds_total[{w}s])))',
+    'topStatementsCalls': 'topk(25, sum by (queryid) (increase(pg_stat_statements_calls_total[{w}s])))',
+    'statementText': 'max by (queryid, query) (last_over_time(pg_stat_statements_query_id[{w}s]))',
+}
+
+
+def load_directory(case):
+    """The controller's load stage output: runtime/packet/load in a launched case (load/ in older layouts)."""
+    for path in (case.d/'runtime'/'packet'/'load', case.d/'load'):
+        if path.is_dir():
+            return path
+    return case.d/'runtime'/'packet'/'load'
+
+
+def load_window(case):
+    """Fallback bookends: the controller's load window (seconds), as ms."""
+    value = read(load_directory(case)/'window.json') or {}
+    if value.get('loadStartedAt') and value.get('loadEndedAt'):
+        return value['loadStartedAt'] * 1000, value['loadEndedAt'] * 1000
+    return None, None
+
+
+class LocalPrometheus:
+    """A network-less Prometheus on a private copy of the snapshot; queried through docker exec."""
+
+    def __init__(self, archive, run=subprocess.run):
+        import tarfile, tempfile, uuid
+        self.run = run
+        self.dir = tempfile.mkdtemp(prefix='case-observer-tsdb-')
+        with tarfile.open(archive) as tar:
+            tar.extractall(self.dir, filter='data')
+        self.name = 'case-observer-tsdb-' + uuid.uuid4().hex[:12]
+        self.run(['docker', 'run', '-d', '--rm', '--name', self.name, '--network', 'none', '--user', '%d:%d' % (os.getuid(), os.getgid()),
+                  '-v', self.dir + ':/prometheus', PROMETHEUS_IMAGE, '--config.file=/etc/prometheus/prometheus.yml',
+                  '--storage.tsdb.path=/prometheus', '--storage.tsdb.retention.time=100y', '--web.listen-address=127.0.0.1:9090'],
+                 check=True, capture_output=True, timeout=120)
+        for _ in range(120):
+            if self.get('/-/ready', check=False):
+                return
+            time.sleep(1)
+        raise OSError('LOCAL_PROMETHEUS_NOT_READY')
+
+    def get(self, path, check=True):
+        r = self.run(['docker', 'exec', self.name, 'wget', '-qO-', 'http://127.0.0.1:9090' + path],
+                     capture_output=True, text=True, timeout=60)
+        if check and r.returncode:
+            raise OSError('LOCAL_PROMETHEUS_QUERY_FAILED')
+        return r.stdout if r.returncode == 0 else None
+
+    def query(self, expr, at):
+        from urllib.parse import urlencode
+        body = json.loads(self.get('/api/v1/query?' + urlencode({'query': expr, 'time': '%.3f' % at})))
+        return [{'labels': {k: v for k, v in row['metric'].items() if k not in ('instance', 'server')},
+                 'value': None if row['value'][1] in ('NaN', '+Inf', '-Inf') else float(row['value'][1])}
+                for row in body['data']['result']]
+
+    def close(self):
+        import shutil
+        self.run(['docker', 'rm', '-f', self.name], capture_output=True, timeout=60)
+        shutil.rmtree(self.dir, ignore_errors=True)
+
+
+def prometheus_figures(case, start, end, local=LocalPrometheus):
+    """PromQL at the steady-window bookends over the retained snapshot; UNMEASURED when absent."""
+    load = load_directory(case)
+    receipt = read(load/'metrics-snapshot.json')
+    if receipt is None:
+        return {'verdict': 'UNMEASURED', 'reason': 'no metrics-snapshot.json in the load stage (labMetrics off or no load stage)'}
+    if receipt.get('verdict') != 'OBSERVED':
+        return {'verdict': 'UNMEASURED', 'reason': receipt.get('code')}
+    basis = 'k6 executor start to steady end'
+    if start is None:
+        start, end = load_window(case)
+        basis = 'controller load window'
+    if start is None or end <= start:
+        return {'verdict': 'UNMEASURED', 'reason': 'no steady window'}
+    w = max(1, int((end - start) / 1000))
+    server = local(load/receipt['file'])
+    try:
+        figures = {name: server.query(expr.format(w=w), end / 1000) for name, expr in QUERIES.items()}
+    finally:
+        server.close()
+    text = {row['labels'].get('queryid'): row['labels'].get('query') for row in figures.pop('statementText')}
+    for name in ('topStatementsSeconds', 'topStatementsCalls'):
+        for row in figures[name]:
+            row['query'] = (text.get(row['labels'].get('queryid')) or '')[:160]
+    return {'verdict': 'OBSERVED', 'window': {'basis': basis, 'startMs': start, 'endMs': end, 'seconds': w},
+            'snapshotSha256': receipt.get('sha256'), 'figures': figures,
+            'scope': 'event-loop utilization is the main thread\'s non-idle wall share, not /proc CPU; '
+                     'statements per write divide every observed pool\'s statements by api 2xx write requests'}
+
+
 def summarize(case, out):
     out = Path(out)
     label, start, end = window(case)
@@ -363,6 +522,8 @@ def summarize(case, out):
                                      'workingSetMiB': distribution(cell['workingSetMiB'])}
                                  for c, cell in sorted(roles.items())},
         'podLogs': read(out/'podlogs'/'followers.json'),
+        'prometheus': prometheus_figures(case, start, end),
+        'pgstreamDelivery': delivery(out),
     }
 
 

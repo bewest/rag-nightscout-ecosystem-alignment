@@ -536,10 +536,14 @@ actual memory, throttling, OOM/restarts and contention during the run. Native
 driver/observer cgroups and owned deadlines/cleanup retain their separate bounds.
 Pod-level resource budgets need their own instrument extension and refuse explicitly.
 
-The shared-socket cohort stays at one Pod. Other multi-Pod workloads currently
-refuse `WORKLOAD_REPLICA_CENSUS_UNSUPPORTED`, because role selection and the
-observed Pod census need an explicit topology extension. This is distinct from
-the cohort's socket-sharing requirement.
+Every Deployment and StatefulSet is counted one Pod per replica: the census
+places and checks readiness of each Pod against `replicas`
+(`ROLE_POD_UNMEASURED` when one is missing), and the load step budgets each Pod
+on its own node. api replicas and realtime or evaluator K>1 need no topology
+extension. Evaluator progress at K>1 asks each ordinal only for the tenants it
+owns under `sha256-modulo-v1` (core `lib/pool-membership/slice.js`); the shares
+together must cover every tenant exactly once. K=1 reads and file names are
+unchanged.
 
 The explicit `applicationTopology: "separate-k1"` profile places API, evaluator,
 realtime and tenant-admin in their own one-replica Deployments. Common intents

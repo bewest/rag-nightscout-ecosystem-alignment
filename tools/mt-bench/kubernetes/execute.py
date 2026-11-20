@@ -291,7 +291,8 @@ def progress(d, c, objects, client, *, raw_output=None, until=None):
                 return raw
         value, primary, post = None, None, None
         try:
-            value = k.evaluator_progress.round_view(list(services), ids, fetch, demand_driven=True, policy=policy)
+            # A static slice answers only for its own tenants: each ordinal is asked for its share.
+            value = k.evaluator_progress.round_view(list(services), ids, fetch, demand_driven=True, policy=policy, sliced=True)
         except BaseException as error:
             primary = error
         try:
@@ -428,7 +429,7 @@ def policy(d, c, objects, client):
     before=k.observe(c,objects,client,initial)
     primer=[p for p in before['pods'].values() if p['workload']=='Job/primer' and p['containers'].get('done',{}).get('ready')]
     k.need(len(primer)==1,'POLICY_PRIMER_WAITING_REQUIRED','UNMEASURED')
-    denied_pod,denied_container=k.selected_pod(c,before,'api')
+    denied_pod,denied_container=k.role_pods(c,before,'api')[0]  # any api Pod is a denied source
     targets=[(primer[0]['name'],'done'),(denied_pod,denied_container),(primer[0]['name'],'done')]
     script="const net=require('node:net');let done=false;const finish=outcome=>{if(done)return;done=true;socket.destroy();console.log(JSON.stringify({outcome}));};const socket=net.connect({host:'admin',port:1342});socket.setTimeout(2000);socket.once('connect',()=>finish('connected'));socket.once('timeout',()=>finish('timeout'));socket.once('error',()=>finish('error'));"
     samples=[]
@@ -636,6 +637,36 @@ def execute(d, c, objects, client, load=False, recovery=False):
         if observer is not None:
             observer.close()
         log.close()
+        if load:
+            metrics_snapshot(out, c, objects, client)
+
+
+# One exec: ask the run's Prometheus (lab metrics component) for a TSDB snapshot, head included,
+# and stream the snapshot directory out as tar. The archive is the retained metrics evidence;
+# case_observer summarize reads its figures by PromQL from it after the namespace is gone.
+SNAPSHOT_SCRIPT = ("set -e; n=$(wget -qO- --post-data= 'http://127.0.0.1:9090/api/v1/admin/tsdb/snapshot?skip_head=false'"
+                   " | sed -n 's/.*\"name\":\"\\([^\"]*\\)\".*/\\1/p'); test -n \"$n\"; cd /prometheus/snapshots/$n; tar -cf - .")
+
+
+def metrics_snapshot(out, c, objects, client):
+    """Best effort and never a stop: a missing snapshot leaves the metrics figures UNMEASURED."""
+    if not any(obj.get('kind') == 'Deployment' and obj['metadata']['name'] == 'prometheus' for obj in objects.values()):
+        return None
+    target = out / 'metrics-tsdb.tar'
+    receipt = {'version': 1, 'verdict': 'UNMEASURED', 'file': target.name, 'requestedAt': time.time()}
+    try:
+        raw = client.call(['exec', 'deploy/prometheus', '-c', 'prometheus', '--', 'sh', '-c', SNAPSHOT_SCRIPT],
+                          read=False, output_limit=512 * 1024 * 1024, timeout=120, cleanup=True)
+        k.need(isinstance(raw, bytes) and len(raw) > 0, 'METRICS_SNAPSHOT_EMPTY', 'UNMEASURED')
+        fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(fd, 'wb') as stream:
+            stream.write(raw)
+        receipt.update(verdict='OBSERVED', bytes=len(raw), sha256=k.digest(target), observedAt=time.time())
+    except Exception as error:
+        receipt.update(code=str(error) if isinstance(error, k.Refused) else 'K8S_METRICS_SNAPSHOT_UNMEASURED',
+                       errorType=type(error).__name__)
+    k.write(out / 'metrics-snapshot.json', receipt)
+    return receipt
 
 
 def terminal_progress(d, out, c, objects, client, runid, load, namespace_uid):

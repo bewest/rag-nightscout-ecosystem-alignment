@@ -143,9 +143,11 @@ def verify_documents(manifest, documents):
             ordinal = int(row['id'].split('-')[-1]) - 1
             require(row.get('slice') == {'count': value['workers'], 'ordinal': ordinal}, 'M7_STATIC_PARTICIPANT_COVERAGE')
         if item['role'] == 'evaluator':
-            require('NS_PGSTREAM_EVALUATOR_SLICE' in env and json.loads(env.get('NS_REALTIME_SLICE_PEERS', 'null')) == peer_list, 'M7_STATIC_PRIVATE_PEERS')
+            hostname = env.get('NS_EVALUATOR_SLICES') == str(value['workers'])  # hostname ordinal form
+            require((hostname or 'NS_PGSTREAM_EVALUATOR_SLICE' in env) and json.loads(env.get('NS_REALTIME_SLICE_PEERS', 'null')) == peer_list, 'M7_STATIC_PRIVATE_PEERS')
             stream = conf.get('pgstream', {})
-            require(stream.get('receiver', {}).get('url') == f'http://{name}:19913/', 'M7_STATIC_RECEIVER')
+            receiver = f'http://evaluator-{item["ordinal"]}.evaluator:19913/' if hostname else f'http://{name}:19913/'
+            require(stream.get('receiver', {}).get('url') in (receiver, None if hostname else receiver), 'M7_STATIC_RECEIVER')
             signatures.append({'postgres': conf.get('postgres'), 'datastore': conf.get('datastore'), 'consumer': conf.get('consumer'),
                                **{key: stream.get(key) for key in ('slot', 'generation', 'streamRole', 'transactionRows')}})
         elif item['role'] == 'realtime':

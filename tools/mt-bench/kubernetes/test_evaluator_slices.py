@@ -2,6 +2,7 @@
 fixture K, and the reader's detach wait. Synthetic replies only; no cluster."""
 import copy
 import json
+import os
 from pathlib import Path
 import subprocess
 import tempfile
@@ -59,13 +60,51 @@ class Census(unittest.TestCase):
         # A single-Pod role selector still refuses K>1, and other workloads keep one Pod.
         with self.assertRaisesRegex(k.Refused, 'ROLE_NOT_READY'):
             k.selected_pod(c, observed, 'evaluator')
-        rendered[-1]['spec']['replicas'] = 9
-        with self.assertRaisesRegex(k.Refused, 'EVALUATOR_SLICES_UNSUPPORTED'):
+        rendered[-1]['spec']['replicas'] = 0
+        with self.assertRaisesRegex(k.Refused, 'WORKLOAD_REPLICAS_INVALID:StatefulSet/evaluator'):
             k.validate(c, inv, rendered)
-        rendered[-1]['spec']['replicas'] = 2
-        rendered[2]['spec']['replicas'] = 2
-        with self.assertRaisesRegex(k.Refused, 'WORKLOAD_REPLICA_CENSUS_UNSUPPORTED:StatefulSet/postgres'):
-            k.validate(c, inv, rendered)
+
+    def test_every_workload_counts_one_pod_per_replica(self):
+        # api as a Deployment of 2 and realtime as a StatefulSet of 2: each Pod is counted and placed.
+        # Red before: any workload but the evaluator refused replicas>1 (WORKLOAD_REPLICA_CENSUS_UNSUPPORTED).
+        c, inv, rendered, client = sliced(1)
+        labels = {c['ownerLabel']: c['runId']}
+        cohort = rendered[1]
+        template = next(p for p in client.pods if p['metadata']['name'] == 'cohort-0')
+        def add(kind, name, count, controller):
+            container = next(x for x in cohort['spec']['template']['spec']['containers'] if x['name'] == name)
+            obj = {'apiVersion': 'apps/v1', 'kind': kind, 'metadata': {'name': name, 'namespace': c['namespace'], 'labels': dict(labels)},
+                   'spec': {'replicas': count, 'template': {'metadata': {'labels': dict(labels)},
+                                                           'spec': {'containers': [copy.deepcopy(container)]}}}}
+            rendered.append(obj)
+            c['roles'][name] = {'workload': kind + '/' + name, 'container': name}
+            actual = copy.deepcopy(obj); actual['metadata'].update(uid='uid-' + name, resourceVersion='10')
+            client.objects[kind + '/' + name] = actual
+            for i in range(count):
+                pod = copy.deepcopy(template)
+                pod['metadata'].update(name='%s-%s' % (name, i if kind == 'StatefulSet' else 'h%d' % i), uid='uid-%s-%d' % (name, i),
+                                       ownerReferences=[controller(i)])
+                pod['spec'] = copy.deepcopy(obj['spec']['template']['spec']); pod['spec']['nodeName'] = 'synthetic-node'
+                pod['status']['containerStatuses'] = [dict(template['status']['containerStatuses'][0], name=name,
+                                                           containerID='containerd://%s-%d' % (name, i))]
+                client.pods.append(pod)
+        add('StatefulSet', 'realtime', 2, lambda i: {'kind': 'StatefulSet', 'name': 'realtime', 'uid': 'uid-realtime', 'controller': True})
+        rs = {'apiVersion': 'apps/v1', 'kind': 'ReplicaSet', 'metadata': {'name': 'api-h', 'uid': 'uid-rs-api', 'labels': dict(labels), 'namespace': c['namespace'],
+              'ownerReferences': [{'kind': 'Deployment', 'name': 'api', 'uid': 'uid-api', 'controller': True}]}}
+        original_get = client.get
+        def get(kind, name=None, cleanup=False):
+            if kind == 'replicasets' and name is None:
+                return {'items': [rs]}
+            return original_get(kind, name, cleanup) if name is not None else original_get(kind, cleanup=cleanup)
+        client.get = get
+        add('Deployment', 'api', 2, lambda i: {'kind': 'ReplicaSet', 'name': 'api-h', 'uid': 'uid-rs-api', 'controller': True})
+        objects = k.validate(c, inv, rendered)
+        observed = k.observe(c, objects, client)
+        for role, count in (('api', 2), ('realtime', 2), ('evaluator', 1)):
+            self.assertEqual(len(k.role_pods(c, observed, role)), count, role)
+        client.pods = [p for p in client.pods if p['metadata']['name'] != 'api-h1']
+        with self.assertRaisesRegex(k.Refused, 'ROLE_POD_UNMEASURED:api'):
+            k.observe(c, objects, client)
 
     def test_k1_census_unchanged(self):
         c, inv, rendered, client = sliced(1)
@@ -79,48 +118,124 @@ class Census(unittest.TestCase):
         self.assertEqual(producer_startup.replica_identity([two, one], 2), (one, two))
 
 
-def static_page(ordinal, count, runtime):
-    rows = []
-    for index, tenant in enumerate((A, B)):
-        mine = index % count == ordinal
-        rows.append({'tenant': tenant, 'admitted': mine, 'ready': mine, 'code': None, 'evaluation': {'alert': None},
-                     'cycles': 1, 'progress': {'generation': 1, 'completedAcquisitions': 1, 'completedTimeCycles': 0,
+# Core lib/pool-membership/slice.js bucket(id, K) for K = 1..8, computed with core 6da24edbb7.
+CORE_BUCKETS = {
+    '11111111-1111-4111-8111-111111111111': [0, 0, 1, 0, 0, 4, 0, 4],
+    '22222222-2222-4222-8222-222222222222': [0, 1, 0, 3, 2, 3, 0, 3],
+    '33333333-3333-4333-8333-333333333333': [0, 1, 1, 3, 1, 1, 3, 7],
+    '44444444-4444-4444-8444-444444444444': [0, 0, 0, 0, 4, 0, 3, 4],
+    '55555555-5555-4555-8555-555555555555': [0, 1, 0, 1, 2, 3, 1, 5],
+    '66666666-6666-4666-8666-666666666666': [0, 1, 0, 1, 3, 3, 5, 5],
+    '0f0e0d0c-0b0a-4908-8706-050403020100': [0, 0, 1, 0, 1, 4, 6, 4],
+    'ffffffff-ffff-4fff-bfff-ffffffffffff': [0, 0, 1, 0, 0, 4, 5, 0],
+}
+
+
+def static_page(ordinal, count, runtime, selected, completed=1):
+    """One slice's inspection page, as core answers it: only for tenants it owns."""
+    rows = [{'tenant': tenant, 'admitted': True, 'ready': True, 'code': None, 'evaluation': {'alert': None},
+             'cycles': completed, 'progress': {'generation': 1, 'completedAcquisitions': completed, 'completedTimeCycles': 0,
                                                'failedCompletions': 0, 'lastCompletedAgeMs': 1},
-                     'jobs': dict.fromkeys(k.evaluator_progress.JOB_FLAGS, False), 'dueAt': None, 'dueReason': None})
+             'jobs': dict.fromkeys(k.evaluator_progress.JOB_FLAGS, False), 'dueAt': None, 'dueReason': None}
+            for tenant in selected]
     configured = {'ordinal': ordinal, 'mode': 'static', 'count': count, 'rule': 'sha256-modulo-v1', 'leaseMs': None}
-    return {'selected': [A, B], 'selfOrdinal': ordinal, 'selfMode': 'static', 'selfCount': count,
+    return {'selected': list(selected), 'selfOrdinal': ordinal, 'selfMode': 'static', 'selfCount': count,
             'view': {'kind': 'evaluator', 'runtimeId': runtime, 'configured': configured, 'observed': None,
                      'gate': {'eligible': True, 'reason': None, 'members': count}, 'tenants': rows}}
 
 
+def slice_pod(count, runtimes, targets, completed=lambda: 1):
+    """kubectl exec into evaluator-<i>: core refuses a selector naming a tenant the slice does not own
+    (evaluator-inspection.js:22-25), which the transport answers as 503 and the helper as exit 1."""
+    def call(args, data=b'', **kwargs):
+        pod = args[2]; ordinal = int(pod.rsplit('-', 1)[1])
+        targets.append(pod)
+        prefix = data.decode().split(';', 1)[0]
+        selected = json.loads(prefix.removeprefix('const M7_PROGRESS_IDS='))
+        if any(k.evaluator_progress.bucket(t, count) != ordinal for t in selected):
+            raise k.Refused('K8S_EXEC_FAILED')
+        raw = json.dumps(static_page(ordinal, count, runtimes[ordinal], selected, completed())).encode() + b'\n'
+        sink = kwargs.get('response_sink')
+        if sink: sink(raw, 0)
+        return raw
+    return call
+
+
+class SliceRule(unittest.TestCase):
+    def test_bucket_matches_core(self):
+        for tenant, expected in CORE_BUCKETS.items():
+            self.assertEqual([k.evaluator_progress.bucket(tenant, n) for n in range(1, 9)], expected, tenant)
+
+    def test_partition_covers_each_id_once_and_k1_asks_everyone(self):
+        ids = sorted(CORE_BUCKETS)
+        shares = k.evaluator_progress.partition(['evaluator', 'evaluator-2'], ids)
+        self.assertEqual(sorted(t for v in shares.values() for t in v), ids)
+        self.assertEqual(shares['evaluator-2'], [t for t in ids if CORE_BUCKETS[t][1] == 1])
+        with self.assertRaisesRegex(k.evaluator_progress.Refused, 'SLICE_EMPTY'):
+            k.evaluator_progress.partition(['evaluator', 'evaluator-2'], ['11111111-1111-4111-8111-111111111111'])
+        seen = {}
+        def fetch(service, chosen, queries, budget):
+            seen[service] = chosen
+            return json.dumps(static_page(0, 1, R, chosen)).encode()
+        k.evaluator_progress.round_view(['evaluator'], ids, fetch, demand_driven=True, sliced=True)
+        self.assertEqual(seen, {'evaluator': ids})
+
+
 class Progress(unittest.TestCase):
-    def test_each_ordinal_is_read_in_its_own_pod_and_retained_separately(self):
+    def setUp(self):
         tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
-        d = Path(tmp.name); out = d/'load'; out.mkdir()
-        c, inv, rendered, client = sliced(2)
-        clock = Clock()
-        c.update(tenants=2, tier='discovery')
-        c['deadlines'] = {'workUntil': iso(clock.now+7200), 'cleanupUntil': iso(clock.now+7800)}
-        objects = k.validate(c, inv, rendered)
-        baseline = k.observe(c, objects, client)
-        pages = {'evaluator-0': static_page(0, 2, R), 'evaluator-1': static_page(1, 2, S)}
-        targets = []
-        def call(args, **kwargs):
-            targets.append(args[2])
-            return json.dumps(pages[args[2]]).encode()+b'\n'
-        client.call = Mock(side_effect=call)
-        roster = [{'id': t, 'token': 'synthetic', 'host': 'synthetic.test'} for t in (A, B)]
-        with patch.object(k.time, 'time', clock.time), patch.object(k, 'active_baseline', return_value=baseline), \
-             patch.object(execute, 'roster', return_value=roster):
-            value = execute.retained_progress(d, out, c, objects, client, 'progress-before')
-        self.assertIsNotNone(value, (out/'progress-before-failure.json').read_text() if (out/'progress-before-failure.json').exists() else '')
-        self.assertEqual(sorted(targets), ['evaluator-0', 'evaluator-1'])
+        self.d = Path(tmp.name); self.out = self.d/'load'; self.out.mkdir()
+        self.c, inv, rendered, self.client = sliced(2)
+        self.clock = Clock()
+        self.c.update(tenants=2, tier='discovery')
+        self.c['deadlines'] = {'workUntil': iso(self.clock.now+7200), 'cleanupUntil': iso(self.clock.now+7800)}
+        self.objects = k.validate(self.c, inv, rendered)
+        self.baseline = k.observe(self.c, self.objects, self.client)
+        self.targets = []; self.done = [0]
+        self.client.call = Mock(side_effect=slice_pod(2, (R, S), self.targets, lambda: self.done[0]))
+        self.roster = [{'id': t, 'token': 'synthetic', 'host': 'synthetic.test'} for t in (A, B)]
+
+    def read(self, name):
+        with patch.object(k.time, 'time', self.clock.time), patch.object(k, 'active_baseline', return_value=self.baseline), \
+             patch.object(execute, 'roster', return_value=self.roster):
+            return execute.retained_progress(self.d, self.out, self.c, self.objects, self.client, name)
+
+    def test_each_ordinal_is_asked_only_for_its_share(self):
+        # Red before the sliced read: every ordinal was asked for every id, each refused, UNMEASURED.
+        value = self.read('progress-before')
+        self.assertIsNotNone(value, (self.out/'progress-before-failure.json').read_text() if (self.out/'progress-before-failure.json').exists() else '')
+        self.assertEqual(sorted(self.targets), ['evaluator-0', 'evaluator-1'])
         self.assertEqual({s: v['ordinal'] for s, v in value['instances'].items()}, {'evaluator': 0, 'evaluator-2': 1})
         self.assertEqual({t: v['service'] for t, v in value['owners'].items()}, {A: 'evaluator', B: 'evaluator-2'})
-        first = k.document(out/'progress-before-response.json')
-        second = k.document(out/'progress-before-evaluator-2-response.json')
+        self.assertEqual(value['slices'], {'rule': 'sha256-modulo-v1', 'count': 2})
+        first = k.document(self.out/'progress-before-response.json')
+        second = k.document(self.out/'progress-before-evaluator-2-response.json')
         self.assertEqual((first['podUid'], second['podUid']), ('uid-evaluator-0', 'uid-evaluator-1'))
-        self.assertTrue((out/'progress-before.private.jsonl').is_file() and (out/'progress-before-evaluator-2.private.jsonl').is_file())
+        self.assertTrue((self.out/'progress-before.private.jsonl').is_file() and (self.out/'progress-before-evaluator-2.private.jsonl').is_file())
+
+    def test_three_rounds_assess_with_shares_covering_every_id_once(self):
+        for name in ('progress-before', 'progress-midpoint', 'progress-after'):
+            self.assertIsNotNone(self.read(name), name)
+            self.done[0] += 1
+        result = execute.assess_progress(self.out, self.c, [A, B])
+        self.assertEqual((result['verdict'], result['tenants'], result['completedWorkDelta']), ('PASS', 2, 4))
+        # A round whose shares overlap or miss an id is a coverage failure, not a pass.
+        rounds = [k.document(self.out/(n+'.json')) for n in ('progress-before', 'progress-midpoint', 'progress-after')]
+        broken = copy.deepcopy(rounds)
+        broken[2]['allRows']['evaluator'][B] = broken[2]['allRows']['evaluator-2'].pop(B)
+        with self.assertRaisesRegex(k.evaluator_progress.Refused, 'COVERAGE'):
+            k.evaluator_progress.assess(broken, [A, B], 'load', demand_driven=True)
+
+
+class Bound(unittest.TestCase):
+    @unittest.skipUnless(os.environ.get('NS_DEPLOY_DIR'), 'NS_DEPLOY_DIR unset: the deploy tree holds the bound')
+    def test_progress_reader_bound_equals_the_deploy_bound(self):
+        # One evaluator K bound: deploy bindings/compose/multitenant/evaluator-workers.js MAX_WORKERS
+        # (its own tests hold the Kubernetes assert and input schema to it).
+        module = Path(os.environ['NS_DEPLOY_DIR'])/'bindings/compose/multitenant/evaluator-workers.js'
+        value = subprocess.run(['node', '-e', 'process.stdout.write(String(require(process.argv[1]).MAX_WORKERS))', str(module)],
+                               check=True, capture_output=True, text=True).stdout
+        self.assertEqual(int(value), k.evaluator_progress.POLICY['maxInstances'])
 
 
 class SeedAndFixtureK(unittest.TestCase):

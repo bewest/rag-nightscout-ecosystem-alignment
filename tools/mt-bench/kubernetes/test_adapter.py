@@ -97,9 +97,6 @@ class Adapter(unittest.TestCase):
             self.render[1]['spec']['template']['spec']['containers'][0]['image']='foreign@sha256:'+'0'*64
             return lambda:self.render[1]['spec']['template']['spec']['containers'][0].update(image=old)
         self.red_restored('K8S_IMAGE_CHANGED',image,lambda:k.validate(self.c,self.inv,self.render))
-        self.render[1]['spec']['replicas']=2
-        with self.assertRaisesRegex(k.Refused,'ONE_COHORT_REPLICA'):k.validate(self.c,self.inv,self.render)
-        self.render[1]['spec']['replicas']=1
         k.validate(self.c,self.inv,self.render)
 
     def test_context_change_and_deadline_refuse_before_child(self):
