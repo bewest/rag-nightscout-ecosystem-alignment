@@ -28,7 +28,6 @@ ROOT = HERE.parents[2]
 M7 = HERE.parent / 'm7-joined'
 sys.modules.setdefault('kube_adapter', sys.modules[__name__])
 sys.path.insert(0, str(M7))
-import candidate
 import frozen
 import discovery_counts
 import evaluator_progress
@@ -255,8 +254,6 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
         item = c.get(actor, {})
         need(isinstance(item.get('hostId'), str) and item['hostId'] and item.get('sharedHost') is True, 'ACTOR_ATTRIBUTION')
         need(all(type(item.get('resources', {}).get(k)) is int and item['resources'][k] > 0 for k in ('millicpus', 'memoryBytes')), 'ACTOR_BUDGET')
-    if 'seed' not in inventory:
-        candidate.pins(sys.modules[__name__], c, inventory, by_key)
     return by_key
 
 
@@ -467,7 +464,6 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             'imageReferences': {r['name']: r['image'] for r in declared}, 'containers': containers,
             'ready': any(r.get('type') == 'Ready' and r.get('status') == 'True' for r in statuses.get('conditions', [])),
             'phase': statuses.get('phase')}
-    candidate.images(sys.modules[__name__], c, result)
     for role, selection in c['roles'].items():
         selected = [r for r in result['pods'].values() if r['workload'] == selection['workload']]
         need(len(selected) == by_key[selection['workload']]['spec'].get('replicas', 1),
@@ -619,7 +615,6 @@ def observe_sql(d, c, objects, output, client):
     baseline = active_baseline(d)
     output = Path(output)
     output.mkdir(mode=0o700, exist_ok=False)
-    candidate.require(sys.modules[__name__], d, c)
     def capture():
         point = observe(c, objects, client, baseline, serving_sql=True)
         pod, container = selected_pod(c, point, 'postgres')
@@ -645,10 +640,6 @@ def observe_sql(d, c, objects, output, client):
     _, _, after = capture()
     write(output / 'after.json', after)
     epoch = {'system_id': fields[0], 'timeline': int(fields[1]), 'database': fields[2]}
-    if 'candidate' in c['pins']:
-        expected = document(d / 'candidate-verification.json')['proof']['nativeSource']
-        need(all(epoch[key] == expected[key] for key in epoch) and fields[3] == 't' and
-             expected['slot'] == 'nsdemo_pgstream', 'CANDIDATE_NATIVE_SOURCE_CHANGED')
     row = {'verdict': 'OBSERVED', 'scope': 'stored source-primer seed rows in the fixture database',
            'runSha256': digest(d / 'run.json'), 'source': c['pins']['pair'], 'nativeSource': epoch,
            'logicalSlotPresent': fields[3] == 't', 'storedRows': int(fields[4]), 'storedTenants': int(fields[5]),
@@ -702,8 +693,6 @@ def prepare(config, inventory_file, render_file, directory):
     if 'experimentSha256' in c:
         packet['commands']['load'] = [sys.executable, str(HERE/'experiment.py'), 'run', str(d),
                                       '<released-allocation.json>', '<owner-supplied-sha256>']
-    if 'candidate' in c['pins']:
-        packet['commands']['candidate-proof'] = [sys.executable, str(HERE / 'adapter.py'), 'candidate-proof', str(d)]
     packet['commands']['restart-evaluator'] = [sys.executable, str(HERE / 'adapter.py'), 'restart', str(d), 'evaluator']
     write(d / 'packet.json', packet)
     return packet
@@ -747,7 +736,7 @@ def main():
     p = sub.add_parser('prepare')
     for arg in ('config', 'inventory', 'render', 'directory'):
         p.add_argument(arg)
-    for name in ('observe', 'sql', 'clinical-sql', 'commission', 'recovery', 'access', 'policy', 'load', 'cleanup-plan', 'assess', 'candidate-proof'):
+    for name in ('observe', 'sql', 'clinical-sql', 'commission', 'recovery', 'access', 'policy', 'load', 'cleanup-plan', 'assess'):
         p = sub.add_parser(name)
         p.add_argument('directory')
     p = sub.add_parser('observe-sql')
@@ -818,10 +807,6 @@ def main():
         value = cleanup_plan(c, initial, current)
         write(d / 'cleanup-plan.json', value)
         return value
-    if args.command == 'candidate-proof':
-        return candidate.observe(sys.modules[__name__], d, c, objects, client)
-    if args.command == 'restart':
-        candidate.require(sys.modules[__name__], d, c)
     from execute import execute, access, assess, restart, continuity, policy
     if args.command == 'continuity':
         return continuity(d, c, args.independent_directory)

@@ -108,11 +108,6 @@ def render_checks(instance):
     return [row['name'] for row in rows]
 
 
-def candidate_pin(inventory, binding):
-    """Resolve the candidate contract for pre-entry and prepare."""
-    return inventory['candidateContract']
-
-
 def prepare(manifest_path, instance, out, *, await_primer=False, existing_fixture=False):
     m = k.document(manifest_path)
     p = workload(m)
@@ -129,13 +124,11 @@ def prepare(manifest_path, instance, out, *, await_primer=False, existing_fixtur
     # The candidate's image digests are the run identity; Kubernetes pulls by digest.
     delivery = frozen.candidate(m)
     selected = frozen.source(m)
-    selected_candidate = None if 'seed' in inventory else candidate_pin(inventory, instance['binding'])
     pins = dict(pair=dict(core=selected['coreCommit'], deploy=selected['deployCommit']),
                 bindingCommit=m['bindingCommit'], instrument=k.instrument()['sha256'],
                 appImage=delivery['app'], appImageId=delivery['appImageId'],
                 postgresImage=delivery['postgres'], postgresImageId=delivery['postgresImageId'],
-                inventorySha256=k.digest(instance['inventory']), renderSha256=k.digest(instance['render']),
-                **({'candidate':selected_candidate} if selected_candidate else {}))
+                inventorySha256=k.digest(instance['inventory']), renderSha256=k.digest(instance['render']))
     k.need(config.get('pins', pins) == pins, 'INSTANCE_PINS_CHANGED')
     tier = m.get('tier', 'discovery')
     k.need(config.get('tier', tier) == tier, 'INSTANCE_TIER_CHANGED')
@@ -240,7 +233,6 @@ def run(packet, grant_path, expected_digest, group=None):
                and 0 < execute.urlparse(c['baseUrl']).port <= 65535, 'LOOPBACK_FORWARD_REQUIRED')
         k.write(attempt/'allocation.json', dict(sha256=expected_digest, accounting=usage,
                                                 namespaceUid=k.active_baseline(d)['namespace']['uid']))
-        k.candidate.require(k, d, c)
         execute.authority(d, c)
         if c.get('history', profile.history.BASELINE) != profile.history.BASELINE:
             receipt = profile.history.run(c['history'], execute.roster(c), c['baseUrl'],

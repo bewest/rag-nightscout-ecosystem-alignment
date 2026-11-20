@@ -43,9 +43,6 @@ def check(export, output, environment=None):
        'workload':{'loadSeconds':30,'offeredRps':1,'logicalPollingClients':4,'probeEveryMs':300000},
        'driver':{'hostId':'synthetic-driver-reference','sharedHost':True,'resources':{'millicpus':1000,'memoryBytes':1073741824}},
        'observer':{'hostId':'synthetic-observer-reference','sharedHost':True,'resources':{'millicpus':200,'memoryBytes':268435456}}}
-    if 'candidateContract' in inv:
-        c['pins'].update(candidate=inv['candidateContract'], postgresImage=inv['images']['postgres'],
-                         postgresImageId='sha256:'+'0'*64)  # deliberately held until E supplies the commissioned mapping
     if application_topology.FIELD in inv:
         c[application_topology.FIELD] = application_topology.selection(inv, k.need)
     if 'resourceAccounting' in inv:

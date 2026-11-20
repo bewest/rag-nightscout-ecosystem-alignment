@@ -100,9 +100,7 @@ The runner derives pins and checks any previously supplied pins for equality.
 ```bash
 python3 -B "$K/experiment.py" prepare "$NEW_MANIFEST" "$INSTANCE" "$NEW_PACKET" --await-primer
 python3 -B "$K/adapter.py" observe "$NEW_PACKET"
-python3 -B "$K/adapter.py" candidate-proof "$NEW_PACKET"
 python3 -B "$K/adapter.py" policy "$NEW_PACKET"
-python3 -B "$K/primer.py" "$NEW_PACKET" "$NEW_PACKET/primer"
 # Start the authorized loopback forward before the access check.
 python3 -B "$K/adapter.py" access "$NEW_PACKET"
 python3 -B "$K/experiment.py" run "$NEW_PACKET" "$RELEASED_ALLOCATION" "$ALLOCATION_SHA256"
@@ -266,15 +264,6 @@ python3 -B tools/mt-bench/kubernetes/adapter.py identity
 python3 -B tools/mt-bench/kubernetes/check_export.py /absolute/binding-export /absolute/new/offline-join
 python3 -B tools/mt-bench/kubernetes/adapter.py prepare /absolute/private/run.json /absolute/private/inventory.json /absolute/private/render.json /absolute/new/run
 ```
-
-For the C3 candidate, carry the exported inventory's `candidateContract` into
-`pins.candidate` and add the commissioned `postgresImage` and `postgresImageId`.
-The adapter checks the rendered source contract and the actual kubelet app and
-PostgreSQL image identities. After live `observe` and while the same primer
-container is still waiting, run `candidate-proof RUN`. This captures the private
-admin verification receipt from the owned Pod and compares its native PostgreSQL
-source against a read-only observation of the selected database and logical
-slot. Capture this before running `policy`, `access` or workload phases.
 
 An optional third `check_export.py` argument selects Lane E's immutable
 environment export directory. The join verifies its render/inventory hashes

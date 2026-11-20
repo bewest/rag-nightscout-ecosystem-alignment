@@ -3,10 +3,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
-from types import SimpleNamespace
 
-import kube_adapter as k
-import primer
 import primer_storage as storage
 
 
@@ -64,19 +61,3 @@ class PrimerStorage(unittest.TestCase):
         storage.check_render(selected,[job])
         pod['containers'][0]['resources']['requests']['memory']='16Mi'
         with self.assertRaisesRegex(ValueError,'EXCEEDS_ACTOR_MEMORY_REQUEST'):storage.check_render(selected,[job])
-
-    def test_mounted_readback_requires_expected_bytes_and_volume(self):
-        receipt = {'configBytes':1499235, 'configSha256':'a'*64}
-        selected = {storage.FIELD:{'stateMiB':32}, 'primerStorageReceipt':receipt}
-        readback = dict(receipt,type=0x01021994,bytes=32*storage.MIB)
-        client = SimpleNamespace(call=lambda args, read: json.dumps(readback))
-        self.assertEqual(primer.storage_readback(selected,client,'prime-pod'),readback)
-        readback['bytes'] = storage.MIB
-        with self.assertRaisesRegex(k.Refused,'PRIMER_STORAGE_READBACK_CHANGED'):
-            primer.storage_readback(selected,client,'prime-pod')
-        readback['bytes'] = 32*storage.MIB
-        readback['configSha256'] = '0'*64
-        with self.assertRaisesRegex(k.Refused,'PRIMER_STORAGE_READBACK_CHANGED'):
-            primer.storage_readback(selected,client,'prime-pod')
-        readback['configSha256'] = receipt['configSha256']
-        self.assertEqual(primer.storage_readback(selected,client,'prime-pod'),readback)
