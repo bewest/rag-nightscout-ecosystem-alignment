@@ -201,3 +201,40 @@ Backing-store Pod replacement on emptyDir loses state and cannot qualify durable
 recovery. Role restart, recovery without a new write, independent-tenant
 continuity, alarm/due work, connector catchup, large histories, long endurance,
 HA and production admission retain their own unmeasured boundaries.
+
+## Populated clinical history
+
+To compare with a populated entries window, choose one five-minute UTC boundary for the whole pair.
+Apply it to each existing rate profile before preparing either binding. For example, in Bash:
+
+```bash
+history_anchor_ms=$(( $(date -u +%s) / 300 * 300000 ))
+python3 tools/mt-bench/kubernetes/workloads/profile.py populate "$profile_90" "$history_anchor_ms" "$out90"
+python3 tools/mt-bench/kubernetes/workloads/profile.py populate "$profile_120" "$history_anchor_ms" "$out120"
+```
+
+The command changes only `history`. Supply the derived file to the standard Kubernetes case or put
+its history object in the Compose runner configuration. The shared toolchain projects it onto both
+platforms. The existing `existing-provisioner-only` profiles retain zero extra rows.
+
+`synthetic-sgv-6h-v1` writes 72 synthetic SGVs per provisioned tenant using its own DATA credential
+and the ordinary v1 entries endpoint. Samples occur every five minutes, with the newest at the
+selected anchor. A deterministic tenant-specific series populates the entries side of the clinical
+working set. Treatment, device-status and profile history retain the standard seed. The fixture
+device uses underscores, which keep it distinct from ordinary and probe run markers.
+
+Use a separate fixture per binding when deployments require different credentials or topology.
+Kubernetes fixture seed cases write and read back history before writer quiescence and snapshot.
+Kubernetes checks the selected recipe on restore. Both platforms verify populated restores through
+PostgreSQL before traffic. New disposable runs seed through DATA. A lost acknowledgement can be
+retried from a complete or absent tenant. A partial or changed tenant requires a fresh fixture.
+An overlapping provisioner or ordinary SGV upsert key also refuses seed.
+
+The run's `populated-history.json` records the anchor and observed age, eligible rows, actual
+`pg_column_size(doc)` bytes per tenant, a logical digest and the number of batches seeded in this
+phase. This byte measure excludes indexes, tuple headers and WAL. Match the logical digest across
+arms. The comparison uses synthetic host order and authored entry fields so database-generated
+metadata can differ. A finite arm requires all its rows to remain visible in the 48-hour cold
+entries window through its work deadline. Choose a new shared anchor and fresh fixtures if the
+pair ages out. Physical footprint, ordinary request count, acknowledgement latency and clinical
+completion remain measurements for the selected candidate.

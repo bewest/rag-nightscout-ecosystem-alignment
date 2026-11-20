@@ -109,6 +109,8 @@ def local(m,instance):
     config=dict(version=1,helperInstrument=None,k6Image=defaults['k6Image'],
                 workSeconds=p['phases']['workSeconds'],cleanupSeconds=p['phases']['cleanupSeconds'],prepare=options,
                 **({'tier': original['tier']} if 'tier' in original else {}))
+    if p['history'] != profile.history.BASELINE:
+        config['history'] = p['history']
     return config
 
 def project(m,instance,target,out):

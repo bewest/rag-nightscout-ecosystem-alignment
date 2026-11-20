@@ -100,6 +100,10 @@ def fixture_config(path, capture=False):
     if not scheduler:
         files.append(reference(c['cacheAbsence']))
     d=Path(c['caseDirectory']);e=read(d/'environment.json');m=read(d/'intent.json');pre=read(d/'preflight.json')
+    if c.get('fixture', {}).get('mode') == 'restore':
+        import fixture_copy
+        import populated_history as history
+        history.check_snapshot(m['profile']['history'], fixture_copy.read_manifest(c['fixture']['directory']))
     primer = primer_options.from_profile(m['profile'],need)
     population=population_ceiling.from_profile(m['profile'],need)
     need(e.get(population_ceiling.FIELD)==population,'POPULATION_CEILING_CHANGED')

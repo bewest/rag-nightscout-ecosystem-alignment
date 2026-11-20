@@ -17,6 +17,7 @@ import fixture_copy
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
 from auto_catalog import auto_catalog
 import point_results
+import populated_history as history
 from primer_progress import ProgressWindow
 cfg=fixture_config(Path(sys.argv[1]))
 d=Path(cfg['caseDirectory']); tool=Path(cfg['toolsDirectory'])
@@ -281,6 +282,17 @@ if not scheduler:assert read(Path(cfg['cacheAbsence']['path']))['verifiedAt']
 producer_policy=producer_startup.policy(intent['profile']['phases'].get('producerStartup'),e['workDeadlineSeconds'])
 selected_source=frozen.source(intent)
 nsuid=trustuid=None;events=[];uids=[];current='create-namespace'
+def attach(*args):
+    limits=cfg['nativeLimits']
+    native_scope = 'ns-' + rid + '-native.scope'
+    put('native-unit.json', {'unit': native_scope})
+    command(['systemd-run','--user','--scope','--quiet','--unit='+native_scope,
+             '-p','CPUQuota='+str(limits['millicpus']/10)+'%',
+             '-p','MemoryMax='+str(limits['memoryBytes']),'-p','MemorySwapMax=0',
+             '-p','RuntimeMaxSec='+str(max(1,int(work-time.time())-6)),
+             sys.executable,'-B',Path(__file__).with_name('attach.py'),str(Path(sys.argv[1]).resolve()),*args],
+            timeout=int(work-time.time())-3)
+
 def interrupted(signum, frame):raise RuntimeError('CONTROLLER_SIGNAL_'+str(signum))
 signal.signal(signal.SIGTERM,interrupted)
 put('deadlines.json',{'workUntil':dt.datetime.fromtimestamp(work,dt.timezone.utc).isoformat(),'cleanupUntil':dt.datetime.fromtimestamp(cleanup,dt.timezone.utc).isoformat()})
@@ -333,6 +345,12 @@ try:
     if intent['primerLocation']=='claim':
         wait_job('primer', waits['primerReadySeconds'])
     if reuse and reuse['mode']=='seed':
+        spec = intent['profile']['history']
+        provenance = {}
+        if spec != history.BASELINE:
+            step('populate clinical history');owned()
+            attach('--seed-history')
+            provenance = {'history': spec, 'historyLogicalSha256': read(live/'populated-history.json')['logicalSha256']}
         # A seed run ends here: stop every writer, snapshot the four claims, keep the Secrets.
         step('stop writers');owned()
         fixture_copy.quiesce(k,ns,rid,work)
@@ -340,20 +358,12 @@ try:
         put('fixture-capture.json',fixture_copy.capture(k,ns,rid,reuse,read(d/'stages/fixture-snapshots.json'),
             {'tenants':e['tenantCount'],'appImage':e['images']['app'],'postgresImage':e['images']['postgres'],
              'coreCommit':cfg['candidate']['coreCommit'],'deployCommit':cfg['candidate']['deployCommit'],
-             'alignmentCommit':cfg['alignmentCommit'],
+             'alignmentCommit':cfg['alignmentCommit'], **provenance,
              **fixture_copy.slices_record(read(d/'inventory.json'))},work))
         step('fixture captured')
         raise SystemExit(0)
     step('attach released runtime')
-    limits=cfg['nativeLimits']
-    native_scope = 'ns-' + rid + '-native.scope'
-    put('native-unit.json', {'unit': native_scope})
-    command(['systemd-run','--user','--scope','--quiet','--unit='+native_scope,
-             '-p','CPUQuota='+str(limits['millicpus']/10)+'%',
-             '-p','MemoryMax='+str(limits['memoryBytes']),'-p','MemorySwapMax=0',
-             '-p','RuntimeMaxSec='+str(max(1,int(work-time.time())-6)),
-             sys.executable,'-B',Path(__file__).with_name('attach.py'),str(Path(sys.argv[1]).resolve())],
-            timeout=int(work-time.time())-3)
+    attach()
 
 except Exception as exc:
     failure={'stage':current,'code':str(exc)[:500],'time':timestamp()}
