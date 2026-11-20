@@ -10,8 +10,27 @@ from producer_wire import ACK_BUDGET, WIRE_DIRECTORY, WIRE_NAME, load_wire, vali
 
 COLOCATED = 'colocated-v1'
 EXTERNAL = 'external-service-v1'
+WRITER = 'writer-driven'
 EXTERNAL_COMMAND = ['/usr/local/bin/pgstream','run','-c','/run/ns-stream/pgstream.yaml','--log-level','info']
 SOURCE_ACK_TIMEOUT_MS = 2000
+
+
+def options(args, *, include_default=False):
+    mode = getattr(args, 'input_transport', 'pgstream')
+    topology = getattr(args, 'pgstream_topology', None)
+    if mode == WRITER:
+        require(topology in (None, COLOCATED) and not getattr(args, 'pgstream_topology_explicit', False)
+                and getattr(args, 'pgstream_notifier_ack_timeout_ms', None) is None
+                and getattr(args, 'commissioning_slot_wal_mib', None) is None,
+                'M7_WRITER_CDC_OPTION_CONFLICT')
+        require(args.profile == 'pgstream-sample' and args.run_purpose == 'discovery'
+                and args.completion_contract == 'evaluator-work-v2' and getattr(args, 'static_workers', None) is not None,
+                'M7_WRITER_DISCOVERY_TOPOLOGY')
+        return {'inputTransport': WRITER}
+    require(mode == 'pgstream', 'M7_INPUT_TRANSPORT')
+    value = topology or COLOCATED
+    require(value in (COLOCATED, EXTERNAL), 'M7_PGSTREAM_TOPOLOGY_INVALID')
+    return {'pgstreamTopology': value} if include_default or value == EXTERNAL else {}
 
 
 def ack_selection(manifest):
@@ -81,6 +100,12 @@ def verify_ack_budget(directory, manifest, mounts):
 
 
 def selection(manifest):
+    mode = manifest.get('inputTransport', 'pgstream')
+    require(mode in ('pgstream', WRITER), 'M7_INPUT_TRANSPORT')
+    if mode == WRITER:
+        require('pgstreamTopology' not in manifest and ACK_BUDGET not in manifest
+                and 'commissioningSlotWalMiB' not in manifest, 'M7_WRITER_CDC_OPTION_CONFLICT')
+        return WRITER
     value=manifest.get('pgstreamTopology',COLOCATED)
     require(value in (COLOCATED,EXTERNAL),'M7_PGSTREAM_TOPOLOGY_INVALID')
     return value
@@ -88,12 +113,29 @@ def selection(manifest):
 
 def verify_config(manifest,config):
     selected=selection(manifest);service=config.get('services',{}).get('pgstream')
-    if selected==EXTERNAL:
+    if selected == WRITER:
+        require(service is None and config['services'].get('bootstrap', {}).get('environment', {}).get('NS_INPUT_TRANSPORT') == WRITER,
+                'M7_WRITER_BINDING_TRANSPORT')
+    elif selected==EXTERNAL:
         require(manifest.get('profile')=='pgstream-sample' and service is not None and service.get('command')==EXTERNAL_COMMAND,'M7_PGSTREAM_EXTERNAL_SERVICE_REQUIRED')
         require(config['services'].get('evaluator',{}).get('command',[])[-1:]==['evaluator'],'M7_PGSTREAM_EVALUATOR_REQUIRED')
     else:
         require(service is None,'M7_PGSTREAM_TOPOLOGY_SELECTION_REQUIRED')
     return selected
+
+
+def require_snapshot(directory, manifest):
+    # The snapshot carries the original deploy .env alongside the archived state.
+    # Refuse before fixture.js creates or restores any project volumes.
+    path = Path(directory) / 'deployment.env'
+    values = dict(line.split('=', 1) for line in path.read_text().splitlines() if '=' in line)
+    require(values.get('NS_INPUT_TRANSPORT','pgstream') == manifest.get('inputTransport','pgstream'),
+            'M7_FIXTURE_INPUT_TRANSPORT_CHANGED')
+    if selection(manifest) == WRITER:
+        workers = str(manifest['staticTopology']['workers'])
+        require(values.get('NS_API_REPLICAS','1') == str(manifest['replicas'])
+                and values.get('NS_REALTIME_WORKERS','1') == workers
+                and values.get('NS_EVALUATOR_WORKERS','1') == workers, 'M7_FIXTURE_TOPOLOGY_CHANGED')
 
 
 def expected_processes(manifest):
@@ -102,15 +144,20 @@ def expected_processes(manifest):
         require(isinstance(instances,dict) and instances,'M7_INSTANCE_FROZEN_ROSTER_CHANGED')
         result={service:('node',) for service in instances}
         if selection(manifest)==EXTERNAL:result['pgstream']=('pgstream',)
-        else:
+        elif selection(manifest)==COLOCATED:
             for service,item in instances.items():
                 if item['role']=='evaluator':result[service]=('node','pgstream')
         return result
+    if selection(manifest)==WRITER:return {'evaluator':('node',)}
     if selection(manifest)==EXTERNAL:return {'evaluator':('node',),'pgstream':('pgstream',)}
     return {'evaluator':('node','pgstream')}
 
 
 def readable_processes(snapshots,manifest):
+    if selection(manifest) == WRITER:
+        require(not any(p.get('component',p.get('name')) == 'pgstream'
+                        for snapshot in snapshots.values() for p in snapshot.get('hostProcesses',{}).values()),
+                'M7_WRITER_UNEXPECTED_PGSTREAM')
     for role,names in expected_processes(manifest).items():
         values=snapshots.get(role,{}).get('hostProcesses',{}).values()
         require(all(any(p.get('component',p.get('name'))==name and not p.get('unavailable') for p in values) for name in names),'M7_SAMPLE_PROCESS_INSTRUMENT')
@@ -143,6 +190,10 @@ def verify_source(manifest,schema):
 
 
 def external_runtime(rows,manifest):
+    if selection(manifest)==WRITER:
+        require(not any(r.get('Config',{}).get('Labels',{}).get('com.docker.compose.service')=='pgstream'
+                        for r in rows), 'M7_WRITER_UNEXPECTED_PGSTREAM')
+        return
     if selection(manifest)!=EXTERNAL:return
     selected=[r for r in rows if r.get('Config',{}).get('Labels',{}).get('com.docker.compose.service')=='pgstream']
     require(len(selected)==1,'M7_PGSTREAM_RUNTIME_ROSTER')

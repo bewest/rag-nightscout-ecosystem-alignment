@@ -547,7 +547,7 @@ def attach(args):
     require(not target.exists() and source.is_dir() and state.is_dir(),'M7_ATTACH_PATH')
     require(git(source,'rev-parse','HEAD')==pair['core'],'M7_OWN_CORE_HEAD_CHANGED')
     m={'version':1,'directory':str(target),'owner':uuid.uuid4().hex,'project':args.project,'pair':pair,'instrument':pinned,'image':args.image,'imageId':args.image_id or args.image,'profile':'pgstream-sample','runPurpose':'discovery','measurementMode':'accepted','cadence':cadence_options(args),'tenants':args.tenants,'replicas':args.replicas,'freeze':str(Path(args.freeze).resolve()),'diagnostics':profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000)),'coreRepository':str(Path(args.core_repo).resolve()),'attached':True,'completionContract':getattr(args,'completion_contract',None),'jwtSetupConcurrency':jwt_setup_concurrency(getattr(args,'jwt_setup_concurrency',1), args.run_purpose=='discovery')}
-    if getattr(args,'pgstream_topology',stream_topology.COLOCATED)!=stream_topology.COLOCATED:m['pgstreamTopology']=args.pgstream_topology
+    m.update(stream_topology.options(args))
     m.update(static_selection)
     require(re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,62}',args.project) and workload_inputs.tenants(args.tenants) and (args.replicas==1 or static_selection),'M7_ATTACH_SCOPE')
     # Current receipts bind semantic configuration before attachment admission.
@@ -565,7 +565,7 @@ def attach(args):
         runtime_directory=Path(runtime.get('directory','')).resolve()
         require(owner_path==runtime_directory/'owner.json' and runtime.get('prepared') is True
                 and runtime.get('project')==m['project'] and runtime.get('pair')==m['pair']
-                and runtime.get('imageId')==m['imageId'], 'M7_ATTACH_RUNTIME_OWNER_MISMATCH')
+                and runtime.get('imageId')==m['imageId'] and stream_topology.selection(runtime)==stream_topology.selection(m), 'M7_ATTACH_RUNTIME_OWNER_MISMATCH')
         if bound_primer or 'primerMaxTenants' in runtime or primer_options.requires_extended(primer_options.from_manifest(runtime)):
             require(runtime.get('primerConcurrency',1)==m['primerConcurrency'] and
                     runtime.get('primerMaxTenants')==m.get('primerMaxTenants'),'M7_PRIMER_OPTIONS_RUNTIME_CHANGED')
@@ -665,14 +665,22 @@ def discovery_source_preflight(d,m):
     with private_commands(d/'source-contract-checks'/uuid.uuid4().hex):
         with command_deadline(min(time.time()+120,_COMMAND_DEADLINE.get() or float('inf'))):
             if (d/'core/lib/server/serve/deployment-settings.js').is_file():
-                return {'source':'rendered-compose', 'services':service_roster(document(d/'frozen.compose.json'))}
+                config = document(d/'frozen.compose.json')
+                result = {'source':'rendered-compose', 'services':service_roster(config)}
+                if stream_topology.selection(m) == stream_topology.WRITER:
+                    static_topology.verify_config(m, config)
+                    result.update(inputTransport=stream_topology.WRITER, apiReplicas=m['replicas'],
+                                  evaluatorSlices=m['staticTopology']['workers'], realtimeSlices=m['staticTopology']['workers'])
+                return result
+            require(stream_topology.selection(m) != stream_topology.WRITER, 'M7_WRITER_ROLE_SETTINGS_REQUIRED')
             return discovery_source_contract(d,m,core_repo,deploy_repo)
 
 
 def preparation_environment(m):
     # Static overlays pin seed counts during prepare, before .env is appended.
     return {'NS_API_REPLICAS': str(m['replicas']), 'NS_DEMO_TENANTS': str(m['tenants']),
-            **static_topology.environment(m)}
+            **static_topology.environment(m),
+            **({'NS_INPUT_TRANSPORT':stream_topology.WRITER} if stream_topology.selection(m) == stream_topology.WRITER else {})}
 
 
 def discovery_source_contract(d,m,core_repo,deploy_repo):
@@ -754,7 +762,7 @@ def prepare(args):
     if getattr(args,'measurement_mode','accepted')=='unaccepted' or (args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery'):
         candidate={'profile':args.profile,'tenants':args.tenants,'replicas':args.replicas,'pair':{'core':args.core_commit,'deploy':args.deploy_commit},'instrument':pinned,
                    'cadence':cadence_options(args),'runPurpose':getattr(args,'run_purpose','acceptance'),'measurementMode':args.measurement_mode,'runId':getattr(args,'run_id',None),'imageId':getattr(args,'image_id',None) or args.image,'maximumRunMinutes':getattr(args,'maximum_run_minutes',180),
-                   'diagnostics':profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000)),**static_selection,**({'pgstreamTopology':args.pgstream_topology,'completionContract':args.completion_contract} if static_selection else {}),
+                   'diagnostics':profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000)),**static_selection,**stream_topology.options(args),**({'completionContract':args.completion_contract} if static_selection else {}),
                    'primerConcurrency':options['concurrency'],**({'primerMaxTenants':options['maxTenants']} if 'maxTenants' in options else {})}
         candidate.update(commissioning_wal.option(args))
         candidate.update(ack_budget)
@@ -793,7 +801,7 @@ def prepare_staged(args,target,pinned):
     m.update(static_topology.option(args))
     if getattr(args,'namespace_preflight',None):m['namespacePreflight']=args.namespace_preflight
     if getattr(args,'dependency_qualification',None) is not None:m['dependencyReuse']=args.dependency_qualification
-    if getattr(args,'pgstream_topology',stream_topology.COLOCATED)!=stream_topology.COLOCATED:m['pgstreamTopology']=args.pgstream_topology
+    m.update(stream_topology.options(args))
     options=prepare_primer_options(args)
     m["primerConcurrency"]=options['concurrency']
     if 'maxTenants' in options:m['primerMaxTenants']=options['maxTenants']
@@ -828,11 +836,13 @@ def prepare_staged(args,target,pinned):
     # Binding preparation imports source modules (including js-yaml). Install
     # the owned lockfile context before invoking it, not after bootstrap.
     setup_generator(target,m)
-    env = runtime_env({**preparation_environment(m),**({"NS_PGSTREAM":"1","NS_POSTGRES_IMAGE":args.postgres_image} if args.profile=="pgstream-sample" else {})})
+    env = runtime_env({**preparation_environment(m),**({"NS_POSTGRES_IMAGE":args.postgres_image} if args.profile=="pgstream-sample" else {}),
+                       **({"NS_PGSTREAM":"1"} if args.profile=="pgstream-sample" and stream_topology.selection(m) != stream_topology.WRITER else {})})
     networks=["--backend-subnet",args.backend_subnet,"--edge-subnet",args.edge_subnet] if getattr(args,"backend_subnet",None) else []
     destination = ["--state", target / "state", "--port", str(m["port"]), "--project", m["project"], *networks]
     snapshot = getattr(args, 'fixture_snapshot', None)
     if snapshot:
+        stream_topology.require_snapshot(snapshot, m)
         unused_project_namespace(m['project'])
         restored = json.loads(command(['node', overlay/'fixture.js', 'restore', Path(snapshot).resolve(), *destination],
                                       cwd=overlay, env={**env, 'NS_DEMO_IMAGE': args.image}, phase='fixture-restore'))
@@ -905,7 +915,12 @@ def prepare_staged(args,target,pinned):
     m["probe"] = generate(ROOT, target / "probe.js")
     m["workload"] = generate_workload(ROOT, target / "k6/workload.js")
     write(target / "owner.json", m)
-    print(json.dumps({"prepared": m["project"], "pair": m["pair"], "tenants": args.tenants, "replicas": args.replicas}))
+    result = {"prepared": m["project"], "pair": m["pair"], "tenants": args.tenants, "replicas": args.replicas}
+    if stream_topology.selection(m) == stream_topology.WRITER:
+        result.update(inputTransport=stream_topology.WRITER, evaluatorSlices=m['staticTopology']['workers'],
+                      realtimeSlices=m['staticTopology']['workers'], imageId=m['imageId'],
+                      fixture=m.get('fixtureRestore', 'fresh'))
+    print(json.dumps(result))
 
 
 def verify_source(d, m):
@@ -1398,7 +1413,7 @@ def deploy(d, m):
             waiter = None
             if name in ('provision', 'prime'):
                 waiter = ComposePrimerWait(d/'state/primer', name, startup['stageSeconds'], stage)
-                if name == 'prime' and verified_serving(config) and m.get('profile') == 'pgstream-sample':
+                if name == 'prime' and verified_serving(config) and m.get('profile') == 'pgstream-sample' and stream_topology.selection(m) != stream_topology.WRITER:
                     waiter.sample = commissioning_wal.sampler(
                         lambda query: psql(d, query, application_database(d), timeout=ProgressWindow.read_seconds(3)), stage)
             elif '--wait-timeout' in args:
@@ -1436,6 +1451,8 @@ def deploy(d, m):
                     m['pgstreamNotifierAckWire']=ack_wire
                     write(d/'producer-ack-budget.json',ack_wire)
                 if native_bootstrap(config):
+                    if stream_topology.selection(m) == stream_topology.WRITER:
+                        write(d/'writer-seed.json', static_topology.writer_seed(d, config, m['servingInstances']))
                     psql(d,"CREATE EXTENSION IF NOT EXISTS pg_stat_statements;")
                 elif m.get('staticTopology'):
                     static_runtime_contract(d,m)
@@ -2024,9 +2041,12 @@ def sample_context(d,m):
         for role in ('evaluator', 'realtime'):
             name=next((name for name,item in m.get('servingInstances',{}).items() if item['role']==role),role)
             roles[role]=json.loads(compose(d,'exec','-T','--workdir','/opt/app',name,'node','-',role,input=script))
+        require(roles['evaluator'].get('inputTransport','pgstream') == m.get('inputTransport','pgstream'),
+                'M7_INPUT_TRANSPORT_CHANGED')
         selected=commissioning_context.completion(roles['evaluator'],roles['realtime'],m['pair'],m['imageId'],m['instrument']['sha256'])
         logins=commissioning_context.sql_logins(roles['evaluator'],roles['realtime'])
-        write(d/'image-dependency-contexts.json',{'source':'serving-role-environment','roles':list(roles)})
+        write(d/'image-dependency-contexts.json',{'source':'serving-role-environment','roles':list(roles),
+              **({'inputTransport':stream_topology.WRITER} if stream_topology.selection(m) == stream_topology.WRITER else {})})
         write(d/'completion-source.json',selected)
         write(d/'sql-identities.json',logins)
         return selected,logins
@@ -2083,7 +2103,7 @@ def sample_preflight(d,m,k6_id,oneoff=None):
     with private_commands(attempt/'commands'):
         try:
             status['collectorFiles']=collection_segments.preflight(d,m)
-            if m.get('pgstreamTopology')==stream_topology.EXTERNAL:
+            if stream_topology.selection(m) in (stream_topology.EXTERNAL, stream_topology.WRITER):
                 stream_topology.verify_config(m,document(d/'frozen.compose.json'))
                 stream_topology.external_runtime(diagnostic_resource_rows(m),m)
             if m.get('staticTopology'):
@@ -2322,13 +2342,20 @@ def _down(d, m):
     (d / "load" / "k6-tenants.private.json").unlink(missing_ok=True)
 
 
+class PgstreamTopology(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, values)
+        namespace.pgstream_topology_explicit = True
+
+
 def parser():
     p = argparse.ArgumentParser(description=__doc__)
     sub = p.add_subparsers(dest="command", required=True)
     prep = sub.add_parser("prepare")
     for name in ("directory", "core-repo", "core-commit", "deploy-repo", "deploy-commit", "image"):prep.add_argument("--"+name, required=True)
     prep.add_argument('--static-workers',type=int,choices=range(1,DISCOVERY_MAX_WORKERS+1),help='Explicit selected static evaluator/realtime process count for bounded branch diagnostics')
-    prep.add_argument('--pgstream-topology',choices=(stream_topology.COLOCATED,stream_topology.EXTERNAL),default=stream_topology.COLOCATED)
+    prep.add_argument('--pgstream-topology',choices=(stream_topology.COLOCATED,stream_topology.EXTERNAL),default=stream_topology.COLOCATED,action=PgstreamTopology,help='CDC process layout; defaults to colocated-v1')
+    prep.add_argument('--input-transport',choices=('pgstream',stream_topology.WRITER),default='pgstream')
     prep.add_argument('--api-cause-observation',choices=('off','on'),default='off',help='Source-pinned private setup-diagnostic observer; file-I/O overhead is separate')
     prep.add_argument('--completion-contract',choices=('evaluator-work-v1','evaluator-work-v2'),help='Explicit source-bound pgstream completion reader; mandatory at sample preflight')
     prep.add_argument('--opportunity-observation', type=json.loads, help='Legacy option accepted for compatibility')
