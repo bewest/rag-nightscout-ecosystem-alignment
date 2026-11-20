@@ -160,6 +160,24 @@ class TierWorkflow(unittest.TestCase):
                 good['signals'][statements_key]['value'] = 3
                 tier_smoke.assess(root, path)
 
+    def test_smoke_clinical_uses_runner_selected_clinical_when_probe_reports_timings_only(self):
+        with tempfile.TemporaryDirectory() as area:
+            root = Path(area)
+            projected = {'oracles': {'stored': 'GREEN', 'clinical': 'UNMEASURED', 'ownership': 'PASS',
+                                     'clientFrames': 'PASS'}, 'signals': {}}
+            for selected, verdict in (('PASS', 'PASS'), ('FAIL', 'FAIL'), (None, 'FAIL')):
+                observations = {'selectedClinical': {'verdict': selected}} if selected else {}
+                with patch.object(tier_smoke, 'project', return_value=projected), \
+                        patch.object(runner, 'partial', return_value={'observations': observations}):
+                    if verdict == 'PASS':
+                        tier_smoke.assess(root)
+                    else:
+                        with self.assertRaisesRegex(RuntimeError, 'SMOKE_WITNESS_OR_STATEMENT_COUNT'):
+                            tier_smoke.assess(root)
+                report = adapter.document(root / 'smoke.json')
+                self.assertEqual(report['verdict'], verdict)
+                self.assertEqual(report['oracles']['clinical'], selected or 'UNMEASURED')
+
     def test_shared_workload_accepts_fractional_rate_and_sparse_slow_probe(self):
         value = config()
         value['prepare'].update({'offered-rps': 2.5, 'probe-every-ms': 600000,
