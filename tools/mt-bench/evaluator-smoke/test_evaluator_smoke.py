@@ -2,6 +2,7 @@ import json
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -123,6 +124,35 @@ class MainThread(unittest.TestCase):
             p.write_text(p.read_text() + (Path(d) / 'b.jsonl').read_text())
             r = main_thread.reduce(p, (int(1.5e9), int(61.5e9)), 100)
         self.assertEqual(r['reason'], 'CONTAINER_CHANGED_IN_WINDOW')
+
+    def test_two_slices_require_both_windows_and_sum_fleet_cost(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d) / 'run'
+            paths = main_thread.sample_paths(root, 2)
+            window = (int(1.5e9), int(61.5e9))
+            ticks(paths['evaluator'])
+            partial = main_thread.reduce_services(root, 2, window, 100)
+            self.assertEqual(partial['status'], 'UNMEASURED')
+            self.assertEqual(partial['byService']['evaluator']['status'], 'MEASURED')
+            ticks(paths['evaluator-2'], cid='c2', main_per_s=25)
+            result = main_thread.reduce_services(root, 2, window, 100)
+            self.assertEqual(result['mainThreadMsPerWrite'], 450)
+            self.assertEqual(result['mainThreadBusyShare'], .375)
+
+
+class SmokeConfiguration(unittest.TestCase):
+    def test_transport_defaults_and_worker_override(self):
+        args = ('core', 'deploy', '/core', '/deploy', 'project', smoke.WORKLOAD)
+        with patch.object(smoke, 'free_subnets', return_value=('backend', 'edge')):
+            classic = smoke.config(*args)['prepare']
+            writer = smoke.config(*args, transport='writer-driven')['prepare']
+            one = smoke.config(*args, transport='writer-driven', workers=1)['prepare']
+        self.assertEqual((classic['pgstream-topology'], classic['replicas'], classic['static-workers']), ('external-service-v1', 1, 1))
+        self.assertNotIn('input-transport', classic)
+        self.assertEqual((writer['input-transport'], writer['replicas'], writer['static-workers']), ('writer-driven', 2, 2))
+        self.assertNotIn('pgstream-topology', writer)
+        self.assertEqual((one['replicas'], one['static-workers']), (2, 1))
+
 
 
 class Compare(unittest.TestCase):
