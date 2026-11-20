@@ -270,14 +270,6 @@ acceptance remains separate and failed correctness remains failed.
 | `jwt-setup-concurrency` | Discovery JWT setup accepts a positive JavaScript safe integer and batches at most the remaining roster. |
 | `diagnostic-resource-profile`, `diagnostic-resource-allocation` | Retired 2026-11-19: Compose services run uncapped. Native Kubernetes binds requests in its own fixture. |
 
-The [legacy remote protocol](../remote-pgstream/protocol.py) still uses a
-three-hour combined warmup, idle and load ceiling, a one-hour probe interval
-ceiling and 1–60 seconds for the sampler. Its workload accepts 1–8 sockets per
-tenant, 0–80,000 total viewers, acceleration and hot weight up to 10,800, primer
-concurrency 1–32 and JWT setup concurrency 1–64. The external static binding
-accepts one API and one evaluator/realtime worker. The projection checks these
-limits before launch.
-
 Fresh Compose discovery binds an explicit primer maximum or concurrency above
 32 into a version-2 run receipt. Source preflight checks the pinned deployment
 and image for the extended range. Legacy source refuses an unsupported value
