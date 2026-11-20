@@ -56,11 +56,12 @@ def statements(path):
 def assess(before,after,roles):
     legacy=set(roles)=={'pgstream','adapter'}
     shared=set(roles)=={'pgstream','adapter','shared'}
-    require(legacy or shared,'M7_SQL_SHARED_IDENTITY')
+    writer=set(roles)=={'adapter'}
+    require(legacy or shared or writer,'M7_SQL_SHARED_IDENTITY')
     require(all(isinstance(values,list) and all(isinstance(role,str) and role for role in values) and len(values)==len(set(values)) for values in roles.values()),'M7_SQL_SHARED_IDENTITY')
     flattened=[role for values in roles.values() for role in values]
     require(len(flattened)==len(set(flattened)) and roles['adapter'],'M7_SQL_SHARED_IDENTITY')
-    require(bool(roles['pgstream']) if legacy else roles['pgstream']==[] and len(roles['shared'])==1,'M7_SQL_SHARED_IDENTITY')
+    require(writer or (bool(roles['pgstream']) if legacy else roles['pgstream']==[] and len(roles['shared'])==1),'M7_SQL_SHARED_IDENTITY')
     totals={kind:{'calls':0,'executionMs':0.0} for kind in roles}
     raw={}
     for key,value in after.items():
@@ -75,6 +76,10 @@ def assess(before,after,roles):
     require(all(key in after for key in before),'M7_SQL_STATEMENT_EVICTED')
     # A genuinely quiet configured role may have zero SQL; the runner separately
     # checks role existence. No role means unavailable attribution, not zero actor work.
+    if writer:
+        return {'status':'MEASURED','roles':roles,'totals':totals,'roleTotals':raw,
+                'unattributedRoles':sorted(set(raw)-set(flattened)),
+                'scope':'Writer-driven evaluator and realtime SQL logins; other role totals retained separately.'}
     if legacy:
         return {'status':'MEASURED','roles':roles,'totals':totals,'scope':'pg_stat_statements execution work, not PostgreSQL CPU; full private statements retained'}
     totals['pgstream']={'status':'UNMEASURED','code':'M7_SQL_NO_EXCLUSIVE_IDENTITY','calls':None,'executionMs':None}

@@ -15,8 +15,12 @@ def completion(evaluator, realtime, pair, image, instrument):
 
 
 def sql_logins(evaluator, realtime):
-    stream = evaluator['streamRole']
     roles = set(evaluator['sqlRoles']) | set(realtime['sqlRoles'])
+    if evaluator.get('inputTransport') == 'writer-driven':
+        if not roles:
+            raise ValueError('M7_ADAPTER_SQL_IDENTITY')
+        return {'adapter': sorted(roles)}
+    stream = evaluator['streamRole']
     if stream not in evaluator['sqlRoles'] or stream in realtime['sqlRoles'] or len(roles) < 2:
         raise ValueError('M7_SQL_RECOVERY_IDENTITY')
     return {'pgstream':[], 'shared':[stream], 'adapter':sorted(roles - {stream})}

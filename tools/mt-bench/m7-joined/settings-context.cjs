@@ -15,6 +15,11 @@ function projection(root, role, environment) {
   if (role === 'realtime') return { completedOutput: config.completedOutput, sqlRoles };
   if (role !== 'evaluator') throw new Error('M7_COMPLETION_ROLE');
   const { clock, checkpoint, entries } = config.postgres.namespaces;
+  if (environment.NS_INPUT_TRANSPORT === 'writer-driven') {
+    const { devicestatus, treatments } = config.postgres.namespaces;
+    return { inputTransport: 'writer-driven', postgres: { namespaces: { clock, checkpoint, entries, devicestatus, treatments } },
+      trustedWorker: { activity: config.trustedWorker.activity }, consumer: config.consumer, sqlRoles };
+  }
   const { generation, slot, streamRole, recovery } = config.pgstream;
   const selection = settings.nativeSelection(settings.layout(values));
   return { postgres: { namespaces: { clock, checkpoint, entries } },
