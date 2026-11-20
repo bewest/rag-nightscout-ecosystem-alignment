@@ -59,6 +59,9 @@ worth doing under any of the others.
 | **F. Debezium plus broker** | Debezium (per-row events, optional transaction markers) into Kafka/Redpanda partitions or NATS JetStream partitioned subjects keyed by tenant; evaluators consume their partitions. A thin router (nginx with the tenant in a header) is an alternative to a broker but keeps the coupling. | **Yes**, with a broker. | JVM connector plus a stateful broker for every operator; transaction reassembly | Idea |
 | **G. Per-evaluator publications** | PostgreSQL publications with row filters on a tenant bucket column, one logical consumer per evaluator ([private-stream-router](multitenancy-decisions.md#private-stream-router) item 7). | **Yes.** One slot per slice. | bucket column; a pgoutput consumer; K slots and WAL senders | Research candidate |
 | **H. Full filter** | Every evaluator receives every row and drops what it does not own. | No | none | Comparison arm |
+| **I. Batched completion** | Completions for several tenants in one statement (`UPDATE … FROM unnest(…)`) instead of one transaction per tenant on the serialised owner connection. Under backlog, PostgreSQL cost per write then falls as load rises. | n/a | none | Proposed 2026-11-20 |
+| **J. Time-only cycles without a full pass** | Time-derived display fields (timeago and similar) are computed at read or render time. Server timers remain only for time-driven alarms, and they run the alarm predicate, not the full plugin pass. A cycle whose output is unchanged writes nothing. Today a tenant with a "slow" reason gets a full pass every 60 s (`evaluator-due.js:85-149`, read-derived), so this cost grows with tenant count, not write rate. | n/a | none | Proposed 2026-11-20 |
+| **K. Writer-driven notification, no CDC** | The writing role marks the tenant pending in the write transaction. After commit it sends a hint to the owning evaluator and realtime (`slice.js` over ordinal DNS). A sweep over pending rows only, through a partial index, covers lost hints and restarts. The evaluator reads changed rows since its checkpoint into a resident working set. The write's own result may serve as the payload when it is contiguous with the resident state. It rests on [no direct writers](multitenancy-decisions.md); it reopens [event-driven-reset](multitenancy-decisions.md#event-driven-reset). | **Yes.** There is no slot. | pending marker (exists), hint client, sweep; retires pgstream, the patch, the slot, the receipt transaction and the journal in the checkpoint row (to be confirmed) | Design lanes running 2026-11-20 |
 
 **Open question for D, E and F.** "Inbox" is a good name for the durable pending state that
 receipt and evaluation share. Whether that state stays in PostgreSQL (D) or moves into a broker (F)
@@ -214,6 +217,19 @@ identifier `evaluator-profile-20261119`).**
   help until delivery is parallel or pipelined: per-slice delivery (D, E, F or G), or more pgstream
   workers with ordering kept per tenant. A remains worthwhile because it lowers the per-write
   PostgreSQL cost that K=2 raised (2.1 → 3.0 cores at 90 req/s).
+
+**2026-11-20, direction for the next round (read-derived, from the measurements above).**
+- **What binds after K=2 is delivery, not PostgreSQL.** At 120 req/s PostgreSQL used 3.2–3.3 of 16
+  cores. The statement count does not create a serial queue. It lengthens each turn through the
+  three serial points: the main thread, stop-and-wait delivery and the owner connection.
+- **A, I and J pay off under any topology** and come first. A is in progress against a statement
+  budget of ≤ 40 per accepted write, with a smoke that reports statements per write by phase.
+- **K decides whether the transport question exists at all.** It depends on two things:
+  - whether every writer of stream-relevant tables can notify after commit;
+  - what realtime needs instead of the storage-event journal.
+
+  Both are being read. The cheapest deciding spike compares the evaluator's PostgreSQL statements
+  per write under pull-on-hint with today's receipt plus acquisition.
 
 **Next measurements:** per-batch pgstream delivery latency at 120 req/s with K=2; a progress
 instrument that reads K>1 on Kubernetes; the steady journal size per tenant; a profile on a
