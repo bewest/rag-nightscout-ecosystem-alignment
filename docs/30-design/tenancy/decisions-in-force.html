@@ -2585,6 +2585,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -3452,6 +3456,34 @@
   
   
     <li class="md-nav__item">
+      <a href="evaluator-scaling-options-2026-11-19.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluator scaling options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="execution-log.html" class="md-nav__link">
         
   
@@ -3768,6 +3800,34 @@
     
   
     WRITE-CONTRACT: the measured write matrix, and one write step behind the storage interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="writer-driven-refactor-ledger-2026-11-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Writer-driven transport: refactor and retirement ledger
   
 
     
@@ -5900,7 +5960,7 @@
 
 
 <h1 id="multitenant-decisions-in-force">Multitenant decisions in force<a class="headerlink" href="#multitenant-decisions-in-force" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-19 at <code>2e886c446</code>.</em></p>
+<p><em>Living document, last changed 2026-11-20 at <code>8d605cb85</code>.</em></p>
 <p><em>Generated-by-review index, dated 2026-11-18, of the 214 anchored rows in <a href="multitenancy-decisions.html">multitenancy-decisions.md</a> at alignment source commit <code>a0a8c3956d</code>; unanchored table rows are not indexed.</em>
 <em>Each row is classed as in force, superseded or unclear from its text, citing the later row behind the judgement; the classification is read-derived.</em>
 <em>Each row's text in multitenancy-decisions.md remains the authority. This page restates no detail: follow the link before acting on a row.</em></p>
@@ -5925,7 +5985,7 @@
 </ul>
 <h3 id="roles-listeners-and-horizontal-shape">Roles, listeners and horizontal shape<a class="headerlink" href="#roles-listeners-and-horizontal-shape" title="Permanent link">&para;</a></h3>
 <ul>
-<li><a href="multitenancy-decisions.html#statefulset-ordinal-scaling">statefulset-ordinal-scaling</a> — Evaluator and realtime are StatefulSets, slice = ordinal, K = replicas; api is a Deployment; cohort and participant manifest deleted.</li>
+<li><a href="multitenancy-decisions.html#statefulset-ordinal-scaling">statefulset-ordinal-scaling</a> — Evaluator and realtime are StatefulSets, ordinal from the hostname, K = replicas (one env value), one headless Service; api is a Deployment; cohort and participant manifest deleted. Evaluator K is bound at seed only under pgstream; writer-driven fixtures are K-free, one seed serves any K (amended 2026-11-20).</li>
 <li><a href="multitenancy-decisions.html#d5">d5</a> — One core; stateless <code>api</code>, change-driven <code>evaluator</code>, fan-out <code>realtime</code>, connector <code>vcpool</code>; <code>single</code> keeps its server.</li>
 <li><a href="multitenancy-decisions.html#d16">d16</a> — Separate data, owner and operator sockets, multiplexed by tenant, not duplicated per tenant.</li>
 <li><a href="multitenancy-decisions.html#d21">d21</a> — One executable: <code>single</code>, <code>multitenant &lt;role&gt;[,&lt;role&gt;…]</code> and operator tools.</li>
@@ -5943,7 +6003,6 @@
 <li><a href="multitenancy-decisions.html#cohort-pod-not-scaled">cohort-pod-not-scaled</a> — Never scale the all-roles monolith horizontally (narrowed by <a href="multitenancy-decisions.html#k1-per-role-deployments">k1-per-role-deployments</a>).</li>
 <li><a href="multitenancy-decisions.html#vcpool-egress-capacity">vcpool-egress-capacity</a> — Connector pools are sized against upstream quotas; core reports upstream refusals per member.</li>
 <li><a href="multitenancy-decisions.html#evaluator-scale-direction">evaluator-scale-direction</a> — Profile first, then K evaluator processes; no coalescing window (narrowed by <a href="multitenancy-decisions.html#static-hash-ownership">static-hash-ownership</a>: not urgent).</li>
-<li><a href="multitenancy-decisions.html#private-stream-router">private-stream-router</a> — <strong>Deferred</strong>: for K &gt; 1, preferred shape is a private body-reading router with stock pgstream.</li>
 </ul>
 <h3 id="platformapplication-boundary-startup-and-simplification">Platform/application boundary, startup and simplification<a class="headerlink" href="#platformapplication-boundary-startup-and-simplification" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5952,7 +6011,10 @@
 <li><a href="multitenancy-decisions.html#stream-source-identity-in-data">stream-source-identity-in-data</a> — No deployment pin of the database's stream identity; per-tenant stream state, existing recovery and the restart policy handle a replaced database.</li>
 <li><a href="multitenancy-decisions.html#predictable-fixes-then-test">predictable-fixes-then-test</a> — Predictable simplifications run affected tests only, no per-item break-it control; qualify the joined candidate once.</li>
 <li><a href="multitenancy-decisions.html#provisioning-secrets-in">provisioning-secrets-in</a> — Secrets flow into Jobs and roles, never out of a Pod; one apply converges.</li>
-<li><a href="multitenancy-decisions.html#metrics-endpoint-deferred">metrics-endpoint-deferred</a> — <strong>deferred</strong>: no <code>/metrics</code> work now; Prometheus when it makes a run easier.</li>
+<li><a href="multitenancy-decisions.html#prometheus-metrics-narrow">prometheus-metrics-narrow</a> — official Prometheus Node client (<code>@prometheus-io/client</code>), <code>/metrics</code> on an internal port, opt-in, multitenant roles only (not the classic server); no tenant-id labels; one Prometheus Pod plus <code>postgres_exporter</code> per lab run, TSDB snapshot retained; per-input events still decide verdicts; no OTel tracing now. Supersedes metrics-endpoint-deferred.</li>
+<li><a href="multitenancy-decisions.html#storage-events-single-tenant-parity">storage-events-single-tenant-parity</a> — <code>/storage</code> socket events fire for exactly the write paths a single site uses.</li>
+<li><a href="multitenancy-decisions.html#writer-driven-transport-direction">writer-driven-transport-direction</a> — <strong>Adopted 2026-11-21</strong>: the api is the only writer; post-commit hints to the owning evaluator and realtime; level-triggered recompute plus sweep; pgstream, its slot and the storage-event journal retire.</li>
+<li><a href="multitenancy-decisions.html#prerelease-schema-in-place">prerelease-schema-in-place</a> — No operator databases yet: multitenant schema and migrations change in place; two-step migrations start at the first operator release.</li>
 <li><a href="multitenancy-decisions.html#platform-application-boundary">platform-application-boundary</a> — Application assumes a verified platform and fails closed; it never re-verifies the platform while serving.</li>
 <li><a href="multitenancy-decisions.html#brittle-check-removal">brittle-check-removal</a> — Checks that refuse for anything other than a product property are removed; run identity is image digest plus run configuration.</li>
 <li><a href="multitenancy-decisions.html#unclear-rows-resolved">unclear-rows-resolved</a> — The six Unclear questions resolved toward removal (desired count, writer census, revision wake, cost step A, idle witness, move readiness).</li>
@@ -5999,6 +6061,8 @@
 <li><a href="multitenancy-decisions.html#tenant-live-add">tenant-live-add</a> — Running evaluator and realtime pick up newly provisioned tenants without restart (separate lane).</li>
 <li><a href="multitenancy-decisions.html#registry-connector-definitions">registry-connector-definitions</a> — Connector definitions are durable tenant configuration; endpoint and credential values stay in tenant secrets.</li>
 <li><a href="multitenancy-decisions.html#operator-repair-scope">operator-repair-scope</a> — Use provision for creation, inspect for diagnosis and known-good backups for exceptional recovery. Factory reset preserves clinical data and credentials.</li>
+<li><a href="multitenancy-decisions.html#deployment-signing-secret">deployment-signing-secret</a> — Vault keeps only the per-tenant <code>data</code> key; tenant signing keys derive in process from one deployment secret (file via Vault Agent or Secret); no signing key in PostgreSQL; issuance never calls Vault; one Kubernetes Secret delivers the signing secret; the api <code>ns-access+jwt</code> data verifier, <code>verifyLegacyCredential</code> and the api <code>access</code> namespace retire (2026-11-20).</li>
+<li><a href="multitenancy-decisions.html#one-call-usable-provisioning">one-call-usable-provisioning</a> — One bulk admin call returns usable tenants (owner, subject, credential in the provisioning transaction); fixtures reused by key; sized for about half of runs seeding fresh (2026-11-20).</li>
 <li><a href="multitenancy-decisions.html#deployment-ingress-peer-list-trust">deployment-ingress-peer-list-trust</a> — One explicit peer list serves tenant selection and <code>TRUST_PROXY</code>; empty refuses startup.</li>
 <li><a href="multitenancy-decisions.html#edge-forwarded-headers-left">edge-forwarded-headers-left</a> — The edge keeps forwarding its headers; core's selector refusal is the control.</li>
 <li><a href="multitenancy-decisions.html#failed-login-delay-core">failed-login-delay-core</a> — Failed authentication delays the next request as on a single site, keyed on the real client address.</li>
@@ -6085,8 +6149,6 @@
 <h3 id="event-feed-evaluator-and-realtime">Event feed, evaluator and realtime<a class="headerlink" href="#event-feed-evaluator-and-realtime" title="Permanent link">&para;</a></h3>
 <ul>
 <li><a href="multitenancy-decisions.html#d6">d6</a> — Replication slot is the durable spine; clinical writes never depend on notifications (narrowed by <a href="multitenancy-decisions.html#event-driven-reset">event-driven-reset</a>).</li>
-<li><a href="multitenancy-decisions.html#event-driven-reset">event-driven-reset</a> — Stop tuning the polling architecture; maintained pgstream CDC drives evaluator and realtime.</li>
-<li><a href="multitenancy-decisions.html#pgstream-operating-constraints">pgstream-operating-constraints</a> — One evaluator receiver, no broker, narrow streaming role, strict mode; heartbeat machinery retires.</li>
 <li><a href="multitenancy-decisions.html#evaluator-platform-restart">evaluator-platform-restart</a> — pgstream restarts separately from the evaluator process.</li>
 <li><a href="multitenancy-decisions.html#stream-fed-clinical-materializer">stream-fed-clinical-materializer</a> — Committed clinical rows stream into the evaluator; snapshots only for bootstrap, recovery and gaps.</li>
 <li><a href="multitenancy-decisions.html#single-host-streaming-first">single-host-streaming-first</a> — Qualify a simple single-host baseline first (narrowed by <a href="multitenancy-decisions.html#cluster-fan-out-testing">cluster-fan-out-testing</a>).</li>
@@ -6153,6 +6215,21 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><a href="multitenancy-decisions.html#event-driven-reset">event-driven-reset</a></td>
+<td><a href="multitenancy-decisions.html#writer-driven-transport-direction">writer-driven-transport-direction</a></td>
+<td>stream-fed evaluator and realtime replaced by writer-driven hints (2026-11-21)</td>
+</tr>
+<tr>
+<td><a href="multitenancy-decisions.html#pgstream-operating-constraints">pgstream-operating-constraints</a></td>
+<td><a href="multitenancy-decisions.html#writer-driven-transport-direction">writer-driven-transport-direction</a></td>
+<td>pgstream retired (2026-11-21)</td>
+</tr>
+<tr>
+<td><a href="multitenancy-decisions.html#private-stream-router">private-stream-router</a></td>
+<td><a href="multitenancy-decisions.html#writer-driven-transport-direction">writer-driven-transport-direction</a></td>
+<td>no stream to route (2026-11-21)</td>
+</tr>
 <tr>
 <td><a href="multitenancy-decisions.html#clinical-deadline-from-warm">clinical-deadline-from-warm</a></td>
 <td><a href="multitenancy-decisions.html#deadline-from-acceptance">deadline-from-acceptance</a></td>

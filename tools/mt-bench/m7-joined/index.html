@@ -1892,6 +1892,64 @@
   
   
   
+    <a href="../evaluator-smoke/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    evaluator-smoke/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
     <a href="../external-generator/index.html" class="md-nav__link">
       
   
@@ -2019,7 +2077,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9_6" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -2041,14 +2099,14 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_8_9_5" id="__nav_8_9_5_label" tabindex="0">
+              <label class="md-nav__link md-nav__link--active" for="__nav_8_9_6" id="__nav_8_9_6_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_9_5_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_8_9_5">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_9_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8_9_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2421,64 +2479,6 @@
     
   
     postgrest-poc/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../remote-pgstream/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    remote-pgstream/
   
 
     
@@ -4086,7 +4086,7 @@
 
 
 <h1 id="joined-m7-capacity-adapter">Joined M7 capacity adapter<a class="headerlink" href="#joined-m7-capacity-adapter" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-19 at <code>a9d1721bd</code>.</em></p>
+<p><em>Living document, last changed 2026-11-20 at <code>c6082a7ed</code>.</em></p>
 <p>This prepares the <strong>next</strong> measurement; it does not establish a capacity result.
 The prior capacity record and authorization/allocation profiles retain their own
 source scope. No prior working-tree lib mount or bootstrap patch is reused here.
@@ -4125,19 +4125,17 @@ After source-driven deploy and preflight, pass the prepared cell directly as the
 REST attachment and its <code>state</code> directory as <code>--state</code>, with the same project and
 exact expected source/image. REST retains its own source allowlist and traffic
 authorization; selecting a fixture does not authorize a workload window.
-This selects <code>NS_PGSTREAM=1</code>, a 60-second sampler-disabled
+This selects writer-driven input (<code>NS_INPUT_TRANSPORT=writer-driven</code>), a 60-second sampler-disabled
 baseline, 120-second idle and 600-second ordinary load (<code>ACCEL=1</code>, <code>HOT_FACTOR=1</code>).
 A separate synthetic correctness uploader writes every 300 seconds. Its stored
 ID/glucose, durable completed versions/rows/frame and already-connected stock
 clients must agree. All workload writes also pass the independent count oracle
 and row-mutation control. No worker restart campaign runs in this sample. The selected startup and runtime
-roster omit the retired legacy feed-reader. The default colocated topology runs
-pgstream inside evaluator; explicit <code>external-service-v1</code> keeps a separate native
-producer service. Record the actual selected topology in comparisons.</p>
+roster omit the retired legacy feed-reader.</p>
 <p>Source helpers resolve only the cell-owned lockfile dependency tree; evaluator
 and realtime image processes independently check <code>/opt/app</code> pg resolution before
-load. Per-process CPU-counter bookends and RSS distinguish evaluator Node from its
-pgstream child; process replacement/missing data is UNMEASURED.
+load. Per-process CPU-counter bookends and RSS cover evaluator Node; process
+replacement/missing data is UNMEASURED.
 <code>sql-attribution.json</code> uses full private statement bookends for disjoint SQL-role
 buckets. A native recovery connection may use the configured pgstream role on
 the evaluator database. That role has a separate <code>shared</code> bucket, counted once;
@@ -4253,13 +4251,20 @@ Select a changed concurrency only when preparing a new coordinator-adopted run.<
 <p>The joined deployment starts admin and serving roles through Compose's completed bootstrap dependency.
 The lab client provisions through the private admin API and primes through DATA APIs. The harness reads
 its private <code>primer/tenants.json</code> and exchanges DATA tokens before starting k6.</p>
-<p>Set <code>prepare.fixture-snapshot</code> to the absolute path of a cold fixture produced by the deployment's
-<code>demo.sh snapshot</code> to restore its PostgreSQL, Vault, private settings and primer state into a fresh
-Compose project. The runner records the completed restore in <code>fixture-restore.json</code>. Select a fixture
-with the baseline tenant population you intend to exercise. Vary the workload or viewers in each run.</p>
+<p>Set <code>prepare.fixture</code> to <code>reuse</code> (and optionally <code>prepare.fixture-seed</code> to a seed name) to start from
+a cold fixture found by key (<code>fixture_catalog.py</code>: tenant count, seed name, core migrations tree,
+application and PostgreSQL image ids, input transport, populated history and, for a K-bound transport,
+<code>static-workers</code>). On a catalog hit the runner restores that copy of PostgreSQL, Vault, private
+settings and primer state into the fresh Compose project. On a miss it first builds the fixture in a
+sibling point <code>DIRECTORY-seed</code>: an ordinary deploy (bootstrap, roles, provision, prime) without
+traffic, <code>adapter.py fixture-capture</code> (stop the project, deployment <code>fixture.js snapshot</code> into the
+catalog directory), cleanup, register. <code>runner.py fixture-build CONFIG DIRECTORY</code> builds and
+registers ahead of time. The point records the lookup in <code>fixture-key.json</code> and the restore in
+<code>fixture-restore.json</code>. A hand-named <code>prepare.fixture-snapshot</code> is refused. Vary the workload or
+viewers in each run; a different population or image is a different key.</p>
 <h2 id="instrument">Instrument<a class="headerlink" href="#instrument" title="Permanent link">&para;</a></h2>
 <p>The run records the alignment commit and candidate image identities. Compose and Kubernetes execute
-the same <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/m7-joined/joined-probe.cjs">joined probe</a> with their respective SQL transports.
+the same <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18c537249a975b5eb07c33aef6e9089a67e9ef7e/tools/mt-bench/m7-joined/joined-probe.cjs">joined probe</a> with their respective SQL transports.
 The existing <code>capacity/k6/workload.js</code> supplies seven client shapes: CGM
 entry and Loop devicestatus uploaders, AAPS-style v3 treatments, and follower
 entry/devicestatus/treatment/status reads. The generated workload records two explicit adaptations: current deterministic

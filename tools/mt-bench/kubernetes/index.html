@@ -1892,6 +1892,64 @@
   
   
   
+    <a href="../evaluator-smoke/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    evaluator-smoke/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
     <a href="../external-generator/index.html" class="md-nav__link">
       
   
@@ -1951,7 +2009,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9_5" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -1973,14 +2031,14 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_8_9_4" id="__nav_8_9_4_label" tabindex="0">
+              <label class="md-nav__link md-nav__link--active" for="__nav_8_9_5" id="__nav_8_9_5_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_9_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_8_9_4">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_9_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8_9_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2367,64 +2425,6 @@
     
   
     postgrest-poc/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../remote-pgstream/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    remote-pgstream/
   
 
     
@@ -3877,7 +3877,7 @@
 
 
 <h1 id="kubernetes-boundary-for-the-m7-synthetic-instrument">Kubernetes boundary for the M7 synthetic instrument<a class="headerlink" href="#kubernetes-boundary-for-the-m7-synthetic-instrument" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-19 at <code>ebe69c635</code>.</em></p>
+<p><em>Living document, last changed 2026-11-20 at <code>90614934e</code>.</em></p>
 <p>This adapter prepares and observes one independently owned Kubernetes fixture.
 It reuses the <a href="../m7-joined/RUNNER.html">existing M7 workload, stock client and oracles</a>.
 Preparation and offline controls start no services. An operator or explicitly
@@ -3905,17 +3905,7 @@ The input paths are absolute. Obtain the receipt digests from the releasing owne
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="s1">    profile:($p[0] | del(.referencePins) | .workload.setupSeconds=360 |</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="s1">             .workload.drainSeconds=180)}'</span><span class="w"> </span>&gt;<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_MANIFEST</span><span class="s2">"</span>
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>describe<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_MANIFEST</span><span class="s2">"</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>binding<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_MANIFEST</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$BINDING_REPO</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$IMAGE_DEPLOY_REPO</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_BINDING</span><span class="s2">"</span>
 </code></pre></div>
-<p>The binder exports the selected Git tree into a fresh directory, runs the
-original image constructor with its read-only filesystem and disabled network,
-and compares installed deployment bytes, role commands, SQL identities and
-native catalogue against the supported single-cohort binding. The generated
-<code>bindings/kubernetes/assets/source-contract.json</code> carries the measured producer,
-image, source and owner receipt. <code>binding.json</code> identifies every materialized
-file. A changed deployment protocol or catalogue requires a compatibility review.
-An unknown commit with compatible measured inputs follows the same path. The
-source receipt may carry a bounded diagnostic PENDING or joined source PASS.</p>
 <p>The execution owner renders the package with its private commissioning overlay.
 The accompanying private patch is supplied in the local release packet. Apply
 it to a clean copy of the indicated private base and install this release's
@@ -3929,8 +3919,7 @@ log. Put that Job in <code>stages/verification.json</code> when preparing the ca
 lifecycle waits for it before installing serving workloads and then launches the
 lab provisioning client. The attach phase reuses the captured proof and
 checks the native database source independently. The primer's private results
-live on its <code>/run/ns-client</code> volume. Set its size with the renderer's
-<code>primerStorage</code> input, such as <code>64Mi</code>.</p>
+live on its <code>/run/ns-client</code> volume.</p>
 <p>The primer verifies DATA credentials for the full <code>population.provisionedTenants</code>
 roster. Set <code>population.ordinaryRosterTenants</code> to the number of consecutive entries
 from the start of that roster that should receive ordinary k6 traffic. Select
@@ -3942,17 +3931,6 @@ tenants outside the ordinary subset. Storage checks require both k6 write counte
 for every selected tenant and query marker-tagged rows across the full database.
 An ordinary row on an unselected tenant fails the check. Probe writes on any
 provisioned tenant reconcile against the separate probe ledger.</p>
-<p>The optional <code>bootstrapHelper</code> manifest entry selects the reviewed deploy source
-commit and SHA-256 of <code>bootstrap.js</code>. The constructor verifies the original
-image file, extracts the corrected file from Git and installs it in an immutable
-ConfigMap. Only the provision Job's bootstrap init container mounts the file.
-The package labels the effective diagnostic instance PENDING and retains the
-base image's own source acceptance. For an early readback after foundation
-creation, run <code>adapter.py bootstrap-map PACKET NAMESPACE_UID</code> against the
-commissioner's recorded UID. Initial observation checks the same ConfigMap,
-Job, actual Pod and bootstrap container. When the read guard masks words in
-this public file, kubectl compares its known source, UID and resource version
-locally and emits a Boolean. A missing or changed readback stops the check.</p>
 <p>For a discovery fixture with an external producer, the optional manifest field
 <code>pgstreamNotifierAckTimeoutMs</code> selects a positive acknowledgment budget in
 milliseconds. The publisher projects the one field from the private bootstrap
@@ -3984,12 +3962,10 @@ roster and finite native tools, dependencies and limits as in the adapter guide.
 The runner derives pins and checks any previously supplied pins for equality.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>prepare<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_MANIFEST</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$INSTANCE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span><span class="w"> </span>--await-primer
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/adapter.py"</span><span class="w"> </span>observe<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/adapter.py"</span><span class="w"> </span>candidate-proof<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/adapter.py"</span><span class="w"> </span>policy<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/primer.py"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">/primer"</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1"># Start the authorized loopback forward before the access check.</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/adapter.py"</span><span class="w"> </span>access<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>run<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$RELEASED_ALLOCATION</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$ALLOCATION_SHA256</span><span class="s2">"</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/adapter.py"</span><span class="w"> </span>policy<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Start the authorized loopback forward before the access check.</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/adapter.py"</span><span class="w"> </span>access<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>run<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PACKET</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$RELEASED_ALLOCATION</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$ALLOCATION_SHA256</span><span class="s2">"</span>
 </code></pre></div>
 <p>With <code>--await-primer</code>, prepare the packet before DATA credentials exist. The
 primer runs the image's checked source module inside the original verified
@@ -4032,15 +4008,6 @@ in the same packet to resume. The lifecycle releases the namespace at cleanup.
 After privately saving the complete roster and its receipt, the primer command
 acknowledges export and the waiting container can exit. A previously
 source-projected roster still uses the original prepare command.</p>
-<p>For fresh discovery, <code>primerStorage</code> can select <code>stateMiB</code> and <code>secretCodec</code>
-in the experiment manifest. For example, <code>{"stateMiB":32,"secretCodec":"gzip-v1"}</code>
-selects a 32 MiB primer state volume and lossless transport of the primer
-configuration. <code>raw-v1</code> uses the source bytes directly. The materialized
-publisher checks the exact data size of every role Secret before publication.
-The primer installer checks the original config's byte count and SHA-256, then
-restores its private file. The actor verifies the mounted state volume and
-config digest before writing and records filesystem size and usage when
-available. The source retains its original atomic writes and uncertainty journal.</p>
 <p>The lifecycle starts the split binding's platform bootstrap while Vault can
 still be sealed. Once the private admin proof succeeds it starts all serving
 roles, including pgstream, before releasing the tenant provision and DATA
@@ -4157,14 +4124,6 @@ the environment owner must establish its image/source mapping.</p>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/check_export.py<span class="w"> </span>/absolute/binding-export<span class="w"> </span>/absolute/new/offline-join
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>prepare<span class="w"> </span>/absolute/private/run.json<span class="w"> </span>/absolute/private/inventory.json<span class="w"> </span>/absolute/private/render.json<span class="w"> </span>/absolute/new/run
 </code></pre></div>
-<p>For the C3 candidate, carry the exported inventory's <code>candidateContract</code> into
-<code>pins.candidate</code> and add the commissioned <code>postgresImage</code> and <code>postgresImageId</code>.
-The adapter checks the rendered source contract and the actual kubelet app and
-PostgreSQL image identities. After live <code>observe</code> and while the same primer
-container is still waiting, run <code>candidate-proof RUN</code>. This captures the private
-admin verification receipt from the owned Pod and compares its native PostgreSQL
-source against a read-only observation of the selected database and logical
-slot. Capture this before running <code>policy</code>, <code>access</code> or workload phases.</p>
 <p>An optional third <code>check_export.py</code> argument selects Lane E's immutable
 environment export directory. The join verifies its render/inventory hashes
 and the same binding archive/commit, then checks that exact storage/access
@@ -4429,7 +4388,7 @@ change refuses. Hard-map keys, pod counts, scopes and other fields remain exact;
 unknown dimensions and masked values have no inferred equality. Resource
 readback refusals retain only the safe resource kind/name beside the code.</p>
 <p>Use a <strong>new</strong> copy of the released commissioner source with
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/kubernetes/commissioning-accounting.patch"><code>commissioning-accounting.patch</code></a>. The patch
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18c537249a975b5eb07c33aef6e9089a67e9ef7e/tools/mt-bench/kubernetes/commissioning-accounting.patch"><code>commissioning-accounting.patch</code></a>. The patch
 header identifies the base source hash; retained instruments are unchanged. From
 the new staging directory containing <code>bin/preflight.py</code>, apply the patch with
 <code>git apply /absolute/helper/tools/mt-bench/kubernetes/commissioning-accounting.patch</code>.
@@ -4444,10 +4403,14 @@ upper bound on use, a quiet-worker reservation or capacity acceptance. Capture
 actual memory, throttling, OOM/restarts and contention during the run. Native
 driver/observer cgroups and owned deadlines/cleanup retain their separate bounds.
 Pod-level resource budgets need their own instrument extension and refuse explicitly.</p>
-<p>The shared-socket cohort stays at one Pod. Other multi-Pod workloads currently
-refuse <code>WORKLOAD_REPLICA_CENSUS_UNSUPPORTED</code>, because role selection and the
-observed Pod census need an explicit topology extension. This is distinct from
-the cohort's socket-sharing requirement.</p>
+<p>Every Deployment and StatefulSet is counted one Pod per replica: the census
+places and checks readiness of each Pod against <code>replicas</code>
+(<code>ROLE_POD_UNMEASURED</code> when one is missing), and the load step budgets each Pod
+on its own node. api replicas and realtime or evaluator K&gt;1 need no topology
+extension. Evaluator progress at K&gt;1 asks each ordinal only for the tenants it
+owns under <code>sha256-modulo-v1</code> (core <code>lib/pool-membership/slice.js</code>); the shares
+together must cover every tenant exactly once. K=1 reads and file names are
+unchanged.</p>
 <p>The explicit <code>applicationTopology: "separate-k1"</code> profile places API, evaluator,
 realtime and tenant-admin in their own one-replica Deployments. Common intents
 select it under <code>kubernetes.applicationTopology</code>; projection carries the same
@@ -4489,13 +4452,13 @@ new ordinary roster size, and hold <code>workload.logicalPollingClients</code> f
 the rate at fixed population, change that scale, or use
 <code>workload.driverPlan.writeRateScale</code> for writes alone. The describe command
 prints the seven offered rates for the selected point.</p>
-<p>Current P platform receipts select <code>platformVerification: "startup-v2"</code> in both
-the source contract and candidate inventory. Their role rows contain exactly
-<code>role</code> and <code>generation</code>, without an expiry lease. Legacy candidate contracts
-retain the expiry check. A topology selection alone does not change proof
-semantics. Offline profile controls do not qualify private HTTP transport,
-replacement or clinical/client behavior on a live cluster; those observations
-belong to the lane's frozen baseline and retained run evidence.</p>
+<p>On the simplified platform, the migration Job prepares PostgreSQL. API,
+evaluator and realtime check isolation on their own database connections.
+Kubernetes checks tenant-admin through its private readiness endpoint.
+For a fresh disposable fixture, the in-cluster primer provisions tenants and
+seeds DATA through the private Services. For archived candidates, the runner
+interprets the startup contract recorded in their receipts. See the
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#platform-verification-removal">platform verification decision</a>.</p>
 <p>Focused controls use real scratch Jsonnet renders and patched commissioner code:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nv">K8S_BINDING_SOURCE</span><span class="o">=</span>/absolute/deployment-repository<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nv">K8S_COMMISSIONING_SOURCE</span><span class="o">=</span>/absolute/released/staging/ops/staging-k8s/bin<span class="w"> </span><span class="se">\</span>
@@ -4519,7 +4482,7 @@ is gone.</p>
 <h2 id="outcome-evaluator-gate-on-kubernetes">Outcome evaluator gate on Kubernetes<a class="headerlink" href="#outcome-evaluator-gate-on-kubernetes" title="Permanent link">&para;</a></h2>
 <p>Decision <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#outcome-evaluator-gate">outcome-evaluator-gate</a>
 replaces the lifetime <code>failedCompletions == 0</code> rule and the instant midpoint
-readiness rule. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/m7-joined/outcome_gate.py">outcome_gate.py</a> is the one frozen gate; its
+readiness rule. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18c537249a975b5eb07c33aef6e9089a67e9ef7e/tools/mt-bench/m7-joined/outcome_gate.py">outcome_gate.py</a> is the one frozen gate; its
 identity is the SHA-256 of that file. Tenants, rate, windows, budgets and
 <code>deadlineMs</code> (default 120000) are configuration under the same identity.</p>
 <table>
@@ -4577,7 +4540,7 @@ not-ready owner at the midpoint continues. Raw responses are written before
 any decoder reads them (<code>progress-*.private.jsonl</code>; after an early load stop, <code>progress-stop.private.jsonl</code>, then <code>stored-counts.json</code>, recorded in <code>stop-evidence.json</code>). The runner publishes <code>load/outcome-gate.json</code> and a stage summary in <code>result.json</code> before returning a failure or missing measurement. It also reports HTTP latency over all k6 shard summaries, including the exact pooled count and mean, plus the quantile range across shards.
 The progress reader checks the evaluator's runtime identity, owner and foreign counters across captured rounds. It records the observed work delta, including zero for idle tenants. The workload outcome combines these checks with storage, sampled clinical results and per-input catch-up. A missing component leaves the load stage <code>UNMEASURED</code>.</p>
 <p><code>assessor.py &lt;load&gt;</code> re-reduces a retained run into a new file beside it and refuses if any original file changes. Set <code>outcomeGate.midpointStop</code> to <code>never</code> to record a hard midpoint signal and continue collecting evidence.</p>
-<p>The accepted-input observer starts before the probe and follows run-marked writes through drain. Its Kubernetes transport brackets each read-only SQL transaction with checks of the owned namespace and Pods. Each call honors the observer timeout and the entered work deadline. The observer reconciles its inputs against the workload and probe acceptance counts. Tenants with no accepted input owe no output. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed6a2923d37b33dd2f1413356c2cd1a7bb7656e5/tools/mt-bench/kubernetes/catchup.py">Kubernetes transport</a> · <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#deadline-from-acceptance">Deadline and drain decision</a></p>
+<p>The accepted-input observer starts before the probe and follows run-marked writes through drain. Its Kubernetes transport brackets each read-only SQL transaction with checks of the owned namespace and Pods. Each call honors the observer timeout and the entered work deadline. The observer reconciles its inputs against the workload and probe acceptance counts. Tenants with no accepted input owe no output. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18c537249a975b5eb07c33aef6e9089a67e9ef7e/tools/mt-bench/kubernetes/catchup.py">Kubernetes transport</a> · <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#deadline-from-acceptance">Deadline and drain decision</a></p>
 <h2 id="one-intent-for-compose-and-kubernetes">One intent for Compose and Kubernetes<a class="headerlink" href="#one-intent-for-compose-and-kubernetes" title="Permanent link">&para;</a></h2>
 <p><code>toolchain.py</code> projects a version 1 <code>multitenant-experiment</code> into the existing
 Compose runner or Kubernetes experiment contract. It starts no actor. Immutable
@@ -4638,9 +4601,7 @@ or change edge replicas, socket topology, source images or an entered run.</p>
 <p>The Compose projection emits the normal <code>config.json</code> and existing diagnostic
 receipt template. The execution owner binds its fresh receipt and uses the
 existing <code>runner.py</code>. Kubernetes emits <code>manifest.json</code> for <code>experiment.py</code>.
-Historical direct configurations remain supported. The C3 Kubernetes-only
-<code>bootstrapHelper</code> override refuses on Compose; select the local source owner's
-own compatible diagnostic image receipt there. A projection never substitutes
+Historical direct configurations remain supported. A projection never substitutes
 another source or changes PENDING to PASS.</p>
 <table>
 <thead>
@@ -4803,11 +4764,7 @@ Job backoff is zero, replacement waits for Failed, and test Pods have a finite
 termination grace. Runtime application Pod and container identities stay strict;
 only the exact declared test Job has a separate dynamic census.</p>
 <p>The accepted-input observer runs across probe and driver traffic. After both writers exit, the controller reconciles storage, checks remaining clinical work through drain, captures terminal progress and calls <code>assess_stage()</code>. <code>assess_join()</code> adds capture/run/script/hash checks. The init
-waiter alone gets <code>jobs/get</code> for <code>provision</code> and <code>primer</code> in its namespace;
-the split verified-serving binding also names <code>verification</code> explicitly and
-requires its completion before accepting primer readiness. Its lifecycle waits
-for verification, then serving readiness, then releases the standalone primer.
-Legacy bindings retain their original primer-ready gate. The
+waiter alone gets <code>jobs/get</code> for <code>provision</code> and <code>primer</code> in its namespace. The
 exporter receives no Kubernetes API permission. The test Pod uses component
 <code>load</code>, so it does not match the application's
 private admin/internal <code>operator</code> selectors. One additional owned
@@ -4831,15 +4788,7 @@ named owned native Job or Pod gets a bounded private spec read. Namespace and
 object UIDs bracket that read, and the existing strict declaration comparison
 checks the actual reference, token mounts, resources and security fields. A
 redacted reference never counts as exact evidence. Native load and artifact
-readers use the same adapter. <code>experiment.candidate_pin(inventory, binding_ref)</code>
-resolves a split binding's full candidate pin from its hashed materialized
-receipt; pre-entry tools must use that receipt instead of the legacy
-<code>inventory.candidateContract</code> field.</p>
-<p>Explicit <code>startup-v4</code> retains the source client's version-1 startup receipt and
-the native completion-receipt requirement. The source owns v4 role digests,
-presentation catalogue checks and tenant-floor proof authority. The helper does
-not issue a tenant-floor backfill. New-image runtime qualification remains with
-the run owner.</p>
+readers use the same adapter.</p>
 <p>Focused offline controls: <code>python3 -B -m unittest -v test_native_input test_native_load test_native_files test_native_join</code> from this
 directory. Set <code>NS_NATIVE_K6_TEST_BINARY</code> to an existing pinned local k6 binary
 to execute the real summary/event export control; it opens no network listener.
@@ -4870,17 +4819,24 @@ ordinary edge endpoint. Preparation projects DATA credentials from the existing 
 SQL reader settings from the running roles. The namespace stays with its owner. The resulting packet
 uses the ordinary observe, access and bounded run commands. Four bound native snapshot/clone claims
 identify restored fixture reuse.</p>
-<p>To reuse a fixture across fresh standard namespaces, add <code>--fixture-seed NEW_DIR</code> (with
-<code>--storage-class</code> and <code>--snapshot-class</code>) to <code>experiment.py standard</code> for one seed run. It
-provisions and primes on four labelled claims, stops every role, snapshots the claims through CSI,
-sets their contents to Retain under the <code>nightscout.org/fixture</code> label and writes the handles, the
-original Secrets, the PostgreSQL image digest and the source commits to <code>NEW_DIR</code> (private). It
-runs no traffic. Each later run adds <code>--fixture-restore DIR</code>: the controller creates those
-Secrets, binds the handles in the new namespace (<code>fixture.imported</code>), clones the claims and starts
-through the ordinary provision Job and primer. A restore refuses another population or PostgreSQL
-image. Cleanup deletes the namespace and the run's labelled contents; <code>fixture_copy.py delete DIR
-CONTEXT</code> ends the fixture and the CSI driver deletes the provider snapshots. Snapshots and restored
-volumes are billed storage.</p>
+<p>To reuse a fixture across fresh standard namespaces, add <code>--fixture reuse</code> to <code>experiment.py
+standard</code>. The harness computes the fixture key (<code>m7-joined/fixture_catalog.py</code>: tenant count,
+<code>--fixture-seed NAME</code>, the core migrations tree at the image's core commit, the application and
+PostgreSQL image ids, the input transport, the populated-history spec and, for a K-bound
+transport, evaluator K) and looks it up in the local catalog (<code>$NS_FIXTURE_CATALOG</code>, default
+<code>/mnt/data/nightscout-workspace/artifacts/fixtures/catalog.json</code>, outside Git). On a hit the case
+restores that fixture: the controller creates the seed's Secrets, binds the retained handles in the
+new namespace (<code>fixture.imported</code>), clones the claims and starts through the ordinary provision Job
+and primer. On a miss it first runs a seed case at <code>OUTPUT-seed</code> (live, no traffic): it provisions
+and primes on four labelled claims (<code>--storage-class</code>, <code>--snapshot-class</code>), stops every role,
+snapshots the claims through CSI, sets their contents to Retain under the <code>nightscout.org/fixture</code>
+label, writes the handles, the original Secrets and the key to a private catalog directory, and
+registers it; then it prepares the restore. <code>--fixture build</code> builds and registers the key's
+fixture ahead of time and prepares nothing else (a hit returns at once). A restore refuses another
+key, population, PostgreSQL image or evaluator K. Cleanup deletes the namespace and the run's
+labelled contents; <code>fixture_copy.py delete DIR CONTEXT</code> ends the fixture (the CSI driver deletes
+the provider snapshots) and retires its catalog entry. <code>python3 m7-joined/fixture_catalog.py list</code>
+shows the catalog. Snapshots and restored volumes are billed storage.</p>
 
 
 

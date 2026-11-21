@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/remote-pgstream/index.html">
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/evaluator-smoke/index.html">
       
       
-        <link rel="prev" href="../postgrest-poc/index.html">
+        <link rel="prev" href="../compose-baseline/index.html">
       
       
-        <link rel="next" href="../rls-poc/index.html">
+        <link rel="next" href="../external-generator/index.html">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Remote PostgreSQL stream calibration - Nightscout ecosystem alignment</title>
+        <title>evaluator-smoke: statements and main-thread CPU per accepted write - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#remote-postgresql-stream-calibration" class="md-skip">
+        <a href="#evaluator-smoke-statements-and-main-thread-cpu-per-accepted-write" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Remote PostgreSQL stream calibration
+              evaluator-smoke: statements and main-thread CPU per accepted write
             
           </span>
         </div>
@@ -1865,6 +1865,78 @@
                 
   
   
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link md-nav__link--active">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    evaluator-smoke/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_9_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8_9_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    evaluator-smoke/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
   
   
     
@@ -2275,78 +2347,6 @@
     </a>
   
 
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9_10" checked>
-        
-          
-          <div class="md-nav__link md-nav__container">
-            <a href="index.html" class="md-nav__link md-nav__link--active">
-              
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    remote-pgstream/
-  
-
-    
-  </span>
-  
-  
-
-            </a>
-            
-          </div>
-        
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_9_10_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_8_9_10">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    remote-pgstream/
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-            
-          </ul>
-        </nav>
       
     </li>
   
@@ -3690,47 +3690,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#realistic-cadence-and-driver-shards" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Realistic cadence and driver shards
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#explicit-remote-static-k1n1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Explicit remote static K1/N1
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#native-driver-kernel-counters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Native driver kernel counters
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -3746,260 +3705,71 @@
 
 
 
-<h1 id="remote-postgresql-stream-calibration">Remote PostgreSQL stream calibration<a class="headerlink" href="#remote-postgresql-stream-calibration" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-19 at <code>88288834f</code>.</em></p>
-<blockquote>
-<p><strong>NOT RUNNABLE (2026-11-19).</strong> This path imports <code>tools/mt-bench/m7-joined</code> modules that the
-simplification round deleted: <code>orchestration_binding</code>, <code>evaluator_idle</code>, <code>evaluator_opportunities</code>, <code>discovery_rest</code>, <code>diagnostic_resources</code>, <code>experiment_batch</code> and <code>completed-oracle-v2-control.cjs</code>, plus adapter seams built on them (<code>opportunity_collector</code>, <code>enabled_idle</code>, the resource wrappers, the local remote projection in <code>run_configuration.py</code>). Every module here raises <code>ImportError</code> at import, and its
-tests skip, rather than half-work. Maintainer decision: port later, do not delete. The port target
-is the single assessor (<code>m7-joined/assessor.py</code>) and its raw event format (accepted, stored, output,
-frame, access, datastore, readback); the k6 roster now carries each tenant's JWT
-(<code>m7-joined/jwt_tenants.py</code>). The round's base, <code>ea2231e834</code>, still has the deleted modules.</p>
-</blockquote>
-<p>This is a separate diagnostic extension of the existing external-generator path.
-It preserves sealed M7 and the existing external profile. Its unchanged default prepares1000 tenants and2000 logical stock polling clients.
-Explicit file plans admit10,1000,3000,5000 or10000 tenants with two clients per tenant.
-These are supported preparation parameters, not measured capacity or a tenant ladder.</p>
-<p>Strict reporting admits only the enumerated source/image presets in
-<code>transport.py</code>. The legacy pair permits serial priming only; qualified primer
-presets permit the concurrency checked there.</p>
-<p>Explicit <code>reportMode: "discovery"</code> admits a configurable source/image <strong>request</strong>.
-It requires the full workload/resource plan and an identical
-<code>remoteReportMode: "discovery"</code> in the existing diagnostic authorization. Tenant
-count (1–10000), client count (1–8), finite cadence, rate and duration travel through
-the existing caller, worker, helper parser, probe and reducer. Change the private
-configuration and its genuine bound authorization; do not edit source constants.
-Strict presets retain their existing limits.</p>
-<p>Discovery source admission requires actual exact Git commit objects, evaluator
-inspection version 2 with due/job fields, <code>build.assertCleanSource</code>, actual app
-image identity with both core and deployment labels, the pinned PostgreSQL image,
-and verified dependency custody. Before ingress, traffic export or runtime, the
-SUT archives the configured commits, executes that deployment's
-<code>tools/prospective-plan-documents.js</code>, and gives its generated documents to that
-core's <code>nightscout plan check</code>. This executes the published schemas, real role
-loaders and preflight without starting services or connecting to a database.
-Failed commands refuse; their raw output stays in private
-<code>source-contract-checks/</code> under the cell. An attachment may resolve its deployment
-repository from the build verifier's checked <code>.overlay.json</code>; historical captures
-are not rewritten.</p>
-<p>The paired controller also requires the existing hashed <code>sourceQualification</code>
-record with exact core/deploy/image, canonical build and image-check return codes
-of zero, no image-label mismatches and both exact labels. Compact image metadata,
-SHA-shaped strings and a caller-authored claim do not supply that evidence.
-A missing qualification stays missing. These checks qualify isolated synthetic
-discovery only; functional, runtime and capacity acceptance remain separate.
-Optional observations stay unknown/partial, and source, authority, clinical or
-data mismatches still fail.</p>
-<p>The source-bound parser and workload seams adopt committed cf7d975, d652a025 and
-dfbfd84; no application code is injected into either image. The default uses
-10 seconds of warmup,30 seconds of observed idle, and310 seconds of load,
-ACCEL=1, HOT_FACTOR=1, probe cadence 300000 ms, sampler cadence 2 seconds,
-and no restart. Cold deployment stage timings precede these steady windows.
-In strict mode, an optional binding <code>workload</code> contains exactly <code>cadence</code>, <code>primerConcurrency</code> and
-<code>resourcePlan</code>. Cadence may set <code>loadSeconds</code>1–3600 and <code>offeredRps</code>1–10000;
-other strict cadence, seven request shapes, two stock clients per tenant and no-restart
-behavior stay fixed. A resource plan carries its reference, exact cohort/client
-counts and distinct SUT/driver inventory identities with CPU/RAM. The controller
-checks those against its actual inventory. The plan is not measured headroom.
-Nondefault parameters require this full binding and identical <code>remoteWorkload</code> in
-the genuine receipt. The helper compares actual parsed arguments and prepared
-manifest fields with it. The traffic generator receives the same duration and
-rate through actual probe argv and k6 environment; provisioning concurrency reaches
-the existing canonical prime argv. Missing or changed parameters refuse before
-preparation. Expiry limits every phase; expired workload authority does not prevent
-exact-owned cleanup.
-The canonical deploy sequence includes evaluator pool initialization after
-commission and before API startup. Existing image, source, dependency, settings,
-state, ownership and receipt checks remain in force.</p>
-<p><code>cell.py</code> runs on the SUT as the existing UID/GID 1000 runtime account. It uses a
-local Unix Docker endpoint. <code>generator.py</code> runs on the separate generator under
-the existing trusted supervisor, with stock traffic children under nsload UID/GID
-1001 and no supplementary groups, sudo, Docker socket or application state.
-The generator needs the same recorded Node/npm binary hashes and exact source
-lockfile dependencies as the SUT; version names alone do not qualify it.
-The trusted supervisor creates two distinct empty npm configuration files outside
-the traffic-writable dependency directory. Their parent and files remain root-owned
-and readable by the traffic group. The supervisor verifies their identity, empty
-content and modes before and after locked installation. The child keeps its restricted
-environment, UID/GID1001, disabled install scripts and exact lockfile.</p>
-<p>The SUT retains its exact collector edge on 127.0.0.1. <code>ingress</code> adds one approved
-private IPv4 edge, records the full before/after hash and JSON patch, and retains
-normal full-compose verification. Actual <code>ip -j address show</code> output must
-match the receipt-approved interface, MAC and assigned private IP. A private IP
-from another host fails. The provider firewall must separately admit only the
-actual generator identity/private IP to this exact port, plus controller SSH22.
-The SUT raw/PREROUTING chain must filter that original destination before Docker
-DNAT: first PREROUTING rule matches the exact destination/port on every interface
-and jumps to the nonce-owned chain, which accepts only the approved NIC plus
-generator /32 and drops the rest. NIC/admission are re-read before traffic and
-final qualification. <code>transport.firewall_rules(binding)</code> emits
-the three exact rules to install after root review; <code>firewall_check</code> reads the
-actual table and refuses missing or broader rules. No firewall is installed by
-file preparation. No provider API token is staged on either host.</p>
-<p>The genuine existing <code>AUTHORIZED_DIAGNOSTIC</code> receipt must also bind
-<code>remoteProfile</code>, <code>remoteTransport</code>, <code>remoteExtensionSha256</code> and, for explicit
-parameters, exact <code>remoteWorkload</code>. This extension
-never creates authorization or acceptance. A proposal with pending exports,
-allocation, NIC inventory or receipt cannot execute.</p>
-<p>Future execution uses these SUT entry points after root review and allocation:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3<span class="w"> </span>tools/mt-bench/remote-pgstream/cell.py<span class="w"> </span>prepare<span class="w"> </span>--binding<span class="w"> </span>BINDING<span class="w"> </span>--cell<span class="w"> </span>NEW_CELL<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span>--core-repo<span class="w"> </span>CORE_REPO<span class="w"> </span>--core-commit<span class="w"> </span>CORE_SHA<span class="w"> </span>--deploy-repo<span class="w"> </span>DEPLOY_REPO<span class="w"> </span>--deploy-commit<span class="w"> </span>DEPLOY_SHA<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>--image<span class="w"> </span>APP_IMAGE_ID<span class="w"> </span>--postgres-image<span class="w"> </span>PG_IMAGE_ID<span class="w"> </span>--receipt<span class="w"> </span>GENUINE_RECEIPT<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>--profile<span class="w"> </span>pgstream-sample<span class="w"> </span>--run-purpose<span class="w"> </span>discovery<span class="w"> </span>--tenants<span class="w"> </span><span class="m">1000</span><span class="w"> </span>--replicas<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span>--warmup-seconds<span class="w"> </span><span class="m">10</span><span class="w"> </span>--idle-seconds<span class="w"> </span><span class="m">30</span><span class="w"> </span>--load-seconds<span class="w"> </span><span class="m">310</span><span class="w"> </span>--accel<span class="w"> </span><span class="m">1</span><span class="w"> </span>--hot-factor<span class="w"> </span><span class="m">1</span><span class="w"> </span>--sampler-interval<span class="w"> </span><span class="m">2</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>python3<span class="w"> </span>tools/mt-bench/remote-pgstream/cell.py<span class="w"> </span>deploy<span class="w"> </span>--binding<span class="w"> </span>BINDING<span class="w"> </span>--cell<span class="w"> </span>NEW_CELL
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>python3<span class="w"> </span>tools/mt-bench/remote-pgstream/cell.py<span class="w"> </span><span class="nb">export</span><span class="w"> </span>--binding<span class="w"> </span>BINDING<span class="w"> </span>--cell<span class="w"> </span>NEW_CELL
+<h1 id="evaluator-smoke-statements-and-main-thread-cpu-per-accepted-write">evaluator-smoke: statements and main-thread CPU per accepted write<a class="headerlink" href="#evaluator-smoke-statements-and-main-thread-cpu-per-accepted-write" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-11-20 at <code>04e3600be</code>.</em></p>
+<p><em>Contributor-facing. The evaluator's "smoke" tier of
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#capacity-test-tiers">capacity-test-tiers</a>.
+The baseline comparison is a figure, never a gate
+(<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#performance-signals-not-gates">performance-signals-not-gates</a>).</em></p>
+<p>One command builds (or reuses) the image for a core commit, runs a small Compose multitenant
+deployment through the <a href="../m7-joined/RUNNER.html">m7-joined runner</a>'s smoke tier (by default 16 tenants, one API, one evaluator, one realtime process, 180 s of realistic-v1 load at rate multiplier 24), and reports:</p>
+<ul>
+<li>evaluator SQL statements per accepted write, by database role (<code>nsdemo_evaluator</code>,
+  <code>nsdemo_lifetime_evaluator</code>, <code>nsdemo_outbox</code>, <code>nsdemo_suppression</code>) and by phase (receipt,
+  dispatch, settings, acquisition, completion, consumers, observe, txn-control, fences, registry,
+  unattributed), with PostgreSQL executor ms per write;</li>
+<li>statements and PostgreSQL executor ms from the API and API lifecycle database roles, divided by
+  the same accepted-write count. These include ordinary reads during the workload. The evaluator
+  totals keep their original scope for comparison with earlier runs;</li>
+<li>evaluator main-thread CPU ms per accepted write (<code>/proc/&lt;pid&gt;/task/&lt;pid&gt;/stat</code>, sampled each
+  second through <code>docker exec</code>, interpolated at the same SQL window bounds);</li>
+<li>the same figures beside the committed <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18c537249a975b5eb07c33aef6e9089a67e9ef7e/tools/mt-bench/evaluator-smoke/baseline.json"><code>baseline.json</code></a>.</li>
+</ul>
+<p>The runner's own smoke verdict (stored counts, clinical witnesses, fixture ownership, viewer
+bindings) stays strict and is reported next to the figures.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># from an alignment checkout whose externals/ holds cgm-remote-monitor-official and nightscout-deploy</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># (or set NS_SMOKE_CORE_REPO / NS_SMOKE_DEPLOY_REPO)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>python3<span class="w"> </span>tools/mt-bench/evaluator-smoke/smoke.py<span class="w"> </span>run<span class="w"> </span>--core<span class="w"> </span>&lt;commit<span class="p">|</span>branch<span class="p">|</span>clean<span class="w"> </span>worktree&gt;<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>--out<span class="w"> </span>/mnt/data/nightscout-workspace/artifacts/&lt;lane&gt;/&lt;new-run&gt;
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>python3<span class="w"> </span>tools/mt-bench/evaluator-smoke/smoke.py<span class="w"> </span>run<span class="w"> </span>--image<span class="w"> </span>&lt;ref<span class="w"> </span>with<span class="w"> </span>core/deploy<span class="w"> </span>revision<span class="w"> </span>labels&gt;<span class="w"> </span>--out<span class="w"> </span>&lt;dir&gt;
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>python3<span class="w"> </span>tools/mt-bench/evaluator-smoke/smoke.py<span class="w"> </span>reduce<span class="w"> </span>&lt;dir&gt;/run<span class="w">                 </span><span class="c1"># re-reduce a retained run</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>python3<span class="w"> </span>tools/mt-bench/evaluator-smoke/smoke.py<span class="w"> </span>reduce<span class="w"> </span>&lt;dir&gt;/run<span class="w"> </span>--empty-rules<span class="w">   </span><span class="c1"># negative control</span>
 </code></pre></div>
-<p>Prepare selects a free loopback port. Read the actual prepared owner.json port,
-update the same controller-owned binding and exact-port provider/SUT admission
-before deploy; do not substitute an inferred port. The receipt binds transport
-identity, not a guessed free port. Do not use historical pilot-ledger prepare,
-external-setup or its legacy remote-pilot campaign.</p>
-<p>The controller <code>pgstream-caller.mjs</code> is the bounded executable caller. Its
-<code>bundle</code> command reuses the existing committed source-pack exporters and checks
-actual archive bytes. Its <code>run</code> command uses existing SSH/scp/Session transport,
-checks explicit SSH key bytes against the root-owned known-hosts file, stages
-both hosts, installs the recorded Node binary, loads/inspects app and PostgreSQL
-IDs, prepares the new cell, reads its actual port, invokes root-owned exact-port
-provider admission, installs/checks host admission, deploys all normal roles,
-exports/transfers six traffic files, starts the bound two-per-tenant stock polling clients and the
-seven-shape workload at its bound duration and offered rate, imports seven result files and collects both hosts.
-Every success/failure path then attempts exact-owned Docker cleanup and invokes
-the root-owned exact provider-ID deletion hook. The controller relays phases,
-never HTTP or socket traffic. Requests go directly to the approved private IP.</p>
-<p>The finite worker is <code>pgstream-worker.py</code>; historical pilot-ledger/external-setup
-are not called. Runtime Docker/package versions are retained in private evidence.
-Driver FD/socket/NIC headroom remains UNMEASURED until the separate sampler joins.
-The root still owns allocation, cost/deadline, provider admission and deletion.
-No provider credentials travel to hosts. See controller <code>PGSTREAM-CALIBRATION.md</code>
-for caller inputs and hook output contracts.</p>
-<p>The generator returns actual per-write, per-client frame identity/content in its
-private probe result. The SUT reuses <code>completed-oracle.cjs</code> after the steady
-bookend to join selected acknowledged writes with storage, durable evaluator
-output/frame and BG-now mean/last. Missing client evidence or altered BG-now fails
-qualification. The clinical scope remains selected witnesses, not all-roster
-clinical equivalence. Due opportunity and reconnect are UNMEASURED.</p>
-<p>SUT SQL request bookends, cgroups, processes and IO stay in its clock domain.
-Driver write-to-frame uses its local monotonic clock. Write-to-evaluation is
-UNMEASURED; cross-host timestamp subtraction is prohibited. Driver headroom
-integration is REST-owned. Existing generator cumulative network samples include
-control traffic and cannot prove NIC saturation or available capacity.</p>
-<p>Focused checks (no services, network, SQL or Docker):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">PYTHONPATH</span><span class="o">=</span>tools/mt-bench/remote-pgstream<span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/mt-bench/remote-pgstream<span class="w"> </span>-p<span class="w"> </span><span class="s2">"test_*.py"</span><span class="w"> </span>-v
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>node<span class="w"> </span>--test<span class="w"> </span>tools/mt-bench/external-generator/test_recovery.cjs
+<p>For the writer-driven smoke, supply the joined image with its core and deploy revision labels.
+The launcher selects two APIs, two evaluator slices and two realtime slices. Add <code>--plan-only</code>
+to record the effective configuration and candidate identity before starting the fixture.
+Use a fresh output directory for each invocation.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python3<span class="w"> </span>tools/mt-bench/evaluator-smoke/smoke.py<span class="w"> </span>run<span class="w"> </span>--input-transport<span class="w"> </span>writer-driven<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>--image<span class="w"> </span><span class="s2">"</span><span class="nv">$JOINED_IMAGE</span><span class="s2">"</span><span class="w"> </span>--out<span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_OUTPUT</span><span class="s2">"</span>
 </code></pre></div>
-<p>Measured source checks do not qualify a remote deployment. Startup timing,
-throughput, p95, client completion and real host headroom remain UNMEASURED until
-root runs the reviewed remote calibration.</p>
-<p>Discovery external-service topology also accepts the existing explicit
-<code>local-qualification-external-pgstream-6cpu-10g-v1</code> profile. The caller, worker,
-receipt and prepared cell retain that exact name; the shared resource producer
-sets the actual role limits and the collector verifies effective cgroups. This
-selection retains diagnostic scope and grants no capacity acceptance. The default
-4CPU/8GiB selection and strict reporting are unchanged.</p>
-<p>Current single-process native preparation selects the <code>external-service-native-v1</code>
-helper dependency profile with the external-service topology and an explicit
-resource allocation. The packet binds the version-2 diagnostic configuration
-to exact built-image evidence and accepted-work reader dependencies. Its default
-path binds the reviewed source acceptance and sends that original hashed file
-only to the SUT. Explicit <code>nativeSourceAdmission: diagnostic-build-v1</code> instead
-retains exactly <code>sourceAcceptance: {status: PENDING}</code> and mirrors the selection
-in <code>remoteNativeSourceAdmission</code>. The paired controller validates actual
-image/build/source-plan/absence evidence and transfers a separate hashed
-<code>source-build-proof.json</code>; no source-acceptance PASS is manufactured. The worker checks both revision labels again after image import.
-The controller and extension still require the resource owner's genuine
-diagnostic authorization and finite reviewed transport scope.</p>
-<p>The SUT records the native producer and evaluator identities and effective
-container limits before load. The existing reader checks native accepted and
-completed work and sampled due opportunities in both idle and load. It joins
-selected completed output with the stock viewer's exact callback, transport
-incarnation and monotonic delay. A missing clinical or independent writer-count
-proof refuses the native smoke. Outcomes for unobserved due events, all-writer
-WAL-to-intake coverage and cross-host write-to-evaluation latency remain
-unmeasured. The remote worker requires the separate driver's actual Docker
-CPU, memory and no-swap readback for an explicit allocation.</p>
-<h3 id="realistic-cadence-and-driver-shards">Realistic cadence and driver shards<a class="headerlink" href="#realistic-cadence-and-driver-shards" title="Permanent link">&para;</a></h3>
-<p>Discovery workload bindings accept the existing <code>realistic-v1</code> mix and
-<code>driverShards</code> from the canonical runner configuration. The realistic mix keeps
-acceleration and hot factor at one and refuses an aggregate <code>offeredRps</code> override.
-Unknown selectors, ambiguous mixes, noninteger shard counts and counts outside
-1–16 or above the tenant count refuse. Strict historical presets keep their
-existing contract. The local VU scheduling trace selector remains local-only.</p>
-<p>For more than one shard, select the explicit external pgstream topology and
-include exact <code>driver_shards.py</code> and <code>contract.py</code> hashes in the existing helper
-dependency record. The remote projection derives these two hashes from its
-selected instrument and refuses a conflicting supplied hash. The paired caller
-and worker mirror the complete cadence, including the optional logical viewer
-count, to the actual helper parser. The driver passes <code>M7_WORKLOAD_MIX</code> to k6.</p>
-<p>The trusted generator derives contiguous readonly roster slices from the one
-verified traffic roster. It reuses the shared shard planner and script inside
-one existing admitted k6 container. CPU, memory, no-swap, UID, owner, image,
-mount, cleanup and finite lifetime checks remain on that container. The exact
-canonical shell program, environment and roster hashes are checked before
-launch; an arbitrary entrypoint or changed program refuses. No additional
-traffic file, database credential or provider credential is exported.</p>
-<p>Each shard retains its own summary, log and exit code. The shared reducer creates
-the aggregate summary only when all shards exit successfully. Counters and
-weighted means reduce the retained fields; each reported merged percentile is
-the largest shard statistic. The legacy <code>quantileBounds</code> field retains its range
-across shards, not pooled-percentile bounds. <code>pooledPercentiles</code> remains
-<code>UNMEASURED</code> without raw samples and a verified definition. This method makes no
-claim about a particular k6 percentile algorithm. The paired
-worker transports every selected shard artifact plus the hash-only roster
-record through its existing bounded result archive. Missing or failed shards
-remain visible and do not become zero traffic.</p>
-<p>This tooling support starts no remote job and proves no operating envelope.
-Use a new plan, helper digest, receipt and paired controller after changing the
-selection. Preserve entered run inputs and all independent clinical, stored-write
-and exact client-frame checks.</p>
-<p>The optional <code>cadence.workloadScale</code> bounds a uniform rate bracket to 0.25–8
-when <code>workloadMix</code> is <code>realistic-v1</code>. Its default one preserves nominal cadence;
-other factors scale all seven intervals together and retain the fixed roster,
-viewers and resource limits. The caller, worker, helper and k6 environment mirror
-the exact value. Dropping the worker flag, changing the receipt or changing the
-canonical driver environment refuses before entry. <code>shapeCycleMs</code> in the driver
-preallocation declaration is the selected, rounded time unit after scaling.
-A scaled point is a rate bracket, not a sensor-cadence capacity claim.</p>
-<h3 id="explicit-remote-static-k1n1">Explicit remote static K1/N1<a class="headerlink" href="#explicit-remote-static-k1n1" title="Permanent link">&para;</a></h3>
-<p>Native discovery supports only <code>staticTopology: {kind: static-hash-v1, workers: 1}</code>
-with the paired <code>remoteStaticTopology</code> receipt and <code>limits.staticWorkers: 1</code> plus
-<code>apiReplicas: 1</code>. It requires an authored allocation with socket-edge and without additional
-serving ordinals. The ordinary Compose definition retains a dormant placement
-operator, so its resource row stays reserved; the actual launch excludes it. Other remote K/N
-shapes refuse; the helper retains exact source-pair qualification.</p>
-<p>The projection, caller binding, worker CLI and actual cell parser bind the same
-selector and configuration digest. The ordinary product generator, real published
-plan parser and mounted role/producer documents remain authoritative. The remote
-launch plan includes socket-edge and skips retired pool initialization. Source
-slot/ordinal/peer checks run after bootstrap; actual role/edge census and private
-configuration contexts run before ordinary traffic. Native inspection v3 preserves
-configured count/ordinal separately from unknown peer liveness.</p>
-<p>Source and synthetic-host controls prove those paths and refusal/restoration.
-Actual remote startup, transport, resource observations and delivery still need a
-finite tiny qualification on the selected image. This support grants no capacity
-and does not qualify remote K2/N2. Entered helpers, source and clocks stay fixed.</p>
-<h3 id="native-driver-kernel-counters">Native driver kernel counters<a class="headerlink" href="#native-driver-kernel-counters" title="Permanent link">&para;</a></h3>
-<p>The existing trusted root supervisor adds optional <code>driverCgroup</code> observations
-inside <code>generator-metrics.json</code>; the existing worker export retains that file.
-Traffic children keep their original user and receive no Docker, SQL or credential
-authority. Each measured row qualifies the exact creation intent, full container
-ID, owner nonce, pinned image, canonical command, mounts and security, then checks
-the host PID birth and cgroup path before and after the kernel reads. A changed
-identity refuses the observation. Explicit driver CPU and memory selections must
-also match the kernel quota and memory cap.</p>
-<p>Rows retain cumulative <code>cpu.stat</code> counters (including <code>nr_throttled</code> and
-<code>throttled_usec</code>), <code>cpu.max</code>, <code>memory.current</code>, <code>memory.peak</code>, <code>memory.max</code> and
-<code>memory.events</code>. They cover the k6 container and all of its selected shards, apart
-from the probe child and SUT. The memory peak covers the container lifetime;
-interval CPU/throttling deltas require two measured rows with identical identity.
-Each row retains the monotonic CPU-counter read time and kernel read span, so
-interval normalization need not use the later Docker qualification timestamp.
-Missing/unsupported files or absent actors are <code>UNMEASURED</code> with a reason and no
-counter substitution. Docker-stats and native readback availability stay separate.
-Source controls cover owner/image mismatch, birth change, missing peak, unsupported
-cgroup version, missing CPU counters and unlimited quota, with restoration. Actual
-remote qualification of these new fields requires a new frozen point; historical
-commissioning captures retain their original scope.</p>
+<p>With <code>--core</code>, writer-driven runs build against deploy <code>edc6c5df1e8c</code> by default.
+<code>--replicas</code> changes the API count. <code>--static-workers</code> sets the slices per evaluator and
+realtime role. The summary reports CPU for each evaluator and sums CPU per accepted write across
+the fleet when every slice covers the measurement window. SQL figures combine all processes using
+each database role. For matched history, pass the same five-minute UTC <code>--history-anchor-ms</code>
+to both arms. The fixture writes and verifies 72 synthetic readings per tenant before traffic.</p>
+<p><code>--out</code> is private (synthetic credentials) and must be outside any checkout. The image is
+<code>ns-evaluator-smoke:&lt;core12&gt;-&lt;deploy12&gt;</code>, built like deploy's <code>tools/compose-overlay.sh</code> plus
+<code>build.js --image</code> (core commit with <code>bindings/compose/multitenant</code> from the deploy commit, default
+<code>f57a8c3</code>), and reused when its labels match. The Compose project is
+<code>evaluator-m-smoke-&lt;core10&gt;</code>; the runner removes it and its volumes and records the cleanup readback.
+The run refuses when the one-minute load average exceeds the CPU count.</p>
+<p><strong>Phase rules.</strong> <code>statement_phase.py</code> classifies statement text; they are the rules behind retained
+evidence <code>evaluator-profile-20261119</code> and reproduce its 164.37 and 169.49 statements per write on
+that run's retained bookends. Shapes several phases issue (BEGIN/COMMIT, fence locks and
+<code>set_config</code>) are their own phases. A code change that adds new statement text shows as
+<code>unattributed</code>; add a rule rather than reading a lower total as a saving.</p>
+<p><strong>Limits.</strong> Top-level statements only (not statements inside functions). Executor time is not
+PostgreSQL CPU. Accepted writes are HTTP-accepted writes plus stored probe writes; idle tenants
+owe no work, and time-only cycles (counted under <code>cycles</code>) add statements without writes. At 16
+tenants each tenant writes every few seconds, so cycles rarely merge; the 1,000-tenant figures were
+taken at about one write per tenant per 100 s.
+Main-thread CPU at about 2.8 writes/s includes fixed per-second work (timers, health, realtime
+hints) spread over few writes, so it is a figure for comparing commits at this workload, not a
+cost model. The sampler's <code>docker exec</code> shell is an extra process in the evaluator container.</p>
+<p><strong>Baseline (core <code>bee2589b6</code>, image <code>6c23df42a702</code>, three runs, 521 accepted writes each, about
+283 s wall time per run):</strong> 171.46–171.89 statements per accepted write, 3.91–4.04 executor ms per
+write, 16.7–17.1 main-thread ms per write (two runs). Per role and phase: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18c537249a975b5eb07c33aef6e9089a67e9ef7e/tools/mt-bench/evaluator-smoke/baseline.json"><code>baseline.json</code></a>.</p>
 
 
 
