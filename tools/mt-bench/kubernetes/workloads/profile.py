@@ -82,7 +82,7 @@ def describe(p):
     inputs=workload_runtime.workload_inputs
     startup=inputs.startup_selection(p['phases'],need)
     return {'version': 1, 'profile': p['name'],
-            **({'history': dict(p['history'], rowsPerTenant=history.ROWS, stepMs=history.STEP_MS)}
+            **({'history': dict(p['history'], rowsPerTenant=history.ROWS if p['history']['mode'] == history.MODE else history.rows_per_tenant(p['history']), stepMs=history.STEP_MS)}
                if p['history'] != history.BASELINE else {}), 'basis': 'read-derived equations from generated M7 workload',
             **({primer_options.FIELD:p['phases'][primer_options.FIELD]} if primer_options.FIELD in p['phases'] else {}),
             **({population_ceiling.FIELD:population_ceiling.from_profile(p,need)} if 'maxTenants' in p['population'] else {}),
@@ -194,9 +194,10 @@ def main():
     args = parser.parse_args()
     p = read(args.profile)
     if args.action == 'populate':
-        if len(args.paths) != 2:
-            parser.error('populate requires ANCHOR_UNIX_MS OUTPUT_PROFILE')
-        p['history'] = dict(mode=history.MODE, anchorUnixMs=int(str(args.paths[0])))
+        if len(args.paths) not in (2, 3):
+            parser.error('populate requires ANCHOR_UNIX_MS OUTPUT_PROFILE [MODE]')
+        mode = str(args.paths[2]) if len(args.paths) == 3 else history.MODE
+        p['history'] = dict(mode=mode, anchorUnixMs=int(str(args.paths[0])))
         # Standard cases bind source pins from the candidate during their own preparation.
         write(args.paths[1], validate(p, require_pins=False))
     elif args.action == 'describe':
