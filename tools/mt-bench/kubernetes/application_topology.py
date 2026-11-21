@@ -6,7 +6,7 @@ SEPARATE = 'separate-k1'
 ROLES = ('api', 'evaluator', 'realtime', 'tenant-admin')
 SEPARATE_WORKLOADS = {
     **{role: 'Deployment' for role in ROLES},
-    **{name: 'Deployment' for name in ('pgstream', 'admin', 'ui', 'edge')},
+    **{name: 'Deployment' for name in ('admin', 'ui', 'edge')},
     'postgres': 'StatefulSet', 'vault': 'StatefulSet',
     'provision': 'Job', 'primer': 'Job',
 }
@@ -42,8 +42,6 @@ def validate(config, inventory, objects, need):
         return
     for role, target in role_mapping(profile).items():
         need(config['roles'].get(role) == target, 'APPLICATION_ROLE_TOPOLOGY:' + role)
-    need(config['roles'].get('pgstream') == {'workload': 'Deployment/pgstream', 'container': 'pgstream'},
-         'APPLICATION_ROLE_TOPOLOGY:pgstream')
     rendered = [obj for obj in objects.values() if obj['kind'] in ('Deployment', 'StatefulSet', 'Job')
                 and not (config.get('nativeLoad') is not None and obj['kind']=='Job' and obj['metadata']['name']=='k6')]
     workloads = {obj['metadata']['name']: obj for obj in rendered}

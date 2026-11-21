@@ -161,7 +161,6 @@ def phase_measurements(directory, manifest, name):
         peak = memory_peak_observation(first, value)
         rows[role] = {"cpuUsecDelta": delta if delta >= 0 else None, "cpuCoresMean": delta / 1e6 / seconds if delta >= 0 else None,
                       "memoryObservation":peak, "resourceLimits":value.get("resourceLimits",{"status":"UNMEASURED"}), **({"instance":value["instance"]} if "instance" in value else {}), "counterReset": delta < 0, "processRssKiBAfter": value.get("processRssKiB"), "anonBytesAfter": b[1], "memoryCurrentBytesAfter": b[2]}
-    # Container totals include both evaluator Node and its pgstream child.
     # Keep process identity/start time when subtracting their own counters.
     for role,value in rows.items():
         initial=before['roles'].get(role,{}).get('hostProcesses',{})

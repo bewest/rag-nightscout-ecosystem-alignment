@@ -4,7 +4,6 @@ import argparse
 import json
 import os
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 
@@ -18,25 +17,6 @@ import primer_options
 import population_ceiling
 import application_topology
 from workloads import profile, reduce
-
-
-def bind_ack_publisher(package, selected):
-    if frozen.ACK_BUDGET not in selected:
-        return
-    publisher = package/'scripts/secrets.sh'
-    source = publisher.read_text()
-    verified = '  test -f "$work/primer/expected-verification.json"'
-    original = '  k create secret generic ns-config-pgstream --from-file=pgstream.yaml="$work/pgstream/pgstream.yaml" >/dev/null'
-    wait = '  k wait --for=condition=complete job/provision --timeout=30s >/dev/null'
-    k.need(all(source.count(line) == 1 for line in (verified, original, wait)), 'PGSTREAM_ACK_PUBLISHER_CHANGED')
-    projection = '''  binding=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-  python3 -B "$binding/scripts/producer_ack_publish.py" "$binding/assets/source-contract.json" \\
-    "$work/pgstream/pgstream.yaml" "$work/pgstream/pgstream.effective.yaml" >"$work/pgstream-ack.json"'''
-    active = original.replace('/pgstream.yaml"', '/pgstream.effective.yaml"')
-    publisher.write_text(source.replace(verified, verified+'\n'+projection).replace(original, active)
-                         .replace(wait, wait+'\n  cat "$work/pgstream-ack.json"'))
-    shutil.copyfile(k.HERE/'producer_ack_publish.py', package/frozen.ACK_PACKAGE[0])
-    shutil.copyfile(k.M7/'producer_wire.py', package/frozen.ACK_PACKAGE[1])
 
 
 def bind_primer_stall(package, manifest):
@@ -134,12 +114,7 @@ def prepare(manifest_path, instance, out, *, await_primer=False, existing_fixtur
     c = profile.bind(p, dict(config, pins=pins, tier=tier))
     k.need('edgeConfiguration' not in config or config['edgeConfiguration']==edge,'EDGE_CONFIGURATION_CHANGED')
     if edge is not None:c['edgeConfiguration']=edge
-    k.need('producerAckReadback' not in config, 'PGSTREAM_ACK_READBACK_UNDECLARED')
-    if frozen.ACK_BUDGET in selected:
-        k.need('producerAckReadback' in instance, 'PGSTREAM_ACK_READBACK_REQUIRED')
-        c['producerAckReadback'] = frozen.read_ref(instance['producerAckReadback'])
-    else:
-        k.need('producerAckReadback' not in instance, 'PGSTREAM_ACK_READBACK_UNDECLARED')
+    k.need('producerAckReadback' not in config and 'producerAckReadback' not in instance, 'PGSTREAM_ACK_READBACK_UNDECLARED')
     if c.get('nativeLoad') is not None:
         c['nativeLoadCustodyFile']=str(out.resolve()/'load/native-load.json')
     objects = k.validate(c, inventory, render)

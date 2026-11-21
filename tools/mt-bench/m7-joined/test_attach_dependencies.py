@@ -46,7 +46,8 @@ class AttachmentDependencies(unittest.TestCase):
              core_repo='synthetic',core_commit=self.m['pair']['core'],deploy_repo='synthetic',deploy_commit=self.m['pair']['deploy'],
              source_root=self.source,state=state,directory=target,project='synthetic',image='sha256:'+'c'*64,
              image_id='sha256:'+'c'*64,tenants=1,replicas=1,freeze=self.fixture/'receipt.json',quiet_load=0,
-             diagnostics='on',diagnostics_interval_ms=2500)
+             diagnostics='on',diagnostics_interval_ms=2500,completion_contract='evaluator-work-v2',static_workers=1,runtime_owner=str(self.owner_file))
+        self.owner.update(inputTransport='writer-driven',staticTopology={'kind':'static-hash-v1','workers':1},replicas=1);self.save()
         def admission(manifest,operation):
             self.assertEqual(manifest['diagnostics'],a.profile_provenance.selection('on',2500))
             raise RuntimeError('M7_TEST_STOP_BEFORE_RESOURCE_ACCESS')

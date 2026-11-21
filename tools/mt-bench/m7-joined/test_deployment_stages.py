@@ -109,8 +109,7 @@ class PlatformStartupSelection(unittest.TestCase):
 
     def test_verified_serving_starts_all_roles_together_before_tenant_provision(self):
         services={name:{'command':['node',name]} for name in ('api','realtime','evaluator','tenant-admin')}
-        services.update(pgstream={'command':adapter.stream_topology.EXTERNAL_COMMAND},
-                        bootstrap={'environment':{}}, primer={'environment':{'NS_DEMO_TENANTS':'8'}})
+        services.update(bootstrap={'environment':{}}, primer={'environment':{'NS_DEMO_TENANTS':'8'}})
         stages=adapter.deployment_plan({'services':services},pgstream=True,platform_verification=True)
         argv={name:args for name,_,args in stages}
         self.assertNotIn('remaining-roles', argv)
@@ -119,12 +118,11 @@ class PlatformStartupSelection(unittest.TestCase):
         self.assertEqual(list(argv), ['vault-start','infrastructure','bootstrap','admin-feed','platform-verify',
                                      'serving','provision','commission','prime','publish-primer'])
         self.assertEqual(set(argv['serving'][argv['serving'].index('--wait-timeout')+2:]),
-                         {'api','realtime','evaluator','tenant-admin','pgstream','ui','nginx'})
+                         {'api','realtime','evaluator','tenant-admin','ui','nginx'})
 
     def test_runner_invokes_serving_before_durable_provision_with_inactivity_waits(self):
         services={name:{'command':['node',name]} for name in ('api','realtime','evaluator','tenant-admin')}
-        services.update(pgstream={'command':adapter.stream_topology.EXTERNAL_COMMAND},
-                        bootstrap={'environment':{}},primer={'environment':{'NS_DEMO_TENANTS':'8'}})
+        services.update(bootstrap={'environment':{}},primer={'environment':{'NS_DEMO_TENANTS':'8'}})
         calls=[]
         with tempfile.TemporaryDirectory() as tmp, contextlib.ExitStack() as stack:
             root=Path(tmp)
@@ -138,7 +136,6 @@ class PlatformStartupSelection(unittest.TestCase):
             stack.enter_context(patch.object(adapter,'image',return_value='synthetic'))
             stack.enter_context(patch.object(adapter.profile_provenance,'identity',return_value={}))
             stack.enter_context(patch.object(adapter.profile_provenance,'state_environment'))
-            stack.enter_context(patch.object(adapter.stream_topology,'install_ack_budget',return_value=None))
             def invoke(_, *args, **kwargs):
                 stage=adapter.document(root/'deployment-stages.json')[-1]['name']
                 calls.append(stage)
@@ -148,7 +145,7 @@ class PlatformStartupSelection(unittest.TestCase):
                 if stage=='serving':
                     self.assertIsInstance(kwargs['wait_for_primer'],adapter.ComposeProgressWait)
                     self.assertNotIn('--wait-timeout',args)
-                    self.assertTrue({'api','realtime','evaluator','pgstream'} <= set(args))
+                    self.assertTrue({'api','realtime','evaluator'} <= set(args))
             stack.enter_context(patch.object(adapter,'compose',side_effect=invoke))
             with self.assertRaisesRegex(RuntimeError,'M7_CONTROL_PROVISION_SELECTED'):
                 adapter.deploy(root,m)

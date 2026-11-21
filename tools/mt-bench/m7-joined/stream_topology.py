@@ -1,126 +1,31 @@
-"""Explicit source-bound pgstream process topology; no runtime substitution."""
-import json
-import os
+"""Explicit source-bound input transport: writer-driven is the only one."""
 from pathlib import Path
-import stat
-import tempfile
 
-from contract import digest, require
-from producer_wire import ACK_BUDGET, WIRE_DIRECTORY, WIRE_NAME, load_wire, valid_timeout
+from contract import require
 
-COLOCATED = 'colocated-v1'
-EXTERNAL = 'external-service-v1'
 WRITER = 'writer-driven'
-EXTERNAL_COMMAND = ['/usr/local/bin/pgstream','run','-c','/run/ns-stream/pgstream.yaml','--log-level','info']
-SOURCE_ACK_TIMEOUT_MS = 2000
 
 
-def options(args, *, include_default=False):
-    mode = getattr(args, 'input_transport', 'pgstream')
-    topology = getattr(args, 'pgstream_topology', None)
-    if mode == WRITER:
-        require(topology in (None, COLOCATED) and not getattr(args, 'pgstream_topology_explicit', False)
-                and getattr(args, 'pgstream_notifier_ack_timeout_ms', None) is None
-                and getattr(args, 'commissioning_slot_wal_mib', None) is None,
-                'M7_WRITER_CDC_OPTION_CONFLICT')
-        require(args.profile == 'pgstream-sample' and args.run_purpose == 'discovery'
-                and args.completion_contract == 'evaluator-work-v2' and getattr(args, 'static_workers', None) is not None,
-                'M7_WRITER_DISCOVERY_TOPOLOGY')
-        return {'inputTransport': WRITER}
-    require(mode == 'pgstream', 'M7_INPUT_TRANSPORT')
-    value = topology or COLOCATED
-    require(value in (COLOCATED, EXTERNAL), 'M7_PGSTREAM_TOPOLOGY_INVALID')
-    return {'pgstreamTopology': value} if include_default or value == EXTERNAL else {}
-
-
-def ack_selection(manifest):
-    if ACK_BUDGET not in manifest:
-        return {}
-    value = manifest[ACK_BUDGET]
-    require(manifest.get('profile') == 'pgstream-sample' and manifest.get('runPurpose') == 'discovery'
-            and selection(manifest) == EXTERNAL, 'M7_PGSTREAM_ACK_LOCAL_EXTERNAL_DISCOVERY_REQUIRED')
-    require(valid_timeout(value), 'M7_PGSTREAM_ACK_BUDGET_INVALID')
-    return {ACK_BUDGET: value}
-
-
-def ack_option(args):
-    value = getattr(args, 'pgstream_notifier_ack_timeout_ms', None)
-    if value is None:
-        return {}
-    require(getattr(args, 'command', 'prepare') == 'prepare', 'M7_PGSTREAM_ACK_FRESH_PREPARE_REQUIRED')
-    return ack_selection({ACK_BUDGET: value, 'profile': args.profile, 'runPurpose': args.run_purpose,
-                          'pgstreamTopology': args.pgstream_topology})
-
-
-def wire_path(directory, mounts):
-    root = directory/'state/pgstream'
-    selected = [mount for mount in mounts if mount.get('target', mount.get('Destination')) == WIRE_DIRECTORY]
-    require(len(selected) == 1, 'M7_PGSTREAM_ACK_WIRE_MOUNT')
-    mount = selected[0]
-    require(mount.get('type', mount.get('Type')) == 'bind'
-            and mount.get('source', mount.get('Source')) == str(root)
-            and (mount.get('read_only') is True or mount.get('RW') is False), 'M7_PGSTREAM_ACK_WIRE_MOUNT')
-    path = root/WIRE_NAME
-    require(path.resolve() == path and path.is_file(), 'M7_PGSTREAM_ACK_WIRE_PATH')
-    return path
-
-
-def install_ack_budget(directory, manifest, compose):
-    options = ack_selection(manifest)
-    if not options:
-        return None
-    path = wire_path(directory, compose['services']['pgstream']['volumes'])
-    config, notifier = load_wire(path.read_bytes())
-    require(notifier.get('client_timeout') == SOURCE_ACK_TIMEOUT_MS, 'M7_PGSTREAM_ACK_SOURCE_DEFAULT_CHANGED')
-    original = digest(path)
-    ownership = path.stat()
-    notifier['client_timeout'] = options[ACK_BUDGET]
-    with tempfile.NamedTemporaryFile(mode='w', dir=path.parent, delete=False) as staged:
-        temporary = Path(staged.name)
-        try:
-            own = os.fstat(staged.fileno())
-            require((own.st_uid, own.st_gid) == (ownership.st_uid, ownership.st_gid), 'M7_PGSTREAM_ACK_WIRE_OWNER')
-            os.fchmod(staged.fileno(), stat.S_IMODE(ownership.st_mode))
-            json.dump(config, staged, indent=2)
-            staged.write('\n')
-            staged.flush()
-            os.replace(temporary, path)
-        finally:
-            temporary.unlink(missing_ok=True)
-    return {'sourceTimeoutMs': SOURCE_ACK_TIMEOUT_MS, 'effectiveTimeoutMs': options[ACK_BUDGET],
-            'sourceWireSha256': original, 'effectiveWireSha256': digest(path)}
-
-
-def verify_ack_budget(directory, manifest, mounts):
-    path = wire_path(directory, mounts)
-    _, notifier = load_wire(path.read_bytes())
-    record = manifest.get('pgstreamNotifierAckWire', {})
-    require(record.get('effectiveTimeoutMs') == manifest[ACK_BUDGET] == notifier.get('client_timeout')
-            and record.get('effectiveWireSha256') == digest(path), 'M7_PGSTREAM_ACK_WIRE_CHANGED')
+def options(args):
+    require(getattr(args, 'input_transport', WRITER) == WRITER, 'M7_INPUT_TRANSPORT')
+    require(args.profile == 'pgstream-sample' and args.run_purpose == 'discovery'
+            and args.completion_contract == 'evaluator-work-v2' and getattr(args, 'static_workers', None) is not None,
+            'M7_WRITER_DISCOVERY_TOPOLOGY')
+    return {'inputTransport': WRITER}
 
 
 def selection(manifest):
-    mode = manifest.get('inputTransport', 'pgstream')
-    require(mode in ('pgstream', WRITER), 'M7_INPUT_TRANSPORT')
-    if mode == WRITER:
-        require('pgstreamTopology' not in manifest and ACK_BUDGET not in manifest
-                and 'commissioningSlotWalMiB' not in manifest, 'M7_WRITER_CDC_OPTION_CONFLICT')
-        return WRITER
-    value=manifest.get('pgstreamTopology',COLOCATED)
-    require(value in (COLOCATED,EXTERNAL),'M7_PGSTREAM_TOPOLOGY_INVALID')
-    return value
+    require(manifest.get('inputTransport') == WRITER, 'M7_INPUT_TRANSPORT')
+    require('pgstreamTopology' not in manifest and 'pgstreamNotifierAckTimeoutMs' not in manifest
+            and 'commissioningSlotWalMiB' not in manifest, 'M7_WRITER_CDC_OPTION_CONFLICT')
+    return WRITER
 
 
 def verify_config(manifest,config):
-    selected=selection(manifest);service=config.get('services',{}).get('pgstream')
-    if selected == WRITER:
-        require(service is None and config['services'].get('bootstrap', {}).get('environment', {}).get('NS_INPUT_TRANSPORT') == WRITER,
-                'M7_WRITER_BINDING_TRANSPORT')
-    elif selected==EXTERNAL:
-        require(manifest.get('profile')=='pgstream-sample' and service is not None and service.get('command')==EXTERNAL_COMMAND,'M7_PGSTREAM_EXTERNAL_SERVICE_REQUIRED')
-        require(config['services'].get('evaluator',{}).get('command',[])[-1:]==['evaluator'],'M7_PGSTREAM_EVALUATOR_REQUIRED')
-    else:
-        require(service is None,'M7_PGSTREAM_TOPOLOGY_SELECTION_REQUIRED')
+    selected=selection(manifest)
+    require(config.get('services',{}).get('pgstream') is None
+            and config['services'].get('bootstrap', {}).get('environment', {}).get('NS_INPUT_TRANSPORT') == WRITER,
+            'M7_WRITER_BINDING_TRANSPORT')
     return selected
 
 
@@ -129,74 +34,35 @@ def require_snapshot(directory, manifest):
     # Refuse before fixture.js creates or restores any project volumes.
     path = Path(directory) / 'deployment.env'
     values = dict(line.split('=', 1) for line in path.read_text().splitlines() if '=' in line)
-    require(values.get('NS_INPUT_TRANSPORT','pgstream') == manifest.get('inputTransport','pgstream'),
+    selection(manifest)
+    # Older fixtures recorded NS_INPUT_TRANSPORT; a pgstream fixture recorded NS_PGSTREAM=1.
+    require(values.get('NS_INPUT_TRANSPORT', WRITER) == WRITER and 'NS_PGSTREAM' not in values,
             'M7_FIXTURE_INPUT_TRANSPORT_CHANGED')
-    if selection(manifest) == WRITER:
-        workers = str(manifest['staticTopology']['workers'])
-        require(values.get('NS_API_REPLICAS','1') == str(manifest['replicas'])
-                and values.get('NS_REALTIME_WORKERS','1') == workers
-                and values.get('NS_EVALUATOR_WORKERS','1') == workers, 'M7_FIXTURE_TOPOLOGY_CHANGED')
+    workers = str(manifest['staticTopology']['workers'])
+    require(values.get('NS_API_REPLICAS','1') == str(manifest['replicas'])
+            and values.get('NS_REALTIME_WORKERS','1') == workers
+            and values.get('NS_EVALUATOR_WORKERS','1') == workers, 'M7_FIXTURE_TOPOLOGY_CHANGED')
 
 
 def expected_processes(manifest):
+    selection(manifest)
     instances=manifest.get('servingInstances')
     if instances is not None:
         require(isinstance(instances,dict) and instances,'M7_INSTANCE_FROZEN_ROSTER_CHANGED')
-        result={service:('node',) for service in instances}
-        if selection(manifest)==EXTERNAL:result['pgstream']=('pgstream',)
-        elif selection(manifest)==COLOCATED:
-            for service,item in instances.items():
-                if item['role']=='evaluator':result[service]=('node','pgstream')
-        return result
-    if selection(manifest)==WRITER:return {'evaluator':('node',)}
-    if selection(manifest)==EXTERNAL:return {'evaluator':('node',),'pgstream':('pgstream',)}
-    return {'evaluator':('node','pgstream')}
+        return {service:('node',) for service in instances}
+    return {'evaluator':('node',)}
 
 
 def readable_processes(snapshots,manifest):
-    if selection(manifest) == WRITER:
-        require(not any(p.get('component',p.get('name')) == 'pgstream'
-                        for snapshot in snapshots.values() for p in snapshot.get('hostProcesses',{}).values()),
-                'M7_WRITER_UNEXPECTED_PGSTREAM')
+    require(not any(p.get('component',p.get('name')) == 'pgstream'
+                    for snapshot in snapshots.values() for p in snapshot.get('hostProcesses',{}).values()),
+            'M7_WRITER_UNEXPECTED_PGSTREAM')
     for role,names in expected_processes(manifest).items():
         values=snapshots.get(role,{}).get('hostProcesses',{}).values()
         require(all(any(p.get('component',p.get('name'))==name and not p.get('unavailable') for p in values) for name in names),'M7_SAMPLE_PROCESS_INSTRUMENT')
 
 
-def verify_source(manifest,schema):
-    if selection(manifest)==EXTERNAL:
-        value=schema.get('properties',{}).get('pgstream',{}) if isinstance(schema,dict) else {}
-        require(isinstance(value,dict),'M7_PGSTREAM_EXTERNAL_SOURCE_REQUIRED')
-        properties=value.get('properties',{});required=value.get('required',[])
-        # Check the native capabilities this instrument uses. Other optional
-        # source fields (for example startupTransport) belong to the shipping
-        # parser, exercised by discovery_source_contract before runtime entry.
-        # A compatible source extension must not require a helper revision.
-        require(value.get('type')=='object' and isinstance(required,list) and len(required)==4 and set(required)=={'receiver','slot','streamRole','bounds'} and value.get('additionalProperties') is False and isinstance(properties,dict) and {'receiver','slot','streamRole','bounds','transactionRows','generation','recovery'}<=set(properties),'M7_PGSTREAM_EXTERNAL_SOURCE_REQUIRED')
-        # Descriptions are annotations. Unknown validation keywords still refuse.
-        def contract(spec):
-            return {key:entry for key,entry in spec.items() if key!='description'} if isinstance(spec,dict) else None
-        require(contract(properties['transactionRows'])=={'type':'integer','minimum':1,'maximum':1000000} and contract(properties['generation'])=={'type':'string','pattern':'^[a-f0-9]{32}$'},'M7_PGSTREAM_NATIVE_SOURCE_REQUIRED')
-        recovery=contract(properties['recovery'])
-        require(isinstance(recovery,dict) and set(recovery)=={'type','required','additionalProperties','properties'} and recovery.get('type')=='object' and isinstance(recovery.get('required'),list) and len(recovery['required'])==3 and set(recovery['required'])=={'connectionEnv','timeoutMs','maxQueued'} and recovery.get('additionalProperties') is False and recovery.get('properties')=={'connectionEnv':{'type':'string','pattern':'^[A-Z][A-Z0-9_]{0,127}$'},'timeoutMs':{'type':'integer','minimum':1,'maximum':30000},'maxQueued':{'type':'integer','minimum':1,'maximum':1024}},'M7_PGSTREAM_NATIVE_RECOVERY_REQUIRED')
-        # Startup rendezvous is optional in historical native source. When the
-        # source publishes it, preserve both finite clock-safe bounds and its
-        # closed object contract; accepting an extra name alone is insufficient.
-        if 'startupTransport' in properties:
-            startup=contract(properties['startupTransport'])
-            timeout={'type':'integer','minimum':1,'maximum':9223372036854}
-            require(isinstance(startup,dict) and set(startup)=={'type','required','additionalProperties','properties'} and startup.get('type')=='object' and isinstance(startup.get('required'),list) and len(startup['required'])==2 and set(startup['required'])=={'timeoutMs','retryIntervalMs'} and startup.get('additionalProperties') is False and startup.get('properties')=={'timeoutMs':timeout,'retryIntervalMs':timeout},'M7_PGSTREAM_STARTUP_TRANSPORT_REQUIRED')
-        require(value.get('dependentRequired')=={'generation':['transactionRows'],'recovery':['transactionRows']},'M7_PGSTREAM_NATIVE_DEPENDENCIES_REQUIRED')
-
-
 def external_runtime(rows,manifest):
-    if selection(manifest)==WRITER:
-        require(not any(r.get('Config',{}).get('Labels',{}).get('com.docker.compose.service')=='pgstream'
-                        for r in rows), 'M7_WRITER_UNEXPECTED_PGSTREAM')
-        return
-    if selection(manifest)!=EXTERNAL:return
-    selected=[r for r in rows if r.get('Config',{}).get('Labels',{}).get('com.docker.compose.service')=='pgstream']
-    require(len(selected)==1,'M7_PGSTREAM_RUNTIME_ROSTER')
-    row=selected[0];state=row.get('State',{})
-    require(row.get('Image')==manifest['imageId'] and row.get('Config',{}).get('Cmd')==EXTERNAL_COMMAND,'M7_PGSTREAM_RUNTIME_IMAGE_COMMAND')
-    require(state.get('Running') is True and type(state.get('Pid')) is int and state['Pid']>0 and isinstance(state.get('StartedAt'),str) and bool(state['StartedAt']),'M7_PGSTREAM_RUNTIME_BIRTH')
+    selection(manifest)
+    require(not any(r.get('Config',{}).get('Labels',{}).get('com.docker.compose.service')=='pgstream'
+                    for r in rows), 'M7_WRITER_UNEXPECTED_PGSTREAM')

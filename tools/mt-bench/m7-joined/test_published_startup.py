@@ -10,15 +10,15 @@ STARTUP_STATIC_CORE, STARTUP_STATIC_DEPLOY = '5a94bbaee7f1130b7de8db0f90deae8c4c
 class PublishedStartup(unittest.TestCase):
     def test_published_exact_startup_receipt_retains_pending_truth(self):
         cfg=config();cfg['prepare'].update({'core-commit':STARTUP_STATIC_CORE,'deploy-commit':STARTUP_STATIC_DEPLOY,
-            'tenant-readiness':'serve','primer-concurrency':16,'commissioning-slot-wal-mib':1024})
+            'tenant-readiness':'serve','primer-concurrency':16})
         with patch.object(a,'instrument',return_value={'sha256':'d'*64}):projection=rc.resolve(cfg,{'status':'PENDING'})
         value=projection['configuration'];proof={**projection['diagnosticReceiptTemplate'],'status':'AUTHORIZED_DIAGNOSTIC'}
         m={**value,'instrument':{'sha256':'d'*64},'runConfiguration':value}
         self.assertEqual(value['pair'],{'core':STARTUP_STATIC_CORE,'deploy':STARTUP_STATIC_DEPLOY})
-        self.assertEqual((value['tenantReadiness'],value['primerConcurrency'],value['commissioningSlotWalMiB']),('serve',16,1024))
+        self.assertEqual((value['tenantReadiness'],value['primerConcurrency']),('serve',16))
         self.assertEqual(c.receipt_scope(m,proof,'run')['functionalAcceptance'],'PENDING')
         self.assertEqual(c.receipt_scope(m,proof,'deploy')['capacityAcceptance'],'NOT_GRANTED')
-        for field,changed in [('tenantReadiness','all'),('primerConcurrency',1),('commissioningSlotWalMiB',256)]:
+        for field,changed in [('tenantReadiness','all'),('primerConcurrency',1)]:
             bad=copy.deepcopy(m);bad['runConfiguration'][field]=changed
             with self.assertRaisesRegex(RuntimeError,'CONFIGURATION_MISMATCH'):c.receipt_scope(bad,proof,'run')
         bad=copy.deepcopy(proof);bad['sourceAcceptance']={'status':'PASS'}

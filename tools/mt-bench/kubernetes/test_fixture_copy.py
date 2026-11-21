@@ -94,20 +94,17 @@ class FixtureCopy(unittest.TestCase):
         cluster = Cluster()
         self.assertEqual(len(fc.import_secrets(cluster, 'ns-synth-restore-1', 'restore-1', chosen['directory'])), 6)
         self.assertTrue(all(b['metadata']['labels'] == {fc.LABEL: 'restore-1'} for _, b in cluster.calls))
-        manifest = fc.read_manifest(chosen['directory'])
-        fc.check_restore(manifest, 8, PG)
+        seeded = fc.read_manifest(chosen['directory'])
+        # A fixture without the writer-driven record (a pgstream seed) is refused.
         with self.assertRaisesRegex(fc.Refused, 'INPUT_TRANSPORT_CHANGED'):
-            fc.check_restore(manifest, 8, PG, input_transport='writer-driven')
+            fc.check_restore(seeded, 8, PG)
+        manifest = {**seeded, **fc.slices_record({'inputTransport':'writer-driven'})}
+        fc.check_restore(manifest, 8, PG)
         record = fc.slices_record({'inputTransport':'writer-driven', 'slices':{'evaluator':2}})
         fc.check_restore({**manifest, **record}, 8, PG, 2, 'writer-driven')
         # K-free: a writer-driven fixture seeded at K=2 (or K=1) restores at K=1 and K=2.
         fc.check_restore({**manifest, **record}, 8, PG, 1, 'writer-driven')
         fc.check_restore({**manifest, 'inputTransport': 'writer-driven'}, 8, PG, 2, 'writer-driven')
-        # pgstream stays bound to K.
-        with self.assertRaisesRegex(fc.Refused, 'EVALUATOR_SLICES_CHANGED'):
-            fc.check_restore(manifest, 8, PG, 2)
-        with self.assertRaisesRegex(fc.Refused, 'INPUT_TRANSPORT_CHANGED'):
-            fc.check_restore({**manifest, **record}, 8, PG, 2)
         with self.assertRaisesRegex(fc.Refused, 'TENANTS_CHANGED'):
             fc.check_restore(manifest, 3000, PG)
         with self.assertRaisesRegex(fc.Refused, 'POSTGRES_IMAGE_CHANGED'):
@@ -170,7 +167,7 @@ class KeyedFixture(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.root)
         self.catalog = fixture_catalog.Catalog(self.root/'catalog.json')
         self.key = fixture_catalog.key(tenants=8, image='sha256:' + 'a'*64, postgres_image='sha256:' + 'b'*64,
-                                       schema='migrations-tree:' + 'c'*40)
+                                       schema='migrations-tree:' + 'c'*40, transport='writer-driven')
         self.prepared, self.launched = [], []
         def prepare(template, binding, profile, output, *, fixture, **options):
             self.prepared.append((output.name, fixture))
@@ -187,7 +184,8 @@ class KeyedFixture(unittest.TestCase):
         _, chosen = self.prepared[-1]
         cluster = Cluster(pods=1)
         snapshots = {'items': [{'kind': 'VolumeSnapshot', 'metadata': {'name': n, 'namespace': NS}} for n in fc.SNAPSHOTS.values()]}
-        fc.capture(cluster, NS, RID, chosen, snapshots, {'tenants': 8, 'postgresImage': PG, 'key': chosen['key']}, 1e12)
+        fc.capture(cluster, NS, RID, chosen, snapshots, {'tenants': 8, 'postgresImage': PG, 'key': chosen['key'],
+                                                       **fc.slices_record({'inputTransport': 'writer-driven'})}, 1e12)
         self.launched.append(bound)
 
     def run_keyed(self, action, name, launch=None):

@@ -19,7 +19,7 @@ HERE=Path(__file__).parent
 
 def manifest():
     return {'pair':{'core':COMMIT or E217_CORE,'deploy':os.environ.get('M7_PROFILE_TEST_DEPLOY_COMMIT',DEPLOY)},'profile':'pgstream-sample',
-            'runPurpose':'discovery','pgstreamTopology':'external-service-v1','completionContract':'evaluator-work-v2',
+            'runPurpose':'discovery','inputTransport':'writer-driven','completionContract':'evaluator-work-v2',
             'replicas':2,'tenants':4,'staticTopology':{'kind':s.KIND,'workers':2}}
 
 

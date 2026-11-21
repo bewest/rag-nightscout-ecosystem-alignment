@@ -21,14 +21,14 @@ from test_evaluator_progress import A, B, R, S
 
 def config():
     value=legacy_config();value['prepare'].update({'core-commit':CORE,'deploy-commit':DEPLOY,
-        'pgstream-topology':'external-service-v1','completion-contract':'evaluator-work-v2','static-workers':2,'replicas':2,
+        'completion-contract':'evaluator-work-v2','static-workers':2,'replicas':2,
         'generator-dependencies':'/synthetic/owned-dependencies'})
     return value
 
 
 def manifest(k=2,n=2):
     return {'pair':{'core':CORE,'deploy':DEPLOY},'profile':'pgstream-sample','runPurpose':'discovery',
-            'pgstreamTopology':'external-service-v1','completionContract':'evaluator-work-v2','replicas':n,
+            'inputTransport':'writer-driven','completionContract':'evaluator-work-v2','replicas':n,
             'staticTopology':{'kind':s.KIND,'workers':k}}
 
 
@@ -76,14 +76,13 @@ class StaticTopology(unittest.TestCase):
         for role in ('api','api-2','evaluator','evaluator-2','realtime','realtime-2','tenant-admin'):
             family=role if role=='tenant-admin' else role.split('-')[0]
             config['services'][role]={'command':['node','deploy/multitenant/entrypoint.js',family]}
-        config['services']['pgstream']={'command':a.stream_topology.EXTERNAL_COMMAND}
         config['services']['socket-edge']={'command':s.EDGE_COMMAND}
         roster=a.service_roster(config)
         self.assertIn('socket-edge',roster)
         stages=a.deployment_plan(config,pgstream=True)
         self.assertEqual(next(row[2][-2:] for row in stages if row[0]=='apis'),['api','api-2'])
         launch=next(row[2] for row in stages if row[0]=='remaining-roles')
-        for role in ('evaluator','evaluator-2','realtime','realtime-2','pgstream','socket-edge'):self.assertIn(role,launch)
+        for role in ('evaluator','evaluator-2','realtime','realtime-2','socket-edge'):self.assertIn(role,launch)
         broken=copy.deepcopy(config);broken['services']['socket-edge']['command']=['node','other.js']
         self.assertNotIn('socket-edge',a.service_roster(broken))
         self.assertIn('socket-edge',a.service_roster(config))
@@ -96,7 +95,19 @@ class StaticTopology(unittest.TestCase):
             if name.startswith(('evaluator','realtime')):row['restart']='unless-stopped'
         cfg['services']['socket-edge']={'command':s.EDGE_COMMAND,'restart':'unless-stopped','environment':{
             'NS_REALTIME_STATIC_COUNT':'2','NS_REALTIME_STATIC_ROUTE_MAP':json.dumps({'version':1,'rule':'sha256-modulo-v1','count':2,'upstreams':['http://realtime:1339/','http://realtime-2:1339/']})}}
-        values=role_rows({'services':{k:v for k,v in cfg['services'].items() if k!='socket-edge'}},m)
+        # The writer overlay's ordinal addresses and target settings (deploy writer-driven.js).
+        settings={'NS_INPUT_TRANSPORT':'writer-driven','NS_EVALUATOR_SLICES':'2','NS_REALTIME_SLICES':'2',
+                  'NS_EVALUATOR_SLICE_URL':'http://evaluator-{i}.evaluator:19002/','NS_REALTIME_SLICE_URL':'http://realtime-{i}.realtime-peers:19003/'}
+        cfg['services']['tenant-admin']={'environment':{}}
+        for name,row in cfg['services'].items():
+            if name=='socket-edge':continue
+            row['environment'].update(settings)
+        for role,zone,port in [('evaluator','evaluator',19002),('realtime','realtime-peers',19003)]:
+            for i in range(2):
+                row=cfg['services'][s.service(role,i)]
+                row.update(hostname=f'{role}-{i}',networks={'backend':{'aliases':[f'{role}-{i}.{zone}']}})
+                row['environment']['NS_SERVE_INTERNAL_PORT']=str(port)
+        values=role_rows({'services':{k:v for k,v in cfg['services'].items() if k not in ('socket-edge','tenant-admin')}},m)
         edge={'Id':'physical-edge','Image':m['imageId'],'Config':{'Cmd':s.EDGE_COMMAND,'Labels':{OWNER:m['owner'],'com.docker.compose.project':m['project'],'com.docker.compose.service':'socket-edge'}},'State':{'Running':True,'Pid':90,'StartedAt':'2026-11-17T00:00:00Z'}}
         values.append(edge);self.assertEqual(s.verify_runtime(m,cfg,values)['status'],'VERIFIED')
         for bad in (values[:-1],values+values[-1:]):

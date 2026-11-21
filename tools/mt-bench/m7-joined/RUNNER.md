@@ -270,14 +270,6 @@ acceptance remains separate and failed correctness remains failed.
 | `jwt-setup-concurrency` | Discovery JWT setup accepts a positive JavaScript safe integer and batches at most the remaining roster. |
 | `diagnostic-resource-profile`, `diagnostic-resource-allocation` | Retired 2026-11-19: Compose services run uncapped. Native Kubernetes binds requests in its own fixture. |
 
-The [legacy remote protocol](../remote-pgstream/protocol.py) still uses a
-three-hour combined warmup, idle and load ceiling, a one-hour probe interval
-ceiling and 1–60 seconds for the sampler. Its workload accepts 1–8 sockets per
-tenant, 0–80,000 total viewers, acceleration and hot weight up to 10,800, primer
-concurrency 1–32 and JWT setup concurrency 1–64. The external static binding
-accepts one API and one evaluator/realtime worker. The projection checks these
-limits before launch.
-
 Fresh Compose discovery binds an explicit primer maximum or concurrency above
 32 into a version-2 run receipt. Source preflight checks the pinned deployment
 and image for the extended range. Legacy source refuses an unsupported value
@@ -814,12 +806,11 @@ Compose and Kubernetes report the rounded rates per shape.
 
 ### Startup selection in a reused session
 
-A session attachment inherits the original `commissioningSlotWalMiB`,
+A session attachment inherits the original
 `tenantReadiness` and `platformStartup` proof. Its binding retains the exact
 runtime-owner path, SHA-256 and owner nonce. Admission checks the same source,
 image, roster, state path, frozen Compose and environment. Direct attachment
-requests cannot select a WAL allowance or readiness mode. Applying a WAL setting
-remains a fresh-preparation operation; attachment only verifies the existing
+requests cannot select a readiness mode; attachment only verifies the existing
 selection. Fixture names, CIDRs and generator dependency selections also remain
 prepare-only inputs. Resources and dependencies retain their existing runtime
 owner checks.
@@ -960,13 +951,6 @@ Use `plan` to inspect these phase limits and the work they cover. Set these limi
 from observed phase timings and keep their evidence with the experiment.
 Deployment priming is a separate provisioning stage. A traffic window names
 the generator's offered-work plan and does not set the overall cleanup clock.
-
-For fresh external pgstream discovery, `pgstream-notifier-ack-timeout-ms`
-selects the producer's per-request acknowledgment budget. Omit it to keep the
-source value. The receipt binds the requested value. After bootstrap, the
-runner records the source and effective wire hashes and checks the owned
-producer's read-only mount. The setting leaves retry cadence and clinical
-completion deadlines unchanged.
 
 For an owner-monitored one-shot local discovery point, set `"tier": "discovery"`
 and `"workSeconds": null`, supply positive `setup-seconds` and `drain-seconds`

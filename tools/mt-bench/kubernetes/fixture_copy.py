@@ -78,7 +78,7 @@ def seed_environment(inventory):
     """The seed environment the binding records (`NS_EVALUATOR_WORKERS` for evaluator K>1)."""
     value = dict(inventory.get('seed', {}).get('environment', {}))
     need(value.get('NS_EVALUATOR_WORKERS', '1') == str(evaluator_slices(inventory)), 'SEED_EVALUATOR_SLICES')
-    need(value.get('NS_INPUT_TRANSPORT', 'pgstream') == inventory.get('inputTransport', 'pgstream'), 'SEED_INPUT_TRANSPORT')
+    need(value.get('NS_INPUT_TRANSPORT') == inventory.get('inputTransport') == 'writer-driven', 'SEED_INPUT_TRANSPORT')
     return value
 
 
@@ -86,23 +86,19 @@ def slices_record(inventory):
     """Recorded in the fixture manifest only for K>1, so K=1 manifests are unchanged."""
     count = evaluator_slices(inventory)
     record = {'evaluatorSlices': count} if count != 1 else {}
-    if inventory.get('inputTransport', 'pgstream') != 'pgstream':
-        record['inputTransport'] = inventory['inputTransport']
+    record['inputTransport'] = inventory['inputTransport']
     return record
 
 
-def check_restore(manifest, tenants, postgres_image, slices=1, input_transport='pgstream', key=None):
+def check_restore(manifest, tenants, postgres_image, slices=1, input_transport='writer-driven', key=None):
     """A restore never grows or shrinks the roster and keeps the PostgreSQL data format.
-    Its Secrets carry the seed's pgstream receivers, so evaluator K must match too. A keyed
-    restore also refuses a fixture recorded under another key (a catalog pointing elsewhere)."""
+    A writer-driven fixture restores at any evaluator K (decision statefulset-ordinal-scaling,
+    amended), so `slices` is not checked. A keyed restore also refuses a fixture recorded under
+    another key (a catalog pointing elsewhere)."""
     need(key is None or manifest.get('key') == key, 'KEY_CHANGED')
-    need(manifest.get('inputTransport', 'pgstream') == input_transport, 'INPUT_TRANSPORT_CHANGED')
+    need(manifest.get('inputTransport') == input_transport, 'INPUT_TRANSPORT_CHANGED')
     need(manifest['tenants'] == tenants, 'TENANTS_CHANGED')
     need(manifest['postgresImage'] == postgres_image, 'POSTGRES_IMAGE_CHANGED')
-    # Only pgstream binds a fixture to evaluator K (its Secrets carry one receiver per slice);
-    # a writer-driven fixture restores at any K (decision statefulset-ordinal-scaling, amended).
-    if input_transport == 'pgstream':
-        need(manifest.get('evaluatorSlices', 1) == slices, 'EVALUATOR_SLICES_CHANGED')
 
 
 def storage(binding_storage):
@@ -114,7 +110,7 @@ def _jsonnet(jsonnet, library, code):
                                                'local f=import "ns/fixture.libsonnet";' + code], timeout=30))
 
 
-def render(jsonnet, library, namespace, run_id, chosen, tenants=None, postgres_image=None, slices=1, input_transport='pgstream'):
+def render(jsonnet, library, namespace, run_id, chosen, tenants=None, postgres_image=None, slices=1, input_transport='writer-driven'):
     """Objects created before the stores, from the deploy binding's fixture.libsonnet: empty
     claims (seed) or Retain contents, VolumeSnapshots and clones (restore)."""
     a = json.dumps

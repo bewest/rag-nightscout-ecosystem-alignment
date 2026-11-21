@@ -215,9 +215,9 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     for document in (run, intent):
         document.pop('applicationTopology', None)
         document['primerLocation'] = 'claim' if inventory['results']['primer'].get('claim') else 'pod'
-    transport = inventory.get('inputTransport', 'pgstream')
-    if transport == 'writer-driven':
-        run['roles'].pop('pgstream', None)
+    transport = inventory['inputTransport']
+    k.need(transport == 'writer-driven', 'INPUT_TRANSPORT')
+    run['roles'].pop('pgstream', None)
     for target in run['roles'].values():
         name = target['workload'].split('/', 1)[1]
         target['workload'] = inventory['workloads'][name]['kind'] + '/' + name
@@ -232,7 +232,7 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     if fixture:
         if 'key' in fixture:
             key = fixture['key']
-            k.need(key['tenants'] == tenants and key['transport'] == inventory.get('inputTransport', 'pgstream') and
+            k.need(key['tenants'] == tenants and key['transport'] == transport and
                    key.get('evaluatorSlices', 1) == (fixture_copy.evaluator_slices(inventory) if 'evaluatorSlices' in key else 1),
                    'FIXTURE_KEY_CASE_MISMATCH')
         library = binding/'bindings/kubernetes/lib'

@@ -13,8 +13,8 @@ evaluator ordinal is its own row). API reads only; no exec.
 OUT_DIR/nodes.json: /proc/cpuinfo `model name` per node, read once from one running case Pod there
 (the observer's only exec).
 Database and process figures (event-loop lag and utilization, evaluator phase time per slice,
-pending-work age, statements per write by role, slot lag, walsender waits, pg_stat_statements,
-pg_stat_io, receipt round trip) come from the run's own Prometheus when the binding input sets
+pending-work age, statements per write by role, pg_stat_statements,
+pg_stat_io) come from the run's own Prometheus when the binding input sets
 `labMetrics.enabled`: the controller retains a TSDB snapshot before teardown
 (runtime/packet/load/metrics-tsdb.tar, execute.metrics_snapshot) and `summarize` evaluates PromQL on it at the
 steady-window bookends with a local, network-less Prometheus of the same version. Without the
@@ -63,7 +63,6 @@ class Case:
         self.node = (read(self.d/'native-run-template.json', {}).get('nativeLoad') or {}).get('nodeName')
         self.runtime = self.d/'runtime'
         inputs = read(self.d/'binding-inputs.json', {})
-        self.input_transport = inputs.get('inputTransport', 'pgstream')
         self.log_roles = sorted(inputs.get('roleEnv') or {})
         workloads = {}
         for obj in manifests(read(self.d/'render.json', [])):
@@ -307,42 +306,6 @@ def window(case):
     return ('stage ' + TRAFFIC, None, None)
 
 
-TRACE = b'PGSTREAM_RECEIVER_TRACE '
-
-
-def delivery(out):
-    """Per pgstream transaction batch (commit position), from the evaluator receivers' own trace
-    (NS_PGSTREAM_RECEIVER_TRACE=1 in roleEnv): first receipt to last response across the slices that
-    received it, and the gap from one batch's last response to the next batch's first receipt.
-    Receiver wall clocks on different nodes are not aligned; the trace drops lines above 100/s."""
-    logs = out/'podlogs'
-    batches, dropped = {}, 0
-    for path in sorted(logs.glob('*.evaluator.log')) if logs.is_dir() else []:
-        pod = path.name.split('.')[0]
-        for line in path.read_bytes().splitlines():
-            at = line.find(TRACE)
-            if at < 0:
-                continue
-            try:
-                row = json.loads(line[at + len(TRACE):])
-            except ValueError:
-                continue
-            dropped += row.get('dropped', 0) or 0
-            # Core acknowledges an accepted body with 204 (lib/pgstream/evaluator.js); any 2xx is a delivery.
-            if row.get('event') != 'response-finished' or not row.get('position') or not 200 <= (row.get('status') or 0) < 300:
-                continue
-            cell = batches.setdefault(row['position'], {})
-            cell[pod] = (row['at'] - row['elapsedMs'], row['at'], row.get('rows'))
-    if not batches:
-        return {'verdict': 'UNMEASURED', 'reason': 'no receiver trace in podlogs (roleEnv NS_PGSTREAM_RECEIVER_TRACE=1)'}
-    ordered = sorted(batches.values(), key=lambda c: min(v[0] for v in c.values()))
-    spans = [max(v[1] for v in c.values()) - min(v[0] for v in c.values()) for c in ordered]
-    gaps = [min(v[0] for v in b.values()) - max(v[1] for v in a.values()) for a, b in zip(ordered, ordered[1:])]
-    return {'batches': len(ordered), 'slicesPerBatch': distribution([len(c) for c in ordered]),
-            'deliverySpanMs': distribution(spans), 'interBatchGapMs': distribution(gaps), 'droppedTraceLines': dropped,
-            'scope': 'read-derived from receiver timestamps; includes evaluator receipt time; clocks unaligned across nodes'}
-
-
 # The binding's Prometheus image (deploy lab-metrics.libsonnet), run locally on a copy of the
 # retained snapshot with no network.
 PROMETHEUS_IMAGE = 'prom/prometheus@sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996'
@@ -373,16 +336,6 @@ QUERIES = {
     'topStatementsCalls': 'topk(25, sum by (queryid) (increase(pg_stat_statements_calls_total[{w}s])))',
     'statementText': 'max by (queryid, query) (last_over_time(pg_stat_statements_query_id[{w}s]))',
 }
-PGSTREAM_QUERIES = {
-    'receiptsPerSecond': 'sum by (pod, slice, outcome) (rate(nightscout_pgstream_receipt_seconds_count[{w}s]))',
-    'receiptMeanSeconds': 'sum by (pod, slice) (rate(nightscout_pgstream_receipt_seconds_sum[{w}s])) / sum by (pod, slice) (rate(nightscout_pgstream_receipt_seconds_count[{w}s]))',
-    'receiptP95Seconds': 'histogram_quantile(0.95, sum by (pod, slice, le) (rate(nightscout_pgstream_receipt_seconds_bucket[{w}s])))',
-    'slotConfirmedLagBytesMax': 'max_over_time(ns_slot_confirmed_lag_bytes[{w}s])',
-    'slotConfirmedLagBytesMean': 'avg_over_time(ns_slot_confirmed_lag_bytes[{w}s])',
-    'walsenderSamplesByWait': 'sum by (state, wait_event_type, wait_event) (count_over_time(ns_walsender_senders[{w}s]))',
-}
-
-
 def load_directory(case):
     """The controller's load stage output: runtime/packet/load in a launched case (load/ in older layouts)."""
     for path in (case.d/'runtime'/'packet'/'load', case.d/'load'):
@@ -456,8 +409,7 @@ def prometheus_figures(case, start, end, local=LocalPrometheus):
     w = max(1, int((end - start) / 1000))
     server = local(load/receipt['file'])
     try:
-        queries = QUERIES | PGSTREAM_QUERIES if case.input_transport == 'pgstream' else QUERIES
-        figures = {name: server.query(expr.format(w=w), end / 1000) for name, expr in queries.items()}
+        figures = {name: server.query(expr.format(w=w), end / 1000) for name, expr in QUERIES.items()}
     finally:
         server.close()
     text = {row['labels'].get('queryid'): row['labels'].get('query') for row in figures.pop('statementText')}
@@ -514,7 +466,7 @@ def summarize(case, out):
     models = read(out/'nodes.json', {})
     every = sorted(set(nodes) | set(models) | set(placement.values()) - {'<none>'})
     return {
-        'run': case.run, 'inputTransport': case.input_transport, 'window': label, 'samples': used,
+        'run': case.run, 'window': label, 'samples': used,
         'nodes': [{'name': node, 'cpuModel': (models.get(node) or {}).get('cpuModel', 'UNMEASURED'),
                    **{k: distribution(v) for k, v in nodes.get(node, {}).items()}} for node in every],
         # Per Pod: each evaluator ordinal separately, with the node it ran on.
@@ -527,7 +479,6 @@ def summarize(case, out):
                                  for c, cell in sorted(roles.items())},
         'podLogs': read(out/'podlogs'/'followers.json'),
         'prometheus': prometheus_figures(case, start, end),
-        **({'pgstreamDelivery': delivery(out)} if case.input_transport == 'pgstream' else {}),
     }
 
 

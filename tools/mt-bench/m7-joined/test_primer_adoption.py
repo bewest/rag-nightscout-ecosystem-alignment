@@ -33,12 +33,16 @@ class PrimerAdoption(unittest.TestCase):
     def test_image_preflight_refuses_legacy_source_before_image_access(self):
         from types import SimpleNamespace
         args=SimpleNamespace(profile='pgstream-sample',run_purpose='discovery',primer_concurrency=33,
+                             core_repo='/synthetic/core',core_commit='e'*40,
                              deploy_repo='/synthetic/deploy',deploy_commit='f'*40)
-        with patch.object(adapter,'command',return_value=b'legacy native primer') as command, patch.object(adapter,'image') as image:
+        # A core without deployment-settings.js takes the deploy primer source, which is refused.
+        with patch.object(adapter,'git',return_value='') as git, \
+                patch.object(adapter,'command',return_value=b'legacy native primer') as command, patch.object(adapter,'image') as image:
             with self.assertRaisesRegex(RuntimeError,'PRIMER_OPTION_SOURCE_UNSUPPORTED'):
                 adapter.prepare_image_inputs(args)
             image.assert_not_called()
             command.assert_called_once_with(['git','-C',args.deploy_repo,'show',args.deploy_commit+':'+primer_options.SOURCE_PATH],binary=True)
+            git.assert_called_once_with(args.core_repo,'ls-tree','--name-only',args.core_commit,'lib/server/serve/deployment-settings.js')
 
     def test_timed_out_constructor_removes_exact_owned_container_and_checks_absence(self):
         name='ns-primer-option-probe-'+'a'*32

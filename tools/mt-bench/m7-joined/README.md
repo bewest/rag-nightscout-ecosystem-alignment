@@ -42,20 +42,18 @@ After source-driven deploy and preflight, pass the prepared cell directly as the
 REST attachment and its `state` directory as `--state`, with the same project and
 exact expected source/image. REST retains its own source allowlist and traffic
 authorization; selecting a fixture does not authorize a workload window.
-This selects `NS_PGSTREAM=1`, a 60-second sampler-disabled
+This selects writer-driven input (`NS_INPUT_TRANSPORT=writer-driven`), a 60-second sampler-disabled
 baseline, 120-second idle and 600-second ordinary load (`ACCEL=1`, `HOT_FACTOR=1`).
 A separate synthetic correctness uploader writes every 300 seconds. Its stored
 ID/glucose, durable completed versions/rows/frame and already-connected stock
 clients must agree. All workload writes also pass the independent count oracle
 and row-mutation control. No worker restart campaign runs in this sample. The selected startup and runtime
-roster omit the retired legacy feed-reader. The default colocated topology runs
-pgstream inside evaluator; explicit `external-service-v1` keeps a separate native
-producer service. Record the actual selected topology in comparisons.
+roster omit the retired legacy feed-reader.
 
 Source helpers resolve only the cell-owned lockfile dependency tree; evaluator
 and realtime image processes independently check `/opt/app` pg resolution before
-load. Per-process CPU-counter bookends and RSS distinguish evaluator Node from its
-pgstream child; process replacement/missing data is UNMEASURED.
+load. Per-process CPU-counter bookends and RSS cover evaluator Node; process
+replacement/missing data is UNMEASURED.
 `sql-attribution.json` uses full private statement bookends for disjoint SQL-role
 buckets. A native recovery connection may use the configured pgstream role on
 the evaluator database. That role has a separate `shared` bucket, counted once;

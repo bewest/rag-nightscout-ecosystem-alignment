@@ -207,20 +207,21 @@ class ActualAttachment(unittest.TestCase):
             (runtime/'state/primer').mkdir();(runtime/'state/primer/tenants.json').write_text('[]')
             (runtime/'state/seed').write_text('unchanged')
             (runtime/'env').write_text('synthetic');(runtime/'compose.json').write_text('{}')
-            a.write(runtime/'owner.json',{'directory':str(runtime),'prepared':True,
-                'project':'synthetic','pair':{'core':'core','deploy':'deploy'},'imageId':'sha256:'+'e'*64})
+            a.write(runtime/'owner.json',{'directory':str(runtime),'prepared':True,'inputTransport':'writer-driven','staticTopology':{'kind':'static-hash-v1','workers':1},'replicas':1,'servingInstances':{},
+                'project':'synthetic','pair':{'core':'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa','deploy':'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'},'imageId':'sha256:'+'e'*64})
             config={'services':{'nginx':{'ports':[{'host_ip':'127.0.0.1','published':12345}]},
-                'vault':{'command':['vault','server']},'pgstream':{'command':a.stream_topology.EXTERNAL_COMMAND},'evaluator':{'command':['evaluator']}}}
+                'vault':{'command':['vault','server']},'evaluator':{'command':['evaluator']},
+                'bootstrap':{'environment':{'NS_INPUT_TRANSPORT':'writer-driven'}}}}
             row={'Id':'physical','Image':'sha256:'+'e'*64,'State':{'StartedAt':'original'},
                 'Config':{'Labels':{a.OWNER:'original','com.docker.compose.service':'evaluator'}}}
             args=SimpleNamespace(fixture_project=None,profile='pgstream-sample',run_purpose='discovery',
-                core_repo=str(runtime/'core'),core_commit='core',deploy_repo='deploy',deploy_commit='deploy',
+                core_repo=str(runtime/'core'),core_commit='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',deploy_repo='deploy',deploy_commit='bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
                 source_root=str(runtime/'core'),state=str(runtime/'state'),dependencies_root=str(runtime/'dependencies'),
                 project='synthetic',image='sha256:'+'e'*64,image_id='sha256:'+'e'*64,tenants=1,replicas=1,freeze=str(root/'receipt.json'),
                 quiet_load=0,env_file=str(runtime/'env'),compose=[str(runtime/'compose.json')],
-                runtime_owner=str(runtime/'owner.json'),pgstream_topology=a.stream_topology.EXTERNAL)
+                runtime_owner=str(runtime/'owner.json'),completion_contract='evaluator-work-v2',static_workers=1)
             with ExitStack() as stack:
-                for name,value in {'instrument':{'sha256':'d'*64},'git':'core','resources':[row],
+                for name,value in {'instrument':{'sha256':'d'*64},'git':'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa','resources':[row],
                     'fixture_inventory':{},'host_identity':{},'generate':{},'generate_workload':{},
                     'tenant_projection':[]}.items():
                     stack.enter_context(patch.object(a,name,return_value=value))
@@ -237,15 +238,17 @@ class ActualAttachment(unittest.TestCase):
                         'functionalAcceptanceAtAuthorization':'PENDING','sourceAcceptance':{'status':'PENDING'},
                         'configurationSha256':rc.sha(m['runConfiguration']),
                         'execution':{'workSeconds':3600,'cleanupSeconds':30,'k6Image':'sha256:'+'f'*64},
-                        'limits':{'tenants':1,'apiReplicas':1,'trafficSeconds':m['cadence']['loadSeconds']}}
+                        'limits':{'tenants':1,'apiReplicas':1,'trafficSeconds':m['cadence']['loadSeconds'],'staticWorkers':1}}
                     a.write(root/'receipt.json',receipt)
                     return actual_frozen(m,operation)
                 stack.enter_context(patch.object(a,'frozen',side_effect=admission));stack.enter_context(patch.object(a,'image'))
                 stack.enter_context(patch.object(a,'serving_mounts'))
-                stack.enter_context(patch.object(a,'command',side_effect=lambda argv,**kw:json.dumps(config if 'config' in argv else dict(schema='synthetic',sha256='synthetic',sourceCommit='core',sourceBlobs={}))))
+                # Static topology checks have their own tests; this test covers attachment custody.
+                stack.enter_context(patch.object(a.static_topology,'verify_config',return_value={}))
+                stack.enter_context(patch.object(a,'command',side_effect=lambda argv,**kw:json.dumps(config if 'config' in argv else dict(schema='synthetic',sha256='synthetic',sourceCommit='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',sourceBlobs={}))))
                 def verify(d,m):
                     self.assertNotIn('diagnosticResources',m);self.assertNotIn('edgeWorkerBudget',m)
-                    self.assertEqual(a.stream_topology.verify_config(m,config),a.stream_topology.EXTERNAL)
+                    self.assertEqual(a.stream_topology.verify_config(m,config),a.stream_topology.WRITER)
                 stack.enter_context(patch.object(a,'verify',side_effect=verify))
                 for name in ('one','two'):
                     args.directory=str(root/name);a.attach(args)

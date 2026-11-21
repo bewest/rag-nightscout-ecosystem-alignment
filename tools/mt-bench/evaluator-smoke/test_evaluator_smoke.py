@@ -144,11 +144,8 @@ class SmokeConfiguration(unittest.TestCase):
     def test_transport_defaults_and_worker_override(self):
         args = ('core', 'deploy', '/core', '/deploy', 'project', smoke.WORKLOAD)
         with patch.object(smoke, 'free_subnets', return_value=('backend', 'edge')):
-            classic = smoke.config(*args)['prepare']
-            writer = smoke.config(*args, transport='writer-driven')['prepare']
-            one = smoke.config(*args, transport='writer-driven', workers=1)['prepare']
-        self.assertEqual((classic['pgstream-topology'], classic['replicas'], classic['static-workers']), ('external-service-v1', 1, 1))
-        self.assertNotIn('input-transport', classic)
+            writer = smoke.config(*args)['prepare']
+            one = smoke.config(*args, workers=1)['prepare']
         self.assertEqual((writer['input-transport'], writer['replicas'], writer['static-workers']), ('writer-driven', 2, 2))
         self.assertNotIn('pgstream-topology', writer)
         self.assertEqual((one['replicas'], one['static-workers']), (2, 1))
