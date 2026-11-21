@@ -31,18 +31,19 @@ def require(ok, code):
 def validate(spec):
     if spec == BASELINE and type(spec['additionalSeedRows']) is int:
         return
-    require(isinstance(spec, dict) and set(spec) == {'mode', 'anchorUnixMs'} and spec['mode'] in (MODE, MODE_4W),
+    require(isinstance(spec, dict) and set(spec) == {'mode', 'anchorUnixMs'} and spec['mode'] in (MODE,) + tuple(SHAPES),
             'UNSUPPORTED')
     anchor = spec['anchorUnixMs']
-    rows = ROWS if spec['mode'] == MODE else SGV_4W
+    rows = ROWS if spec['mode'] == MODE else SHAPES[spec['mode']][0] * 288
     require(type(anchor) is int and rows * STEP_MS <= anchor < 253402300800000
             and anchor % STEP_MS == 0, 'ANCHOR')
 
 
 def rows_per_tenant(spec):
     """Stored rows per tenant by collection for a populated-history spec."""
-    if spec.get('mode') == MODE_4W:
-        return dict(entries=SGV_4W, devicestatus=DS_4W, treatments=TREATMENTS_4W, profile=1)
+    if spec.get('mode') in SHAPES:
+        days = SHAPES[spec['mode']][0]
+        return dict(entries=days*288, devicestatus=days*288, treatments=days*TREATMENTS_PER_DAY, profile=1)
     return dict(entries=ROWS)
 
 
@@ -110,7 +111,7 @@ def post(port, tenant, rows, until, path='/api/v1/entries'):
 
 def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=post, now=time.time):
     validate(spec)
-    if spec != BASELINE and spec['mode'] == MODE_4W:
+    if spec != BASELINE and spec['mode'] in SHAPES:
         return run_4w(spec, tenants, base, sql, until, window_seconds, verify_only=verify_only,
                       post_batch=post_batch, now=now)
     require(spec != BASELINE and tenants and type(window_seconds) is int and window_seconds >= 0, 'INPUT')
@@ -205,6 +206,14 @@ WORKERS_4W = 16
 # history at the end of the run (the run's own writes fill the rest).
 MAX_STALE_4W_MS = 24 * 3_600_000
 
+# synthetic-history-2d-v1: the same generator over two days, the evaluator's cold window
+# (LOOKBACK_MS): 576 SGV, 576 devicestatus, 16 treatments, one profile per tenant. Its own
+# marker, so its readback never counts another mode's rows, and its own fixture-catalog key.
+MODE_2D = 'synthetic-history-2d-v1'
+DEVICE_2D = 's4_history_fixture_2d_v1'
+DAYS_2D = 2
+SHAPES = {MODE_4W: (DAYS_4W, DEVICE_4W), MODE_2D: (DAYS_2D, DEVICE_2D)}  # mode -> (days, marker)
+
 
 def _iso(stamp):
     return datetime.fromtimestamp(stamp / 1000, tz=timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
@@ -216,21 +225,23 @@ def _sgv_4w(stamp, ordinal):
     return int(max(40, min(400, round(130 + 45 * math.sin(day + ordinal * 0.37) + 20 * math.sin(fast + ordinal)))))
 
 
-def entries_4w(anchor, ordinal):
+def entries_4w(anchor, ordinal, days=DAYS_4W, device=DEVICE_4W):
     out = []
-    for index in range(SGV_4W):
-        stamp = anchor - (SGV_4W - 1 - index) * STEP_MS
-        out.append(dict(type='sgv', device=DEVICE_4W, direction='Flat', sgv=_sgv_4w(stamp, ordinal),
+    n = days * 288
+    for index in range(n):
+        stamp = anchor - (n - 1 - index) * STEP_MS
+        out.append(dict(type='sgv', device=device, direction='Flat', sgv=_sgv_4w(stamp, ordinal),
                         date=stamp, dateString=_iso(stamp)))
     return out
 
 
-def devicestatus_4w(anchor, ordinal):
+def devicestatus_4w(anchor, ordinal, days=DAYS_4W, device=DEVICE_4W):
     out = []
-    for index in range(DS_4W):
-        stamp = anchor - (DS_4W - 1 - index) * STEP_MS
+    n = days * 288
+    for index in range(n):
+        stamp = anchor - (n - 1 - index) * STEP_MS
         iso = _iso(stamp); bg = _sgv_4w(stamp, ordinal); iob = round(((index + ordinal) % 60) / 20, 2)
-        out.append({'device': 'openaps://' + DEVICE_4W, 'created_at': iso,
+        out.append({'device': 'openaps://' + device, 'created_at': iso,
                     'uploader': {'battery': 40 + (index + ordinal) % 60},
                     'pump': {'clock': iso, 'reservoir': round(200 - (index % 864) * 0.2, 1),
                              'battery': {'percent': 50 + index % 50}, 'status': {'status': 'normal', 'bolusing': False}},
@@ -246,15 +257,15 @@ _DAY = ((450, 'Meal Bolus', 5.0, 45), (750, 'Meal Bolus', 6.0, 60), (1110, 'Meal
         (960, 'Temp Basal', None, None), (1320, 'Temp Basal', None, None))
 
 
-def treatments_4w(anchor, ordinal):
+def treatments_4w(anchor, ordinal, days=DAYS_4W, device=DEVICE_4W):
     out = []
-    first_day = anchor - anchor % 86_400_000 - (DAYS_4W - 1) * 86_400_000
-    for day in range(DAYS_4W):
+    first_day = anchor - anchor % 86_400_000 - (days - 1) * 86_400_000
+    for day in range(days):
         for slot, (minute, kind, insulin, carbs) in enumerate(_DAY):
             stamp = first_day + day * 86_400_000 + minute * 60_000 + (ordinal % 6) * STEP_MS
             if stamp > anchor:
-                stamp -= DAYS_4W * 86_400_000  # wrap the last day's later slots to before the first day
-            doc = {'eventType': kind, 'created_at': _iso(stamp), 'enteredBy': DEVICE_4W}
+                stamp -= days * 86_400_000  # wrap the last day's later slots to before the first day
+            doc = {'eventType': kind, 'created_at': _iso(stamp), 'enteredBy': device}
             if insulin is not None:
                 doc['insulin'] = insulin
             if carbs is not None:
@@ -265,20 +276,22 @@ def treatments_4w(anchor, ordinal):
     return out
 
 
-def profile_4w(anchor):
+def profile_4w(anchor, days=DAYS_4W, device=DEVICE_4W):
+    start = _iso(anchor - days * 288 * STEP_MS)
     sched = lambda v: [{'time': '00:00', 'value': v, 'timeAsSeconds': 0}]
-    return {'defaultProfile': 'S4History', 'startDate': _iso(anchor - SGV_4W * STEP_MS), 'created_at': _iso(anchor - SGV_4W * STEP_MS),
-            'units': 'mg/dl', 'enteredBy': DEVICE_4W,
+    return {'defaultProfile': 'S4History', 'startDate': start, 'created_at': start,
+            'units': 'mg/dl', 'enteredBy': device,
             'store': {'S4History': {'dia': 4, 'carbratio': sched(10), 'sens': sched(50), 'basal': sched(0.8),
                                     'target_low': sched(100), 'target_high': sched(120), 'units': 'mg/dl',
                                     'timezone': 'UTC', 'delay': 20, 'startDate': '1970-01-01T00:00:00.000Z'}}}
 
 
-def expected_4w(anchor, ordinal):
+def expected_4w(anchor, ordinal, days=DAYS_4W, device=DEVICE_4W):
     """Readback values the API must preserve: counts and order-independent numeric sums."""
-    e = entries_4w(anchor, ordinal); d = devicestatus_4w(anchor, ordinal); t = treatments_4w(anchor, ordinal)
-    return dict(entries=SGV_4W, entriesMd5=digest(e), devicestatus=DS_4W,
-                dsBattery=sum(r['uploader']['battery'] for r in d), treatments=TREATMENTS_4W,
+    e = entries_4w(anchor, ordinal, days, device); d = devicestatus_4w(anchor, ordinal, days, device)
+    t = treatments_4w(anchor, ordinal, days, device)
+    return dict(entries=len(e), entriesMd5=digest(e), devicestatus=len(d),
+                dsBattery=sum(r['uploader']['battery'] for r in d), treatments=len(t),
                 insulinX10=round(sum(r.get('insulin', 0) for r in t) * 10), carbs=sum(r.get('carbs', 0) for r in t),
                 profile=1)
 
@@ -295,27 +308,27 @@ def _tables(sql):
     return found
 
 
-def census_4w(sql, tables, at, horizon):
+def census_4w(sql, tables, at, horizon, device=DEVICE_4W):
     fields = " || ',' || ".join(f"(doc->>'{k}')" for k in FIELDS)
     measured = collections.defaultdict(dict)
     for line in sql(f"""SELECT tenant_id::text, count(*), sum(pg_column_size(doc)),
         count(*) FILTER (WHERE jsonb_typeof(doc->'date') = 'number'
            AND (doc->>'date')::bigint BETWEEN {at+horizon-LOOKBACK_MS} AND {at}),
         md5(string_agg({fields}, '|' ORDER BY (doc->>'date')::bigint))
-        FROM {tables['entries']} WHERE doc->>'device'='{DEVICE_4W}' GROUP BY tenant_id;""").splitlines():
+        FROM {tables['entries']} WHERE doc->>'device'='{device}' GROUP BY tenant_id;""").splitlines():
         tenant, rows, size, active, checksum = line.split('\t')
         measured[tenant].update(entries=int(rows), entriesBytes=int(size), activeRows=int(active), entriesMd5=checksum)
     for line in sql(f"""SELECT tenant_id::text, count(*), sum(pg_column_size(doc)), sum((doc->'uploader'->>'battery')::bigint)
-        FROM {tables['devicestatus']} WHERE doc->>'device'='openaps://{DEVICE_4W}' GROUP BY tenant_id;""").splitlines():
+        FROM {tables['devicestatus']} WHERE doc->>'device'='openaps://{device}' GROUP BY tenant_id;""").splitlines():
         tenant, rows, size, battery = line.split('\t')
         measured[tenant].update(devicestatus=int(rows), devicestatusBytes=int(size), dsBattery=int(battery))
     for line in sql(f"""SELECT tenant_id::text, count(*), sum(pg_column_size(doc)),
         round(coalesce(sum((doc->>'insulin')::numeric),0)*10), coalesce(sum((doc->>'carbs')::numeric),0)
-        FROM {tables['treatments']} WHERE doc->>'enteredBy'='{DEVICE_4W}' GROUP BY tenant_id;""").splitlines():
+        FROM {tables['treatments']} WHERE doc->>'enteredBy'='{device}' GROUP BY tenant_id;""").splitlines():
         tenant, rows, size, insulin, carbs = line.split('\t')
         measured[tenant].update(treatments=int(rows), treatmentsBytes=int(size), insulinX10=int(float(insulin)), carbs=int(float(carbs)))
     for line in sql(f"""SELECT tenant_id::text, count(*) FROM {tables['profile']}
-        WHERE doc->>'enteredBy'='{DEVICE_4W}' GROUP BY tenant_id;""").splitlines():
+        WHERE doc->>'enteredBy'='{device}' GROUP BY tenant_id;""").splitlines():
         tenant, rows = line.split('\t')
         measured[tenant]['profile'] = int(rows)
     return dict(measured)
@@ -331,15 +344,16 @@ def run_4w(spec, tenants, base, sql, until, window_seconds, *, verify_only=False
     require(port and len({row['id'] for row in tenants}) == len(tenants)
             and len({row['host'] for row in tenants}) == len(tenants), 'ROSTER')
     anchor = spec['anchorUnixMs']
+    days, device = SHAPES[spec['mode']]
     roster = sorted(tenants, key=lambda row: row['host'])
-    expected = {tenant['id']: expected_4w(anchor, i) for i, tenant in enumerate(roster)}
+    expected = {tenant['id']: expected_4w(anchor, i, days, device) for i, tenant in enumerate(roster)}
     tables = _tables(sql)
 
     def inspect():
         at = int(now() * 1000)
         horizon = max(window_seconds*1000, math.ceil(until*1000)-at if until is not None else 0)
         require(anchor <= at and at + horizon - anchor <= MAX_STALE_4W_MS, 'OUTSIDE_CLINICAL_WINDOW')
-        measured = census_4w(sql, tables, at, horizon)
+        measured = census_4w(sql, tables, at, horizon, device)
         require(measured.keys() <= expected.keys(), 'FOREIGN_TENANT')
         return at, measured
 
@@ -353,9 +367,9 @@ def run_4w(spec, tenants, base, sql, until, window_seconds, *, verify_only=False
     if missing:
         require(not verify_only, 'RESTORED_ROWS_MISSING')
         ids = ','.join("'" + t['id'] + "'" for _, t in missing)
-        oldest = anchor - (SGV_4W - 1) * STEP_MS
+        oldest = anchor - (days * 288 - 1) * STEP_MS
         collisions = sql(f"""SELECT DISTINCT tenant_id::text FROM {tables['entries']}
-            WHERE tenant_id::text IN ({ids}) AND doc->>'type'='sgv' AND doc->>'device' IS DISTINCT FROM '{DEVICE_4W}'
+            WHERE tenant_id::text IN ({ids}) AND doc->>'type'='sgv' AND doc->>'device' IS DISTINCT FROM '{device}'
               AND jsonb_typeof(doc->'date')='number' AND (doc->>'date')::bigint BETWEEN {oldest} AND {anchor};""").splitlines()
         require(not collisions, 'UPSERT_KEY_IN_USE')
         failed = Event()
@@ -364,14 +378,14 @@ def run_4w(spec, tenants, base, sql, until, window_seconds, *, verify_only=False
                 return
             i, tenant = item
             try:
-                e = entries_4w(anchor, i)
+                e = entries_4w(anchor, i, days, device)
                 for k in range(0, len(e), SGV_BATCH):
                     post_batch(port, tenant, e[k:k+SGV_BATCH], until, path='/api/v1/entries')
-                d = devicestatus_4w(anchor, i)
+                d = devicestatus_4w(anchor, i, days, device)
                 for k in range(0, len(d), DS_BATCH):
                     post_batch(port, tenant, d[k:k+DS_BATCH], until, path='/api/v1/devicestatus')
-                post_batch(port, tenant, treatments_4w(anchor, i), until, path='/api/v1/treatments')
-                post_batch(port, tenant, profile_4w(anchor), until, path='/api/v1/profile')
+                post_batch(port, tenant, treatments_4w(anchor, i, days, device), until, path='/api/v1/treatments')
+                post_batch(port, tenant, profile_4w(anchor, days, device), until, path='/api/v1/profile')
             except Exception:
                 failed.set()
                 raise
