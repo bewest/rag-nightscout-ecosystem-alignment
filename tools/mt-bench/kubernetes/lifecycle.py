@@ -92,8 +92,7 @@ def owned():
     cur=get('namespace',ns,False)
     assert cur and cur['metadata']['uid']==nsuid and cur['metadata']['labels']['nightscout.org/run-id']==rid
 def objects(stage):return read(d/'stages'/f'{stage}.json')['items']
-split = 'verification' in read(d/'inventory.json').get('workloads', {})
-startup_stages = ('foundation','stores','provision','private-admin','primer','serving') + (('verification',) if split else ())
+startup_stages = ('foundation','stores','provision','private-admin','primer','serving')
 def step(stage):
     global current
     current=stage

@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-"""Prepare a portable binding, bind a fresh allocation, or execute one bounded load."""
+"""Bind a fresh allocation, or execute one bounded load."""
 import argparse
-import io
 import json
 import os
 from pathlib import Path
 import shutil
 import subprocess
 import sys
-import tarfile
 
 import kube_adapter as k
 from auto_catalog import auto_catalog
@@ -16,7 +14,6 @@ import execute
 import frozen
 import edge_configuration
 import matrix
-import primer_storage
 import primer_options
 import population_ceiling
 import application_topology
@@ -40,42 +37,6 @@ def bind_ack_publisher(package, selected):
                          .replace(wait, wait+'\n  cat "$work/pgstream-ack.json"'))
     shutil.copyfile(k.HERE/'producer_ack_publish.py', package/frozen.ACK_PACKAGE[0])
     shutil.copyfile(k.M7/'producer_wire.py', package/frozen.ACK_PACKAGE[1])
-
-
-def bind_primer_storage(package, selected):
-    if frozen.PRIMER_STORAGE not in selected:
-        return
-    options = selected[frozen.PRIMER_STORAGE]
-    lib = package/'lib/ns/nightscout.libsonnet'
-    text = lib.read_text()
-    volume = "{ name: 'config-' + role, emptyDir: { medium: 'Memory', sizeLimit: '1Mi' } },"
-    k.need(text.count(volume)==1, 'PRIMER_STORAGE_VOLUME_SEAM')
-    size = primer_storage.volume_size(options['stateMiB'])
-    text = text.replace(volume, volume.replace("sizeLimit: '1Mi'", f"sizeLimit: if role == 'primer' then '{size}' else '1Mi'"))
-    if options['secretCodec']=='gzip-v1':
-        start = "const input='/run/ns-secret/'+role;"
-        marker = "const source=from+'/'+name,destination=to+'/'+name;"
-        command = "      command: ['node', '-e', |||\n"
-        end = '      |||] + roles,'
-        k.need(all(text.count(anchor)==1 for anchor in (start, marker, command, end)),
-               'PRIMER_STORAGE_INSTALL_SEAM')
-        source = (k.HERE/'primer_config_unpack.cjs').read_text().rstrip()
-        unpack = start+'\n'+source+f"\nif(role==='primer')restorePrimerConfig(input,dir,{options['stateMiB']*primer_storage.MIB});"
-        copy = "if(role==='primer'&&from===input&&['config.json.gz','config.digest.json'].includes(name))continue;\n"+marker
-        text = text.replace(command, "      local installer = |||\n").replace(end, '      |||,\n'
-            "      command: ['node', '-e', if std.member(roles, 'primer') then\n"
-            f'        std.strReplace(std.strReplace(installer, {json.dumps(start)}, {json.dumps(unpack)}),\n'
-            f'                       {json.dumps(marker)}, {json.dumps(copy)})\n'
-            '      else installer] + roles,')
-    lib.write_text(text)
-    publisher = package/'scripts/secrets.sh'
-    text = publisher.read_text()
-    publish = '  for role in api realtime evaluator tenant-admin ui admin primer; do'
-    k.need(text.count(publish)==1, 'PRIMER_STORAGE_PUBLISH_SEAM')
-    insert = '''  primer_binding=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-  python3 -B "$primer_binding/scripts/primer_storage.py" "$primer_binding/assets/source-contract.json" "$work/primer"\n'''
-    publisher.write_text(text.replace(publish,insert+publish))
-    shutil.copyfile(k.HERE/'primer_storage.py',package/frozen.PRIMER_STORAGE_PACKAGE)
 
 
 def bind_primer_stall(package, manifest):
@@ -113,102 +74,6 @@ def bind_job_completion_wait(package, selected):
     publisher.write_text(text.replace(wait,wait.replace('30s',f"{selected[frozen.JOB_COMPLETE]}s")))
 
 
-def materialize(manifest, binding_repo, deploy_repo, out):
-    selected = frozen.source(manifest)
-    def git(repo, *args):
-        return subprocess.check_output(['git', '-C', repo, *args])
-    # The deploy checkout supplies the captured contract; its head is recorded,
-    # not compared. Image identity is the selected digest.
-    deploy_head = git(deploy_repo, 'rev-parse', 'HEAD').decode().strip()
-    archive = git(binding_repo, 'archive', manifest['bindingCommit'], 'bindings/kubernetes')
-    with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
-        schema = 'bindings/kubernetes/inputs.schema.json'
-        supported = json.load(tar.extractfile('bindings/kubernetes/assets/source-contract.json'))
-        if 'verificationJob' in supported:
-            k.need(supported['verificationJob']=='verification','CANDIDATE_VERIFICATION_JOB_CHANGED')
-            split=True
-        else:
-            # Earlier split bindings predate verificationJob and declare this
-            # legacy input in their frozen schema. Keep those sources runnable.
-            inputs = json.load(tar.extractfile(schema)) if schema in tar.getnames() else {}
-            split = inputs.get('properties', {}).get('primerStorage', {}).get('type') == 'string'
-    if split:
-        k.need(population_ceiling.FIELD not in selected, 'POPULATION_CEILING_UNSUPPORTED_BY_BINDING')
-        k.need(frozen.PRIMER_STORAGE not in selected, 'USE_BINDING_PRIMER_STORAGE_INPUT')
-    options = selected.get(primer_options.FIELD, {})
-    protocol = None
-    if not split or primer_options.requires_extended(options):
-        prime_source = git(deploy_repo, 'show', selected['deployCommit']+':'+primer_options.SOURCE_PATH)
-        protocol = primer_options.source_protocol(prime_source)
-        primer_options.require_source(options, protocol, k.need)
-    population=selected.get(population_ceiling.FIELD)
-    population_files=None
-    population_support=None
-    if population is not None:
-        try:
-            population_files={name:git(deploy_repo,'show',selected['deployCommit']+':'+population_ceiling.SOURCE_PREFIX+name)
-                              for name in population_ceiling.SOURCE_FILES}
-        except subprocess.SubprocessError:
-            k.need(False,'POPULATION_SOURCE_UNSUPPORTED')
-        population_ceiling.source_hashes(population_files,k.need)
-        try:
-            population_support=json.loads(git(binding_repo,'show',manifest['bindingCommit']+
-                                              ':bindings/kubernetes/assets/population-ceiling-source.json'))
-        except (subprocess.SubprocessError,ValueError):
-            k.need(False,'POPULATION_BINDING_UNSUPPORTED')
-        hashes=population_ceiling.source_hashes(population_files,k.need)
-        k.need(population_support.get('protocol')==population_ceiling.PROTOCOL and
-               all(population_support.get('sourceFilesSha256',{}).get(name)==value for name,value in hashes.items()),
-               'POPULATION_BINDING_SOURCE_CHANGED')
-    out.mkdir(mode=0o700, parents=True, exist_ok=False)
-    with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
-        tar.extractall(out, filter='data')
-    package = out / 'bindings/kubernetes'
-    asset = package / 'assets/source-contract.json'
-    supported = k.document(asset)
-    support_path=package/'assets/population-ceiling-source.json'
-    if support_path.is_file():population_support=k.document(support_path)
-    native_inputs = supported.get('bindingInputsVersion') == 1
-    if not native_inputs:
-        subprocess.run(['git', 'apply', '--directory=bindings/kubernetes', str(k.HERE / 'binding-input.patch')],
-                       cwd=out, check=True)
-    subprocess.run([sys.executable, package/'check/source-equivalence.py', '--capture',
-                    '--compose', Path(deploy_repo).resolve()/'bindings/compose',
-                    '--image', selected['localImageId']], check=True)
-    measured = k.document(asset)
-    if 'verificationJob' in supported:
-        k.need(measured.get('verificationJob')==supported['verificationJob'],'CANDIDATE_VERIFICATION_JOB_CHANGED')
-    if split:
-        k.need(all(measured[key] == selected[key] for key in ('coreCommit', 'deployCommit', 'localImageId')),
-               'CANDIDATE_SOURCE_IMAGE_CHANGED')
-    if native_inputs:
-        k.need(measured.get('bindingInputsVersion') == 1, 'BINDING_INPUT_PROTOCOL_CHANGED')
-    # The binding can only create the commands and database identities it knows.
-    for key in ('commands', 'postgresIdentities'):
-        k.need(split or measured[key] == supported[key], 'UNSUPPORTED_BINDING_CAPABILITY:' + key)
-    measured['capturedDeployHead'] = deploy_head
-    if protocol:
-        measured[primer_options.PROTOCOL_FIELD] = protocol
-    if population_files is not None:
-        measured['populationSource']=population_ceiling.probe_image(
-            lambda argv,timeout:subprocess.check_output(argv,timeout=timeout,text=True),
-            selected['localImageId'],population_files,population,k.need)
-        measured[population_ceiling.PROTOCOL_FIELD]=population_ceiling.PROTOCOL
-    frozen.install_bootstrap_helper(manifest, deploy_repo, package, measured)
-    measured.update(selected)
-    k.write(asset, measured)
-    bind_ack_publisher(package, selected)
-    bind_primer_storage(package, selected)
-    bind_primer_stall(package, manifest)
-    bind_job_completion_wait(package, selected)
-    k.write(out/'binding.json', dict(bindingCommit=manifest['bindingCommit'],
-            sourceContractSha256=k.digest(asset), patchSha256=k.digest(k.HERE/'binding-input.patch'),
-            **({'bindingInputsVersion': 1, 'patchApplied': False} if native_inputs else {}),
-            files={str(p.relative_to(package)):k.digest(p) for p in sorted(package.rglob('*')) if p.is_file()},
-            sourceAcceptance=selected['sourceAcceptance'], capacityAcceptance='NOT_GRANTED'))
-    return package
-
-
 def workload(m):
     application_topology.selection(m, k.need)
     edge_configuration.selection(m.get('edge'),k.need)
@@ -242,23 +107,6 @@ def render_checks(instance):
     return [row['name'] for row in rows]
 
 
-def candidate_pin(inventory, binding):
-    """Resolve the candidate contract for pre-entry and prepare from the binding as selected."""
-    if 'verification' not in inventory.get('workloads', {}):
-        return inventory['candidateContract']
-    asset = Path(binding)/'bindings/kubernetes/assets/source-contract.json'
-    source_contract = k.document(asset)
-    k.need(source_contract['platformVerification'] in k.candidate.STARTUP_PROTOCOLS,
-           'VERIFIED_SERVING_BINDING_OPTIONS')
-    pin = {key: source_contract[key] for key in
-           ('platformVerification', 'sourceAcceptance', 'nativeCatalogueSha256')}
-    pin.update({key:source_contract[key] for key in
-                (primer_options.FIELD, primer_options.PROTOCOL_FIELD, frozen.ACK_BUDGET)
-                if key in source_contract})
-    pin.update(verificationJob='verification', imageConfigId=source_contract['localImageId'])
-    return pin
-
-
 def prepare(manifest_path, instance, out, *, await_primer=False, existing_fixture=False):
     m = k.document(manifest_path)
     p = workload(m)
@@ -275,30 +123,15 @@ def prepare(manifest_path, instance, out, *, await_primer=False, existing_fixtur
     # The candidate's image digests are the run identity; Kubernetes pulls by digest.
     delivery = frozen.candidate(m)
     selected = frozen.source(m)
-    split = 'verification' in inventory.get('workloads', {})
-    selected_candidate = None if 'seed' in inventory else candidate_pin(inventory, instance['binding'])
-    if split:
-        k.need(frozen.PRIMER_STORAGE not in selected and population_ceiling.FIELD not in selected,
-               'VERIFIED_SERVING_BINDING_OPTIONS')
     pins = dict(pair=dict(core=selected['coreCommit'], deploy=selected['deployCommit']),
                 bindingCommit=m['bindingCommit'], instrument=k.instrument()['sha256'],
                 appImage=delivery['app'], appImageId=delivery['appImageId'],
                 postgresImage=delivery['postgres'], postgresImageId=delivery['postgresImageId'],
-                inventorySha256=k.digest(instance['inventory']), renderSha256=k.digest(instance['render']),
-                **({'candidate':selected_candidate} if selected_candidate else {}))
+                inventorySha256=k.digest(instance['inventory']), renderSha256=k.digest(instance['render']))
     k.need(config.get('pins', pins) == pins, 'INSTANCE_PINS_CHANGED')
     tier = m.get('tier', 'discovery')
     k.need(config.get('tier', tier) == tier, 'INSTANCE_TIER_CHANGED')
     c = profile.bind(p, dict(config, pins=pins, tier=tier))
-    k.need(config.get(frozen.PRIMER_STORAGE, selected.get(frozen.PRIMER_STORAGE))==selected.get(frozen.PRIMER_STORAGE),
-           'PRIMER_STORAGE_CONFIGURATION_CHANGED')
-    if frozen.PRIMER_STORAGE in selected:
-        c[frozen.PRIMER_STORAGE]=selected[frozen.PRIMER_STORAGE]
-        k.need('primerStorageReceipt' in instance and 'primerStorageReceipt' not in config, 'PRIMER_STORAGE_PUBLISH_PROOF_REQUIRED')
-        c['primerStorageReceipt']=frozen.read_ref(instance['primerStorageReceipt'])
-        primer_storage.verify_receipt(c[frozen.PRIMER_STORAGE],c['primerStorageReceipt'])
-    else:
-        k.need('primerStorageReceipt' not in instance and 'primerStorageReceipt' not in config, 'PRIMER_STORAGE_UNDECLARED')
     k.need('edgeConfiguration' not in config or config['edgeConfiguration']==edge,'EDGE_CONFIGURATION_CHANGED')
     if edge is not None:c['edgeConfiguration']=edge
     k.need('producerAckReadback' not in config, 'PGSTREAM_ACK_READBACK_UNDECLARED')
@@ -310,19 +143,9 @@ def prepare(manifest_path, instance, out, *, await_primer=False, existing_fixtur
     if c.get('nativeLoad') is not None:
         c['nativeLoadCustodyFile']=str(out.resolve()/'load/native-load.json')
     objects = k.validate(c, inventory, render)
-    if selected_candidate:
-        frozen.check_bootstrap_render(m, objects.values())
-        k.need(all(selected_candidate.get(key) == selected.get(key) for key in
-                   ('runtimeBootstrapHelper', 'imageSourceAcceptance', 'sourceAcceptance')), 'BOOTSTRAP_HELPER_SCOPE')
     checks = render_checks(instance)
     k.need(c['storageMode'] in ('disposable', 'existing-claim'), 'EXPERIMENT_STORAGE')
     k.need('verificationProof' not in config, 'CANDIDATE_VERIFICATION_PROOF_SCOPE')
-    if 'verificationProof' in instance:
-        k.need(split, 'CANDIDATE_VERIFICATION_PROOF_SCOPE')
-        captured = frozen.read_ref(instance['verificationProof'])
-        k.need(set(captured) == {'proof','jobUid','podUid','containerId'}, 'CANDIDATE_FIXTURE_CHANGED')
-        k.candidate.proof(k, c, captured['proof'])
-        c['verificationProof'] = captured
     if 'roleDocuments' in instance:
         docs = instance['roleDocuments']
         measured = k.completion_source(c, docs['evaluator'], docs['realtime'], **({'native_receipt':docs['nativeReceipt']} if 'nativeReceipt' in docs else {}))
@@ -380,9 +203,6 @@ def run(packet, grant_path, expected_digest, group=None):
     attempt.mkdir(mode=0o700, exist_ok=False)
     outcome = dict(verdict='UNMEASURED', tier=c.get('tier', 'discovery'),
                    capacityAcceptance='NOT_GRANTED', experimentSha256=c['experimentSha256'])
-    selection = c['pins'].get('candidate', {})
-    if 'runtimeBootstrapHelper' in selection:
-        outcome.update({key: selection[key] for key in ('runtimeBootstrapHelper', 'imageSourceAcceptance', 'sourceAcceptance')})
     try:
         k.need(not (d/'load').exists(), 'STAGE_OUTPUT_EXISTS')
         client = k.Client(c)
@@ -402,9 +222,7 @@ def run(packet, grant_path, expected_digest, group=None):
         k.need(k.re.fullmatch(r'http://127\.0\.0\.1:[0-9]{1,5}', c['baseUrl'])
                and 0 < execute.urlparse(c['baseUrl']).port <= 65535, 'LOOPBACK_FORWARD_REQUIRED')
         k.write(attempt/'allocation.json', dict(sha256=expected_digest, accounting=usage,
-                                                bootstrapHelper=k.active_baseline(d).get('bootstrapHelper'),
                                                 namespaceUid=k.active_baseline(d)['namespace']['uid']))
-        k.candidate.require(k, d, c)
         execute.authority(d, c)
         if c.get('history', profile.history.BASELINE) != profile.history.BASELINE:
             receipt = profile.history.run(c['history'], execute.roster(c), c['baseUrl'],
@@ -446,12 +264,6 @@ def require_preflight(pre, config):
     expected['renderSha256'] = config['pins']['renderSha256']
     k.need(pre.get('offline') == 'PASS' and pre.get('commissioning') == 'PREFLIGHT_ONLY', 'MATRIX_PREFLIGHT_REQUIRED')
     k.need(pre.get('experiment') == expected, 'PREFLIGHT_EXPERIMENT_CHANGED')
-    selection = config['pins'].get('candidate', {})
-    keys = ('runtimeBootstrapHelper', 'imageSourceAcceptance', 'sourceAcceptance')
-    if 'runtimeBootstrapHelper' in selection or 'runtimeBootstrapHelper' in pre:
-        k.need('runtimeBootstrapHelper' in selection and selection.get('sourceAcceptance') == 'PENDING'
-               and all(key in pre and pre[key] == selection.get(key) for key in keys),
-               'PREFLIGHT_BOOTSTRAP_HELPER_CHANGED')
 
 
 def failure(exc):
@@ -484,8 +296,7 @@ def launch(path, prepare_only):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest='action', required=True)
-    for name, fields in {'binding': ('manifest','binding_repo','deploy_repo','output'),
-                         'describe': ('manifest',), 'prepare': ('manifest','instance','output'),
+    for name, fields in {'describe': ('manifest',), 'prepare': ('manifest','instance','output'),
                          'run': ('packet','allocation','sha256'), 'launch': ('config',)}.items():
         command = commands.add_parser(name)
         for field in fields:
@@ -534,8 +345,6 @@ def main():
         return standard_case.prepare(a.template_case, a.binding, a.profile, a.output, **options)
     if a.action == 'launch':
         return launch(a.config, a.prepare_only)
-    if a.action == 'binding':
-        return str(materialize(k.document(a.manifest), a.binding_repo, a.deploy_repo, a.output.resolve()))
     if a.action == 'describe':
         return profile.describe(workload(k.document(a.manifest)))
     if a.action == 'prepare':

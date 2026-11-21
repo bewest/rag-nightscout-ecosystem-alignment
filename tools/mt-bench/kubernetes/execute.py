@@ -379,9 +379,7 @@ def stop_evidence(d, out, c, objects, client, namespace_uid):
 def access(d, c, objects, client):
     k.need(not (d / 'access.json').exists() and not (d / 'access-failure.json').exists(),
            'ACCESS_OUTPUT_EXISTS')
-    phase = 'candidate-receipt'
     try:
-        k.candidate.require(k, d, c)
         phase = 'verified-roster'
         tenants = roster(c)
         baseline = k.active_baseline(d)
@@ -423,7 +421,6 @@ def policy_assess(observations):
 
 
 def policy(d, c, objects, client):
-    k.candidate.require(k, d, c)
     k.need(not (d/'policy.json').exists(),'POLICY_OUTPUT_EXISTS')
     initial=k.active_baseline(d)
     before=k.observe(c,objects,client,initial)
@@ -466,7 +463,6 @@ def stage_runid(c, name):
 
 
 def execute(d, c, objects, client, load=False, recovery=False):
-    k.candidate.require(k, d, c)
     name = 'load' if load else 'recovery' if recovery else 'commission'
     out = d / name
     k.need(not out.exists(), 'STAGE_OUTPUT_EXISTS')
@@ -861,7 +857,6 @@ def assess_stage(d, out, c, objects, client):
 
 
 def assess(d, c, objects, client):
-    k.candidate.require(k, d, c)
     result = {name: assess_stage(d, d / name, c, objects, client) for name in ('commission','recovery','load') if (d / name).is_dir()}
     k.need(result, 'AUTHORITY_UNMEASURED', 'UNMEASURED')
     access_result, policy_result = authority(d, c)

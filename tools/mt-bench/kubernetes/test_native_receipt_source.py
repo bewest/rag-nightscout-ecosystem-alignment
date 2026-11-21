@@ -18,9 +18,6 @@ class NativeReceiptCaller(unittest.TestCase):
         case = Path(CASE)
         config = k.document(case/'pre-entry-packet/run.json')
         evaluator, realtime = [case/'runtime'/(role+'-config.private.json') for role in ('evaluator', 'realtime')]
-        self.assertEqual(config['pins']['candidate']['platformVerification'], 'startup-v3')
-        with self.assertRaisesRegex(k.Refused, 'COMPLETION_RECEIPT_REQUIRED'):
-            k.completion_source(config, evaluator, realtime)
         script = """const fs=require('fs'),p=require('path'),root=process.argv[1],e=JSON.parse(fs.readFileSync(process.argv[2])),r=JSON.parse(fs.readFileSync(process.argv[3]));
           const binding={namespace:e.postgres.namespaces.checkpoint,lifecycleNamespace:e.trustedWorker.activity,consumer:e.consumer,generation:e.pgstream.generation,source:{system_id:'1',timeline:1,database:'nightscout_compose_test',slot:e.pgstream.slot}};
           const native=require(p.join(root,'lib/tenant-lifecycle/native-selection')).create(binding);

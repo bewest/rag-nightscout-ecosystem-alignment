@@ -13,7 +13,6 @@ import time
 import kube_adapter as k
 import native_load
 import workload
-import candidate
 
 FIELD = 'nativeLoad'
 JOB = 'Job/k6'
@@ -22,13 +21,11 @@ POLICY = 'NetworkPolicy/native-load-to-edge'
 
 
 def waiting_jobs(c):
-    # In the split binding, primer readiness only proves client export is ready;
-    # the independent verification Job must have completed as well.
     if c.get('primerLocation') in ('pod', 'controller'):
         return ['provision']
     if c.get('primerLocation') == 'claim':
         return ['provision', 'primer']
-    return ['provision', 'verification', 'primer:ready'] if candidate.verified_serving(c) else ['provision', 'primer:ready']
+    return ['provision', 'primer:ready']
 
 
 def actor_labels(c, component):
@@ -335,11 +332,6 @@ def prepare_case(case, selection):
     preparing['pins']={'appImage':delivery['app'],'appImageId':delivery['appImageId'],
                    'pair':{'core':source['coreCommit'],'deploy':source['deployCommit']},
                    'bindingCommit':manifest['bindingCommit'],'instrument':k.instrument()['sha256']}
-    if 'verification' in inventory.get('workloads', {}):
-        # Match normal experiment.prepare's protocol selection, without copying
-        # mutable candidate receipts into the run template. Full pins are bound
-        # and checked by the normal preparer before entry.
-        preparing['pins']['candidate']={'verificationJob':'verification'}
     c=experiment.profile.bind(experiment.workload(manifest),preparing)
     c.update(tier=manifest.get('tier','discovery'),nativeLoad=selection,
              applicationTopology=application_topology.selection(manifest,k.need))

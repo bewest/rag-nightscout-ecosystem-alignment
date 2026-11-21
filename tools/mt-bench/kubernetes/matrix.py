@@ -220,7 +220,6 @@ def run(value, output):
         d, c, objects = k.load(directory)
         k.need(not (d / 'load').exists(), 'STAGE_OUTPUT_EXISTS')
         if 'experimentSha256' in c:
-            k.candidate.require(k, d, c)
             e.authority(d, c)
         else:
             qualification = k.document(d / 'qualification.json')
