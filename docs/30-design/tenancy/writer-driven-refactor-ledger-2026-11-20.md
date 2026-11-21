@@ -29,6 +29,8 @@ An item moves up only when a measurement or a blocker needs it.
 
 ## At adoption
 
+*Adopted 2026-11-21. These are done on local branches `claude/retire-pgstream-20261120` (core `e3fb38ff1`, deploy `44c7f969d`, harness `46130f0399`) and joined in `claude/s4-final-20261120`; they land with the final join once its full integration tier passes. Open: delete or re-point the seven remaining native stream labs (maintainer).*
+
 These retire with the stream:
 - pgstream, the patched fork, wal2json, the slot, the DBA trigger step, the streaming role, the
   subscription roster, the WAL-sender budget and `REPLICA IDENTITY FULL`;

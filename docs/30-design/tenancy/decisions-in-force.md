@@ -45,7 +45,6 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [cohort-pod-not-scaled](multitenancy-decisions.md#cohort-pod-not-scaled) — Never scale the all-roles monolith horizontally (narrowed by [k1-per-role-deployments](multitenancy-decisions.md#k1-per-role-deployments)).
 - [vcpool-egress-capacity](multitenancy-decisions.md#vcpool-egress-capacity) — Connector pools are sized against upstream quotas; core reports upstream refusals per member.
 - [evaluator-scale-direction](multitenancy-decisions.md#evaluator-scale-direction) — Profile first, then K evaluator processes; no coalescing window (narrowed by [static-hash-ownership](multitenancy-decisions.md#static-hash-ownership): not urgent).
-- [private-stream-router](multitenancy-decisions.md#private-stream-router) — **Deferred**: for K > 1, preferred shape is a private body-reading router with stock pgstream.
 
 ### Platform/application boundary, startup and simplification
 
@@ -56,7 +55,7 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [provisioning-secrets-in](multitenancy-decisions.md#provisioning-secrets-in) — Secrets flow into Jobs and roles, never out of a Pod; one apply converges.
 - [prometheus-metrics-narrow](multitenancy-decisions.md#prometheus-metrics-narrow) — official Prometheus Node client (`@prometheus-io/client`), `/metrics` on an internal port, opt-in, multitenant roles only (not the classic server); no tenant-id labels; one Prometheus Pod plus `postgres_exporter` per lab run, TSDB snapshot retained; per-input events still decide verdicts; no OTel tracing now. Supersedes metrics-endpoint-deferred.
 - [storage-events-single-tenant-parity](multitenancy-decisions.md#storage-events-single-tenant-parity) — `/storage` socket events fire for exactly the write paths a single site uses.
-- [writer-driven-transport-direction](multitenancy-decisions.md#writer-driven-transport-direction) — Direction, measurement pending: the api is the only writer; post-commit hints to the owning evaluator and realtime; level-triggered recompute plus sweep; pgstream stays the incumbent until spikes S1–S4 hold.
+- [writer-driven-transport-direction](multitenancy-decisions.md#writer-driven-transport-direction) — **Adopted 2026-11-21**: the api is the only writer; post-commit hints to the owning evaluator and realtime; level-triggered recompute plus sweep; pgstream, its slot and the storage-event journal retire.
 - [prerelease-schema-in-place](multitenancy-decisions.md#prerelease-schema-in-place) — No operator databases yet: multitenant schema and migrations change in place; two-step migrations start at the first operator release.
 - [platform-application-boundary](multitenancy-decisions.md#platform-application-boundary) — Application assumes a verified platform and fails closed; it never re-verifies the platform while serving.
 - [brittle-check-removal](multitenancy-decisions.md#brittle-check-removal) — Checks that refuse for anything other than a product property are removed; run identity is image digest plus run configuration.
@@ -192,8 +191,6 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 ### Event feed, evaluator and realtime
 
 - [d6](multitenancy-decisions.md#d6) — Replication slot is the durable spine; clinical writes never depend on notifications (narrowed by [event-driven-reset](multitenancy-decisions.md#event-driven-reset)).
-- [event-driven-reset](multitenancy-decisions.md#event-driven-reset) — Stop tuning the polling architecture; maintained pgstream CDC drives evaluator and realtime.
-- [pgstream-operating-constraints](multitenancy-decisions.md#pgstream-operating-constraints) — One evaluator receiver, no broker, narrow streaming role, strict mode; heartbeat machinery retires.
 - [evaluator-platform-restart](multitenancy-decisions.md#evaluator-platform-restart) — pgstream restarts separately from the evaluator process.
 - [stream-fed-clinical-materializer](multitenancy-decisions.md#stream-fed-clinical-materializer) — Committed clinical rows stream into the evaluator; snapshots only for bootstrap, recovery and gaps.
 - [single-host-streaming-first](multitenancy-decisions.md#single-host-streaming-first) — Qualify a simple single-host baseline first (narrowed by [cluster-fan-out-testing](multitenancy-decisions.md#cluster-fan-out-testing)).
@@ -255,6 +252,9 @@ The text of every row below was archived unchanged on 2026-11-18 in [the superse
 
 | row | replaced by | reason |
 |---|---|---|
+| [event-driven-reset](multitenancy-decisions.md#event-driven-reset) | [writer-driven-transport-direction](multitenancy-decisions.md#writer-driven-transport-direction) | stream-fed evaluator and realtime replaced by writer-driven hints (2026-11-21) |
+| [pgstream-operating-constraints](multitenancy-decisions.md#pgstream-operating-constraints) | [writer-driven-transport-direction](multitenancy-decisions.md#writer-driven-transport-direction) | pgstream retired (2026-11-21) |
+| [private-stream-router](multitenancy-decisions.md#private-stream-router) | [writer-driven-transport-direction](multitenancy-decisions.md#writer-driven-transport-direction) | no stream to route (2026-11-21) |
 | [clinical-deadline-from-warm](multitenancy-decisions.md#clinical-deadline-from-warm) | [deadline-from-acceptance](multitenancy-decisions.md#deadline-from-acceptance) | warm evidence rebuilt per-tenant warm-up machinery; work follows input (row kept in place, not archived) |
 | [d9](multitenancy-decisions.md#d9) | its own text | historical base; the current-dev delivery plan supersedes it |
 | [allocator-preserving-restore-first](multitenancy-decisions.md#allocator-preserving-restore-first) | [tenant-local-insertion-semantics](multitenancy-decisions.md#tenant-local-insertion-semantics), [restore-suspend-drain-replace](multitenancy-decisions.md#restore-suspend-drain-replace) | shared allocator and shared pause not the target |
