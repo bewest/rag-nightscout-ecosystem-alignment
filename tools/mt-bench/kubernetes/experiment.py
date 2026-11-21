@@ -519,7 +519,7 @@ def main():
     standard.add_argument('--fixture-catalog', type=Path, help='catalog file (default $NS_FIXTURE_CATALOG or the workspace catalog)')
     standard.add_argument('--storage-class', default='do-block-storage', help='StorageClass for seeded fixture claims')
     standard.add_argument('--snapshot-class', default='do-block-storage', help='VolumeSnapshotClass for a seed')
-    standard.add_argument('--fixture-postgres-size', help='PostgreSQL claim size for a seed (default 1Gi)')
+    standard.add_argument('--fixture-postgres-size', help='PostgreSQL claim size for a seed (default 4Gi: data plus about max_wal_size of WAL)')
     a = parser.parse_args()
     if a.action == 'standard':
         import standard_case

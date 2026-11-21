@@ -26,7 +26,9 @@ PARTS = ('postgres', 'vault', 'provisionState', 'primerResults')
 CLAIMS = {'postgres': 'fixture-postgres', 'vault': 'fixture-vault',
           'provisionState': 'fixture-provision-state', 'primerResults': 'fixture-primer-results'}
 SNAPSHOTS = {part: 'snap-' + name for part, name in CLAIMS.items()}
-SEED_SIZES = dict.fromkeys(PARTS, '1Gi')
+# PostgreSQL needs its data plus about max_wal_size (default 1 GB) of WAL between checkpoints: a 1Gi claim
+# filled at K=2 >=180 req/s (No space left on device, s4-k8s-20261120 f-k2-180b). 4Gi leaves room for both.
+SEED_SIZES = {**dict.fromkeys(PARTS, '1Gi'), 'postgres': '4Gi'}
 SECRET_PREFIXES = ('ns-config-', 'ns-credentials-')
 SECRET_NAMES = ('ns-postgres-password', 'ns-ca', 'ns-vault-tls', 'ns-signing-secret')
 MANIFEST, SECRETS = 'fixture.json', 'secrets.private.json'
