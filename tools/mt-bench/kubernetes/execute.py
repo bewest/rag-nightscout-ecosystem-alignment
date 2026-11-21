@@ -331,6 +331,38 @@ def retained_progress(d, out, c, objects, client, name, *, until=None):
     return value
 
 
+def sql_bookend(d, out, c, objects, client, name):
+    """Writer-driven bookend from the durable -completed rows (progress_sql); a figure, never a stop."""
+    import clinical_sql, progress_sql
+    raw = out/(name+'.private.jsonl')
+    ids = [r['id'] for r in roster(c)]
+    baseline = k.active_baseline(d)
+    def fetch():
+        pod, container = clinical_sql.observe(c, objects, client, baseline, continuity_verdict='UNMEASURED')
+        remaining = min(120, k.deadline(c))
+        return k.postgres_read(client, pod, container,
+                               f'SET LOCAL statement_timeout={max(1, int(remaining * 1000))};\n' + progress_sql.query(c['completion']),
+                               timeout=remaining)
+    try:
+        value = progress_sql.capture(fetch, ids, raw_output=raw)
+    except Exception as error:
+        k.write(out/(name+'-failure.json'), {**progress_refusal(error), 'source':progress_sql.SOURCE,
+                                              'responseRetained':raw.is_file(), 'pins':c['pins']})
+        return None
+    value['pins'] = c['pins']
+    k.write(out/(name+'.json'), value)
+    return value
+
+
+def capture_bookend(d, out, c, objects, client, name):
+    """A load bookend: durable SQL rows for writer-driven evaluators (lazy tenant loading makes the
+    inspection RPC refuse unloaded tenants), the inspection RPC otherwise."""
+    import progress_sql
+    if progress_sql.writer_driven(c):
+        return sql_bookend(d, out, c, objects, client, name)
+    return retained_progress(d, out, c, objects, client, name)
+
+
 def gate_mode(c):
     value = dict(c.get('outcomeGate') or {})
     value.setdefault('midpointStop', 'hard')
@@ -362,7 +394,11 @@ def stop_evidence(d, out, c, objects, client, namespace_uid):
     if not (out/'progress-after.private.jsonl').exists():
         raw = out/'progress-stop.private.jsonl'
         try:
-            k.write(out/'progress-stop.json', progress(d, c, objects, client, raw_output=raw))
+            import progress_sql
+            if progress_sql.writer_driven(c):
+                k.need(sql_bookend(d, out, c, objects, client, 'progress-stop') is not None, 'PROGRESS_SQL_UNMEASURED', 'UNMEASURED')
+            else:
+                k.write(out/'progress-stop.json', progress(d, c, objects, client, raw_output=raw))
             receipt['progress'] = {'verdict':'DECODED'}
         except Exception as error:
             receipt['progress'] = progress_refusal(error)
@@ -487,7 +523,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
     out.mkdir(mode=0o700)
     k.write(out / 'before.json', before)
     k.write(out / 'driver.json', readback)
-    retained_progress(d, out, c, objects, client, 'progress-before')
+    capture_bookend(d, out, c, objects, client, 'progress-before')
     runid = stage_runid(c, name)
     (out / 'runid').write_text(runid)
     node = c['driver']['node']
@@ -667,6 +703,10 @@ def metrics_snapshot(out, c, objects, client):
 
 
 def terminal_progress(d, out, c, objects, client, runid, load, namespace_uid):
+    import progress_sql
+    if progress_sql.writer_driven(c):
+        sql_bookend(d, out, c, objects, client, 'progress-after')
+        return
     raw = out / 'progress-after.private.jsonl'
     try:
         k.write(out / 'progress-after.json', progress(d, c, objects, client, raw_output=raw))
@@ -748,6 +788,13 @@ def load_checks(out, c=None):
 
 
 def assess_progress(out, c, ids):
+    import progress_sql
+    if progress_sql.writer_driven(c):
+        for name in ('progress-before', 'progress-after'):
+            k.need((out / (name + '.json')).is_file(), 'EVALUATOR_PROGRESS_BOOKENDS', 'UNMEASURED')
+        midpoint = k.document(out / 'progress-midpoint.json') if (out / 'progress-midpoint.json').is_file() else None
+        return progress_sql.assess(k.document(out / 'progress-before.json'), k.document(out / 'progress-after.json'),
+                                   ids, midpoint)
     names = [name for name in ('progress-before', 'progress-midpoint', 'progress-after') if (out / (name + '.json')).is_file()]
     k.need(names and names[0] == 'progress-before' and names[-1] == 'progress-after', 'EVALUATOR_PROGRESS_BOOKENDS', 'UNMEASURED')
     rounds = [k.document(out / (name + '.json')) for name in names]
