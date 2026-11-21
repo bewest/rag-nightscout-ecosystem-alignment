@@ -56,7 +56,26 @@ try:
     location = 'pod' if m['primerLocation'] == 'controller' else m['primerLocation']
     inventory = read(d/'inventory.json')
     primer = next(obj for obj in k.manifests(read(d/'render.json')) if k.key(obj) == 'Job/primer')
-    tenants, reuse = fixture.read_roster(kub, primer, inventory, private, cfg['tenants'], until, location)
+    held = read(live/'fixture-reader.json') if (live/'fixture-reader.json').exists() else None
+    tenants, reuse = fixture.read_roster(kub, primer, inventory, private, cfg['tenants'], until, location, held)
+    from populated_history import BASELINE, run as prepare_history
+    if len(sys.argv) == 3 and sys.argv[2] == '--seed-history':
+        pg = read(live/'latest-postgres.json')
+        client = k.Client(cfg)
+        def sql(query):
+            def uid():
+                return client.call(['get','pod',pg['name'],'-o','jsonpath={.metadata.uid}']).decode()
+            if uid() != pg['uid']:
+                raise RuntimeError('K8S_HISTORY_POSTGRES_CHANGED')
+            result = k.postgres_read(client, pg['name'], cfg['roles']['postgres']['container'], query)
+            if uid() != pg['uid']:
+                raise RuntimeError('K8S_HISTORY_POSTGRES_CHANGED')
+            return result
+        write(live/'populated-history.json', prepare_history(m['profile']['history'], tenants, cfg['baseUrl'],
+                                                            sql, until, 0))
+        raise SystemExit(0)
+    if control.get('fixture', {}).get('mode') == 'restore' and m['profile']['history'] != BASELINE:
+        cfg['restoredHistory'] = True
     cfg['tenantsFile'] = str(private/'data-roster.private.json')
     write(Path(cfg['tenantsFile']), tenants)
     write(live/'fixture.json', {'location':location,'reuse':reuse,'tenants':len(tenants)})

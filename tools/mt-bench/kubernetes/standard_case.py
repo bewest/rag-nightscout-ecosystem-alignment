@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
 import time
 
 import experiment
@@ -33,6 +34,65 @@ def resolve_image(reference, inspect=None):
     labels = (spec.get('Config') or {}).get('Labels') or {}
     return {'reference': reference, 'imageId': spec['Id'],
             'core': labels.get('org.opencontainers.image.revision'), 'deploy': labels.get('org.nightscout.deploy.revision')}
+
+
+def fixture_key(template_case, profile_path, *, app_image, postgres_image=None, core=None, binding_extra=None,
+                seed='default', inspect=None):
+    """The fixture key of the case `prepare` would materialize from the same inputs."""
+    import fixture_catalog
+    template_case = template_case.resolve()
+    profile = k.document(profile_path)
+    control = k.document(template_case/'lifecycle-input.json')
+    inputs = k.document(template_case/'binding-inputs.json')
+    if binding_extra:
+        inputs.update(k.document(Path(binding_extra)))
+    app = resolve_image(app_image, inspect)
+    postgres = resolve_image(postgres_image or inputs['images']['postgres'], inspect)
+    k.need(app['core'], 'FIXTURE_IMAGE_CORE_REVISION_REQUIRED')
+    return fixture_catalog.key(
+        tenants=profile['population']['provisionedTenants'], image=app['imageId'], postgres_image=postgres['imageId'],
+        schema=fixture_catalog.schema((core or Path(control['coreRepository'])).resolve(), app['core']),
+        transport=inputs.get('inputTransport', 'pgstream'), seed=seed, history=profile.get('history'),
+        evaluator_slices=inputs.get('slices', {}).get('evaluator', 1))
+
+
+def keyed(action, template_case, binding, profile_path, output, *, seed='default', catalog=None,
+          storage_class=None, snapshot_class=None, postgres_size=None, launch=None, **options):
+    """Find the fixture by key. `reuse` restores it into the case at OUTPUT, building and registering
+    it first on a miss (the seed case is OUTPUT-seed); `build` only builds and registers (case OUTPUT)."""
+    import fixture_catalog
+    k.need(action in ('reuse', 'build'), 'FIXTURE_ACTION')
+    output = output.resolve()
+    catalog = catalog or fixture_catalog.Catalog()
+    key = fixture_key(template_case, profile_path, seed=seed, **{name: options.get(name) for name in
+                      ('app_image', 'postgres_image', 'core', 'binding_extra', 'inspect')})
+    hit = catalog.lookup(key, 'kubernetes')
+    lookup = 'hit' if hit else 'miss'
+    if not hit:
+        seed_case = output if action == 'build' else output.with_name(output.name + '-seed')
+        directory = catalog.reserve(key, 'kubernetes')
+        try:
+            chosen = fixture_copy.selection('seed', directory, storage_class, snapshot_class, postgres_size)
+            prepare(template_case, binding, profile_path, seed_case, fixture={**chosen, 'key': key}, **options)
+            (launch or _launch)(seed_case/'lifecycle-bound.json')
+            manifest = fixture_copy.read_manifest(directory)
+        except BaseException as error:
+            catalog.failed(key, 'kubernetes', str(error) or type(error).__name__)
+            raise
+        hit = catalog.register(key, 'kubernetes', {
+            'fixtureId': manifest['fixtureId'], 'volumeSnapshotContents': manifest['seedContents'],
+            'providerSnapshots': manifest['handles'], 'seedCase': str(seed_case)})
+    if action == 'build':
+        return {'fixture': lookup, 'digest': hit['digest'], 'directory': hit['directory'], 'status': hit['status']}
+    chosen = fixture_copy.selection('restore', hit['directory'])
+    return prepare(template_case, binding, profile_path, output,
+                   fixture={**chosen, 'key': key, 'digest': hit['digest'], 'lookup': lookup}, **options)
+
+
+def _launch(bound):
+    """Run a seed case to completion; it stops after the capture and sends no traffic."""
+    subprocess.run([sys.executable, '-B', str(Path(__file__).with_name('experiment.py')), 'launch', str(bound)],
+                   check=True, stdout=sys.stderr)
 
 
 def prepare(template_case, binding, profile_path, output, *, app_image, postgres_image=None,
@@ -149,12 +209,15 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     rendered = k.document(output/'render.json')
     inventory = k.document(output/'inventory.json')
     profile.pop('proposedEnvelope', None)
-    stages = {name:[] for name in lc.stages_for(inventory)}
+    stages = {name:[] for name in lc.STAGES}
     workload_stages = {'postgres':'stores', 'vault':'stores', 'provision':'provision',
                        'admin':'private-admin', 'primer':'primer'}
     for document in (run, intent):
         document.pop('applicationTopology', None)
         document['primerLocation'] = 'claim' if inventory['results']['primer'].get('claim') else 'pod'
+    transport = inventory['inputTransport']
+    k.need(transport == 'writer-driven', 'INPUT_TRANSPORT')
+    run['roles'].pop('pgstream', None)
     for target in run['roles'].values():
         name = target['workload'].split('/', 1)[1]
         target['workload'] = inventory['workloads'][name]['kind'] + '/' + name
@@ -167,10 +230,15 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     for stage,items in stages.items():
         k.write(output/'stages'/(stage+'.json'),{'apiVersion':'v1','kind':'List','items':items})
     if fixture:
+        if 'key' in fixture:
+            key = fixture['key']
+            k.need(key['tenants'] == tenants and key['transport'] == transport and
+                   key.get('evaluatorSlices', 1) == (fixture_copy.evaluator_slices(inventory) if 'evaluatorSlices' in key else 1),
+                   'FIXTURE_KEY_CASE_MISMATCH')
         library = binding/'bindings/kubernetes/lib'
         k.write(output/'stages/fixture-claims.json',
                 fixture_copy.render(jsonnet,library,namespace,run_id,fixture,tenants,candidate['postgres'],
-                                    fixture_copy.evaluator_slices(inventory)))
+                                    fixture_copy.evaluator_slices(inventory), transport))
         if fixture['mode'] == 'seed':
             k.write(output/'stages/fixture-snapshots.json',
                     fixture_copy.snapshot_objects(jsonnet,library,namespace,run_id,fixture))
@@ -186,10 +254,15 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
                tenantsFile=str(output/'runtime/fixture/data-roster.private.json'), deadlines={kind:(now+timedelta(seconds=env[seconds])).isoformat().replace('+00:00','Z')
                for kind,seconds in [('workUntil','workDeadlineSeconds'),('cleanupUntil','cleanupDeadlineSeconds')]})
     k.write(output/'native-run-template.json', run)
+    fixture_identity = {'mode':'fresh'} if fixture is None else {'mode':fixture['mode'], 'directory':str(fixture['directory'])}
+    fixture_identity['history'] = profile['history']
     k.write(output/'preflight.json',{'offline':'PASS','commissioning':'PREFLIGHT_ONLY',
         'trialEnvelope':{'placementMode':'scheduler','resourceAccounting':'requests-v1'},'experiment':{'runId':run_id,
         'namespace':namespace,'renderSha256':k.digest(output/'render.json'),'experimentSha256':k.digest(output/'intent.json')},
-        'identity':{'alignmentCommit':alignment,'candidate':candidate}})
+        'identity':{'alignmentCommit':alignment,'bindingCommit':binding_head,'candidate':candidate,
+                    'fixture':fixture_identity},
+        'topology':{'inputTransport':transport, 'apiReplicas':inventory['workloads']['api']['replicas'],
+                    'evaluatorSlices':inventory['slices']['evaluator'], 'realtimeSlices':inventory['slices']['realtime']}})
     selected_control = {key:control[key] for key in ('version','toolsDirectory','k6','readonlyGuard','pullSecretCommand') if key in control}
     selected_control.update(caseDirectory=str(output),bindingDirectory=str(binding),instrumentDirectory=str(k.ROOT),
                             schedulerPlacement=True,coreRepository=str(core),runTemplate=lc.ref(output/'native-run-template.json'),
@@ -202,4 +275,6 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     instance = {'config':str(output/'native-run-template.json'),'render':str(output/'render.json'),
                 'inventory':str(output/'inventory.json'),'binding':str(binding)}
     experiment.prepare(output/'intent.json',instance,output/'offline-final',await_primer=True)
-    return experiment.launch(output/'lifecycle-input.json', True)
+    result = experiment.launch(output/'lifecycle-input.json', True)
+    preflight = k.document(output/'preflight.json')
+    return {**result, 'identity':preflight['identity'], 'topology':preflight['topology']}

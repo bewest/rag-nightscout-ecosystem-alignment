@@ -22,6 +22,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import adapter as a
 import workload_inputs
+import populated_history as history
 import point_results
 from contract import require
 from auto_catalog import auto_catalog
@@ -171,7 +172,8 @@ def load_config(path):
 def validate_config(config):
     require(config.get('version') == 1, 'M7_RUNNER_CONFIG_VERSION')
     common = {'version', 'prepare', 'k6Image', 'workSeconds', 'cleanupSeconds'}
-    keys = set(config) - {'tier', 'smokeBaseline'}
+    history.validate(config.get('history', history.BASELINE))
+    keys = set(config) - {'tier', 'smokeBaseline', 'history'}
     require(keys in (common | {'helperHead'}, common | {'helperInstrument'}), 'M7_RUNNER_CONFIG_FIELDS')
     tier = config.get('tier')
     require('tier' not in config or tier in TIERS, 'M7_RUNNER_TIER')
@@ -258,8 +260,77 @@ def materialize_tier_receipt(directory, config, argv):
             break
 
 
+def fixture_request(config):
+    """`prepare.fixture: reuse` (optional `fixture-seed`) selects the fixture by key. A hand-named
+    `fixture-snapshot` path is refused here; the runner sets it from the catalog."""
+    options = config['prepare']
+    require('fixture-snapshot' not in options, 'M7_FIXTURE_BY_KEY_REQUIRED')
+    if 'fixture' not in options:
+        require('fixture-seed' not in options, 'M7_FIXTURE_REQUEST')
+        return None
+    require(options['fixture'] == 'reuse', 'M7_FIXTURE_REQUEST')
+    plain = {key: value for key, value in options.items() if key not in ('fixture', 'fixture-seed')}
+    return {**config, 'prepare': plain}, options.get('fixture-seed', 'default')
+
+
+def fixture_key(config, seed):
+    import fixture_catalog
+    _, argv = validate_config(config)
+    parsed = a.parser().parse_args(['prepare', '--directory', '/tmp/m7-runner-validation', *argv])
+    return fixture_catalog.key(
+        tenants=parsed.tenants, image=parsed.image_id or parsed.image, postgres_image=parsed.postgres_image,
+        schema=fixture_catalog.schema(parsed.core_repo, parsed.core_commit),
+        transport=getattr(parsed, 'input_transport', None) or 'pgstream', seed=seed, history=config.get('history'),
+        evaluator_slices=parsed.static_workers or 1)
+
+
+def resolve_fixture(config, seed, root, catalog=None, build=None):
+    """Look the key up: a hit restores that copy; a miss builds and registers it first (case ROOT-seed)."""
+    import fixture_catalog
+    catalog = catalog or fixture_catalog.Catalog()
+    key = fixture_key(config, seed)
+    hit, lookup = catalog.lookup(key, 'compose'), 'hit'
+    if not hit:
+        hit, lookup = (build or build_fixture)(config, key, root.with_name(root.name + '-seed'), catalog), 'miss'
+    snapshot = Path(hit['directory'])
+    require(a.document(snapshot/'key.json') == key, 'M7_FIXTURE_KEY_CHANGED')
+    selected = {**config, 'prepare': {**config['prepare'], 'fixture-snapshot': str(snapshot)}}
+    return selected, {'key': key, 'digest': hit['digest'], 'lookup': lookup, 'snapshot': str(snapshot)}
+
+
+def build_fixture(config, key, root, catalog):
+    """A fresh point that deploys (bootstrap, roles, provision, prime), stops and copies its volumes
+    and state into the catalog, then cleans up. It sends no traffic."""
+    directory = catalog.reserve(key, 'compose')
+    failure = None
+    try:
+        prepare(config, root, one_shot=True)
+        execution_window(root, load_config(root/'config.json')[0])
+        d, _ = a.load(root/'fixture', resource_limits=False)
+        stage(root, 'deploy', ['deploy', str(d)])
+        stage(root, 'fixture-capture', ['fixture-capture', str(d), str(directory)])
+        write(directory/'key.json', key)
+    except BaseException as error:
+        failure = error
+        catalog.failed(key, 'compose', code(error))
+        raise
+    finally:
+        try:
+            cleanup(root, 'FIXTURE_BUILT' if failure is None else 'FIXTURE_BUILD_FAILED')
+        finally:
+            until = time.monotonic() + 10
+            while (root/'guard-job.json').exists() and guard_alive(root) and time.monotonic() < until:
+                time.sleep(.05)
+    return catalog.register(key, 'compose', {'snapshot': a.document(directory/'snapshot.json'), 'buildCase': str(root),
+                                             'captureSeconds': a.document(root/'fixture/fixture-capture.json').get('seconds')})
+
+
 def prepare(config_file, directory, *, one_shot=False, candidate=None):
-    config, selected = with_candidate(a.document(config_file), candidate)
+    config, selected = with_candidate(config_file if isinstance(config_file, dict) else a.document(config_file), candidate)
+    request = fixture_request(config)
+    keyed = None
+    if request:
+        config, keyed = resolve_fixture(*request, Path(directory).resolve())
     tier = config.get('tier')
     if tier is None:
         _, argv = validate_config(config)
@@ -270,6 +341,8 @@ def prepare(config_file, directory, *, one_shot=False, candidate=None):
     write(root / 'config.json', config)
     if selected is not None:
         write(root / 'candidate.json', selected)
+    if keyed is not None:
+        write(root / 'fixture-key.json', keyed)
     entry_memory = point_results.available_memory()
     write(root / 'result.json', {'version': 1, 'memAvailableAtEntryBytes': entry_memory, 'status': 'PREPARING', 'phase': 'prepare', 'capacityAcceptance': 'NOT_GRANTED'})
     phase = 'configuration'
@@ -632,6 +705,26 @@ def execution_window(root,config):
     return state
 
 
+def prepare_history(output, d, config, until, *, verify_only=False, after=False):
+    spec = config.get('history', history.BASELINE)
+    if spec == history.BASELINE and 'fixture-snapshot' not in config.get('prepare', {}):
+        return
+    m = a.document(d/'owner.json')
+    with a.command_deadline(until):
+        a.assert_owned(m)
+        database = a.application_database(d)
+        def read(query):
+            return a.psql(d, 'BEGIN READ ONLY;\n'+query+'\nROLLBACK;', database,
+                          timeout=history.remaining(until, 120))
+        if spec == history.BASELINE:
+            history.require(not history.census(read, int(time.time()*1000), 0), 'SNAPSHOT_MISMATCH')
+            return
+        receipt = history.run(spec, a.document(d/'tenants.private.json'), 'http://127.0.0.1:'+str(m['port']),
+                              read, until, 0 if after else history.window(m['cadence']),
+                              verify_only=verify_only or 'fixture-snapshot' in config['prepare'])
+        write(output/('populated-history-after.json' if after else 'populated-history.json'), receipt)
+
+
 def execute(directory, rehearsal=False):
     root = Path(directory).resolve()
     config, _ = load_config(root / 'config.json')
@@ -646,7 +739,10 @@ def execute(directory, rehearsal=False):
         stage(root, 'preflight', ['preflight', str(d), '--k6-image', config['k6Image']])
         # Essential source/runtime/instrument checks stay in adapter preflight.
         optional_preflight(root, d)
+        prepare_history(root, d, config, state.get('stopWorkAt'))
         stage(root, 'run', ['run', str(d), '--k6-image', config['k6Image']])
+        if state.get('stopWorkAt') is None and config.get('history', history.BASELINE) != history.BASELINE:
+            prepare_history(root, d, config, None, verify_only=True, after=True)
         if config.get('tier') == 'smoke':
             from tier_smoke import assess
             assess(root, config.get('smokeBaseline'))
@@ -678,7 +774,7 @@ SESSION_VARIABLE_OPTIONS = frozenset(('freeze', 'receipt', 'warmup-seconds', 'id
     'load-seconds', 'offered-rps', 'hot-factor', 'probe-every-ms', 'sockets-per-tenant',
     'logical-polling-clients', 'viewer-setup', 'workload-mix', 'workload-scale', 'sampler-interval', 'quiet-load', 'jwt-setup-concurrency',
     'evaluator-catchup', 'evaluator-opportunities', 'opportunity-observation', 'restart-during-load-after-seconds', 'driver-shards', 'driver-headroom', 'driver-plan'))
-SESSION_PREPARE_ONLY = frozenset(('fixture-project', 'fixture-snapshot', 'backend-subnet', 'edge-subnet', 'commissioning-slot-wal-mib', 'tenant-readiness',
+SESSION_PREPARE_ONLY = frozenset(('fixture-project', 'fixture-snapshot', 'fixture', 'fixture-seed', 'backend-subnet', 'edge-subnet', 'tenant-readiness',
     'generator-dependencies', 'generator-dependency-receipt',
     'generator-dependency-receipt-sha256', 'generator-dependency-preparation',
     'generator-dependency-preparation-sha256', 'generator-dependency-preparation-head'))
@@ -693,6 +789,7 @@ def session_start(config_file, directory):
         require(not m.get('attached'), 'M7_SESSION_ORIGINAL_OWNER_REQUIRED')
         (root/'observations').mkdir(mode=0o700)
         state = a.document(root/'execution.json')
+        prepare_history(root, d, config, state['stopWorkAt'])
         value = {'version':1, 'owner':state['owner'], 'startedAt':state['startedAt'],
             'stopWorkAt':state['stopWorkAt'], 'cleanupAt':state['cleanupAt'],
             'runtimeOwnerSha256':a.digest(d/'owner.json'), 'runtimeOwner':m['owner'],
@@ -738,6 +835,8 @@ def session_observe(directory, owner, name, config_file, history_file=None):
         config, prepared_argv = load_config(config_file)
         original = a.document(root/'config.json')
         require(config['k6Image'] == original['k6Image'], 'M7_SESSION_RUNTIME_CONFIG_CHANGED')
+        require(config.get('history', history.BASELINE) == original.get('history', history.BASELINE),
+                'M7_SESSION_HISTORY_CHANGED')
         stable = lambda options:{k:v for k,v in options.items() if k not in SESSION_VARIABLE_OPTIONS}
         require(stable(config['prepare']) == stable(original['prepare']), 'M7_SESSION_RUNTIME_CONFIG_CHANGED')
         ob = root/'observations'/name
@@ -768,7 +867,10 @@ def session_observe(directory, owner, name, config_file, history_file=None):
             stage(root,name+'-attach',argv)
             stage(root,name+'-preflight',['preflight',str(ob/'fixture'),'--k6-image',config['k6Image']])
             optional_preflight(ob,ob/'fixture')
+            prepare_history(ob, ob/'fixture', config, session['stopWorkAt'], verify_only=True)
             stage(root,name+'-run',['run',str(ob/'fixture'),'--k6-image',config['k6Image']])
+            if session['stopWorkAt'] is None and config.get('history', history.BASELINE) != history.BASELINE:
+                prepare_history(ob, ob/'fixture', config, None, verify_only=True, after=True)
         except BaseException as error:
             failure = {'code':code(error),'errorType':type(error).__name__}
         finally:
@@ -832,6 +934,10 @@ def main():
         if mode == 'run':
             prep.add_argument('--standard-case', action='store_true',
                               help='Create a fresh case with result.json, cleanup.json and raw/')
+    build = sub.add_parser('fixture-build', help='Build and register the keyed fixture of CONFIG (prepare.fixture: reuse) without traffic')
+    build.add_argument('config')
+    build.add_argument('directory')
+    build.add_argument('--candidate', help=candidate_help)
     plan = sub.add_parser('plan')
     plan.add_argument('config')
     plan.add_argument('--candidate', help=candidate_help)
@@ -842,7 +948,7 @@ def main():
     observe.add_argument('--name',required=True);observe.add_argument('--config',required=True);observe.add_argument('--history', help='Optional legacy observation metadata')
     close = sub.add_parser('session-close');close.add_argument('directory');close.add_argument('--owner',required=True)
     args = parser.parse_args()
-    if args.action in ('prepare', 'execute', 'rehearse', 'run', 'session-start', 'session-observe'):
+    if args.action in ('prepare', 'execute', 'rehearse', 'run', 'session-start', 'session-observe', 'fixture-build'):
         def interrupted(signum, frame):raise KeyboardInterrupt()
         signal.signal(signal.SIGTERM,interrupted)
     if args.action == 'session-start':return print(json.dumps(session_start(args.config,args.directory),indent=2))
@@ -854,6 +960,17 @@ def main():
         acceptance=a.document(args.source_acceptance) if args.source_acceptance else None
         value=rc.resolve(config,acceptance)
         return print(json.dumps(value,indent=2))
+    if args.action == 'fixture-build':
+        import fixture_catalog
+        config, _ = with_candidate(a.document(args.config), args.candidate)
+        request = fixture_request(config)
+        require(request is not None, 'M7_FIXTURE_REQUEST')
+        catalog = fixture_catalog.Catalog()
+        key = fixture_key(*request)
+        hit = catalog.lookup(key, 'compose')
+        record = hit or build_fixture(request[0], key, Path(args.directory).resolve(), catalog)
+        return print(json.dumps({'fixture': 'hit' if hit else 'built', 'digest': record['digest'],
+                                 'directory': record['directory'], 'status': record['status']}, indent=2))
     if args.action == 'identity':
         identity = a.instrument()
         return print(json.dumps({'helperHead': identity['commit'], 'helperInstrument': identity['sha256']}, indent=2))

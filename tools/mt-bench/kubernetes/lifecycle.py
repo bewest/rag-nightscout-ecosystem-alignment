@@ -17,6 +17,7 @@ import fixture_copy
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
 from auto_catalog import auto_catalog
 import point_results
+import populated_history as history
 from primer_progress import ProgressWindow
 cfg=fixture_config(Path(sys.argv[1]))
 d=Path(cfg['caseDirectory']); tool=Path(cfg['toolsDirectory'])
@@ -91,8 +92,7 @@ def owned():
     cur=get('namespace',ns,False)
     assert cur and cur['metadata']['uid']==nsuid and cur['metadata']['labels']['nightscout.org/run-id']==rid
 def objects(stage):return read(d/'stages'/f'{stage}.json')['items']
-split = 'verification' in read(d/'inventory.json').get('workloads', {})
-startup_stages = ('foundation','stores','provision','private-admin','primer','serving') + (('verification',) if split else ())
+startup_stages = ('foundation','stores','provision','private-admin','primer','serving')
 def step(stage):
     global current
     current=stage
@@ -200,7 +200,7 @@ def ready(label,typ,timeout,convergence=None,want=1):
                             previous=(failure_codes(s['name'],v['name'],s['uid'],previous=True)
                                       if v['previousTermination'] else {'status':'NOT_EXERCISED','codes':[]})
                             codes=sorted(set(current['codes']+previous['codes']))
-                            hard=disposition=='HARD' or bool(producer_startup.TERMINAL_CODES.intersection(codes))
+                            hard=disposition=='HARD'
                             finding={'pod':s['name'],'uid':s['uid'],'failed':[{'container':v['name'],
                                      'codes':codes,'state':v['state'],'priorTermination':v['previousTermination'],
                                      'restartCount':v['restartCount'],'currentLog':current,'previousLog':previous}],
@@ -241,7 +241,7 @@ def ready(label,typ,timeout,convergence=None,want=1):
 def workload_ready(stage):
     for obj in objects(stage):
         nm=obj['metadata']['name']; sel=obj['spec']['selector']['matchLabels']
-        convergence=producer_policy if nm=='pgstream' else None
+        convergence=None
         timeout=waits['cohortReadySeconds'] if application_topology.serving_workload(intent,stage,obj,frozen.require) else waits['workloadReadySeconds']
         seconds=convergence['maxSeconds'] if convergence else timeout
         if stage=='stores' and nm=='vault':
@@ -281,6 +281,18 @@ if not scheduler:assert read(Path(cfg['cacheAbsence']['path']))['verifiedAt']
 producer_policy=producer_startup.policy(intent['profile']['phases'].get('producerStartup'),e['workDeadlineSeconds'])
 selected_source=frozen.source(intent)
 nsuid=trustuid=None;events=[];uids=[];current='create-namespace'
+# Module level: the cleanup's native-unit absence check reads it after attach() has run.
+native_scope = 'ns-' + rid + '-native.scope'
+def attach(*args):
+    limits=cfg['nativeLimits']
+    put('native-unit.json', {'unit': native_scope})
+    command(['systemd-run','--user','--scope','--quiet','--unit='+native_scope,
+             '-p','CPUQuota='+str(limits['millicpus']/10)+'%',
+             '-p','MemoryMax='+str(limits['memoryBytes']),'-p','MemorySwapMax=0',
+             '-p','RuntimeMaxSec='+str(max(1,int(work-time.time())-6)),
+             sys.executable,'-B',Path(__file__).with_name('attach.py'),str(Path(sys.argv[1]).resolve()),*args],
+            timeout=int(work-time.time())-3)
+
 def interrupted(signum, frame):raise RuntimeError('CONTROLLER_SIGNAL_'+str(signum))
 signal.signal(signal.SIGTERM,interrupted)
 put('deadlines.json',{'workUntil':dt.datetime.fromtimestamp(work,dt.timezone.utc).isoformat(),'cleanupUntil':dt.datetime.fromtimestamp(cleanup,dt.timezone.utc).isoformat()})
@@ -309,9 +321,9 @@ try:
             # The copied PostgreSQL, Vault and roster need the Secrets they were seeded with.
             fixture_copy.import_secrets(lambda a,b=None:k(a,b,private=True),ns,rid,reuse['directory'])
         else:
-            # The seed renders pgstream's receivers for the binding's evaluator K (inventory
-            # seed.environment, K>1 only); an inherited NS_EVALUATOR_WORKERS never reaches it.
-            seed_env={key:value for key,value in env.items() if key!='NS_EVALUATOR_WORKERS'}
+            # The seed takes the binding's evaluator K from the inventory (seed.environment);
+            # an inherited NS_EVALUATOR_WORKERS never reaches it.
+            seed_env={key:value for key,value in env.items() if key not in ('NS_EVALUATOR_WORKERS', 'NS_INPUT_TRANSPORT')}
             seed_env.update(fixture_copy.seed_environment(read(d/'inventory.json')))
             command(['bash',secret_script,'seed',ns,e['images']['app']],timeout=waits['secretSeedSeconds'],private=True,
                     environment=seed_env)
@@ -330,9 +342,23 @@ try:
     workload_ready('private-admin')
     workload_ready('serving')
     install('primer')
+    # A seed that writes populated history reads the roster too (attach --seed-history).
+    seeds_history = bool(reuse) and reuse['mode']=='seed' and intent['profile']['history'] != history.BASELINE
+    if intent['primerLocation']=='claim' and (not (reuse and reuse['mode']=='seed') or seeds_history):
+        # Fault 2: the reader shares the primer's attachment instead of re-attaching after its detach.
+        import fixture
+        primer_job=next(o for o in objects('primer') if o['kind']=='Job' and o['metadata']['name']=='primer')
+        put('fixture-reader.json',fixture.hold_reader(fixture.runner(rpc+['-n',ns],work),primer_job,read(d/'inventory.json'),
+                                                       min(work,time.time()+waits['primerReadySeconds'])))
     if intent['primerLocation']=='claim':
         wait_job('primer', waits['primerReadySeconds'])
     if reuse and reuse['mode']=='seed':
+        spec = intent['profile']['history']
+        provenance = {}
+        if spec != history.BASELINE:
+            step('populate clinical history');owned()
+            attach('--seed-history')
+            provenance = {'history': spec, 'historyLogicalSha256': read(live/'populated-history.json')['logicalSha256']}
         # A seed run ends here: stop every writer, snapshot the four claims, keep the Secrets.
         step('stop writers');owned()
         fixture_copy.quiesce(k,ns,rid,work)
@@ -340,20 +366,12 @@ try:
         put('fixture-capture.json',fixture_copy.capture(k,ns,rid,reuse,read(d/'stages/fixture-snapshots.json'),
             {'tenants':e['tenantCount'],'appImage':e['images']['app'],'postgresImage':e['images']['postgres'],
              'coreCommit':cfg['candidate']['coreCommit'],'deployCommit':cfg['candidate']['deployCommit'],
-             'alignmentCommit':cfg['alignmentCommit'],
+             'alignmentCommit':cfg['alignmentCommit'], **provenance, **({'key':reuse['key']} if 'key' in reuse else {}),
              **fixture_copy.slices_record(read(d/'inventory.json'))},work))
         step('fixture captured')
         raise SystemExit(0)
     step('attach released runtime')
-    limits=cfg['nativeLimits']
-    native_scope = 'ns-' + rid + '-native.scope'
-    put('native-unit.json', {'unit': native_scope})
-    command(['systemd-run','--user','--scope','--quiet','--unit='+native_scope,
-             '-p','CPUQuota='+str(limits['millicpus']/10)+'%',
-             '-p','MemoryMax='+str(limits['memoryBytes']),'-p','MemorySwapMax=0',
-             '-p','RuntimeMaxSec='+str(max(1,int(work-time.time())-6)),
-             sys.executable,'-B',Path(__file__).with_name('attach.py'),str(Path(sys.argv[1]).resolve())],
-            timeout=int(work-time.time())-3)
+    attach()
 
 except Exception as exc:
     failure={'stage':current,'code':str(exc)[:500],'time':timestamp()}

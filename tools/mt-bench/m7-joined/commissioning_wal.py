@@ -1,4 +1,4 @@
-"""Explicit finite WAL retention for a fresh local commissioning diagnostic."""
+"""Immutable startup selections an attached session inherits from its exact runtime owner."""
 import copy
 import hashlib
 import json
@@ -6,31 +6,7 @@ import re
 from pathlib import Path
 from contract import require
 
-FIELD = 'commissioningSlotWalMiB'
-VALUES = (256, 1024)
-SETTING = 'max_slot_wal_keep_size'
-
-
-def value(selected):
-    require(type(selected) is int and selected in VALUES, 'M7_COMMISSIONING_SLOT_WAL_INVALID')
-    return selected
-
-
-def scope(profile, purpose, attached=False):
-    require(profile == 'pgstream-sample' and purpose == 'discovery' and not attached,
-            'M7_COMMISSIONING_SLOT_WAL_LOCAL_DIAGNOSTIC_ONLY')
-
-
-def option(args):
-    selected = getattr(args, 'commissioning_slot_wal_mib', None)
-    if selected is None:
-        return {}
-    selected = value(selected)
-    scope(args.profile, getattr(args, 'run_purpose', 'acceptance'))
-    return {FIELD: selected}
-
-
-STARTUP_FIELDS = (FIELD, 'tenantReadiness', 'platformStartup')
+STARTUP_FIELDS = ('tenantReadiness', 'platformStartup')
 
 
 def _digest(path):
@@ -40,7 +16,7 @@ def _digest(path):
 def _runtime(manifest):
     record = manifest.get('startupRuntimeOwner')
     require(isinstance(record, dict) and set(record) == {'path', 'sha256', 'owner'},
-            'M7_COMMISSIONING_SLOT_WAL_LOCAL_DIAGNOSTIC_ONLY')
+            'M7_STARTUP_RUNTIME_OWNER_REQUIRED')
     require(isinstance(record['path'], str) and isinstance(record['sha256'], str)
             and re.fullmatch('[a-f0-9]{64}', record['sha256']), 'M7_STARTUP_RUNTIME_OWNER_CHANGED')
     path = Path(record['path'])
@@ -63,8 +39,7 @@ def _runtime(manifest):
 
 def inherit(args, manifest, runtime, root):
     """Copy immutable startup facts from the exact owner, never request changes."""
-    require(getattr(args, 'commissioning_slot_wal_mib', None) is None
-            and getattr(args, 'tenant_readiness', None) is None,
+    require(getattr(args, 'tenant_readiness', None) is None,
             'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     if not any(k in runtime for k in STARTUP_FIELDS):
         return
@@ -85,124 +60,6 @@ def inherit(args, manifest, runtime, root):
 
 
 def from_manifest(manifest):
-    if manifest.get('attached') and (FIELD in manifest or 'tenantReadiness' in manifest
-                                    or 'startupRuntimeOwner' in manifest):
-        runtime = _runtime(manifest)
-        return from_manifest(runtime)
-    if FIELD not in manifest:
-        return {}
-    selected = value(manifest[FIELD])
-    scope(manifest.get('profile'), manifest.get('runPurpose'), manifest.get('attached', False))
-    return {FIELD: selected}
-
-
-def command_setting(config):
-    command = config.get('services', {}).get('postgres', {}).get('command')
-    require(isinstance(command, list) and command and command[0] == 'postgres'
-            and all(type(item) is str for item in command), 'M7_COMMISSIONING_SLOT_WAL_COMMAND_SHAPE')
-    matches = [index for index, item in enumerate(command) if SETTING in item]
-    require(len(matches) == 1 and matches[0] > 0 and command[matches[0]-1] == '-c',
-            'M7_COMMISSIONING_SLOT_WAL_COMMAND_SHAPE')
-    return command, matches[0]
-
-
-def install(config, manifest):
-    selected = from_manifest(manifest)
-    if not selected:
-        return
-    require(not manifest.get('attached'), 'M7_COMMISSIONING_SLOT_WAL_LOCAL_DIAGNOSTIC_ONLY')
-    command, index = command_setting(config)
-    require(command[index] in (SETTING + '=256MB', SETTING + '=-1'), 'M7_COMMISSIONING_SLOT_WAL_BASELINE_CHANGED')
-    command[index] = SETTING + '=' + str(selected[FIELD]) + 'MB'
-    verify(config, manifest)
-
-
-def verify(config, manifest):
-    selected = from_manifest(manifest)
-    if not selected:
-        return
-    command, index = command_setting(config)
-    require(command[index] == SETTING + '=' + str(selected[FIELD]) + 'MB',
-            'M7_COMMISSIONING_SLOT_WAL_CHANGED')
-
-
-def remote_selection(value):
-    selected=value.get(FIELD);readiness=value.get('tenantReadiness')
-    if selected is None and readiness is None:return {}
-    require(type(selected) is int and selected==1024 and readiness in ('serve','all'),
-            'REMOTE_STARTUP_SELECTION')
-    require(value.get('reportMode')=='discovery' and
-            (value.get('helperDependencies')or{}).get('profile')=='external-service-native-v1' and
-            value.get('pgstreamTopology')=='external-service-v1', 'REMOTE_STARTUP_NATIVE_DISCOVERY_ONLY')
-    allocation=value.get('diagnosticResourceAllocation')
-    require(isinstance(allocation,dict) and all(allocation.get('services',{}).get(role,{}).get('millicpus')==1000
-            for role in ('admin','primer')), 'REMOTE_STARTUP_ADMIN_PRIMER_CPU')
-    return {FIELD:selected,'tenantReadiness':readiness}
-
-
-SOURCE_FILES=('bindings/compose/multitenant/platform-startup.js',
-              'bindings/compose/multitenant/platform-verify.js',
-              'bindings/compose/multitenant/compose.yaml')
-
-def verify_source(a,manifest,core_repo,deploy_repo):
-    selection=from_manifest(manifest)
-    if not selection or manifest.get('tenantReadiness')is None:return None
-    require(manifest.get('tenantReadiness') in ('serve','all'),'M7_PLATFORM_STARTUP_READINESS_REQUIRED')
-    import hashlib
-    files={name:a.command(['git','-C',deploy_repo,'show',manifest['pair']['deploy']+':'+name],binary=True)for name in SOURCE_FILES}
-    source = files[SOURCE_FILES[-1]]
-    require(any(token in source for token in (b'max_slot_wal_keep_size=256MB', b'max_slot_wal_keep_size=-1')),
-            'M7_COMMISSIONING_SLOT_WAL_BASELINE_CHANGED')
-    return {'selection':{**selection,'tenantReadiness':manifest['tenantReadiness']},
-            'files':{name:hashlib.sha256(text).hexdigest()for name,text in files.items()}}
-
-
-def runtime(a,d,manifest,phase):
-    selected=from_manifest(manifest)
-    if not selected:return None
-    raw=a.psql(d,"SELECT name,setting,unit,pending_restart FROM pg_settings WHERE name='max_slot_wal_keep_size'")
-    if isinstance(raw,bytes):raw=raw.decode()
-    require(raw.strip().splitlines()==[SETTING+'\t'+str(selected[FIELD])+'\tMB\tf'],
-            'M7_COMMISSIONING_SLOT_WAL_RUNTIME')
-    import time
-    result={'version':1,'kind':'commissioning-slot-wal-readback-v1','status':'PASS','basis':'reproduced',
-            'phase':phase,'at':time.time(),'pair':manifest['pair'],'imageId':manifest['imageId'],
-            FIELD:selected[FIELD],'setting':SETTING,'unit':'MB','pendingRestart':False,
-            'scope':'actual selected PostgreSQL setting only; finite slot allowance is not a total WAL/disk quota'}
-    a.write(d/('commissioning-wal-'+phase+'.json'),result)
-    return result
-
-
-SLOT_QUERY = """SELECT current_setting('max_slot_wal_keep_size'), active,
-    pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn)::bigint
-    FROM pg_replication_slots WHERE slot_name='nsdemo_pgstream' AND slot_type='logical'
-    AND database=current_database();"""
-
-
-def sampler(read, result, *, now=None):
-    """Read the live slot while the tenant primer runs. Retain aggregates only."""
-    import time
-    import subprocess
-    now = now or time.monotonic
-    next_read = 0
-    record = {'status':'UNMEASURED', 'samples':0, 'unavailable':0}
-    result['primeSlotWal'] = record
-
-    def sample():
-        nonlocal next_read
-        started = now()
-        if started < next_read:
-            return
-        next_read = started + 5
-        try:
-            setting, active, amount = read(SLOT_QUERY).strip().split('\t')
-            if active not in ('t','f') or not amount.isdigit():
-                raise ValueError
-            amount = int(amount)
-        except (OSError, RuntimeError, ValueError, subprocess.SubprocessError):
-            record['unavailable'] += 1
-            return
-        record.update(status='OBSERVED', setting=setting, lastActive=(active == 't'),
-                      lastRetainedBytes=amount, maxRetainedBytes=max(amount, record.get('maxRetainedBytes',0)))
-        record['samples'] += 1
-    return sample
+    if manifest.get('attached') and ('tenantReadiness' in manifest or 'startupRuntimeOwner' in manifest):
+        _runtime(manifest)
+    return {}

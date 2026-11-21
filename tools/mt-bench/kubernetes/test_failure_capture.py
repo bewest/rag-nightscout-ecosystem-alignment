@@ -119,7 +119,7 @@ class FailureCapture(unittest.TestCase):
             client = k.Client(c, run=run_rpc)
             import catchup
             with patch.object(catchup, 'observer') as collected, \
-                 patch.object(k.candidate, 'require'), patch.object(module, 'actor', return_value={}), patch('jwt_tenants.attach',side_effect=lambda rows,*args,**kwargs:[{**row,'jwt':'synthetic-jwt'} for row in rows]), \
+                 patch.object(module, 'actor', return_value={}), patch('jwt_tenants.attach',side_effect=lambda rows,*args,**kwargs:[{**row,'jwt':'synthetic-jwt'} for row in rows]), \
                  patch.object(k, 'active_baseline', return_value=baseline), \
                  patch.object(k, 'observe', return_value=baseline), \
                  patch.object(k.shutil, 'which', return_value=str(tool)), \

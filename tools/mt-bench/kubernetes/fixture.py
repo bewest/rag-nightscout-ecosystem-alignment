@@ -15,11 +15,13 @@ def reader_pod(job, inventory, location, seconds):
     if results['file'] != 'tenants.json' or primer['name'] != 'primer':
         raise RuntimeError('K8S_FIXTURE_RESULTS_CHANGED')
     reader = {key: primer[key] for key in ('image', 'imagePullPolicy', 'securityContext', 'resources')}
-    reader.update(name='reader', command=['node', '-e', 'setTimeout(() => {}, 120000)'],
+    reader.update(name='reader', command=['node', '-e', 'setTimeout(() => {}, %d)' % (max(120, seconds) * 1000)],
                   volumeMounts=[{'name': 'client-state', 'mountPath': '/results', 'readOnly': True}])
     pod = {'apiVersion': 'v1', 'kind': 'Pod',
            'metadata': {**template['metadata'], 'generateName': 'fixture-reader-', 'namespace': inventory['namespace']},
-           'spec': {**spec, 'containers': [reader], 'activeDeadlineSeconds': seconds}}
+           # The reader's node PID 1 ignores SIGTERM: a 1 s grace lets read_roster's 15 s delete finish before
+           # the observe census, which refuses a Pod without a rendered controller (K8S_POD_CONTROLLER).
+           'spec': {**spec, 'containers': [reader], 'activeDeadlineSeconds': seconds, 'terminationGracePeriodSeconds': 1}}
     if location == 'claim':
         claim = results.get('claim')
         if not claim or state.get('persistentVolumeClaim', {}).get('claimName') != claim:
@@ -56,22 +58,52 @@ def wait_detached(run, claim, cutoff, seconds=DETACH_SECONDS, clock=time):
         clock.sleep(2)
 
 
-def read_roster(kubectl, job, inventory, directory, count, cutoff, location):
-    from contract import tenant_projection
-    directory.mkdir(mode=0o700, parents=True, exist_ok=False)
-
+def runner(kubectl, cutoff):
     def run(args, **kwargs):
         remaining = cutoff - time.time()
         if remaining <= 0:
             raise RuntimeError('K8S_FIXTURE_DEADLINE')
         return subprocess.run([*kubectl, *args], check=True, capture_output=True, timeout=min(remaining, 30), **kwargs)
+    return run
 
-    seconds = min(job['spec']['activeDeadlineSeconds'], max(1, math.ceil(cutoff - time.time())))
-    pod = reader_pod(job, inventory, location, seconds)
-    if location == 'claim':
-        detach = wait_detached(run, inventory['results']['primer']['claim'], cutoff)
-        (directory/'reader-detach.json').write_text(json.dumps(detach) + '\n')
+
+def hold_reader(run, job, inventory, cutoff, clock=time):
+    """Create the claim's reader on the primer Pod's node while the primer still uses the volume,
+    so the RWO volume stays attached from primer to reader. Readers created after the primer's
+    detach took 14 min from creation to roster read although no VolumeAttachment remained
+    (fixture-restore fault 2: 2 of 4 keyed restores on CSI v4.20.0, 2026-11-20); one attachment
+    avoids the handoff."""
+    while True:
+        rows = json.loads(run(['get', 'pods', '-l', 'job-name=' + job['metadata']['name'], '-o', 'json']).stdout)['items']
+        nodes = sorted({p['spec']['nodeName'] for p in rows if p['spec'].get('nodeName')})
+        if nodes:
+            break
+        if clock.time() >= cutoff:
+            raise RuntimeError('K8S_FIXTURE_PRIMER_UNSCHEDULED')
+        clock.sleep(1)
+    seconds = min(job['spec']['activeDeadlineSeconds'], max(1, math.ceil(cutoff - clock.time())))
+    pod = reader_pod(job, inventory, 'claim', seconds)
+    # Bound to the node directly: the attach/detach controller then keeps the volume attached.
+    pod['spec']['nodeName'] = nodes[0]
     created = json.loads(run(['create', '-f', '-', '-o', 'json'], input=json.dumps(pod).encode()).stdout)
+    return {'name': created['metadata']['name'], 'uid': created['metadata']['uid'], 'node': nodes[0],
+            'primerPods': len(rows), 'createdAt': clock.time()}
+
+
+def read_roster(kubectl, job, inventory, directory, count, cutoff, location, held=None):
+    from contract import tenant_projection
+    directory.mkdir(mode=0o700, parents=True, exist_ok=False)
+    run = runner(kubectl, cutoff)
+    if held:
+        (directory/'reader-held.json').write_text(json.dumps(held) + '\n')
+        created = {'metadata': {'name': held['name'], 'uid': held['uid']}}
+    else:
+        seconds = min(job['spec']['activeDeadlineSeconds'], max(1, math.ceil(cutoff - time.time())))
+        pod = reader_pod(job, inventory, location, seconds)
+        if location == 'claim':
+            detach = wait_detached(run, inventory['results']['primer']['claim'], cutoff)
+            (directory/'reader-detach.json').write_text(json.dumps(detach) + '\n')
+        created = json.loads(run(['create', '-f', '-', '-o', 'json'], input=json.dumps(pod).encode()).stdout)
     name = created['metadata']['name']
     try:
         while True:

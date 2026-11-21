@@ -224,16 +224,23 @@ class Capture(unittest.TestCase):
         self.assertEqual(set(value['figures']), set(o.QUERIES) - {'statementText'})
         self.assertEqual(value['figures']['topStatementsSeconds'], [{'labels': {'queryid': '7'}, 'value': 2.5, 'query': 'SELECT $1'}])
 
-    def test_delivery_span_and_gap_from_receiver_trace(self):
-        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
-        logs = Path(tmp.name)/'podlogs'; logs.mkdir()
-        # Core acknowledges with 204 (measured live, case a2-k1); 200 is accepted too, a 503 refusal is not a delivery.
-        line = lambda at, ms, pos, status=204: ('2026-11-20T00:00:00Z PGSTREAM_RECEIVER_TRACE ' + json.dumps(
-            {'at': at, 'request': 1, 'event': 'response-finished', 'elapsedMs': ms, 'position': pos, 'rows': 3, 'status': status, 'dropped': 0}) + '\n')
-        (logs/'evaluator-0.evaluator.log').write_text(line(1010, 10, '0/A') + line(1100, 20, '0/B') + 'other line\n')
-        (logs/'evaluator-1.evaluator.log').write_text(line(1030, 25, '0/A', 200) + line(1090, 5, '0/B') + line(5000, 5, '0/C', 503))
-        value = o.delivery(Path(tmp.name))
-        self.assertEqual(value['batches'], 2)
-        self.assertEqual(value['deliverySpanMs']['max'], 30)   # 0/A: received 1000, last response 1030
-        self.assertEqual(value['interBatchGapMs']['median'], 50)  # 0/B first receipt 1080 - 1030
-        self.assertEqual(o.delivery(Path(tmp.name)/'none')['verdict'], 'UNMEASURED')
+    def test_writer_driven_summary_uses_api_writes_and_skips_cdc(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        baseline = case(tmp.name, None)
+        out = Path(tmp.name)
+        (out/'samples.jsonl').touch()
+        (baseline.d/'binding-inputs.json').write_text(json.dumps({'inputTransport': 'writer-driven'}))
+        c = o.Case(baseline.d)
+        summary = o.summarize(c, out)
+        self.assertNotIn('pgstreamDelivery', summary)
+        packet = c.runtime/'packet'/'load'
+        packet.mkdir(parents=True)
+        (packet/'metrics-snapshot.json').write_text(json.dumps({'verdict': 'OBSERVED', 'file': 'metrics-tsdb.tar'}))
+        FakePrometheus.queries = []
+        figures = o.prometheus_figures(c, 0, 10000, local=FakePrometheus)['figures']
+        self.assertIn('pendingOldestAgeMaxSeconds', figures)
+        write_queries = [q for q, _ in FakePrometheus.queries if 'nightscout_http_request_seconds_count' in q]
+        self.assertEqual(len(write_queries), 2)
+        self.assertTrue(all('workload="api"' in q for q in write_queries))
+

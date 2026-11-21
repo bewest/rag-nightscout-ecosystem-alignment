@@ -240,33 +240,38 @@ class Bound(unittest.TestCase):
 
 class SeedAndFixtureK(unittest.TestCase):
     def test_seed_environment_follows_the_binding(self):
-        self.assertEqual(fixture_copy.seed_environment({}), {})
-        k2 = {'slices': {'evaluator': 2}, 'seed': {'environment': {'NS_EVALUATOR_WORKERS': '2'}}}
-        self.assertEqual(fixture_copy.seed_environment(k2), {'NS_EVALUATOR_WORKERS': '2'})
+        writer = {'NS_INPUT_TRANSPORT': 'writer-driven'}
+        k1 = {'inputTransport': 'writer-driven', 'seed': {'environment': writer}}
+        self.assertEqual(fixture_copy.seed_environment(k1), writer)
+        k2 = {'inputTransport': 'writer-driven', 'slices': {'evaluator': 2},
+              'seed': {'environment': {'NS_EVALUATOR_WORKERS': '2', **writer}}}
+        self.assertEqual(fixture_copy.seed_environment(k2), {'NS_EVALUATOR_WORKERS': '2', **writer})
         with self.assertRaisesRegex(fixture_copy.Refused, 'SEED_EVALUATOR_SLICES'):
-            fixture_copy.seed_environment({'slices': {'evaluator': 2}})
-        self.assertEqual(fixture_copy.slices_record({}), {})
-        self.assertEqual(fixture_copy.slices_record(k2), {'evaluatorSlices': 2})
+            fixture_copy.seed_environment({'inputTransport': 'writer-driven', 'slices': {'evaluator': 2}, 'seed': {'environment': writer}})
+        with self.assertRaisesRegex(fixture_copy.Refused, 'SEED_INPUT_TRANSPORT'):
+            fixture_copy.seed_environment({'seed': {'environment': {}}})
+        self.assertEqual(fixture_copy.slices_record(k1), {'inputTransport': 'writer-driven'})
+        self.assertEqual(fixture_copy.slices_record(k2), {'evaluatorSlices': 2, 'inputTransport': 'writer-driven'})
 
-    def test_restore_refuses_a_fixture_seeded_for_another_k(self):
+    def test_a_writer_driven_fixture_restores_at_any_k(self):
+        # K-free (decision statefulset-ordinal-scaling, amended): the seed's K is not a restore refusal.
         tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
         directory = Path(tmp.name)/'fixture'; directory.mkdir(mode=0o700)
         parts = fixture_copy.PARTS
         manifest = {'version': 1, 'handles': dict.fromkeys(parts, 'h'), 'sizes': dict.fromkeys(parts, '1Gi'),
                     'driver': 'dobs.csi.digitalocean.com', 'tenants': 1000, 'postgresImage': 'pg',
-                    'snapshotClass': 's', 'storageClass': 'c'}
+                    'snapshotClass': 's', 'storageClass': 'c', 'inputTransport': 'writer-driven'}
         for name, value in ((fixture_copy.MANIFEST, manifest), (fixture_copy.SECRETS, [])):
             (directory/name).write_text(json.dumps(value)); (directory/name).chmod(0o600)
         chosen = {'mode': 'restore', 'directory': str(directory)}
-        never = '/nonexistent/jsonnet'  # the refusal precedes any render
-        with self.assertRaisesRegex(fixture_copy.Refused, 'EVALUATOR_SLICES_CHANGED'):
-            fixture_copy.render(never, '/nonexistent', 'ns', 'run', chosen, 1000, 'pg', 2)
-        manifest['evaluatorSlices'] = 2
-        (directory/fixture_copy.MANIFEST).write_text(json.dumps(manifest))
-        with self.assertRaisesRegex(fixture_copy.Refused, 'EVALUATOR_SLICES_CHANGED'):
-            fixture_copy.render(never, '/nonexistent', 'ns', 'run', chosen, 1000, 'pg', 1)
-        with self.assertRaises(FileNotFoundError):  # K matches: proceeds to the renderer
-            fixture_copy.render(never, '/nonexistent', 'ns', 'run', chosen, 1000, 'pg', 2)
+        never = '/nonexistent/jsonnet'  # passing the checks proceeds to the renderer
+        for seeded, restored in ((1, 2), (2, 1), (2, 2)):
+            manifest['evaluatorSlices'] = seeded
+            (directory/fixture_copy.MANIFEST).write_text(json.dumps(manifest))
+            with self.assertRaises(FileNotFoundError):
+                fixture_copy.render(never, '/nonexistent', 'ns', 'run', chosen, 1000, 'pg', restored)
+        with self.assertRaisesRegex(fixture_copy.Refused, 'TENANTS_CHANGED'):
+            fixture_copy.render(never, '/nonexistent', 'ns', 'run', chosen, 999, 'pg', 1)
 
 
 class ReaderDetach(unittest.TestCase):
@@ -294,6 +299,60 @@ class ReaderDetach(unittest.TestCase):
         held = [('csi-a', 'pvc-123')]
         value, _ = self.run_wait([held] * 100, seconds=10)
         self.assertEqual((value['attachedAtCreate'], value['waitedSeconds']), (['csi-a'], 10))
+
+
+class ReaderHeld(unittest.TestCase):
+    """Fault 2: the reader is bound to the primer Pod's node before the primer exits, so the RWO
+    volume is never detached and re-attached between them."""
+    job = {'metadata': {'name': 'primer'}, 'spec': {'activeDeadlineSeconds': 600, 'template': {
+        'metadata': {'labels': {'nightscout.org/run-id': 'r'}},
+        'spec': {'containers': [{'name': 'primer', 'image': 'app', 'imagePullPolicy': 'IfNotPresent',
+                                 'securityContext': {}, 'resources': {}}],
+                 'nodeSelector': {'kubernetes.io/hostname': 'n1'},
+                 'volumes': [{'name': 'client-state', 'persistentVolumeClaim': {'claimName': 'fixture-primer-results'}}]}}}}
+    inventory = {'namespace': 'ns', 'results': {'primer': {'claim': 'fixture-primer-results', 'file': 'tenants.json'}}}
+
+    def test_reader_is_created_on_the_scheduled_primer_node(self):
+        clock, calls, polls = Clock(), [], iter([[], [{'spec': {}}], [{'spec': {'nodeName': 'n1'}}]])
+        def run(args, input=None, **kwargs):
+            calls.append(args[:2])
+            if args[:2] == ['get', 'pods']:
+                return subprocess.CompletedProcess(args, 0, json.dumps({'items': next(polls)}).encode())
+            body = json.loads(input)
+            calls.append(body)
+            return subprocess.CompletedProcess(args, 0, json.dumps({'metadata': {'name': 'fixture-reader-x', 'uid': 'u'}}).encode())
+        held = reader.hold_reader(run, self.job, self.inventory, clock.now + 3600, clock)
+        pod = calls[-1]
+        self.assertEqual((held['name'], held['node']), ('fixture-reader-x', 'n1'))
+        self.assertEqual(pod['spec']['nodeName'], 'n1')
+        self.assertEqual(pod['spec']['volumes'], [{'name': 'client-state', 'persistentVolumeClaim':
+                         {'claimName': 'fixture-primer-results', 'readOnly': True}}])
+        self.assertNotIn(['get', 'volumeattachments'], calls)
+        with self.assertRaisesRegex(RuntimeError, 'PRIMER_UNSCHEDULED'):
+            reader.hold_reader(lambda args, **kw: subprocess.CompletedProcess(args, 0, b'{"items": []}'),
+                               self.job, self.inventory, clock.now + 5, clock)
+
+    def test_a_held_reader_is_read_without_a_new_pod_or_attachment_wait(self):
+        calls = []
+        def fake(argv, **kwargs):
+            args = argv[3:]
+            calls.append(args[:2])
+            if args[:2] == ['get', 'pod']:
+                body = {'metadata': {'uid': 'u'}, 'status': {'conditions': [{'type': 'Ready', 'status': 'True'}]}}
+            elif args[0] == 'exec':
+                body = {'version': 1, 'tenants': []}
+            else:
+                body = {'items': []}
+            return subprocess.CompletedProcess(argv, 0, json.dumps(body).encode())
+        directory = Path(tempfile.mkdtemp())/'fixture'
+        inventory = {**self.inventory, 'storage': {'claims': {}}}
+        with patch.object(reader.subprocess, 'run', side_effect=fake), \
+             patch('contract.tenant_projection', return_value=[]):
+            reader.read_roster(['kubectl', '-n', 'ns'], self.job, inventory, directory, 0, 1e12, 'claim',
+                               {'name': 'fixture-reader-x', 'uid': 'u', 'node': 'n1'})
+        self.assertNotIn(['create', '-f'], calls)
+        self.assertNotIn(['get', 'volumeattachments'], calls)
+        self.assertTrue((directory/'reader-held.json').is_file())
 
 
 if __name__ == '__main__':

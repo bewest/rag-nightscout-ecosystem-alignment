@@ -42,20 +42,18 @@ After source-driven deploy and preflight, pass the prepared cell directly as the
 REST attachment and its `state` directory as `--state`, with the same project and
 exact expected source/image. REST retains its own source allowlist and traffic
 authorization; selecting a fixture does not authorize a workload window.
-This selects `NS_PGSTREAM=1`, a 60-second sampler-disabled
+This selects writer-driven input (`NS_INPUT_TRANSPORT=writer-driven`), a 60-second sampler-disabled
 baseline, 120-second idle and 600-second ordinary load (`ACCEL=1`, `HOT_FACTOR=1`).
 A separate synthetic correctness uploader writes every 300 seconds. Its stored
 ID/glucose, durable completed versions/rows/frame and already-connected stock
 clients must agree. All workload writes also pass the independent count oracle
 and row-mutation control. No worker restart campaign runs in this sample. The selected startup and runtime
-roster omit the retired legacy feed-reader. The default colocated topology runs
-pgstream inside evaluator; explicit `external-service-v1` keeps a separate native
-producer service. Record the actual selected topology in comparisons.
+roster omit the retired legacy feed-reader.
 
 Source helpers resolve only the cell-owned lockfile dependency tree; evaluator
 and realtime image processes independently check `/opt/app` pg resolution before
-load. Per-process CPU-counter bookends and RSS distinguish evaluator Node from its
-pgstream child; process replacement/missing data is UNMEASURED.
+load. Per-process CPU-counter bookends and RSS cover evaluator Node; process
+replacement/missing data is UNMEASURED.
 `sql-attribution.json` uses full private statement bookends for disjoint SQL-role
 buckets. A native recovery connection may use the configured pgstream role on
 the evaluator database. That role has a separate `shared` bucket, counted once;
@@ -191,10 +189,17 @@ The joined deployment starts admin and serving roles through Compose's completed
 The lab client provisions through the private admin API and primes through DATA APIs. The harness reads
 its private `primer/tenants.json` and exchanges DATA tokens before starting k6.
 
-Set `prepare.fixture-snapshot` to the absolute path of a cold fixture produced by the deployment's
-`demo.sh snapshot` to restore its PostgreSQL, Vault, private settings and primer state into a fresh
-Compose project. The runner records the completed restore in `fixture-restore.json`. Select a fixture
-with the baseline tenant population you intend to exercise. Vary the workload or viewers in each run.
+Set `prepare.fixture` to `reuse` (and optionally `prepare.fixture-seed` to a seed name) to start from
+a cold fixture found by key (`fixture_catalog.py`: tenant count, seed name, core migrations tree,
+application and PostgreSQL image ids, input transport, populated history and, for a K-bound transport,
+`static-workers`). On a catalog hit the runner restores that copy of PostgreSQL, Vault, private
+settings and primer state into the fresh Compose project. On a miss it first builds the fixture in a
+sibling point `DIRECTORY-seed`: an ordinary deploy (bootstrap, roles, provision, prime) without
+traffic, `adapter.py fixture-capture` (stop the project, deployment `fixture.js snapshot` into the
+catalog directory), cleanup, register. `runner.py fixture-build CONFIG DIRECTORY` builds and
+registers ahead of time. The point records the lookup in `fixture-key.json` and the restore in
+`fixture-restore.json`. A hand-named `prepare.fixture-snapshot` is refused. Vary the workload or
+viewers in each run; a different population or image is a different key.
 
 ## Instrument
 

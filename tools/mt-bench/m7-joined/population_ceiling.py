@@ -63,7 +63,7 @@ const fs=require('node:fs'),crypto=require('node:crypto');
 const root='/opt/app/deploy/multitenant/',expected=JSON.parse(process.argv[1]),limit=Number(process.argv[2]);
 for(const [name,hash] of Object.entries(expected))if(crypto.createHash('sha256').update(fs.readFileSync(root+name)).digest('hex')!==hash)throw Error('POPULATION_IMAGE_SOURCE_CHANGED');
 const population=require(root+'population-ceiling');
-process.env[population.ENV]=String(limit);process.env.NS_DEMO_TENANTS=String(Math.min(2,limit));process.env.NS_PGSTREAM='1';
+process.env[population.ENV]=String(limit);process.env.NS_DEMO_TENANTS=String(Math.min(2,limit));
 const plan=require(root+'config'),layout=plan.layout('population_probe');
 const urls=Object.fromEntries(Object.keys(layout.roles).map(role=>[role,'postgres://'+role+':synthetic@postgres/nightscout_compose_test']));
 const docs=plan.documents({layout,urls,tokens:[],publicKeys:[],managementKeys:[],vaultAddress:'https://vault:8200'});

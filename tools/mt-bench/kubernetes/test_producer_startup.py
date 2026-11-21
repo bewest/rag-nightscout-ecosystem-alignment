@@ -122,17 +122,6 @@ class Startup(unittest.TestCase):
         exec(compile(ast.Module(body=nodes, type_ignores=[]), str(source), 'exec'), globals_)
         return globals_['ready'], retained, acquired, pod
 
-    def test_bounded_retry_preserves_previous_log_and_waits_for_stability(self):
-        ready, records, calls, expected = self.fixture()
-        result = ready('only-producer', 'pgstream', 20, {'maxSeconds': 20, 'stableReadySeconds': 4})
-        self.assertEqual(result, expected)
-        self.assertEqual(records['failure-pgstream.json']['disposition'], 'RETRY')
-        attempt = records['failure-pgstream.json']['failed'][0]
-        self.assertEqual(attempt['previousLog']['codes'], ['PGSTREAM_RETRY_SYNTHETIC'])
-        self.assertEqual(attempt['currentLog']['codes'], [])
-        self.assertEqual(sum('--previous' in args for args in calls), 1)
-        self.assertEqual(records['startup-convergence-pgstream.json']['observedStableSeconds'], 4)
-
     def test_failed_container_keeps_bounded_private_log_without_publishing_its_bytes(self):
         output=b'x'*70000+b'\nprivate constructor detail\n'
         ready,records,calls,_=self.fixture(hard=True,output=output)
@@ -164,29 +153,3 @@ class Startup(unittest.TestCase):
             ready('only-producer', 'pgstream', 20, {'maxSeconds': 20, 'stableReadySeconds': 4})
         self.assertEqual(calls, [])
 
-    def test_convergence_stays_within_the_authored_work_deadline(self):
-        for options in ({'maxSeconds': 11, 'stableReadySeconds': 2},
-                        {'maxSeconds': 10, 'stableReadySeconds': 10},
-                        {'maxSeconds': 10, 'stableReadySeconds': True}):
-            with self.assertRaisesRegex(ValueError, 'PRODUCER_STARTUP_WINDOW'):
-                startup.policy(options, 10)
-        ready, records, _, _ = self.fixture()
-        with self.assertRaisesRegex(RuntimeError, 'READY_DEADLINE_pgstream'):
-            ready('only-producer', 'pgstream', 5, {'maxSeconds': 5, 'stableReadySeconds': 4})
-        self.assertNotIn('startup-convergence-pgstream.json', records)
-
-    def test_native_webhook_codes_stay_line_scoped(self):
-        self.assertEqual(startup.log_codes(b'webhook response status code: 503 Service Unavailable'),
-                         ['OBSERVED_PRODUCER_RECEIVER_HTTP_503'])
-        self.assertEqual(startup.log_codes(b'webhook did not respond\nstatus code: 503 unrelated'),
-                         [])
-        self.assertEqual(startup.log_codes(b'webhook request: dial tcp: connect: connection refused'),
-                         ['OBSERVED_PRODUCER_RECEIVER_CONNECTION_REFUSED'])
-        self.assertEqual(startup.log_codes(b'notifier is idle\nwebhook shutdown'), [])
-
-    def test_actual_config_load_shape_maps_to_a_terminal_class(self):
-        raw = b'Error: loading configuration: reading config file: open fixture.yaml: no such file'
-        self.assertEqual(startup.log_codes(raw), ['OBSERVED_PRODUCER_CONFIG_LOAD_ERROR'])
-        self.assertIn(startup.log_codes(raw)[0], startup.TERMINAL_CODES)
-        self.assertEqual(startup.log_codes(b'webhook: context deadline exceeded'),
-                         ['OBSERVED_PRODUCER_WEBHOOK_TIMEOUT'])

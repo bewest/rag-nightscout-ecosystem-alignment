@@ -32,16 +32,20 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ALIGNMENT = HERE.parent.parent.parent
-RUNNER = HERE.parent / 'm7-joined' / 'runner.py'
+M7 = HERE.parent / 'm7-joined'
+RUNNER = M7 / 'runner.py'
+sys.path.insert(0, str(M7))
 sys.path.insert(0, str(HERE))
+import populated_history  # noqa: E402
+from contract import DISCOVERY_MAX_API_REPLICAS, DISCOVERY_MAX_WORKERS  # noqa: E402
 import main_thread  # noqa: E402
 import statement_phase  # noqa: E402
 
-DEFAULT_DEPLOY = 'f57a8c335be9895c0ce4596d8a73275444b16541'  # nightscout-deploy; image inputs equal at 09f2223
+WRITER_DEPLOY = 'edc6c5df1e8cdf693493f5b4bb5d89e591afbb75'
 K6_IMAGE = 'sha256:eeb0db19cd8d263aa57346cdbc7ea18e6fcfb2ba9497746a7ae82ceefc8c9fa5'  # grafana/k6:1.3.0
 POSTGRES_IMAGE = 'sha256:21e7e1665c3dd2fdd80ebd9ce6d36fb160d6a4129683b315b6492a71d87bfda7'
 BASELINE = HERE / 'baseline.json'
-WORKLOAD = {'tenants': 16, 'load-seconds': 180, 'workload-scale': 24}
+WORKLOAD = {'tenants': 16, 'load-seconds': 180, 'workload-scale': 24.0}
 
 
 def sh(cmd, **kw):
@@ -49,7 +53,13 @@ def sh(cmd, **kw):
 
 
 def repo(env, default):
-    return Path(os.environ.get(env) or ALIGNMENT / 'externals' / default)
+    if os.environ.get(env):
+        return Path(os.environ[env])
+    local = ALIGNMENT / 'externals' / default
+    if local.exists():
+        return local
+    common = sh(['git', '-C', str(ALIGNMENT), 'rev-parse', '--path-format=absolute', '--git-common-dir'])
+    return Path(common).parent / 'externals' / default
 
 
 def resolve(ref, root):
@@ -75,11 +85,11 @@ def labels(image):
 
 def build(core, deploy, core_repo, deploy_repo, scratch):
     """Image from two commits, as deploy's tools/compose-overlay.sh + build.js do (overlay marker written here)."""
+    deploy = sh(['git', '-C', str(deploy_repo), 'rev-parse', '--verify', deploy + '^{commit}'])
     tag = f'ns-evaluator-smoke:{core[:12]}-{deploy[:12]}'
     image_id, lab = labels(tag)
     if image_id and lab.get('org.opencontainers.image.revision') == core and lab.get('org.nightscout.deploy.revision') == deploy:
         return tag, image_id, 'reused'
-    sh(['git', '-C', str(deploy_repo), 'rev-parse', '--verify', deploy + '^{commit}'])
     work = Path(scratch) / f'build-{core[:12]}'
     require(not work.exists(), 'SMOKE_BUILD_DIR_EXISTS')
     sh(['git', '-C', str(core_repo), 'worktree', 'add', '--detach', str(work), core])
@@ -114,24 +124,37 @@ def free_subnets():
     raise SystemExit('SMOKE_NO_FREE_SUBNET')
 
 
-def config(core, deploy, core_repo, deploy_repo, project, workload):
+def config(core, deploy, core_repo, deploy_repo, project, workload, *, replicas=None, workers=None):
+    replicas = 2 if replicas is None else replicas
+    workers = 2 if workers is None else workers
     backend, edge = free_subnets()
     head = sh(['git', '-C', str(ALIGNMENT), 'rev-parse', 'HEAD'])
     return {
         'version': 1, 'tier': 'smoke', 'helperHead': head, 'k6Image': K6_IMAGE,
         'workSeconds': 2400, 'cleanupSeconds': 300,
+        **({'history': workload['history']} if 'history' in workload else {}),
         'prepare': {
             'core-repo': str(core_repo), 'core-commit': core, 'deploy-repo': str(deploy_repo), 'deploy-commit': deploy,
-            'postgres-image': POSTGRES_IMAGE, 'tenants': workload['tenants'], 'replicas': 1,
+            'postgres-image': POSTGRES_IMAGE, 'tenants': workload['tenants'], 'replicas': replicas,
             'warmup-seconds': 5, 'idle-seconds': 5, 'load-seconds': workload['load-seconds'],
             'setup-seconds': 180, 'drain-seconds': 180, 'accel': 1, 'hot-factor': 1, 'sampler-interval': 5,
             'probe-every-ms': 10000, 'sockets-per-tenant': 1, 'logical-polling-clients': 2,
             'workload-mix': 'realistic-v1', 'workload-scale': workload['workload-scale'],
             'primer-concurrency': 4, 'jwt-setup-concurrency': 4, 'fixture-project': project,
             'maximum-run-minutes': 40, 'backend-subnet': backend, 'edge-subnet': edge, 'quiet-load': os.cpu_count() or 1,
-            'pgstream-topology': 'external-service-v1', 'completion-contract': 'evaluator-work-v2', 'static-workers': 1,
+            'input-transport': 'writer-driven',
+            'completion-contract': 'evaluator-work-v2', 'static-workers': workers,
         },
     }
+
+
+def recorded_topology(run):
+    # The runner retains the candidate-bound configuration. Older smoke packets used 1/1/1.
+    source = run / 'config.json'
+    options = json.loads(source.read_text())['prepare'] if source.is_file() else {}
+    workers = options.get('static-workers', 1)
+    return {'inputTransport': options.get('input-transport', 'pgstream'), 'apiReplicas': options.get('replicas', 1),
+            'evaluatorSlices': workers, 'realtimeSlices': workers}
 
 
 def reduce(run, empty_rules=False):
@@ -139,8 +162,9 @@ def reduce(run, empty_rules=False):
     rules = [] if empty_rules else statement_phase.DEFAULT_RULES
     sql = statement_phase.reduce_point(run, rules)
     writes = sql['acceptedWrites']['total']
-    samples = run.parent / (run.name + '-main-thread.jsonl')
-    cpu = main_thread.reduce(samples, sql['windowNs'], writes) if samples.is_file() else {'status': 'UNMEASURED', 'reason': 'NO_SAMPLER_FILE'}
+    topology = recorded_topology(run)
+    slices = topology['evaluatorSlices']
+    cpu = main_thread.reduce_services(run, slices, sql['windowNs'], writes)
     smoke = {}
     try:
         smoke = json.loads((run / 'smoke.json').read_text())
@@ -154,20 +178,23 @@ def reduce(run, empty_rules=False):
     return {
         'version': 1, 'kind': 'evaluator-statement-smoke-v1',
         'candidate': {k: identity.get(k) for k in ('reference', 'imageId', 'core', 'deploy')},
+        'topology': topology,
         'runnerSmokeVerdict': smoke.get('verdict', 'UNMEASURED'), 'runnerOracles': smoke.get('oracles'),
         'acceptedWrites': sql['acceptedWrites'], 'windowSeconds': sql['windowSeconds'], 'cycles': sql['cycles'],
         'statementsPerWrite': {'total': sql['total']['perWrite'],
+                               'api': sql['api']['perWrite'],
                                'byRole': {k: v['perWrite'] for k, v in sql['roles'].items()},
                                'byPhase': {k: v['perWrite'] for k, v in sql['phases'].items()}},
         'executionMsPerWrite': {'total': sql['total']['msPerWrite'],
+                                'api': sql['api']['msPerWrite'],
                                 'byRole': {k: v['msPerWrite'] for k, v in sql['roles'].items()},
                                 'byPhase': {k: v['msPerWrite'] for k, v in sql['phases'].items()}},
         'attributedShare': sql['attributedShare'],
         'mainThread': cpu,
         'shapes': sql['shapes'],
         'rules': 'empty (negative control)' if empty_rules else 'default',
-        'scope': 'pg_stat_statements top-level calls of the four evaluator roles between the load bookends, '
-                 'divided by HTTP-accepted writes plus stored probe writes; executor time, not CPU',
+        'scope': 'Totals and phases cover four evaluator roles. API figures cover nsdemo_api and nsdemo_lifetime_api '
+                 'over the same window, including reads. Both use HTTP-accepted writes plus stored probe writes.',
     }
 
 
@@ -184,8 +211,11 @@ def compare(summary, baseline):
                                    'delta': round(x - y, 3) if None not in (x, y) else None,
                                    'ratio': round(x / y, 3) if None not in (x, y) and y else None}
         return out
-    pick = lambda s: {'statementsPerWrite': s['statementsPerWrite'], 'executionMsPerWrite': {'total': s['executionMsPerWrite']['total']},
-                      'mainThreadMsPerWrite': s['mainThread'].get('mainThreadMsPerWrite')}
+    def pick(s):
+        times = s['executionMsPerWrite']
+        return {'statementsPerWrite': s['statementsPerWrite'],
+                'executionMsPerWrite': {key: times[key] for key in ('total', 'api') if key in times},
+                'mainThreadMsPerWrite': s['mainThread'].get('mainThreadMsPerWrite')}
     return {'kind': 'evaluator-statement-smoke-comparison-v1', 'gate': False,
             'baselineCandidate': baseline.get('candidate'), 'observedCandidate': summary.get('candidate'),
             'workloadMatches': baseline.get('workload') == summary.get('workload'),
@@ -199,6 +229,10 @@ def markdown(summary, comparison=None):
              f"(http {s['acceptedWrites']['http']}, probe {s['acceptedWrites']['probeStored']}); window {s['windowSeconds']} s; "
              f"cycles {s['cycles']}", '',
              '| statements per accepted write | value | baseline |', '|---|---:|---:|']
+    topology = s.get('topology')
+    if topology:
+        lines.insert(1, f"Input transport {topology['inputTransport']}, API replicas {topology['apiReplicas']}, "
+                        f"evaluator slices {topology['evaluatorSlices']}, realtime slices {topology['realtimeSlices']}.")
     base = (comparison or {}).get('figures', {})
     def row(key, label):
         v = base.get(key, {})
@@ -207,11 +241,14 @@ def markdown(summary, comparison=None):
         lines.append(f"| role {k} | {v} | {base.get('statementsPerWrite.byRole.' + k, {}).get('baseline', '')} |")
     for k, v in s['statementsPerWrite']['byPhase'].items():
         lines.append(f"| phase {k} | {v} | {base.get('statementsPerWrite.byPhase.' + k, {}).get('baseline', '')} |")
-    lines.append(f"| **total** | **{s['statementsPerWrite']['total']}** | {base.get('statementsPerWrite.total', {}).get('baseline', '')} |")
+    lines.append(f"| **evaluator total** | **{s['statementsPerWrite']['total']}** | {base.get('statementsPerWrite.total', {}).get('baseline', '')} |")
+    lines.append(f"| API and API lifecycle roles | {s['statementsPerWrite']['api']} | {base.get('statementsPerWrite.api', {}).get('baseline', '')} |")
     m = s['mainThread']
-    lines += ['', f"executor ms per write {s['executionMsPerWrite']['total']}; main thread: {m.get('status')} "
+    lines += ['', f"executor ms per write (evaluator / API) {s['executionMsPerWrite']['total']} / {s['executionMsPerWrite']['api']}; main thread: {m.get('status')} "
               f"{m.get('mainThreadMsPerWrite', '')} ms per write (busy share {m.get('mainThreadBusyShare', '')}, "
               f"whole process {m.get('processMsPerWrite', '')} ms per write); attributed share {s['attributedShare']}"]
+    for service, value in m.get('byService', {}).items():
+        lines.append(f"{service} main thread: {value['status']}, {value.get('mainThreadMsPerWrite', '—')} ms per accepted write.")
     if comparison:
         lines.append(f"comparison is a figure, not a gate; workload matches baseline: {comparison['workloadMatches']}")
     return '\n'.join(lines) + '\n'
@@ -242,9 +279,14 @@ def main():
     for name in ('build', 'run'):
         p = sub.add_parser(name)
         p.add_argument('--core', help='core commit, branch, or clean cgm-remote-monitor worktree path')
-        p.add_argument('--deploy-commit', default=DEFAULT_DEPLOY)
+        p.add_argument('--deploy-commit', help='Deploy revision for an image built from --core')
         p.add_argument('--scratch', help='private directory for build worktrees and logs (default: --out)')
         if name == 'run':
+            p.add_argument('--input-transport', choices=('writer-driven',), default='writer-driven')
+            p.add_argument('--replicas', type=int, choices=range(1, DISCOVERY_MAX_API_REPLICAS + 1), help='API processes (writer-driven defaults to 2)')
+            p.add_argument('--static-workers', type=int, choices=range(1, DISCOVERY_MAX_WORKERS + 1), help='Evaluator and realtime slices per role (writer-driven defaults to 2)')
+            p.add_argument('--history-anchor-ms', type=int, help='Seed 72 SGVs per tenant ending at this shared five-minute UTC anchor')
+            p.add_argument('--plan-only', action='store_true', help='Resolve and print the runner plan without starting a fixture')
             p.add_argument('--image', help='existing image reference with core/deploy revision labels')
             p.add_argument('--out', required=True, help='new private output directory (outside any checkout)')
             p.add_argument('--project', help='Compose project name (default evaluator-m-smoke-<core10>)')
@@ -275,18 +317,20 @@ def main():
     if a.cmd == 'build':
         require(a.core, 'SMOKE_CORE_REQUIRED')
         scratch = Path(a.scratch or '.').resolve()
-        tag, image_id, how = build(resolve(a.core, core_repo), a.deploy_commit, core_repo, deploy_repo, scratch)
+        tag, image_id, how = build(resolve(a.core, core_repo), a.deploy_commit or WRITER_DEPLOY, core_repo, deploy_repo, scratch)
         return print(json.dumps({'image': tag, 'imageId': image_id, 'origin': how}))
     # run
     require(bool(a.core) != bool(a.image), 'SMOKE_CORE_XOR_IMAGE')
     out = Path(a.out).resolve()
     require(not out.exists(), 'SMOKE_OUT_EXISTS')
     require(not str(out).startswith(str(ALIGNMENT.resolve())), 'SMOKE_OUT_INSIDE_CHECKOUT')
-    busy()
+    if not a.plan_only:
+        busy()
     out.mkdir(parents=True, mode=0o700)
     t0 = time.monotonic()
     if a.core:
-        tag, image_id, how = build(resolve(a.core, core_repo), a.deploy_commit, core_repo, deploy_repo, Path(a.scratch or out))
+        deploy = a.deploy_commit or WRITER_DEPLOY
+        tag, image_id, how = build(resolve(a.core, core_repo), deploy, core_repo, deploy_repo, Path(a.scratch or out))
     else:
         tag = a.image
         image_id, _ = labels(tag)
@@ -295,22 +339,38 @@ def main():
     _, lab = labels(tag)
     core, deploy = lab.get('org.opencontainers.image.revision'), lab.get('org.nightscout.deploy.revision')
     require(bool(core and deploy and re.fullmatch(r'[0-9a-f]{40}', core) and re.fullmatch(r'[0-9a-f]{40}', deploy)), 'SMOKE_IMAGE_LABELS')
+    if a.image and a.deploy_commit:
+        require(resolve(a.deploy_commit, deploy_repo) == deploy, 'SMOKE_IMAGE_DEPLOY_MISMATCH')
     project = a.project or f'evaluator-m-smoke-{core[:10]}'
     workload = {k: getattr(a, k.replace('-', '_')) for k in WORKLOAD}
+    if a.history_anchor_ms is not None:
+        workload['history'] = {'mode': populated_history.MODE, 'anchorUnixMs': a.history_anchor_ms}
+        populated_history.validate(workload['history'])
     (out / 'workload.json').write_text(json.dumps(workload) + '\n')
     (out / 'image.json').write_text(json.dumps({'image': tag, 'imageId': image_id, 'origin': how, 'core': core, 'deploy': deploy}) + '\n')
     cfg = out / 'config.json'
-    cfg.write_text(json.dumps(config(core, deploy, core_repo, deploy_repo, project, workload), indent=1) + '\n')
+    configuration = config(core, deploy, core_repo, deploy_repo, project, workload,
+                           replicas=a.replicas, workers=a.static_workers)
+    cfg.write_text(json.dumps(configuration, indent=1) + '\n')
+    if a.plan_only:
+        plan = sh([sys.executable, str(RUNNER), 'plan', str(cfg), '--candidate', tag])
+        (out / 'plan.json').write_text(plan + '\n')
+        return print(plan)
     run = out / 'run'
-    sampler = main_thread.Sampler(project, out / 'run-main-thread.jsonl').start()
+    samplers = []
     code = None
     try:
+        for service, path in main_thread.sample_paths(run, configuration['prepare']['static-workers']).items():
+            samplers.append(main_thread.Sampler(project, path, service=service).start())
         with (out / 'runner.log').open('w') as log:
             code = subprocess.run([sys.executable, str(RUNNER), 'run', str(cfg), str(run), '--candidate', tag],
                                   stdout=log, stderr=subprocess.STDOUT).returncode
     finally:
-        sampler.stop()
+        for sampler in samplers:
+            sampler.stop()
     (out / 'elapsed.json').write_text(json.dumps({'seconds': round(time.monotonic() - t0, 1), 'runnerExit': code}) + '\n')
+    if code and not (run / 'fixture/load/after-pg-statements.tsv').is_file():
+        raise SystemExit(f'SMOKE_RUNNER_EXIT:{code} (see {out}/runner.log)')
     finish(run, out, a.baseline, workload)
     if code:
         raise SystemExit(f'SMOKE_RUNNER_EXIT:{code} (see {out}/runner.log); figures above are from a failed run')

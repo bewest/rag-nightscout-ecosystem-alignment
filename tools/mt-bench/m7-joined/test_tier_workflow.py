@@ -82,57 +82,6 @@ class TierWorkflow(unittest.TestCase):
                                                'deploy.resources.reservations.cpus'])
         self.assertEqual(projected['services']['evaluator']['deploy']['resources']['limits'], {'pids': 500})
 
-    def test_ack_budget_is_receipt_bound_to_local_external_discovery(self):
-        value = config()
-        value['tier'] = 'discovery'
-        options = value['prepare']
-        options['pgstream-topology'] = stream.EXTERNAL
-        options['pgstream-notifier-ack-timeout-ms'] = 10000
-        with patch.object(adapter, 'instrument', return_value={'sha256': value['helperInstrument']}):
-            plan = runner.tier_plan(value)
-            effective = plan['effective']
-            self.assertEqual(effective[stream.ACK_BUDGET], 10000)
-            value['prepare']['pgstream-topology'] = stream.COLOCATED
-            with self.assertRaisesRegex(RuntimeError, 'ACK_LOCAL_EXTERNAL_DISCOVERY_REQUIRED'):
-                runner.tier_plan(value)
-            value['prepare']['pgstream-topology'] = stream.EXTERNAL
-            value['prepare']['pgstream-notifier-ack-timeout-ms'] = 0
-            with self.assertRaisesRegex(RuntimeError, 'ACK_BUDGET_INVALID'):
-                runner.tier_plan(value)
-        with self.assertRaisesRegex(RuntimeError, 'ACK_BOUND_RECEIPT_REQUIRED'):
-            discovery_authorization(effective, {'version': 1})
-
-    def test_ack_budget_changes_only_source_notifier_timeout_and_checks_runtime_mount(self):
-        with tempfile.TemporaryDirectory() as area:
-            root = Path(area)
-            wire = root/'state/pgstream/pgstream.yaml'
-            mount = {'type': 'bind', 'read_only': True, 'target': '/run/ns-stream', 'source': str(wire.parent)}
-            config_value = {'services': {'pgstream': {'volumes': [mount]}}}
-            original = {'source': {'preserved': True}, 'target': {'webhooks': {'notifier': {
-                'worker_count': 1, 'strict_mode': True, 'backoff': {'constant': {'max_retries': 1, 'interval': 50}},
-                'client_timeout': 2000, 'transaction_batch': {'max_rows': 4000}}}}}
-            adapter.write(wire, original)
-            self.assertIsNone(stream.install_ack_budget(root, {}, config_value))
-            self.assertEqual(json.loads(wire.read_text()), original)
-            selected = {stream.ACK_BUDGET: 10000, 'pgstreamTopology': stream.EXTERNAL,
-                        'runPurpose': 'discovery', 'profile': 'pgstream-sample'}
-            recorded = stream.install_ack_budget(root, selected, config_value)
-            selected['pgstreamNotifierAckWire'] = recorded
-            self.assertEqual(recorded['sourceTimeoutMs'], 2000)
-            self.assertEqual(recorded['effectiveTimeoutMs'], 10000)
-            expected = copy.deepcopy(original)
-            expected['target']['webhooks']['notifier']['client_timeout'] = 10000
-            self.assertEqual(json.loads(wire.read_text()), expected)
-            observed = {'Type': 'bind', 'RW': False, 'Source': str(wire.parent), 'Destination': '/run/ns-stream'}
-            stream.verify_ack_budget(root, selected, [observed])
-            with self.assertRaisesRegex(RuntimeError, 'ACK_SOURCE_DEFAULT_CHANGED'):
-                stream.install_ack_budget(root, selected, config_value)
-            with self.assertRaisesRegex(RuntimeError, 'ACK_WIRE_MOUNT'):
-                stream.verify_ack_budget(root, selected, [{**observed, 'RW': True}])
-            adapter.write(wire, original)
-            with self.assertRaisesRegex(RuntimeError, 'ACK_WIRE_CHANGED'):
-                stream.verify_ack_budget(root, selected, [observed])
-
     def test_smoke_detects_one_extra_statement_per_cycle_and_keeps_timing_context(self):
         with tempfile.TemporaryDirectory() as area:
             root = Path(area)

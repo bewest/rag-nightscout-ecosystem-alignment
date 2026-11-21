@@ -16,6 +16,7 @@ sys.path.append(str(ROOT / 'tools/mt-bench/m7-joined'))
 import workload_runtime
 import primer_options
 import population_ceiling
+import populated_history as history
 SHAPES = workload_runtime.SHAPES
 
 
@@ -35,11 +36,12 @@ def write(path, value):
         stream.write('\n')
 
 
-def validate(p):
+def validate(p, *, require_pins=True):
     need(p['version'] == 1 and p['kind'] == 'k8s-m7-workload-profile', 'PROFILE')
-    need(all(isinstance(p['referencePins'][k], str) and
-             __import__('re').fullmatch(r'[a-f0-9]{40}', p['referencePins'][k])
-             for k in ('core', 'deploy', 'bindingCommit')), 'SOURCE_PINS')
+    if require_pins or 'referencePins' in p:
+        need(all(isinstance(p['referencePins'][k], str) and
+                 __import__('re').fullmatch(r'[a-f0-9]{40}', p['referencePins'][k])
+                 for k in ('core', 'deploy', 'bindingCommit')), 'SOURCE_PINS')
     n = p['population']['provisionedTenants']
     population_ceiling.from_profile(p,need)
     w = p['workload']
@@ -49,8 +51,10 @@ def validate(p):
     need(workload_runtime.workload_inputs.tenants(p['population']['hotFactor']) and
          p['population']['hotFactor'] == w.get('hotFactor', 1),
          'ADAPTER_ROSTER_OR_HOT_FACTOR_UNSUPPORTED')
-    need(p['history'] == {'mode': 'existing-provisioner-only', 'additionalSeedRows': 0,
-                          'retention': 'UNMEASURED'}, 'HISTORY_UNSUPPORTED')
+    try:
+        history.validate(p['history'])
+    except ValueError as error:
+        raise ValueError('K8S_LOAD_HISTORY_UNSUPPORTED') from error
     burst = p['phases'].get('reconnectBurstClients', 0)
     viewer_setup = workload_runtime.viewer_plan.setup(w)
     need(p['phases']['restart'] is False and type(burst) is int and
@@ -77,7 +81,9 @@ def describe(p):
     cycle_ms = cycles['w_sgv']
     inputs=workload_runtime.workload_inputs
     startup=inputs.startup_selection(p['phases'],need)
-    return {'version': 1, 'profile': p['name'], 'basis': 'read-derived equations from generated M7 workload',
+    return {'version': 1, 'profile': p['name'],
+            **({'history': dict(p['history'], rowsPerTenant=history.ROWS, stepMs=history.STEP_MS)}
+               if p['history'] != history.BASELINE else {}), 'basis': 'read-derived equations from generated M7 workload',
             **({primer_options.FIELD:p['phases'][primer_options.FIELD]} if primer_options.FIELD in p['phases'] else {}),
             **({population_ceiling.FIELD:population_ceiling.from_profile(p,need)} if 'maxTenants' in p['population'] else {}),
             **({'populationCommissioning':population_ceiling.commissioning(p['population']['provisionedTenants'],primer_options.from_profile(p,need))}
@@ -130,7 +136,10 @@ def bind(p, config):
     need(existing.get('evaluatorProgressBudget',budget)==budget,'EVALUATOR_PROGRESS_BUDGET_CHANGED')
     observation=p['workload'].get('drainObservation')
     need(existing.get('drainObservation',observation)==observation,'DRAIN_OBSERVATION_CHANGED')
+    need(config.get('history', p['history']) == p['history'], 'HISTORY_CHANGED')
     result = copy.deepcopy(config)
+    if p['history'] != history.BASELINE:
+        result['history'] = p['history']
     result.pop('accessSetupSeconds', None)
     data_seconds=workload_runtime.workload_inputs.startup_selection(p['phases'],need).get('kubernetes',{}).get('dataPrimerSeconds')
     need(config.get('dataPrimerSeconds',data_seconds)==data_seconds,'DATA_PRIMER_WINDOW_CHANGED')
@@ -179,12 +188,18 @@ def dry(p, target):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=('describe', 'dry', 'bind'))
+    parser.add_argument('action', choices=('describe', 'dry', 'bind', 'populate'))
     parser.add_argument('profile', type=Path)
     parser.add_argument('paths', nargs='*', type=Path)
     args = parser.parse_args()
     p = read(args.profile)
-    if args.action == 'describe':
+    if args.action == 'populate':
+        if len(args.paths) != 2:
+            parser.error('populate requires ANCHOR_UNIX_MS OUTPUT_PROFILE')
+        p['history'] = dict(mode=history.MODE, anchorUnixMs=int(str(args.paths[0])))
+        # Standard cases bind source pins from the candidate during their own preparation.
+        write(args.paths[1], validate(p, require_pins=False))
+    elif args.action == 'describe':
         print(json.dumps(describe(p), indent=2))
     elif args.action == 'dry':
         print(dry(p, args.paths[0].resolve()))

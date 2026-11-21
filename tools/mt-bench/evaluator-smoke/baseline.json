@@ -48,7 +48,8 @@
    "txn-control": 41.42,
    "fences": 27.7,
    "registry": 0.26
-  }
+  },
+  "api": 48.92
  },
  "executionMsPerWrite": {
   "total": 4.005,
@@ -69,7 +70,8 @@
    "txn-control": 0.076,
    "fences": 0.122,
    "registry": 0.037
-  }
+  },
+  "api": 3.146
  },
  "attributedShare": 1.0,
  "mainThread": {
@@ -195,7 +197,7 @@
   }
  ],
  "rules": "default",
- "scope": "pg_stat_statements top-level calls of the four evaluator roles between the load bookends, divided by HTTP-accepted writes plus stored probe writes; executor time, not CPU",
+ "scope": "Totals and phases cover four evaluator roles. API figures cover nsdemo_api and nsdemo_lifetime_api over the same window, including reads. Both use HTTP-accepted writes plus stored probe writes.",
  "workload": {
   "tenants": 16,
   "load-seconds": 180,

@@ -189,7 +189,7 @@ class Adapter(unittest.TestCase):
             def call(argv, **kw):
                 self.assertIn('BEGIN READ ONLY;', kw['data'].decode())
                 self.assertIn('synthetic-compose-demo', kw['data'].decode())
-                return b'1\t1\tnightscout_compose_test\tt\t0\t0\n'
+                return b'1\t1\tnightscout_compose_test\t0\t0\n'
             self.client.call = call
             observed = k.observe_sql(d, self.c, self.objects, d/'independent', self.client)
             self.assertEqual(observed['storedTenants'], 0)
@@ -237,7 +237,7 @@ class Adapter(unittest.TestCase):
             k.write(roster, [{'id': id, 'host': host, 'token':'synthetic'} for id,host in ((A,'a.test'),(B,'b.test'))])
             receipt = dict(verdict='OBSERVED', runSha256=k.digest(d/'run.json'), namespaceUid=initial['namespace']['uid'],
                            jobUid='job-id', podUid='primer-pod-id', containerId='containerd://done',
-                           sourceResult={'state':'synthetic-data-primed','tenants':2},dataTenants=2,rosterSha256=k.digest(roster))
+                           sourceResult={'state':'synthetic-tenants-usable','tenants':2},dataTenants=2,rosterSha256=k.digest(roster))
             k.write(output/'result.json', receipt)
             job['status'] = {'conditions':[{'status':'True','type':'Complete','reason':'CompletionsReached',
                                            'lastTransitionTime':iso(time.time())}],'succeeded':1}
@@ -314,7 +314,7 @@ class Adapter(unittest.TestCase):
             self.assertIn('rawRow:e.rawRow',source)
             native=subprocess.run(['node',str(HERE/'probe.test.cjs'),str(target)],capture_output=True,text=True,timeout=15)
             self.assertEqual(native.returncode,0,native.stderr)
-            for mode in ('sql-unavailable', 'restored'):
+            for mode in ('sql-unavailable', 'restored', 'writer-driven'):
                 result = subprocess.run(['node', str(HERE/'probe.test.cjs'), str(target), mode],
                                         capture_output=True, text=True, timeout=15)
                 self.assertEqual(result.returncode, 0, result.stderr)

@@ -20,12 +20,6 @@ FIELDS = {'version','caseDirectory','instrumentDirectory','alignmentCommit','can
           'populationCeilingPreflight','schedulerPlacement','capturedSourceCommit','fixture'}
 STAGES = ('namespace','cluster-trust','foundation','stores','provision','private-admin','primer','serving')
 
-def stages_for(inventory):
-    if 'verification' in inventory.get('workloads', {}):
-        return (*STAGES, 'verification')
-    return STAGES
-
-
 def need(ok, code):
     if not ok: raise ValueError('K8S_LIFECYCLE_' + code)
 
@@ -100,6 +94,10 @@ def fixture_config(path, capture=False):
     if not scheduler:
         files.append(reference(c['cacheAbsence']))
     d=Path(c['caseDirectory']);e=read(d/'environment.json');m=read(d/'intent.json');pre=read(d/'preflight.json')
+    if c.get('fixture', {}).get('mode') == 'restore':
+        import fixture_copy
+        import populated_history as history
+        history.check_snapshot(m['profile']['history'], fixture_copy.read_manifest(c['fixture']['directory']))
     primer = primer_options.from_profile(m['profile'],need)
     population=population_ceiling.from_profile(m['profile'],need)
     need(e.get(population_ceiling.FIELD)==population,'POPULATION_CEILING_CHANGED')
@@ -132,9 +130,7 @@ def fixture_config(path, capture=False):
     package=Path(c['bindingDirectory'])
     files += [d/(name+'.json') for name in ('environment','intent','inventory','render','preflight')]
     rendered=[]; stage_objects={}
-    stages = stages_for(inventory)
-    split = 'verification' in stages
-    for stage in stages:
+    for stage in STAGES:
         p=d/'stages'/(stage+'.json');files.append(p)
         stage_objects[stage]=read(p)['items']
         for obj in stage_objects[stage]:
@@ -145,14 +141,6 @@ def fixture_config(path, capture=False):
             need(kind!='Service' or obj['spec'].get('type','ClusterIP')=='ClusterIP','NEW_BILLABLE_RESOURCE')
             if scheduler and kind in ('Deployment','StatefulSet','Job'):
                 need(not obj['spec']['template']['spec'].get('nodeName'), 'SCHEDULER_BYPASSED')
-    if split:
-        expected = [o for o in stage_objects['verification'] if o['kind']=='Job' and o['metadata']['name']=='verification']
-        need(len(expected)==len(stage_objects['verification'])==1 and
-             sum(o['kind']=='Job' and o['metadata']['name']=='verification' for o in rendered)==1 and
-             expected[0]['spec'].get('suspend') is True, 'VERIFICATION_STAGE')
-        from kube_adapter import manifests
-        need(expected == [o for o in manifests(read(d/'render.json'))
-                          if o['kind']=='Job' and o['metadata']['name']=='verification'], 'VERIFICATION_STAGE')
     startup=startup_preflight(m,e,rendered)
     primer_preflight=None
     if primer is not None and 'seed' in inventory:
@@ -163,7 +151,7 @@ def fixture_config(path, capture=False):
         contract=json.loads(data)
         rendered_proof=[obj['data']['source-contract.json'].encode() for obj in stage_objects['foundation']
                         if obj['kind']=='ConfigMap' and obj['metadata']['name']=='provision-scripts']
-        need((split or rendered_proof==[data]) and contract.get(primer_options.FIELD)==primer,'PRIMER_OPTIONS_BINDING_CHANGED')
+        need(rendered_proof==[data] and contract.get(primer_options.FIELD)==primer,'PRIMER_OPTIONS_BINDING_CHANGED')
         protocol=contract.get(primer_options.PROTOCOL_FIELD)
         primer_options.require_source(primer,protocol,need)
         primer_preflight={'selection':primer,'sourceProtocol':protocol}

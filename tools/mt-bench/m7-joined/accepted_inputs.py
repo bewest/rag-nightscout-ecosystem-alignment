@@ -1,8 +1,8 @@
 """Read-only live collector: accepted, stored and output events for every input.
 
-Each HTTP ACK identifies one run-marked storage row. A native journal event
-binds that row to an intake floor. A fenced durable completion at or beyond
-that floor covers the input, including when the worker coalesces inputs.
+Each HTTP ACK identifies one run-marked storage row. The selected reader binds
+it to the native intake floor or writer-driven clinical window. Fenced durable
+completion can cover multiple inputs when the worker coalesces work.
 It emits the raw events of `assessor.py`; the assessor alone judges them.
 """
 import contextvars
@@ -13,8 +13,11 @@ import re
 import threading
 import time
 from collections import Counter
+from itertools import chain
 
 KIND = 'accepted-input-events-v2'
+# core lib/pgstream/intake-profile.js CODEC, GENERATION_DOMAIN
+LIFECYCLE_CODEC = ('canonical-maintenance-active-plus2-v1', 'positive-int8-complete-pair-max-4611686018427387902-v1')
 HERE = Path(__file__).resolve().parent
 
 
@@ -35,8 +38,7 @@ def query(config, run):
             'M7_INPUT_NATIVE_SOURCE_REQUIRED')
     consumer = native.get('inputConsumer', '')
     # The product's work-contract digest selects rows; older captures predate receipts.
-    parts = ['evaluator-work-v2', config.get('checkpoint'), consumer,
-             'canonical-maintenance-active-plus2-v1', 'positive-int8-complete-pair-max-4611686018427387902-v1']
+    parts = ['evaluator-work-v2', config.get('checkpoint'), consumer, *LIFECYCLE_CODEC]
     digest = (native.get('receipt') or {}).get('contractDigest') or hashlib.sha256(
         json.dumps(parts, separators=(',', ':')).encode()).hexdigest()
     sql = (HERE/'accepted-inputs.sql').read_text()
@@ -49,6 +51,38 @@ def query(config, run):
         require(isinstance(value, str) and re.fullmatch(pattern, value), 'M7_INPUT_SOURCE_BINDING')
         sql = sql.replace('@' + name + '@', value)
     return sql
+
+
+DB_IDENTITY = """json_build_array((pg_control_system()).system_identifier::text,
+                  (pg_control_checkpoint()).timeline_id, current_database())"""
+
+
+def writer_queries(config, run):
+    writer = config['writerDriven']
+    require(isinstance(writer, dict) and config.get('kind') == 'evaluator-work-v2' and not config.get('native'),
+            'M7_INPUT_SOURCE_BINDING')
+    require(isinstance(run, str) and re.fullmatch('[a-z0-9-]{1,100}', run), 'M7_INPUT_SOURCE_BINDING')
+    consumer = config.get('consumer')
+    require(isinstance(consumer, str) and re.fullmatch('evaluator-[A-Za-z0-9_-]{1,100}-completed', consumer),
+            'M7_INPUT_SOURCE_BINDING')
+    bindings = {k: config.get(k) for k in ('checkpoint', 'entries', 'clock')}
+    bindings.update({k: writer.get(k) for k in ('lifecycle', 'devicestatus', 'treatments')})
+    require(all(isinstance(v, str) and re.fullmatch('[a-z][a-z0-9_]{0,62}', v) for v in bindings.values()),
+            'M7_INPUT_SOURCE_BINDING')
+    # Core selects the native lifecycle contract whenever the evaluator has a
+    # lifecycle namespace, which writer-driven mode requires:
+    # typed-checkpoint.js digest=native?.contractDigest, native-selection.js contractDigest.
+    parts = [config['kind'], config['checkpoint'], consumer.removesuffix('-completed'), *LIFECYCLE_CODEC]
+    bindings.update(identity=DB_IDENTITY, consumer=consumer, run=run,
+                    digest=hashlib.sha256(json.dumps(parts, separators=(',', ':')).encode()).hexdigest())
+    # Pin the source before the first writer starts. A surviving marker from a
+    # previous run cannot qualify on its old stamp, even if the name is reused.
+    baseline = (HERE/'accepted-writer-baseline.sql').read_text()
+    sql = (HERE/'accepted-writer-inputs.sql').read_text()
+    for key, value in bindings.items():
+        sql = sql.replace('@' + key + '@', value)
+        baseline = baseline.replace('@' + key + '@', value)
+    return baseline, sql
 
 
 def read_acks(folder, run, result):
@@ -226,6 +260,89 @@ class Coverage:
         return events
 
 
+class WriterCoverage(Coverage):
+    """Track only inputs from this run, using S1's commit-ordered public history stamp."""
+    def prime(self, baseline):
+        identity = baseline.get('identity')
+        require(isinstance(identity, list) and len(identity) == 3 and all(identity)
+                and isinstance(baseline.get('tenants'), dict), 'M7_INPUT_SOURCE_BINDING')
+        self.source = identity
+        self.last_trusted_start = self.previous_start
+        self.storage_readable = False
+        self.baseline = {tenant: [int(n) for n in pair] for tenant, pair in baseline['tenants'].items() if tenant in self.ids
+                         and isinstance(pair, list) and len(pair) == 2
+                         and all(isinstance(n, str) and re.fullmatch('[0-9]{1,19}', n) for n in pair) and int(pair[0]) > 0}
+        self.figures['baselineTenants'] = len(self.baseline)
+
+    def capture(self, rows, start, end):
+        rows = iter(rows)
+        first = next(rows, None)
+        self.previous_start = start
+        self.storage_readable = bool(first and first.get('identity') == self.source)
+        if not self.storage_readable:
+            self.figures['sourceRejectedRounds'] += 1
+            return
+        stored = {}
+        for row in chain((first,), rows):
+            tenant = row['tenant']
+            if tenant is None:    # Empty snapshot still carries the source identity.
+                continue
+            stamps = {}
+            for domain, marker, key, stamp in row['inputs']:
+                if not all(isinstance(value, str) and value for value in (domain, marker, key)):
+                    self.figures['malformedInputs'] += 1
+                    continue
+                key = (domain, marker, key)
+                # The ACK identifies one row. Ambiguous keys cannot prove timing.
+                stamps[key] = None if key in stamps else stamp
+            stored[tenant] = set(stamps)
+            if tenant not in self.ids:
+                continue
+            if row.get('outputTenant') not in (tenant, None):
+                self.foreign_output[tenant] = row['outputTenant']
+            base = self.baseline.get(tenant)
+            fenced = base and row.get('identity') == self.source and row.get('generation') == base[0] and row.get('phase') == 'active'
+            if not fenced:
+                self.figures['fenceRejectedRows'] += 1
+                self.storage_readable = False
+                continue
+            evaluated, clock = row.get('evaluated'), row.get('clock')
+            observed, completed = row.get('observed'), row.get('completed')
+            for key, stamp in stamps.items():
+                item = self.inputs.setdefault((tenant, *key), {'beforeStore': self.last_trusted_start, 'storedBy': end,
+                                              'stamp': stamp, 'upperWork': None, 'pendingAt': None, 'durableBy': None})
+                if stamp != item['stamp']:
+                    # Mutable or duplicate synthetic key: neither write can be identified uniquely at ACK.
+                    item.update(stamp=None, durableBy=None, pendingAt=None)
+                if (row.get('stateOK') is not True or type(stamp) is not int or item['stamp'] is None
+                        or type(clock) is not int or not base[1] < stamp <= clock
+                        or type(observed) is not int or observed < stamp or type(evaluated) is not int):
+                    continue
+                if item['upperWork'] is None:
+                    # This snapshot already contains the row and its transaction's pending mark.
+                    # Coalesced or unclocked writes can make the work version exceed the public stamp.
+                    item['upperWork'] = observed
+                if item['durableBy'] is not None:
+                    continue
+                if row.get('outputAbsent') is True:
+                    item['pendingAt'] = start
+                elif row.get('outputOK') is True and type(completed) is int and 0 <= completed <= observed:
+                    if evaluated < stamp:
+                        item['pendingAt'] = start
+                    elif completed >= item['upperWork']:
+                        item['durableBy'] = end
+        self.stored = stored
+        self.rounds += 1
+        if self.storage_readable:
+            self.last_trusted_start = start
+
+    def events(self, acks, drain_end, *, through_drain=True):
+        events = super().events(acks, drain_end, through_drain=through_drain)
+        if not getattr(self, 'storage_readable', False):
+            return [e for e in events if e['event'] not in ('datastore', 'stored', 'readback')]
+        return events
+
+
 class Observer:
     def __init__(self, *, config, run_id, ids, fetch):
         self.config, self.run, self.ids, self.fetch = config, run_id, set(ids), fetch
@@ -235,11 +352,16 @@ class Observer:
 
     def start(self):
         selection = ((self.config.get('native') or {}).get('receipt') or {}).get('selection') or {}
-        self.coverage = Coverage(self.run, self.ids, time.monotonic(), selection.get('binding', {}).get('source'))
+        coverage = WriterCoverage if 'writerDriven' in self.config else Coverage
+        self.coverage = coverage(self.run, self.ids, time.monotonic(), selection.get('binding', {}).get('source'))
         try:
-            self.sql = query(self.config, self.run)
-            self.coverage.before_writes_lsn = wal_position(json.loads(
-                self.fetch("SELECT to_json(pg_current_wal_insert_lsn()::text)::text;", 20)))
+            if isinstance(self.coverage, WriterCoverage):
+                baseline, self.sql = writer_queries(self.config, self.run)
+                self.coverage.prime(json.loads(self.fetch(baseline, 20)))
+            else:
+                self.sql = query(self.config, self.run)
+                self.coverage.before_writes_lsn = wal_position(json.loads(
+                    self.fetch("SELECT to_json(pg_current_wal_insert_lsn()::text)::text;", 20)))
         except Exception as exc:
             self.error = exc
             return self

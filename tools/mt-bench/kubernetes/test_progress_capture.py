@@ -153,7 +153,7 @@ class ProgressCapture(unittest.TestCase):
         self.frames = [page(False)]
         target = self.d/'load';target.rmdir()
         class Started(Exception):pass
-        with patch.object(k.candidate, 'require'), patch.object(execute, 'actor', return_value={}), \
+        with patch.object(execute, 'actor', return_value={}), \
              patch.object(execute.subprocess, 'Popen', side_effect=Started):
             with self.assertRaises(Started):
                 execute.execute(self.d, self.c, self.objects, self.client, load=True)

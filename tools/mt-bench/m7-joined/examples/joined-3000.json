@@ -17,6 +17,7 @@
     "run-purpose": "discovery",
     "diagnostics": "on",
     "completion-contract": "evaluator-work-v2",
+    "static-workers": 1,
     "tenants": 3000,
     "replicas": 1,
     "warmup-seconds": 2,

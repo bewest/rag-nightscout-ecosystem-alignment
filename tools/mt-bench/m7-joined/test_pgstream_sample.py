@@ -66,8 +66,9 @@ class Sample(unittest.TestCase):
     def test_pending_discovery_receipt_exact_identity_and_accepted_mode_unchanged(self):
         from contract import receipt_scope,campaign_check,pilot_check
         m,r=self.diagnostic()
+        # A version-1 discovery receipt cannot authorize a writer-driven run.
         for operation in ('build','deploy','run'):
-            self.assertEqual(receipt_scope(m,r,operation)['functionalAcceptance'],'UNACCEPTED')
+            with self.assertRaisesRegex(RuntimeError,'WRITER_CONFIGURATION_REQUIRED'):receipt_scope({**m,'inputTransport':'writer-driven'},r,operation)
         for change in ({'pair':{'core':'f'*40,'deploy':'b'*40}},{'imageId':'sha256:'+'e'*64},{'instrument':'0'*64},{'status':'PASS'},{'functionalAcceptanceAtAuthorization':'PASS'}):
             with self.assertRaises(RuntimeError):receipt_scope(m,{**r,**change},'run')
         with self.assertRaisesRegex(RuntimeError,'FROZEN_ACCEPTANCE_REQUIRED'):receipt_scope({**m,'runPurpose':'acceptance'},r,'run')
@@ -77,11 +78,9 @@ class Sample(unittest.TestCase):
     def test_selected_knobs_count_scope_and_ordinary_command(self):
         import discovery
         m,r=self.diagnostic();m['tenants']=100;r['limits']['tenants']=100
-        self.assertEqual(a.receipt_scope(m,r,'run')['kind'],'diagnostic-discovery')
         args=SimpleNamespace(profile='pgstream-sample',warmup_seconds=5,idle_seconds=10,load_seconds=20,accel=1,hot_factor=1,sampler_interval=1)
         knobs=a.cadence_options(args);self.assertEqual((knobs['loadSeconds'],knobs['hotFactor'],knobs['samplerIntervalSeconds']),(20,1,1))
         m.update(cadence=knobs,owner='e'*32,project='synthetic',port=1234,settingsFingerprint={'sha256':'f'*64})
-        r['limits']['trafficSeconds']=20;a.receipt_scope(m,r,'run')
         cmd=discovery.k6_command(a,Path('/synthetic'),m,'sha256:synthetic','synthetic-run')
         self.assertIn('HOT_FACTOR=1',cmd);self.assertIn('ACCEL=1',cmd);self.assertIn('DURATION=20',cmd)
         with self.assertRaisesRegex(RuntimeError,'KNOB_PROFILE'):a.cadence_options(SimpleNamespace(profile='capacity',load_seconds=20))
@@ -106,18 +105,18 @@ class Sample(unittest.TestCase):
                 proof.assert_called_once();self.assertEqual(result['status'],'MEASURED');self.assertEqual(result['functionalAcceptance'],'UNACCEPTED');self.assertEqual(result['capacityAcceptance'],'NOT_GRANTED');self.assertNotIn('verdict',result)
     def test_setup_failure_preserves_deployment_and_new_success_attempt(self):
         with tempfile.TemporaryDirectory() as temp:
-            d=Path(temp);(d/'deployment.json').write_text('retained');m={'owner':'a'*32,'project':'synthetic','cadence':{'samplerIntervalSeconds':1}}
+            d=Path(temp);(d/'deployment.json').write_text('retained');m={'owner':'a'*32,'project':'synthetic','cadence':{'samplerIntervalSeconds':1},'inputTransport':'writer-driven'};(d/'frozen.compose.json').write_text('{"services":{"bootstrap":{"environment":{"NS_INPUT_TRANSPORT":"writer-driven"}}}}')
             # This test isolates setup retry retention; real companion-format admission
             # is exercised in test_collection_segments against actual files.
-            with patch.object(a.collection_segments,'preflight',return_value={'status':'CHECKED'}),patch.object(a,'sample_context',return_value=({},{})),patch.object(a,'phase_snapshot',side_effect=RuntimeError('M7_SQL_SETUP')):
+            with patch.object(a.collection_segments,'preflight',return_value={'status':'CHECKED'}),patch.object(a,'diagnostic_resource_rows',return_value=[]),patch.object(a,'sample_context',return_value=({},{})),patch.object(a,'phase_snapshot',side_effect=RuntimeError('M7_SQL_SETUP')):
                 with self.assertRaisesRegex(RuntimeError,'SQL_SETUP'):a.sample_preflight(d,m,'sha256:synthetic')
             failed=next((d/'setup-attempts').iterdir());self.assertEqual(a.document(failed/'setup.json')['status'],'FAILED')
             def snapshot(_,out,name):
-                a.write(out/(name+'-cgroups.json'),{'roles':{'evaluator':{'hostProcesses':{'1':{'name':'node'},'2':{'name':'pgstream'}}}}});(out/(name+'-pg-statements.tsv')).write_text('')
+                a.write(out/(name+'-cgroups.json'),{'roles':{'evaluator':{'hostProcesses':{'1':{'name':'node'}}}}});(out/(name+'-pg-statements.tsv')).write_text('')
             @contextlib.contextmanager
             def sampler(_,out):
                 (out/'docker-stats.tsv').write_text('t\tcontainer\tcpu_pct\tmem\n1\tsynthetic-evaluator-1\t0%\t1MiB / 2MiB\n');yield
-            with patch.object(a.collection_segments,'preflight',return_value={'status':'CHECKED'}),patch.object(a,'sample_context',return_value=({},{})),patch.object(a,'phase_snapshot',side_effect=snapshot),patch.object(a,'sampling',sampler),patch.object(a,'command',return_value='k6 synthetic --summary-export'),patch.object(a.time,'sleep'):
+            with patch.object(a.collection_segments,'preflight',return_value={'status':'CHECKED'}),patch.object(a,'diagnostic_resource_rows',return_value=[]),patch.object(a,'sample_context',return_value=({},{})),patch.object(a,'phase_snapshot',side_effect=snapshot),patch.object(a,'sampling',sampler),patch.object(a,'command',return_value='k6 synthetic --summary-export'),patch.object(a.time,'sleep'):
                 a.sample_preflight(d,m,'sha256:synthetic')
             self.assertEqual(len(list((d/'setup-attempts').iterdir())),2)
             self.assertEqual(a.document(failed/'setup.json')['status'],'FAILED');self.assertEqual((d/'deployment.json').read_text(),'retained')
@@ -194,8 +193,10 @@ class Sample(unittest.TestCase):
     def check_prepared_fixture(self, restored_count=None):
         with tempfile.TemporaryDirectory() as temp:
             d=Path(temp);calls=[]
-            args=SimpleNamespace(core_repo='core',deploy_repo='deploy',core_commit='a'*40,deploy_commit='b'*40,image='sha256:'+'c'*64,postgres_image='sha256:'+'d'*64,tenants=4,replicas=1,quiet_load=3,freeze=str(d/'freeze.json'),profile='pgstream-sample',backend_subnet='10.221.0.0/28',edge_subnet='10.221.1.0/28',fixture_project='ns-rest-joined-baseline')
+            args=SimpleNamespace(core_repo='core',deploy_repo='deploy',core_commit='a'*40,deploy_commit='b'*40,image='sha256:'+'c'*64,postgres_image='sha256:'+'d'*64,tenants=4,replicas=1,quiet_load=3,freeze=str(d/'freeze.json'),profile='pgstream-sample',run_purpose='discovery',completion_contract='evaluator-work-v2',static_workers=1,backend_subnet='10.221.0.0/28',edge_subnet='10.221.1.0/28',fixture_project='ns-rest-joined-baseline')
             if restored_count is not None:
+                (d/'source-snapshot').mkdir()
+                (d/'source-snapshot/deployment.env').write_text('NS_API_REPLICAS=1\n')
                 args.fixture_snapshot = str(d/'source-snapshot')
             def git(repo,*argv):
                 if argv[:2]==('worktree','add'):(d/'core/deploy/multitenant').mkdir(parents=True)
@@ -223,9 +224,11 @@ class Sample(unittest.TestCase):
                         return json.dumps([{'Name':name,'CreatedAt':'synthetic'} for name in argv[3:]])
                     if argv[1] in ('network','volume'):return ''
                     names=['postgres','vault','admin','primer','feed-reader','api','realtime','evaluator','tenant-admin','ui','nginx']
-                    return json.dumps({'services':{name:{'command':['postgres']if name=='postgres'else['node','entrypoint.js',name],'image':args.postgres_image if name=='postgres'else args.image}for name in names}})
+                    services={name:{'command':['postgres']if name=='postgres'else['node','entrypoint.js',name],'image':args.postgres_image if name=='postgres'else args.image}for name in names}
+                    services['bootstrap']={'image':args.image,'environment':{'NS_INPUT_TRANSPORT':'writer-driven'}}
+                    return json.dumps({'services':services})
                 return b''
-            with patch.object(a,'setup_generator') as generator,patch.object(a,'port',return_value=12345),patch.object(a,'git',side_effect=git),patch.object(a,'command',side_effect=command),patch.object(a,'inventory',return_value={}),patch.object(a,'host_identity',return_value='host'),patch.object(a,'resources',return_value=[]):
+            with patch.object(a,'setup_generator') as generator,patch.object(a,'port',return_value=12345),patch.object(a,'git',side_effect=git),patch.object(a,'command',side_effect=command),patch.object(a,'inventory',return_value={}),patch.object(a,'host_identity',return_value='host'),patch.object(a,'resources',return_value=[]),patch.object(a,'frozen'),patch.object(a.static_topology,'verify_config',return_value={}),patch.object(a,'seal_diagnostic_images',side_effect=lambda config,m:config):
                 if restored_count is not None and restored_count != args.tenants:
                     with self.assertRaisesRegex(RuntimeError, 'M7_PRIMER_COUNT'):
                         a.prepare_staged(args,d,{'sha256':'e'*64})
@@ -235,7 +238,7 @@ class Sample(unittest.TestCase):
                 a.prepare_staged(args,d,{'sha256':'e'*64})
             generator.assert_called_once()
             argv,options=calls[0]
-            self.assertIn('--project',argv);self.assertEqual(argv[argv.index('--backend-subnet')+1],args.backend_subnet);self.assertEqual(argv[argv.index('--edge-subnet')+1],args.edge_subnet);self.assertEqual(options['env']['NS_PGSTREAM'],'1')
+            self.assertIn('--project',argv);self.assertEqual(argv[argv.index('--backend-subnet')+1],args.backend_subnet);self.assertEqual(argv[argv.index('--edge-subnet')+1],args.edge_subnet);self.assertEqual(options['env']['NS_INPUT_TRANSPORT'],'writer-driven');self.assertNotIn('NS_PGSTREAM',options['env'])
             self.assertEqual((d/'env').read_bytes(),(d/'core/deploy/multitenant/.env').read_bytes())
             lines = (d/'env').read_text().splitlines()
             self.assertEqual(len({line.split('=',1)[0] for line in lines}), len(lines))
@@ -245,15 +248,14 @@ class Sample(unittest.TestCase):
             self.assertEqual(argv[argv.index('--project')+1],args.fixture_project)
             self.assertEqual(a.document(d/'frozen.compose.json')['services']['postgres']['image'],args.postgres_image)
     def test_distinct_sql_roles_delta_and_overlap_red(self):
-        roles=sql.identities({'pgstream':{'streamRole':'synthetic_stream'}},[{'A':'postgres://synthetic_adapter@invalid/synthetic'}])
-        before={('synthetic_stream','1','1','00'):{'calls':2,'executionMs':1.0},('synthetic_adapter','2','1','00'):{'calls':3,'executionMs':2.0}}
-        after=copy.deepcopy(before);after[('synthetic_stream','1','1','00')]['calls']+=2
-        self.assertEqual(sql.assess(before,after,roles)['totals']['pgstream']['calls'],2)
-        with self.assertRaisesRegex(RuntimeError,'SHARED_IDENTITY'):
-            sql.identities({'pgstream':{'streamRole':'synthetic_adapter'}},[{'A':'postgres://synthetic_adapter@invalid/synthetic'}])
+        roles={'adapter':['synthetic_adapter']}
+        before={('synthetic_other','1','1','00'):{'calls':2,'executionMs':1.0},('synthetic_adapter','2','1','00'):{'calls':3,'executionMs':2.0}}
+        after=copy.deepcopy(before);after[('synthetic_adapter','2','1','00')]['calls']+=2
+        self.assertEqual(sql.assess(before,after,roles)['totals']['adapter']['calls'],2)
+        with self.assertRaisesRegex(RuntimeError,'SHARED_IDENTITY'):sql.assess(before,after,{'pgstream':['synthetic_other'],'adapter':['synthetic_adapter']})
         with self.assertRaisesRegex(RuntimeError,'EVICTED'):sql.assess(before,{},roles)
         with self.assertRaisesRegex(RuntimeError,'COUNTER_RESET'):sql.assess(after,before,roles)
-        self.assertEqual(sql.assess(before,after,roles)['totals']['pgstream']['calls'],2)
+        self.assertEqual(sql.assess(before,after,roles)['totals']['adapter']['calls'],2)
     def test_statement_reader_retains_beyond_old_top50_and_exact_query_bytes(self):
         with tempfile.TemporaryDirectory() as temp:
             p=Path(temp)/'snapshot.tsv';p.write_text(''.join(f'synthetic\t{i}\t{i}.0\t{i}\t1\t{str(i).encode().hex()}\n' for i in range(100)))

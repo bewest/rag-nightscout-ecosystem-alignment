@@ -66,7 +66,7 @@ class Sampler:
             while not self._stop.is_set():
                 cid = _container(self.project, self.service)
                 if not cid:
-                    time.sleep(2)
+                    self._stop.wait(2)
                     continue
                 hz, origin = _clk_tck(cid)
                 out.write(json.dumps({'kind': 'attach', 'container': cid[:12], 'clkTck': hz, 'clkTckOrigin': origin,
@@ -93,8 +93,10 @@ class Sampler:
                 if tick and tick['procs']:
                     out.write(json.dumps(tick) + '\n')
                 out.flush()
+                if self._stop.is_set() and self._proc.poll() is None:
+                    self._proc.kill()
                 self._proc.wait()
-                time.sleep(1)
+                self._stop.wait(1)
 
 
 def _at(points, t):
@@ -151,3 +153,30 @@ def reduce(path, window, writes):
                 'mainThreadMsPerWrite': round(1000 * best['mainSeconds'] / writes, 3) if writes else None,
                 'processMsPerWrite': round(1000 * best['processSeconds'] / writes, 3) if writes else None})
     return out
+
+
+def sample_paths(run, workers):
+    """One independent sample stream per evaluator; the first retains its original filename."""
+    return {('evaluator' if i == 1 else f'evaluator-{i}'):
+            run.parent / (run.name + ('' if i == 1 else f'-evaluator-{i}') + '-main-thread.jsonl')
+            for i in range(1, workers + 1)}
+
+
+def reduce_services(run, workers, window, writes):
+    by_service = {}
+    for service, path in sample_paths(run, workers).items():
+        by_service[service] = reduce(path, window, writes) if path.is_file() else {
+            'status': 'UNMEASURED', 'reason': 'NO_SAMPLER_FILE'}
+    if workers == 1:
+        return by_service['evaluator']
+    total = {'status': 'UNMEASURED', 'byService': by_service,
+             'scope': 'Summed evaluator CPU across slices per fleet write; busy share is the mean across slices.'}
+    if any(row['status'] != 'MEASURED' for row in by_service.values()):
+        total['reason'] = 'INCOMPLETE_EVALUATOR_SLICES'
+        return total
+    total['status'] = 'MEASURED'
+    for key in ('mainThreadMsPerWrite', 'processMsPerWrite'):
+        total[key] = round(sum(row[key] for row in by_service.values()), 3) if writes else None
+    shares = [row['mainThreadBusyShare'] for row in by_service.values()]
+    total['mainThreadBusyShare'] = round(sum(shares) / workers, 4) if None not in shares else None
+    return total

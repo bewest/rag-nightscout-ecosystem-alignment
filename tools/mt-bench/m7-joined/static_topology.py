@@ -5,6 +5,7 @@ from pathlib import Path
 from contract import require, discovery_api_replicas, discovery_workers
 import workload_inputs
 import role_instances
+import stream_topology
 
 # Run identity is the image digest (imageId) plus the run configuration; any
 # commit pair is accepted and recorded, and no build receipt is required.
@@ -22,7 +23,7 @@ def validate(manifest):
     require(isinstance(pair, dict) and set(pair) == {'core', 'deploy'}
             and all(isinstance(v, str) and re.fullmatch(r'[0-9a-f]{40}', v) for v in pair.values()), 'M7_STATIC_SOURCE_PAIR')
     require(manifest.get('profile') == 'pgstream-sample' and manifest.get('runPurpose') == 'discovery'
-            and manifest.get('pgstreamTopology') == 'external-service-v1'
+            and stream_topology.selection(manifest) == stream_topology.WRITER
             and manifest.get('completionContract') == 'evaluator-work-v2'
             and discovery_api_replicas(manifest.get('replicas')),
             'M7_STATIC_DIAGNOSTIC_SCOPE')
@@ -36,7 +37,7 @@ def option(args):
     manifest = {'staticTopology': {'kind': KIND, 'workers': count},
                 'pair': {'core': args.core_commit, 'deploy': args.deploy_commit},
                 'profile': args.profile, 'runPurpose': args.run_purpose,
-                'pgstreamTopology': args.pgstream_topology, 'completionContract': args.completion_contract,
+                **stream_topology.options(args), 'completionContract': args.completion_contract,
                 'replicas': args.replicas}
     validate(manifest)
     # No explicit allocation selects uncapped Compose services (an explained
@@ -85,7 +86,62 @@ def verify_config(manifest, config):
     require(edge.get('restart') in ('on-failure', 'unless-stopped') and
             all(config['services'][name].get('restart') in ('on-failure', 'unless-stopped') for name in instances if instances[name]['role'] != 'api'),
             'M7_STATIC_PLATFORM_RESTART')
+    if stream_topology.selection(manifest) == stream_topology.WRITER:
+        verify_writer_targets(config['services'], instances, count)
     return instances
+
+
+def verify_writer_targets(services, instances, count):
+    for role, zone, port in [('evaluator','evaluator',19002), ('realtime','realtime-peers',19003)]:
+        addresses = []
+        for i in range(count):
+            host = f'{role}-{i}'
+            alias = f'{host}.{zone}'
+            spec = services[service(role,i)]
+            require(spec.get('hostname') == host and alias in spec['networks']['backend'].get('aliases', [])
+                    and spec['environment'].get('NS_SERVE_INTERNAL_PORT') == str(port)
+                    and not spec['environment'].get('NS_SERVE_INTERNAL_SOCKET'), 'M7_WRITER_ORDINAL_ADDRESS')
+            addresses.append(f'http://{alias}:{port}/')
+        for name in [*instances, 'tenant-admin']:
+            env = services[name].get('environment', {})
+            prefix = 'NS_' + role.upper()
+            require(env.get('NS_INPUT_TRANSPORT') == stream_topology.WRITER, 'M7_WRITER_BINDING_TRANSPORT')
+            require(env.get(prefix+'_SLICES') == str(count), 'M7_WRITER_TARGET_COUNT')
+            if count == 1:
+                require(env.get(prefix+'_INTERNAL_URL') == f'http://{role}:{port}/'
+                        and not env.get(prefix+'_INTERNAL_SOCKET'), 'M7_WRITER_TARGET_ADDRESS')
+            else:
+                template = env.get(prefix+'_SLICE_URL', '')
+                require([template.replace('{i}',str(i)) for i in range(count)] == addresses, 'M7_WRITER_TARGET_ADDRESS')
+            if role == 'realtime' and env.get('NS_REALTIME_SLICE_PEERS'):
+                require(json.loads(env['NS_REALTIME_SLICE_PEERS']) == [{'url':url} for url in addresses],
+                        'M7_WRITER_TARGET_ADDRESS')
+
+
+def writer_seed(directory, config, instances):
+    """Read the final bootstrap marker and role-private credential files by name only."""
+    state = (Path(directory)/'state').resolve()
+    complete = json.loads((state/'bootstrap/complete.json').read_bytes())
+    require(complete.get('inputTransport') == stream_topology.WRITER, 'M7_FIXTURE_INPUT_TRANSPORT_CHANGED')
+    require(not (state/'credentials/postgres/pgstream').exists() and not (state/'pgstream/pgstream.yaml').exists(),
+            'M7_WRITER_UNEXPECTED_STREAM_SEED')
+    # Read the role names exported by the exact overlaid binding. It writes one
+    # file per connection, with the legacy evaluator recovery connection omitted.
+    import subprocess
+    render = Path(directory)/'core/deploy/multitenant/render.js'
+    code = 'console.log(JSON.stringify(require(process.argv[1]).connections))'
+    connections = json.loads(subprocess.check_output(['node','-e',code,render],timeout=10))
+    verified = {}
+    roles = {name: row['role'] for name, row in instances.items()}
+    for name,role in {**roles, 'tenant-admin':'tenant-admin', 'admin':'admin'}.items():
+        mounts = [v for v in config['services'][name]['volumes'] if v.get('target') == '/run/ns-config']
+        require(len(mounts) == 1 and mounts[0].get('read_only') is True and mounts[0].get('type') == 'bind'
+                and Path(mounts[0]['source']).resolve() == state/name, 'M7_STATIC_CONFIG_MOUNT')
+        expected = {key.lower() for key in connections[role] if key != 'NS_STREAM_RECOVERY_PG'}
+        files = {p.name for p in (state/name).glob('ns_*') if p.is_file() and p.stat().st_size}
+        require(files == expected, 'M7_WRITER_ROLE_CREDENTIALS')
+        verified[name] = sorted(files)
+    return {'inputTransport':stream_topology.WRITER, 'roleCredentialFiles':verified}
 
 
 def service(role, ordinal):
@@ -145,11 +201,7 @@ def verify_documents(manifest, documents):
         if item['role'] == 'evaluator':
             hostname = env.get('NS_EVALUATOR_SLICES') == str(value['workers'])  # hostname ordinal form
             require((hostname or 'NS_PGSTREAM_EVALUATOR_SLICE' in env) and json.loads(env.get('NS_REALTIME_SLICE_PEERS', 'null')) == peer_list, 'M7_STATIC_PRIVATE_PEERS')
-            stream = conf.get('pgstream', {})
-            receiver = f'http://evaluator-{item["ordinal"]}.evaluator:19913/' if hostname else f'http://{name}:19913/'
-            require(stream.get('receiver', {}).get('url') in (receiver, None if hostname else receiver), 'M7_STATIC_RECEIVER')
-            signatures.append({'postgres': conf.get('postgres'), 'datastore': conf.get('datastore'), 'consumer': conf.get('consumer'),
-                               **{key: stream.get(key) for key in ('slot', 'generation', 'streamRole', 'transactionRows')}})
+            signatures.append({'postgres': conf.get('postgres'), 'datastore': conf.get('datastore'), 'consumer': conf.get('consumer')})
         elif item['role'] == 'realtime':
             require('NS_REALTIME_SLICE' in env, 'M7_STATIC_DOCUMENT_ORDINAL')
     require(signatures and all(v == signatures[0] for v in signatures) and all(signatures[0].get(k) for k in ('slot', 'generation', 'streamRole', 'consumer')),
@@ -178,26 +230,6 @@ def state_documents(manifest, config, state):
         files = {f'/run/ns-config/{file}': json.loads((source/file).read_text()) for file in names}
         processes.append({'name': name, 'roles': [item['role']], 'environment': json.loads((source/'env.json').read_text()), 'files': files})
     return {'contract': 1, 'processes': processes}
-
-
-def verify_producer(manifest, documents, data):
-    from urllib.parse import urlsplit
-    value = validate(manifest)
-    require(value is not None, 'M7_STATIC_SELECTION_REQUIRED')
-    evaluator = next(p for p in documents['processes'] if p['name'] == 'evaluator')['files']['/run/ns-config/config.json']
-    try:
-        replica = data['source']['postgres']['replication']
-        database = urlsplit(data['source']['postgres']['url'])
-        batch = data['target']['webhooks']['notifier']['transaction_batch']
-        receivers = [f'http://{service("evaluator", i)}:19913/pgstream' for i in range(value['workers'])]
-        require(batch['slice_receivers'] == receivers and replica['replication_slot'] == evaluator['pgstream']['slot']
-                and replica['plugin']['include_transactions'] is True
-                and database.path[1:] == evaluator['datastore']['database']
-                and database.hostname == evaluator['datastore']['hostname'], 'M7_STATIC_PRODUCER_SOURCE')
-    except (KeyError, TypeError, ValueError):
-        raise RuntimeError('M7_STATIC_PRODUCER_SOURCE') from None
-    return {'status': 'VERIFIED', 'receivers': receivers, 'slot': replica['replication_slot'],
-            'scope': 'Actual configured producer source/targets. Subscription effects and physical source identity retain their native runtime checks.'}
 
 
 def verify_runtime(manifest, config, rows):

@@ -32,18 +32,7 @@ jq -n --slurpfile p "$K/workloads/realistic-1000.json" \
     profile:($p[0] | del(.referencePins) | .workload.setupSeconds=360 |
              .workload.drainSeconds=180)}' > "$NEW_MANIFEST"
 python3 -B "$K/experiment.py" describe "$NEW_MANIFEST"
-python3 -B "$K/experiment.py" binding "$NEW_MANIFEST" "$BINDING_REPO" "$IMAGE_DEPLOY_REPO" "$NEW_BINDING"
 ```
-
-The binder exports the selected Git tree into a fresh directory, runs the
-original image constructor with its read-only filesystem and disabled network,
-and compares installed deployment bytes, role commands, SQL identities and
-native catalogue against the supported single-cohort binding. The generated
-`bindings/kubernetes/assets/source-contract.json` carries the measured producer,
-image, source and owner receipt. `binding.json` identifies every materialized
-file. A changed deployment protocol or catalogue requires a compatibility review.
-An unknown commit with compatible measured inputs follows the same path. The
-source receipt may carry a bounded diagnostic PENDING or joined source PASS.
 
 The execution owner renders the package with its private commissioning overlay.
 The accompanying private patch is supplied in the local release packet. Apply
@@ -59,8 +48,7 @@ log. Put that Job in `stages/verification.json` when preparing the case. The
 lifecycle waits for it before installing serving workloads and then launches the
 lab provisioning client. The attach phase reuses the captured proof and
 checks the native database source independently. The primer's private results
-live on its `/run/ns-client` volume. Set its size with the renderer's
-`primerStorage` input, such as `64Mi`.
+live on its `/run/ns-client` volume.
 
 The primer verifies DATA credentials for the full `population.provisionedTenants`
 roster. Set `population.ordinaryRosterTenants` to the number of consecutive entries
@@ -73,18 +61,6 @@ tenants outside the ordinary subset. Storage checks require both k6 write counte
 for every selected tenant and query marker-tagged rows across the full database.
 An ordinary row on an unselected tenant fails the check. Probe writes on any
 provisioned tenant reconcile against the separate probe ledger.
-
-The optional `bootstrapHelper` manifest entry selects the reviewed deploy source
-commit and SHA-256 of `bootstrap.js`. The constructor verifies the original
-image file, extracts the corrected file from Git and installs it in an immutable
-ConfigMap. Only the provision Job's bootstrap init container mounts the file.
-The package labels the effective diagnostic instance PENDING and retains the
-base image's own source acceptance. For an early readback after foundation
-creation, run `adapter.py bootstrap-map PACKET NAMESPACE_UID` against the
-commissioner's recorded UID. Initial observation checks the same ConfigMap,
-Job, actual Pod and bootstrap container. When the read guard masks words in
-this public file, kubectl compares its known source, UID and resource version
-locally and emits a Boolean. A missing or changed readback stops the check.
 
 For a discovery fixture with an external producer, the optional manifest field
 `pgstreamNotifierAckTimeoutMs` selects a positive acknowledgment budget in
@@ -123,9 +99,7 @@ The runner derives pins and checks any previously supplied pins for equality.
 ```bash
 python3 -B "$K/experiment.py" prepare "$NEW_MANIFEST" "$INSTANCE" "$NEW_PACKET" --await-primer
 python3 -B "$K/adapter.py" observe "$NEW_PACKET"
-python3 -B "$K/adapter.py" candidate-proof "$NEW_PACKET"
 python3 -B "$K/adapter.py" policy "$NEW_PACKET"
-python3 -B "$K/primer.py" "$NEW_PACKET" "$NEW_PACKET/primer"
 # Start the authorized loopback forward before the access check.
 python3 -B "$K/adapter.py" access "$NEW_PACKET"
 python3 -B "$K/experiment.py" run "$NEW_PACKET" "$RELEASED_ALLOCATION" "$ALLOCATION_SHA256"
@@ -173,16 +147,6 @@ in the same packet to resume. The lifecycle releases the namespace at cleanup.
 After privately saving the complete roster and its receipt, the primer command
 acknowledges export and the waiting container can exit. A previously
 source-projected roster still uses the original prepare command.
-
-For fresh discovery, `primerStorage` can select `stateMiB` and `secretCodec`
-in the experiment manifest. For example, `{"stateMiB":32,"secretCodec":"gzip-v1"}`
-selects a 32 MiB primer state volume and lossless transport of the primer
-configuration. `raw-v1` uses the source bytes directly. The materialized
-publisher checks the exact data size of every role Secret before publication.
-The primer installer checks the original config's byte count and SHA-256, then
-restores its private file. The actor verifies the mounted state volume and
-config digest before writing and records filesystem size and usage when
-available. The source retains its original atomic writes and uncertainty journal.
 
 The lifecycle starts the split binding's platform bootstrap while Vault can
 still be sealed. Once the private admin proof succeeds it starts all serving
@@ -289,15 +253,6 @@ python3 -B tools/mt-bench/kubernetes/adapter.py identity
 python3 -B tools/mt-bench/kubernetes/check_export.py /absolute/binding-export /absolute/new/offline-join
 python3 -B tools/mt-bench/kubernetes/adapter.py prepare /absolute/private/run.json /absolute/private/inventory.json /absolute/private/render.json /absolute/new/run
 ```
-
-For the C3 candidate, carry the exported inventory's `candidateContract` into
-`pins.candidate` and add the commissioned `postgresImage` and `postgresImageId`.
-The adapter checks the rendered source contract and the actual kubelet app and
-PostgreSQL image identities. After live `observe` and while the same primer
-container is still waiting, run `candidate-proof RUN`. This captures the private
-admin verification receipt from the owned Pod and compares its native PostgreSQL
-source against a read-only observation of the selected database and logical
-slot. Capture this before running `policy`, `access` or workload phases.
 
 An optional third `check_export.py` argument selects Lane E's immutable
 environment export directory. The join verifies its render/inventory hashes
@@ -736,9 +691,7 @@ python3 -B "$K/toolchain.py" kubernetes "$INTENT" "$FRESH_INSTANCE" "$NEW_PROJEC
 The Compose projection emits the normal `config.json` and existing diagnostic
 receipt template. The execution owner binds its fresh receipt and uses the
 existing `runner.py`. Kubernetes emits `manifest.json` for `experiment.py`.
-Historical direct configurations remain supported. The C3 Kubernetes-only
-`bootstrapHelper` override refuses on Compose; select the local source owner's
-own compatible diagnostic image receipt there. A projection never substitutes
+Historical direct configurations remain supported. A projection never substitutes
 another source or changes PENDING to PASS.
 
 | Capability | Integrated scope and limit |
@@ -899,11 +852,7 @@ termination grace. Runtime application Pod and container identities stay strict;
 only the exact declared test Job has a separate dynamic census.
 
 The accepted-input observer runs across probe and driver traffic. After both writers exit, the controller reconciles storage, checks remaining clinical work through drain, captures terminal progress and calls `assess_stage()`. `assess_join()` adds capture/run/script/hash checks. The init
-waiter alone gets `jobs/get` for `provision` and `primer` in its namespace;
-the split verified-serving binding also names `verification` explicitly and
-requires its completion before accepting primer readiness. Its lifecycle waits
-for verification, then serving readiness, then releases the standalone primer.
-Legacy bindings retain their original primer-ready gate. The
+waiter alone gets `jobs/get` for `provision` and `primer` in its namespace. The
 exporter receives no Kubernetes API permission. The test Pod uses component
 `load`, so it does not match the application's
 private admin/internal `operator` selectors. One additional owned
@@ -929,16 +878,7 @@ named owned native Job or Pod gets a bounded private spec read. Namespace and
 object UIDs bracket that read, and the existing strict declaration comparison
 checks the actual reference, token mounts, resources and security fields. A
 redacted reference never counts as exact evidence. Native load and artifact
-readers use the same adapter. `experiment.candidate_pin(inventory, binding_ref)`
-resolves a split binding's full candidate pin from its hashed materialized
-receipt; pre-entry tools must use that receipt instead of the legacy
-`inventory.candidateContract` field.
-
-Explicit `startup-v4` retains the source client's version-1 startup receipt and
-the native completion-receipt requirement. The source owns v4 role digests,
-presentation catalogue checks and tenant-floor proof authority. The helper does
-not issue a tenant-floor backfill. New-image runtime qualification remains with
-the run owner.
+readers use the same adapter.
 
 Focused offline controls: `python3 -B -m unittest -v test_native_input test_native_load test_native_files test_native_join` from this
 directory. Set `NS_NATIVE_K6_TEST_BINARY` to an existing pinned local k6 binary
@@ -974,14 +914,21 @@ SQL reader settings from the running roles. The namespace stays with its owner. 
 uses the ordinary observe, access and bounded run commands. Four bound native snapshot/clone claims
 identify restored fixture reuse.
 
-To reuse a fixture across fresh standard namespaces, add `--fixture-seed NEW_DIR` (with
-`--storage-class` and `--snapshot-class`) to `experiment.py standard` for one seed run. It
-provisions and primes on four labelled claims, stops every role, snapshots the claims through CSI,
-sets their contents to Retain under the `nightscout.org/fixture` label and writes the handles, the
-original Secrets, the PostgreSQL image digest and the source commits to `NEW_DIR` (private). It
-runs no traffic. Each later run adds `--fixture-restore DIR`: the controller creates those
-Secrets, binds the handles in the new namespace (`fixture.imported`), clones the claims and starts
-through the ordinary provision Job and primer. A restore refuses another population or PostgreSQL
-image. Cleanup deletes the namespace and the run's labelled contents; `fixture_copy.py delete DIR
-CONTEXT` ends the fixture and the CSI driver deletes the provider snapshots. Snapshots and restored
-volumes are billed storage.
+To reuse a fixture across fresh standard namespaces, add `--fixture reuse` to `experiment.py
+standard`. The harness computes the fixture key (`m7-joined/fixture_catalog.py`: tenant count,
+`--fixture-seed NAME`, the core migrations tree at the image's core commit, the application and
+PostgreSQL image ids, the input transport, the populated-history spec and, for a K-bound
+transport, evaluator K) and looks it up in the local catalog (`$NS_FIXTURE_CATALOG`, default
+`/mnt/data/nightscout-workspace/artifacts/fixtures/catalog.json`, outside Git). On a hit the case
+restores that fixture: the controller creates the seed's Secrets, binds the retained handles in the
+new namespace (`fixture.imported`), clones the claims and starts through the ordinary provision Job
+and primer. On a miss it first runs a seed case at `OUTPUT-seed` (live, no traffic): it provisions
+and primes on four labelled claims (`--storage-class`, `--snapshot-class`), stops every role,
+snapshots the claims through CSI, sets their contents to Retain under the `nightscout.org/fixture`
+label, writes the handles, the original Secrets and the key to a private catalog directory, and
+registers it; then it prepares the restore. `--fixture build` builds and registers the key's
+fixture ahead of time and prepares nothing else (a hit returns at once). A restore refuses another
+key, population, PostgreSQL image or evaluator K. Cleanup deletes the namespace and the run's
+labelled contents; `fixture_copy.py delete DIR CONTEXT` ends the fixture (the CSI driver deletes
+the provider snapshots) and retires its catalog entry. `python3 m7-joined/fixture_catalog.py list`
+shows the catalog. Snapshots and restored volumes are billed storage.

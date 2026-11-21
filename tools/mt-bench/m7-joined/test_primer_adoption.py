@@ -33,12 +33,16 @@ class PrimerAdoption(unittest.TestCase):
     def test_image_preflight_refuses_legacy_source_before_image_access(self):
         from types import SimpleNamespace
         args=SimpleNamespace(profile='pgstream-sample',run_purpose='discovery',primer_concurrency=33,
+                             core_repo='/synthetic/core',core_commit='e'*40,
                              deploy_repo='/synthetic/deploy',deploy_commit='f'*40)
-        with patch.object(adapter,'command',return_value=b'legacy native primer') as command, patch.object(adapter,'image') as image:
+        # A core without deployment-settings.js takes the deploy primer source, which is refused.
+        with patch.object(adapter,'git',return_value='') as git, \
+                patch.object(adapter,'command',return_value=b'legacy native primer') as command, patch.object(adapter,'image') as image:
             with self.assertRaisesRegex(RuntimeError,'PRIMER_OPTION_SOURCE_UNSUPPORTED'):
                 adapter.prepare_image_inputs(args)
             image.assert_not_called()
             command.assert_called_once_with(['git','-C',args.deploy_repo,'show',args.deploy_commit+':'+primer_options.SOURCE_PATH],binary=True)
+            git.assert_called_once_with(args.core_repo,'ls-tree','--name-only',args.core_commit,'lib/server/serve/deployment-settings.js')
 
     def test_timed_out_constructor_removes_exact_owned_container_and_checks_absence(self):
         name='ns-primer-option-probe-'+'a'*32
@@ -98,10 +102,7 @@ class PrimerAdoption(unittest.TestCase):
         p=root/'state/primer'
         for name,value in {
             'config.json':{'seed':[{'id':A},{'id':B}]},
-            'provisioned.json':[{'id':A},{'id':B}],
-            'tenants.json':{'version':1,'tenants':[{'id':i,'host':h,'dataToken':'synthetic-data'} for i,h in [(A,'a.example.test'),(B,'b.example.test')]]},
-            'primed.json':{'state':'synthetic-data-primed','tenants':2},
-            'entry-requests.json':{'version':1,'tenants':{}}
+            'tenants.json':{'version':1,'tenants':[{'id':i,'host':h,'subject':s,'dataToken':'synthetic-data'} for i,h,s in [(A,'a.example.test','sa'),(B,'b.example.test','sb')]]},
         }.items():adapter.write(p/name,value)
     def test_only_prime_gets_bound_option_default_keeps_existing_argv(self):
         config={'services':{'api':{'command':['node','api']},'evaluator':{'command':['node','evaluator']}}}
@@ -118,25 +119,25 @@ class PrimerAdoption(unittest.TestCase):
         for value in (0,2**53,True,'4',2.5):
             with self.assertRaisesRegex(RuntimeError,'PRIMER_CONCURRENCY_INVALID'):adapter.deployment_plan(config,True,value)
             with self.assertRaisesRegex(RuntimeError,'PRIMER_MAX_TENANTS_INVALID'):adapter.deployment_plan(config,True,primer_max_tenants=value)
-    def test_database_count_catches_missing_duplicate_and_foreign_tenants_then_restores(self):
+    def test_database_count_catches_missing_unusable_and_foreign_tenants_then_restores(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);self.fixture(root)
-            good=f'{A}\t1\n{B}\t1\n'
-            for raw in (f'{A}\t1\n',f'{A}\t2\n{B}\t1\n',f'{A}\t1\n{C}\t1\n'):
+            good=f'{A}\tsa\n{A}\towner-a\n{B}\tsb\n{B}\towner-b\n'
+            # missing tenant; a tenant whose roster subject has no credential row; a foreign tenant
+            for raw in (f'{A}\tsa\n',f'{A}\tsa\n{B}\towner-b\n',f'{A}\tsa\n{B}\tsb\n{C}\tsc\n'):
                 with patch.object(adapter,'psql',return_value=raw) as sql:
                     with self.assertRaisesRegex(RuntimeError,'DATABASE_COUNT_MISMATCH'):adapter.primer_counts(root,{'tenants':2})
                     self.assertEqual(adapter.document(root/'primer-counts.private.json')['verdict'],'FAIL')
-                    self.assertIn("doc->>'device'='synthetic-compose-demo'",sql.call_args.args[1])
+                    self.assertIn('legacy_credential_subjects',sql.call_args.args[1])
+                    self.assertNotIn('synthetic-compose-demo',sql.call_args.args[1])
             with patch.object(adapter,'psql',return_value=good):
                 result=adapter.primer_counts(root,{'tenants':2})
-            self.assertEqual(result['verdict'],'PASS');self.assertEqual(result['persistedEntries'],2)
+            self.assertEqual(result['verdict'],'PASS');self.assertEqual(result['usableTenants'],2)
             self.assertEqual((root/'primer-counts.private.json').stat().st_mode&0o777,0o600)
-    def test_seed_custody_and_uncertainty_mismatch_refuse_before_sql(self):
+    def test_seed_and_roster_mismatch_refuse_before_sql(self):
         for name,value,code in [
             ('config.json',{'seed':[{'id':A},{'id':A}]},'SEED_COUNT'),
-            ('provisioned.json',[{'id':A},{'id':C}],'CUSTODY_COUNT'),
-            ('primed.json',{'state':'synthetic-data-primed','tenants':1},'CUSTODY_COUNT'),
-            ('entry-requests.json',{'version':1,'tenants':{A:{'state':'outcome-uncertain'}}},'ENTRY_UNCERTAIN')]:
+            ('tenants.json',{'version':1,'tenants':[{'id':i,'host':h,'dataToken':'synthetic-data'} for i,h in [(A,'a.example.test'),(C,'c.example.test')]]},'CUSTODY_COUNT')]:
             with self.subTest(name=name),tempfile.TemporaryDirectory() as tmp:
                 root=Path(tmp);self.fixture(root);adapter.write(root/'state/primer'/name,value)
                 with patch.object(adapter,'psql') as sql:
@@ -145,7 +146,7 @@ class PrimerAdoption(unittest.TestCase):
     def test_actual_psql_argv_selects_frozen_application_database(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);self.fixture(root)
-            with patch.object(adapter,'compose',return_value=f'{A}\t1\n{B}\t1\n') as call:
+            with patch.object(adapter,'compose',return_value=f'{A}\tsa\n{B}\tsb\n') as call:
                 self.assertEqual(adapter.primer_counts(root,{'tenants':2})['verdict'],'PASS')
                 args=call.call_args.args
                 self.assertEqual(args[args.index('-d')+1],'synthetic_application')
@@ -159,9 +160,7 @@ class PrimerAdoption(unittest.TestCase):
             with self.subTest(tenants=n),tempfile.TemporaryDirectory() as tmp:
                 root=Path(tmp);self.fixture(root);p=root/'state/primer';ids=[str(__import__('uuid').UUID(int=i+1)) for i in range(n)]
                 adapter.write(p/'config.json',{'seed':[{'id':i} for i in ids]})
-                adapter.write(p/'provisioned.json',[{'id':i} for i in ids])
-                adapter.write(p/'tenants.json',{'version':1,'tenants':[{'id':i,'host':'t'+str(k)+'.example.test','dataToken':'synthetic'} for k,i in enumerate(ids)]})
-                adapter.write(p/'primed.json',{'state':'synthetic-data-primed','tenants':n})
-                with patch.object(adapter,'psql',return_value=''.join(i+'\t1\n' for i in ids)):
+                adapter.write(p/'tenants.json',{'version':1,'tenants':[{'id':i,'host':'t'+str(k)+'.example.test','subject':'s'+str(k),'dataToken':'synthetic'} for k,i in enumerate(ids)]})
+                with patch.object(adapter,'psql',return_value=''.join(i+'\ts'+str(k)+'\n' for k,i in enumerate(ids))):
                     self.assertEqual(adapter.primer_counts(root,{'tenants':n})['persistedTenants'],n)
 if __name__=='__main__':unittest.main()

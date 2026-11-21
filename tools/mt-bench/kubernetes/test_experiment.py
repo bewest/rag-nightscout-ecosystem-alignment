@@ -1,11 +1,9 @@
 """Frozen owner inputs and per-allocation preflight are independent contracts."""
 import copy
-import io
 import json
 from pathlib import Path
 import subprocess
 import tempfile
-import tarfile
 import unittest
 from types import SimpleNamespace
 from test_adapter import fixture
@@ -26,14 +24,13 @@ class Frozen(unittest.TestCase):
             all.some(x=>x.kind==='ConfigMap'&&x.metadata.name==='application') &&
             !all.some(x=>x.kind==='Job') ? [] : ['wrong partition']}]};
         """)
-        receipt=self.ref('binding.json',{'files':{}})
         render=self.root/'render.json';inventory=self.root/'inventory.json'
         policy={'apiVersion':'networking.k8s.io/v1','kind':'NetworkPolicy','metadata':{'name':'native-load-to-edge'}}
         job={'apiVersion':'batch/v1','kind':'Job','metadata':{'name':'k6'}}
         contents={'application':{'apiVersion':'v1','kind':'ConfigMap','metadata':{'name':'application'}},
                   'nativeLoadResources':[job,policy]}
         k.write(render,contents);k.write(inventory,{'nativeLoad':{'version':1}})
-        instance={'render':str(render),'inventory':str(inventory),'bindingReceipt':receipt}
+        instance={'render':str(render),'inventory':str(inventory),'binding':str(self.root)}
         self.assertEqual(experiment.render_checks(instance),['native-partition'])
         contents['nativeLoadResources'].append(dict(job,metadata={'name':'unaccounted'}))
         k.write(render,contents)
@@ -42,120 +39,42 @@ class Frozen(unittest.TestCase):
         contents['nativeLoadResources'].pop();k.write(render,contents)
         self.assertEqual(experiment.render_checks(instance),['native-partition'])
 
-    def test_split_candidate_pin_uses_hashed_binding_and_refuses_contract_tamper(self):
-        package = self.root/'bindings/kubernetes/assets'
-        package.mkdir(parents=True)
-        asset = package/'source-contract.json'
-        contract = {'platformVerification':'startup-v4','sourceAcceptance':'PENDING',
-                    'nativeCatalogueSha256':'1'*64,'localImageId':self.image}
-        k.write(asset, contract)
-        receipt = self.ref('binding.json', {'sourceContractSha256':k.digest(asset),
-                                           'files':{'assets/source-contract.json':k.digest(asset)}})
-        inventory = {'workloads':{'verification':{}}}
-        pin = experiment.candidate_pin(inventory, receipt)
-        self.assertEqual(pin['verificationJob'], 'verification')
-        self.assertEqual(pin['imageConfigId'], self.image)
-        self.assertEqual(pin['platformVerification'], 'startup-v4')
-        k.write(asset, dict(contract, localImageId='sha256:'+'0'*64))
-        with self.assertRaisesRegex(k.Refused, 'CANDIDATE_SOURCE_IMAGE_CHANGED'):
-            experiment.candidate_pin(inventory, receipt)
-        k.write(asset, contract)
-        self.assertEqual(experiment.candidate_pin(inventory, receipt), pin)
-        self.assertEqual(experiment.candidate_pin({'candidateContract':pin}, {}), pin)
-
     def setUp(self):
         scratch = tempfile.TemporaryDirectory()
         self.addCleanup(scratch.cleanup)
         self.root = Path(scratch.name)
         self.pair = dict(core='1'*40, deploy='2'*40)
         self.image = 'sha256:'+'3'*64
-        self.build = dict(schemaVersion=1, status='BUILT_VERIFIED_LOCAL', localImageId=self.image,
-                          coreCommit=self.pair['core'], deployCommit=self.pair['deploy'],
-                          runtime=dict(binarySha256='4'*64, producerHelpSucceeded=True),
-                          labels={'org.opencontainers.image.revision':self.pair['core'],
-                                  'org.nightscout.deploy.revision':self.pair['deploy']})
-        build = self.ref('build',self.build)
-        self.pending = dict(status='FROZEN_DIAGNOSTIC_ONLY', sourceAcceptance='PENDING',
-                            coreCommit=self.pair['core'], deployCommit=self.pair['deploy'], imageId=self.image,
-                            imageReceiptSha256=build['sha256'], capacityAcceptance='NOT_GRANTED')
-        self.manifest = dict(version=1, kind='k8s-frozen-experiment', sourceReceipt=self.ref('owner',self.pending),
-                             buildReceipt=build, bindingCommit='5'*40, postgresImageId='sha256:'+'6'*64)
+        # bf55167272: the run's candidate comes from run parameters (image references,
+        # digests and labelled commits); no source, build or delivery receipt is read.
+        self.candidate = dict(app='registry.example.test/app@sha256:'+'3'*64, appImageId=self.image,
+                              postgres='registry.example.test/postgres@sha256:'+'6'*64,
+                              postgresImageId='sha256:'+'6'*64,
+                              coreCommit=self.pair['core'], deployCommit=self.pair['deploy'])
+        self.manifest = dict(version=1, kind='k8s-frozen-experiment', candidate=self.candidate,
+                             bindingCommit='5'*40)
 
     def ref(self, name, value):
         p = self.root/name
         k.write(p,value)
         return dict(path=str(p), sha256=k.digest(p))
 
-    def test_source_receipt_provenance_is_recorded_not_reproved(self):
+    def test_candidate_digest_is_run_identity_and_commits_are_recorded_not_compared(self):
+        # brittle-check-removal: run identity is the image digest plus the run configuration.
         baseline = frozen.source(self.manifest)
-        self.assertEqual(baseline['sourceAcceptance'], 'PENDING')
-        # Receipt words and cross-receipt pairs no longer refuse a run.
-        for value in (dict(self.pending, coreCommit='a'*40), dict(self.pending, status='ACCEPTANCE_SELECTION'),
-                      dict(self.pending, imageReceiptSha256='a'*64)):
-            other = frozen.source(dict(self.manifest, sourceReceipt=self.ref('other', value)))
-            self.assertEqual({**other, 'diagnosticSha256': None}, {**baseline, 'diagnosticSha256': None})
-        # A PASS receipt for another image never labels this source PASS.
-        other = dict(self.pending, kind='joined-acceptance', status='PASS', imageId='sha256:'+'a'*64)
-        self.assertEqual(frozen.source(dict(self.manifest, sourceReceipt=self.ref('other', other)))['sourceAcceptance'], 'PENDING')
-        with self.assertRaisesRegex(ValueError, 'EVIDENCE_CHANGED'):
-            frozen.source(dict(self.manifest, sourceReceipt=dict(self.manifest['sourceReceipt'],sha256='0'*64)))
+        self.assertEqual((baseline['localImageId'], baseline['sourceAcceptance']), (self.image, 'PENDING'))
+        # A candidate without digest-pinned references or full commits refuses.
+        for field, value in (('app', 'registry.example.test/app:latest'), ('appImageId', 'sha256:short'),
+                             ('coreCommit', 'abc'), ('postgres', None)):
+            with self.subTest(field=field), self.assertRaisesRegex(frozen.Refused, 'K8S_EXPERIMENT_CANDIDATE'):
+                frozen.source(dict(self.manifest, candidate=dict(self.candidate, **{field: value})))
+        with self.assertRaisesRegex(frozen.Refused, 'FROZEN_ACCEPTANCE_REQUIRED'):
+            frozen.source(dict(self.manifest, tier='acceptance'))
         selected = {**baseline, 'nativeCatalogueSha256': '7'*64}
         self.assertEqual(frozen.contract(self.manifest, {**selected, 'coreCommit': 'b'*40}), baseline)
         with self.assertRaisesRegex(ValueError, 'CONTRACT_CONFIGURATION_CHANGED'):
             frozen.contract(self.manifest, {**selected, 'localImageId': 'sha256:'+'b'*64})
-
-    def test_native_binding_inputs_skip_legacy_patch_and_keep_capture_protocol(self):
-        from unittest.mock import patch
-        selected = frozen.source(self.manifest)
-        for version, captured, job in ((None, None, None), (1, 1, None), (1, None, None),
-                                      (1, 1, 'verification'), (1, 1, 'dropped')):
-            supported = dict(selected, commands={}, postgresIdentities={}, nativeCatalogueSha256='7'*64,
-                             sourceFilesSha256={})
-            if job:
-                supported['verificationJob']='verification'
-            if version is not None:
-                supported['bindingInputsVersion'] = version
-            archive = io.BytesIO()
-            with tarfile.open(fileobj=archive, mode='w') as output:
-                payload = json.dumps(supported).encode()
-                member = tarfile.TarInfo('bindings/kubernetes/assets/source-contract.json')
-                member.size = len(payload)
-                output.addfile(member, io.BytesIO(payload))
-            calls = []
-            out = self.root/('materialized-'+str(version)+'-'+str(captured)+'-'+str(job))
-            def git(argv, **_):
-                if argv[3:5] == ['rev-parse', 'HEAD']:
-                    return selected['deployCommit'].encode()
-                if argv[3] == 'status':
-                    return b''
-                if argv[3] == 'show':
-                    return b'synthetic prime source'
-                if argv[3] == 'archive':
-                    return archive.getvalue()
-                self.fail(argv)
-            def execute(argv, **_):
-                calls.append(argv)
-                if str(argv[1]).endswith('source-equivalence.py'):
-                    path = out/'bindings/kubernetes/assets/source-contract.json'
-                    measured = json.loads(path.read_bytes())
-                    if job=='dropped':
-                        measured.pop('verificationJob',None)
-                    if captured is None:
-                        measured.pop('bindingInputsVersion', None)
-                    k.write(path, measured)
-                return SimpleNamespace(returncode=0)
-            with patch.object(experiment.subprocess, 'check_output', side_effect=git), \
-                 patch.object(experiment.subprocess, 'run', side_effect=execute):
-                if job=='dropped' or version == 1 and captured is None:
-                    with self.assertRaisesRegex(k.Refused, 'CANDIDATE_VERIFICATION_JOB_CHANGED' if job else 'BINDING_INPUT_PROTOCOL_CHANGED'):
-                        experiment.materialize(self.manifest, '/synthetic/binding', '/synthetic/deploy', out)
-                    self.assertFalse((out/'binding.json').exists())
-                else:
-                    experiment.materialize(self.manifest, '/synthetic/binding', '/synthetic/deploy', out)
-                    receipt = k.document(out/'binding.json')
-                    self.assertEqual(any(argv[:2] == ['git', 'apply'] for argv in calls), version is None)
-                    if version == 1:
-                        self.assertEqual((receipt['bindingInputsVersion'], receipt['patchApplied']), (1, False))
+        self.assertEqual(frozen.contract(self.manifest, selected), baseline)
 
     def test_selected_primer_requires_new_source_proof_and_preserves_exact_inputs(self):
         options={'concurrency':64,'maxTenants':20000}
@@ -175,55 +94,6 @@ class Frozen(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'CONTRACT_CONFIGURATION_CHANGED'):
             frozen.contract(manifest,{**fit,'primerOptions':{'concurrency':33,'maxTenants':20000}})
         self.assertEqual(frozen.contract(manifest,fit),selected)
-
-    def test_ack_budget_binds_package_and_changes_only_ack_field(self):
-        manifest = {**self.manifest, frozen.ACK_BUDGET: 60000}
-        selected = frozen.source(manifest)
-        baseline = frozen.source(self.manifest)
-        self.assertEqual(selected, {**baseline, frozen.ACK_BUDGET: 60000})
-        for invalid in (0, True, 1.5, 2**63):
-            with self.assertRaisesRegex(ValueError, 'PGSTREAM_ACK_BUDGET'):
-                frozen.source({**manifest, frozen.ACK_BUDGET: invalid})
-        selected['nativeCatalogueSha256'] = '7'*64
-        with self.assertRaisesRegex(ValueError, 'PGSTREAM_ACK_UNDECLARED'):
-            frozen.contract(self.manifest, selected)
-        wrong = {**selected, frozen.ACK_BUDGET: 10000}
-        with self.assertRaisesRegex(ValueError, 'CONTRACT_CONFIGURATION_CHANGED'):
-            frozen.contract(manifest, wrong)
-        script = self.root/'scripts/secrets.sh'
-        script.parent.mkdir()
-        script.write_text('''#!/usr/bin/env bash
-publish() {
-  test -f "$work/primer/expected-verification.json"
-  k create secret generic ns-config-pgstream --from-file=pgstream.yaml="$work/pgstream/pgstream.yaml" >/dev/null
-  k wait --for=condition=complete job/provision --timeout=30s >/dev/null
-}
-''')
-        experiment.bind_ack_publisher(self.root, selected)
-        subprocess.run(['bash', '-n', script], check=True)
-        self.assertIn('pgstream.effective.yaml', script.read_text())
-        with self.assertRaisesRegex(k.Refused, 'PGSTREAM_ACK_PUBLISHER_CHANGED'):
-            experiment.bind_ack_publisher(self.root, selected)
-        source = self.root/'wire.json'
-        config = dict(source=dict(publicSyntheticFixture=True),target=dict(webhooks=dict(notifier=dict(
-            client_timeout=2000, worker_count=1, strict_mode=True,
-            backoff=dict(constant=dict(max_retries=1,interval=50)),transaction_batch=dict(max_rows=4000)))))
-        k.write(source, config)
-        contract = self.ref('contract.json', selected)
-        output = self.root/'effective.yaml'
-        command = ['python3', '-B', str(self.root/frozen.ACK_PACKAGE[0]), contract['path'], str(source), str(output)]
-        evidence = json.loads(subprocess.check_output(command))
-        self.assertEqual(evidence, {'sourceTimeoutMs': 2000, 'effectiveTimeoutMs': 60000,
-                                   'sourceWireSha256': k.digest(source), 'effectiveWireSha256': k.digest(output),
-                                   'sourceContractSha256': contract['sha256']})
-        result = k.document(output)
-        result['target']['webhooks']['notifier']['client_timeout'] = 2000
-        self.assertEqual(result, config)
-        self.assertEqual(k.document(source), config)
-        self.assertEqual(output.stat().st_mode & 0o777, 0o600)
-        duplicate = subprocess.run(command, capture_output=True)
-        self.assertNotEqual(duplicate.returncode, 0)
-        self.assertEqual(duplicate.stderr.strip(), b'K8S_PGSTREAM_ACK_PUBLISH_FAILED')
 
     def test_authored_publisher_job_wait_is_source_bound(self):
         manifest={**self.manifest,'profile':{'phases':{'startupWindows':{'kubernetes':{'jobCompleteSeconds':120}}}}}

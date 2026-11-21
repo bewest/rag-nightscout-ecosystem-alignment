@@ -18,6 +18,7 @@ class OrdinaryBounded(unittest.TestCase):
             path=Path(tmp)/'config.json'
             options={'core-repo':'/synthetic/core','core-commit':'a'*40,'deploy-repo':'/synthetic/deploy','deploy-commit':'b'*40,
                      'image':'sha256:'+'c'*64,'receipt':'/synthetic/receipt','tenants':2,'replicas':1,'profile':'pgstream-sample','run-purpose':'discovery',
+                     'completion-contract':'evaluator-work-v2','static-workers':1,
                      'fixture-project':'synthetic','backend-subnet':'10.248.226.0/24','edge-subnet':'10.248.227.0/24',
                      'load-seconds':30,
                      'generator-dependencies':'/synthetic/deps','generator-dependency-receipt':'/synthetic/original.json',
@@ -50,6 +51,7 @@ class OrdinaryBounded(unittest.TestCase):
             d=Path(tmp)
             args=SimpleNamespace(core_repo='/synthetic/core',deploy_repo='/synthetic/deploy',core_commit='a'*40,deploy_commit='b'*40,
                 image='image',tenants=2,replicas=1,quiet_load=3,freeze='/synthetic/receipt',profile='pgstream-sample',run_purpose='discovery',
+                completion_contract='evaluator-work-v2',static_workers=1,
                 dependency_qualification={'qualified':'original-provenance'})
             def git(repo,*argv):
                 self.assertEqual(argv[:3],('worktree','add','--detach'))
@@ -74,7 +76,7 @@ class OrdinaryBounded(unittest.TestCase):
             def stage(directory,name,args):
                 self.assertTrue((directory/'execution.json').exists())
                 events.append(name)
-            source=Path(tmp)/'config.json';a.write(source,{'workSeconds':1500})
+            source=Path(tmp)/'config.json';a.write(source,{'workSeconds':1500,'prepare':{}})
             with patch.object(runner,'validate_config',return_value=({'workSeconds':1500},[])),patch.object(runner,'preflight_receipt'),patch.object(runner,'arm_window',side_effect=arm),patch.object(runner,'stage',side_effect=stage):
                 runner.prepare(source,root)
             # Source/plan admission now runs before seeding for ordinary runners too.

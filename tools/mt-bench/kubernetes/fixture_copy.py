@@ -26,9 +26,11 @@ PARTS = ('postgres', 'vault', 'provisionState', 'primerResults')
 CLAIMS = {'postgres': 'fixture-postgres', 'vault': 'fixture-vault',
           'provisionState': 'fixture-provision-state', 'primerResults': 'fixture-primer-results'}
 SNAPSHOTS = {part: 'snap-' + name for part, name in CLAIMS.items()}
-SEED_SIZES = dict.fromkeys(PARTS, '1Gi')
+# PostgreSQL needs its data plus about max_wal_size (default 1 GB) of WAL between checkpoints: a 1Gi claim
+# filled at K=2 >=180 req/s (No space left on device, s4-k8s-20261120 f-k2-180b). 4Gi leaves room for both.
+SEED_SIZES = {**dict.fromkeys(PARTS, '1Gi'), 'postgres': '4Gi'}
 SECRET_PREFIXES = ('ns-config-', 'ns-credentials-')
-SECRET_NAMES = ('ns-postgres-password', 'ns-ca', 'ns-vault-tls')
+SECRET_NAMES = ('ns-postgres-password', 'ns-ca', 'ns-vault-tls', 'ns-signing-secret')
 MANIFEST, SECRETS = 'fixture.json', 'secrets.private.json'
 LABEL, FIXTURE_LABEL = 'nightscout.org/run-id', 'nightscout.org/fixture'
 CONTENTS = 'volumesnapshotcontents.snapshot.storage.k8s.io'
@@ -76,21 +78,27 @@ def seed_environment(inventory):
     """The seed environment the binding records (`NS_EVALUATOR_WORKERS` for evaluator K>1)."""
     value = dict(inventory.get('seed', {}).get('environment', {}))
     need(value.get('NS_EVALUATOR_WORKERS', '1') == str(evaluator_slices(inventory)), 'SEED_EVALUATOR_SLICES')
+    need(value.get('NS_INPUT_TRANSPORT') == inventory.get('inputTransport') == 'writer-driven', 'SEED_INPUT_TRANSPORT')
     return value
 
 
 def slices_record(inventory):
     """Recorded in the fixture manifest only for K>1, so K=1 manifests are unchanged."""
     count = evaluator_slices(inventory)
-    return {'evaluatorSlices': count} if count != 1 else {}
+    record = {'evaluatorSlices': count} if count != 1 else {}
+    record['inputTransport'] = inventory['inputTransport']
+    return record
 
 
-def check_restore(manifest, tenants, postgres_image, slices=1):
+def check_restore(manifest, tenants, postgres_image, slices=1, input_transport='writer-driven', key=None):
     """A restore never grows or shrinks the roster and keeps the PostgreSQL data format.
-    Its Secrets carry the seed's pgstream receivers, so evaluator K must match too."""
+    A writer-driven fixture restores at any evaluator K (decision statefulset-ordinal-scaling,
+    amended), so `slices` is not checked. A keyed restore also refuses a fixture recorded under
+    another key (a catalog pointing elsewhere)."""
+    need(key is None or manifest.get('key') == key, 'KEY_CHANGED')
+    need(manifest.get('inputTransport') == input_transport, 'INPUT_TRANSPORT_CHANGED')
     need(manifest['tenants'] == tenants, 'TENANTS_CHANGED')
     need(manifest['postgresImage'] == postgres_image, 'POSTGRES_IMAGE_CHANGED')
-    need(manifest.get('evaluatorSlices', 1) == slices, 'EVALUATOR_SLICES_CHANGED')
 
 
 def storage(binding_storage):
@@ -102,7 +110,7 @@ def _jsonnet(jsonnet, library, code):
                                                'local f=import "ns/fixture.libsonnet";' + code], timeout=30))
 
 
-def render(jsonnet, library, namespace, run_id, chosen, tenants=None, postgres_image=None, slices=1):
+def render(jsonnet, library, namespace, run_id, chosen, tenants=None, postgres_image=None, slices=1, input_transport='writer-driven'):
     """Objects created before the stores, from the deploy binding's fixture.libsonnet: empty
     claims (seed) or Retain contents, VolumeSnapshots and clones (restore)."""
     a = json.dumps
@@ -112,7 +120,7 @@ def render(jsonnet, library, namespace, run_id, chosen, tenants=None, postgres_i
             a(namespace), a(CLAIMS), a(chosen['sizes']), a(chosen['storageClass']), a(labels)))
     else:
         manifest = read_manifest(chosen['directory'])
-        check_restore(manifest, tenants, postgres_image, slices)
+        check_restore(manifest, tenants, postgres_image, slices, input_transport, chosen.get('key'))
         items = _jsonnet(jsonnet, library,
             'std.flattenArrays(std.objectValues(f.imported(%s,%s,%s,%s,%s,%s))) + '
             'std.objectValues(f.claims(%s,"VolumeSnapshot",%s,%s,%s,%s,%s))' % (
@@ -203,7 +211,7 @@ def capture(k, namespace, run_id, chosen, snapshots, provenance, until):
         (directory/MANIFEST).chmod(0o600)
         json.dump(manifest, out, indent=2)
     return {key: manifest[key] for key in ('fixtureId', 'driver', 'sizes', 'secrets', 'tenants', 'postgresImage',
-                                           'evaluatorSlices') if key in manifest}
+                                           'evaluatorSlices', 'inputTransport') if key in manifest}
 
 
 def delete(k, directory, until):
@@ -227,4 +235,9 @@ if __name__ == '__main__':
         raise SystemExit('delete FIXTURE_DIR KUBE_CONTEXT')
     run = lambda args, body=None: subprocess.run(['kubectl', '--context', sys.argv[3], *args], check=True,
                                                  capture_output=True, timeout=180).stdout
-    print(json.dumps(delete(run, sys.argv[2], time.time() + 300), indent=2))
+    result = delete(run, sys.argv[2], time.time() + 300)
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent/'m7-joined'))
+    import fixture_catalog
+    # The catalog stops offering this fixture; the next lookup for its key builds again.
+    result['catalogRetired'] = fixture_catalog.Catalog().retire(sys.argv[2])
+    print(json.dumps(result, indent=2))

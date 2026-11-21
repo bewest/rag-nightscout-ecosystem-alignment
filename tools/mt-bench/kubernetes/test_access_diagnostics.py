@@ -21,8 +21,7 @@ class AccessDiagnostics(unittest.TestCase):
             def observe(*_):
                 steps.append('observe')
 
-            with patch.object(adapter.candidate, 'require'), \
-                 patch.object(adapter, 'active_baseline', return_value=baseline), \
+            with patch.object(adapter, 'active_baseline', return_value=baseline), \
                  patch.object(execute, 'roster', return_value=roster), \
                  patch.object(execute, 'actor', side_effect=lambda _: steps.append('actor')), \
                  patch.object(execute, 'environment', return_value={}), \
@@ -44,8 +43,7 @@ class AccessDiagnostics(unittest.TestCase):
                 steps.append('witness')
                 return b'{"verdict":"PASS","tenantRosterSize":2,"witnessTenants":["first","last"]}'
 
-            with patch.object(adapter.candidate, 'require'), \
-                 patch.object(adapter, 'active_baseline', return_value=baseline), \
+            with patch.object(adapter, 'active_baseline', return_value=baseline), \
                  patch.object(execute, 'roster', return_value=roster), \
                  patch.object(execute, 'actor', side_effect=lambda _: steps.append('actor')), \
                  patch.object(execute, 'environment', return_value={}), \

@@ -59,7 +59,11 @@ def tenant_projection(document, count):
     for row in rows:
         require(isinstance(row, dict) and UUID.fullmatch(row.get("id", "")) and isinstance(row.get("host"), str)
                 and re.fullmatch(r"[a-z0-9.-]+", row["host"]) and isinstance(row.get("dataToken"), str) and row["dataToken"], "M7_PRIMER_DATA_TOKEN_REQUIRED")
-        result.append({"id": row["id"], "host": row["host"], "token": row["dataToken"]})
+        projected = {"id": row["id"], "host": row["host"], "token": row["dataToken"]}
+        # The provisioning call's data JWT and its expiry (seconds), when the roster carries both.
+        if isinstance(row.get("jwt"), str) and row["jwt"] and type(row.get("jwtExpiresAt")) is int:
+            projected.update(jwt=row["jwt"], jwtExpiresAt=row["jwtExpiresAt"])
+        result.append(projected)
     require(len({r["id"] for r in result}) == count and len({r["host"] for r in result}) == count, "M7_PRIMER_DUPLICATE")
     return result
 
@@ -285,15 +289,13 @@ def discovery_authorization(manifest, receipt):
     import primer_options
     version=receipt.get('version',1)
     require(type(version) is int and version in (1,2),'M7_DIAGNOSTIC_RECEIPT_VERSION')
-    require('commissioningSlotWalMiB' not in manifest or version==2,
-            'M7_COMMISSIONING_SLOT_WAL_BOUND_RECEIPT_REQUIRED')
-    ack_budget = stream_topology.ack_selection(manifest)
-    require(not ack_budget or version==2, 'M7_PGSTREAM_ACK_BOUND_RECEIPT_REQUIRED')
     selected_budgets={'opportunityObservation','probeLedger','startupWindows','evaluatorProgressBudget'} & manifest.get('cadence',{}).keys()
     require(not selected_budgets or version==2,'M7_WORKLOAD_BUDGET_BOUND_RECEIPT_REQUIRED')
     primer=primer_options.selection(primer_options.from_manifest(manifest),lambda ok,code:require(ok,'M7_'+code))
     require(not ('maxTenants' in primer or primer_options.requires_extended(primer)) or version==2,
             'M7_PRIMER_OPTIONS_BOUND_RECEIPT_REQUIRED')
+    stream_topology.selection(manifest)
+    require(version==2, 'M7_WRITER_CONFIGURATION_REQUIRED')
     if version==1:return dict(UNACCEPTED_SCOPE)
     from run_configuration import sha
     import static_topology
@@ -301,16 +303,13 @@ def discovery_authorization(manifest, receipt):
     resolved=manifest.get('runConfiguration')
     require(isinstance(resolved,dict) and receipt.get('configurationSha256')==sha(resolved),
             'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
-    require(stream_topology.ack_selection(resolved) == ack_budget, 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
+    require(resolved.get('inputTransport') == manifest.get('inputTransport'), 'M7_INPUT_TRANSPORT_CHANGED')
     require(primer_options.from_manifest(resolved)==primer,'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(resolved.get('staticTopology') == manifest.get('staticTopology'), 'M7_STATIC_CONFIGURATION_MISMATCH')
     require(all(resolved.get(k)==manifest.get(k) for k in ('pair','imageId','tenants','replicas','cadence'))
             and resolved.get('instrument')==manifest['instrument']['sha256'], 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     import commissioning_wal
     commissioning_wal.from_manifest(manifest)
-    require((commissioning_wal.FIELD in resolved)==(commissioning_wal.FIELD in manifest)
-            and resolved.get(commissioning_wal.FIELD)==manifest.get(commissioning_wal.FIELD),
-            'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(receipt.get('purpose')=='BOUNDED_DISCOVERY' and resolved.get('runPurpose')=='discovery',
             'M7_DIAGNOSTIC_PURPOSE_REQUIRED')
     execution=receipt.get('execution')

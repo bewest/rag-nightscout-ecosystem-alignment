@@ -12,8 +12,9 @@ from test_offered_rps import JS as OFFERED_PROGRAM
 
 def prepare_fixture(target, concurrency=1, overlay_kind="directory"):
     """Keep adapter.prepare/staged/workload/probe real; isolate external effects."""
-    target=Path(target)
-    args=a.parser().parse_args(['prepare','--directory',str(target),'--core-repo','/tmp/synthetic-core','--core-commit','a'*40,'--deploy-repo','/tmp/synthetic-deploy','--deploy-commit','b'*40,'--image','synthetic','--freeze','/tmp/synthetic-freeze','--tenants','6','--replicas','1','--jwt-setup-concurrency',str(concurrency)])
+    target=Path(target);freeze=target.parent/(target.name+'-freeze.json');freeze.write_text('{}')
+    args=a.parser().parse_args(['prepare','--directory',str(target),'--core-repo','/tmp/synthetic-core','--core-commit','a'*40,'--deploy-repo','/tmp/synthetic-deploy','--deploy-commit','b'*40,'--image','synthetic','--freeze',str(freeze),'--tenants','6','--replicas','1','--jwt-setup-concurrency',str(concurrency),
+        '--profile','pgstream-sample','--run-purpose','discovery','--completion-contract','evaluator-work-v2','--static-workers','1','--postgres-image','sha256:'+'0'*64])
     contract={'version':2,'operations':{'inspectEvaluator':{'response':{'properties':{'tenants':{'items':{'properties':{'dueAt':{},'dueReason':{},'jobs':{}},'required':['dueAt','dueReason','jobs']}}}}}}}
     def git(repo,*argv):
         if argv[0]=='show':return json.dumps(contract)
@@ -36,6 +37,7 @@ def prepare_fixture(target, concurrency=1, overlay_kind="directory"):
         if argv[:2]==['docker','compose'] and argv[-3:]==['config','--format','json']:
             roles=('postgres','vault','admin','primer','api','realtime','evaluator','tenant-admin','ui','nginx','feed-reader')
             services={role:{'command':['synthetic']} for role in roles}
+            services['bootstrap']={'command':['synthetic'],'environment':{'NS_INPUT_TRANSPORT':'writer-driven'}}
             services['postgres']['command']=['postgres']
             for role in ('api','realtime','evaluator'):
                 services[role]['command']=['node','lib/server/serve/main.js',role]
@@ -45,6 +47,9 @@ def prepare_fixture(target, concurrency=1, overlay_kind="directory"):
         for name,value in {'commit':lambda *args:None,'git':git,'command':command,'instrument':lambda:{'sha256':'f'*64},'inventory':lambda *args:{},'host_identity':lambda value:'synthetic','resources':lambda m:[],'port':lambda:12345,'setup_generator':lambda *args:None}.items():
             stack.enter_context(patch.object(a,name,side_effect=value))
         # Pure contract isolates machine UID policy, not a running service.
+        # Writer-driven discovery: receipt admission, static topology and image sealing have their own tests.
+        stack.enter_context(patch.object(a,'frozen'));stack.enter_context(patch.object(a,'receipt_scope'));stack.enter_context(patch.object(a,'prepare_image_inputs',return_value=None));stack.enter_context(patch.object(a.static_topology,'verify_config',return_value={}))
+        stack.enter_context(patch.object(a,'seal_diagnostic_images',side_effect=lambda config,m:config))
         stack.enter_context(patch.object(a.os,'getuid',return_value=1000));stack.enter_context(patch.object(a.os,'getgid',return_value=1000))
         with patch('builtins.print'):a.prepare(args)
     return json.loads((target/'owner.json').read_text())

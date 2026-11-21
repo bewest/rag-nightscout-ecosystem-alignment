@@ -13,8 +13,8 @@ evaluator ordinal is its own row). API reads only; no exec.
 OUT_DIR/nodes.json: /proc/cpuinfo `model name` per node, read once from one running case Pod there
 (the observer's only exec).
 Database and process figures (event-loop lag and utilization, evaluator phase time per slice,
-pending-work age, statements per write by role, slot lag, walsender waits, pg_stat_statements,
-pg_stat_io, receipt round trip) come from the run's own Prometheus when the binding input sets
+pending-work age, statements per write by role, pg_stat_statements,
+pg_stat_io) come from the run's own Prometheus when the binding input sets
 `labMetrics.enabled`: the controller retains a TSDB snapshot before teardown
 (runtime/packet/load/metrics-tsdb.tar, execute.metrics_snapshot) and `summarize` evaluates PromQL on it at the
 steady-window bookends with a local, network-less Prometheus of the same version. Without the
@@ -306,47 +306,11 @@ def window(case):
     return ('stage ' + TRAFFIC, None, None)
 
 
-TRACE = b'PGSTREAM_RECEIVER_TRACE '
-
-
-def delivery(out):
-    """Per pgstream transaction batch (commit position), from the evaluator receivers' own trace
-    (NS_PGSTREAM_RECEIVER_TRACE=1 in roleEnv): first receipt to last response across the slices that
-    received it, and the gap from one batch's last response to the next batch's first receipt.
-    Receiver wall clocks on different nodes are not aligned; the trace drops lines above 100/s."""
-    logs = out/'podlogs'
-    batches, dropped = {}, 0
-    for path in sorted(logs.glob('*.evaluator.log')) if logs.is_dir() else []:
-        pod = path.name.split('.')[0]
-        for line in path.read_bytes().splitlines():
-            at = line.find(TRACE)
-            if at < 0:
-                continue
-            try:
-                row = json.loads(line[at + len(TRACE):])
-            except ValueError:
-                continue
-            dropped += row.get('dropped', 0) or 0
-            # Core acknowledges an accepted body with 204 (lib/pgstream/evaluator.js); any 2xx is a delivery.
-            if row.get('event') != 'response-finished' or not row.get('position') or not 200 <= (row.get('status') or 0) < 300:
-                continue
-            cell = batches.setdefault(row['position'], {})
-            cell[pod] = (row['at'] - row['elapsedMs'], row['at'], row.get('rows'))
-    if not batches:
-        return {'verdict': 'UNMEASURED', 'reason': 'no receiver trace in podlogs (roleEnv NS_PGSTREAM_RECEIVER_TRACE=1)'}
-    ordered = sorted(batches.values(), key=lambda c: min(v[0] for v in c.values()))
-    spans = [max(v[1] for v in c.values()) - min(v[0] for v in c.values()) for c in ordered]
-    gaps = [min(v[0] for v in b.values()) - max(v[1] for v in a.values()) for a, b in zip(ordered, ordered[1:])]
-    return {'batches': len(ordered), 'slicesPerBatch': distribution([len(c) for c in ordered]),
-            'deliverySpanMs': distribution(spans), 'interBatchGapMs': distribution(gaps), 'droppedTraceLines': dropped,
-            'scope': 'read-derived from receiver timestamps; includes evaluator receipt time; clocks unaligned across nodes'}
-
-
 # The binding's Prometheus image (deploy lab-metrics.libsonnet), run locally on a copy of the
 # retained snapshot with no network.
 PROMETHEUS_IMAGE = 'prom/prometheus@sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996'
 # Steady-window figures; {w} is the window in seconds, evaluated at its end.
-WRITES = 'sum(increase(nightscout_http_request_seconds_count{{method=~"POST|PUT|PATCH|DELETE",status_class="2xx"}}[{w}s]))'
+WRITES = 'sum(increase(nightscout_http_request_seconds_count{{workload="api",method=~"POST|PUT|PATCH|DELETE",status_class="2xx"}}[{w}s]))'
 QUERIES = {
     'targets': 'min_over_time(up[{w}s])',
     'cpuCores': 'rate(process_cpu_seconds_total{{job="roles"}}[{w}s])',
@@ -364,13 +328,7 @@ QUERIES = {
     'statementsPerWriteByRole': 'sum by (role) (increase(nightscout_pg_statements_total[{w}s])) / scalar(' + WRITES + ')',
     'statementsByApplication': 'sum by (role, application_name) (increase(nightscout_pg_statements_total[{w}s]))',
     'statementClientMeanSeconds': 'sum by (role) (increase(nightscout_pg_statement_seconds_total[{w}s])) / sum by (role) (increase(nightscout_pg_statements_total[{w}s]))',
-    'receiptsPerSecond': 'sum by (pod, slice, outcome) (rate(nightscout_pgstream_receipt_seconds_count[{w}s]))',
-    'receiptMeanSeconds': 'sum by (pod, slice) (rate(nightscout_pgstream_receipt_seconds_sum[{w}s])) / sum by (pod, slice) (rate(nightscout_pgstream_receipt_seconds_count[{w}s]))',
-    'receiptP95Seconds': 'histogram_quantile(0.95, sum by (pod, slice, le) (rate(nightscout_pgstream_receipt_seconds_bucket[{w}s])))',
     'httpP95Seconds': 'histogram_quantile(0.95, sum by (method, status_class, le) (rate(nightscout_http_request_seconds_bucket[{w}s])))',
-    'slotConfirmedLagBytesMax': 'max_over_time(ns_slot_confirmed_lag_bytes[{w}s])',
-    'slotConfirmedLagBytesMean': 'avg_over_time(ns_slot_confirmed_lag_bytes[{w}s])',
-    'walsenderSamplesByWait': 'sum by (state, wait_event_type, wait_event) (count_over_time(ns_walsender_senders[{w}s]))',
     'activeBackendsByApplication': 'sum by (application_name, wait_event_type) (avg_over_time(ns_activity_backends{{backend_type="client backend",state="active"}}[{w}s]))',
     'statIoSecondsByBackend': 'sum by (backend_type) (increase(ns_stat_io_read_seconds[{w}s]) + increase(ns_stat_io_write_seconds[{w}s]) + increase(ns_stat_io_fsync_seconds[{w}s]))',
     'statIoReadsByBackend': 'sum by (backend_type) (increase(ns_stat_io_reads[{w}s]))',
@@ -378,8 +336,6 @@ QUERIES = {
     'topStatementsCalls': 'topk(25, sum by (queryid) (increase(pg_stat_statements_calls_total[{w}s])))',
     'statementText': 'max by (queryid, query) (last_over_time(pg_stat_statements_query_id[{w}s]))',
 }
-
-
 def load_directory(case):
     """The controller's load stage output: runtime/packet/load in a launched case (load/ in older layouts)."""
     for path in (case.d/'runtime'/'packet'/'load', case.d/'load'):
@@ -523,7 +479,6 @@ def summarize(case, out):
                                  for c, cell in sorted(roles.items())},
         'podLogs': read(out/'podlogs'/'followers.json'),
         'prometheus': prometheus_figures(case, start, end),
-        'pgstreamDelivery': delivery(out),
     }
 
 

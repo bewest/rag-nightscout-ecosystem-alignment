@@ -12,22 +12,21 @@ import runner
 class StartupInheritance(unittest.TestCase):
  def setUp(self):
   self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup);self.root=Path(self.tmp.name)/'runtime';self.root.mkdir();(self.root/'state').mkdir();self.compose=self.root/'frozen.compose.json';self.compose.write_text('{"services":{}}');(self.root/'env').write_text('SYNTHETIC=1\n')
-  self.owner={'directory':str(self.root),'owner':'a'*32,'prepared':True,'project':'synthetic','pair':{'core':'b'*40,'deploy':'c'*40},'imageId':'sha256:'+'d'*64,'instrument':{'sha256':'e'*64},'profile':'pgstream-sample','runPurpose':'discovery','tenants':10000,'replicas':1,'commissioningSlotWalMiB':1024,'tenantReadiness':'serve','platformStartup':{'kind':'admin-verification-v1','readiness':'serve','helperSha256':'f'*64},'composeSha256':w._digest(self.compose),'environmentSha256':w._digest(self.root/'env')}
+  self.owner={'directory':str(self.root),'owner':'a'*32,'prepared':True,'project':'synthetic','pair':{'core':'b'*40,'deploy':'c'*40},'imageId':'sha256:'+'d'*64,'instrument':{'sha256':'e'*64},'profile':'pgstream-sample','runPurpose':'discovery','tenants':10000,'replicas':1,'tenantReadiness':'serve','platformStartup':{'kind':'admin-verification-v1','readiness':'serve','helperSha256':'f'*64},'composeSha256':w._digest(self.compose),'environmentSha256':w._digest(self.root/'env')}
   self.file=self.root/'owner.json';a.write(self.file,self.owner)
-  self.args=SimpleNamespace(runtime_owner=str(self.file),state=str(self.root/'state'),compose=[str(self.compose)],env_file=str(self.root/'env'),commissioning_slot_wal_mib=None,tenant_readiness=None)
+  self.args=SimpleNamespace(runtime_owner=str(self.file),state=str(self.root/'state'),compose=[str(self.compose)],env_file=str(self.root/'env'),tenant_readiness=None)
  def manifest(self):
   m={k:copy.deepcopy(v) for k,v in self.owner.items() if k not in (*w.STARTUP_FIELDS,'prepared')};m.update(attached=True,owner='1'*32);return m
  def inherit(self):
   m=self.manifest();w.inherit(self.args,m,self.owner,self.root);return m
  def test_inherit_exact_owner_selection_and_never_apply_on_attach(self):
-  m=self.inherit();self.assertEqual(w.from_manifest(m),{w.FIELD:1024});self.assertEqual(m['tenantReadiness'],'serve');self.assertEqual(m['platformStartup'],self.owner['platformStartup']);self.assertEqual(m['startupRuntimeOwner']['sha256'],a.digest(self.file));self.assertIn('tenant-readiness',runner.SESSION_PREPARE_ONLY)
-  with self.assertRaisesRegex(RuntimeError,'LOCAL_DIAGNOSTIC_ONLY'):w.install({},m)
-  for key in ('commissioning_slot_wal_mib','tenant_readiness'):
-   bad=copy.copy(self.args);setattr(bad,key,256 if key=='commissioning_slot_wal_mib' else 'all')
+  m=self.inherit();self.assertEqual(w.from_manifest(m),{});self.assertEqual(m['tenantReadiness'],'serve');self.assertEqual(m['platformStartup'],self.owner['platformStartup']);self.assertEqual(m['startupRuntimeOwner']['sha256'],a.digest(self.file));self.assertIn('tenant-readiness',runner.SESSION_PREPARE_ONLY)
+  for key in ('tenant_readiness',):
+   bad=copy.copy(self.args);setattr(bad,key,'all')
    with self.assertRaisesRegex(RuntimeError,'FRESH_PREPARE_ONLY'):w.inherit(bad,self.manifest(),self.owner,self.root)
  def test_foreign_owner_hash_image_state_compose_and_selector_refuse_restored(self):
   green=self.inherit()
-  for mutate in (lambda m:m['startupRuntimeOwner'].update(sha256='0'*64),lambda m:m['startupRuntimeOwner'].update(owner='0'*32),lambda m:m.update(imageId='sha256:'+'0'*64),lambda m:m.update({w.FIELD:256}),lambda m:m.update(tenantReadiness='all'),lambda m:m['platformStartup'].update(helperSha256='0'*64)):
+  for mutate in (lambda m:m['startupRuntimeOwner'].update(sha256='0'*64),lambda m:m['startupRuntimeOwner'].update(owner='0'*32),lambda m:m.update(imageId='sha256:'+'0'*64),lambda m:m.update(tenantReadiness='all'),lambda m:m['platformStartup'].update(helperSha256='0'*64)):
    bad=copy.deepcopy(green);mutate(bad)
    with self.assertRaisesRegex(RuntimeError,'STARTUP_RUNTIME_'):w.from_manifest(bad)
   for field,value in [('state',str(self.root/'foreign')),('compose',[str(self.root/'foreign.json')]),('runtime_owner',str(self.root/'foreign.json'))]:
@@ -35,10 +34,10 @@ class StartupInheritance(unittest.TestCase):
    with self.assertRaisesRegex(RuntimeError,'STARTUP_RUNTIME_BINDING'):w.inherit(args,self.manifest(),self.owner,self.root)
   original=self.compose.read_text();self.compose.write_text('{}')
   with self.assertRaisesRegex(RuntimeError,'STARTUP_RUNTIME_BINDING'):self.inherit()
-  self.compose.write_text(original);self.assertEqual(w.from_manifest(self.inherit()),{w.FIELD:1024})
+  self.compose.write_text(original);self.assertEqual(w.from_manifest(self.inherit()),{})
  def test_unbound_attached_selection_still_refuses(self):
-  m=self.manifest();m[w.FIELD]=1024
-  with self.assertRaisesRegex(RuntimeError,'LOCAL_DIAGNOSTIC_ONLY'):w.from_manifest(m)
+  m=self.manifest();m['tenantReadiness']='serve'
+  with self.assertRaisesRegex(RuntimeError,'STARTUP_RUNTIME_OWNER_REQUIRED'):w.from_manifest(m)
 
 CAPTURE=os.environ.get('M7_STARTUP_ATTACH_CAPTURE')
 @unittest.skipUnless(CAPTURE,'retained actual startup capture explicitly required')
@@ -72,7 +71,7 @@ class RetainedStartup(unittest.TestCase):
   args=self.arguments()
   with self.assertRaisesRegex(RuntimeError,'^M7_DIAGNOSTIC_CONFIGURATION_MISMATCH$'):self.admission(args,lambda *args:None)
   with self.assertRaisesRegex(RuntimeError,'ADMISSION_PASSED_BEFORE_ACTOR'):self.admission(self.arguments())
-  for field,value in [('commissioning_slot_wal_mib',256),('tenant_readiness','all')]:
+  for field,value in [('tenant_readiness','all')]:
    args=self.arguments();setattr(args,field,value)
    with self.assertRaisesRegex(RuntimeError,'FRESH_PREPARE_ONLY'):self.admission(args)
   with self.assertRaisesRegex(RuntimeError,'ADMISSION_PASSED_BEFORE_ACTOR'):self.admission(self.arguments())

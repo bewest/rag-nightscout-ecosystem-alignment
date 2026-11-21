@@ -42,8 +42,10 @@ class NumericContract(unittest.TestCase):
         contract.discovery_authorization(manifest,proof)
         with self.assertRaisesRegex(RuntimeError,'WORKLOAD_BUDGET_BOUND_RECEIPT_REQUIRED'):
             contract.discovery_authorization(manifest,{'version':1})
+        # Without the budget a version-1 receipt still cannot authorize a writer-driven run.
         omitted={**manifest,'cadence':{k:v for k,v in cadence.items() if k!='probeLedger'}}
-        self.assertEqual(contract.discovery_authorization(omitted,{'version':1}),contract.UNACCEPTED_SCOPE)
+        with self.assertRaisesRegex(RuntimeError,'WRITER_CONFIGURATION_REQUIRED'):
+            contract.discovery_authorization(omitted,{'version':1})
         changed={**manifest,'cadence':{**cadence,'probeLedger':{**selected,'maxWrites':120001}}}
         with self.assertRaisesRegex(RuntimeError,'DIAGNOSTIC_CONFIGURATION_MISMATCH'):
             contract.discovery_authorization(changed,proof)
