@@ -198,8 +198,8 @@ SGV_4W = DAYS_4W * 288
 DS_4W = SGV_4W
 TREATMENTS_PER_DAY = 8
 TREATMENTS_4W = DAYS_4W * TREATMENTS_PER_DAY
-SGV_BATCH = 2016          # one week per request (~350 KB; the edge limits bodies to 2 MB)
-DS_BATCH = 1008           # half a week per request (~0.6 MB)
+SGV_BATCH = 288           # one day per request (short requests: the edge proxy_read_timeout is 60 s)
+DS_BATCH = 288            # one day per request
 WORKERS_4W = 16
 # The fixture ends at its anchor; the evaluator's 48 h window must still hold at least half
 # history at the end of the run (the run's own writes fill the rest).

@@ -69,7 +69,7 @@ class FourWeeks(unittest.TestCase):
                              (84, 28, 112))
         # batches stay under the edge's 2 MB body limit
         self.assertEqual(sorted({(p, n) for _, p, n in self.calls}),
-                         [('/api/v1/devicestatus', 1008), ('/api/v1/entries', 2016), ('/api/v1/profile', 1),
+                         [('/api/v1/devicestatus', 288), ('/api/v1/entries', 288), ('/api/v1/profile', 1),
                           ('/api/v1/treatments', 224)])
         self.assertLess(len(json.dumps(h.devicestatus_4w(self.anchor, 0)[:h.DS_BATCH])), 2*1024*1024)
         self.assertEqual((receipt['rows'], receipt['collections']['devicestatus']['rows'],
