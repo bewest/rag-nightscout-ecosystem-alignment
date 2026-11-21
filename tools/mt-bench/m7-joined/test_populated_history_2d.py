@@ -2,6 +2,7 @@
 import copy
 import json
 import unittest
+import unittest.mock
 
 import fixture_catalog
 import populated_history as h
@@ -78,6 +79,20 @@ class TwoDays(four_weeks.FourWeeks):
         self.assertEqual([r['sgv'] for r in h.entries_4w(a, i)[-576:]], [r['sgv'] for r in h.entries_4w(a, i, 2, h.DEVICE_2D)])
         self.assertEqual(h.expected_4w(a, i)['treatments'], h.TREATMENTS_4W)
         self.assertEqual(json.dumps(h.profile_4w(a)), json.dumps(h.profile_4w(a, h.DAYS_4W, h.DEVICE_4W)))
+
+    def test_seed_limits_change_requests_not_rows(self):
+        self.assertEqual(h.seed_limits({}), (h.WORKERS_4W, 288))
+        self.assertEqual(h.seed_limits({'S4_HISTORY_SEED_WORKERS': '4', 'S4_HISTORY_SEED_BATCH': '96'}), (4, 96))
+        for bad in ({'S4_HISTORY_SEED_WORKERS': '0'}, {'S4_HISTORY_SEED_BATCH': '289'}):
+            with self.assertRaisesRegex(ValueError, 'SEED_LIMITS'):
+                h.seed_limits(bad)
+        whole = self.fixture()
+        self.store, self.calls = {}, []
+        with unittest.mock.patch.dict('os.environ', {'S4_HISTORY_SEED_BATCH': '96', 'S4_HISTORY_SEED_WORKERS': '2'}):
+            small = self.fixture()
+        self.assertEqual(sorted({(p, n) for _, p, n in self.calls if p in ('/api/v1/entries', '/api/v1/devicestatus')}),
+                         [('/api/v1/devicestatus', 96), ('/api/v1/entries', 96)])
+        self.assertEqual(small['logicalSha256'], whole['logicalSha256'])
 
 
 if __name__ == '__main__':

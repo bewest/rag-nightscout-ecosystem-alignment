@@ -6,6 +6,7 @@ import hashlib
 from http.client import HTTPConnection
 import json
 import math
+import os
 import re
 from threading import Event
 import time
@@ -215,6 +216,15 @@ DAYS_2D = 2
 SHAPES = {MODE_4W: (DAYS_4W, DEVICE_4W), MODE_2D: (DAYS_2D, DEVICE_2D)}  # mode -> (days, marker)
 
 
+def seed_limits(environ=os.environ):
+    """Seed concurrency and rows per request. Operator knobs for a write path that times out under load;
+    they change how rows are sent, never which rows, so they are not part of the fixture key."""
+    workers = int(environ.get('S4_HISTORY_SEED_WORKERS', WORKERS_4W))
+    batch = int(environ.get('S4_HISTORY_SEED_BATCH', SGV_BATCH))
+    require(1 <= workers <= 64 and 1 <= batch <= SGV_BATCH, 'SEED_LIMITS')
+    return workers, batch
+
+
 def _iso(stamp):
     return datetime.fromtimestamp(stamp / 1000, tz=timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
 
@@ -345,6 +355,7 @@ def run_4w(spec, tenants, base, sql, until, window_seconds, *, verify_only=False
             and len({row['host'] for row in tenants}) == len(tenants), 'ROSTER')
     anchor = spec['anchorUnixMs']
     days, device = SHAPES[spec['mode']]
+    workers, batch = seed_limits()
     roster = sorted(tenants, key=lambda row: row['host'])
     expected = {tenant['id']: expected_4w(anchor, i, days, device) for i, tenant in enumerate(roster)}
     tables = _tables(sql)
@@ -379,17 +390,17 @@ def run_4w(spec, tenants, base, sql, until, window_seconds, *, verify_only=False
             i, tenant = item
             try:
                 e = entries_4w(anchor, i, days, device)
-                for k in range(0, len(e), SGV_BATCH):
-                    post_batch(port, tenant, e[k:k+SGV_BATCH], until, path='/api/v1/entries')
+                for k in range(0, len(e), batch):
+                    post_batch(port, tenant, e[k:k+batch], until, path='/api/v1/entries')
                 d = devicestatus_4w(anchor, i, days, device)
-                for k in range(0, len(d), DS_BATCH):
-                    post_batch(port, tenant, d[k:k+DS_BATCH], until, path='/api/v1/devicestatus')
+                for k in range(0, len(d), batch):
+                    post_batch(port, tenant, d[k:k+batch], until, path='/api/v1/devicestatus')
                 post_batch(port, tenant, treatments_4w(anchor, i, days, device), until, path='/api/v1/treatments')
                 post_batch(port, tenant, profile_4w(anchor, days, device), until, path='/api/v1/profile')
             except Exception:
                 failed.set()
                 raise
-        with ThreadPoolExecutor(max_workers=WORKERS_4W) as pool:
+        with ThreadPoolExecutor(max_workers=workers) as pool:
             list(pool.map(seed, missing))
         at, measured = inspect()
     require(measured.keys() == expected.keys(), 'ROWS_MISSING')
