@@ -3723,7 +3723,7 @@ deployment through the <a href="../m7-joined/RUNNER.html">m7-joined runner</a>'s
   totals keep their original scope for comparison with earlier runs;</li>
 <li>evaluator main-thread CPU ms per accepted write (<code>/proc/&lt;pid&gt;/task/&lt;pid&gt;/stat</code>, sampled each
   second through <code>docker exec</code>, interpolated at the same SQL window bounds);</li>
-<li>the same figures beside the committed <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18c537249a975b5eb07c33aef6e9089a67e9ef7e/tools/mt-bench/evaluator-smoke/baseline.json"><code>baseline.json</code></a>.</li>
+<li>the same figures beside the committed <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/tools/mt-bench/evaluator-smoke/baseline.json"><code>baseline.json</code></a>.</li>
 </ul>
 <p>The runner's own smoke verdict (stored counts, clinical witnesses, fixture ownership, viewer
 bindings) stays strict and is reported next to the figures.</p>
@@ -3769,7 +3769,7 @@ hints) spread over few writes, so it is a figure for comparing commits at this w
 cost model. The sampler's <code>docker exec</code> shell is an extra process in the evaluator container.</p>
 <p><strong>Baseline (core <code>bee2589b6</code>, image <code>6c23df42a702</code>, three runs, 521 accepted writes each, about
 283 s wall time per run):</strong> 171.46–171.89 statements per accepted write, 3.91–4.04 executor ms per
-write, 16.7–17.1 main-thread ms per write (two runs). Per role and phase: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18c537249a975b5eb07c33aef6e9089a67e9ef7e/tools/mt-bench/evaluator-smoke/baseline.json"><code>baseline.json</code></a>.</p>
+write, 16.7–17.1 main-thread ms per write (two runs). Per role and phase: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/tools/mt-bench/evaluator-smoke/baseline.json"><code>baseline.json</code></a>.</p>
 
 
 

@@ -12252,11 +12252,11 @@ byte or memory bound.</p>
 </tr>
 <tr>
 <td>Instrument</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18c537249a975b5eb07c33aef6e9089a67e9ef7e/tools/lab/d6-native-discriminators/proof.py">proof.py</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/tools/lab/d6-native-discriminators/proof.py">proof.py</a></td>
 </tr>
 <tr>
 <td>Accepted capture</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18c537249a975b5eb07c33aef6e9089a67e9ef7e/reports/tenancy/d6-native-discriminators-2026-11-11/run-4.json">run-4.json</a>: reproduced <code>PASS</code>, 36 SQL cases, 22 assertions; owned-container cleanup exit 0</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/d6-native-discriminators-2026-11-11/run-4.json">run-4.json</a>: reproduced <code>PASS</code>, 36 SQL cases, 22 assertions; owned-container cleanup exit 0</td>
 </tr>
 </tbody>
 </table>
@@ -12326,13 +12326,13 @@ prototype wrapper. Do not generalize it to replication connections, serving read
 or a logical restore authority change.</p>
 <h2 id="retained-failures-and-instrument-repair">Retained failures and instrument repair<a class="headerlink" href="#retained-failures-and-instrument-repair" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18c537249a975b5eb07c33aef6e9089a67e9ef7e/reports/tenancy/d6-native-discriminators-2026-11-11/run-1.json">run-1.json</a>: setup only, <strong>NO-MEASUREMENT</strong>. Socket <code>pg_isready</code>
+<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/d6-native-discriminators-2026-11-11/run-1.json">run-1.json</a>: setup only, <strong>NO-MEASUREMENT</strong>. Socket <code>pg_isready</code>
   observed the image's temporary initialization server immediately before shutdown;
   subsequent psql calls saw shutdown/missing socket. The instrument now waits for
   final TCP loopback readiness. No semantic control claim attaches to this failure.</li>
-<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18c537249a975b5eb07c33aef6e9089a67e9ef7e/reports/tenancy/d6-native-discriminators-2026-11-11/run-2.json">run-2.json</a>: exploratory successful SQL calls before semantic assertions
+<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/d6-native-discriminators-2026-11-11/run-2.json">run-2.json</a>: exploratory successful SQL calls before semantic assertions
   and planted controls were added. It is not the accepted assertion capture.</li>
-<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18c537249a975b5eb07c33aef6e9089a67e9ef7e/reports/tenancy/d6-native-discriminators-2026-11-11/run-3.json">run-3.json</a>: retained <strong>FAIL</strong>. The restoration assertion wrongly
+<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/d6-native-discriminators-2026-11-11/run-3.json">run-3.json</a>: retained <strong>FAIL</strong>. The restoration assertion wrongly
   expected removal from publication to suppress a row committed while that table
   was published. The actual historical row remained visible on replay. Run 4 keeps
   that observation and tests restoration using a new row committed after removal.</li>
