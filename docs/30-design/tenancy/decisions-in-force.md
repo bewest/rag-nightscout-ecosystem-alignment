@@ -56,6 +56,8 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [prometheus-metrics-narrow](multitenancy-decisions.md#prometheus-metrics-narrow) — official Prometheus Node client (`@prometheus-io/client`), `/metrics` on an internal port, opt-in, multitenant roles only (not the classic server); no tenant-id labels; one Prometheus Pod plus `postgres_exporter` per lab run, TSDB snapshot retained; per-input events still decide verdicts; no OTel tracing now. Supersedes metrics-endpoint-deferred.
 - [storage-events-single-tenant-parity](multitenancy-decisions.md#storage-events-single-tenant-parity) — `/storage` socket events fire for exactly the write paths a single site uses.
 - [writer-driven-transport-direction](multitenancy-decisions.md#writer-driven-transport-direction) — **Adopted 2026-11-21**: the api is the only writer; post-commit hints to the owning evaluator and realtime; level-triggered recompute plus sweep; pgstream, its slot and the storage-event journal retire.
+- [stateful-evaluator-resident-window](multitenancy-decisions.md#stateful-evaluator-resident-window) — **Adopted 2026-11-21**: each evaluator slice keeps its tenants' windows resident and updates them from the pending mark; memory is planned per resident; output byte-identical to the full rebuild.
+- [evaluator-k-planned-restart](multitenancy-decisions.md#evaluator-k-planned-restart) — K changes by planned restart with headroom; no logical-shard map, live K change or hash change.
 - [prerelease-schema-in-place](multitenancy-decisions.md#prerelease-schema-in-place) — No operator databases yet: multitenant schema and migrations change in place; two-step migrations start at the first operator release.
 - [platform-application-boundary](multitenancy-decisions.md#platform-application-boundary) — Application assumes a verified platform and fails closed; it never re-verifies the platform while serving.
 - [brittle-check-removal](multitenancy-decisions.md#brittle-check-removal) — Checks that refuse for anything other than a product property are removed; run identity is image digest plus run configuration.
@@ -78,6 +80,7 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [lane-failure-recover-in-place](multitenancy-decisions.md#lane-failure-recover-in-place) — A failed session lane is replaced in place, never hiding an uncertain completion.
 - [compose-restart-on-failure](multitenancy-decisions.md#compose-restart-on-failure) — Compose production default is `restart: on-failure`; tests may disable restart.
 - [pg-connection-budget](multitenancy-decisions.md#pg-connection-budget) — Deploy sizes `max_connections` from the declared per-role connection budget.
+- [pg-connection-pooler-allowed](multitenancy-decisions.md#pg-connection-pooler-allowed) — PgBouncer and/or a larger `max_connections` meet the budget as K grows; check session state before transaction pooling.
 
 ### Deployment repository and Kubernetes
 
@@ -224,6 +227,8 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [capacity-test-tiers](multitenancy-decisions.md#capacity-test-tiers) — Smoke, discovery and acceptance tiers with a target ladder (narrowed by [cluster-fan-out-testing](multitenancy-decisions.md#cluster-fan-out-testing): environments).
 - [outcome-evaluator-gate](multitenancy-decisions.md#outcome-evaluator-gate) — The evaluator gate judges outcomes against the 120 s clinical deadline; typed transient retries are counted.
 - [deadline-from-acceptance](multitenancy-decisions.md#deadline-from-acceptance) — The clinical deadline runs from acceptance; catch-up is per accepted input; no warm evidence in any gate.
+- [latency-objectives](multitenancy-decisions.md#latency-objectives) — p95 within 30 s at expected load is the planning objective; about 1 s the stretch; 120 s the clinical gate under overload.
+- [plannable-scale-campaign](multitenancy-decisions.md#plannable-scale-campaign) — One candidate, concurrent workstreams, end-state tested first, work backward from failing signals; $40, teardown 09:00 PST 2026-11-22.
 - [preload-is-a-signal](multitenancy-decisions.md#preload-is-a-signal) — Whole-roster preload convergence is a signal; traffic starts when roles are ready.
 - [m7-envelope-measured-not-declared](multitenancy-decisions.md#m7-envelope-measured-not-declared) — Operating limits come from measurement (narrowed by [operable-architecture-first](multitenancy-decisions.md#operable-architecture-first)).
 - [local-10k-release](multitenancy-decisions.md#local-10k-release) — Run the local 10,000-tenant realistic-mix point now on the a72 reference.
