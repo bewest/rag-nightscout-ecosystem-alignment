@@ -74,7 +74,7 @@ class OrdinaryBounded(unittest.TestCase):
             def stage(directory,name,args):
                 self.assertTrue((directory/'execution.json').exists())
                 events.append(name)
-            source=Path(tmp)/'config.json';a.write(source,{'workSeconds':1500})
+            source=Path(tmp)/'config.json';a.write(source,{'workSeconds':1500,'prepare':{}})
             with patch.object(runner,'validate_config',return_value=({'workSeconds':1500},[])),patch.object(runner,'preflight_receipt'),patch.object(runner,'arm_window',side_effect=arm),patch.object(runner,'stage',side_effect=stage):
                 runner.prepare(source,root)
             # Source/plan admission now runs before seeding for ordinary runners too.
