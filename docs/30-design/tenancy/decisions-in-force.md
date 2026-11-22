@@ -228,7 +228,7 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [outcome-evaluator-gate](multitenancy-decisions.md#outcome-evaluator-gate) — The evaluator gate judges outcomes against the 120 s clinical deadline; typed transient retries are counted.
 - [deadline-from-acceptance](multitenancy-decisions.md#deadline-from-acceptance) — The clinical deadline runs from acceptance; catch-up is per accepted input; no warm evidence in any gate.
 - [latency-objectives](multitenancy-decisions.md#latency-objectives) — p95 within 30 s at expected load is the planning objective; about 1 s the stretch; 120 s the clinical gate under overload.
-- [plannable-scale-campaign](multitenancy-decisions.md#plannable-scale-campaign) — One candidate, concurrent workstreams, end-state tested first, work backward from failing signals; $40, teardown 09:00 PST 2026-11-22.
+- [plannable-scale-campaign](multitenancy-decisions.md#plannable-scale-campaign) — Baseline end state first on the looping-shape fixture, latency fixes as predicted hypotheses A/B tested only where the baseline binds; $40, teardown 09:00 PST 2026-11-22.
 - [preload-is-a-signal](multitenancy-decisions.md#preload-is-a-signal) — Whole-roster preload convergence is a signal; traffic starts when roles are ready.
 - [m7-envelope-measured-not-declared](multitenancy-decisions.md#m7-envelope-measured-not-declared) — Operating limits come from measurement (narrowed by [operable-architecture-first](multitenancy-decisions.md#operable-architecture-first)).
 - [local-10k-release](multitenancy-decisions.md#local-10k-release) — Run the local 10,000-tenant realistic-mix point now on the a72 reference.
