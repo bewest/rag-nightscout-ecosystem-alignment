@@ -387,8 +387,8 @@ def latency_observation(settings, c, *, load=True):
     if not load or c.get('tier', 'discovery') != 'discovery':
         return 'polling-sql-v1'
     import progress_sql
-    durable = progress_sql.durable_lag(c.get('completion')) is not None
-    return settings.get('latencyObservation', 'offline-v1' if durable else 'polling-sql-v1')
+    offline = c.get('tier') == 'discovery' or progress_sql.durable_lag(c.get('completion')) is not None
+    return settings.get('latencyObservation', 'offline-v1' if offline else 'polling-sql-v1')
 
 
 def offline_latency_oracle(out, runid, mode='offline-v1'):

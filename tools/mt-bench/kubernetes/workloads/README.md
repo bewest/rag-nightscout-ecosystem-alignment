@@ -110,9 +110,11 @@ retain their own SQL receipts.
 For a matched control, change only `latencyObservation` to
 `offline-with-witness-sql-v1`. This enables the sparse probe SQL while using
 the same offered traffic, frame ledger and drain. `polling-sql-v1` enables both
-live observers. Discovery defaults to offline observation on a durable-M1
-image and polling on older images. Smoke and acceptance tiers use polling,
-and commission and recovery stages always retain their clinical probe.
+live observers. An explicit discovery tier defaults to offline observation on
+every image. Missing evaluator timing evidence leaves the deadline unmeasured.
+Legacy loads without a tier or observation setting default to offline on
+durable-M1 images and polling on older images. Smoke and acceptance tiers use
+polling, and commission and recovery stages always retain their clinical probe.
 
 Workload profiles carry no resource envelope. Kubernetes requests come from the
 render; the scheduler decides placement (decisions `generous-run-resources`,
