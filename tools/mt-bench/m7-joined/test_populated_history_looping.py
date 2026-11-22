@@ -163,6 +163,12 @@ class Looping(unittest.TestCase):
     def test_devicestatus_is_loop_sized(self):
         self.check_devicestatus_is_loop_sized()
 
+    def test_red_devicestatus(self):
+        # the 2-day mode's small status in place of full loop documents
+        small = lambda t, i, iso, enacted: dict(h.devicestatus_4w(t.anchor, t.ordinal, 1, L.DEVICE)[0],
+                                                device=L.DS_PREFIX[t.kind] + L.DEVICE, created_at=iso)
+        self.red(self.check_devicestatus_is_loop_sized, ('_loop', small), ('_oref', small))
+
     def check_cgm_only_fraction(self):
         for n, pct, cgm in ((10, 20, 2), (1000, 20, 200), (7, 50, 4), (10, 0, 0), (10, 100, 10)):
             spec = L.default_spec(self.anchor, cgmOnlyPercent=pct)

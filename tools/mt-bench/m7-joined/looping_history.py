@@ -453,11 +453,18 @@ def request_rate(spec, tenants=1000, sample=12):
     w = dict(w_sgv=tenants / 300, w_devicestatus=looping / 300,
              w_treatments=(looping * tx_loop + cgm * tx_cgm) / 86400)
     r = {k: v * tenants for k, v in READS_PER_TENANT_S.items()}
+    # JSON bytes per devicestatus document, averaged over the three controller kinds (equal shares)
+    per_kind = [bytes_per_tenant(spec, 'looping', next(i for i in range(10_000) if kind(spec, i) == k)) for k in KINDS]
+    ds_doc = sum(s['devicestatus'] for s in per_kind) / len(per_kind) / (DAYS * CYCLES_PER_DAY)
     return dict(tenants=tenants, looping=looping, cgmOnly=cgm,
                 treatmentPostCyclesPerDay={'looping': round(tx_loop, 2), 'cgm-only': tx_cgm},
+                treatmentsPerDay={'looping': LOOPING_TREATMENTS_PER_DAY, 'cgm-only': CGM_ONLY_TREATMENTS_PER_DAY},
                 writesPerSecond={k: round(v, 3) for k, v in w.items()}, readsPerSecond={k: round(v, 3) for k, v in r.items()},
                 writes=round(sum(w.values()), 3), reads=round(sum(r.values()), 3),
-                total=round(sum(w.values()) + sum(r.values()), 3))
+                total=round(sum(w.values()) + sum(r.values()), 3),
+                devicestatusJsonBytesPerDocument=round(ds_doc),
+                devicestatusJsonBytesPerSecond=round(w['w_devicestatus'] * ds_doc),
+                basis='read-derived: generator counts x cadence; reads are realistic-v1 follower polls')
 
 
 def describe(spec, tenants=1000):
