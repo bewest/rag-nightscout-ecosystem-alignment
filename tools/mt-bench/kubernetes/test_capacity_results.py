@@ -5,6 +5,7 @@ import tempfile
 import unittest
 
 import capacity_results as results
+import coverage_verdict
 from test_durable_m1 import A, B, C, bookend, run_rows, seeded
 
 
@@ -68,6 +69,30 @@ class CapacityPublication(unittest.TestCase):
         (self.root / 'observer' / 'viewer-frames.jsonl').write_text('')
         with self.assertRaisesRegex(ValueError, 'differs from its receipt'):
             results.rescore(self.root)
+
+    def test_storage_refusals_read_the_named_retained_load_stage_only(self):
+        results.publish(self.load, self.root)
+        self.assertEqual(results.rescore(self.root)['storageRefusals']['verdict'], 'UNMEASURED')
+        retained = self.load.parent / 'retained-load'
+        retained.mkdir()
+        write(retained / 'window.json', {'loadStartedAt': 1000, 'loadEndedAt': 1600})
+        write(retained / 'metrics-snapshot.json', {'verdict': 'OBSERVED', 'file': 'metrics-tsdb.tar', 'observedAt': 1660})
+        labels = {'pod': 'api-a', 'role': 'api', 'code': 'STORAGE_TIMEOUT', 'phase': 'clock', 'route_class': 'entries_write'}
+        seen = []
+
+        class Local:
+            def __init__(self, archive):
+                seen.append(archive)
+
+            def query(self, expr, at):
+                return [{'labels': labels, 'value': 0 if at == 1000 else 4}] if not expr.startswith('resets(') else []
+
+            def close(self):
+                seen.append('closed')
+        value = coverage_verdict.refusals_from_load(retained, local=Local)
+        self.assertEqual((value['verdict'], value['byCode']['STORAGE_TIMEOUT'], value['startS'], value['endS']),
+                         ('OBSERVED', 4, 1000, 1660))
+        self.assertEqual(seen, [retained / 'metrics-tsdb.tar', 'closed'])
 
     def test_lost_viewer_and_tenant_do_not_score_green(self):
         write(self.load / 'probe-exit.json', {'code': 'K8S_PROBE_FAILED'})
