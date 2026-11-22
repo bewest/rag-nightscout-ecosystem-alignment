@@ -636,11 +636,11 @@ def execute(d, c, objects, client, load=False, recovery=False):
             ordinary = jwt_tenants.attach(ordinary, c['baseUrl'], settings.get('jwtSetupConcurrency', 1),
                                          deadline=min(time.time()+setup, work_until),
                                          covers_until=int(time.time()) + settings['loadSeconds'] + settings.get('drainSeconds', 0) + 600)
-            if settings.get('driverShape') == 'looping-v1':
-                # The seed's own roles (looping_history.roles over the provisioned roster in host order).
+            if settings.get('driverShape') in ('looping-v1', 'looping-v2'):
+                # The seed's own roles (looping_history.roles over the provisioned roster in host order; v2 the same).
                 import looping_driver
-                import looping_history
-                k.need(c.get('history', {}).get('mode') == looping_history.MODE, 'DRIVER_SHAPE_REQUIRES_LOOPING_FIXTURE')
+                import populated_history
+                k.need(c.get('history', {}).get('mode') in populated_history.LOOPING_MODES, 'DRIVER_SHAPE_REQUIRES_LOOPING_FIXTURE')
                 ordinary = looping_driver.annotate(c['history'], tenants, ordinary)
             env['TENANTS_FILE'] = str(jwt_tenants.write(out / 'k6-tenants.private.json', ordinary))
             load_process_started = time.time()

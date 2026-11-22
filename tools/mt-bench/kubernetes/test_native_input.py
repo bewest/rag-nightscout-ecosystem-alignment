@@ -92,13 +92,22 @@ class NativeInput(unittest.TestCase):
 
     def test_looping_roles_survive_private_delivery_and_bind_the_roster_digest(self):
         import looping_history
+        import looping_history_v2
+        import looping_driver
+        for shape, spec in (('looping-v1', looping_history.default_spec(1_763_683_200_000)),
+                            ('looping-v2', looping_history_v2.default_spec(1_763_683_200_000))):
+            with self.subTest(shape=shape):
+                self.check_looping_delivery(shape, spec)
+
+    def check_looping_delivery(self, shape, spec):
         import looping_driver
         c, job, options, rows = self.package(10)
-        c['history'] = looping_history.default_spec(1_763_683_200_000)
+        c['history'] = spec
         del c['workload']['offeredRps']
-        c['workload'].update(workloadMix='realistic-v1', driverShape='looping-v1')
+        c['workload'].update(workloadMix='realistic-v1', driverShape=shape)
         rows = looping_driver.annotate(c['history'], rows, rows)
         _, _, receipt = load.package(c, job, SCRIPT, rows, input_codec=codec.PRIVATE, **options)
+        self.assertEqual(receipt['inputTransport']['driverShape'], shape)
         with tempfile.TemporaryDirectory() as area:
             root = Path(area)
             seed = {row['id']: row['host'] for row in rows}

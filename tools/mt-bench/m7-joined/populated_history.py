@@ -30,25 +30,29 @@ def require(ok, code):
         raise ValueError('M7_HISTORY_' + code)
 
 
-def _looping():
-    import looping_history  # imports this module; loaded on first use
+def _looping(mode=None):
+    """The looping generator for a mode: v1 (looping_history) or v2 (looping_history_v2); loaded on first use."""
+    if mode == MODE_LOOPING_V2:
+        import looping_history_v2
+        return looping_history_v2
+    import looping_history  # imports this module
     return looping_history
 
 
 def is_looping(spec):
-    return isinstance(spec, dict) and spec.get('mode') == MODE_LOOPING
+    return isinstance(spec, dict) and spec.get('mode') in LOOPING_MODES
 
 
 def default_spec(mode, anchor):
-    """The spec a mode name and anchor stand for (the looping mode fills its seeded defaults)."""
-    return _looping().default_spec(anchor) if mode == MODE_LOOPING else dict(mode=mode, anchorUnixMs=anchor)
+    """The spec a mode name and anchor stand for (the looping modes fill their seeded defaults)."""
+    return _looping(mode).default_spec(anchor) if mode in LOOPING_MODES else dict(mode=mode, anchorUnixMs=anchor)
 
 
 def validate(spec):
     if spec == BASELINE and type(spec['additionalSeedRows']) is int:
         return
     if is_looping(spec):
-        return _looping().validate(spec)
+        return _looping(spec['mode']).validate(spec)
     require(isinstance(spec, dict) and set(spec) == {'mode', 'anchorUnixMs'} and spec['mode'] in (MODE,) + tuple(SHAPES),
             'UNSUPPORTED')
     anchor = spec['anchorUnixMs']
@@ -60,7 +64,7 @@ def validate(spec):
 def rows_per_tenant(spec):
     """Stored rows per tenant by collection for a populated-history spec (looping: a looping tenant)."""
     if is_looping(spec):
-        return _looping().rows_per_tenant(spec)
+        return _looping(spec['mode']).rows_per_tenant(spec)
     if spec.get('mode') in SHAPES:
         days = SHAPES[spec['mode']][0]
         return dict(entries=days*288, devicestatus=days*288, treatments=days*TREATMENTS_PER_DAY, profile=1)
@@ -145,7 +149,7 @@ def post(port, tenant, rows, until, path='/api/v1/entries'):
 def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=post, now=time.time):
     validate(spec)
     if is_looping(spec):
-        return _looping().run(spec, tenants, base, sql, until, window_seconds, verify_only=verify_only,
+        return _looping(spec['mode']).run(spec, tenants, base, sql, until, window_seconds, verify_only=verify_only,
                               post_batch=post_batch, now=now)
     if spec != BASELINE and spec['mode'] in SHAPES:
         return run_4w(spec, tenants, base, sql, until, window_seconds, verify_only=verify_only,
@@ -253,6 +257,9 @@ SHAPES = {MODE_4W: (DAYS_4W, DEVICE_4W), MODE_2D: (DAYS_2D, DEVICE_2D)}  # mode 
 # synthetic-history-looping-2d-v1 (looping_history.py): a closed-loop population over the same 2-day
 # window, seeded, with CGM-only and deep-history tenants. Its own marker and fixture-catalog key.
 MODE_LOOPING = 'synthetic-history-looping-2d-v1'
+# synthetic-history-looping-2d-v2 (looping_history_v2.py): sized per controller from the AID client model.
+MODE_LOOPING_V2 = 'synthetic-history-looping-2d-v2'
+LOOPING_MODES = (MODE_LOOPING, MODE_LOOPING_V2)
 
 
 def seed_limits(environ=os.environ):

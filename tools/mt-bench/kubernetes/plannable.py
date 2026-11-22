@@ -42,6 +42,11 @@ UUID = re.compile('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 HISTORY_MODE = re.compile('synthetic-history-[a-z0-9-]{1,48}-v[0-9]{1,3}')
 # E1's fixture key (BRIEF-mt-plannable-scale-20261121, row E1); a parameter, not a dependency.
 LOOPING_2D = 'synthetic-history-looping-2d-v1'
+# The AID client model's history (m7-joined/looping_history_v2.py): its own key; v1 stays the default seed.
+LOOPING_2D_V2 = 'synthetic-history-looping-2d-v2'
+LOOPING_MODES = (LOOPING_2D, LOOPING_2D_V2)
+# The live writes on a looping fixture: looping-v2 (AID client model D1-D5) unless a profile asks for v1.
+LOOPING_DRIVER_SHAPE = 'looping-v2'
 # Current fit at the 2-day fixture (execution log 2026-11-21, P1); refit on E1 with --base-mib/--per-resident-mib.
 EVALUATOR_MEMORY = {'baseMiB': 195, 'perResidentMiB': 1.85}
 # A gauge core does not export at 80972e7ae: residents.size per slice (evaluator-runtime.js:172).
@@ -81,7 +86,8 @@ def point(k, *, api_replicas=2, pools=None, evaluator_memory=None, lab_metrics=T
     return value
 
 
-def profile(base, *, tenants, history_mode=LOOPING_2D, anchor_ms=None, name=None, work_seconds=None):
+def profile(base, *, tenants, history_mode=LOOPING_2D, anchor_ms=None, name=None, work_seconds=None,
+            driver_shape=LOOPING_DRIVER_SHAPE):
     """A profile for TENANTS on HISTORY_MODE, from BASE (an existing workload profile document)."""
     need(type(tenants) is int and 1 <= tenants <= 20000, 'TENANTS')
     need(isinstance(history_mode, str) and HISTORY_MODE.fullmatch(history_mode), 'HISTORY_MODE')
@@ -93,9 +99,11 @@ def profile(base, *, tenants, history_mode=LOOPING_2D, anchor_ms=None, name=None
         need(type(anchor_ms) is int and anchor_ms > 0, 'ANCHOR')
         history['anchorUnixMs'] = anchor_ms
     value['history'] = history
-    # E3: on the looping fixture the live writes take its shape (m7-joined/looping_driver.py).
-    if history_mode == LOOPING_2D and value.get('workload', {}).get('workloadMix') == 'realistic-v1':
-        value['workload']['driverShape'] = 'looping-v1'
+    # E3: on a looping fixture the live writes take a looping shape (m7-joined/looping_driver.py);
+    # looping-v2 (the AID client model) by default, looping-v1 on request.
+    need(driver_shape in ('looping-v1', 'looping-v2'), 'DRIVER_SHAPE')
+    if history_mode in LOOPING_MODES and value.get('workload', {}).get('workloadMix') == 'realistic-v1':
+        value['workload']['driverShape'] = driver_shape
     value['name'] = name or 'n%d-%s' % (tenants, history_mode.removeprefix('synthetic-history-'))
     if work_seconds is not None:
         value['phases']['workSeconds'] = work_seconds
@@ -107,7 +115,7 @@ def known_history(mode):
     """Whether the harness's history generator knows MODE yet (E1 adds the looping mode)."""
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'m7-joined'))
     import populated_history
-    return mode in getattr(populated_history, 'SHAPES', {})
+    return mode in getattr(populated_history, 'SHAPES', {}) or mode in getattr(populated_history, 'LOOPING_MODES', ())
 
 
 def rendered_slices(inventory, role):
@@ -266,6 +274,7 @@ def main(argv=None):
     p.add_argument('--anchor-ms', type=int)
     p.add_argument('--name')
     p.add_argument('--work-seconds', type=int)
+    p.add_argument('--driver-shape', default=LOOPING_DRIVER_SHAPE, choices=('looping-v1', 'looping-v2'))
     p = sub.add_parser('ownership', help='slice ownership of a roster under a rendered inventory')
     p.add_argument('inventory', type=Path)
     p.add_argument('roster', type=Path, help='JSON list of tenant ids, or {"tenants": [...]} ')
@@ -278,7 +287,7 @@ def main(argv=None):
         out = point(a.k, api_replicas=a.api_replicas, pools=a.pools, evaluator_memory=memory)
     elif a.command == 'profile':
         out = profile(json.loads(a.base.read_text()), tenants=a.tenants, history_mode=a.history_mode,
-                      anchor_ms=a.anchor_ms, name=a.name, work_seconds=a.work_seconds)
+                      anchor_ms=a.anchor_ms, name=a.name, work_seconds=a.work_seconds, driver_shape=a.driver_shape)
         if not known_history(a.history_mode):
             print('warning: history mode %s is not in populated_history.SHAPES yet (E1 pending)' % a.history_mode, file=sys.stderr)
     elif a.command == 'ownership':

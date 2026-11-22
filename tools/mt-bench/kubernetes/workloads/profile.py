@@ -48,8 +48,8 @@ def validate(p, *, require_pins=True):
     need(workload_runtime.workload_inputs.tenants(n) and n >= 2, 'TENANTS')
     ordinary = workload_runtime.ordinary_count(n, p['population']['ordinaryRosterTenants'], need)
     workload_runtime.validate(w, need, ordinary)
-    if w.get('driverShape') == 'looping-v1':
-        need(p['history'].get('mode') == history.MODE_LOOPING and n == ordinary,
+    if w.get('driverShape') in ('looping-v1', 'looping-v2'):
+        need(p['history'].get('mode') in history.LOOPING_MODES and n == ordinary,
              'LOOPING_OFFER_REQUIRES_FULL_FIXTURE_ROSTER')
     need(workload_runtime.workload_inputs.tenants(p['population']['hotFactor']) and
          p['population']['hotFactor'] == w.get('hotFactor', 1),
