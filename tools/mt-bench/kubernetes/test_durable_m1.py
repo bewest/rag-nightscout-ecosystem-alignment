@@ -192,7 +192,16 @@ class Observer(unittest.TestCase):
         durable = {'completion': {'durableLag': {'boundsMs': BOUNDS}}}
         self.assertEqual(execute.latency_observation({}, durable), 'offline-v1')
         self.assertEqual(execute.latency_observation({'latencyObservation': 'polling-sql-v1'}, durable), 'polling-sql-v1')
-        self.assertEqual(execute.latency_observation({}, {'completion': {}}), 'polling-sql-v1', 'older images keep the default')
+        self.assertEqual(execute.latency_observation({}, {'completion': {}}), 'polling-sql-v1', 'an unclassified legacy run')
+
+    def test_discovery_default_on_an_image_without_durable_m1(self):
+        import execute
+        old = {'tier': 'discovery', 'completion': {}}
+        self.assertEqual(execute.latency_observation({}, old), 'offline-v1')
+        self.assertEqual(execute.latency_observation({'latencyObservation': 'polling-sql-v1'}, old), 'polling-sql-v1')
+        self.assertEqual(execute.latency_observation({}, old, load=False), 'polling-sql-v1')
+        for tier in ('smoke', 'acceptance'):
+            self.assertEqual(execute.latency_observation({}, dict(old, tier=tier)), 'polling-sql-v1')
 
 
 class ImageReport(unittest.TestCase):

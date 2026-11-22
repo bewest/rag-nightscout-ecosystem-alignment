@@ -5,7 +5,12 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http
 (async()=>{
  const target=path.resolve(process.argv[2]),d=path.dirname(target),realRequire=createRequire(target),o=realRequire('./completed-oracle.cjs');
  const unavailable=process.argv[3]==='sql-unavailable';
- const writer=process.argv[3]==='writer-driven';
+ const capacity=['capacity-off','capacity-on'].includes(process.argv[3]);
+ const writer=capacity||process.argv[3]==='writer-driven';
+ const witnessSql=process.argv[3]==='capacity-off'?'off':'on';
+ const frameLedger=path.join(d,'frames-'+witnessSql+'.jsonl');
+ const drainDeadline=path.join(d,'control-drain-'+witnessSql);
+ let drainEndMs;
  const identity=['12345',1,'synthetic'];
  const ids=['11111111-1111-4111-8111-111111111111','22222222-2222-4222-8222-222222222222'];
  const tenants=ids.map((id,i)=>({id,host:(i?'b':'a')+'.example.test',token:'synthetic-'+i}));
@@ -22,6 +27,9 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http
    let body='';req.on('data',v=>body+=v);req.on('end',()=>{
      const doc={...JSON.parse(body)[0],_id:'synthetic-stored-'+(++ordinal)};if(writer)doc.srvModified=stored.get(tenant.id).length+1;stored.get(tenant.id).push(doc);res.end('{}');
      for(const socket of sockets.filter(s=>s.tenant===tenant.id))socket.deliver('dataUpdate',{sgvs:[{_id:doc._id,mills:doc.date,mgdl:doc.sgv}]});
+     if(capacity&&ordinal===2){
+       setTimeout(()=>sockets[0].deliver('dataUpdate',{sgvs:[{_id:'ordinary',device:'synthetic-pipeline',date:1234}]}),40);
+     }
    });
  });
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
@@ -47,17 +55,38 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),http
  fs.writeFileSync(path.join(d,'tenants.json'),JSON.stringify(tenants));
  const argv=['node',target,'--base','http://127.0.0.1:'+server.address().port,'--tenants',path.join(d,'tenants.json'),'--runid','synthetic-pipeline','--per','1','--clients','2','--viewerSetup',JSON.stringify({opensPerSecond:100,transport:'websocket-first',scenario:'ordinary',stallSeconds:3}),'--probeEvery','1','--maxWrites','2','--restart','0','--out',path.join(d,'probe.json'),'--signal',path.join(d,'.window')];
  const child={execFile(exe,args,opts,callback){assert.equal(exe,'synthetic-python');assert.equal(args[1],'clinical-sql');assert.equal(opts.timeout,60000);queries++;return {stdin:{end(query){assert(query.startsWith('SELECT '));if(writer&&query.includes('json_object_agg')){setImmediate(()=>callback(null,JSON.stringify({identity,tenants:Object.fromEntries(ids.map(id=>[id,['1','0']]))})));return;}if(unavailable){setImmediate(()=>callback(Object.assign(Error('observer unavailable'),{code:1}),'',''));return;}setImmediate(()=>callback(null,ids.filter(id=>query.includes("'"+id+"'")).map(row).filter(Boolean).map(r=>JSON.stringify(r)).join('\n')));}}};}};
+ if(capacity){
+   argv.push('--witnessSql',witnessSql,'--frameLedger',frameLedger,'--viewerDrainUntil',drainDeadline);
+   drainEndMs=Date.now()+450;
+   fs.writeFileSync(drainDeadline,String(drainEndMs));
+ }
  let watchdog;
  try{
    await new Promise((resolve,reject)=>{
      watchdog=setTimeout(()=>reject(Error('SYNTHETIC_PROBE_TIMEOUT')),10000);
      const fakeProcess={argv,hrtime:process.hrtime,env:{M7_RUN_PURPOSE:'discovery',M7_COMPLETION_SOURCE:JSON.stringify(config),K8S_PYTHON:'synthetic-python',K8S_ADAPTER:'synthetic-adapter',K8S_RUN_DIRECTORY:d},once(){},exit(code){code?reject(Error('GENERATED_PROBE_EXIT_'+code)):resolve();}};
      const require_=name=>name==='socket.io-client'?{io}:name==='node:child_process'?child:realRequire(name);
-     const context={require:require_,process:fakeProcess,console:{log(){},error:reject},__dirname:d,Buffer,URL,performance,setTimeout:(f,ms)=>setTimeout(f,Math.min(ms,10)),clearTimeout,setImmediate};
+     const context={require:require_,process:fakeProcess,console:{log(){},error:reject},__dirname:d,Buffer,URL,performance,setTimeout:(f,ms)=>setTimeout(f,capacity&&ms<1000?ms:Math.min(ms,10)),clearTimeout,setImmediate};
      vm.runInNewContext(fs.readFileSync(target,'utf8'),context,{filename:target});
    });
    const probe=JSON.parse(fs.readFileSync(path.join(d,'probe.json'))),ledger=JSON.parse(fs.readFileSync(path.join(d,'probe-accounting.json')));
    assert.deepEqual(probe.viewerSetup.initial,{connected:2,firstFrames:2,transports:{websocket:2}});
+   if(capacity){
+     assert.equal(probe.viewerDrainEndMs,drainEndMs);
+     const frames=fs.readFileSync(frameLedger,'utf8').trim().split('\n').map(row=>JSON.parse(row));
+     assert(frames.some(frame=>frame.keys.entries.includes(1234)));
+     assert(frames.every(frame=>frame.atMs<=drainEndMs));
+     assert.equal(ledger.attempts,2);assert.equal(probe.window.writes.ok,2);assert.equal(probe.window.deliveredFrames,2);
+     if(witnessSql==='off'){
+       assert.equal(queries,0);
+       assert.equal(probe.durableOutputObservation.collector.queries,0);
+       assert.equal(probe.durableOutputObservation.status,'NOT_COLLECTED');
+       assert.equal(probe.completedOutput,undefined);
+       assert.equal(probe.window.evaluationMissedWithin120s,null);
+       assert.equal(probe.window.writeToEvaluationMs,null);
+       return;
+     }
+   }
    if(process.argv[4]){
      fs.writeFileSync(process.argv[4],JSON.stringify({config,stored:Object.fromEntries([...stored].map(([id,docs])=>[id,{probe:docs.length}]))}));
    }

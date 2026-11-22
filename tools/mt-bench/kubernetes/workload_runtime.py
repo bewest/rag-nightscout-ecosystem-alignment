@@ -32,7 +32,8 @@ def validate(w, need, tenants=None):
     # fixture (v1) or the AID client model (v2).
     need('driverShape' not in w or (w['driverShape'] in ('looping-v1', 'looping-v2') and w.get('workloadMix') == REALISTIC_MIX
          and w.get('driverShards', 1) == 1), 'WORKLOAD_DRIVER_SHAPE')
-    need(w.get('latencyObservation', 'polling-sql-v1') in ('polling-sql-v1', 'offline-v1'), 'WORKLOAD_LATENCY_OBSERVATION')
+    need(w.get('latencyObservation', 'polling-sql-v1') in
+         ('polling-sql-v1', 'offline-v1', 'offline-with-witness-sql-v1'), 'WORKLOAD_LATENCY_OBSERVATION')
     viewer_plan.setup(w, need)
     need(workload_inputs.seconds(w.get('loadSeconds')), 'WORKLOAD_LOAD_SECONDS')
     need(workload_inputs.polling_clients(w.get('logicalPollingClients')), 'WORKLOAD_VIEWERS')
