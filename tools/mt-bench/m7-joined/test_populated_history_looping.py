@@ -170,6 +170,38 @@ class Looping(unittest.TestCase):
                                                 device=L.DS_PREFIX[t.kind] + L.DEVICE, created_at=iso)
         self.red(self.check_devicestatus_is_loop_sized, ('_loop', small), ('_oref', small))
 
+    def check_representable(self):
+        """The PostgreSQL storage refuses -0, non-finite numbers and keys with '.', '$', NUL or empty
+        (lib/storage/postgres-entries-write.js jsonValue/fields); a v1 batch holding one is answered 400."""
+        import math
+        bad = []
+        def walk(x, path):
+            if isinstance(x, float) and (not math.isfinite(x) or (x == 0 and math.copysign(1, x) < 0)):
+                bad.append(path)
+            elif isinstance(x, dict):
+                for k, v in x.items():
+                    if not k or any(c in k for c in '.$\0'):
+                        bad.append(path + '.' + k)
+                    walk(v, path + '.' + k)
+            elif isinstance(x, list):
+                for v in x:
+                    walk(v, path + '[]')
+        spec = L.default_spec(1795308000000)
+        roles = L.roles(spec, 40)
+        for i in range(40):
+            for name, rows in docs(L.Tenant(spec, i, roles[i])).items():
+                for d in rows:
+                    walk(d, name)
+        self.assertEqual(sorted(set(bad)), [])
+
+    def test_documents_representable_by_postgres_storage(self):
+        self.check_representable()
+
+    def test_red_representable(self):
+        # the generator before the fix: plain round() keeps -0.0
+        self.red(self.check_representable, ('_r1', lambda x: round(x, 1)), ('_r2', lambda x: round(x, 2)),
+                 ('_r4', lambda x: round(x, 4)))
+
     def check_cgm_only_fraction(self):
         for n, pct, cgm in ((10, 20, 2), (1000, 20, 200), (7, 50, 4), (10, 0, 0), (10, 100, 10)):
             spec = L.default_spec(self.anchor, cgmOnlyPercent=pct)

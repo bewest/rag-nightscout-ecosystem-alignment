@@ -123,12 +123,19 @@ def profile_revisions(days):
 
 # ------------------------------------------------------------------ timeline (cheap, no documents)
 
+# `+ 0.0` turns a rounded -0.0 into 0.0: the PostgreSQL storage refuses -0 in a document
+# (lib/storage/postgres-entries-write.js jsonValue: Object.is(value, -0)), answering v1 POST 400
+# "Document cannot be represented by this storage".
 def _r1(x):
-    return round(x, 1)
+    return round(x, 1) + 0.0
 
 
 def _r2(x):
-    return round(x, 2)
+    return round(x, 2) + 0.0
+
+
+def _r4(x):
+    return round(x, 4) + 0.0
 
 
 class Tenant:
@@ -294,10 +301,10 @@ def _oref(t, i, iso, enacted):
         'threshold': 70, 'minDelta': _r1((bg - t.sgv[max(0, i - 3)]) / 3), 'expectedDelta': _r1(-iob * 2.1),
         'reservoir': t.reservoir[i], 'insulinForManualBolus': 0.0, 'manualBolusErrorString': 0}
     iob_doc = {'iob': iob, 'basaliob': _r2(iob / 3), 'bolusiob': _r2(iob * 2 / 3), 'netbasalinsulin': _r2(iob / 4),
-               'bolusinsulin': _r2(iob * 1.5), 'activity': round(iob / 100, 4), 'time': iso,
+               'bolusinsulin': _r2(iob * 1.5), 'activity': _r4(iob / 100), 'time': iso,
                'iobWithZeroTemp': {'iob': _r2(iob - 0.1), 'basaliob': _r2(iob / 3 - 0.1), 'bolusiob': _r2(iob * 2 / 3),
                                    'netbasalinsulin': _r2(iob / 4), 'bolusinsulin': _r2(iob * 1.5),
-                                   'activity': round(iob / 100, 4), 'time': iso},
+                                   'activity': _r4(iob / 100), 'time': iso},
                'lastTemp': {'date': t.stamp(i) - STEP_MS * (i % 6), 'duration': 30.0, 'rate': rate}}
     openaps = {'version': '0.7.1', 'iob': iob_doc, 'suggested': suggested}
     if enacted:
