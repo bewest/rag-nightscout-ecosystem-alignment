@@ -715,7 +715,7 @@ def prepare_history(output, d, config, until, *, verify_only=False, after=False)
         database = a.application_database(d)
         def read(query):
             return a.psql(d, 'BEGIN READ ONLY;\n'+query+'\nROLLBACK;', database,
-                          timeout=history.remaining(until, 120))
+                          timeout=history.remaining(until, history.readback_seconds()))
         if spec == history.BASELINE:
             history.require(not history.census(read, int(time.time()*1000), 0), 'SNAPSHOT_MISMATCH')
             return

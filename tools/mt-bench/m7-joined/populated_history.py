@@ -266,6 +266,15 @@ MODE_LOOPING_V2 = 'synthetic-history-looping-2d-v2'
 LOOPING_MODES = (MODE_LOOPING, MODE_LOOPING_V2)
 
 
+def readback_seconds(environ=os.environ):
+    """Bound on one readback statement (S4_HISTORY_READBACK_SECONDS, default 120). The census reads every
+    seeded row: at 10k tenants of v2 its devicestatus statement took 117 s on a quiet workstation and
+    went over 120 s under load, failing a finished seed."""
+    value = int(environ.get('S4_HISTORY_READBACK_SECONDS', 120))
+    require(10 <= value <= 7200, 'READBACK_SECONDS')
+    return value
+
+
 def seed_limits(environ=os.environ):
     """Seed concurrency and rows per request. Operator knobs for a write path that times out under load;
     they change how rows are sent, never which rows, so they are not part of the fixture key."""
