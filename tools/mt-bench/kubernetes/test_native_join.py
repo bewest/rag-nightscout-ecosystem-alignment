@@ -422,5 +422,23 @@ class NativeJoin(unittest.TestCase):
         selected['tolerations'] = [{'key':'dedicated','value':'nightscout','operator':'Equal','effect':'NoSchedule'}]
         self.assertEqual(j.base_job(c)['spec']['template']['spec']['tolerations'],selected['tolerations'])
 
+    def test_pool_selector_places_the_load_job_on_the_pool_only(self):
+        c, inventory, render, client = fixture()
+        selected = c['nativeLoad']
+        selected.pop('nodeName')
+        selected['nodeSelector'] = {'doks.digitalocean.com/node-pool': 'plancurve-c16'}
+        spec = j.base_job(c)['spec']['template']['spec']
+        self.assertEqual(spec['nodeSelector'], {'doks.digitalocean.com/node-pool': 'plancurve-c16'})
+        self.assertNotIn('nodeName', spec)
+        for bad in ({'kubernetes.io/hostname': 'n1'}, {'doks.digitalocean.com/node-pool': 'Bad Pool'},
+                    {'doks.digitalocean.com/node-pool': 'a', 'x': 'y'}):
+            selected['nodeSelector'] = bad
+            with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_PLACEMENT'):
+                j.base_job(c)
+        selected['nodeSelector'] = {'doks.digitalocean.com/node-pool': 'plancurve-c16'}
+        selected['nodeName'] = 'n1'
+        with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_PLACEMENT'):
+            j.base_job(c)
+
 
 if __name__=='__main__':unittest.main()

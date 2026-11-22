@@ -42,19 +42,26 @@ class Slices(unittest.TestCase):
 
 
 class Point(unittest.TestCase):
-    def test_one_k_sets_both_roles_two_api_and_the_memory_constants(self):
-        for k in range(1, 9):
+    def test_one_k_sets_both_roles_two_api_and_leaves_memory_to_the_binding(self):
+        for k in range(1, 33):
             v = p.point(k)
-            self.assertEqual(v['slices'], {'evaluator': k, 'realtime': k})
+            self.assertEqual(v['slices'], {'evaluator': k, 'realtime': min(k, 8)})
             self.assertEqual(v['apiReplicas'], 2)
-            self.assertEqual(v['evaluatorMemory'], {'baseMiB': 195, 'perResidentMiB': 1.85})
+            self.assertNotIn('evaluatorMemory', v, 'the binding default model applies')
             self.assertTrue(v['labMetrics']['enabled'])
-        self.assertEqual(p.point(8, evaluator_memory={'perResidentMiB': 1.2})['evaluatorMemory'], {'baseMiB': 195, 'perResidentMiB': 1.2})
+        self.assertEqual(p.point(20, realtime_k=4)['slices'], {'evaluator': 20, 'realtime': 4})
+        self.assertEqual(p.point(8, evaluator_memory={'perResidentMiB': 1.2})['evaluatorMemory'], {'perResidentMiB': 1.2})
+        for bad in ({'baseMiB': 0}, {'perResidentMiB': -1}, {'other': 1}):
+            with self.assertRaises(p.Refused):
+                p.point(8, evaluator_memory=bad)
 
-    def test_k_outside_1_to_8_refuses(self):
-        for k in (0, 9, 2.0, '4'):
+    def test_k_outside_1_to_32_refuses_and_realtime_keeps_1_to_8(self):
+        for k in (0, 33, 2.0, '4'):
             with self.assertRaises(p.Refused):
                 p.point(k)
+        for realtime_k in (0, 9, 20):
+            with self.assertRaises(p.Refused):
+                p.point(20, realtime_k=realtime_k)
         with self.assertRaises(p.Refused):
             p.point(2, pools={'receiver': 2})
 
@@ -172,6 +179,15 @@ class Rendered(unittest.TestCase):
             self.assertEqual(out.returncode, 0, out.stderr)
             return json.loads(out.stdout)['inventory']['i']
 
+    def test_k_20_renders_with_realtime_8_and_the_binding_memory_model(self):
+        inv = self.render({**p.point(20), 'tenantCount': 10000})
+        self.assertEqual(inv['slices'], {'evaluator': 20, 'realtime': 8})
+        ev = inv['connectionBudget']['evaluator']
+        self.assertEqual((ev['residentMax'], ev['memoryRequestMiB'], ev['heapMiB']), (599, 3519, 5279))
+        own = p.ownership(roster(10000), inv)
+        self.assertEqual(sum(own['evaluator']['perOrdinal']), 10000)
+        self.assertLessEqual(max(own['evaluator']['perOrdinal']), 599)
+
     def test_k_1_2_4_8_budget_memory_and_ownership(self):
         ids = roster(10000)
         expected = {1: 205, 2: 248, 4: 334, 8: 506}
@@ -180,9 +196,10 @@ class Rendered(unittest.TestCase):
             self.assertEqual(inv['connectionBudget']['budget'], expected[k])
             self.assertEqual(inv['connectionBudget']['maxConnections'], expected[k])
             ev = inv['connectionBudget']['evaluator']
-            self.assertEqual(ev['residentMax'], -(-10000 // k))
-            self.assertEqual(ev['memoryRequestMiB'], int(-(-(195 + 1.85 * ev['residentMax']) // 1)))
+            self.assertGreaterEqual(ev['residentMax'], -(-10000 // k))
+            self.assertEqual(ev['memoryRequestMiB'], int(-(-(1745 + 2.96 * ev['residentMax']) // 1)))
             container = next(c for c in inv['workloads']['evaluator']['containers'] if c['name'] == 'evaluator')
+            self.assertEqual(container['command'][1], '--max-old-space-size=%d' % ev['heapMiB'])
             self.assertEqual(container['resources']['requests']['memory'], '%dMi' % ev['memoryRequestMiB'])
             self.assertNotIn('limits', container['resources'])
             own = p.ownership(ids, inv)

@@ -1000,7 +1000,7 @@ def restart(d, c, objects, client, role):
     pod, container = k.selected_pod(c, before, role)
     # The main source-owned Node role must be PID1. Refuse a changed entrypoint;
     # never select a process by substring or kill the whole cohort Pod.
-    script = "const fs=require('fs');const a=fs.readFileSync('/proc/1/cmdline','utf8').split('\\0').filter(Boolean);if(a.length!==3||!a[1].endsWith('deploy/multitenant/entrypoint.js')||a[2]!==process.argv[1])throw Error('K8S_ROLE_PID1_MISMATCH');process.kill(1,'SIGTERM');"
+    script = "const fs=require('fs');const a=fs.readFileSync('/proc/1/cmdline','utf8').split('\\0').filter(Boolean);if(a.length===4&&/^--max-old-space-size=[1-9][0-9]*$/.test(a[1]))a.splice(1,1);if(a.length!==3||!a[1].endsWith('deploy/multitenant/entrypoint.js')||a[2]!==process.argv[1])throw Error('K8S_ROLE_PID1_MISMATCH');process.kill(1,'SIGTERM');"
     record = {'role': role, 'pod': pod, 'container': container, 'before': before, 'startedAt': time.time(), 'status': 'ATTEMPTED',
               'independentTenantContinuity': 'UNMEASURED; use a separately owned fixture probe spanning this window', 'persistentRecovery': 'NOT_EXERCISED'}
     k.write(d / 'restart.json', record)

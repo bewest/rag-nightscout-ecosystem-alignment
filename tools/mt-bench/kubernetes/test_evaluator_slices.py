@@ -238,6 +238,16 @@ class Bound(unittest.TestCase):
         self.assertEqual(int(value), k.evaluator_progress.POLICY['maxInstances'])
 
 
+class ProgressRoster(unittest.TestCase):
+    def test_compose_names_cover_1_to_32_and_refuse_beyond(self):
+        ordinal = k.evaluator_progress.service_ordinal
+        self.assertEqual([ordinal(s) for s in ('evaluator', 'evaluator-2', 'evaluator-20', 'evaluator-32')], [0, 1, 19, 31])
+        for bad in ('evaluator-1', 'evaluator-33', 'evaluator-02', 'evaluator-0'):
+            with self.assertRaises(k.evaluator_progress.Refused):
+                ordinal(bad)
+        self.assertEqual(k.evaluator_progress.POLICY['maxInstances'], 32)
+
+
 class SeedAndFixtureK(unittest.TestCase):
     def test_seed_environment_follows_the_binding(self):
         writer = {'NS_INPUT_TRANSPORT': 'writer-driven'}

@@ -36,7 +36,10 @@ from pathlib import Path
 import re
 import sys
 
-K_MAX = 8
+# Evaluator K follows deploy evaluator-workers.js MAX_WORKERS (32 since deploy 9160d81); realtime keeps 1..8.
+K_MAX = 32
+REALTIME_K_MAX = 8
+K_MAX_BY_ROLE = {'evaluator': K_MAX, 'realtime': REALTIME_K_MAX}
 SLICED = ('evaluator', 'realtime')
 UUID = re.compile('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
 HISTORY_MODE = re.compile('synthetic-history-[a-z0-9-]{1,48}-v[0-9]{1,3}')
@@ -47,8 +50,8 @@ LOOPING_2D_V2 = 'synthetic-history-looping-2d-v2'
 LOOPING_MODES = (LOOPING_2D, LOOPING_2D_V2)
 # The live writes on a looping fixture: looping-v2 (AID client model D1-D5) unless a profile asks for v1.
 LOOPING_DRIVER_SHAPE = 'looping-v2'
-# Current fit at the 2-day fixture (execution log 2026-11-21, P1); refit on E1 with --base-mib/--per-resident-mib.
-EVALUATOR_MEMORY = {'baseMiB': 195, 'perResidentMiB': 1.85}
+# Evaluator memory: the binding's default model applies (deploy d8d325a: 1745 + 2.96 x residentMax MiB and the
+# V8 heap ceiling from it). point() writes evaluatorMemory only when a refit is asked for.
 # A gauge core does not export at 80972e7ae: residents.size per slice (evaluator-runtime.js:172).
 RESIDENT_GAUGE = 'nightscout_evaluator_resident_tenants'
 
@@ -69,18 +72,21 @@ def bucket(tenant, members):
     return int.from_bytes(hashlib.sha256(tenant.encode()).digest()[:8], 'big') % members
 
 
-def point(k, *, api_replicas=2, pools=None, evaluator_memory=None, lab_metrics=True, role_env=None):
-    """Binding input for one K: both sliced roles take the same K."""
+def point(k, *, realtime_k=None, api_replicas=2, pools=None, evaluator_memory=None, lab_metrics=True, role_env=None):
+    """Binding input for one evaluator K; realtime takes the same K up to its own bound of 8 unless given."""
     need(type(k) is int and 1 <= k <= K_MAX, 'K')
+    realtime_k = min(k, REALTIME_K_MAX) if realtime_k is None else realtime_k
+    need(type(realtime_k) is int and 1 <= realtime_k <= REALTIME_K_MAX, 'REALTIME_K')
     need(type(api_replicas) is int and 1 <= api_replicas <= 16, 'API_REPLICAS')
     value = {'inputTransport': 'writer-driven', 'apiReplicas': api_replicas,
-             'slices': {'evaluator': k, 'realtime': k}, 'labMetrics': {'enabled': bool(lab_metrics)}}
+             'slices': {'evaluator': k, 'realtime': realtime_k}, 'labMetrics': {'enabled': bool(lab_metrics)}}
     if pools:
         need(set(pools) <= {'api', 'realtime', 'evaluator', 'operation', 'read'}, 'POOLS')
         value['pools'] = dict(pools)
-    memory = {**EVALUATOR_MEMORY, **(evaluator_memory or {})}
-    need(memory['baseMiB'] > 0 and memory['perResidentMiB'] >= 0, 'EVALUATOR_MEMORY')
-    value['evaluatorMemory'] = memory
+    if evaluator_memory:
+        need(set(evaluator_memory) <= {'baseMiB', 'perResidentMiB', 'heapHeadroom'}
+             and evaluator_memory.get('baseMiB', 1) > 0 and evaluator_memory.get('perResidentMiB', 0) >= 0, 'EVALUATOR_MEMORY')
+        value['evaluatorMemory'] = dict(evaluator_memory)
     if role_env:
         value['roleEnv'] = role_env
     return value
@@ -122,7 +128,7 @@ def rendered_slices(inventory, role):
     """K and replicas of a sliced role from the render inventory; they must agree."""
     k = inventory['slices'][role]
     replicas = inventory['workloads'][role]['replicas']
-    need(type(k) is int and 1 <= k <= K_MAX, 'K')
+    need(type(k) is int and 1 <= k <= K_MAX_BY_ROLE[role], 'K')
     return k, replicas
 
 
@@ -263,6 +269,7 @@ def main(argv=None):
     sub = ap.add_subparsers(dest='command', required=True)
     p = sub.add_parser('point', help='binding input for one K')
     p.add_argument('k', type=int)
+    p.add_argument('--realtime-k', type=int, help='realtime K (default min(K, 8))')
     p.add_argument('--api-replicas', type=int, default=2)
     p.add_argument('--base-mib', type=float)
     p.add_argument('--per-resident-mib', type=float)
@@ -284,7 +291,7 @@ def main(argv=None):
     a = ap.parse_args(argv)
     if a.command == 'point':
         memory = {k: v for k, v in (('baseMiB', a.base_mib), ('perResidentMiB', a.per_resident_mib)) if v is not None}
-        out = point(a.k, api_replicas=a.api_replicas, pools=a.pools, evaluator_memory=memory)
+        out = point(a.k, realtime_k=a.realtime_k, api_replicas=a.api_replicas, pools=a.pools, evaluator_memory=memory)
     elif a.command == 'profile':
         out = profile(json.loads(a.base.read_text()), tenants=a.tenants, history_mode=a.history_mode,
                       anchor_ms=a.anchor_ms, name=a.name, work_seconds=a.work_seconds, driver_shape=a.driver_shape)

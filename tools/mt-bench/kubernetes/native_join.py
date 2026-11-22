@@ -92,7 +92,7 @@ def selected(c):
     if value is None:
         return None
     k.need(c.get('tier','discovery') == 'discovery' and isinstance(value,dict)
-           and set(value) - {'inputCodec','nodeName','tolerations','waiterResources'} == {'version','mode','image','shellContract','resources','exporterResources',
+           and set(value) - {'inputCodec','nodeName','nodeSelector','tolerations','waiterResources'} == {'version','mode','image','shellContract','resources','exporterResources',
                              'deadlineSeconds','imagePullSecrets'}
            and value.get('version') == 1 and value.get('mode') == 'job-v1', 'NATIVE_LOAD_SELECTION')
     import native_input
@@ -102,6 +102,12 @@ def selected(c):
            and isinstance(value['imagePullSecrets'],list)
            and all(isinstance(row,dict) and set(row)=={'name'} and k.NAME.fullmatch(row['name'])
                    for row in value['imagePullSecrets']), 'NATIVE_LOAD_PLACEMENT')
+    if 'nodeSelector' in value:
+        # The pool selector of a multi-node layout only; a hostname pin is nodeName.
+        k.need('nodeName' not in value and isinstance(value['nodeSelector'],dict)
+               and list(value['nodeSelector']) == ['doks.digitalocean.com/node-pool']
+               and isinstance(value['nodeSelector']['doks.digitalocean.com/node-pool'],str)
+               and k.NAME.fullmatch(value['nodeSelector']['doks.digitalocean.com/node-pool']), 'NATIVE_LOAD_PLACEMENT')
     if 'tolerations' in value:
         tolerations = value['tolerations']
         k.need(isinstance(tolerations,list) and len(tolerations) == 1
@@ -135,7 +141,8 @@ def base_job(c):
                         'restartPolicy':'Never','automountServiceAccountToken':False,'enableServiceLinks':False,
                         'terminationGracePeriodSeconds':5,
                         'serviceAccountName':ACCOUNT,'imagePullSecrets':copy.deepcopy(s['imagePullSecrets']),
-                        **({'nodeSelector':{'kubernetes.io/hostname':s['nodeName']}} if 'nodeName' in s else {}),
+                        **({'nodeSelector':{'kubernetes.io/hostname':s['nodeName']}} if 'nodeName' in s else
+                           {'nodeSelector':dict(s['nodeSelector'])} if 'nodeSelector' in s else {}),
                         **({'tolerations':s['tolerations']} if 'tolerations' in s else {}),
                         'securityContext':{'fsGroup':1000,'seccompProfile':{'type':'RuntimeDefault'}},
                         'initContainers':[waiter], 'containers':[{'name':'k6','image':s['image'],

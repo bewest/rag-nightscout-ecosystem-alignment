@@ -24,6 +24,8 @@ import native_join
 
 
 NAMESPACE_PREFIX = 'ns-synth-'
+# DigitalOcean Kubernetes node-pool label: the pool selector for a multi-node layout.
+POOL_LABEL = 'doks.digitalocean.com/node-pool'
 
 
 def resolve_image(reference, inspect=None):
@@ -120,7 +122,8 @@ def _launch(bound):
 
 
 def prepare(template_case, binding, profile_path, output, *, app_image, postgres_image=None,
-            namespace_prefix=NAMESPACE_PREFIX, core=None, taint=None, inspect=None, fixture=None, node_name=None, resources_file=None, binding_extra=None):
+            namespace_prefix=NAMESPACE_PREFIX, core=None, taint=None, inspect=None, fixture=None, node_name=None, resources_file=None, binding_extra=None,
+            node_pool=None):
     output = output.resolve()
     inputs = (template_case, binding)
     k.need(all(not output.is_relative_to(path.resolve()) for path in inputs),
@@ -131,7 +134,8 @@ def prepare(template_case, binding, profile_path, output, *, app_image, postgres
         raise k.Refused('K8S_STANDARD_CASE_EXISTS','UNMEASURED') from None
     try:
         return _materialize(template_case,binding,profile_path,output,core,taint,
-                            app_image,postgres_image,namespace_prefix,inspect,fixture,node_name,resources_file,binding_extra)
+                            app_image,postgres_image,namespace_prefix,inspect,fixture,node_name,resources_file,binding_extra,
+                            node_pool)
     except Exception as error:
         failed = output.with_name(output.name+'.failed-'+str(time.time_ns()))
         output.rename(failed)
@@ -148,7 +152,8 @@ def prepare(template_case, binding, profile_path, output, *, app_image, postgres
 
 
 def _materialize(template_case, binding, profile_path, output, core, taint,
-                 app_image, postgres_image, namespace_prefix, inspect, fixture=None, node_name=None, resources_file=None, binding_extra=None):
+                 app_image, postgres_image, namespace_prefix, inspect, fixture=None, node_name=None, resources_file=None, binding_extra=None,
+                 node_pool=None):
     template_case = template_case.resolve()
     binding = binding.resolve()
     output = output.resolve()
@@ -184,11 +189,18 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
         k.need(equal and key and value, 'STANDARD_RESERVED_WORKER_TAINT')
         placement = {'tolerations':[{'key':key,'value':value,'operator':'Equal','effect':'NoSchedule'}]}
         selection.update(placement)
+    k.need(not (node_name and node_pool), 'STANDARD_NODE_NAME_OR_POOL')
     if node_name:
         # Pin every rendered workload and the native load Job to one named node (one case per node).
         k.need(k.NAME.fullmatch(node_name), 'STANDARD_NODE_NAME')
         placement = {**placement, 'nodeSelector': {'kubernetes.io/hostname': node_name}}
         selection['nodeName'] = node_name
+    elif node_pool:
+        # Multi-node layout: every workload and the load Job stay on one provider pool's nodes;
+        # the scheduler places them across that pool (no per-node pin).
+        k.need(k.NAME.fullmatch(node_pool), 'STANDARD_NODE_POOL')
+        placement = {**placement, 'nodeSelector': {POOL_LABEL: node_pool}}
+        selection['nodeSelector'] = {POOL_LABEL: node_pool}
     phases = profile['phases']
     traffic = profile['workload']
     grace = max(v.get('gracefulStopSeconds', 30) for v in traffic['driverPlan']['scenarios'].values())

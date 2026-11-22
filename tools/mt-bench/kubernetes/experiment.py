@@ -293,6 +293,8 @@ def main():
     standard.add_argument('--core', type=Path, help='Core checkout for the driver (defaults to the template checkout)')
     standard.add_argument('--reserved-worker-taint', metavar='KEY=VALUE', help='Tolerate the reserved worker for this run')
     standard.add_argument('--node-name', help='Pin every workload and the load Job to this node (nodeSelector kubernetes.io/hostname)')
+    standard.add_argument('--node-pool', help='Multi-node layout: keep every workload and the load Job on this provider pool '
+                                              '(nodeSelector doks.digitalocean.com/node-pool); exclusive with --node-name')
     standard.add_argument('--resources', type=Path, help='JSON per-container resources (requests/limits) for a one-change arm')
     standard.add_argument('--binding-input', type=Path, help='JSON object merged into the binding inputs last (for example roleEnv)')
     standard.add_argument('--fixture', choices=('reuse', 'build'),
@@ -310,7 +312,7 @@ def main():
     if a.action == 'standard':
         import standard_case
         options = dict(app_image=a.app_image, postgres_image=a.postgres_image, namespace_prefix=a.namespace_prefix,
-                       core=a.core, taint=a.reserved_worker_taint, node_name=a.node_name,
+                       core=a.core, taint=a.reserved_worker_taint, node_name=a.node_name, node_pool=a.node_pool,
                        resources_file=a.resources, binding_extra=a.binding_input)
         if a.fixture:
             import fixture_catalog

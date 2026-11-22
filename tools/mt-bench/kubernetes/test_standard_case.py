@@ -1,6 +1,7 @@
 """Public offline preparation against an operator-selected binding and frozen package."""
 
 import hashlib
+import shutil
 import json
 import os
 from pathlib import Path
@@ -102,7 +103,14 @@ class StandardCase(unittest.TestCase):
                     failed, = root.glob(output.name+'.failed-*')
                     self.assertEqual(k.document(failed/'prepare-error.json')['liveActors'],0)
                 taint = ['--reserved-worker-taint','worker=reserved'] if i == 0 else []
-                result = json.loads(subprocess.check_output(cmd + taint))
+                # The second point is a multi-node layout: the pool selector, no hostname pin.
+                pool = ['--node-pool','plancurve-c16'] if i == 1 else []
+                if i == 1:
+                    both = subprocess.run(cmd+pool+['--node-name','n1'],capture_output=True,text=True)
+                    self.assertEqual(json.loads(both.stderr)['code'],'K8S_STANDARD_NODE_NAME_OR_POOL')
+                    for failed in root.glob(output.name+'.failed-*'):
+                        shutil.rmtree(failed)
+                result = json.loads(subprocess.check_output(cmd + taint + pool))
                 self.assertFalse(result['runtimeStarted'])
                 self.assertEqual(result['identity']['fixture']['history'], profile['history'])
                 final = k.document(output/'intent.json')
@@ -136,7 +144,8 @@ class StandardCase(unittest.TestCase):
                 for obj in objs:
                     if obj['kind'] in k.WORKLOADS:
                         pod = k.template(obj)['spec']
-                        self.assertFalse(any(pod.get(key) for key in ('nodeName','nodeSelector','affinity')))
+                        self.assertFalse(any(pod.get(key) for key in ('nodeName','affinity')))
+                        self.assertEqual(pod.get('nodeSelector'), {'doks.digitalocean.com/node-pool':'plancurve-c16'} if pool else None)
                         self.assertEqual(pod.get('tolerations',[]), [{'key':'worker','value':'reserved',
                                          'operator':'Equal','effect':'NoSchedule'}] if taint else [])
                 job, = [o for o in objs if o['kind']=='Job' and o['metadata']['name']=='k6']

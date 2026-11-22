@@ -12,7 +12,7 @@ UUID=re.compile(r'[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}')
 # One reader policy. Failed completions are judged by outcome_gate (decision
 # outcome-evaluator-gate); the original strict-zero and earlier policy versions
 # are not live. Retained runs re-reduce through assessor.py.
-POLICY={'version': 2, 'moduleVersion': 5, 'selectorRows': 128, 'maxTenants': 4294967295, 'maxInstances': 8, 'roundsPerPhase': 3, 'maxQueriesPerPhase': 1024, 'maxBytesPerPhase': 67108864, 'responseMaxBytes': 1048576, 'rpcTimeoutMs': 5000, 'roundDeadlineMs': 15000, 'idleWitness': 'successful-work-progression-not-clinical-proof', 'loadWitness': 'successful-work-progression', 'recoveryCadenceMs': 15000, 'recoveryTimeoutMs': 900000, 'recoveryMaxRounds': 60, 'readinessMaxQueries': 25600, 'readinessMaxBytes': 268435456, 'readinessMaxRounds': 80, 'deadlineClaim': False, 'workloadCohortChanged': False, 'dueState': 'captured-only-not-opportunity-assessed', 'cacheGeneration': 'disposable-not-process-identity'}  # The pinned Compose worker roster supports 1-8.
+POLICY={'version': 2, 'moduleVersion': 5, 'selectorRows': 128, 'maxTenants': 4294967295, 'maxInstances': 32, 'roundsPerPhase': 3, 'maxQueriesPerPhase': 1024, 'maxBytesPerPhase': 67108864, 'responseMaxBytes': 1048576, 'rpcTimeoutMs': 5000, 'roundDeadlineMs': 15000, 'idleWitness': 'successful-work-progression-not-clinical-proof', 'loadWitness': 'successful-work-progression', 'recoveryCadenceMs': 15000, 'recoveryTimeoutMs': 900000, 'recoveryMaxRounds': 60, 'readinessMaxQueries': 25600, 'readinessMaxBytes': 268435456, 'readinessMaxRounds': 80, 'deadlineClaim': False, 'workloadCohortChanged': False, 'dueState': 'captured-only-not-opportunity-assessed', 'cacheGeneration': 'disposable-not-process-identity'}  # Deploy evaluator-workers.js MAX_WORKERS: 1-32 (deploy 9160d81).
 # Decision outcome-evaluator-gate: failed completions are judged by
 # outcome_gate from raw typed reasons, not by a lifetime zero here.
 OUTCOME_FAILURE_POLICY='outcome-evaluator-gate-v1'
@@ -56,7 +56,7 @@ def validate_ids(ids):
     need(isinstance(ids,list) and 1<=len(ids)<=POLICY['maxTenants'] and len(set(ids))==len(ids) and all(isinstance(v,str) and UUID.fullmatch(v) for v in ids),'M7_EVALUATOR_PROGRESS_TENANTS')
 
 SLICE_RULE='sha256-modulo-v1'
-SERVICE=re.compile(r'evaluator(?:-([2-8]))?')
+SERVICE=re.compile(r'evaluator(?:-([2-9]|[12][0-9]|3[0-2]))?')
 
 def bucket(tenant,members):
     """Core lib/pool-membership/slice.js bucket(): the first 8 bytes of
@@ -152,7 +152,7 @@ def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_c
             need(page.get('selfOrdinal')==position and page.get('selfMode')==view.get('configured',{}).get('mode'),'M7_EVALUATOR_PROGRESS_INSTANCE','FAIL')
             if page.get('selfMode')=='static':
                 configured=view['configured']
-                match=re.fullmatch(r'evaluator(?:-([2-8]))?',service)
+                match=SERVICE.fullmatch(service)
                 need(type(configured.get('count')) is int and type(page.get('selfCount')) is int
                      and configured['count']==len(services)==page['selfCount'] and match is not None
                      and position==int(match[1] or 1)-1 and position<len(services)
