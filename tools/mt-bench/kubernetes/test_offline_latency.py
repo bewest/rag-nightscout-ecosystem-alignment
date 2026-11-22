@@ -35,7 +35,7 @@ class OfflineLatency(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             out = Path(d)
             (out / 'k6.log').write_text(k6_line('tenant-a', 'entries', '1000000', 5000, run='r'))
-            (out / 'viewer-frames.jsonl').write_text(frame('tenant-a', 5900, entries=1000000))
+            (out / 'viewer-frames.jsonl').write_text(frame('tenant-a', 5900, entries=1000000, run='r'))
             observer = execute.OfflineLatency('r')
             observer.start(); observer.finish(out, drain_end=0); observer.close()
             doc = json.loads((out / 'm3-latency.json').read_text())

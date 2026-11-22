@@ -20,9 +20,11 @@ def k6_line(tenant, domain, key, accepted, request=20, run=RUN):
     return 'time="2026-11-21T00:00:00Z" level=info msg=%s source=console\n' % json.dumps(msg)
 
 
-def frame(tenant, at, entries=None, devicestatus=None, treatments=None, socket=0):
-    return json.dumps({'event': 'viewer-frame', 'tenant': tenant, 'socket': socket, 'atMs': at, 'delta': False,
-                       'entries': entries, 'devicestatus': devicestatus, 'treatments': treatments}) + '\n'
+def frame(tenant, at, entries=None, devicestatus=None, treatments=None, socket=0, run=RUN):
+    keys = {domain: [key] if key is not None else [] for domain, key in
+            [('entries', entries), ('devicestatus', devicestatus), ('treatments', treatments)]}
+    return json.dumps({'event': 'viewer-frame', 'version': 2, 'run': run, 'tenant': tenant,
+                       'socket': socket, 'atMs': at, 'delta': False, 'keys': keys}) + '\n'
 
 
 class LatencyOracle(unittest.TestCase):
@@ -57,6 +59,18 @@ class LatencyOracle(unittest.TestCase):
         self.assertEqual(rows[0]['lagMs'], 800, 'OFFSET_SIGN')
         doc, rows = self.run_oracle([k6_line(A, 'entries', '1000000', 5000)], [frame(A, 5500, entries=1000000)], offset=-300)
         self.assertEqual(rows[0]['lagMs'], 200)
+
+    def test_skipped_input_foreign_run_and_old_ledger_cannot_prove_delivery(self):
+        lines = [k6_line(A, 'entries', '1000000', 5000)]
+        observations = [frame(A, 6000, entries=1000001), frame(A, 6500, entries=1000000, run='other'),
+                        frame(A, 140000)]
+        doc, rows = self.run_oracle(lines, observations)
+        self.assertFalse(rows)
+        self.assertEqual(doc['domains']['entries']['unmatched'], 1)
+        legacy = json.dumps(dict(event='viewer-frame', tenant=A, atMs=6000, entries=1000000)) + '\n'
+        doc, rows = self.run_oracle(lines, [legacy])
+        self.assertFalse(rows)
+        self.assertEqual(doc['domains']['entries']['legacyUnmeasured'], 1)
 
     def test_frames_before_the_request_cannot_match(self):
         # A frame carrying a key at least as new, but received before the request began (a clock or key error), is ignored.

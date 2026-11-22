@@ -2,8 +2,8 @@
 
 After the run, join the load driver's accepted writes (the k6 `m7-input-accepted`
 lines, with the driver clock's `acceptedAtMs`) to the first realtime `dataUpdate`
-frame, on any viewer of that tenant, whose newest record of the write's domain
-is at least the write's key (the probe's `--frameLedger` lines). The key is the
+frame on any viewer of that tenant carrying the run marker and exact write key
+in the right domain (the probe's `--frameLedger` lines). The key is the
 document's own `date` (entries, treatments) or `created_at` (devicestatus), and
 the frame carries the same values, so the frame identifies the write without
 an id. Nothing reads the database.
@@ -35,7 +35,10 @@ def key_ms(domain, key):
     if re.fullmatch(r'-?[0-9]{1,16}', key):
         return int(key)
     try:
-        return int(datetime.datetime.fromisoformat(key.replace('Z', '+00:00')).timestamp() * 1000)
+        instant = datetime.datetime.fromisoformat(key.replace('Z', '+00:00'))
+        if instant.tzinfo is None:
+            return None
+        return (instant - datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)) // datetime.timedelta(milliseconds=1)
     except ValueError:
         return None
 
@@ -70,12 +73,12 @@ def accepted(paths, run):
     return rows, counts
 
 
-def frames(path):
+def frames(path, run):
     by = {}
     with open(path) as stream:
         for line in stream:
             row = json.loads(line)
-            if row.get('event') == 'viewer-frame':
+            if row.get('event') == 'viewer-frame' and (row.get('version') != 2 or row.get('run') == run):
                 by.setdefault(row['tenant'], []).append(row)
     for rows in by.values():
         rows.sort(key=lambda r: r['atMs'])
@@ -90,31 +93,43 @@ def pct(values, p):
 
 
 def join(writes, by_tenant, offset_ms=0):
-    end = max((r['atMs'] for rows in by_tenant.values() for r in rows), default=None)
-    out, rows = {d: {'lags': [], 'unmatched': 0, 'censored': 0, 'unviewed': 0} for d in DOMAINS}, []
+    end, sightings, legacy = {}, {}, set()
+    for tenant, frames_seen in by_tenant.items():
+        for frame in frames_seen:
+            if frame.get('version') != 2:
+                legacy.add(tenant)
+                continue
+            end[tenant] = frame['atMs']
+            for domain in DOMAINS:
+                for key in frame['keys'][domain]:
+                    sightings.setdefault((tenant, domain, key), []).append(frame['atMs'])
+    out, rows = {d: {'lags': [], 'unmatched': 0, 'censored': 0, 'unviewed': 0, 'legacyUnmeasured': 0} for d in DOMAINS}, []
     for tenant, domain, key, at, request in writes:
         series, bucket = by_tenant.get(tenant), out[domain]
         if not series:
             bucket['unviewed'] += 1
             continue
-        times = [r['atMs'] for r in series]
+        times = sightings.get((tenant, domain, key), ())
         # Frames sent before the request started cannot reflect it (viewer clock).
         start = at - (request if isinstance(request, (int, float)) else 0) - offset_ms
-        first = next((r for r in series[bisect.bisect_left(times, start):]
-                      if r.get(domain) is not None and r[domain] >= key), None)
-        if first is None:
-            if end is None or end + offset_ms - at < DEADLINE_MS:
+        index = bisect.bisect_left(times, start)
+        if index == len(times):
+            if tenant in legacy:
+                bucket['legacyUnmeasured'] += 1
+            elif end[tenant] + offset_ms - at < DEADLINE_MS:
                 bucket['censored'] += 1
             else:
                 bucket['unmatched'] += 1
             continue
-        lag = first['atMs'] + offset_ms - at
+        first = times[index]
+        lag = first + offset_ms - at
         bucket['lags'].append(lag)
-        rows.append({'tenant': tenant, 'domain': domain, 'keyMs': key, 'acceptedAtMs': at, 'frameAtMs': first['atMs'], 'lagMs': lag})
+        rows.append({'tenant': tenant, 'domain': domain, 'keyMs': key, 'acceptedAtMs': at, 'frameAtMs': first, 'lagMs': lag})
     summary = {}
     for domain, b in out.items():
         lags = b['lags']
         summary[domain] = {'matched': len(lags), 'unmatched': b['unmatched'], 'censored': b['censored'], 'unviewed': b['unviewed'],
+                           'legacyUnmeasured': b['legacyUnmeasured'],
                            'p50Ms': pct(lags, 50), 'p95Ms': pct(lags, 95), 'p99Ms': pct(lags, 99), 'maxMs': max(lags) if lags else None,
                            'negative': sum(1 for v in lags if v < 0),
                            **{'within%dMs' % e: sum(1 for v in lags if v <= e) for e in EDGES_MS}}
@@ -132,12 +147,12 @@ def main(argv=None):
     folder = Path(a.k6)
     paths = sorted(folder.glob('k6-shard-*.log')) or [folder / 'k6.log']
     writes, counts = accepted([x for x in paths if x.is_file()], a.run)
-    summary, rows = join(writes, frames(a.frames), a.offset_ms)
+    summary, rows = join(writes, frames(a.frames, a.run), a.offset_ms)
     if a.rows:
         with open(a.rows, 'x') as stream:
             for row in rows:
                 stream.write(json.dumps(row) + '\n')
-    json.dump({'version': 1, 'kind': 'm3-offline-latency-v1', 'runId': a.run, 'offsetMs': a.offset_ms,
+    json.dump({'version': 2, 'kind': 'm3-offline-latency-v2', 'runId': a.run, 'offsetMs': a.offset_ms,
                'offsetBasis': 'driver clock minus viewer clock; 0 means not measured or same host',
                'deadlineMs': DEADLINE_MS, 'driver': counts, 'domains': summary}, sys.stdout, indent=1)
     sys.stdout.write('\n')
