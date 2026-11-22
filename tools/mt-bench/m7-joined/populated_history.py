@@ -146,11 +146,15 @@ def post(port, tenant, rows, until, path='/api/v1/entries'):
             conn.close()
 
 
-def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=post, now=time.time):
+def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=post, now=time.time,
+        bulk=None):
+    """`bulk` (looping modes only): a seeder that writes the missing tenants' history some other way than
+    HTTP (history_loader.StorageLoader); the readback that follows is the same."""
     validate(spec)
     if is_looping(spec):
         return _looping(spec['mode']).run(spec, tenants, base, sql, until, window_seconds, verify_only=verify_only,
-                              post_batch=post_batch, now=now)
+                              post_batch=post_batch, now=now, bulk=bulk)
+    require(bulk is None, 'BULK_UNSUPPORTED_MODE')
     if spec != BASELINE and spec['mode'] in SHAPES:
         return run_4w(spec, tenants, base, sql, until, window_seconds, verify_only=verify_only,
                       post_batch=post_batch, now=now)
@@ -260,6 +264,15 @@ MODE_LOOPING = 'synthetic-history-looping-2d-v1'
 # synthetic-history-looping-2d-v2 (looping_history_v2.py): sized per controller from the AID client model.
 MODE_LOOPING_V2 = 'synthetic-history-looping-2d-v2'
 LOOPING_MODES = (MODE_LOOPING, MODE_LOOPING_V2)
+
+
+def readback_seconds(environ=os.environ):
+    """Bound on one readback statement (S4_HISTORY_READBACK_SECONDS, default 120). The census reads every
+    seeded row: at 10k tenants of v2 its devicestatus statement took 117 s on a quiet workstation and
+    went over 120 s under load, failing a finished seed."""
+    value = int(environ.get('S4_HISTORY_READBACK_SECONDS', 120))
+    require(10 <= value <= 7200, 'READBACK_SECONDS')
+    return value
 
 
 def seed_limits(environ=os.environ):

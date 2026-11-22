@@ -553,13 +553,13 @@ def _batches(docs, size, max_bytes=None):
     return out + ([part] if part else [])
 
 
-def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=h.post, now=time.time):
+def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=h.post, now=time.time, bulk=None):
     return seed_and_verify(sys.modules[__name__], spec, tenants, base, sql, until, window_seconds,
-                           verify_only=verify_only, post_batch=post_batch, now=now)
+                           verify_only=verify_only, post_batch=post_batch, now=now, bulk=bulk)
 
 
 def seed_and_verify(g, spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=h.post,
-                    now=time.time):
+                    now=time.time, bulk=None):
     """Seed through the API and read back, for a looping generator module `g` (this one or looping_history_v2)."""
     g.validate(spec)
     require(tenants and type(window_seconds) is int and window_seconds >= 0, 'INPUT')
@@ -626,8 +626,11 @@ def seed_and_verify(g, spec, tenants, base, sql, until, window_seconds, *, verif
             except Exception:
                 failed.set()
                 raise
-        with ThreadPoolExecutor(max_workers=workers) as pool:
-            list(pool.map(seed, missing))
+        if bulk is not None:
+            bulk(g, spec, missing, len(roster), until)
+        else:
+            with ThreadPoolExecutor(max_workers=workers) as pool:
+                list(pool.map(seed, missing))
         at, measured = inspect()
     require(measured.keys() == {t['id'] for t in roster}, 'ROWS_MISSING')
     for tenant, value in measured.items():

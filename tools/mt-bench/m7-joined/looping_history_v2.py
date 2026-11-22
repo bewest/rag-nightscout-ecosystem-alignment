@@ -547,9 +547,9 @@ def census(sql, tables, at, horizon):
     return v1.census_for(sql, tables, at, horizon, DEVICE, DS_DEVICES)
 
 
-def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=h.post, now=time.time):
+def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=h.post, now=time.time, bulk=None):
     return v1.seed_and_verify(sys.modules[__name__], spec, tenants, base, sql, until, window_seconds,
-                              verify_only=verify_only, post_batch=post_batch, now=now)
+                              verify_only=verify_only, post_batch=post_batch, now=now, bulk=bulk)
 
 
 if __name__ == '__main__':
