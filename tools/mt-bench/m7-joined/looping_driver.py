@@ -11,6 +11,8 @@
   driven (about 0.009 req/s per 1,000 tenants).
 """
 import json
+import math
+from functools import cache
 
 import looping_history as lh
 
@@ -29,6 +31,22 @@ def treatment_cycle_ms(spec=None, sample=12):
     spec = spec or reference_spec()
     per_day = sum(lh.post_cycles_per_day(spec, 'looping', i) for i in range(sample)) / sample
     return round(86_400_000 / per_day)
+
+
+@cache
+def live_treatment_cycle_ms():
+    return treatment_cycle_ms()
+
+
+def write_offers(spec, tenants, uniform_scale, write_scale, device_cycle):
+    """Return the selected population and k6 time unit for the two looping-only writes."""
+    lh.validate(spec)
+    cgm_only = (tenants * spec['cgmOnlyPercent'] + 50) // 100
+    loopers = tenants - cgm_only
+    lh.require(loopers >= max(1, spec['deepHistoryTenants']), 'LOOPING_ROSTER')
+    unit = math.floor(live_treatment_cycle_ms() / uniform_scale / write_scale + .5)
+    lh.require(1 <= unit <= 9223372036854, 'TREATMENT_TIME_UNIT')
+    return {'w_devicestatus': (loopers, device_cycle), 'w_treatments_v3': (loopers, unit)}
 
 
 def templates(spec=None):
@@ -55,7 +73,7 @@ def environment():
     docs, mean = templates()
     return {'M7_DRIVER_SHAPE': SHAPE,
             'M7_LOOPING_TEMPLATES': json.dumps({'placeholder': PLACEHOLDER, 'documents': docs}, separators=(',', ':')),
-            'M7_LOOPING_TREATMENT_CYCLE_MS': str(treatment_cycle_ms())}
+            'M7_LOOPING_TREATMENT_CYCLE_MS': str(live_treatment_cycle_ms())}
 
 
 def annotate(spec, provisioned, ordinary):

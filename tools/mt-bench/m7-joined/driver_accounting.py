@@ -103,6 +103,13 @@ def expected_plans(m):
     rows = driver_shards.plan(count, hot, c.get('offeredRps'), n) if n > 1 else [
         {'index': 0, 'tenants': count, 'weight': count - 1 + hot, 'hotFactor': hot,
          'offeredRps': c.get('offeredRps')}]
+    looping = {}
+    if c.get('driverShape') == 'looping-v1':
+        import looping_driver
+        require(n == 1 and realistic is not None and hot == 1 and m.get('history'),
+                'M7_DRIVER_LOOPING_FIXTURE')
+        looping = looping_driver.write_offers(m['history'], count, c.get('workloadScale', 1),
+                                              cfg.get('writeRateScale', 1), realistic['w_devicestatus'])
     plans = []
     # k6 v1.3.0 constant_arrival_rate.go:300-335 races the duration context
     # with a timer at the endpoint. Native controls reproduce the optional
@@ -112,7 +119,9 @@ def expected_plans(m):
         weight = shard['weight']
         for name, r in cfg['scenarios'].items():
             rate = WEIGHTS[name] * weight
-            if realistic is not None:
+            if name in looping:
+                rate, unit = looping[name]
+            elif realistic is not None:
                 unit = realistic[name]
             elif shard['offeredRps'] is not None:
                 unit = math.floor(sum(WEIGHTS[k] for k in cfg['scenarios']) * weight * 1000 / shard['offeredRps'] + .5)

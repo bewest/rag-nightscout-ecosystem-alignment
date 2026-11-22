@@ -200,10 +200,15 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
     private_input = input_codec == native_input.PRIVATE
     if private_input:
         k.need('driverPlan' in w, 'NATIVE_LOAD_CONFIGURED_DRIVER_REQUIRED')
-        k.need(all({'id', 'host', 'token'} <= set(row) <= {'id', 'host', 'token', 'jwt'} for row in tenants), 'NATIVE_LOAD_DATA_FIELDS')
+        fields = ['id', 'host', 'token', 'jwt']
+        if w.get('driverShape') == 'looping-v1':
+            fields.append('loopKind')
+            k.need(all('loopKind' in row and row['loopKind'] in (None, 'loop', 'aaps', 'trio') for row in tenants),
+                   'NATIVE_LOAD_LOOPING_ROSTER')
+        k.need(all({'id', 'host', 'token'} <= set(row) <= set(fields) for row in tenants), 'NATIVE_LOAD_DATA_FIELDS')
         # The image derives ids and aliases. Bind the exact DATA projection,
         # including order on partial rosters, independently at both ends.
-        tenants = [{key: row[key] for key in ('id','host','token','jwt') if key in row} for row in tenants]
+        tenants = [{key: row[key] for key in fields if key in row} for row in tenants]
     tenant_text = json.dumps(tenants, separators=(',', ':'), ensure_ascii=not private_input)
     inputs = {'apiVersion': 'v1', 'kind': 'Secret', 'type': 'Opaque', 'immutable': True,
               'metadata': {'name': 'ns-k6-inputs', 'namespace': c['namespace'],
@@ -329,7 +334,9 @@ def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, 
         try:
             private_data = None
             if receipt['inputTransport']['codec'] == 'fixture-data-v1':
-                private_data = [[row['id'], row['token'], *([row['jwt']] if 'jwt' in row else [])] for row in tenants]
+                private_data = [[row['id'], row['token'], row.get('jwt'), row['loopKind']] if 'loopKind' in row
+                                else [row['id'], row['token'], *([row['jwt']] if 'jwt' in row else [])]
+                                for row in tenants]
             return native_files.capture(kube, c, wanted, out, receipt, failures=failures, private_data=private_data)
         except Exception as error:
             close_after_failure(error)

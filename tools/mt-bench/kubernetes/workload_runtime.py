@@ -30,7 +30,7 @@ def validate(w, need, tenants=None):
          'driverPlan', 'driverShards', 'driverHeadroom', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget','drainObservation','latencyObservation','driverShape'}, 'WORKLOAD_FIELDS')
     # looping-v1 (m7-joined/looping_driver.py): realistic-v1 cadence, writes shaped like the E1 fixture.
     need('driverShape' not in w or (w['driverShape'] == 'looping-v1' and w.get('workloadMix') == REALISTIC_MIX
-         and 'driverPlan' not in w), 'WORKLOAD_DRIVER_SHAPE')
+         and w.get('driverShards', 1) == 1), 'WORKLOAD_DRIVER_SHAPE')
     need(w.get('latencyObservation', 'polling-sql-v1') in ('polling-sql-v1', 'offline-v1'), 'WORKLOAD_LATENCY_OBSERVATION')
     viewer_plan.setup(w, need)
     need(workload_inputs.seconds(w.get('loadSeconds')), 'WORKLOAD_LOAD_SECONDS')
@@ -85,6 +85,10 @@ def driver_manifest(c):
     m = dict(tenants=c.get('ordinaryRosterTenants', c['tenants']), replicas=sum(r == 'api' or r.startswith('api-') for r in c['roles']),
              cadence=cadence, pair=c['pins']['pair'], imageId=c['pins']['appImageId'],
              instrument=c['pins']['instrument'], runPurpose='discovery', transport='kubernetes-native')
+    if 'driverShape' in cadence:
+        if m['tenants'] != c['tenants'] or not c.get('history'):
+            raise ValueError('K8S_LOOPING_OFFER_REQUIRES_FULL_FIXTURE_ROSTER')
+        m['history'] = c['history']
     driver.expected_plans(m)
     return m
 
@@ -111,11 +115,18 @@ def environment(w, inherited, need):
     return env
 
 
-def rates(w, n):
+def rates(w, n, history=None):
     if 'workloadMix' in w:
         cycles = realistic_cycle_ms(w.get('workloadScale', 1), w.get('driverPlan', {}).get('writeRateScale', 1))
     else:
         cycle = workload_inputs.aggregate_cycle_ms(n, w.get('hotFactor', 1), w['offeredRps'])
         cycles = dict.fromkeys(SHAPES, cycle)
         n += w.get('hotFactor', 1) - 1
-    return cycles, {shape: weight * n * 1000 / cycles[shape] for shape, weight in SHAPES.items()}
+    offer = {shape: weight * n * 1000 / cycles[shape] for shape, weight in SHAPES.items()}
+    if w.get('driverShape') == 'looping-v1':
+        import looping_driver
+        for shape, (tenants, unit) in looping_driver.write_offers(history, n, w.get('workloadScale', 1),
+                w.get('driverPlan', {}).get('writeRateScale', 1), cycles['w_devicestatus']).items():
+            cycles[shape] = unit
+            offer[shape] = tenants * 1000 / unit
+    return cycles, offer

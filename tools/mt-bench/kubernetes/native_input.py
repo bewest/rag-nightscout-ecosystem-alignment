@@ -24,6 +24,8 @@ def fixture_data(c, job, secret, receipt):
     count = workload_runtime.driver_count(c, k.need)
     meta = {'codec': PRIVATE, 'fixtureTenants': c['tenants'], 'tenants': count,
             'sha256': receipt['rosterSha256']}
+    if c['workload'].get('driverShape') == 'looping-v1':
+        meta['driverShape'] = 'looping-v1'
     secret['stringData']['fixture-data.json'] = json.dumps(meta)
     for entry in main['env']:
         if entry['name'] == 'TENANTS_FILE':

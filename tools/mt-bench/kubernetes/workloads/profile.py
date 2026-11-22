@@ -48,6 +48,9 @@ def validate(p, *, require_pins=True):
     need(workload_runtime.workload_inputs.tenants(n) and n >= 2, 'TENANTS')
     ordinary = workload_runtime.ordinary_count(n, p['population']['ordinaryRosterTenants'], need)
     workload_runtime.validate(w, need, ordinary)
+    if w.get('driverShape') == 'looping-v1':
+        need(p['history'].get('mode') == history.MODE_LOOPING and n == ordinary,
+             'LOOPING_OFFER_REQUIRES_FULL_FIXTURE_ROSTER')
     need(workload_runtime.workload_inputs.tenants(p['population']['hotFactor']) and
          p['population']['hotFactor'] == w.get('hotFactor', 1),
          'ADAPTER_ROSTER_OR_HOT_FACTOR_UNSUPPORTED')
@@ -77,7 +80,7 @@ def describe(p):
     validate(p)
     n = p['population']['ordinaryRosterTenants']
     w = p['workload']
-    cycles, rates = workload_runtime.rates(w, n)
+    cycles, rates = workload_runtime.rates(w, n, p['history'])
     cycle_ms = cycles['w_sgv']
     inputs=workload_runtime.workload_inputs
     startup=inputs.startup_selection(p['phases'],need)

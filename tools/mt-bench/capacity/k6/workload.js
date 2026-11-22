@@ -88,7 +88,7 @@ if (mix !== undefined &&
 // per looping tenant every M7_LOOPING_TREATMENT_CYCLE_MS.
 const shape = __ENV.M7_DRIVER_SHAPE;
 const looping = shape === 'looping-v1';
-if (shape !== undefined && (!looping || mix !== 'realistic-v1' || __ENV.M7_DRIVER_PLAN)) throw Error('M7_DRIVER_SHAPE_CONFIGURATION');
+if (shape !== undefined && (!looping || mix !== 'realistic-v1')) throw Error('M7_DRIVER_SHAPE_CONFIGURATION');
 const LOOP = looping ? JSON.parse(__ENV.M7_LOOPING_TEMPLATES) : null;
 const LOOPERS = [];
 if (looping) for (let i = 0; i < TENANTS.length; i++) {

@@ -7,6 +7,7 @@ import unittest
 from pathlib import Path
 
 import adapter
+import driver_accounting
 import looping_driver
 import looping_history
 import workload
@@ -102,11 +103,26 @@ class LoopingDriver(unittest.TestCase):
     def test_refusals(self):
         rows = roster(10)
         for bad_rows, env in ((rows, looping_driver.environment()),                      # roles missing
-                              (looping_driver.annotate(SPEC, rows, rows), {**looping_driver.environment(), 'M7_DRIVER_PLAN': '{}'}),
                               (looping_driver.annotate(SPEC, rows, rows), {**looping_driver.environment(), 'M7_DRIVER_SHAPE': 'other'})):
             with self.assertRaises(RuntimeError) as caught:
                 self.evaluate(bad_rows, env)
             self.assertIn('M7_DRIVER_SHAPE_CONFIGURATION', str(caught.exception))
+
+    def test_configured_plan_matches_the_generated_scenarios(self):
+        rows = roster(25)
+        spec = dict(SPEC, cgmOnlyPercent=32)
+        annotated = looping_driver.annotate(spec, rows, rows)
+        plan = dict(version=1, observer='scheduling-v1', writeRateScale=2,
+                    scenarios={name: {} for name in driver_accounting.WEIGHTS})
+        cadence = dict(workloadMix='realistic-v1', driverShape='looping-v1', workloadScale=1.5,
+                       loadSeconds=60, hotFactor=1, driverPlan=plan)
+        projected, = driver_accounting.expected_plans(dict(tenants=len(rows), history=spec, cadence=cadence))
+        measured = self.evaluate(annotated, {**looping_driver.environment(), 'M7_WORKLOAD_SCALE': '1.5',
+                                            'M7_DRIVER_PLAN': json.dumps(plan)})['scenarios']
+        for name, row in measured.items():
+            self.assertEqual((row['rate'], row['timeUnit']),
+                             (projected['scenarios'][name]['rate'], projected['scenarios'][name]['timeUnit']), name)
+        self.assertEqual(measured['w_devicestatus']['rate'], 17)
 
     def test_default_is_unchanged(self):
         rows = roster(100)
