@@ -157,16 +157,37 @@ class Warmup(unittest.TestCase):
                 p.first_alarm_query(bad, 1)
 
 
-DEPLOY = Path(os.environ.get('NS_DEPLOY_BINDING', '/mnt/data/nightscout-workspace/worktrees/deploy/plannable-e25-20261121'))
+class DeployBinding(unittest.TestCase):
+    def test_the_deploy_tree_is_named_explicitly_and_never_guessed(self):
+        for source in ({}, {'NS_DEPLOY_BINDING': ''}, {'NS_DEPLOY_BINDING': 'relative/deploy'}):
+            with self.assertRaisesRegex(p.Refused, 'K8S_PLAN_DEPLOY_BINDING_REQUIRED'):
+                p.deploy_binding(source)
+        with tempfile.TemporaryDirectory() as d:
+            with self.assertRaisesRegex(p.Refused, 'K8S_PLAN_DEPLOY_BINDING_INVALID'):
+                p.deploy_binding({'NS_DEPLOY_BINDING': d})
+            lib = Path(d)/'bindings/kubernetes/lib/ns'
+            lib.mkdir(parents=True)
+            (lib/'connection-budget.libsonnet').write_text('{}')
+            self.assertEqual(p.deploy_binding({'NS_DEPLOY_BINDING': d}), Path(d))
+        # No workstation path is written into the harness as a fallback.
+        for name in ('plannable.py', 'test_plannable.py'):
+            self.assertNotIn('/worktrees/' + 'deploy/', (Path(__file__).parent/name).read_text(), name)
 
 
-@unittest.skipUnless((DEPLOY/'bindings/kubernetes/lib/ns/connection-budget.libsonnet').is_file() and shutil.which('tk'),
-                     'deploy binding with the connection budget and tk required')
 class Rendered(unittest.TestCase):
-    """The harness's one K input through the deploy render: budget, memory and ownership agree."""
+    """The harness's one K input through the deploy render: budget, memory and ownership agree.
+
+    NS_DEPLOY_BINDING names the deploy tree. Unset or not a deploy tree refuses (an error, not a skip):
+    these checks have no meaning against a guessed binding."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.deploy = p.deploy_binding()
+        if not shutil.which('tk'):
+            raise unittest.SkipTest('tk required')
 
     def render(self, extra):
-        lib = DEPLOY/'bindings/kubernetes'
+        lib = self.deploy/'bindings/kubernetes'
         base = json.loads((lib/'environments/synthetic/inputs.json').read_text())
         with tempfile.TemporaryDirectory() as d:
             env = Path(d)/'environments/x'

@@ -426,7 +426,12 @@ from correctness, and capacity acceptance stays `NOT_GRANTED` throughout.
 
 Focused controls, using synthetic API replies and loopback/fake process boundaries:
 
+The render checks in `test_plannable.py` read a deploy tree named by `NS_DEPLOY_BINDING` (an absolute
+path to a nightscout-deploy checkout or to a `git archive` of the ref under test). There is no default:
+unset, they refuse with `K8S_PLAN_DEPLOY_BINDING_REQUIRED`.
+
 ```bash
+export NS_DEPLOY_BINDING=/absolute/nightscout-deploy
 python3 -B -m unittest discover -s tools/mt-bench/kubernetes -p 'test_*.py' -v
 node tools/mt-bench/kubernetes/claims.test.cjs
 node tools/mt-bench/kubernetes/access.test.cjs

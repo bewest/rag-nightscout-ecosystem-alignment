@@ -32,6 +32,7 @@ from collections import Counter
 import copy
 import hashlib
 import json
+import os
 import math
 from pathlib import Path
 import re
@@ -64,6 +65,20 @@ class Refused(ValueError):
 def need(ok, code):
     if not ok:
         raise Refused('K8S_PLAN_' + code)
+
+
+def deploy_binding(source=None):
+    """The deploy tree the offline render checks read: NS_DEPLOY_BINDING, always explicit.
+
+    There is no default path: a lane worktree left behind renders an old binding and the check then
+    measures the wrong commit. For a ref rather than a checkout, archive it into scratch first
+    (git -C <deploy> archive <ref> | tar -x -C <scratch>) and name the scratch directory."""
+    source = os.environ if source is None else source
+    raw = source.get('NS_DEPLOY_BINDING')
+    need(isinstance(raw, str) and raw.startswith('/'), 'DEPLOY_BINDING_REQUIRED')
+    root = Path(raw)
+    need((root/'bindings/kubernetes/lib/ns/connection-budget.libsonnet').is_file(), 'DEPLOY_BINDING_INVALID')
+    return root
 
 
 def bucket(tenant, members):
