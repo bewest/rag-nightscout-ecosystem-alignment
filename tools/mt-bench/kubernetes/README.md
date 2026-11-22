@@ -808,6 +808,30 @@ file's exact length/hash and acknowledged the manifest, or the finite Job and
 exporter deadlines expire. Raw CSV never depends on kubelet log retention.
 The exporter contributes its explicit requests/limits to Pod fit and quota.
 
+A capacity case can publish writer results from the exporter to a private, retained filesystem.
+Give `experiment.py standard` the option `--writer-publication /absolute/volume.json`,
+or set `nativeLoad.writerPublication` in the native Job selection. The object takes this form.
+
+```json
+{"volumeName":"capacity-example","storageClassName":"","storage":"64Mi"}
+```
+
+Reserve the existing filesystem PV with `persistentVolumeReclaimPolicy: Retain` and a
+`claimRef` naming `writer-publication` in this run's exact namespace. The claim reference
+starts without a UID. Match its storage class and writable capacity to the selection. The
+exporter runs as UID/GID 1000 and needs write access at the mounted root. The lifecycle
+verifies the reservation, creates a PVC explicitly bound to that volume and records its UID.
+Namespace cleanup releases the PV. The storage owner can retrieve the files from the backing
+filesystem or rebind the released PV to a reader. Reserve each volume for only one run.
+
+After k6 exits, the exporter commits `<stage-run-id>/<pod-uid>/writer/publication.json`
+with the byte lengths and SHA-256 digests of the numeric k6 summary and the accepted-write
+ledger. This happens before the controller reads or acknowledges any artifacts. A nonzero
+writer exit or an invalid input records a partial publication. An interrupted copy has no
+committed manifest until the atomic directory rename. A writer killed before emitting its
+exit code can leave no publication. Repeating the export with identical inputs is idempotent.
+The original scheduling CSV and raw diagnostics still use the finite exec/ack collection.
+
 For a **fresh, uncaptured prepared case**, run `python3 -B native_join.py
 /absolute/case /absolute/selection.json`, then the normal lifecycle capture and
 fresh entry checks. Selection requires `version: 1`, `mode: "job-v1"`, immutable

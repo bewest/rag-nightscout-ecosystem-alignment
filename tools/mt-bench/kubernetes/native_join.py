@@ -92,9 +92,12 @@ def selected(c):
     if value is None:
         return None
     k.need(c.get('tier','discovery') == 'discovery' and isinstance(value,dict)
-           and set(value) - {'inputCodec','nodeName','nodeSelector','tolerations','waiterResources'} == {'version','mode','image','shellContract','resources','exporterResources',
+           and set(value) - {'inputCodec','nodeName','nodeSelector','tolerations','waiterResources','writerPublication'} == {'version','mode','image','shellContract','resources','exporterResources',
                              'deadlineSeconds','imagePullSecrets'}
            and value.get('version') == 1 and value.get('mode') == 'job-v1', 'NATIVE_LOAD_SELECTION')
+    if 'writerPublication' in value:
+        import native_files
+        native_files.publication_selection(value['writerPublication'])
     import native_input
     k.need(value.get('inputCodec', 'raw-v1') in native_input.CODECS, 'NATIVE_LOAD_INPUT_CODEC')
     k.need(('nodeName' not in value or isinstance(value['nodeName'],str) and k.NAME.fullmatch(value['nodeName']))
@@ -206,6 +209,12 @@ def validate(c, inventory, objects):
             for name in totals:totals[name]+=amount[name]
     k.need(len(quotas)==1,'NATIVE_LOAD_QUOTA_REQUIRED')
     hard=quotas[0]['spec']['hard']
+    if s.get('writerPublication'):
+        requested = k.resource_budget.quantity(s['writerPublication']['storage'], False, k.need)
+        k.need(('persistentvolumeclaims' not in hard or int(hard['persistentvolumeclaims']) >= 1)
+               and ('requests.storage' not in hard
+                    or k.resource_budget.quantity(hard['requests.storage'], False, k.need) >= requested),
+               'WRITER_PUBLICATION_QUOTA')
     k.need(k.resource_budget.quantity(hard.get('requests.cpu',0),True,k.need)>=totals['millicpus']
            and k.resource_budget.quantity(hard.get('requests.memory',0),False,k.need)>=totals['memoryBytes']
            and int(hard.get('pods',0))>=count,'NATIVE_LOAD_UNACCOUNTED_QUOTA')

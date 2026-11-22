@@ -301,6 +301,14 @@ try:
     node=create(objects('namespace')[0]);nsuid=node['metadata']['uid'];put('custody.json',{'namespace':ns,'namespaceUid':nsuid})
     owned();node=create(trust);trustuid=node['metadata']['uid'];put('custody.json',{'namespace':ns,'namespaceUid':nsuid,'trustName':tn,'trustUid':trustuid})
     install('foundation')
+    publication = (intent.get('nativeLoad') or {}).get('writerPublication')
+    if publication is not None:
+        from native_files import publication_claim
+        step('writer publication claim');owned()
+        volume = get('persistentvolume', publication['volumeName'], False)
+        made = create(publication_claim(publication, ns, rid, volume))
+        uids.append({'kind': made['kind'], 'name': made['metadata']['name'], 'uid': made['metadata']['uid']})
+        put('created.json', uids)
     # Legacy fixtures expect prewarmed images. Scheduler fixtures leave the
     # digest-pinned image pull policy to Kubernetes and the authored manifest.
     if not scheduler:

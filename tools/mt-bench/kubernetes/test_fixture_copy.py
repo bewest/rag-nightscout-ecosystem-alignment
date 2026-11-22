@@ -190,10 +190,10 @@ class KeyedFixture(unittest.TestCase):
                                                        **fc.slices_record({'inputTransport': 'writer-driven'})}, 1e12)
         self.launched.append(bound)
 
-    def run_keyed(self, action, name, launch=None):
+    def run_keyed(self, action, name, launch=None, **options):
         return self.sc.keyed(action, self.root, self.root, self.root/'profile.json', self.root/name, catalog=self.catalog,
                              storage_class='do-block-storage', snapshot_class='do-block-storage',
-                             launch=launch or self.launch, app_image='x', core=self.root)
+                             launch=launch or self.launch, app_image='x', core=self.root, **options)
 
     def test_restore_forward_uses_ancestor_and_preserves_fixture_identity(self):
         def git(*args):
@@ -248,6 +248,14 @@ class KeyedFixture(unittest.TestCase):
         self.assertEqual(len(self.launched), 1)
         record = self.catalog.lookup(self.key, 'kubernetes')
         self.assertEqual(sorted(record['identity']['volumeSnapshotContents'].values()), sorted('content-' + n for n in fc.SNAPSHOTS.values()))
+
+    def test_writer_publication_is_reserved_for_traffic_case_on_catalog_miss(self):
+        volume = self.root/'traffic-volume.json'
+        with mock.patch.object(self.sc, 'prepare', wraps=self.sc.prepare) as prepare:
+            self.run_keyed('reuse', 'run', writer_publication=volume)
+        seed, traffic = prepare.call_args_list
+        self.assertNotIn('writer_publication', seed.kwargs)
+        self.assertEqual(traffic.kwargs['writer_publication'], volume)
 
     def test_build_ahead_registers_without_a_restore_and_is_idempotent(self):
         self.assertEqual(self.run_keyed('build', 'seed-a')['fixture'], 'miss')
