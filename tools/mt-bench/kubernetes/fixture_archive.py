@@ -388,8 +388,7 @@ def import_k8s(archive, fixture_dir, context, namespace, run_id, jsonnet, librar
     until = time.time() + deadline
     manifest = verify(archive)
     prov = manifest['provenance']
-    need(postgres_image_ref.endswith('@' + prov['postgresImage'].split('@')[-1]) or
-         postgres_image_ref == prov['postgresImage'], 'POSTGRES_IMAGE_REFERENCE')
+    need(same_postgres_image(postgres_image_ref, prov['postgresImage']), 'POSTGRES_IMAGE_REFERENCE')
     tenants = roster(archive, manifest)
     k = kubectl(context, namespace)
     owned_namespace(k, run_id)
@@ -458,6 +457,21 @@ def _import(archive, manifest, tenants, k, fixture_dir, namespace, run_id, jsonn
     if catalog:
         result['catalog'] = register(catalog, prov['key'], chosen['directory'], run_id, result['totalSeconds'])
     return result
+
+
+def same_postgres_image(ref, recorded):
+    """The pullable reference names the archive's image: the same digest, or (for a provenance that
+    records a local image id) a local image with that id whose repository digests include REF."""
+    if ref == recorded or ref.endswith('@' + recorded.split('@')[-1]):
+        return True
+    if '@' in recorded or '@sha256:' not in ref:
+        return False
+    try:
+        spec = json.loads(subprocess.run(['docker', 'image', 'inspect', recorded], check=True,
+                                         capture_output=True, text=True).stdout)[0]
+    except (subprocess.CalledProcessError, FileNotFoundError, ValueError, IndexError):
+        return False
+    return spec.get('Id') == recorded and ref in (spec.get('RepoDigests') or [])
 
 
 def write_secrets_dir(archive):
