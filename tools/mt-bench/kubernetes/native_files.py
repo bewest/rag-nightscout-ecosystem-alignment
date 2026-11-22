@@ -1,6 +1,6 @@
 """One-shard configured driver: retain original bounded files through Pod exec.
 
-An exporter container holds only the test Pod's emptyDir, without an API token.
+An exporter holds the test Pod's emptyDir and can publish to a prebound retained volume.
 The owned Pod stays until export acknowledgment or its finite Job deadline.
 Raw CSV never traverses Kubernetes container logs (which may rotate).
 """
@@ -18,6 +18,46 @@ import workload_runtime
 
 FILES = {'k6.log': 64 * 1024**2, 'k6-native.log': 64 * 1024**2,
          'k6-summary.json': 4 * 1024**2, 'file-limits.txt': 16384}
+
+
+PUBLICATION_CLAIM = 'writer-publication'
+
+
+def publication_selection(selection):
+    k.need(isinstance(selection, dict) and set(selection) == {'volumeName', 'storageClassName', 'storage'}
+           and isinstance(selection['volumeName'], str) and k.NAME.fullmatch(selection['volumeName'])
+           and isinstance(selection['storageClassName'], str)
+           and (not selection['storageClassName'] or k.NAME.fullmatch(selection['storageClassName']))
+           and isinstance(selection['storage'], str)
+           and k.resource_budget.quantity(selection['storage'], False, k.need) > 0,
+           'WRITER_PUBLICATION_SELECTION')
+    return selection
+
+
+def publication_claim(selection, namespace, run_id, pv):
+    """Bind one already reserved, retained PV. Never request dynamic provisioning."""
+    publication_selection(selection)
+    spec = (pv or {}).get('spec', {})
+    metadata = (pv or {}).get('metadata', {})
+    ref = spec.get('claimRef') or {}
+    k.need(metadata.get('name') == selection['volumeName'] and not metadata.get('deletionTimestamp')
+           and (pv or {}).get('status', {}).get('phase') == 'Available'
+           and spec.get('persistentVolumeReclaimPolicy') == 'Retain'
+           and spec.get('volumeMode', 'Filesystem') == 'Filesystem'
+           and spec.get('storageClassName', '') == selection['storageClassName']
+           and ref.get('name') == PUBLICATION_CLAIM and ref.get('namespace') == namespace and not ref.get('uid')
+           and k.resource_budget.quantity(spec.get('capacity', {}).get('storage', 0), False, k.need)
+               >= k.resource_budget.quantity(selection['storage'], False, k.need),
+           'WRITER_PUBLICATION_RETAINED_VOLUME_REQUIRED')
+    access = next((mode for mode in ('ReadWriteOnce', 'ReadWriteMany', 'ReadWriteOncePod')
+                   if mode in spec.get('accessModes', [])), None)
+    k.need(access, 'WRITER_PUBLICATION_WRITABLE_VOLUME_REQUIRED')
+    return {'apiVersion': 'v1', 'kind': 'PersistentVolumeClaim',
+            'metadata': {'namespace': namespace, 'name': PUBLICATION_CLAIM,
+                         'labels': {'nightscout.org/run-id': run_id}},
+            'spec': {**{key: selection[key] for key in ('volumeName', 'storageClassName')},
+                     'accessModes': [access], 'volumeMode': 'Filesystem',
+                     'resources': {'requests': {'storage': selection['storage']}}}}
 
 
 def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contract):
@@ -44,6 +84,11 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
     if cfg['observer'] == 'scheduling-v1':
         files['k6-scheduling.csv.gz'] = maximum
     config = dict(runId=receipt['runId'], files=files, seconds=receipt['activeDeadlineSeconds'])
+    publication = (c.get('nativeLoad') or {}).get('writerPublication')
+    if publication is not None:
+        receipt['writerPublication'] = publication_selection(publication)
+        config['writerPublication'] = True
+        secret['stringData']['native-publication.cjs'] = (k.HERE / 'native-publication.cjs').read_text()
     secret['stringData'] = {**secret['stringData'],
                             'workload.js': script.decode(), driver.SCRIPT: wrapper.decode(),
                             'native-artifacts.cjs': (k.HERE / 'native-artifacts.cjs').read_text(),
@@ -80,6 +125,11 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
                 'volumeMounts': [{'name': 'inputs', 'mountPath': '/inputs', 'readOnly': True},
                                  {'name': 'artifacts', 'mountPath': '/out'}]}
     pod = job['spec']['template']['spec']
+    if publication is not None:
+        pod['volumes'].append({'name': PUBLICATION_CLAIM, 'persistentVolumeClaim': {'claimName': PUBLICATION_CLAIM}})
+        exporter['volumeMounts'].append({'name': PUBLICATION_CLAIM, 'mountPath': '/publication'})
+        exporter['env'] = [{'name': 'NS_PUBLICATION_ROOT', 'value': '/publication'},
+                           {'name': 'NS_PUBLICATION_POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}}]
     pod['containers'].append(exporter)
     # This is disposable local Pod storage; requests/limits and the full new Pod
     # must still enter the operating owner's fit/quota admission.

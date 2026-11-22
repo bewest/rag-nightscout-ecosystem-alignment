@@ -97,7 +97,9 @@ def keyed(action, template_case, binding, profile_path, output, *, seed='default
         directory = catalog.reserve(key, 'kubernetes')
         try:
             chosen = fixture_copy.selection('seed', directory, storage_class, snapshot_class, postgres_size)
-            prepare(template_case, binding, profile_path, seed_case, fixture={**chosen, 'key': key}, **options)
+            # A seed has no load stage; the writer volume is reserved for the traffic case.
+            seed_options = {key: value for key, value in options.items() if key != 'writer_publication'}
+            prepare(template_case, binding, profile_path, seed_case, fixture={**chosen, 'key': key}, **seed_options)
             (launch or _launch)(seed_case/'lifecycle-bound.json')
             manifest = fixture_copy.read_manifest(directory)
         except BaseException as error:
@@ -123,7 +125,7 @@ def _launch(bound):
 
 def prepare(template_case, binding, profile_path, output, *, app_image, postgres_image=None,
             namespace_prefix=NAMESPACE_PREFIX, core=None, taint=None, inspect=None, fixture=None, node_name=None, resources_file=None, binding_extra=None,
-            node_pool=None):
+            node_pool=None, writer_publication=None):
     output = output.resolve()
     inputs = (template_case, binding)
     k.need(all(not output.is_relative_to(path.resolve()) for path in inputs),
@@ -135,7 +137,7 @@ def prepare(template_case, binding, profile_path, output, *, app_image, postgres
     try:
         return _materialize(template_case,binding,profile_path,output,core,taint,
                             app_image,postgres_image,namespace_prefix,inspect,fixture,node_name,resources_file,binding_extra,
-                            node_pool)
+                            node_pool,writer_publication)
     except Exception as error:
         failed = output.with_name(output.name+'.failed-'+str(time.time_ns()))
         output.rename(failed)
@@ -153,7 +155,7 @@ def prepare(template_case, binding, profile_path, output, *, app_image, postgres
 
 def _materialize(template_case, binding, profile_path, output, core, taint,
                  app_image, postgres_image, namespace_prefix, inspect, fixture=None, node_name=None, resources_file=None, binding_extra=None,
-                 node_pool=None):
+                 node_pool=None, writer_publication=None):
     template_case = template_case.resolve()
     binding = binding.resolve()
     output = output.resolve()
@@ -177,6 +179,9 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
         binding_inputs['storage'] = storage = fixture_copy.storage(storage)
     run['storageMode'] = storage['mode']
     selection = run.pop('nativeLoad')
+    selection.pop('writerPublication', None)  # A volume reservation belongs to one run namespace.
+    if writer_publication is not None:
+        selection['writerPublication'] = k.document(writer_publication)
     resources = k.document(binding/'bindings/kubernetes/lib/ns/typical-requests.json')
     selection.pop('nodeName', None)
     selection.pop('tolerations', None)
