@@ -53,6 +53,17 @@ const savePartial=()=>{if(discovery&&retainedOut)fs.writeFileSync(args.out,JSON.
 const transport = require('./probe-transport.cjs')({args,fs,path,signalDir,execFile,process,discovery,completionSource});
 const {psqlAsync,composeArgs} = transport;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+// M3 (offline latency oracle, opt-in --frameLedger FILE): one JSON line per received
+// dataUpdate with the receipt time and the newest record of each write domain it
+// carries. tools/mt-bench/m7-joined/latency_oracle.py joins it to the driver's
+// m7-input-accepted lines after the run. No database is read.
+// Synchronous appends: the probe ends with process.exit, which would drop a stream's buffer.
+const frameLedgerFd = args.frameLedger ? fs.openSync(args.frameLedger, 'wx', 0o600) : null;
+const frameLedger = frameLedgerFd === null ? null : { write: line => fs.writeSync(frameLedgerFd, line) };
+const newest = rows => { let max = null, count = 0;
+  for (const row of Array.isArray(rows) ? rows : []) { const v = Number.isFinite(row?.mills) ? row.mills : Number.isFinite(row?.date) ? row.date : Date.parse(row?.created_at);
+    if (Number.isFinite(v)) { count++; if (max === null || v > max) max = v; } }
+  return { max, count }; };
 const lookup = (hostname, options, cb) => (options && options.all) ? cb(null, [{ address: base.hostname, family: 4 }]) : cb(null, base.hostname, 4);
 const agent = new http.Agent({ keepAlive: true, lookup, maxSockets: Infinity });
 const plainAgent = new http.Agent({ keepAlive: false });
@@ -216,6 +227,9 @@ function open (index, jwt) {
   s.socket.on('connect_error', e => { reasons['connect_error:' + e.message] = (reasons['connect_error:' + e.message] || 0) + 1; });
   s.socket.on('dataUpdate', frame => {
     const at = Date.now(); s.frames.push(at);
+    if (frameLedger) { const sgv = newest(frame?.sgvs), ds = newest(frame?.devicestatus), tx = newest(frame?.treatments);
+      frameLedger.write(JSON.stringify({ event: 'viewer-frame', tenant: t.id, socket: sockets.indexOf(s), atMs: at, delta: frame?.delta === true,
+        entries: sgv.max, entriesCount: sgv.count, devicestatus: ds.max, devicestatusCount: ds.count, treatments: tx.max, treatmentsCount: tx.count }) + '\n'); }
     if (transport.frames) {
       const rows = frame?.sgvs || [], evidence = transport.frames;
       if (evidence.rows.length < 4096) {

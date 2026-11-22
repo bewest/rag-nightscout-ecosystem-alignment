@@ -30,6 +30,7 @@
     "workloadMix": "realistic-v1",
     "workloadScale": 1,
     "logicalPollingClients": 100,
-    "probeEveryMs": 300000
+    "probeEveryMs": 300000,
+    "latencyObservation": "offline-v1"
   }
 }
