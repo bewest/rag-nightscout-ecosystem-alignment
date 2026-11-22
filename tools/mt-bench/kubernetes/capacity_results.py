@@ -14,7 +14,7 @@ import tempfile
 import coverage_verdict
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE.parent / 'm7-joined'))
+sys.path.append(str(HERE.parent / 'm7-joined'))
 import http_accounting
 import latency_oracle
 
