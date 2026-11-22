@@ -300,11 +300,16 @@ class NativeJoin(unittest.TestCase):
     def test_probe_timeout_stops_writer_and_finishes_ordinary_catchup(self):
         self.native_probe_writer_join(timeout=True)
 
-    def native_probe_writer_join(self, timeout):
+    def test_discovery_default_runs_native_load_without_either_sql_poller(self):
+        self.native_probe_writer_join(timeout=False, offline=True)
+
+    def native_probe_writer_join(self, timeout, offline=False):
         # Exercise the real controller flow with admitted synthetic boundaries;
         # clinical correctness itself is covered by the unchanged oracle suite.
         from test_native_load import TENANTS
         c,_,_,_=fixture();c['completion']={};c['baseUrl']='http://127.0.0.1:18080'
+        if not offline:
+            c['workload']['latencyObservation'] = 'polling-sql-v1'
         c['tenantsFile']='/synthetic/tenants.json'
         c['driver'].update(node='/synthetic/node',dependencies='/synthetic/deps',
                            k6='/synthetic/k6',k6Sha256='9'*64)
@@ -316,7 +321,12 @@ class NativeJoin(unittest.TestCase):
                                     'workload':{'adaptedSha256':k.digest(d/'workload.js')}})
             process = SimpleNamespace(returncode=None)
             process.poll = lambda: process.returncode
-            def spawn(*_,**kwargs):
+            def spawn(argv, **kwargs):
+                if offline:
+                    self.assertEqual(argv[argv.index('--witnessSql') + 1], 'off')
+                    self.assertIn('--viewerDrainUntil', argv)
+                else:
+                    self.assertNotIn('--witnessSql', argv)
                 self.assertNotIn('M7_CLINICAL_WARM_PATH', kwargs['env'])
                 events.append('probe-start');(out/'.window').touch()
                 return process
@@ -357,7 +367,15 @@ class NativeJoin(unittest.TestCase):
                   patch.object(n,'assess_join',side_effect=assess)):
                 result=execute.execute(d,c,{},None,load=True)
             self.assertEqual(result['verdict'],'OBSERVED');local.assert_not_called()
-            self.assertEqual(events,['start-acceptance','probe-start','native-load','probe-stopped' if timeout else 'probe-joined','capture-storage','drain-acceptance','terminal-progress','full-assessor','close-acceptance'])
+            expected = ['probe-start', 'native-load', 'probe-stopped' if timeout else 'probe-joined', 'capture-storage']
+            if not offline:
+                expected = ['start-acceptance', *expected, 'drain-acceptance']
+            expected.extend(['terminal-progress', 'full-assessor'])
+            if not offline:
+                expected.append('close-acceptance')
+            self.assertEqual(events, expected)
+            if offline:
+                self.assertFalse(k.document(out/'latency-observation.json')['liveSqlObserver'])
             if timeout:
                 self.assertEqual(k.document(out/'probe-exit.json')['code'],'K8S_PROBE_DRAIN_WINDOW_EXHAUSTED')
             self.assertFalse((out/'preload-convergence').exists())

@@ -96,8 +96,14 @@ class CapacityPublication(unittest.TestCase):
         manifest = results.read(self.load / 'native-artifacts.json')
         manifest['files'][path.name]['bytes'] = path.stat().st_size
         write(self.load / 'native-artifacts.json', manifest)
-        results.publish(self.load, self.root)
-        self.assertEqual(results.rescore(self.root)['viewerDelivery']['reason'], 'acceptance ledger incomplete')
+        # The writer publication itself refuses a summary that counts more accepted requests than
+        # k6.log holds, so the run is scored as incomplete writer evidence before any viewer join.
+        self.assertEqual(results.publish(self.load, self.root)['writer'], 'partial')
+        writer = results.read(self.root / self.run / self.pod / 'writer' / 'publication.json')
+        self.assertEqual(writer['problems'], {'k6.log': 'accepted-request-count-mismatch'})
+        report = results.rescore(self.root)
+        self.assertEqual(report['reason'], 'incomplete writer evidence')
+        self.assertEqual(report['viewerDelivery']['verdict'], 'UNMEASURED')
 
     def test_controller_packet_can_rejoin_independent_volume_after_writer_capture_loss(self):
         results.publish(self.load, self.root)
