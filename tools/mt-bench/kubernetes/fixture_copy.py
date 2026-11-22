@@ -18,6 +18,7 @@ CSI driver deletes the provider snapshots. Disposable storage is replaced only w
 """
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 import time
@@ -90,12 +91,44 @@ def slices_record(inventory):
     return record
 
 
-def check_restore(manifest, tenants, postgres_image, slices=1, input_transport='writer-driven', key=None):
+def same_fixture_data(source, target):
+    """Only the application image and its migration tree may change on a forward restore."""
+    return {k: v for k, v in source.items() if k not in ('image', 'schema')} == {
+        k: v for k, v in target.items() if k not in ('image', 'schema')}
+
+
+def can_migrate_forward(repository, source, target):
+    if not all(isinstance(commit, str) and re.fullmatch(r'[0-9a-f]{40}', commit) for commit in (source, target)):
+        return False
+    return subprocess.run(['git', '-C', str(repository), 'merge-base', '--is-ancestor', source, target],
+                          stderr=subprocess.DEVNULL, timeout=15).returncode == 0
+
+
+def migration_receipt(log, forward):
+    """Bootstrap emits this result only after migrate up on the restored database succeeds."""
+    for line in reversed(log.splitlines()):
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(row, dict) and row.get('state') == 'existing-demo-unsealed':
+            need(row.get('seededFrom') == forward['seededFrom'] and row.get('sourceCommit') == forward['target'],
+                 'FORWARD_BOOTSTRAP_SOURCE')
+            return {key: row[key] for key in ('state', 'seededFrom', 'sourceCommit')}
+    raise Refused('K8S_FIXTURE_FORWARD_BOOTSTRAP_MISSING')
+
+
+def check_restore(manifest, tenants, postgres_image, slices=1, input_transport='writer-driven', key=None, forward=None):
     """A restore never grows or shrinks the roster and keeps the PostgreSQL data format.
     A writer-driven fixture restores at any evaluator K (decision statefulset-ordinal-scaling,
     amended), so `slices` is not checked. A keyed restore also refuses a fixture recorded under
     another key (a catalog pointing elsewhere)."""
-    need(key is None or manifest.get('key') == key, 'KEY_CHANGED')
+    if forward:
+        need(input_transport == 'writer-driven' and manifest.get('coreCommit') == forward['seededFrom']
+             and manifest.get('key') == forward['sourceKey'] and same_fixture_data(forward['sourceKey'], key),
+             'FORWARD_SOURCE_CHANGED')
+    else:
+        need(key is None or manifest.get('key') == key, 'KEY_CHANGED')
     need(manifest.get('inputTransport') == input_transport, 'INPUT_TRANSPORT_CHANGED')
     need(manifest['tenants'] == tenants, 'TENANTS_CHANGED')
     need(manifest['postgresImage'] == postgres_image, 'POSTGRES_IMAGE_CHANGED')
@@ -120,7 +153,7 @@ def render(jsonnet, library, namespace, run_id, chosen, tenants=None, postgres_i
             a(namespace), a(CLAIMS), a(chosen['sizes']), a(chosen['storageClass']), a(labels)))
     else:
         manifest = read_manifest(chosen['directory'])
-        check_restore(manifest, tenants, postgres_image, slices, input_transport, chosen.get('key'))
+        check_restore(manifest, tenants, postgres_image, slices, input_transport, chosen.get('key'), chosen.get('forward'))
         items = _jsonnet(jsonnet, library,
             'std.flattenArrays(std.objectValues(f.imported(%s,%s,%s,%s,%s,%s))) + '
             'std.objectValues(f.claims(%s,"VolumeSnapshot",%s,%s,%s,%s,%s))' % (

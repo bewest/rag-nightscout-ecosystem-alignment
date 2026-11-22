@@ -926,9 +926,12 @@ and primer. On a miss it first runs a seed case at `OUTPUT-seed` (live, no traff
 and primes on four labelled claims (`--storage-class`, `--snapshot-class`), stops every role,
 snapshots the claims through CSI, sets their contents to Retain under the `nightscout.org/fixture`
 label, writes the handles, the original Secrets and the key to a private catalog directory, and
-registers it; then it prepares the restore. `--fixture build` builds and registers the key's
-fixture ahead of time and prepares nothing else (a hit returns at once). A restore refuses another
-key, population, PostgreSQL image or evaluator K. Cleanup deletes the namespace and the run's
+registers it, then prepares the restore. `--fixture build` can build the seed ahead of time.
+A writer-driven case prefers an exact key. It can also reuse a seed from an ancestor core commit
+with the same tenant count, seed, history specification, transport and PostgreSQL image. A
+forward restore runs the provision Job's ordinary migrations and records the bootstrap result
+in `fixture-forward.json` before starting serving roles. Writer-driven fixtures can be used at
+different evaluator replica counts. Cleanup deletes the namespace and the run's
 labelled contents; `fixture_copy.py delete DIR CONTEXT` ends the fixture (the CSI driver deletes
 the provider snapshots) and retires its catalog entry. `python3 m7-joined/fixture_catalog.py list`
 shows the catalog. Snapshots and restored volumes are billed storage.

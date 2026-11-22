@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import subprocess
 import tempfile
 import unittest
 from unittest import mock
@@ -55,13 +56,13 @@ class FixtureCopy(unittest.TestCase):
         self.root = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, self.root)
 
-    def seeded(self, cluster=None):
+    def seeded(self, cluster=None, **provenance):
         cluster = cluster or Cluster(pods=2)
         chosen = fc.selection('seed', self.root/'fixture-8', 'do-block-storage', 'do-block-storage')
         fc.quiesce(cluster, NS, RID, 1e12)
         snapshots = {'items': [{'kind': 'VolumeSnapshot', 'metadata': {'name': n, 'namespace': NS}} for n in fc.SNAPSHOTS.values()]}
         summary = fc.capture(cluster, NS, RID, chosen, snapshots,
-                             {'tenants': 8, 'postgresImage': PG, 'coreCommit': 'a'*40, 'deployCommit': 'b'*40}, 1e12)
+                             {'tenants': 8, 'postgresImage': PG, 'coreCommit': 'a'*40, 'deployCommit': 'b'*40, **provenance}, 1e12)
         return cluster, chosen, summary
 
     def test_seed_stops_writers_then_keeps_retained_handles_and_only_fixture_secrets(self):
@@ -130,7 +131,7 @@ class FixtureCopy(unittest.TestCase):
 
     @unittest.skipUnless(BINDING and JSONNET.is_file(), 'needs K8S_FIXTURE_BINDING (deploy checkout) and jsonnet 0.21')
     def test_rendered_restore_binds_handles_in_the_fresh_namespace(self):
-        _, chosen, _ = self.seeded()
+        _, chosen, _ = self.seeded(inputTransport='writer-driven')
         library = Path(BINDING)/'bindings/kubernetes/lib'
         seed = fc.render(str(JSONNET), library, NS, RID, chosen)['items']
         self.assertEqual(sorted(o['metadata']['name'] for o in seed), sorted(fc.CLAIMS.values()))
@@ -185,13 +186,53 @@ class KeyedFixture(unittest.TestCase):
         cluster = Cluster(pods=1)
         snapshots = {'items': [{'kind': 'VolumeSnapshot', 'metadata': {'name': n, 'namespace': NS}} for n in fc.SNAPSHOTS.values()]}
         fc.capture(cluster, NS, RID, chosen, snapshots, {'tenants': 8, 'postgresImage': PG, 'key': chosen['key'],
+                                                       'coreCommit': getattr(self, 'source', None),
                                                        **fc.slices_record({'inputTransport': 'writer-driven'})}, 1e12)
         self.launched.append(bound)
 
     def run_keyed(self, action, name, launch=None):
         return self.sc.keyed(action, self.root, self.root, self.root/'profile.json', self.root/name, catalog=self.catalog,
                              storage_class='do-block-storage', snapshot_class='do-block-storage',
-                             launch=launch or self.launch, app_image='x')
+                             launch=launch or self.launch, app_image='x', core=self.root)
+
+    def test_restore_forward_uses_ancestor_and_preserves_fixture_identity(self):
+        def git(*args):
+            return subprocess.check_output(['git', '-C', str(self.root), *args], text=True).strip()
+        git('init', '-q')
+        def commit(message):
+            git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit',
+                '--allow-empty', '-qm', message)
+            return git('rev-parse', 'HEAD')
+        self.source = commit('seed')
+        target = commit('candidate')
+        self.run_keyed('build', 'seed')
+        saved = self.key
+        self.key = {**saved, 'schema': 'migrations-tree:' + 'd'*40, 'image': 'sha256:' + 'e'*64}
+        with mock.patch.object(self.sc, 'resolve_image', return_value={'core': target}):
+            self.run_keyed('reuse', 'forward')
+        chosen = self.prepared[-1][1]
+        self.assertEqual((chosen['mode'], chosen['lookup'], len(self.launched)), ('restore', 'forward', 1))
+        self.assertEqual(chosen['forward'], {'sourceKey': saved, 'seededFrom': self.source, 'target': target})
+        manifest = fc.read_manifest(chosen['directory'])
+        fc.check_restore(manifest, 8, PG, key=self.key, forward=chosen['forward'])
+        for field, value in [('history', {'mode': 'other'}), ('seed', 'other'), ('postgresImage', 'other'),
+                             ('transport', 'pgstream'), ('tenants', 10)]:
+            with self.subTest(field=field), self.assertRaisesRegex(fc.Refused, 'FORWARD_SOURCE_CHANGED'):
+                fc.check_restore(manifest, 8, PG, key={**self.key, field: value}, forward=chosen['forward'])
+        self.assertFalse(fc.can_migrate_forward(self.root, target, self.source))
+        self.assertFalse(fc.can_migrate_forward(self.root, '', target))
+        with mock.patch.object(self.sc, 'resolve_image', return_value={'core': '1'*40}):
+            self.run_keyed('reuse', 'unrelated')
+        self.assertEqual(self.prepared[-2][1]['mode'], 'seed')
+        self.assertEqual(len(self.launched), 2)
+
+    def test_restore_forward_requires_the_migrated_seed_at_the_expected_core(self):
+        forward = {'seededFrom': 'old', 'target': 'new'}
+        row = {'state': 'existing-demo-unsealed', 'seededFrom': 'old', 'sourceCommit': 'new'}
+        self.assertEqual(fc.migration_receipt(json.dumps(row), forward), row)
+        for change in [{'seededFrom': 'another'}, {'sourceCommit': 'other'}, {'state': 'fresh'}]:
+            with self.subTest(change=change), self.assertRaisesRegex(fc.Refused, 'FORWARD_BOOTSTRAP'):
+                fc.migration_receipt(json.dumps({**row, **change}), forward)
 
     def test_a_miss_builds_registers_and_restores_then_the_next_run_hits(self):
         self.assertEqual(self.run_keyed('reuse', 'run-1'), {'case': 'run-1'})

@@ -336,6 +336,9 @@ try:
     # roles can then start independently of synthetic tenant creation.
     step('provision')
     wait_job('provision', waits['provisionReadySeconds'])
+    if reuse and reuse.get('forward'):
+        bootstrap = k(['logs', 'job/provision', '-n', ns, '-c', 'bootstrap'], private=True)
+        put('fixture-forward.json', fixture_copy.migration_receipt(bootstrap, reuse['forward']))
     workload_ready('stores')
     install('private-admin')
     install('serving')

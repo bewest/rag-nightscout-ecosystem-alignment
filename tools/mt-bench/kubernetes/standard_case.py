@@ -68,6 +68,28 @@ def keyed(action, template_case, binding, profile_path, output, *, seed='default
                       ('app_image', 'postgres_image', 'core', 'binding_extra', 'inspect')})
     hit = catalog.lookup(key, 'kubernetes')
     lookup = 'hit' if hit else 'miss'
+    forward = None
+    if not hit and key['transport'] == 'writer-driven':
+        # Look at the seed manifest only when a ready record matches all workload and database inputs.
+        candidates = []
+        for entry in catalog.entries().values():
+            record = entry['platforms'].get('kubernetes', {})
+            if record.get('status') == 'ready' and fixture_copy.same_fixture_data(entry['key'], key):
+                candidates.append((record['builtAt'], entry['key']))
+        if candidates:
+            repository = options.get('core') or Path(k.document(template_case/'lifecycle-input.json')['coreRepository'])
+            target = resolve_image(options['app_image'], options.get('inspect'))['core']
+            for _, source_key in sorted(candidates, key=lambda item: item[0], reverse=True):
+                record = catalog.lookup(source_key, 'kubernetes')
+                if not record:
+                    continue
+                manifest = fixture_copy.read_manifest(record['directory'])
+                k.need(manifest.get('key') == source_key and manifest['fixtureId'] == record['identity']['fixtureId'],
+                       'FIXTURE_CATALOG_MANIFEST_MISMATCH')
+                if fixture_copy.can_migrate_forward(repository, manifest.get('coreCommit'), target):
+                    hit, lookup = record, 'forward'
+                    forward = {'sourceKey': source_key, 'seededFrom': manifest['coreCommit'], 'target': target}
+                    break
     if not hit:
         seed_case = output if action == 'build' else output.with_name(output.name + '-seed')
         directory = catalog.reserve(key, 'kubernetes')
@@ -83,10 +105,12 @@ def keyed(action, template_case, binding, profile_path, output, *, seed='default
             'fixtureId': manifest['fixtureId'], 'volumeSnapshotContents': manifest['seedContents'],
             'providerSnapshots': manifest['handles'], 'seedCase': str(seed_case)})
     if action == 'build':
-        return {'fixture': lookup, 'digest': hit['digest'], 'directory': hit['directory'], 'status': hit['status']}
+        return {'fixture': lookup, 'digest': hit['digest'], 'directory': hit['directory'], 'status': hit['status'],
+                **({'forward': forward} if forward else {})}
     chosen = fixture_copy.selection('restore', hit['directory'])
     return prepare(template_case, binding, profile_path, output,
-                   fixture={**chosen, 'key': key, 'digest': hit['digest'], 'lookup': lookup}, **options)
+                   fixture={**chosen, 'key': key, 'digest': hit['digest'], 'lookup': lookup,
+                            **({'forward': forward} if forward else {})}, **options)
 
 
 def _launch(bound):
@@ -232,6 +256,10 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     if fixture:
         if 'key' in fixture:
             key = fixture['key']
+            if fixture.get('forward'):
+                forward = fixture['forward']
+                k.need(forward['target'] == app['core'] and
+                       fixture_copy.can_migrate_forward(core, forward['seededFrom'], app['core']), 'FIXTURE_FORWARD_ANCESTRY')
             k.need(key['tenants'] == tenants and key['transport'] == transport and
                    key.get('evaluatorSlices', 1) == (fixture_copy.evaluator_slices(inventory) if 'evaluatorSlices' in key else 1),
                    'FIXTURE_KEY_CASE_MISMATCH')
