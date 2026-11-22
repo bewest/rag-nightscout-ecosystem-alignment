@@ -26,8 +26,13 @@ class OfflineLatency(unittest.TestCase):
 
     def test_setting_values(self):
         base = {'loadSeconds': 60, 'offeredRps': 1, 'logicalPollingClients': 1, 'probeEveryMs': 1000}
-        for value in ('polling-sql-v1', 'offline-v1'):
+        for value in ('polling-sql-v1', 'offline-v1', 'offline-with-witness-sql-v1'):
             workload_runtime.validate({**base, 'latencyObservation': value}, need)
+            settings = {'latencyObservation': value}
+            self.assertEqual(execute.latency_observation(settings, {'tier': 'discovery'}), value)
+            for tier in ('smoke', 'acceptance'):
+                self.assertEqual(execute.latency_observation(settings, {'tier': tier}), 'polling-sql-v1')
+            self.assertEqual(execute.latency_observation(settings, {}, load=False), 'polling-sql-v1')
         with self.assertRaises(AssertionError):
             workload_runtime.validate({**base, 'latencyObservation': 'live'}, need)
 
@@ -40,9 +45,14 @@ class OfflineLatency(unittest.TestCase):
             observer.start(); observer.finish(out, drain_end=0); observer.close()
             doc = json.loads((out / 'm3-latency.json').read_text())
             self.assertEqual(doc['domains']['entries']['p50Ms'], 900)
-            self.assertFalse(json.loads((out / 'latency-observation.json').read_text())['liveSqlObserver'])
+            receipt = json.loads((out / 'latency-observation.json').read_text())
+            self.assertFalse(receipt['liveSqlObserver'])
+            self.assertEqual(receipt['witnessSql'], 'off')
         with tempfile.TemporaryDirectory() as d:
-            execute.offline_latency_oracle(Path(d), 'r')
+            execute.OfflineLatency('r', 'offline-with-witness-sql-v1').finish(Path(d))
+            receipt = json.loads((Path(d) / 'latency-observation.json').read_text())
+            self.assertFalse(receipt['liveSqlObserver'])
+            self.assertEqual(receipt['witnessSql'], 'on')
             self.assertEqual(json.loads((Path(d) / 'm3-latency.json').read_text())['code'], 'K8S_M3_FRAME_LEDGER_MISSING')
 
 
