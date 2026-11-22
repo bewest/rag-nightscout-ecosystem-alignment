@@ -570,7 +570,7 @@ class HistoryV2(unittest.TestCase):
         self.assertEqual(set(receipt['roles']), set(roles))
         restored = self.fixture(verify_only=True, tenants=self.tenants[::-1])
         self.assertEqual((restored['logicalSha256'], restored['seededBatches']), (receipt['logicalSha256'], 0))
-        self.assertLess(max(c[3] for c in self.calls), 2 * 1024 * 1024)
+        self.assertLess(max(c[3] for c in self.calls), 1024 * 1024)   # devicestatus parser limit: 1 MB (HTTP 413 seen)
         healthy = copy.deepcopy(self.store)
         key = sorted(self.tenants, key=lambda r: r['host'])[roles.index('looping')]['id']
         for mutate in (lambda: self.store[key]['/api/v1/devicestatus'].pop(),

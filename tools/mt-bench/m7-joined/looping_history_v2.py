@@ -73,6 +73,8 @@ TRIO_ENACTED_DELAY_MS = 2_000
 LOOP_EXTRA_DELAY_MS = 1_000
 PROFILES = dict(loop=2, trio=1, aaps=1, cgm=1)
 MEAL_MINUTES = v1.MEAL_MINUTES
+# A request body bound (the seed's boundaries only, not its rows): a Trio day of statuses is about 1.1 MB.
+SEED_BODY_MAX_BYTES = 900_000
 CHECKED = v1.CHECKED
 
 _r1, _r2, _r4 = v1._r1, v1._r2, v1._r4

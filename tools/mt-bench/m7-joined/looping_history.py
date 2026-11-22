@@ -539,6 +539,20 @@ def seed_requests(t):
             ('/api/v1/treatments', treatments(t)), ('/api/v1/profile', profiles(t)))
 
 
+def _batches(docs, size, max_bytes=None):
+    """Request boundaries: at most `size` rows, and (when set) at most `max_bytes` of JSON body, so a day of
+    large statuses stays under the API's 1 MB parser for devicestatus (core lib/middleware/index.js:23-24)."""
+    if max_bytes is None:
+        return [docs[k:k+size] for k in range(0, len(docs), size)]
+    out, part, used = [], [], 2
+    for d in docs:
+        n = len(json.dumps(d)) + 2
+        if part and (len(part) == size or used + n > max_bytes):
+            out.append(part); part, used = [], 2
+        part.append(d); used += n
+    return out + ([part] if part else [])
+
+
 def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=h.post, now=time.time):
     return seed_and_verify(sys.modules[__name__], spec, tenants, base, sql, until, window_seconds,
                            verify_only=verify_only, post_batch=post_batch, now=now)
@@ -607,8 +621,8 @@ def seed_and_verify(g, spec, tenants, base, sql, until, window_seconds, *, verif
                             post_batch(port, tenant, doc, until, path=path)
                         continue
                     size = min(batch, treatment_batch) if path == '/api/v1/treatments' else batch
-                    for k in range(0, len(docs), size):
-                        post_batch(port, tenant, docs[k:k+size], until, path=path)
+                    for part in _batches(docs, size, getattr(g, 'SEED_BODY_MAX_BYTES', None)):
+                        post_batch(port, tenant, part, until, path=path)
             except Exception:
                 failed.set()
                 raise
