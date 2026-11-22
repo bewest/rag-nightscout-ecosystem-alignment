@@ -201,7 +201,11 @@ def run(packet, grant_path, expected_digest, group=None):
         execute.authority(d, c)
         if c.get('history', profile.history.BASELINE) != profile.history.BASELINE:
             receipt = profile.history.run(c['history'], execute.roster(c), c['baseUrl'],
-                        lambda query: k.sql(d, c, objects, query, client),
+                        # The history readback scans every stored document (about 2 min at 10k
+                        # tenants): its own limit inside the work deadline, not the 20 s observation default.
+                        lambda query: k.sql(d, c, objects, query, client, timeout=max(1, min(
+                            int(k.os.environ.get('K8S_HISTORY_READ_SECONDS', '900')),
+                            k.timestamp(c['deadlines']['workUntil']) - k.time.time()))),
                         k.timestamp(c['deadlines']['workUntil']), profile.history.window(c['workload']),
                         verify_only=c.get('restoredHistory', False))
             k.write(attempt/'populated-history.json', receipt)

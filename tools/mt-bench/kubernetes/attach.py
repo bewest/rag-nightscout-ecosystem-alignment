@@ -33,6 +33,7 @@ def execute(label,args,deadline=1800):
         write(live/'attachment-refusal.json',{'stage':label,'exit':result.returncode,'codes':detail})
         raise RuntimeError('ATTACH_'+label)
     return path
+HISTORY_READ_SECONDS=int(os.environ.get('K8S_HISTORY_READ_SECONDS','900'))
 exp=[sys.executable,'-B',K/'experiment.py'];ad=[sys.executable,'-B',K/'adapter.py']
 obj=read(live/'latest-edge.json');edge=obj['name'];edgeuid=obj['uid']
 kub=[cfg['kubectl'],'--context',cfg['context'],'-n',ns]
@@ -67,7 +68,10 @@ try:
                 return client.call(['get','pod',pg['name'],'-o','jsonpath={.metadata.uid}']).decode()
             if uid() != pg['uid']:
                 raise RuntimeError('K8S_HISTORY_POSTGRES_CHANGED')
-            result = k.postgres_read(client, pg['name'], cfg['roles']['postgres']['container'], query)
+            # The history readback scans every stored document (about 2 min at 10k tenants); it gets
+            # its own limit inside the work deadline, not the adapter's 20 s observation default.
+            result = k.postgres_read(client, pg['name'], cfg['roles']['postgres']['container'], query,
+                                     timeout=max(1, min(HISTORY_READ_SECONDS, until - time.time())))
             if uid() != pg['uid']:
                 raise RuntimeError('K8S_HISTORY_POSTGRES_CHANGED')
             return result

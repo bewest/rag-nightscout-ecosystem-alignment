@@ -613,13 +613,13 @@ def active_baseline(d):
     return initial
 
 
-def sql(d, c, objects, query, client=None):
+def sql(d, c, objects, query, client=None, timeout=None):
     need(isinstance(query, str) and query.strip().startswith('SELECT ') and len(query.encode()) < 131072, 'SQL_READ_ONLY')
     client = client or Client(c)
     baseline = active_baseline(d)
     before = observe(c, objects, client, baseline)
     pod, container = selected_pod(c, before, 'postgres')
-    raw = postgres_read(client, pod, container, query)
+    raw = postgres_read(client, pod, container, query, **({'timeout': timeout} if timeout else {}))
     observe(c, objects, client, baseline)
     return raw
 
