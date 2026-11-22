@@ -3,7 +3,8 @@
 const fs = require('node:fs'), path = require('node:path');
 const { once } = require('node:events');
 const root = process.env.NS_NATIVE_OUTPUT || '/out';
-const config = JSON.parse(fs.readFileSync(process.env.NS_NATIVE_EXPORT_CONFIG || '/inputs/export.json'));
+const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));
+let config;
 const manifestFile = path.join(root, 'artifacts.json');
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 function checked(name, expected) {
@@ -18,6 +19,20 @@ function sized(name) {
 }
 async function main() {
   const mode = process.argv[2];
+  if (mode === 'publish') {
+    const [source, runId, podUid, destination] = process.argv.slice(3);
+    if (!source || !destination) throw Error('K8S_WRITER_PUBLICATION_ARGUMENTS');
+    const custody = read(path.join(source, 'native-load.json'));
+    if (custody.kind !== 'm7-kubernetes-k6-job-v1' || custody.runId !== runId || custody.podUid !== podUid ||
+        custody.artifactSource?.podUid !== podUid || custody.writerContinuity === 'UNMEASURED')
+      throw Error('K8S_WRITER_PUBLICATION_CUSTODY');
+    const result = await require('./native-publication.cjs').publish(source, runId, podUid, destination,
+      read(path.join(source, 'native-artifacts.json')));
+    process.stdout.write(JSON.stringify(result) + '\n');
+    if (result.status !== 'complete') process.exitCode = 78;
+    return;
+  }
+  config = read(process.env.NS_NATIVE_EXPORT_CONFIG || '/inputs/export.json');
   if (mode === 'hold') {
     const timer = setTimeout(() => process.exit(78), config.seconds * 1000);
     try {
@@ -25,8 +40,17 @@ async function main() {
       const exit = fs.readFileSync(path.join(root, 'exit-code'), 'utf8').trim();
       if (!/^[0-9]{1,3}$/.test(exit)) throw Error('K8S_NATIVE_ARTIFACT_EXIT');
       const files = {};
-      for (const name of Object.keys(config.files)) files[name] = sized(name);
+      for (const name of Object.keys(config.files)) {
+        try { files[name] = sized(name); }
+        catch (err) {
+          if (!config.writerPublication || (err.code !== 'ENOENT' && err.message !== 'K8S_NATIVE_ARTIFACT_BOUND')) throw err;
+        }
+      }
       const manifest = {kind:'m7-native-artifacts-v1', runId:config.runId, exitCode:Number(exit), files};
+      if (config.writerPublication) {
+        await require('./native-publication.cjs').publish(root, config.runId, process.env.NS_PUBLICATION_POD_UID,
+          process.env.NS_PUBLICATION_ROOT, manifest);
+      }
       fs.writeFileSync(manifestFile + '.tmp', JSON.stringify(manifest), {mode:0o600, flag:'wx'});
       fs.renameSync(manifestFile + '.tmp', manifestFile);
       while (!fs.existsSync(path.join(root, 'exported'))) await delay(100);

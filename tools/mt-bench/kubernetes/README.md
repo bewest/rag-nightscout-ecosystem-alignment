@@ -787,8 +787,8 @@ Its appended `handleSummary` exports k6's actual counters/trends in framed
 chunks; it changes no workload function and includes no JWT setup data.
 
 `native_join.py` adds an opt-in `nativeLoad` selection to the existing execution,
-census and fit path. The controller, probe, SQL, completed clinical output, frames and the accepted-input
-observer still run on the workstation. `assess_join()` verifies the
+census and fit path. The workstation runs the controller, viewer probe and SQL bookends. Correctness and recovery
+also run their selected live SQL witnesses. `assess_join()` verifies the
 capture/run/script bindings and calls the unchanged `execute.assess_stage()`;
 Job completion alone leaves the outcome gate UNMEASURED. The 120-second clinical
 contract and accepted-versus-stored accounting remain required. All-writer
@@ -812,6 +812,30 @@ credentials. It holds the Pod until an owned exec reader has verified each
 file's exact length/hash and acknowledged the manifest, or the finite Job and
 exporter deadlines expire. Raw CSV never depends on kubelet log retention.
 The exporter contributes its explicit requests/limits to Pod fit and quota.
+
+A capacity case can publish writer results from the exporter to a private, retained filesystem.
+Give `experiment.py standard` the option `--writer-publication /absolute/volume.json`,
+or set `nativeLoad.writerPublication` in the native Job selection. The object takes this form.
+
+```json
+{"volumeName":"capacity-example","storageClassName":"","storage":"64Mi"}
+```
+
+Reserve the existing filesystem PV with `persistentVolumeReclaimPolicy: Retain` and a
+`claimRef` naming `writer-publication` in this run's exact namespace. The claim reference
+starts without a UID. Match its storage class and writable capacity to the selection. The
+exporter runs as UID/GID 1000 and needs write access at the mounted root. The lifecycle
+verifies the reservation, creates a PVC explicitly bound to that volume and records its UID.
+Namespace cleanup releases the PV. The storage owner can retrieve the files from the backing
+filesystem or rebind the released PV to a reader. Reserve each volume for only one run.
+
+After k6 exits, the exporter commits `<stage-run-id>/<pod-uid>/writer/publication.json`
+with the byte lengths and SHA-256 digests of the numeric k6 summary and the accepted-write
+ledger. This happens before the controller reads or acknowledges any artifacts. A nonzero
+writer exit or an invalid input records a partial publication. An interrupted copy has no
+committed manifest until the atomic directory rename. A writer killed before emitting its
+exit code can leave no publication. Repeating the export with identical inputs is idempotent.
+The original scheduling CSV and raw diagnostics still use the finite exec/ack collection.
 
 For a **fresh, uncaptured prepared case**, run `python3 -B native_join.py
 /absolute/case /absolute/selection.json`, then the normal lifecycle capture and
@@ -856,7 +880,7 @@ Job backoff is zero, replacement waits for Failed, and test Pods have a finite
 termination grace. Runtime application Pod and container identities stay strict;
 only the exact declared test Job has a separate dynamic census.
 
-The accepted-input observer runs across probe and driver traffic. After both writers exit, the controller reconciles storage, checks remaining clinical work through drain, captures terminal progress and calls `assess_stage()`. `assess_join()` adds capture/run/script/hash checks. The init
+In polling mode the accepted-input observer covers probe and driver traffic. Discovery defaults to offline observation. After the writers exit, the controller reconciles storage, captures terminal progress and calls `assess_stage()`. `assess_join()` adds capture/run/script/hash checks. The init
 waiter alone gets `jobs/get` for `provision` and `primer` in its namespace. The
 exporter receives no Kubernetes API permission. The test Pod uses component
 `load`, so it does not match the application's
@@ -905,6 +929,34 @@ are published beside `raw/`. The native receipt includes the namespace,
 labelled cluster trust, host unit and port-forward observations. The load
 report retains scheduling drops, per-executor start times and attributable
 actor transitions alongside the independently judged product components.
+
+### Rescore a capacity run after cleanup
+
+Native discovery runs that record viewer frames publish a private packet to
+`runtime/packet/experiment/capacity-results/`. The sibling `capacity-publication.json`
+reports the export status. The native exporter selects numeric k6 metrics and ordinary accepted-write
+events. The controller supplies the viewer frame ledger, stored counts, and evaluator counters from
+the start and end of the run. They share a run ID and writer Pod UID. Keep the packet on retained
+storage. Once both parts are present, scoring requires only Python and the harness checkout.
+
+```sh
+python3 -B tools/mt-bench/kubernetes/capacity_results.py rescore "$PACKET"
+```
+
+For an older retained load directory, first run
+`python3 -B tools/mt-bench/kubernetes/capacity_results.py publish "$LOAD" "$PACKET"`.
+To score a recovered exporter volume, point `rescore` at its `RUN_ID/POD_UID/writer`
+directory for HTTP accounting alone, or pass `--writer "$WRITER"` alongside the controller
+packet for all three measures. Supply `--clock-bound-ms` and `--viewer-offset-ms` when reproducing
+a score with previously measured clock settings.
+
+The report separates HTTP accounting, all-input evaluator deadline coverage and observed viewer
+delivery. It preserves the original stage verdict and verifies file digests and producer identity.
+Incomplete writer evidence, missing SQL bookends and failed viewer capture leave the corresponding
+scores unmeasured. The compact packet supports durable evaluator counters. Older images that relied
+on Prometheus for that measure still need their raw case and retained TSDB. An interrupted
+controller can lose viewer and SQL evidence even when the exporter volume preserves the writer.
+[Capacity and comparison modes](workloads/README.md)
 
 The joined disposable binding uses `secrets.sh seed`, waits for the provision Job and role readiness,
 then runs the deployment's primer as an init container using the private admin and API Services.

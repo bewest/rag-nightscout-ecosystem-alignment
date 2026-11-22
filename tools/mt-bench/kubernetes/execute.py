@@ -368,8 +368,9 @@ def capture_bookend(d, out, c, objects, client, name):
 
 class OfflineLatency:
     """Stands where the live accepted-input observer stands; reads nothing during the run."""
-    def __init__(self, runid):
+    def __init__(self, runid, mode='offline-v1'):
         self.runid = runid
+        self.mode = mode
 
     def start(self):
         pass
@@ -378,22 +379,24 @@ class OfflineLatency:
         pass
 
     def finish(self, out, *, drain_end=None, storage=None):
-        offline_latency_oracle(out, self.runid)
+        offline_latency_oracle(out, self.runid, self.mode)
 
 
-def latency_observation(settings, c):
-    """On an image that keeps durable M1 on the work row (lane m1-durable) the polling SQL observer is off unless
-    the workload asks for it ('polling-sql-v1', a smoke cross-check); elsewhere the default is unchanged."""
+def latency_observation(settings, c, *, load=True):
+    """Commission, recovery and correctness tiers always use the live witnesses."""
+    if not load or c.get('tier', 'discovery') != 'discovery':
+        return 'polling-sql-v1'
     import progress_sql
-    durable = progress_sql.durable_lag(c.get('completion')) is not None
-    return settings.get('latencyObservation', 'offline-v1' if durable else 'polling-sql-v1')
+    offline = c.get('tier') == 'discovery' or progress_sql.durable_lag(c.get('completion')) is not None
+    return settings.get('latencyObservation', 'offline-v1' if offline else 'polling-sql-v1')
 
 
-def offline_latency_oracle(out, runid):
+def offline_latency_oracle(out, runid, mode='offline-v1'):
     """M3 after the run: no database read. The clock offset between the k6 driver and the viewer
     process is not measured here; the result says so (0 means same host or unmeasured)."""
     oracle = Path(__file__).resolve().parents[1] / 'm7-joined' / 'latency_oracle.py'
-    k.write(out / 'latency-observation.json', {'version': 1, 'mode': 'offline-v1', 'liveSqlObserver': False,
+    k.write(out / 'latency-observation.json', {'version': 1, 'mode': mode, 'liveSqlObserver': False,
+            'witnessSql': 'off' if mode == 'offline-v1' else 'on',
             'evaluatorCatchup': 'NOT_COLLECTED (polling observer retired for this profile)',
             'm3': 'm3-latency.json', 'm1m2': 'role Prometheus metrics (metrics snapshot)'})
     if not (out / 'viewer-frames.jsonl').is_file():
@@ -581,14 +584,11 @@ def execute(d, c, objects, client, load=False, recovery=False):
     setup = settings.get('setupSeconds', 310)
     if not load:
         argv += ['--maxWrites', '2']
-    # Latency observation (lane mt-plannable-scale-20261121, E3). 'polling-sql-v1' (default) keeps the
-    # live accepted-input SQL observer for correctness and smoke. 'offline-v1' polls nothing during the
-    # run: the viewers keep a frame ledger, and m7-joined/latency_oracle.py joins it to the driver's
-    # accepted writes afterwards (M3); stage lag and backlog come from the roles' metrics (M1, M2).
-    offline_latency = latency_observation(settings, c) == 'offline-v1'
-    if offline_latency and load:
-        argv += ['--frameLedger', str(out / 'viewer-frames.jsonl')]
-    # Unchanged stock probe, with only SQL transport and external restart changed.
+    mode = latency_observation(settings, c, load=load)
+    offline_latency = mode != 'polling-sql-v1'
+    if offline_latency:
+        argv += ['--frameLedger', str(out / 'viewer-frames.jsonl'), '--viewerDrainUntil', str(out / '.restart'),
+                 '--witnessSql', 'off' if mode == 'offline-v1' else 'on']
     started = time.time()
     process = None
     load_started = load_ended = load_process_started = load_process_ended = None
@@ -604,7 +604,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
             return
         retained_progress(d, out, c, objects, client, 'progress-midpoint')
     observer = catchup.observer(d, c, objects, client, runid, [row['id'] for row in tenants]) if load and not offline_latency else \
-        OfflineLatency(runid) if load else None
+        OfflineLatency(runid, mode) if load else None
     log = (out / 'probe.log').open('xb')
     try:
         if observer is not None:
@@ -662,8 +662,9 @@ def execute(d, c, objects, client, load=False, recovery=False):
                           seconds=settings['loadSeconds'] + setup + 5, failures=midpoint_failure)
                 load_process_ended = time.time()
                 load_started, load_ended = ordinary_load_window(c, out / 'k6.log', load_process_started, load_process_ended)
-            (out / '.restart').touch()
-            drain_end = time.monotonic() + min(settings.get('drainSeconds', 120), k.deadline(c))
+            drain_seconds = min(settings.get('drainSeconds', 120), k.deadline(c))
+            drain_end = time.monotonic() + drain_seconds
+            k.write(out / '.restart', int(1000 * (time.time() + drain_seconds)))
         if load:
             # The operator's remaining drain clock can censor outstanding witnesses.
             requested = settings.get('drainSeconds', 120)
@@ -672,7 +673,10 @@ def execute(d, c, objects, client, load=False, recovery=False):
                     'maximumObservableSeconds': min(requested, k.deadline(c)),
                     'scope': 'remaining operator drain'})
             try:
-                wait_observed(process, max(0, drain_end - time.monotonic()), midpoint_failure)
+                # Offline viewers capture through the deadline itself. Allow them to flush the final
+                # probe receipt; frame acceptance stops at the original drain end.
+                flush = 5 if offline_latency else 0
+                wait_observed(process, min(k.deadline(c), max(0, drain_end - time.monotonic()) + flush), midpoint_failure)
             except subprocess.TimeoutExpired:
                 stop_process(process)
                 k.write(out/'probe-exit.json', {'verdict':'UNMEASURED', 'code':'K8S_PROBE_DRAIN_WINDOW_EXHAUSTED',

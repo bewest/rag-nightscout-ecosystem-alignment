@@ -28,6 +28,9 @@ const { execFile } = require('node:child_process');
 const { io } = require(process.env.M7_GENERATOR_ROOT?path.join(process.env.M7_GENERATOR_ROOT,'node_modules/socket.io-client'):'socket.io-client');
 
 const args = Object.fromEntries(process.argv.slice(2).reduce((a, v, i, all) => (i % 2 ? a : [...a, [v.replace(/^--/, ''), all[i + 1]]]), []));
+const witnessSql = args.witnessSql ?? 'on';
+if (!['off', 'on'].includes(witnessSql) || (witnessSql === 'off' && args.restart !== '0'))
+  throw Error('M7_PROBE_WITNESS_SQL_MODE');
 const base = new URL(args.base);
 const tenants = JSON.parse(fs.readFileSync(args.tenants, 'utf8'));
 const PER = Number(args.per ?? 2), OPEN = Number(args.open ?? 5), PROBE = Number(args.probeEvery ?? 3000);
@@ -60,6 +63,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 // Synchronous appends: the probe ends with process.exit, which would drop a stream's buffer.
 const frameLedgerFd = args.frameLedger ? fs.openSync(args.frameLedger, 'wx', 0o600) : null;
 const frameLedger = frameLedgerFd === null ? null : { write: line => fs.writeSync(frameLedgerFd, line) };
+let viewerDrainEnd = Infinity;
 function writeKeys(rows, marker, dateField) {
   const keys = new Set();
   for (const row of Array.isArray(rows) ? rows : []) {
@@ -232,7 +236,9 @@ function open (index, jwt) {
   });
   s.socket.on('connect_error', e => { reasons['connect_error:' + e.message] = (reasons['connect_error:' + e.message] || 0) + 1; });
   s.socket.on('dataUpdate', frame => {
-    const at = Date.now(); s.frames.push(at);
+    const at = Date.now();
+    if (at > viewerDrainEnd) return;
+    s.frames.push(at);
     if (frameLedger) {
       const keys = {entries: writeKeys(frame?.sgvs, 'device', 'date'),
         devicestatus: writeKeys(frame?.devicestatus, 'device', 'created_at'),
@@ -254,7 +260,7 @@ function open (index, jwt) {
 }
 
 (async () => {
-  const out = { args: { per: PER, open: OPEN, probeEveryMs: PROBE, tenants: tenants.length, stockMs: STOCK, recoveryMs: RECOVERY, evalTimeoutMs: EVAL_TIMEOUT } };
+  const out = { args: { per: PER, open: OPEN, probeEveryMs: PROBE, witnessSql, tenants: tenants.length, stockMs: STOCK, recoveryMs: RECOVERY, evalTimeoutMs: EVAL_TIMEOUT } };
   retainedOut=out; if(discovery){out.runPurpose='discovery';savePartial();}
   const setupSeconds=Number(args.setupSeconds??300),setupStartedMono=performance.now();
   if(!Number.isSafeInteger(setupSeconds)||!Number.isSafeInteger(setupSeconds*1000)||setupSeconds<=0)throw Error('M7_PHASE_WINDOW_INVALID:setupSeconds');
@@ -273,7 +279,7 @@ function open (index, jwt) {
   out.viewerBindings=sockets.map((s,socket)=>({socket,tenant:tenants[s.index].id}));
   log('prime', out.prime);savePartial();
   fs.writeFileSync(path.join(signalDir,'prime.json'),JSON.stringify(out.prime)); if(!discovery&&out.prime.primed!==TOTAL)throw new Error('M7_ESTABLISHED_SOCKETS_INCOMPLETE');
-  const writerBaseline = completionSource?.writerDriven ? JSON.parse(await psqlAsync(completionOracle.writerBaseline(completionSource))) : null;
+  const writerBaseline = witnessSql === 'on' && completionSource?.writerDriven ? JSON.parse(await psqlAsync(completionOracle.writerBaseline(completionSource))) : null;
   fs.writeFileSync(args.signal, String(Date.now()));
 
   // Window: probe writes, write->frame and write->evaluation.
@@ -282,10 +288,11 @@ function open (index, jwt) {
   const accounting=(discovery||process.env.M7_INPUT_ACCOUNTING==='1')?require('./probe-accounting.cjs').create({ids:tenants.map(t=>t.id),runId:args.runid,budget,persist:value=>writeEvidence('probe-accounting.json',value)}):null;
   let polling = true;
   const poller = (async () => {
+    if (witnessSql === 'off') return;
     for (;;) {
       const open=evalPending.filter(e=>e.evaluatedAt===null &&
         (completionSource?timing.shouldPoll(e):Date.now()-e.sent<120000));
-      if(!polling&&!open.length)break;
+      if(!polling&&(!open.length||args.viewerDrainUntil))break;
       if(open.length && completionSource){
         const ids=[...new Set(open.map(e=>e.tenant))];
         oracleCost.durablePendingPeak=Math.max(oracleCost.durablePendingPeak,open.filter(e=>e.acked!==null&&!e.durableObservation).length);
@@ -341,7 +348,7 @@ function open (index, jwt) {
     for (const e of evalPending) if (e.evaluatedAt === null) evalMissed.push(e.tenant);
   })();
   const writers = []; let k = 0; const stride = tenants.length > 7 ? 7919 % tenants.length || 1 : 1;
-  while (!out.sqlObserverFailure && !fs.existsSync(path.join(signalDir, '.restart')) && (args.maxWrites===undefined || k<Number(args.maxWrites))) {
+  while ((!out.sqlObserverFailure || args.viewerDrainUntil) && !fs.existsSync(path.join(signalDir, '.restart')) && (args.maxWrites===undefined || k<Number(args.maxWrites))) {
     const i = (k * stride) % tenants.length; k++;
     const t = tenants[i]; const date = Date.now() - 60000 + (k % 1000);
     const p = { sentMono:performance.now(), sent: Date.now(), seen: new Set(), latencies: [], expected: viewers[i] };
@@ -361,7 +368,16 @@ function open (index, jwt) {
     if(completionSource){const until=Date.now()+PROBE;while(Date.now()<until&&!fs.existsSync(path.join(signalDir,'.restart')))await sleep(Math.min(1000,until-Date.now()));}else await sleep(PROBE);
   }
   if(accounting)accounting.close();
-  await Promise.all(writers); await sleep(10000); polling = false; await poller;
+  // A capacity run closes admissions and publishes the absolute viewer deadline atomically.
+  // Both arms capture through the same drain even if every SQL witness settles immediately.
+  if (args.viewerDrainUntil) {
+    viewerDrainEnd = Number(fs.readFileSync(args.viewerDrainUntil, 'utf8'));
+    if (!Number.isSafeInteger(viewerDrainEnd) || viewerDrainEnd <= 0) throw Error('M7_PROBE_DRAIN_DEADLINE');
+    out.viewerDrainEndMs = viewerDrainEnd;
+  }
+  await Promise.all(writers);
+  await sleep(args.viewerDrainUntil ? Math.max(0, viewerDrainEnd - Date.now()) : 10000);
+  polling = false; await poller;
   const w1 = Date.now();
   const latencies = [...pending.values()].flatMap(p => p.latencies);
   const firstSocket = [...pending.values()].filter(p => p.latencies.length).map(p => Math.min(...p.latencies));
@@ -370,7 +386,10 @@ function open (index, jwt) {
     writeToFrameMs: stats(latencies), writeToFirstFrameMs: stats(firstSocket), deliveredFrames: latencies.length,
     expectedFrames: [...pending.values()].reduce((n,p)=>n+p.expected,0),
     writeToEvaluationMs: stats(evalLatencies), evaluationMissedWithin120s: evalMissed.length, reasons: { ...reasons } };
-  if(out.sqlObserverFailure)out.window.evaluationMissedWithin120s=null;
+  if (witnessSql === 'off') {
+    out.window.writeToEvaluationMs = null;
+    out.window.evaluationMissedWithin120s = null;
+  } else if (out.sqlObserverFailure) out.window.evaluationMissedWithin120s = null;
   savePartial();
   log('window', { w2f: out.window.writeToFrameMs, w2e: out.window.writeToEvaluationMs, delivered: out.window.deliveredFrames, expected: out.window.expectedFrames, writes });
   writeEvidence('fanout.json',{probeWrites:{byTenant}});
@@ -483,8 +502,10 @@ function open (index, jwt) {
     out.restart = restart;
     }
   }
-  if(completionSource){
-    if (transport.frames) out.kubernetesFrames=transport.frames;
+  if (transport.frames && completionSource) out.kubernetesFrames=transport.frames;
+  if (witnessSql === 'off') {
+    out.durableOutputObservation = {status: 'NOT_COLLECTED', collector: oracleCost};
+  } else if(completionSource){
     oracleCost.observationEndMono=performance.now();
     for(const e of evalPending){
       const frames=[...(pending.get(e.tenant+':'+e.date)?.clientFrames?.values()||[])];
@@ -501,8 +522,8 @@ function open (index, jwt) {
         ...(transport.frames ? {clientProofVersion:e.clientProofVersion,expectedSockets:e.expectedSockets,sentMono:e.sentMono,
           rawRow:e.rawRow,clientObservations:[...(pending.get(e.tenant+':'+e.date)?.clientFrames?.values()||[])]} : {}),...e.completion})),
       probeCadenceMs:PROBE,scope:'sampled stored/output/client witnesses and selected BG-now mean; witnessTenants is the exercised subset, not all-roster clinical equivalence; uploader separate from ordinary k6 workload; any planned restart is qualified by its separate receipt'};
-    for(const s of sockets)s.socket.close();
   }
+  if (completionSource) for (const s of sockets) s.socket.close();
   fs.writeFileSync(args.out, JSON.stringify(out, null, 2) + '\n');
   process.exit(out.sqlObserverFailure && args.restart==='1' ? 1 : 0);
 })().catch(e => {if(discovery){retainedOut=retainedOut||{};if(e.clinicalFailure)retainedOut.hardFailure={stage:'runtime-recovery',code:typedCode(e)};retainedOut.failure={code:typedCode(e),verdict:e.clinicalFailure?'FAIL':'UNMEASURED'};savePartial();} console.error('probe failed', discovery?typedCode(e):e && e.stack); process.exit(1); });
