@@ -283,7 +283,7 @@ class Client:
                 result = self.run(argv, input=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                   timeout=limit, check=False, env=env)
         except (OSError, subprocess.TimeoutExpired) as error:
-            _lost(args, limit, type(error).__name__, None, b'')
+            _lost(args, limit, type(error).__name__, None, b'', data)
             raise Refused('K8S_OBSERVATION_LOST', 'UNMEASURED')
         def bounded_response():
             raw = result.stdout
@@ -302,7 +302,7 @@ class Client:
         if result.returncode and re.search(rb'(?<![A-Z_])EVALUATOR_SCOPE_UNSAFE(?![A-Z_])', getattr(result, 'stderr', b'') or b''):
             raise Refused('EVALUATOR_SCOPE_UNSAFE', 'FAIL')
         if result.returncode:
-            _lost(args, limit, 'exit', result.returncode, getattr(result, 'stderr', b'') or b'')
+            _lost(args, limit, 'exit', result.returncode, getattr(result, 'stderr', b'') or b'', data)
         need(result.returncode == 0, 'OBSERVATION_LOST', 'UNMEASURED')
         return bounded_response() if raw is None else raw
 
@@ -315,13 +315,24 @@ class Client:
 
 
 
-def _lost(args, limit, reason, returncode, stderr):
+def _lost(args, limit, reason, returncode, stderr, data=None):
     """Say which observation was lost and why, on stderr (the stage log keeps it). Verb, resource and
     flags only: no names, no input data, and stderr is cut to its last 300 bytes."""
     shape = [a for a in args[:6] if not a.startswith('--token')]
     tail = stderr[-300:].decode('utf-8', 'replace') if isinstance(stderr, bytes) else str(stderr)[-300:]
     print(json.dumps({'observationLost': {'kubectl': shape, 'limitSeconds': round(limit, 1), 'reason': reason,
-                                          'returncode': returncode, 'stderrTail': tail}}), file=sys.stderr, flush=True)
+                                          'returncode': returncode, 'stderrTail': tail,
+                                          'sqlHead': _sql_head(data)}}), file=sys.stderr, flush=True)
+
+
+def _sql_head(data):
+    """The first 160 characters of a harness-authored read-only query, whitespace folded; nothing else."""
+    if not isinstance(data, (bytes, str)):
+        return None
+    text = data.decode('utf-8', 'replace') if isinstance(data, bytes) else data
+    if not text.startswith('BEGIN READ ONLY;'):
+        return None
+    return ' '.join(text[len('BEGIN READ ONLY;'):].split())[:160]
 
 def meta(obj):
     m = obj['metadata']
