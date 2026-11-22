@@ -5,7 +5,8 @@ Lane mt-plannable-scale-20261121, workstream E5. Decisions: pg-connection-budget
 pg-connection-pooler-allowed, evaluator-k-planned-restart, stateful-evaluator-resident-window,
 requests-typical-scheduler-decides.
 
-    point     one K (1..8) sets evaluator and realtime K, 2 api replicas, lab metrics, and optionally
+    point     one K (1..32) sets evaluator K and realtime K (the same, up to realtime's bound of 8),
+              2 api replicas, lab metrics, and optionally
               pools and the evaluator memory constants. The deploy binding renders from that input
               max_connections (connection budget), the evaluator memory request
               (base + per-resident x ceil(tenants / K)) and NS_EVALUATOR_RESIDENT_MAX (owned count).

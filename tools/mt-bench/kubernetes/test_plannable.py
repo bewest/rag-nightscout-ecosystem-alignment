@@ -188,6 +188,27 @@ class Rendered(unittest.TestCase):
         self.assertEqual(sum(own['evaluator']['perOrdinal']), 10000)
         self.assertLessEqual(max(own['evaluator']['perOrdinal']), 599)
 
+    def test_k_9_16_20_32_budget_memory_and_ownership(self):
+        # Evaluator K above 8 with realtime at its bound of 8 and two api: 322 + 23 x K connections.
+        ids = roster(10000)
+        expected = {9: (529, 1253, 5454), 16: (690, 734, 3918), 20: (782, 599, 3519), 32: (1058, 391, 2903)}
+        for k, (budget, resident, memory) in expected.items():
+            inv = self.render({**p.point(k), 'tenantCount': 10000})
+            self.assertEqual(inv['slices'], {'evaluator': k, 'realtime': 8})
+            self.assertEqual(budget, 322 + 23 * k)
+            self.assertEqual((inv['connectionBudget']['budget'], inv['connectionBudget']['maxConnections']), (budget, budget))
+            ev = inv['connectionBudget']['evaluator']
+            self.assertEqual((ev['residentMax'], ev['memoryRequestMiB']), (resident, memory))
+            self.assertGreaterEqual(ev['heapMiB'], ev['memoryRequestMiB'])
+            own = p.ownership(ids, inv)
+            self.assertEqual(sum(own['evaluator']['perOrdinal']), 10000)
+            self.assertEqual(len(own['evaluator']['perOrdinal']), k)
+            self.assertTrue(all(n > 0 for n in own['evaluator']['perOrdinal']))
+            self.assertLessEqual(max(own['evaluator']['perOrdinal']), resident)
+            # A Pod missing from the live set leaves its tenants unowned: refused, not measured.
+            with self.assertRaisesRegex(p.Refused, 'TENANT_UNOWNED_EVALUATOR'):
+                p.ownership(ids, inv, live={'evaluator': range(k - 1)})
+
     def test_k_1_2_4_8_budget_memory_and_ownership(self):
         ids = roster(10000)
         expected = {1: 205, 2: 248, 4: 334, 8: 506}

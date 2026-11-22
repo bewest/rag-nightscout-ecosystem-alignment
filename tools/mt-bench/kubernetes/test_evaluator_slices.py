@@ -130,6 +130,20 @@ CORE_BUCKETS = {
     'ffffffff-ffff-4fff-bfff-ffffffffffff': [0, 0, 1, 0, 0, 4, 5, 0],
 }
 
+# The same ids at K = 9, 16, 20, 32, computed with core 458539d99; core holds the same table
+# (tests/tenant-slice-ownership.test.js VECTORS), so a change of rule on either side is red.
+LARGE_KS = (9, 16, 20, 32)
+CORE_BUCKETS_LARGE = {
+    '11111111-1111-4111-8111-111111111111': [1, 4, 0, 20],
+    '22222222-2222-4222-8222-222222222222': [6, 11, 7, 11],
+    '33333333-3333-4333-8333-333333333333': [7, 15, 11, 15],
+    '44444444-4444-4444-8444-444444444444': [6, 4, 4, 4],
+    '55555555-5555-4555-8555-555555555555': [3, 5, 17, 21],
+    '66666666-6666-4666-8666-666666666666': [0, 5, 13, 5],
+    '0f0e0d0c-0b0a-4908-8706-050403020100': [4, 4, 16, 4],
+    'ffffffff-ffff-4fff-bfff-ffffffffffff': [4, 0, 0, 0],
+}
+
 
 def static_page(ordinal, count, runtime, selected, completed=1):
     """One slice's inspection page, as core answers it: only for tenants it owns."""
@@ -165,6 +179,31 @@ class SliceRule(unittest.TestCase):
     def test_bucket_matches_core(self):
         for tenant, expected in CORE_BUCKETS.items():
             self.assertEqual([k.evaluator_progress.bucket(tenant, n) for n in range(1, 9)], expected, tenant)
+
+    def test_every_harness_copy_of_the_rule_matches_core_at_9_16_20_32(self):
+        import coverage_verdict
+        import plannable
+        rules = {'evaluator_progress.bucket': k.evaluator_progress.bucket, 'plannable.bucket': plannable.bucket,
+                 'coverage_verdict.slice_of': coverage_verdict.slice_of}
+        for name, rule in rules.items():
+            for tenant, expected in CORE_BUCKETS_LARGE.items():
+                self.assertEqual([rule(tenant, n) for n in LARGE_KS], expected, name + ' ' + tenant)
+            for tenant, expected in CORE_BUCKETS.items():
+                self.assertEqual([rule(tenant, n) for n in range(1, 9)], expected, name + ' ' + tenant)
+
+    def test_partition_covers_each_id_once_at_9_16_20_32(self):
+        ids = ['%08x-0000-4000-8000-%012x' % (i * 2654435761 % 2**32, i) for i in range(4000)]
+        for count in LARGE_KS:
+            services = k.evaluator_services(count)
+            self.assertEqual([k.evaluator_progress.service_ordinal(s) for s in services], list(range(count)))
+            shares = k.evaluator_progress.partition(services, ids)
+            self.assertEqual(sorted(t for v in shares.values() for t in v), sorted(ids), count)
+            self.assertEqual(sum(len(v) for v in shares.values()), len(ids), count)
+            for ordinal, service in enumerate(services):
+                self.assertEqual(shares[service], [t for t in ids if k.evaluator_progress.bucket(t, count) == ordinal], (count, service))
+        # One service more than the bound is not a roster the reader accepts.
+        with self.assertRaises(k.evaluator_progress.Refused):
+            k.evaluator_progress.partition(k.evaluator_services(33), ids)
 
     def test_partition_covers_each_id_once_and_k1_asks_everyone(self):
         ids = sorted(CORE_BUCKETS)
