@@ -146,11 +146,15 @@ def post(port, tenant, rows, until, path='/api/v1/entries'):
             conn.close()
 
 
-def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=post, now=time.time):
+def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=post, now=time.time,
+        bulk=None):
+    """`bulk` (looping modes only): a seeder that writes the missing tenants' history some other way than
+    HTTP (history_loader.StorageLoader); the readback that follows is the same."""
     validate(spec)
     if is_looping(spec):
         return _looping(spec['mode']).run(spec, tenants, base, sql, until, window_seconds, verify_only=verify_only,
-                              post_batch=post_batch, now=now)
+                              post_batch=post_batch, now=now, bulk=bulk)
+    require(bulk is None, 'BULK_UNSUPPORTED_MODE')
     if spec != BASELINE and spec['mode'] in SHAPES:
         return run_4w(spec, tenants, base, sql, until, window_seconds, verify_only=verify_only,
                       post_batch=post_batch, now=now)
