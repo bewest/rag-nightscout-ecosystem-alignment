@@ -386,6 +386,14 @@ class LocalPrometheus:
                  'value': None if row['value'][1] in ('NaN', '+Inf', '-Inf') else float(row['value'][1])}
                 for row in body['data']['result']]
 
+    def query_range(self, expr, start, end, step):
+        from urllib.parse import urlencode
+        body = json.loads(self.get('/api/v1/query_range?' + urlencode(
+            {'query': expr, 'start': '%.3f' % start, 'end': '%.3f' % end, 'step': '%ds' % step})))
+        return [{'labels': {k: v for k, v in row['metric'].items() if k not in ('instance', 'server')},
+                 'values': [(t, v) for t, v in row['values'] if v not in ('NaN', '+Inf', '-Inf')]}
+                for row in body['data']['result']]
+
     def close(self):
         import shutil
         self.run(['docker', 'rm', '-f', self.name], capture_output=True, timeout=60)
