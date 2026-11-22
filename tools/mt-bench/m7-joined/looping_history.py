@@ -32,6 +32,7 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import math
+import os
 import random
 import re
 from threading import Event
@@ -525,6 +526,8 @@ def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, p
             and len({row['host'] for row in tenants}) == len(tenants), 'ROSTER')
     anchor = spec['anchorUnixMs']
     workers, batch = h.seed_limits()
+    treatment_batch = int(os.environ.get('S4_HISTORY_SEED_TREATMENT_BATCH', batch))
+    require(1 <= treatment_batch <= h.SGV_BATCH, 'SEED_LIMITS')
     roster = sorted(tenants, key=lambda row: row['host'])
     role = roles(spec, len(roster))
     tables = h._tables(sql)
@@ -571,8 +574,9 @@ def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, p
                 t = Tenant(spec, i, role[i])
                 for path, docs in (('/api/v1/entries', entries(t)), ('/api/v1/devicestatus', devicestatus(t)),
                                    ('/api/v1/treatments', treatments(t))):
-                    for k in range(0, len(docs), batch):
-                        post_batch(port, tenant, docs[k:k+batch], until, path=path)
+                    size = min(batch, treatment_batch) if path == '/api/v1/treatments' else batch
+                    for k in range(0, len(docs), size):
+                        post_batch(port, tenant, docs[k:k+size], until, path=path)
                 for doc in profiles(t):
                     post_batch(port, tenant, doc, until, path='/api/v1/profile')
             except Exception:
