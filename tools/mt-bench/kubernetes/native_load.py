@@ -201,7 +201,7 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
     if private_input:
         k.need('driverPlan' in w, 'NATIVE_LOAD_CONFIGURED_DRIVER_REQUIRED')
         fields = ['id', 'host', 'token', 'jwt']
-        if w.get('driverShape') == 'looping-v1':
+        if w.get('driverShape') in ('looping-v1', 'looping-v2'):
             fields.append('loopKind')
             k.need(all('loopKind' in row and row['loopKind'] in (None, 'loop', 'aaps', 'trio') for row in tenants),
                    'NATIVE_LOAD_LOOPING_ROSTER')

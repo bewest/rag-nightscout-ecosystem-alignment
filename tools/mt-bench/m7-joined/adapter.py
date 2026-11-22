@@ -850,12 +850,18 @@ def prepare_staged(args,target,pinned):
     # Ordinary runtime source stays in its paired image. The explicit clinical
     # diagnostic may later stage one separately attested sender executable;
     # bootstrap and application libraries never receive source overlays.
+    # Optional custody label for a lane's census (M7_LANE_LABEL=key=value); the owner label stays authoritative.
+    lane = os.environ.get("M7_LANE_LABEL")
+    require(lane is None or re.fullmatch(r"[a-z][a-z0-9.-]{0,62}=[A-Za-z0-9._-]{1,63}", lane), "M7_LANE_LABEL")
+    extra = dict([lane.split("=", 1)]) if lane else {}
     for name, spec in config["services"].items():
         spec.setdefault("labels", {})[OWNER] = nonce
+        spec["labels"].update(extra)
     for kind in ("volumes", "networks"):
         for spec in config.get(kind, {}).values():
             require(not spec.get("external") and spec.get("name", "").startswith(m["project"]+"_"), "M7_EXTERNAL_OR_SHARED_RESOURCE_REFUSED")
             spec.setdefault("labels", {})[OWNER] = nonce
+            spec["labels"].update(extra)
     pg = config["services"]["postgres"]
     require(isinstance(pg.get("command"), list) and pg["command"][0] == "postgres", "M7_POSTGRES_COMMAND_SHAPE_CHANGED")
     pg["command"].extend(["-c", "shared_preload_libraries=pg_stat_statements", "-c", "pg_stat_statements.track=top", "-c", "track_io_timing=on"])

@@ -28,8 +28,9 @@ def validate(w, need, tenants=None):
     need(isinstance(w, dict) and set(w) <= {'loadSeconds', 'offeredRps', 'workloadMix',
          'workloadScale', 'logicalPollingClients', 'viewerSetup', 'probeEveryMs', 'hotFactor', 'pointId', 'setupSeconds', 'drainSeconds',
          'driverPlan', 'driverShards', 'driverHeadroom', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget','drainObservation','latencyObservation','driverShape'}, 'WORKLOAD_FIELDS')
-    # looping-v1 (m7-joined/looping_driver.py): realistic-v1 cadence, writes shaped like the E1 fixture.
-    need('driverShape' not in w or (w['driverShape'] == 'looping-v1' and w.get('workloadMix') == REALISTIC_MIX
+    # looping-v1/looping-v2 (m7-joined/looping_driver.py): realistic-v1 cadence, writes shaped like the looping
+    # fixture (v1) or the AID client model (v2).
+    need('driverShape' not in w or (w['driverShape'] in ('looping-v1', 'looping-v2') and w.get('workloadMix') == REALISTIC_MIX
          and w.get('driverShards', 1) == 1), 'WORKLOAD_DRIVER_SHAPE')
     need(w.get('latencyObservation', 'polling-sql-v1') in ('polling-sql-v1', 'offline-v1'), 'WORKLOAD_LATENCY_OBSERVATION')
     viewer_plan.setup(w, need)
@@ -111,7 +112,7 @@ def environment(w, inherited, need):
     env.update(selected, DRIVER_HEADROOM=repr(float(headroom(w))))
     if 'driverShape' in w:
         import looping_driver
-        env.update(looping_driver.environment())
+        env.update(looping_driver.environment(w['driverShape']))
     return env
 
 
@@ -123,10 +124,10 @@ def rates(w, n, history=None):
         cycles = dict.fromkeys(SHAPES, cycle)
         n += w.get('hotFactor', 1) - 1
     offer = {shape: weight * n * 1000 / cycles[shape] for shape, weight in SHAPES.items()}
-    if w.get('driverShape') == 'looping-v1':
+    if w.get('driverShape') in ('looping-v1', 'looping-v2'):
         import looping_driver
         for shape, (tenants, unit) in looping_driver.write_offers(history, n, w.get('workloadScale', 1),
-                w.get('driverPlan', {}).get('writeRateScale', 1), cycles['w_devicestatus']).items():
+                w.get('driverPlan', {}).get('writeRateScale', 1), cycles['w_devicestatus'], w['driverShape']).items():
             cycles[shape] = unit
             offer[shape] = tenants * 1000 / unit
     return cycles, offer

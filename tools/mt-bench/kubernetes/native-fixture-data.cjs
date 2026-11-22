@@ -13,7 +13,7 @@ function install(demo, meta, credentials, directory) {
       meta.tenants < 1 || meta.tenants > meta.fixtureTenants) throw Error('ROSTER_COUNT');
   const aliases = new Map(demo.tenantIds(meta.fixtureTenants).map((id, i) => [id, demo.tenantAlias(i)]));
   const rows = credentials.map(pair => {
-    const looping = meta.driverShape === 'looping-v1';
+    const looping = meta.driverShape === 'looping-v1' || meta.driverShape === 'looping-v2';
     if (!Array.isArray(pair) || (looping ? pair.length !== 4 : pair.length < 2 || pair.length > 3)) throw Error('ROSTER_DATA');
     const [id, token, jwt, loopKind] = pair;
     const host = aliases.get(id);

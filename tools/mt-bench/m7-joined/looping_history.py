@@ -32,8 +32,10 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import math
+import os
 import random
 import re
+import sys
 from threading import Event
 import time
 from urllib.parse import urlsplit
@@ -81,6 +83,10 @@ def validate(spec):
     anchor = spec['anchorUnixMs']
     require(max(DAYS, spec['deepHistoryDays']) * CYCLES_PER_DAY * STEP_MS <= anchor < 253402300800000
             and anchor % STEP_MS == 0, 'ANCHOR')
+
+
+def seed_roles(spec, n):
+    return roles(spec, n)
 
 
 def roles(spec, n):
@@ -489,6 +495,11 @@ def describe(spec, tenants=1000):
 # ------------------------------------------------------------------ seed and readback
 
 def census(sql, tables, at, horizon):
+    return census_for(sql, tables, at, horizon, DEVICE, DS_DEVICES)
+
+
+def census_for(sql, tables, at, horizon, DEVICE, DS_DEVICES):
+    """Per-tenant rows, bytes and checked sums of one looping mode's marker (v1 or v2)."""
     fields = " || ',' || ".join(f"(doc->>'{k}')" for k in h.FIELDS)
     measured = collections.defaultdict(dict)
     for line in sql(f"""SELECT tenant_id::text, count(*), sum(pg_column_size(doc)),
@@ -516,8 +527,41 @@ def census(sql, tables, at, horizon):
     return dict(measured)
 
 
+def tenant_factory(spec, n):
+    """i -> Tenant for a roster of n (the seed's roles); the seeder's only way to build a tenant."""
+    role = roles(spec, n)
+    return lambda i: Tenant(spec, i, role[i])
+
+
+def seed_requests(t):
+    """(path, documents) in the order the seed posts them; profile documents go one per request."""
+    return (('/api/v1/entries', entries(t)), ('/api/v1/devicestatus', devicestatus(t)),
+            ('/api/v1/treatments', treatments(t)), ('/api/v1/profile', profiles(t)))
+
+
+def _batches(docs, size, max_bytes=None):
+    """Request boundaries: at most `size` rows, and (when set) at most `max_bytes` of JSON body, so a day of
+    large statuses stays under the API's 1 MB parser for devicestatus (core lib/middleware/index.js:23-24)."""
+    if max_bytes is None:
+        return [docs[k:k+size] for k in range(0, len(docs), size)]
+    out, part, used = [], [], 2
+    for d in docs:
+        n = len(json.dumps(d)) + 2
+        if part and (len(part) == size or used + n > max_bytes):
+            out.append(part); part, used = [], 2
+        part.append(d); used += n
+    return out + ([part] if part else [])
+
+
 def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=h.post, now=time.time):
-    validate(spec)
+    return seed_and_verify(sys.modules[__name__], spec, tenants, base, sql, until, window_seconds,
+                           verify_only=verify_only, post_batch=post_batch, now=now)
+
+
+def seed_and_verify(g, spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=h.post,
+                    now=time.time):
+    """Seed through the API and read back, for a looping generator module `g` (this one or looping_history_v2)."""
+    g.validate(spec)
     require(tenants and type(window_seconds) is int and window_seconds >= 0, 'INPUT')
     require(re.fullmatch(r'http://127\.0\.0\.1:[0-9]{1,5}', base), 'EDGE')
     port = urlsplit(base).port
@@ -525,15 +569,18 @@ def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, p
             and len({row['host'] for row in tenants}) == len(tenants), 'ROSTER')
     anchor = spec['anchorUnixMs']
     workers, batch = h.seed_limits()
+    treatment_batch = int(os.environ.get('S4_HISTORY_SEED_TREATMENT_BATCH', batch))
+    require(1 <= treatment_batch <= h.SGV_BATCH, 'SEED_LIMITS')
     roster = sorted(tenants, key=lambda row: row['host'])
-    role = roles(spec, len(roster))
+    role = g.seed_roles(spec, len(roster))
+    make = g.tenant_factory(spec, len(roster))
     tables = h._tables(sql)
 
     def inspect():
         at = int(now() * 1000)
         horizon = max(window_seconds*1000, math.ceil(until*1000)-at if until is not None else 0)
         require(anchor <= at and at + horizon - anchor <= h.MAX_STALE_4W_MS, 'OUTSIDE_CLINICAL_WINDOW')
-        measured = census(sql, tables, at, horizon)
+        measured = g.census(sql, tables, at, horizon)
         require(measured.keys() <= {t['id'] for t in roster}, 'FOREIGN_TENANT')
         return at, measured
 
@@ -543,12 +590,12 @@ def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, p
     def expect(i):
         tenant = roster[i]['id']
         if tenant not in expected:
-            expected[tenant] = Tenant(spec, i, role[i]).expected()
+            expected[tenant] = make(i).expected()
         return expected[tenant]
 
     def complete(i, value):
         want = expect(i)
-        return all(value.get(k, 0) == want[k] for k in CHECKED)
+        return all(value.get(k, 0) == want[k] for k in g.CHECKED)
 
     index = {t['id']: i for i, t in enumerate(roster)}
     require(all(complete(index[t], v) for t, v in measured.items()), 'READBACK_MISMATCH')
@@ -556,9 +603,9 @@ def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, p
     if missing:
         require(not verify_only, 'RESTORED_ROWS_MISSING')
         ids = ','.join("'" + t['id'] + "'" for _, t in missing)
-        oldest = anchor - (max(DAYS, spec['deepHistoryDays']) * CYCLES_PER_DAY - 1) * STEP_MS
+        oldest = anchor - (max(g.DAYS, spec['deepHistoryDays']) * g.CYCLES_PER_DAY - 1) * STEP_MS
         collisions = sql(f"""SELECT DISTINCT tenant_id::text FROM {tables['entries']}
-            WHERE tenant_id::text IN ({ids}) AND doc->>'type'='sgv' AND doc->>'device' IS DISTINCT FROM '{DEVICE}'
+            WHERE tenant_id::text IN ({ids}) AND doc->>'type'='sgv' AND doc->>'device' IS DISTINCT FROM '{g.DEVICE}'
               AND jsonb_typeof(doc->'date')='number' AND (doc->>'date')::bigint BETWEEN {oldest} AND {anchor};""").splitlines()
         require(not collisions, 'UPSERT_KEY_IN_USE')
         failed = Event()
@@ -568,13 +615,14 @@ def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, p
                 return
             i, tenant = item
             try:
-                t = Tenant(spec, i, role[i])
-                for path, docs in (('/api/v1/entries', entries(t)), ('/api/v1/devicestatus', devicestatus(t)),
-                                   ('/api/v1/treatments', treatments(t))):
-                    for k in range(0, len(docs), batch):
-                        post_batch(port, tenant, docs[k:k+batch], until, path=path)
-                for doc in profiles(t):
-                    post_batch(port, tenant, doc, until, path='/api/v1/profile')
+                for path, docs in g.seed_requests(make(i)):
+                    if path == '/api/v1/profile':
+                        for doc in docs:
+                            post_batch(port, tenant, doc, until, path=path)
+                        continue
+                    size = min(batch, treatment_batch) if path == '/api/v1/treatments' else batch
+                    for part in _batches(docs, size, getattr(g, 'SEED_BODY_MAX_BYTES', None)):
+                        post_batch(port, tenant, part, until, path=path)
             except Exception:
                 failed.set()
                 raise
@@ -588,7 +636,7 @@ def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, p
     per_tenant = []
     for i, tenant in enumerate(roster):
         value = measured[tenant['id']]
-        logical.update((tenant['host'] + ':' + json.dumps({k: value.get(k, 0) for k in CHECKED}, sort_keys=True) + '\n').encode())
+        logical.update((tenant['host'] + ':' + json.dumps({k: value.get(k, 0) for k in g.CHECKED}, sort_keys=True) + '\n').encode())
         per_tenant.append(dict(ordinal=i, role=role[i], **value))
     total = lambda k, rows=per_tenant: sum(r.get(k, 0) for r in rows)
     by_role = {}
@@ -599,7 +647,7 @@ def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, p
     return dict(version=1, history=spec, observedUnixMs=at, anchorAgeMs=at-anchor,
                 eligibilityThroughUnixMs=max(at+window_seconds*1000, math.ceil(until*1000) if until else 0),
                 measuredWindowSeconds=window_seconds, coldEntriesLookbackMs=h.LOOKBACK_MS,
-                rowsPerTenant={r: rows_per_tenant(spec, r) for r in sorted(set(role))},
+                rowsPerTenant={r: g.rows_per_tenant(spec, r) for r in sorted(set(role))},
                 seededBatches=len(missing), logicalSha256=logical.hexdigest(),
                 rows=total('entries'), activeRows=total('activeRows'), storedDocBytes=total('entriesBytes'),
                 collections={k: dict(rows=total(k), storedDocBytes=total(k + 'Bytes'))
