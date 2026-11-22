@@ -449,6 +449,11 @@ def _import(archive, manifest, tenants, k, fixture_dir, namespace, run_id, jsonn
                                              'alignmentCommit', 'history', 'historyLogicalSha256', 'key',
                                              'inputTransport') if key in prov}
     provenance['archive'] = {'sha256': file_sha256(Path(archive)/ARCHIVE), 'source': manifest['source']}
+    if provenance.get('postgresImage') != postgres_image_ref:
+        # The restore path compares the fixture's image with the pullable reference a case renders; keep
+        # the archive's recorded identity (a local image id) beside it.
+        provenance['postgresImageId'] = provenance['postgresImage']
+        provenance['postgresImage'] = postgres_image_ref
     captured = fc.capture(k, namespace, run_id, chosen, snapshots, provenance, until)
     result = {'fixtureDirectory': chosen['directory'], 'node': node, 'sizes': sizes,
               'fillSeconds': {p: filled[p] for p in PARTS}, 'readback': receipt,
