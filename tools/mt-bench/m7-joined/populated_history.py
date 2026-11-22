@@ -8,6 +8,7 @@ import json
 import math
 import os
 import re
+import sys
 from threading import Event
 import time
 from urllib.parse import quote, urlsplit
@@ -119,11 +120,24 @@ def post(port, tenant, rows, until, path='/api/v1/entries'):
                          body=json.dumps(rows).encode(),
                          headers={'Host': tenant['host'], 'Content-Type': 'application/json'})
             response = conn.getresponse()
-            response.read()
+            if 200 <= response.status < 300:
+                response.read()
+                return
+            # Response bodies and tenant URLs can contain private data. Record only known codes and paths.
+            try:
+                body = json.loads(response.read(4096))
+            except (ValueError, UnicodeError):
+                body = None
+            code = body.get('error') if isinstance(body, dict) else None
+            if code not in ('STORAGE_TIMEOUT', 'STORAGE_BUSY', 'STORAGE_UNAVAILABLE'):
+                code = 'UNKNOWN'
+            route = path if path in ('/api/v1/entries', '/api/v1/devicestatus', '/api/v1/treatments', '/api/v1/profile') else 'UNKNOWN'
+            failure = f'HTTP_{response.status} {route} {code} rows={len(rows) if isinstance(rows, list) else 1} attempt={attempt+1}'
+            print('M7_HISTORY_' + failure, file=sys.stderr, flush=True)
             if response.status in (429, 503) and attempt < 5:
-                time.sleep(2 ** attempt); continue
-            require(200 <= response.status < 300, 'HTTP_' + str(response.status))
-            return
+                time.sleep(2 ** attempt)
+                continue
+            raise ValueError('M7_HISTORY_' + failure)
         finally:
             conn.close()
 

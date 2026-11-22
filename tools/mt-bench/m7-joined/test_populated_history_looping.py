@@ -312,6 +312,34 @@ class Looping(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'OUTSIDE_CLINICAL_WINDOW'):
             self.fixture(now=lambda: (self.anchor + h.MAX_STALE_4W_MS) / 1000, verify_only=True)
 
+    def test_treatment_seed_batch_changes_only_request_boundaries(self):
+        baseline = self.fixture()
+        original_rows = self.store
+        self.store, self.calls = {}, []
+        with unittest.mock.patch.dict(h.os.environ, {'S4_HISTORY_SEED_TREATMENT_BATCH': '32'}):
+            tuned = self.fixture()
+        self.assertEqual(self.store, original_rows)
+        self.assertEqual(tuned['logicalSha256'], baseline['logicalSha256'])
+        self.assertEqual(max(n for _, path, n, _ in self.calls if path.endswith('/treatments')), 32)
+        self.assertEqual(max(n for _, path, n, _ in self.calls if path.endswith('/entries')), 288)
+
+    def test_seed_refusal_names_only_route_and_allowlisted_code(self):
+        import io
+        conn = unittest.mock.Mock()
+        response = conn.getresponse.return_value
+        response.status = 503
+        for code, expected in [('STORAGE_TIMEOUT', 'STORAGE_TIMEOUT'), ('private-info', 'UNKNOWN')]:
+            response.read.return_value = json.dumps({'error': code, 'detail': 'private-info'}).encode()
+            with unittest.mock.patch.object(h, 'HTTPConnection', return_value=conn), \
+                 unittest.mock.patch.object(h.time, 'sleep'), \
+                 unittest.mock.patch('sys.stderr', new_callable=io.StringIO) as trace:
+                with self.assertRaisesRegex(ValueError, 'M7_HISTORY_HTTP_503') as refused:
+                    h.post(80, self.tenants[0], [{}, {}], None, path='/api/v1/treatments')
+                self.assertIn('/api/v1/treatments', str(refused.exception))
+                self.assertIn(expected, str(refused.exception))
+                self.assertEqual(len(trace.getvalue().splitlines()), 6)
+                self.assertNotIn('private-info', trace.getvalue() + str(refused.exception))
+
     def test_request_rate_is_derived_from_the_generator(self):
         rate = L.request_rate(self.spec, 1000)
         self.assertEqual((rate['looping'], rate['cgmOnly']), (800, 200))
