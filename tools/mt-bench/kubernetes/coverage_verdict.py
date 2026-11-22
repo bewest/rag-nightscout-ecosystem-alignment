@@ -315,7 +315,16 @@ def from_case(load, slices=None, clock_bound_ms=None, local=None):
     ids = sorted((bookend.get('tenants') or {}).keys() | stored.keys())
     end = end_from_bookend(bookend, ids)
     count = lambda key: (summary.get(key) or {}).get('count')
-    writes = {'accepted': count('writes_ok'), 'uncertain': count('writes_uncertain'),
+    try:
+        from discovery_counts import accepted_documents
+    except ImportError:
+        import sys as _sys
+        _sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'m7-joined'))
+        from discovery_counts import accepted_documents
+    documents = accepted_documents(summary)
+    writes = {'accepted': documents['accepted'] if documents else count('writes_ok'),
+              'uncertain': documents['uncertain'] if documents else count('writes_uncertain'),
+              'countBasis': documents['basis'] if documents else 'writes_ok (requests)',
               'stored': sum(v.get(k, 0) for v in stored.values() for k in ('entries', 'devicestatus', 'treatments')) if stored else None,
               'storedByTenant': {t: sum(v.values()) for t, v in stored.items()}}
     durable = None

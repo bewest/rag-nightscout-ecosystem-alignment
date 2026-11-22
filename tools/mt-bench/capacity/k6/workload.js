@@ -45,6 +45,9 @@ const START = Number(__ENV.RUN_START);
 const writesOk = new Counter('writes_ok');
 const writesUncertain = new Counter('writes_uncertain');
 const writesRefused = new Counter('writes_refused');
+// Documents, not requests: a looping-v2 v1 treatments POST carries an array (the stored-row oracle counts rows).
+const writesOkDocuments = new Counter('writes_ok_documents');
+const writesUncertainDocuments = new Counter('writes_uncertain_documents');
 const responsesRefused = new Counter('responses_refused');
 const scenarioAttempts = new Counter('scenario_request_attempts'), scenarioResponses = new Counter('scenario_http_responses'), scenarioTransport = new Counter('scenario_transport_failures');
 // looping-v2 request shapes (bounded tag values; no tenant tag)
@@ -163,13 +166,15 @@ for (const [name, perCycle] of Object.entries(shapes)) {
 }
 // Zero-valued thresholds make every counter appear in the summary export, including zeros.
 // No per-tenant tag or threshold: per-tenant figures come from the stored rows.
-const thresholds = {writes_ok:['count>=0'],writes_uncertain:['count>=0'],writes_refused:['count>=0'],responses_refused:['count>=0'],
+const thresholds = {writes_ok:['count>=0'],writes_uncertain:['count>=0'],writes_ok_documents:['count>=0'],writes_uncertain_documents:['count>=0'],writes_refused:['count>=0'],responses_refused:['count>=0'],
   scenario_request_attempts:['count>=0'],scenario_http_responses:['count>=0'],scenario_transport_failures:['count>=0'],dropped_iterations:['count>=0']};
 // k6 reads options in its initial context; other VUs skip the threshold metadata.
 // Undefined __VU supports the standalone payload fixtures.
 if (typeof __VU === 'undefined' || __VU === 0) {
   httpAccountingThresholds(thresholds, Object.keys(shapes));
-  for (const k of ['entries', 'devicestatus', 'treatments', ...(v2 ? ['profile'] : [])]) thresholds[`writes_ok{kind:${k}}`] = ['count>=0'];
+  for (const k of ['entries', 'devicestatus', 'treatments', ...(v2 ? ['profile'] : [])]) {
+    thresholds[`writes_ok{kind:${k}}`] = ['count>=0']; thresholds[`writes_ok_documents{kind:${k}}`] = ['count>=0'];
+  }
   if (v2) for (const name of LOOPING_REQUEST_SHAPES) for (const metric of ['m7_looping_requests', 'm7_looping_documents', 'm7_looping_identityless'])
     thresholds[`${metric}{request_shape:${name}}`] = ['count>=0'];
   for (const name of Object.keys(shapes)) thresholds[`http_req_duration{shape:${name}}`] = ['max>=0'];
@@ -242,8 +247,11 @@ function write (t, kind, url, body, headers, okStatuses, name, requestShape) {
       // M3 (offline latency oracle): the driver's own clock at acceptance.
       acceptedAtMs:Date.now()}));
     writesOk.add(1, tags);
+    writesOkDocuments.add(Array.isArray(body) ? body.length : 1, tags);
   }
-  else if (!(res.status >= 400 && res.status < 500)) writesUncertain.add(1, tags); // may have committed
+  else if (!(res.status >= 400 && res.status < 500)) { // may have committed
+    writesUncertain.add(1, tags); writesUncertainDocuments.add(Array.isArray(body) ? body.length : 1, tags);
+  }
   else writesRefused.add(1, tags);
   return res;
 }

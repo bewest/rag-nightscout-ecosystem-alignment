@@ -5,6 +5,46 @@ from workload_inputs import DEFAULT_PROBE_LEDGER, probe_ledger as valid_probe_le
 
 FIELDS={'attempts','accepted','uncertain','refused','pending'}
 
+
+DOMAINS = ('entries', 'devicestatus', 'treatments')
+
+
+def accepted_documents(metrics):
+    """Accepted and uncertain run writes in stored-row units (documents), or None when unknown.
+
+    A looping-v2 v1 treatments POST carries several documents, so request counters undercount rows.
+    Prefer the per-document counters; for runs before them, derive documents from the attempt-level
+    m7_looping_documents only when every write attempt was accepted (none refused or uncertain)."""
+    def c(key):
+        row = metrics.get(key)
+        row = row.get('values', row) if isinstance(row, dict) else None
+        return row.get('count') if isinstance(row, dict) else None
+    if c('writes_ok_documents') is not None:
+        kinds = {k: c('writes_ok_documents{kind:%s}' % k) for k in DOMAINS}
+        if any(v is None for v in kinds.values()) or c('writes_uncertain_documents') is None:
+            return None
+        return {'accepted': int(sum(kinds.values())), 'uncertain': int(c('writes_uncertain_documents')),
+                'byKind': {k: int(v) for k, v in kinds.items()}, 'basis': 'writes_ok_documents'}
+    shapes = {k[len('m7_looping_documents{request_shape:'):-1]: v for k, v in
+              ((k, c(k)) for k in metrics if k.startswith('m7_looping_documents{request_shape:'))}
+    if not shapes:
+        return None
+    if c('writes_uncertain') != 0 or c('writes_refused') not in (0, None) or None in shapes.values():
+        return None
+    ds = sum(v for k, v in shapes.items() if k.startswith('ds_'))
+    tx = sum(v for k, v in shapes.items() if k.startswith('tx_'))
+    entries = c('writes_ok{kind:entries}')
+    if entries is None or c('writes_ok{kind:devicestatus}') is None or c('writes_ok{kind:treatments}') is None:
+        return None
+    # Every attempt accepted: accepted requests per kind must equal attempted looping requests per kind.
+    req = {k[len('m7_looping_requests{request_shape:'):-1]: c(k) for k in metrics if k.startswith('m7_looping_requests{request_shape:')}
+    if sum(v for k, v in req.items() if k.startswith('ds_')) != c('writes_ok{kind:devicestatus}') or \
+       sum(v for k, v in req.items() if k.startswith('tx_')) != c('writes_ok{kind:treatments}'):
+        return None
+    kinds = {'entries': int(entries), 'devicestatus': int(ds), 'treatments': int(tx)}
+    return {'accepted': sum(kinds.values()), 'uncertain': 0, 'byKind': kinds,
+            'basis': 'm7_looping_documents (every attempt accepted)'}
+
 def counter(metrics,key):
     """A missing count is unknown; only finite nonnegative integer counters exist."""
     if key not in metrics:return None
@@ -103,6 +143,11 @@ def observe(a,d,out,runid,metrics,*,probe_ledger=None,ordinary_ids=None):
             })
             for kind in domains:domains[kind]+=value.get(kind,0)
         accepted,uncertain=counts['writes_ok'],counts['writes_uncertain']
+        documents=accepted_documents(metrics)
+        if documents is not None:
+            # Rows, not requests (looping-v2 sends treatment arrays).
+            accepted,uncertain=documents['accepted'],documents['uncertain'];findings['countBasis']=documents['basis']
+            counts.update({'writes_ok{kind:'+k+'}':v for k,v in documents['byKind'].items()})
         if accepted is not None and uncertain is not None:
             if not accepted<=ordinary_stored<=accepted+uncertain:violation('workload-count-bound')
             for kind,count in domains.items():
