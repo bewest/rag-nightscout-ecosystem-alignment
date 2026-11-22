@@ -225,6 +225,13 @@ class StorageLoader:
                 shard['threads'][2].join()
                 shard['code'] = shard['proc'].wait()
                 shard['threads'][0].join(); shard['threads'][1].join()
+        if self.receipt_path:
+            # Product log lines of the loader processes (synthetic tenants only): local, private, for diagnosis.
+            log = Path(self.receipt_path).with_name('history-loader.private.log')
+            with open(os.open(log, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), 'wb') as f:
+                for k, shard in enumerate(shards):
+                    f.write(b'--- loader process %d exit %d\n' % (k, shard['code']))
+                    f.writelines(shard['errors'][-2000:])
         dones = []
         for shard in shards:
             events = [json.loads(line) for line in shard['lines'] if line.strip().startswith(b'{')]
@@ -246,6 +253,7 @@ class StorageLoader:
                             processes=len(shards), workers=workers, generators=generators,
                             transactionRows=transaction or 'api-request-boundaries', evaluatorsDuringLoad=evaluators,
                             bindings=dones[0].get('bindings'),
+                            retries=dict(sum((collections.Counter(d.get('retries') or {}) for d in dones), collections.Counter())),
                             progress=[s['progress'] for s in shards])
         if self.receipt_path:
             Path(self.receipt_path).write_text(json.dumps(self.receipt, indent=1) + '\n')

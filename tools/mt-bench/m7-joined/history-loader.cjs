@@ -109,28 +109,47 @@ async function main () {
     const windowed = window ? () => window.run(tenant, body) : body;
     return config.runRegistryTenant ? config.runRegistryTenant(tenant, windowed) : windowed();
   }
+  // The refusals the api answers 503 (Retry-After) because nothing committed, plus the lifecycle
+  // scope refusal a withdrawn admission raises (datastore probe lost under load): the HTTP seed resends
+  // those, so the loader resends the batch as sent (a fresh copy: create() mutates its documents).
+  const RETRYABLE = new Set(['STORAGE_TIMEOUT', 'STORAGE_BUSY', 'STORAGE_UNAVAILABLE', 'TENANT_ACTIVITY_UNAVAILABLE',
+    'LIFECYCLE_WINDOW_SUSPENDED', 'LIFECYCLE_WINDOW_SCOPE_INVALID', 'API_TENANT_BUILD_OVERLOADED', 'TENANT_WARMING']);
+  const ATTEMPTS = Number(process.env.NS_LOADER_ATTEMPTS || 8);
+  const retryCodes = {};
   async function loadTenant (tenant, batches) {
-    await inTenant(tenant, async () => {
-      const service = await domains.prepareTenant(tenant);
-      // The raw POST path's request frame (preview-domains legacyRouter): a private bus, an empty
-      // raw cache and a lazy ddata; the storage ports are the tenant's own.
-      const ctx = { storagePorts: service.storagePorts, purifier: purifier({}, {}), bus: new EventEmitter(),
-        cache: EMPTY_CACHE, ddata: createData() };
-      const graph = createLegacy({ env: service.env, ctx, domains: legacyNames });
-      for (const { c, d } of batches) {
-        const docs = d;
-        if (c === 'treatments' || c === 'profile') docs.forEach(doc => ctx.purifier.purifyObject(doc)); // handler step
-        const created = await new Promise((resolve, reject) => {
-          const done = (err, result) => err ? reject(err) : resolve(result || []);
-          if (c === 'profile') graph.context.profile.create(docs, done, { canUpdate: true });
-          else graph.context[c].create(docs, done);
+    let next = 0, attempt = 0;
+    while (next < batches.length) {
+      try {
+        await inTenant(tenant, async () => {
+          const service = await domains.prepareTenant(tenant);
+          // The raw POST path's request frame (preview-domains legacyRouter): a private bus, an empty
+          // raw cache and a lazy ddata; the storage ports are the tenant's own.
+          const ctx = { storagePorts: service.storagePorts, purifier: purifier({}, {}), bus: new EventEmitter(),
+            cache: EMPTY_CACHE, ddata: createData() };
+          const graph = createLegacy({ env: service.env, ctx, domains: legacyNames });
+          for (; next < batches.length; next++) {
+            const { c, d } = batches[next];
+            const docs = structuredClone(d);
+            if (c === 'treatments' || c === 'profile') docs.forEach(doc => ctx.purifier.purifyObject(doc)); // handler step
+            const created = await new Promise((resolve, reject) => {
+              const done = (err, result) => err ? reject(err) : resolve(result || []);
+              if (c === 'profile') graph.context.profile.create(docs, done, { canUpdate: true });
+              else graph.context[c].create(docs, done);
+            });
+            const refused = created.filter(slot => validation.isRefusal(slot)).length;
+            if (refused) throw Object.assign(new Error('refused'), { code: 'LOADER_REFUSED_' + c.toUpperCase() });
+            totals.rows += docs.length; totals.batches += 1;
+            totals.byCollection[c] = (totals.byCollection[c] || 0) + docs.length;
+            attempt = 0;
+          }
         });
-        const refused = created.filter(slot => validation.isRefusal(slot)).length;
-        if (refused) throw Object.assign(new Error('refused'), { code: 'LOADER_REFUSED_' + c.toUpperCase() });
-        totals.rows += docs.length; totals.batches += 1;
-        totals.byCollection[c] = (totals.byCollection[c] || 0) + docs.length;
+      } catch (error) {
+        const code = error && (error.code || error.cause?.code);
+        if (!RETRYABLE.has(code) || ++attempt >= ATTEMPTS) throw error;
+        retryCodes[code] = (retryCodes[code] || 0) + 1;
+        await new Promise(resolve => setTimeout(resolve, Math.min(15000, 500 * 2 ** attempt)));
       }
-    });
+    }
     totals.tenants += 1;
   }
 
@@ -167,7 +186,7 @@ async function main () {
   const seconds = (Date.now() - started) / 1000;
   try { await running.stop(); } catch { /* the process exits below */ }
   if (failure) return fail(failure.code && /^[A-Z_]+$/.test(failure.code) ? failure.code : 'LOADER_WRITE', failure);
-  out({ done: { ...totals, seconds, rowsPerSecond: Math.round(totals.rows / Math.max(seconds, 0.001)), workers: WORKERS,
+  out({ done: { ...totals, seconds, rowsPerSecond: Math.round(totals.rows / Math.max(seconds, 0.001)), workers: WORKERS, retries: retryCodes,
     bindings: { operationWindow: !!window, registry: !!config.runRegistryTenant, writerDriven: !!config.writerDriven,
       activityGate: !!config.activity, writeClock: !!config.writeClock } } });
   process.exit(0);

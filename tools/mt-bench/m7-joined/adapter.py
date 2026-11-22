@@ -862,6 +862,18 @@ def prepare_staged(args,target,pinned):
             require(not spec.get("external") and spec.get("name", "").startswith(m["project"]+"_"), "M7_EXTERNAL_OR_SHARED_RESOURCE_REFUSED")
             spec.setdefault("labels", {})[OWNER] = nonce
             spec["labels"].update(extra)
+    # Optional host directory for the PostgreSQL data volume (M7_POSTGRES_VOLUME_DIR=/abs/dir): a large
+    # seed's data then lives on that filesystem instead of Docker's root. The volume stays the project's
+    # own named volume (local driver, bind); `down --volumes` removes the volume, not the directory,
+    # which the operator deletes after export.
+    volume_dir = os.environ.get("M7_POSTGRES_VOLUME_DIR")
+    if volume_dir:
+        root = Path(volume_dir)
+        require(root.is_absolute() and root.is_dir() and not root.is_symlink(), "M7_POSTGRES_VOLUME_DIR")
+        data = root / m["project"]
+        data.mkdir(mode=0o700)
+        config["volumes"]["postgres-data"].update(driver="local", driver_opts={"type": "none", "o": "bind", "device": str(data)})
+        m["postgresVolumeDir"] = str(data)
     pg = config["services"]["postgres"]
     require(isinstance(pg.get("command"), list) and pg["command"][0] == "postgres", "M7_POSTGRES_COMMAND_SHAPE_CHANGED")
     pg["command"].extend(["-c", "shared_preload_libraries=pg_stat_statements", "-c", "pg_stat_statements.track=top", "-c", "track_io_timing=on"])
