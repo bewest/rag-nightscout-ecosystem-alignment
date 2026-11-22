@@ -174,7 +174,7 @@ class Progress(unittest.TestCase):
         with self.assertRaisesRegex(p.Refused,'BYTE_BOUND'):
             p.round_view(['evaluator'],[A],lambda *_:b'x'*(p.POLICY['maxBytesPerPhase']//3+1))
         with self.assertRaisesRegex(p.Refused,'INSTANCE_BOUND'):
-            p.round_view([f'evaluator-{i}' for i in range(1,10)],[A],lambda *_:b'')
+            p.round_view([f'evaluator-{i}' for i in range(1,34)],[A],lambda *_:b'')
 
     def test_eight_static_instances_require_exact_worker_ordinals(self):
         services=['evaluator', *(f'evaluator-{i}' for i in range(2,9))]
