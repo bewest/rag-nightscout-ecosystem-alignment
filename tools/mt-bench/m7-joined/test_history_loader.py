@@ -222,3 +222,12 @@ def test_parity_red_invariant_and_global_counts():
     assert hp.compare(dump(base()), dump(base(), invariants_ok=False))['verdict'] == 'FAIL'
     b = dump(base()); b['globalCounts']['x.registry'] = 2
     assert hp.compare(dump(base()), b)['verdict'] == 'FAIL'
+
+
+def test_evaluator_pause_option(tmp_path):
+    loader = hl.StorageLoader([sys.executable, '-c', 'pass'], None, environ={'S4_HISTORY_LOADER_EVALUATORS': 'later'})
+    with pytest.raises(ValueError, match='EVALUATORS'):
+        loader.evaluators('stop')
+    for mode in ('run', 'pause', 'stop'):
+        # Without a Compose project nothing is touched; the mode is still validated and recorded.
+        assert hl.StorageLoader([sys.executable], None, environ={'S4_HISTORY_LOADER_EVALUATORS': mode}).evaluators('stop') == mode

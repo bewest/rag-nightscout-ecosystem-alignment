@@ -113,6 +113,24 @@ class StorageLoader:
         self.commands, self.receipt_path, self.environ, self.log = commands, receipt_path, environ, log
         self.receipt = None
 
+    def evaluators(self, action):
+        """S4_HISTORY_LOADER_EVALUATORS=pause|stop: stop the deployment's evaluators while loading (their
+        resident memory grows with every tenant written: about 1.2-1.5 GiB each at 1k on Compose), then
+        start them again (pause) or leave them stopped (stop, for a fixture that is exported next). Each
+        write still leaves its durable pending mark; a started evaluator sweeps those marks."""
+        mode = self.environ.get('S4_HISTORY_LOADER_EVALUATORS', 'run') or 'run'
+        require(mode in ('run', 'pause', 'stop'), 'EVALUATORS')
+        if mode == 'run' or not getattr(self, 'project', None) or (action == 'start' and mode == 'stop'):
+            return mode
+        ids = []
+        for service in ('evaluator', 'evaluator-2', 'evaluator-3', 'evaluator-4'):
+            ids += subprocess.run(['docker', 'ps', '-aq', '--filter', 'label=com.docker.compose.project=' + self.project,
+                                   '--filter', 'label=com.docker.compose.service=' + service],
+                                  capture_output=True, text=True, check=True).stdout.split()
+        require(ids, 'NO_EVALUATORS')
+        subprocess.run(['docker', action, *ids], capture_output=True, check=True)
+        return mode
+
     @classmethod
     def compose(cls, project, receipt_path=None, environ=os.environ):
         workers, _, _ = limits(environ)
@@ -120,13 +138,26 @@ class StorageLoader:
         require(1 <= processes <= 16, 'LIMITS')
         container = api_container(project)
         script = SCRIPT.read_text()
+        # The loader's own api tenant-service cache (product knob, process-local): each tenant is visited
+        # once, so a small LRU bounds the loader's memory at any roster size.
+        cache = str(int(environ.get('S4_HISTORY_LOADER_TENANT_CACHE', 256)))
         commands = [['docker', 'exec', '-i', '-w', '/opt/app', '-e', 'NS_LOADER_WORKERS=' + str(workers),
+                     '-e', 'NS_POOL_API_TENANT_CACHE_MAX=' + cache,
                      '-e', 'NS_LOADER_API_PORT=' + str(18337 + k), '-e', 'NS_LOADER_INTERNAL_PORT=' + str(17101 + k),
                      container, 'node', '-e', script] for k in range(processes)]
-        return cls(commands, receipt_path, environ)
+        loader = cls(commands, receipt_path, environ)
+        loader.project = project
+        return loader
 
     def __call__(self, g, spec, missing, n, until):
         workers, generators, transaction = limits(self.environ)
+        evaluators = self.evaluators('stop')
+        try:
+            return self._load(g, spec, missing, n, until, workers, generators, transaction, evaluators)
+        finally:
+            self.evaluators('start')
+
+    def _load(self, g, spec, missing, n, until, workers, generators, transaction, evaluators):
         started = time.time()
         shards = []
         for argv in self.commands:
@@ -161,7 +192,11 @@ class StorageLoader:
             shards.append(shard)
         sent = collections.Counter()
         env = {k: v for k, v in self.environ.items() if k.startswith('S4_HISTORY_')}
-        jobs = [(spec['mode'], spec, n, i, tenant['id'], transaction, env) for i, tenant in missing]
+        # Deep-history tenants first: each tenant is written serially, so a 90-day tenant dealt last would
+        # set the tail. Tenants are independent; the order across tenants changes no tenant's rows.
+        roles = g.seed_roles(spec, n)
+        order = sorted(missing, key=lambda item: (roles[item[0]] != 'deep', item[0]))
+        jobs = [(spec['mode'], spec, n, i, tenant['id'], transaction, env) for i, tenant in order]
         try:
             with ProcessPoolExecutor(max_workers=generators, mp_context=multiprocessing.get_context('forkserver')) as pool:
                 window = collections.deque()
@@ -209,7 +244,7 @@ class StorageLoader:
                             loaderSeconds=max(d['seconds'] for d in dones), wallSeconds=wall,
                             rowsPerSecond=round(rows / max(max(d['seconds'] for d in dones), 0.001)),
                             processes=len(shards), workers=workers, generators=generators,
-                            transactionRows=transaction or 'api-request-boundaries',
+                            transactionRows=transaction or 'api-request-boundaries', evaluatorsDuringLoad=evaluators,
                             bindings=dones[0].get('bindings'),
                             progress=[s['progress'] for s in shards])
         if self.receipt_path:
