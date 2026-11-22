@@ -350,6 +350,9 @@ def sql_bookend(d, out, c, objects, client, name):
                                               'responseRetained':raw.is_file(), 'pins':c['pins']})
         return None
     value['pins'] = c['pins']
+    if (bounds := progress_sql.durable_lag(c['completion'])) is not None:
+        # The image's durable M1 buckets (lane m1-durable): the verdict refuses a bound it does not know.
+        value['durableLagBoundsMs'] = bounds
     k.write(out/(name+'.json'), value)
     return value
 
@@ -376,6 +379,14 @@ class OfflineLatency:
 
     def finish(self, out, *, drain_end=None, storage=None):
         offline_latency_oracle(out, self.runid)
+
+
+def latency_observation(settings, c):
+    """On an image that keeps durable M1 on the work row (lane m1-durable) the polling SQL observer is off unless
+    the workload asks for it ('polling-sql-v1', a smoke cross-check); elsewhere the default is unchanged."""
+    import progress_sql
+    durable = progress_sql.durable_lag(c.get('completion')) is not None
+    return settings.get('latencyObservation', 'offline-v1' if durable else 'polling-sql-v1')
 
 
 def offline_latency_oracle(out, runid):
@@ -574,7 +585,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
     # live accepted-input SQL observer for correctness and smoke. 'offline-v1' polls nothing during the
     # run: the viewers keep a frame ledger, and m7-joined/latency_oracle.py joins it to the driver's
     # accepted writes afterwards (M3); stage lag and backlog come from the roles' metrics (M1, M2).
-    offline_latency = settings.get('latencyObservation', 'polling-sql-v1') == 'offline-v1'
+    offline_latency = latency_observation(settings, c) == 'offline-v1'
     if offline_latency and load:
         argv += ['--frameLedger', str(out / 'viewer-frames.jsonl')]
     # Unchanged stock probe, with only SQL transport and external restart changed.

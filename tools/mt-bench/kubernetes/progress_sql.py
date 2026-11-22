@@ -23,7 +23,26 @@ FIELDS = ('generation', 'completed', 'observed', 'restoreGeneration', 'stateOK',
 # The writer's pending mark (ms) follows the six fields, with the database read time at the top level, so
 # the end read gives coverage_verdict.py each owed tenant's oldest-input bound (lane R2).
 PENDING_AT = len(FIELDS)
+# Durable M1 (lane m1-durable): on an image whose work row carries the completion lag histogram (core work
+# catalogue 0010, reported by settings-context.cjs as `durableLag`), the same row also returns the cumulative
+# counters, so the before-load and after-drain bookends difference them per tenant in the same snapshot as the
+# pending marks. Without it the query is unchanged (older images have no such columns).
+LAG = ('count', 'sumMs', 'maxMs', 'buckets', 'over120s', 'negative')
+LAG_SQL = ('o.lag_count::text', 'o.lag_sum_ms::text', 'o.lag_max_ms::text', 'o.lag_buckets::text[]', 'o.lag_over_120s::text',
+           'o.lag_negative::text')
 NAME = re.compile('[a-z][a-z0-9_]{0,62}')
+
+
+def durable_lag(config):
+    """The image's durable lag bucket bounds (ms, None = +inf) when the completion source reports them, else None."""
+    value = (config or {}).get('durableLag')
+    if value is None:
+        return None
+    bounds = value.get('boundsMs') if isinstance(value, dict) else None
+    k.need(isinstance(bounds, list) and 2 <= len(bounds) <= 32 and bounds[-1] is None and
+           all(isinstance(b, int) and b > 0 for b in bounds[:-1]) and bounds[:-1] == sorted(set(bounds[:-1])),
+           'PROGRESS_SQL_DURABLE_LAG_BINDING')
+    return bounds
 
 
 def writer_driven(c):
@@ -45,13 +64,14 @@ def query(config):
     # Same digest as writer_queries: core's native lifecycle contract (typed-checkpoint.js).
     parts = [config['kind'], names['checkpoint'], consumer.removesuffix('-completed'), *ai.LIFECYCLE_CODEC]
     digest = hashlib.sha256(json.dumps(parts, separators=(',', ':')).encode()).hexdigest()
+    lag = (',\n      ' + ', '.join(LAG_SQL)) if durable_lag(config) is not None else ''
     return f"""SELECT json_build_object('identity', {ai.DB_IDENTITY},
   'readAtMs', floor(extract(epoch FROM clock_timestamp()) * 1000)::bigint::text, 'tenants',
   (SELECT coalesce(json_object_agg(l.tenant_id, json_build_array(
       l.generation::text, o.work_completed[1]::text, o.work_observed[1]::text, o.output_restore_generation::text,
       coalesce(o.work_version = 2 AND o.contract_digest = '{digest}' AND o.work_enabled
                AND o.projection->0->>'kind' = 'evaluator-work-v2', false),
-      o.work_pending_at IS NOT NULL, o.work_pending_at::text)), '{{}}'::json)
+      o.work_pending_at IS NOT NULL, o.work_pending_at::text{lag})), '{{}}'::json)
      FROM "{names['lifecycle']}".tenant_lifecycle_windows l
      LEFT JOIN "{names['checkpoint']}".tenant_consumer_checkpoint o
        ON o.tenant_id = l.tenant_id AND o.consumer = '{consumer}'
@@ -62,6 +82,15 @@ def _int(value):
     return int(value) if isinstance(value, str) and re.fullmatch('-?[0-9]{1,19}', value) else None
 
 
+def _lag(values):
+    """Cumulative durable lag counters of one row; a malformed value is None (the verdict reads it UNMEASURED)."""
+    count, total, peak, buckets, over, negative = values
+    buckets = [_int(v) for v in buckets] if isinstance(buckets, list) else None
+    value = {'count': _int(count), 'sumMs': _int(total), 'maxMs': _int(peak), 'buckets': buckets,
+             'over120s': _int(over), 'negative': _int(negative)}
+    return None if any(v is None for v in value.values()) or None in buckets else value
+
+
 def decode(raw, ids):
     """A bookend document: identity and the roster tenants' durable state. Shape problems refuse."""
     doc = json.loads(raw)
@@ -70,11 +99,14 @@ def decode(raw, ids):
     tenants = {}
     for tenant in ids:
         row = doc['tenants'].get(tenant)
-        k.need(isinstance(row, list) and len(row) in (len(FIELDS), len(FIELDS) + 1), 'PROGRESS_SQL_COVERAGE', 'FAIL')
+        k.need(isinstance(row, list) and len(row) in (len(FIELDS), len(FIELDS) + 1, len(FIELDS) + 1 + len(LAG)),
+               'PROGRESS_SQL_COVERAGE', 'FAIL')
         generation, completed, observed, restore, state, pending = row[:len(FIELDS)]
         tenants[tenant] = {'generation': _int(generation), 'completed': _int(completed), 'observed': _int(observed),
                            'restoreGeneration': _int(restore), 'stateOK': state is True, 'pending': pending is True,
                            'pendingAt': _int(row[PENDING_AT]) if len(row) > PENDING_AT else None}
+        if len(row) > PENDING_AT + 1:
+            tenants[tenant]['lag'] = _lag(row[PENDING_AT + 1:])
     return {'source': SOURCE, 'identity': doc['identity'], 'tenants': tenants, 'readAtMs': _int(doc.get('readAtMs')),
             'activeTenants': len(doc['tenants']), 'foreignActiveTenants': len(set(doc['tenants']) - set(ids))}
 

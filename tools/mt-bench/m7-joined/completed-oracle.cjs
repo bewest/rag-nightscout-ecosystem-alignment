@@ -46,6 +46,8 @@ function source(evaluator,realtime,selected,receipt){
  if(writer){
   if(receipt||evaluator.pgstream)fail('M7_COMPLETION_SOURCE');
   config.writerDriven={lifecycle:evaluator.trustedWorker?.activity,devicestatus:ns.devicestatus,treatments:ns.treatments};
+  // Durable M1 on the work row (lane m1-durable): the image's bucket bounds, checked again by progress_sql.
+  if(evaluator.durableLag!==undefined){const b=evaluator.durableLag?.boundsMs;if(!Array.isArray(b)||b.length<2||b.length>32||b.at(-1)!==null||!b.slice(0,-1).every((v,i,a)=>Number.isSafeInteger(v)&&v>0&&(i===0||v>a[i-1])))fail('M7_COMPLETION_SOURCE');config.durableLag={boundsMs:[...b]};}
   return prepare(config);
  }
  const n=native.source(evaluator,realtime,receipt);if(n){config.native=n;return prepare(config);}

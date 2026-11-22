@@ -5,6 +5,14 @@
 // settings stay in the process.
 const path = require('node:path');
 
+// An image whose evaluator keeps the durable completion lag histogram on its work row (core work catalogue
+// 0010, lib/pgstream/completion-lag.js) reports its bucket bounds; +inf is null. Older images report nothing.
+function durableLag(root) {
+  let lag;
+  try { lag = require(path.join(root, 'lib/pgstream/completion-lag')); } catch (error) { if (error.code === 'MODULE_NOT_FOUND') return {}; throw error; }
+  return { durableLag: { boundsMs: lag.BOUNDS_MS.map(bound => bound === Infinity ? null : bound) } };
+}
+
 function projection(root, role, environment) {
   const settings = require(path.join(root, 'lib/server/serve/deployment-settings'));
   const values = settings.withSecrets(environment);
@@ -18,7 +26,7 @@ function projection(root, role, environment) {
   if (environment.NS_INPUT_TRANSPORT === 'writer-driven') {
     const { devicestatus, treatments } = config.postgres.namespaces;
     return { inputTransport: 'writer-driven', postgres: { namespaces: { clock, checkpoint, entries, devicestatus, treatments } },
-      trustedWorker: { activity: config.trustedWorker.activity }, consumer: config.consumer, sqlRoles };
+      trustedWorker: { activity: config.trustedWorker.activity }, consumer: config.consumer, sqlRoles, ...durableLag(root) };
   }
   const { generation, slot, streamRole, recovery } = config.pgstream;
   const selection = settings.nativeSelection(settings.layout(values));
