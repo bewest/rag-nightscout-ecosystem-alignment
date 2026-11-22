@@ -165,7 +165,9 @@ function write (t, kind, url, body, headers, okStatuses, name) {
   if (okStatuses.includes(res.status)) {
     const doc = Array.isArray(body) ? body[0] : body;
     console.log(JSON.stringify({event:'m7-input-accepted', run:RUN_ID, tenant:t.id, domain:kind,
-      key:String(kind === 'devicestatus' ? doc.created_at : doc.date), requestToAcceptanceMs:Date.now()-inputStartedAt+1}));
+      key:String(kind === 'devicestatus' ? doc.created_at : doc.date), requestToAcceptanceMs:Date.now()-inputStartedAt+1,
+      // M3 (offline latency oracle): the driver's own clock at acceptance.
+      acceptedAtMs:Date.now()}));
     writesOk.add(1, tags);
   }
   else if (!(res.status >= 400 && res.status < 500)) writesUncertain.add(1, tags); // may have committed

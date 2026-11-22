@@ -27,7 +27,8 @@ def ordinary_roster(c, tenants, need):
 def validate(w, need, tenants=None):
     need(isinstance(w, dict) and set(w) <= {'loadSeconds', 'offeredRps', 'workloadMix',
          'workloadScale', 'logicalPollingClients', 'viewerSetup', 'probeEveryMs', 'hotFactor', 'pointId', 'setupSeconds', 'drainSeconds',
-         'driverPlan', 'driverShards', 'driverHeadroom', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget','drainObservation'}, 'WORKLOAD_FIELDS')
+         'driverPlan', 'driverShards', 'driverHeadroom', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget','drainObservation','latencyObservation'}, 'WORKLOAD_FIELDS')
+    need(w.get('latencyObservation', 'polling-sql-v1') in ('polling-sql-v1', 'offline-v1'), 'WORKLOAD_LATENCY_OBSERVATION')
     viewer_plan.setup(w, need)
     need(workload_inputs.seconds(w.get('loadSeconds')), 'WORKLOAD_LOAD_SECONDS')
     need(workload_inputs.polling_clients(w.get('logicalPollingClients')), 'WORKLOAD_VIEWERS')

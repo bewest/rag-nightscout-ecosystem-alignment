@@ -363,6 +363,41 @@ def capture_bookend(d, out, c, objects, client, name):
     return retained_progress(d, out, c, objects, client, name)
 
 
+class OfflineLatency:
+    """Stands where the live accepted-input observer stands; reads nothing during the run."""
+    def __init__(self, runid):
+        self.runid = runid
+
+    def start(self):
+        pass
+
+    def close(self):
+        pass
+
+    def finish(self, out, *, drain_end=None, storage=None):
+        offline_latency_oracle(out, self.runid)
+
+
+def offline_latency_oracle(out, runid):
+    """M3 after the run: no database read. The clock offset between the k6 driver and the viewer
+    process is not measured here; the result says so (0 means same host or unmeasured)."""
+    oracle = Path(__file__).resolve().parents[1] / 'm7-joined' / 'latency_oracle.py'
+    k.write(out / 'latency-observation.json', {'version': 1, 'mode': 'offline-v1', 'liveSqlObserver': False,
+            'evaluatorCatchup': 'NOT_COLLECTED (polling observer retired for this profile)',
+            'm3': 'm3-latency.json', 'm1m2': 'role Prometheus metrics (metrics snapshot)'})
+    if not (out / 'viewer-frames.jsonl').is_file():
+        k.write(out / 'm3-latency.json', {'version': 1, 'verdict': 'UNMEASURED', 'code': 'K8S_M3_FRAME_LEDGER_MISSING'})
+        return
+    with (out / 'm3-latency.json').open('x') as stream:
+        result = subprocess.run([sys.executable, '-I', '-B', str(oracle), '--k6', str(out), '--frames', str(out / 'viewer-frames.jsonl'),
+                                 '--run', runid, '--rows', str(out / 'm3-latency-rows.jsonl')],
+                                stdout=stream, stderr=subprocess.PIPE, text=True, timeout=600)
+    if result.returncode != 0:
+        (out / 'm3-latency.json').unlink()
+        k.write(out / 'm3-latency.json', {'version': 1, 'verdict': 'UNMEASURED', 'code': 'K8S_M3_ORACLE_FAILED',
+                                          'returncode': result.returncode})
+
+
 def gate_mode(c):
     value = dict(c.get('outcomeGate') or {})
     value.setdefault('midpointStop', 'hard')
@@ -535,6 +570,13 @@ def execute(d, c, objects, client, load=False, recovery=False):
     setup = settings.get('setupSeconds', 310)
     if not load:
         argv += ['--maxWrites', '2']
+    # Latency observation (lane mt-plannable-scale-20261121, E3). 'polling-sql-v1' (default) keeps the
+    # live accepted-input SQL observer for correctness and smoke. 'offline-v1' polls nothing during the
+    # run: the viewers keep a frame ledger, and m7-joined/latency_oracle.py joins it to the driver's
+    # accepted writes afterwards (M3); stage lag and backlog come from the roles' metrics (M1, M2).
+    offline_latency = settings.get('latencyObservation', 'polling-sql-v1') == 'offline-v1'
+    if offline_latency and load:
+        argv += ['--frameLedger', str(out / 'viewer-frames.jsonl')]
     # Unchanged stock probe, with only SQL transport and external restart changed.
     started = time.time()
     process = None
@@ -550,7 +592,8 @@ def execute(d, c, objects, client, load=False, recovery=False):
         if cancel.wait(settings['loadSeconds'] / 2 if load else .5):
             return
         retained_progress(d, out, c, objects, client, 'progress-midpoint')
-    observer = catchup.observer(d, c, objects, client, runid, [row['id'] for row in tenants]) if load else None
+    observer = catchup.observer(d, c, objects, client, runid, [row['id'] for row in tenants]) if load and not offline_latency else \
+        OfflineLatency(runid) if load else None
     log = (out / 'probe.log').open('xb')
     try:
         if observer is not None:
