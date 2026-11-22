@@ -29,9 +29,25 @@ def require(ok, code):
         raise ValueError('M7_HISTORY_' + code)
 
 
+def _looping():
+    import looping_history  # imports this module; loaded on first use
+    return looping_history
+
+
+def is_looping(spec):
+    return isinstance(spec, dict) and spec.get('mode') == MODE_LOOPING
+
+
+def default_spec(mode, anchor):
+    """The spec a mode name and anchor stand for (the looping mode fills its seeded defaults)."""
+    return _looping().default_spec(anchor) if mode == MODE_LOOPING else dict(mode=mode, anchorUnixMs=anchor)
+
+
 def validate(spec):
     if spec == BASELINE and type(spec['additionalSeedRows']) is int:
         return
+    if is_looping(spec):
+        return _looping().validate(spec)
     require(isinstance(spec, dict) and set(spec) == {'mode', 'anchorUnixMs'} and spec['mode'] in (MODE,) + tuple(SHAPES),
             'UNSUPPORTED')
     anchor = spec['anchorUnixMs']
@@ -41,7 +57,9 @@ def validate(spec):
 
 
 def rows_per_tenant(spec):
-    """Stored rows per tenant by collection for a populated-history spec."""
+    """Stored rows per tenant by collection for a populated-history spec (looping: a looping tenant)."""
+    if is_looping(spec):
+        return _looping().rows_per_tenant(spec)
     if spec.get('mode') in SHAPES:
         days = SHAPES[spec['mode']][0]
         return dict(entries=days*288, devicestatus=days*288, treatments=days*TREATMENTS_PER_DAY, profile=1)
@@ -112,6 +130,9 @@ def post(port, tenant, rows, until, path='/api/v1/entries'):
 
 def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=post, now=time.time):
     validate(spec)
+    if is_looping(spec):
+        return _looping().run(spec, tenants, base, sql, until, window_seconds, verify_only=verify_only,
+                              post_batch=post_batch, now=now)
     if spec != BASELINE and spec['mode'] in SHAPES:
         return run_4w(spec, tenants, base, sql, until, window_seconds, verify_only=verify_only,
                       post_batch=post_batch, now=now)
@@ -214,6 +235,10 @@ MODE_2D = 'synthetic-history-2d-v1'
 DEVICE_2D = 's4_history_fixture_2d_v1'
 DAYS_2D = 2
 SHAPES = {MODE_4W: (DAYS_4W, DEVICE_4W), MODE_2D: (DAYS_2D, DEVICE_2D)}  # mode -> (days, marker)
+
+# synthetic-history-looping-2d-v1 (looping_history.py): a closed-loop population over the same 2-day
+# window, seeded, with CGM-only and deep-history tenants. Its own marker and fixture-catalog key.
+MODE_LOOPING = 'synthetic-history-looping-2d-v1'
 
 
 def seed_limits(environ=os.environ):
