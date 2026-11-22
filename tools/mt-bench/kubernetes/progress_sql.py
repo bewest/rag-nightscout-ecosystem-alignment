@@ -20,6 +20,9 @@ import kube_adapter as k
 
 SOURCE = 'sql-completed-v1'
 FIELDS = ('generation', 'completed', 'observed', 'restoreGeneration', 'stateOK', 'pending')
+# The writer's pending mark (ms) follows the six fields, with the database read time at the top level, so
+# the end read gives coverage_verdict.py each owed tenant's oldest-input bound (lane R2).
+PENDING_AT = len(FIELDS)
 NAME = re.compile('[a-z][a-z0-9_]{0,62}')
 
 
@@ -42,12 +45,13 @@ def query(config):
     # Same digest as writer_queries: core's native lifecycle contract (typed-checkpoint.js).
     parts = [config['kind'], names['checkpoint'], consumer.removesuffix('-completed'), *ai.LIFECYCLE_CODEC]
     digest = hashlib.sha256(json.dumps(parts, separators=(',', ':')).encode()).hexdigest()
-    return f"""SELECT json_build_object('identity', {ai.DB_IDENTITY}, 'tenants',
+    return f"""SELECT json_build_object('identity', {ai.DB_IDENTITY},
+  'readAtMs', floor(extract(epoch FROM clock_timestamp()) * 1000)::bigint::text, 'tenants',
   (SELECT coalesce(json_object_agg(l.tenant_id, json_build_array(
       l.generation::text, o.work_completed[1]::text, o.work_observed[1]::text, o.output_restore_generation::text,
       coalesce(o.work_version = 2 AND o.contract_digest = '{digest}' AND o.work_enabled
                AND o.projection->0->>'kind' = 'evaluator-work-v2', false),
-      o.work_pending_at IS NOT NULL)), '{{}}'::json)
+      o.work_pending_at IS NOT NULL, o.work_pending_at::text)), '{{}}'::json)
      FROM "{names['lifecycle']}".tenant_lifecycle_windows l
      LEFT JOIN "{names['checkpoint']}".tenant_consumer_checkpoint o
        ON o.tenant_id = l.tenant_id AND o.consumer = '{consumer}'
@@ -66,11 +70,12 @@ def decode(raw, ids):
     tenants = {}
     for tenant in ids:
         row = doc['tenants'].get(tenant)
-        k.need(isinstance(row, list) and len(row) == len(FIELDS), 'PROGRESS_SQL_COVERAGE', 'FAIL')
-        generation, completed, observed, restore, state, pending = row
+        k.need(isinstance(row, list) and len(row) in (len(FIELDS), len(FIELDS) + 1), 'PROGRESS_SQL_COVERAGE', 'FAIL')
+        generation, completed, observed, restore, state, pending = row[:len(FIELDS)]
         tenants[tenant] = {'generation': _int(generation), 'completed': _int(completed), 'observed': _int(observed),
-                           'restoreGeneration': _int(restore), 'stateOK': state is True, 'pending': pending is True}
-    return {'source': SOURCE, 'identity': doc['identity'], 'tenants': tenants,
+                           'restoreGeneration': _int(restore), 'stateOK': state is True, 'pending': pending is True,
+                           'pendingAt': _int(row[PENDING_AT]) if len(row) > PENDING_AT else None}
+    return {'source': SOURCE, 'identity': doc['identity'], 'tenants': tenants, 'readAtMs': _int(doc.get('readAtMs')),
             'activeTenants': len(doc['tenants']), 'foreignActiveTenants': len(set(doc['tenants']) - set(ids))}
 
 
