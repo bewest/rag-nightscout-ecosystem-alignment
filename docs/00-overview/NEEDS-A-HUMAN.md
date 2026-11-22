@@ -76,6 +76,12 @@ every item that was `merged-upstream` then is `released`.
 |---|---|---|---|
 | `A7A-7` | `unsettled` | §7a item 7 - the clock question | &mdash; |
 
+### Maintainer + a second human &mdash; 1 item
+
+| id | claimed state | what it is | PR |
+|---|---|---|---|
+| `BFQ-241` | `ready-to-push` | BF-241 - one upload limit, UPLOAD_BODY_LIMIT, for entries, treatments and device | &mdash; |
+
 <!-- END GENERATED: needs-a-human -->
 
 ---

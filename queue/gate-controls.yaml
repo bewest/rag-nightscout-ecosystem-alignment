@@ -2850,3 +2850,39 @@ controls:
       Compose early-drop and blanket-window controls on the join (batch-join-2026-11-10/16a1fc2d-acceptance/README.md).
       Re-running source ablations would write into the join worktree that queue gates use.
 
+
+  - gate: node tools/queue/gates/upload-body-limits.js --bf 241 --ref claude/upload-body-limit-20261121
+    cwd: .
+    control: node tools/queue/gates/upload-body-limits.js --bf 241 --ref official/dev
+    positive-control: node tools/queue/gates/upload-body-limits.js --bf 241 --ref claude/upload-body-limit-20261121
+    proves: >
+      2026-11-21: exits 1 on official/dev 79144cbd0 (device status on the 1 MB shared parser) and 0
+      on the fix branch 1820bae16. Static; HTTP behaviour is tests/api.body-limits.test.js.
+
+  - gate: node tools/queue/gates/upload-body-limits.js --bf 242
+    cwd: .
+    control: node tools/queue/gates/upload-body-limits.js --bf 242 --ref 15.0.9
+    proves: >
+      2026-11-21: exits 1 on 15.0.9 c6a0d8ed and on official/dev 79144cbd0, where the defect is
+      present. No positive control until a fix branch exists; add one then.
+
+  - gate: node tools/queue/gates/upload-body-limits.js --bf 243
+    cwd: .
+    control: node tools/queue/gates/upload-body-limits.js --bf 243 --ref 15.0.9
+    proves: >
+      2026-11-21: exits 1 on 15.0.9 c6a0d8ed and on official/dev 79144cbd0, where the defect is
+      present. No positive control until a fix branch exists; add one then.
+
+  - gate: node tools/queue/gates/upload-body-limits.js --bf 244
+    cwd: .
+    control: node tools/queue/gates/upload-body-limits.js --bf 244 --ref 15.0.9
+    proves: >
+      2026-11-21: exits 1 on 15.0.9 c6a0d8ed and on official/dev 79144cbd0, where the defect is
+      present. No positive control until a fix branch exists; add one then.
+
+  - gate: node tools/queue/gates/upload-body-limits.js --bf 245
+    cwd: .
+    control: node tools/queue/gates/upload-body-limits.js --bf 245 --ref 15.0.9
+    proves: >
+      2026-11-21: exits 1 on 15.0.9 c6a0d8ed and on official/dev 79144cbd0, where the defect is
+      present. No positive control until a fix branch exists; add one then.

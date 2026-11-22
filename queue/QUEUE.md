@@ -31,21 +31,21 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 412 |
-| runnable gates | 452 |
-| explicit `no-gate:` markers | 414 |
+| items | 417 |
+| runnable gates | 457 |
+| explicit `no-gate:` markers | 415 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 414 of the 866 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 415 of the 872 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 77 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-ANDROID-LAB, PERF-IMAGE-DIGEST-CACHE |
+| `not-started` | 80 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-ANDROID-LAB, PERF-IMAGE-DIGEST-CACHE, BFQ-242, BFQ-243, BFQ-244 |
 | `in-progress` | 30 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-BENCH-BASELINE, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-TENANT-LIVE-ADD, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST, MT-D6-SLOT-READER |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 1 | WS-LAB |
-| `blocked` | 11 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
+| `ready-to-push` | 2 | WS-LAB, BFQ-241 |
+| `blocked` | 12 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164, BFQ-245 |
 | `in-flight-upstream` | 27 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, MT-OIDC-NATIVE, MT-M6A-JOIN, MT-M6B-JOIN, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-ADMIN-ROLE-OWNERSHIP, MT-ROOT-ADMIN-PARITY, MT-INTERNAL-LISTENER, MT-ACTIVITY-ELIGIBILITY, MT-EXPORT-EXPIRY, MT-ADMIN-LIFECYCLE-FIT, MT-CONSUMER-STALE-RESELECT, MT-TENANT-EXTENDED-SETTINGS, MT-BATCH-JOIN-1110, MT-OWNER-LAST-GUARD, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE, MT-PERF-DB, MT-PERF-REALTIME, MT-PERF-EVALUATOR, MT-EVAL-COST |
 | `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
 | `released` | 93 | P0-A, P0-B, P0-C, P0-J, P0-C-REMEDIATE, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
@@ -168,6 +168,11 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-142** BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or an array, which v3 GET returns under its _id
 - **BFQ-146** BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited v3 record is left out of IOB and COB, and the treatments fall out of time order (merged for 15.0.9, #8784)
 - **BFQ-227** BF-227 - a late or repeated Pushover receipt callback answers 500
+- **BFQ-241** BF-241 - one upload limit, UPLOAD_BODY_LIMIT, for entries, treatments and device status
+- **BFQ-242** BF-242 - notifications router parsers cap activity and food uploads at 100 KB
+- **BFQ-243** BF-243 - with SECURE_CSP=true the CSP report parser refuses API uploads over 100 KB
+- **BFQ-244** BF-244 - API v3 answers 500 for oversized or malformed request bodies
+- **BFQ-245** BF-245 - profile and food uploads capped at 1 MB; bring them under UPLOAD_BODY_LIMIT
 
 ---
 
@@ -2846,7 +2851,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 164 items
+`parcel: register-open` &mdash; 169 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -3018,6 +3023,11 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-142` | BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or an array, which v3 GET returns under its _id | `released` | `bf/api3-delete-nonstring-identifier` | patch | 1 run + 1 no-gate |
 | `BFQ-146` | BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited v3 record is left out of IOB and COB, and the treatments fall out of time order (merged for 15.0.9, #8784) | `released` | `bf/api3-cache-derived-fields` | patch | 1 run + 2 no-gate |
 | `BFQ-227` | BF-227 - a late or repeated Pushover receipt callback answers 500 | `merged-upstream` | `official/dev` | patch | 1 run + 1 no-gate |
+| `BFQ-241` | BF-241 - one upload limit, UPLOAD_BODY_LIMIT, for entries, treatments and device status | `ready-to-push` | `claude/upload-body-limit-20261121` | minor | 1 run + 1 no-gate |
+| `BFQ-242` | BF-242 - notifications router parsers cap activity and food uploads at 100 KB | `not-started` | `none` | patch | 1 run |
+| `BFQ-243` | BF-243 - with SECURE_CSP=true the CSP report parser refuses API uploads over 100 KB | `not-started` | `none` | patch | 1 run |
+| `BFQ-244` | BF-244 - API v3 answers 500 for oversized or malformed request bodies | `not-started` | `none` | patch | 1 run |
+| `BFQ-245` | BF-245 - profile and food uploads capped at 1 MB; bring them under UPLOAD_BODY_LIMIT | `blocked` | `none` | minor | 1 run |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
 
@@ -8365,6 +8375,164 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 
 **Notes.** 2026-11-01 17:45:01Z: #8895 merged as bb85d10f; dev 61eb3733 also contains the CI hygiene repair. The false-return/500 route is present on v15.0.9 by canonical source inspection. ships_to_operators_today describes that defect exposure, not delivery of dev's fix.
+
+### `BFQ-241` &mdash; BF-241 - one upload limit, UPLOAD_BODY_LIMIT, for entries, treatments and device status
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `claude/upload-body-limit-20261121` |
+| base | `official/dev@79144cbd0` |
+| worktree | `/mnt/data/nightscout-workspace/worktrees/cgm-remote-monitor/upload-body-limit` |
+| semver | `minor` |
+| review | maintainer, plus one reviewer who has not merged their own work here |
+| ships to operators today | **yes** |
+| register | `BF-241` |
+
+**Blast radius.** 1 commit (1820bae16), 7 files, +193/-7: lib/middleware/body-limits.js (new), lib/api/{entries,treatments,devicestatus}/index.js, lib/server/env.js, README.md, tests/api.body-limits.test.js. Shared 1 MB parsers and every other route unchanged.
+
+**What an operator sees.** Device-status uploads (for example Loop's status with insulin on board, carbs on board and predictions) are accepted up to the same size as glucose and treatment uploads, 50 MB by default, so a large batch is no longer refused. A new optional setting, UPLOAD_BODY_LIMIT, sets that size for all three. Not in a release yet.
+
+**Why `minor`.** New operator setting UPLOAD_BODY_LIMIT; device status accepts larger bodies. No route, response or default changes for entries or treatments.
+
+**Gates.**
+
+- `[static]` `node tools/queue/gates/upload-body-limits.js --bf 241 --ref claude/upload-body-limit-20261121`
+  - The three bulk-upload routes take their JSON limit from body-limits (default 50mb) and device status no longer uses the 1 MB shared parser, on the fix branch.
+- **NO GATE** &mdash; HTTP behaviour is measured by tests/api.body-limits.test.js (needs MongoDB): 5 of 11 fail on dev 79144cbd0 (2 MB device status refused with 413; a 256kb setting not enforced), 11 of 11 pass on 1820bae16. Not a queue gate because it needs a database.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** 2026-11-21: affected suites 342 passing / 1 pending / 0 failing on 1820bae16 (27 files, MongoDB 8.0 container, Node 22.23.4). Before the PR: merge official/dev, full suite, tools/review/prcheck/prcheck.sh. Multitenant: the tenant app reuses these route factories and its tenant env has no uploadBodyLimit, so the process environment applies (read, not run on the multitenant branch). The multitenant API v3 parser (lib/api3/shared/jsonParser.js on official/workspace/multitenant-20261102) stays at a hard-coded 50 MB.
+
+### `BFQ-242` &mdash; BF-242 - notifications router parsers cap activity and food uploads at 100 KB
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `none` |
+| base | `official/dev@79144cbd0` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-242` |
+
+**Blast radius.** Expected: lib/api/notifications-api.js, parsers moved onto the Pushover callback route; a test.
+
+**What an operator sees.** Activity and food uploads larger than 100 KB would be accepted up to their configured limits.
+
+**Why `patch`.** restores the configured limits; no new setting or route
+
+**Gates.**
+
+- `[static]` `node tools/queue/gates/upload-body-limits.js --bf 242`
+  - official/dev's notifications router registers no parser on the shared v1 app
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Reproduced 2026-11-21 on dev 79144cbd0 (160 KB refused on activity and food). The scoped fix was measured by ablation on a local tree and discarded to keep BF-241 narrow; the activity, food and Pushover-callback suites passed with it. Pairs naturally with BFQ-243 in one PR.
+
+### `BFQ-243` &mdash; BF-243 - with SECURE_CSP=true the CSP report parser refuses API uploads over 100 KB
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `none` |
+| base | `official/dev@79144cbd0` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-243` |
+
+**Blast radius.** Expected: lib/server/app.js, the CSP JSON parser moved onto the /report- violation route; a test.
+
+**What an operator sees.** On a Nightscout with SECURE_CSP turned on, uploads over 100 KB (CGM backfills, treatment batches, Loop status) are refused today. The fix lets them through up to the normal limits.
+
+**Why `patch`.** restores the route limits under SECURE_CSP; no new setting
+
+**Gates.**
+
+- `[static]` `node tools/queue/gates/upload-body-limits.js --bf 243`
+  - official/dev's app.js registers no app-wide JSON parser
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Reproduced 2026-11-21 on dev 79144cbd0 for six v1 routes at 512 KB. The scoped fix was measured by ablation on a local tree (all six cleared, CSP reports still answer 204).
+
+### `BFQ-244` &mdash; BF-244 - API v3 answers 500 for oversized or malformed request bodies
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `none` |
+| base | `official/dev@79144cbd0` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-244` |
+
+**Blast radius.** Expected: lib/api3/index.js (and lib/api3/shared/jsonParser.js on the multitenant branch) parser error handler; HTTP characterization tests first.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** Corrects an error status (500 to 413 or 400); clients that branch on 500 would see a change, so characterize before changing.
+
+**Gates.**
+
+- `[static]` `node tools/queue/gates/upload-body-limits.js --bf 244`
+  - official/dev's API v3 parser error handler reads the parser's status
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/30-design/tenancy/multitenant-rest-api-delivery-plan-2026-11-04.md`
+
+**Notes.** Read-derived 2026-11-21; not reproduced over HTTP.
+
+### `BFQ-245` &mdash; BF-245 - profile and food uploads capped at 1 MB; bring them under UPLOAD_BODY_LIMIT
+
+| | |
+|---|---|
+| state (claimed) | `blocked` |
+| repo | `cgm-remote-monitor` |
+| branch | `none` |
+| base | `official/dev@79144cbd0` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-245` |
+| blocks on | `BFQ-241` |
+
+**Blast radius.** Expected: lib/api/profile/index.js and lib/api/food/index.js use the BF-241 body-limits parser; tests/api.body-limits.test.js gains both routes.
+
+**What an operator sees.** Loop's therapy-settings history and large food lists would be accepted up to the same size as other uploads.
+
+**Why `minor`.** widens the routes covered by UPLOAD_BODY_LIMIT
+
+**Gates.**
+
+- `[static]` `node tools/queue/gates/upload-body-limits.js --bf 245`
+  - official/dev's profile and food JSON parsers take their limit from body-limits
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Reproduced 2026-11-21 on dev 79144cbd0 (2 MB refused with 413 on both). Kept out of BF-241 by the maintainer's scope (three routes only). Loop sends up to 400 settings per request sized to about 1 MB.
 
 ---
 

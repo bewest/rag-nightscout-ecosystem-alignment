@@ -26,10 +26,10 @@ state is not evidence that a gate ran or that a milestone was promoted.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 205 | 39 | 8 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 210 | 42 | 9 |
 | **Modernization** | `release-train` | 55 | 8 | 2 |
 | **Multitenant** | `tenancy`, `platform` | 150 | 30 | 26 |
-| | **total** | **412** | **77** | **36** |
+| | **total** | **417** | **80** | **37** |
 
 <!-- END GENERATED: horizons -->
 
@@ -240,6 +240,11 @@ cover more than one `BF-`:
 | `BFQ-225` | `in-flight-upstream` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3-then-sock |
 | `BFQ-226` | `merged-upstream` | BF-226 - an API v3 autoPrune of more than one record empties the type's cache with no relo |
 | `BFQ-227` | `merged-upstream` | BF-227 - a late or repeated Pushover receipt callback answers 500 |
+| `BFQ-241` | `ready-to-push` | BF-241 - one upload limit, UPLOAD_BODY_LIMIT, for entries, treatments and device status |
+| `BFQ-242` | `not-started` | BF-242 - notifications router parsers cap activity and food uploads at 100 KB |
+| `BFQ-243` | `not-started` | BF-243 - with SECURE_CSP=true the CSP report parser refuses API uploads over 100 KB |
+| `BFQ-244` | `not-started` | BF-244 - API v3 answers 500 for oversized or malformed request bodies |
+| `BFQ-245` | `blocked` | BF-245 - profile and food uploads capped at 1 MB; bring them under UPLOAD_BODY_LIMIT |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `merged-upstream` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `released` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -276,7 +281,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  |  |  |  |  | 18 |  | 1 |  |  |  | **22** |
 | `release-train` | 8 | 2 | 1 |  |  |  | 22 | 15 | 2 | 1 |  |  | 4 | **55** |
-| `register-open` | 29 | 3 | 1 | 1 | 5 | 2 | 55 | 58 | 5 |  |  | 5 |  | **164** |
+| `register-open` | 32 | 3 | 1 | 2 | 6 | 2 | 55 | 58 | 5 |  |  | 5 |  | **169** |
 | `tenancy` | 22 | 23 |  |  | 6 | 23 | 6 |  |  | 10 | 1 | 15 | 6 | **112** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -316,14 +321,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 374 | 91% |
+| Maintainer | 378 | 91% |
 | SECURITY reviewer | 17 | 4% |
-| Maintainer + a second human | 8 | 2% |
+| Maintainer + a second human | 9 | 2% |
 | SAFETY reviewer | 6 | 1% |
 | Unassigned | 3 | 1% |
 | Whoever edits it next | 3 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **412** | |
+| **total** | **417** | |
 
 <!-- END GENERATED: reviewer-load -->
 
