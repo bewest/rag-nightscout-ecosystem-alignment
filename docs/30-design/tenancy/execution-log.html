@@ -4113,6 +4113,39 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#update--realistic-history-bends-with-a-2-day-seed-and-evaluator-memory-per-resident-2026-11-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update — realistic-history bends with a 2-day seed, and evaluator memory per resident (2026-11-21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update--p2-joined-to-the-local-candidate-2026-11-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update — P2 joined to the local candidate (2026-11-21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update--plannable-scale-integration-and-recovered-identifier-lookup-2026-11-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update — plannable-scale integration and recovered identifier lookup (2026-11-21)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -7181,6 +7214,39 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#update--realistic-history-bends-with-a-2-day-seed-and-evaluator-memory-per-resident-2026-11-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update — realistic-history bends with a 2-day seed, and evaluator memory per resident (2026-11-21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update--p2-joined-to-the-local-candidate-2026-11-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update — P2 joined to the local candidate (2026-11-21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update--plannable-scale-integration-and-recovered-identifier-lookup-2026-11-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update — plannable-scale integration and recovered identifier lookup (2026-11-21)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -7204,7 +7270,7 @@
 
 
 <h1 id="multitenant-execution-log">Multitenant execution log<a class="headerlink" href="#multitenant-execution-log" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-20 at <code>6a63eb057</code>.</em></p>
+<p><em>Living document, last changed 2026-11-21 at <code>e292fdb24</code>.</em></p>
 <p><em>Contributor-facing. The dated state of record for multitenant implementation, acceptance and
 measurement: what joined, what was tested, what is left, and who owns it. Moved 2026-11-17 from
 the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">16.0.0 release contents</a>, which ships
@@ -7263,19 +7329,19 @@ are appended at the end as one dated table per coherent batch.</em></p>
 </tr>
 <tr>
 <td>Qualification remains open</td>
-<td><strong>Reproduced:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/switch-over-finish-2026-11-15/full03.json">full03</a> passes inventory and all eight tiers, then fails the enabled corpus (861 passing, one pending, 24 failing). Exact recorded resources, births/groups and producer ports are independently closed. The UTC date-only native case passes. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/switch-over-finish-2026-11-15/fixture-focused01.json">Focused fixture repair</a> at local leaf <code>9580e5b1d5678b5b7d9485aad6b7364da96080b6</code> passes 69 checks with one optional pending; it does not rewrite full03. Source startup and lifetime-oracle repairs are joined. Coherent final full/enabled acceptance, selected-v2 runtime criteria and last prcheck remain open; focused supported-v1 clinical qualification is recorded below. Original failed/aborted captures retain attribution. No push, application-dev merge or release.</td>
+<td><strong>Reproduced:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/reports/tenancy/switch-over-finish-2026-11-15/full03.json">full03</a> passes inventory and all eight tiers, then fails the enabled corpus (861 passing, one pending, 24 failing). Exact recorded resources, births/groups and producer ports are independently closed. The UTC date-only native case passes. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/reports/tenancy/switch-over-finish-2026-11-15/fixture-focused01.json">Focused fixture repair</a> at local leaf <code>9580e5b1d5678b5b7d9485aad6b7364da96080b6</code> passes 69 checks with one optional pending; it does not rewrite full03. Source startup and lifetime-oracle repairs are joined. Coherent final full/enabled acceptance, selected-v2 runtime criteria and last prcheck remain open; focused supported-v1 clinical qualification is recorded below. Original failed/aborted captures retain attribution. No push, application-dev merge or release.</td>
 </tr>
 <tr>
 <td>Lifetime fixture repairs measured on the joined branch</td>
-<td><strong>Reproduced:</strong> the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/switch-over-finish-2026-11-15/lifetime-focused01.json">three-suite point</a> passes 14 cases and fails one final job marker assertion. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/switch-over-finish-2026-11-15/lifetime-focused02.json">focused follow-up</a> passes both job cases at joined local source <code>8128083d164d7ea721f6bff4bb7f883ce18546e9</code>. It proves that draining A removes A's durable marker while retaining the exact existing B participation and allowing B to continue. Both points have independent exact resource/process absence; neither rewrites full03 or replaces final acceptance.</td>
+<td><strong>Reproduced:</strong> the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/reports/tenancy/switch-over-finish-2026-11-15/lifetime-focused01.json">three-suite point</a> passes 14 cases and fails one final job marker assertion. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/reports/tenancy/switch-over-finish-2026-11-15/lifetime-focused02.json">focused follow-up</a> passes both job cases at joined local source <code>8128083d164d7ea721f6bff4bb7f883ce18546e9</code>. It proves that draining A removes A's durable marker while retaining the exact existing B participation and allowing B to continue. Both points have independent exact resource/process absence; neither rewrites full03 or replaces final acceptance.</td>
 </tr>
 <tr>
 <td>Prior cold-client run retained as partial evidence</td>
-<td><strong>Reproduced:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/switch-over-finish-2026-11-15/native13.json">native13</a> proves cold Node-JWT/provider refusal, v3 write and the matching stored-ID socket frame at application8dd/deployment23e. Export stops with SQLSTATE42501 before artifact creation or seven-domain restore. Source/grant inspection identifies a narrow manual fixture ledger-read omission; the product grant builder already covers it. The consumed approval, original export refusal and independent absence remain preserved; the later focused fixed-v1 clinical result is recorded separately below.</td>
+<td><strong>Reproduced:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/reports/tenancy/switch-over-finish-2026-11-15/native13.json">native13</a> proves cold Node-JWT/provider refusal, v3 write and the matching stored-ID socket frame at application8dd/deployment23e. Export stops with SQLSTATE42501 before artifact creation or seven-domain restore. Source/grant inspection identifies a narrow manual fixture ledger-read omission; the product grant builder already covers it. The consumed approval, original export refusal and independent absence remain preserved; the later focused fixed-v1 clinical result is recorded separately below.</td>
 </tr>
 <tr>
 <td>Reusable experiment source integrated; remote gateways remain open</td>
-<td><strong>Reproduced:</strong> the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/switch-over-finish-2026-11-15/tooling-integration01.json">focused integration record</a> binds the reviewed helper and controller capsules, immutable payloads, experiment cells and atomic aggregate resource/cost/deadline admission. All 81 controller checks and 14 local batch checks pass on the integrated branches. Existing entered experiments retain their original source and cleanup owners. The remote owner prepares trusted approval/provider/key/guard integration; source tests do not authorize allocation or qualify live remote fan-out. The actual root-to-UID1000 permission control is recorded below; live remote batch execution remains unmeasured. Custody: <code>externals/work/HANDOFF-experiment-batch-2026-11-15.md</code>.</td>
+<td><strong>Reproduced:</strong> the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/reports/tenancy/switch-over-finish-2026-11-15/tooling-integration01.json">focused integration record</a> binds the reviewed helper and controller capsules, immutable payloads, experiment cells and atomic aggregate resource/cost/deadline admission. All 81 controller checks and 14 local batch checks pass on the integrated branches. Existing entered experiments retain their original source and cleanup owners. The remote owner prepares trusted approval/provider/key/guard integration; source tests do not authorize allocation or qualify live remote fan-out. The actual root-to-UID1000 permission control is recorded below; live remote batch execution remains unmeasured. Custody: <code>externals/work/HANDOFF-experiment-batch-2026-11-15.md</code>.</td>
 </tr>
 <tr>
 <td>Local and remote load observations retained; capacity remains open</td>
@@ -7283,31 +7349,31 @@ are appended at the end as one dated table per coherent batch.</em></p>
 </tr>
 <tr>
 <td>Platform-managed stream recovery reproduced on local source</td>
-<td><strong>Reproduced:</strong> the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/switch-over-finish-2026-11-15/external-platform04.json">source-fixture witness</a> at application604f/deploymentb728 keeps the same evaluator alive across an independent Go-service pause and Docker-policy replacement, withdraws readiness and reaches the exact durable target after restart. Exact cleanup passes. The joined intermediate image at application <code>58ddc1274359af9c393c098026f1e25a828dcc41</code> / deployment <code>b728749354275e3ba8119a7190cf9489187ff685</code> is built and source-label checked; its updated-image local runtime observations are recorded in the canonical performance report, while final capacity remains open. The integrated helper now accounts for the independent Go service within its declared aggregate budget. Other worker, schema and slot/WAL boundaries retain separate scope.</td>
+<td><strong>Reproduced:</strong> the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/reports/tenancy/switch-over-finish-2026-11-15/external-platform04.json">source-fixture witness</a> at application604f/deploymentb728 keeps the same evaluator alive across an independent Go-service pause and Docker-policy replacement, withdraws readiness and reaches the exact durable target after restart. Exact cleanup passes. The joined intermediate image at application <code>58ddc1274359af9c393c098026f1e25a828dcc41</code> / deployment <code>b728749354275e3ba8119a7190cf9489187ff685</code> is built and source-label checked; its updated-image local runtime observations are recorded in the canonical performance report, while final capacity remains open. The integrated helper now accounts for the independent Go service within its declared aggregate budget. Other worker, schema and slot/WAL boundaries retain separate scope.</td>
 </tr>
 <tr>
 <td>Actual stream fault boundaries closed; final corpus remains open</td>
-<td><strong>Reproduced:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/switch-over-finish-2026-11-15/stream-followups01.json">follow-up source-fixture records</a> prove actual schema withdrawal/restoration on the same evaluator, bounded held-receipt recovery with the effective nested retry policy, and named terminal refusal after slot loss without false clinical completion or automatic slot recreation. Each point independently verifies exact cleanup. The slot point retains its earlier deployment binding; the later points bind the retry repair. Final joined enabled-corpus measurement, explicit rebootstrap and WAL exhaustion retain separate scope.</td>
+<td><strong>Reproduced:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/reports/tenancy/switch-over-finish-2026-11-15/stream-followups01.json">follow-up source-fixture records</a> prove actual schema withdrawal/restoration on the same evaluator, bounded held-receipt recovery with the effective nested retry policy, and named terminal refusal after slot loss without false clinical completion or automatic slot recreation. Each point independently verifies exact cleanup. The slot point retains its earlier deployment binding; the later points bind the retry repair. Final joined enabled-corpus measurement, explicit rebootstrap and WAL exhaustion retain separate scope.</td>
 </tr>
 <tr>
 <td>Reviewed assignment, recovery and realtime source joined; runtime criteria remain open</td>
-<td><strong>Reproduced:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/switch-over-finish-2026-11-15/source-integration02.json">focused joined-source record</a> records 225 affected assignment/lifecycle checks, 88 realtime checks and the complete 828-file/eight-tier inventory. Independent review caught and closed actual v2 reader and adoption-ledger composition failures with red/restored controls. The realtime repair preserves one request through parking/retries and cancels obsolete work; the original native initiating trigger remains unmeasured. The M4 observer correction preserves complete inventory and limits. Deleted-tenant reconstruction, selected-v2 admin/HOLD/mode transitions and deployment dispatch remain open. Current credential composition is source-checked separately; one final coherent campaign remains open.</td>
+<td><strong>Reproduced:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/reports/tenancy/switch-over-finish-2026-11-15/source-integration02.json">focused joined-source record</a> records 225 affected assignment/lifecycle checks, 88 realtime checks and the complete 828-file/eight-tier inventory. Independent review caught and closed actual v2 reader and adoption-ledger composition failures with red/restored controls. The realtime repair preserves one request through parking/retries and cancels obsolete work; the original native initiating trigger remains unmeasured. The M4 observer correction preserves complete inventory and limits. Deleted-tenant reconstruction, selected-v2 admin/HOLD/mode transitions and deployment dispatch remain open. Current credential composition is source-checked separately; one final coherent campaign remains open.</td>
 </tr>
 <tr>
 <td>Realtime pending-request and shutdown transport criterion closed</td>
-<td><strong>Reproduced:</strong> the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/switch-over-finish-2026-11-15/realtime-native02.json">bounded real-client replay</a> at joined source306824 keeps four actual authorized polling clients pending beyond the unchanged 60-second deadline, then delivers one frame/callback each after controlled recovery; the never-authorized storage control expires. TCP, queued requests and watch interest all reach zero. A pre-armed independent supervisor and separate exact-CID lookup verify cleanup. The prior attempt remains partial with stale watch counts and a late watchdog. Synthetic current-state/runtime ports limit this to transport/source behavior; the original long-idle trigger, final clinical journey and capacity remain open.</td>
+<td><strong>Reproduced:</strong> the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/reports/tenancy/switch-over-finish-2026-11-15/realtime-native02.json">bounded real-client replay</a> at joined source306824 keeps four actual authorized polling clients pending beyond the unchanged 60-second deadline, then delivers one frame/callback each after controlled recovery; the never-authorized storage control expires. TCP, queued requests and watch interest all reach zero. A pre-armed independent supervisor and separate exact-CID lookup verify cleanup. The prior attempt remains partial with stale watch counts and a late watchdog. Synthetic current-state/runtime ports limit this to transport/source behavior; the original long-idle trigger, final clinical journey and capacity remain open.</td>
 </tr>
 <tr>
 <td>Supported fixed-v1 clinical witness closed independently of optional v2</td>
-<td><strong>Reproduced:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/switch-over-finish-2026-11-15/clinical-fixed-v1-native01.json">focused native clinical restore</a> at host-source1ce/deployment16133 proves cold Node authentication under actual provider refusal, seven populated domain field/ID/tenant reconciliation, genuine held-A drain before import, B write/frame/SQL continuity, fresh A output, preserved current authority/keys and forward live clock. Exact cleanup passes. The application image is NOT_USED. The seven domains are entries, treatments, devicestatus, profile, food, settings and activity; the selected BG-now mean/last output oracle does not assess all clinical output properties. This result does not qualify desired-N/v2, full platform artifacts or the final candidate.</td>
+<td><strong>Reproduced:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/reports/tenancy/switch-over-finish-2026-11-15/clinical-fixed-v1-native01.json">focused native clinical restore</a> at host-source1ce/deployment16133 proves cold Node authentication under actual provider refusal, seven populated domain field/ID/tenant reconciliation, genuine held-A drain before import, B write/frame/SQL continuity, fresh A output, preserved current authority/keys and forward live clock. Exact cleanup passes. The application image is NOT_USED. The seven domains are entries, treatments, devicestatus, profile, food, settings and activity; the selected BG-now mean/last output oracle does not assess all clinical output properties. This result does not qualify desired-N/v2, full platform artifacts or the final candidate.</td>
 </tr>
 <tr>
 <td>Native admission and credential source follow-ups measured</td>
-<td><strong>Reproduced:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/switch-over-finish-2026-11-15/admission-followups01.json">admission follow-ups</a> record 26 native SQL component checks after the bounded PG16 policy-rendering repair, 75 joined credential/claim source checks, the 831-file/eight-tier inventory and 23 integrated remote-root source checks. Actual worker/operator grants and SQL mode transitions pass; live HOLD/evaluator/runtime transition criteria remain open. Both legacy and Node credential constructors work with current recovery epochs. Remote host message-reader/provider installation remains unmeasured.</td>
+<td><strong>Reproduced:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/reports/tenancy/switch-over-finish-2026-11-15/admission-followups01.json">admission follow-ups</a> record 26 native SQL component checks after the bounded PG16 policy-rendering repair, 75 joined credential/claim source checks, the 831-file/eight-tier inventory and 23 integrated remote-root source checks. Actual worker/operator grants and SQL mode transitions pass; live HOLD/evaluator/runtime transition criteria remain open. Both legacy and Node credential constructors work with current recovery epochs. Remote host message-reader/provider installation remains unmeasured.</td>
 </tr>
 <tr>
 <td>Root-to-application-user result permission criterion closed; original custody result remains partial</td>
-<td><strong>Reproduced:</strong> the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/switch-over-finish-2026-11-15/worker-native-uid01.json">one-container native reader control</a> runs the unchanged importer/reader without skips, reproduces EACCES13 when ownership transfer is omitted and reads successfully after restoration. A case-sensitive absence classifier leaves the original run FAILED_PARTIAL. Contemporaneous exact-CID NotFound precedes cutoff, but whole host-group absence by that cutoff is unmeasured; later exact reconciliation removes only the owned marker after all actors are absent. No paid-run or capacity promotion follows.</td>
+<td><strong>Reproduced:</strong> the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/reports/tenancy/switch-over-finish-2026-11-15/worker-native-uid01.json">one-container native reader control</a> runs the unchanged importer/reader without skips, reproduces EACCES13 when ownership transfer is omitted and reads successfully after restoration. A case-sensitive absence classifier leaves the original run FAILED_PARTIAL. Contemporaneous exact-CID NotFound precedes cutoff, but whole host-group absence by that cutoff is unmeasured; later exact reconciliation removes only the owned marker after all actors are absent. No paid-run or capacity promotion follows.</td>
 </tr>
 <tr>
 <td>Bounded normalization improvement fixed on the candidate</td>
@@ -7323,7 +7389,7 @@ are appended at the end as one dated table per coherent batch.</em></p>
 </tr>
 <tr>
 <td>First simplified candidate is not ready; required repair batch selected</td>
-<td><strong>Reproduced:</strong> the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/switch-over-finish-2026-11-15/heartbeatfree-acceptance02.json">closed coherent acceptance record</a> binds runtime <code>0a609e58ae170aa1eda1ab41dbcd0a735f8eb2bd</code>, test instrument <code>95389589dc4df13b1633e0aa3c4786697da2f691</code> and image <code>b9dee0c2</code>. All eight unfiltered application tiers pass; native acceptance has 942 passing, two pending and six failing. Recorded-resource absence passes; final prcheck remains held. Focused investigation separates missing producer/recovery-readiness fixture boundaries from actual startup pending-marker and schema/construction races. The repaired batch is frozen at core <code>1646f00437cb207cb5acf0da0f3474b68f78bc04</code> and deployment <code>8ddfab1e46e3fd577f1e96e738ab5207f9925abf</code>; independent failure controls preserve immediate schema/effect fences, newer pending work and notification reconciliation. One fresh owner builds and qualifies that tuple, then executes one coherent campaign. Independent experiments may use its byte-qualified image before broad acceptance. Earlier captures retain their original failures and source. Current repair/build custody: <code>externals/work/HANDOFF-native-lifecycle-recovery-2026-11-15.md</code> and <code>externals/work/HANDOFF-heartbeatfree-acceptance-03-2026-11-15.md</code>. No repaired-image acceptance or 10,000-tenant application capacity is claimed.</td>
+<td><strong>Reproduced:</strong> the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/reports/tenancy/switch-over-finish-2026-11-15/heartbeatfree-acceptance02.json">closed coherent acceptance record</a> binds runtime <code>0a609e58ae170aa1eda1ab41dbcd0a735f8eb2bd</code>, test instrument <code>95389589dc4df13b1633e0aa3c4786697da2f691</code> and image <code>b9dee0c2</code>. All eight unfiltered application tiers pass; native acceptance has 942 passing, two pending and six failing. Recorded-resource absence passes; final prcheck remains held. Focused investigation separates missing producer/recovery-readiness fixture boundaries from actual startup pending-marker and schema/construction races. The repaired batch is frozen at core <code>1646f00437cb207cb5acf0da0f3474b68f78bc04</code> and deployment <code>8ddfab1e46e3fd577f1e96e738ab5207f9925abf</code>; independent failure controls preserve immediate schema/effect fences, newer pending work and notification reconciliation. One fresh owner builds and qualifies that tuple, then executes one coherent campaign. Independent experiments may use its byte-qualified image before broad acceptance. Earlier captures retain their original failures and source. Current repair/build custody: <code>externals/work/HANDOFF-native-lifecycle-recovery-2026-11-15.md</code> and <code>externals/work/HANDOFF-heartbeatfree-acceptance-03-2026-11-15.md</code>. No repaired-image acceptance or 10,000-tenant application capacity is claimed.</td>
 </tr>
 </tbody>
 </table>
@@ -7338,7 +7404,7 @@ are appended at the end as one dated table per coherent batch.</em></p>
 <tbody>
 <tr>
 <td>Repaired simplified candidate passes coherent acceptance on local branches</td>
-<td><strong>Reproduced:</strong> the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/reports/tenancy/switch-over-finish-2026-11-15/heartbeatfree-acceptance04.json">immutable final acceptance record</a> binds runtime <code>1646f00437cb207cb5acf0da0f3474b68f78bc04</code>, deployment <code>8ddfab1e46e3fd577f1e96e738ab5207f9925abf</code> and image <code>sha256:e3cd382058af98c8aa0fe2a71451f2a539066b087e6ed059e8d7c8124f73a126</code>. Test instrument <code>58fb8444910559ee86c7a1970971090ade7ae67f</code> adds two scoped test-mode save/restore hooks; canonical runtime/build inputs are byte-identical. All eight unfiltered application tiers pass. The applicable 98 native suites have 948 passing, two pending and zero failing; optional tenant-recommission remains deferred. Tier counts overlap and are not summed. Independent absence passes for the exact recorded resources and process births; unrecorded per-suite resources rely on retained finalizers. Root final upstream/prcheck returns <code>OK</code> at unchanged instrument head58fb, retained in <code>/tmp/transition-final-prcheck.log</code>; the captured acceptance record correctly retains its earlier handoff of that last check to root. Earlier failed captures remain unchanged. This closes the repaired candidate acceptance criterion on local branches; no push, application-dev merge or release occurs. Capacity experiments retain their own source, clinical criteria and failures; 10,000-tenant serving capacity remains unmeasured. Current ownership and next integration boundary remain in <code>externals/work/HANDOFF-switch-over-finish-2026-11-15.md</code>.</td>
+<td><strong>Reproduced:</strong> the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/reports/tenancy/switch-over-finish-2026-11-15/heartbeatfree-acceptance04.json">immutable final acceptance record</a> binds runtime <code>1646f00437cb207cb5acf0da0f3474b68f78bc04</code>, deployment <code>8ddfab1e46e3fd577f1e96e738ab5207f9925abf</code> and image <code>sha256:e3cd382058af98c8aa0fe2a71451f2a539066b087e6ed059e8d7c8124f73a126</code>. Test instrument <code>58fb8444910559ee86c7a1970971090ade7ae67f</code> adds two scoped test-mode save/restore hooks; canonical runtime/build inputs are byte-identical. All eight unfiltered application tiers pass. The applicable 98 native suites have 948 passing, two pending and zero failing; optional tenant-recommission remains deferred. Tier counts overlap and are not summed. Independent absence passes for the exact recorded resources and process births; unrecorded per-suite resources rely on retained finalizers. Root final upstream/prcheck returns <code>OK</code> at unchanged instrument head58fb, retained in <code>/tmp/transition-final-prcheck.log</code>; the captured acceptance record correctly retains its earlier handoff of that last check to root. Earlier failed captures remain unchanged. This closes the repaired candidate acceptance criterion on local branches; no push, application-dev merge or release occurs. Capacity experiments retain their own source, clinical criteria and failures; 10,000-tenant serving capacity remains unmeasured. Current ownership and next integration boundary remain in <code>externals/work/HANDOFF-switch-over-finish-2026-11-15.md</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -8950,7 +9016,7 @@ are appended at the end as one dated table per coherent batch.</em></p>
 <tbody>
 <tr>
 <td>Clinical deadlines</td>
-<td><strong>Reproduced on PostgreSQL 16.15.</strong> The shared Compose and Kubernetes observer uses a stored synthetic write, its tenant's server write stamp, the evaluated window and completed work version within one restore generation. Two coalesced inputs were covered. A third write made during evaluation was classified late and an eventual quiet completion covered it with the existing output body. A restore left the original input unresolved. Replaying the earlier CDC packets preserved all 4,357 Compose and 4,358 Kubernetes on-time verdicts. See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/tools/mt-bench/m7-joined/accepted_inputs.py">accepted-input observer</a>.</td>
+<td><strong>Reproduced on PostgreSQL 16.15.</strong> The shared Compose and Kubernetes observer uses a stored synthetic write, its tenant's server write stamp, the evaluated window and completed work version within one restore generation. Two coalesced inputs were covered. A third write made during evaluation was classified late and an eventual quiet completion covered it with the existing output body. A restore left the original input unresolved. Replaying the earlier CDC packets preserved all 4,357 Compose and 4,358 Kubernetes on-time verdicts. See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/tools/mt-bench/m7-joined/accepted_inputs.py">accepted-input observer</a>.</td>
 </tr>
 <tr>
 <td>S4 fixture and topology</td>
@@ -9248,6 +9314,95 @@ are appended at the end as one dated table per coherent batch.</em></p>
 <tr>
 <td>Open</td>
 <td>Untested directions: shorten the outbox transaction by moving the reads out of it; fewer selects per pass (P2 <code>b217e6aec</code> removes two of three output loads and merges cleanly); log the swallowed refusal code; a larger outbox pool; lower evaluator CPU. A K=2/180 point after P2 would show what P2 alone removes. Local handoff <code>HANDOFF-consumer-pass-bound-20261121.md</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="update--realistic-history-bends-with-a-2-day-seed-and-evaluator-memory-per-resident-2026-11-21">Update — realistic-history bends with a 2-day seed, and evaluator memory per resident (2026-11-21)<a class="headerlink" href="#update--realistic-history-bends-with-a-2-day-seed-and-evaluator-memory-per-resident-2026-11-21" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Evidence and ownership</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Harness and image</td>
+<td>Alignment <code>claude/s4-history-20261121</code>, not merged: <code>ecc82c1d83</code> adds <code>synthetic-history-2d-v1</code> (per tenant 576 SGV, 576 devicestatus, 16 treatments, 1 profile; own fixture key) and <code>9eaefa9ae8</code> adds seed worker and batch settings outside the key; unit test with three red controls. Image from core <code>a86a68966</code> + deploy <code>56dddb0</code> (tag <code>s4hist-a86a689661fd-56dddb088b96</code>, private registry).</td>
+</tr>
+<tr>
+<td>Seed</td>
+<td><strong>Measured:</strong> 1,000 tenants, about 1.17 M rows in 13 min 17 s (about 1,800 rows/s, 8 workers, 288-row batches). No batch-upsert timeout, consistent with the limit in the update above.</td>
+</tr>
+<tr>
+<td>Bends</td>
+<td><strong>Measured, Kubernetes, Xeon 8168, 1,000 tenants, 2 api, realtime K = evaluator K, resident 256.</strong> K=1: 30 PASS (durable p95 64 s, max 106 s); 45 FAIL (217 late); 60 FAIL twice; 90 FAIL. K=2: 60 PASS (p95 50 s, max 94 s); 90 FAIL twice; 120 FAIL; 180 FAIL. With 2-day history the bend is K=1 between 30 and 45 req/s and K=2 between 60 and 90, against 120–180 and 180–240 with the 72-row fixture, and passing points have a durable p95 of 50–64 s against 7–13 s. The evaluator main thread binds (event-loop use 0.97 from K=1/45 and K=2/90 up; 68–118 ms per cycle against 22–33 ms); PostgreSQL and api do not. An unprofiled replicate reproduced K=1/60.</td>
+</tr>
+<tr>
+<td>Memory per resident (P1)</td>
+<td><strong>Measured</strong> after forced full GCs: about 1.17–1.18 MiB heap and 1.8–2.0 MiB RSS per resident output with 2-day history (K=1: 256 residents 392–402 MiB heap, 665 MiB RSS; limit 1,000: 1,272 MiB heap, 2,033 MiB RSS), about 2.7× the local SGV-only figure. Read-derived: 1,000 residents per slice is about 1.3 GiB heap and 2.0 GiB RSS per evaluator, against a 224Mi request and no limit. <code>NS_EVALUATOR_RESIDENT_MAX=1000</code> cut cost per cycle 12–15% but did not move the bend (K=1/60 passed once and failed on replicate; K=2/90 and 120 still fail). P1 trades memory for reloads and adds no capacity.</td>
+</tr>
+<tr>
+<td>Profile</td>
+<td><strong>Measured</strong> (120 s, 500 µs): the evaluation cycle is 59–62% of busy time (34–39% with 72 rows), pg driver 17–21%, GC 7–8%. <code>lib/data/json-copy.js</code> is 17–19%, about 12% of it from <code>ddata.processRawDataForRuntime</code> (<code>lib/data/ddata.js:37</code>) via <code>views/index.js</code> <code>clockEdges</code> and <code>dataloader.js:441</code>, <code>:203</code>, a deep copy of raw history every cycle; <code>working-set.js</code> 9–10%. Read-derived: that copy is the next CPU target.</td>
+</tr>
+<tr>
+<td>Spend and cleanup</td>
+<td>About $4.2 of the $15 ceiling (read-derived from 7.39 c-16 node-hours plus storage). Pool and fixture <code>b5df112a5356afcc</code> deleted, kubeconfig deleted; census equal to the before census except another lane's live <code>mt10k-c16</code> pool. Open: one <code>storedWrites</code> FAIL in <code>m-k1-060-r1000</code> while count readback was green (the assessor's per-row join; did not reproduce on replicate). Local handoff <code>HANDOFF-s4-history-bends-20261121.md</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="update--p2-joined-to-the-local-candidate-2026-11-21">Update — P2 joined to the local candidate (2026-11-21)<a class="headerlink" href="#update--p2-joined-to-the-local-candidate-2026-11-21" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Evidence and ownership</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Join</td>
+<td>Local core <code>claude/s4-final-20261120</code> fast-forwarded from <code>a86a68966</code> (= <code>official/workspace/multitenant-20261102</code>, contains official/dev <code>79144cbd0</code>) to <code>b217e6aec</code> (P2). The batch-upsert fix (<code>claude/entries-batch-timeout-20261121</code>) is not joined. Not pushed.</td>
+</tr>
+<tr>
+<td>Full suite</td>
+<td><strong>Measured</strong>, one sequential run from a <code>git archive</code> of <code>b217e6aec</code> (MongoDB 8.0.34, PostgreSQL 16.15, Vault 2.2.1 unpinned): unit 4,451 / 1 pending / 0 failing; dom 230; dependency 368 / 2 pending; core 319; harness 103; stress 18; browser 697; integration 3,852 / 841 pending / 4 failing. The four failures (realtime-sharding) and the opt-in suites evaluator-consumer-load, -timer-churn, -wake and tenant-activity fail identically on <code>a86a68966</code>: <code>tests/fixtures/pgstream-native.js</code> requires <code>lib/pgstream/evaluator</code>, deleted in <code>9978448d7</code>. None is in P2's files. <code>prcheck.sh</code> OK.</td>
+</tr>
+<tr>
+<td>Open</td>
+<td>Repair or retire the <code>pgstream-native</code> fixture (pre-existing, blocks five integration suites). Publication is the maintainer's decision. Local record <code>artifacts/candidate-p2-join-20261121/RESULTS.md</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="update--plannable-scale-integration-and-recovered-identifier-lookup-2026-11-21">Update — plannable-scale integration and recovered identifier lookup (2026-11-21)<a class="headerlink" href="#update--plannable-scale-integration-and-recovered-identifier-lookup-2026-11-21" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Evidence and status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frozen local candidate</td>
+<td>Reproduced on core <code>a076be132</code> and deployment <code>7b0e7be</code>. The resident history window and fitted devicestatus projection run together. A regression control removes the newest row and requires the older status to reappear in full. The candidate also includes the signed-zero storage contract and the identifier-index migration.</td>
+</tr>
+<tr>
+<td>Identifier lookup</td>
+<td>Reproduced on PostgreSQL 16.15 with 100k synthetic rows per collection. The v3 create-dedup miss for treatments fell from 96.891 to 1.023 ms median and for devicestatus from 116.917 to 1.329 ms. Both candidate plans examined zero rows on these misses. Legacy array identifiers remain covered by a partial index. This fixture predominantly contained scalar or absent identifiers.</td>
+</tr>
+<tr>
+<td>Correctness</td>
+<td>Reproduced on the frozen core, eight local tiers passed with 10,177 tests passing and 867 pending. The focused migration and storage run passed 117 tests. Full results distinguish opt-in suites from tests run.</td>
+</tr>
+<tr>
+<td>Capacity</td>
+<td>Read-derived from the deployment render for 10,000 active tenants and eight evaluator pods. Each requests 2,508 MiB, totaling 20,064 MiB across the eight pods. One PostgreSQL instance is configured for 506 connections with the selected defaults. Actual slice occupancy, other pods, node allocatable resources and the deadline measurements determine whether a deployment fits.</td>
+</tr>
+<tr>
+<td>Evidence</td>
+<td>Local handoff <code>artifacts/handoffs/HANDOFF-mt-plannable-scale-20261121.md</code> and retained evidence <code>plannable-scale-20261121/integration-recovery</code>. The 10k end-to-end clinical deadline remains unmeasured.</td>
 </tr>
 </tbody>
 </table>

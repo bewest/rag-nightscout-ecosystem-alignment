@@ -2304,7 +2304,7 @@
 
 
 <h1 id="programme-status--cgm-remote-monitor">Programme status — cgm-remote-monitor<a class="headerlink" href="#programme-status--cgm-remote-monitor" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-19 at <code>ccfdb355d</code>.</em></p>
+<p><em>Living document, last changed 2026-11-21 at <code>a419d6450</code>.</em></p>
 <p><em>What this is: a record (contributor-facing; technical throughout). Read after the
 <a href="mission.html">mission</a>; leads to the <a href="ROADMAP.html">roadmap</a>. Prepared for the Nightscout project;
 proposed for Nightscout Foundation stewardship.
@@ -2338,9 +2338,9 @@ state is not evidence that a gate ran or that a milestone was promoted.</p>
 <tr>
 <td><strong>Remedial</strong></td>
 <td><code>phase0</code>, <code>register-open</code>, <code>docs-truth</code></td>
-<td style="text-align: right;">205</td>
-<td style="text-align: right;">39</td>
-<td style="text-align: right;">8</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">9</td>
 </tr>
 <tr>
 <td><strong>Modernization</strong></td>
@@ -2359,9 +2359,9 @@ state is not evidence that a gate ran or that a milestone was promoted.</p>
 <tr>
 <td></td>
 <td><strong>total</strong></td>
-<td style="text-align: right;"><strong>412</strong></td>
-<td style="text-align: right;"><strong>77</strong></td>
-<td style="text-align: right;"><strong>36</strong></td>
+<td style="text-align: right;"><strong>417</strong></td>
+<td style="text-align: right;"><strong>80</strong></td>
+<td style="text-align: right;"><strong>37</strong></td>
 </tr>
 </tbody>
 </table>
@@ -2953,6 +2953,31 @@ cover more than one <code>BF-</code>:</p>
 <td>BF-227 - a late or repeated Pushover receipt callback answers 500</td>
 </tr>
 <tr>
+<td><code>BFQ-241</code></td>
+<td><code>ready-to-push</code></td>
+<td>BF-241 - one upload limit, UPLOAD_BODY_LIMIT, for entries, treatments and device status</td>
+</tr>
+<tr>
+<td><code>BFQ-242</code></td>
+<td><code>not-started</code></td>
+<td>BF-242 - notifications router parsers cap activity and food uploads at 100 KB</td>
+</tr>
+<tr>
+<td><code>BFQ-243</code></td>
+<td><code>not-started</code></td>
+<td>BF-243 - with SECURE_CSP=true the CSP report parser refuses API uploads over 100 KB</td>
+</tr>
+<tr>
+<td><code>BFQ-244</code></td>
+<td><code>not-started</code></td>
+<td>BF-244 - API v3 answers 500 for oversized or malformed request bodies</td>
+</tr>
+<tr>
+<td><code>BFQ-245</code></td>
+<td><code>blocked</code></td>
+<td>BF-245 - profile and food uploads capped at 1 MB; bring them under UPLOAD_BODY_LIMIT</td>
+</tr>
+<tr>
 <td><code>BFQ-40</code></td>
 <td><code>released</code></td>
 <td>BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion</td>
@@ -3123,11 +3148,11 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>register-open</code></td>
-<td>29</td>
+<td>32</td>
 <td>3</td>
 <td>1</td>
-<td>1</td>
-<td>5</td>
+<td>2</td>
+<td>6</td>
 <td>2</td>
 <td>55</td>
 <td>58</td>
@@ -3136,7 +3161,7 @@ cover more than one <code>BF-</code>:</p>
 <td></td>
 <td>5</td>
 <td></td>
-<td><strong>164</strong></td>
+<td><strong>169</strong></td>
 </tr>
 <tr>
 <td><code>tenancy</code></td>
@@ -3245,7 +3270,7 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 <tbody>
 <tr>
 <td>Maintainer</td>
-<td style="text-align: right;">374</td>
+<td style="text-align: right;">378</td>
 <td style="text-align: right;">91%</td>
 </tr>
 <tr>
@@ -3255,7 +3280,7 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 </tr>
 <tr>
 <td>Maintainer + a second human</td>
-<td style="text-align: right;">8</td>
+<td style="text-align: right;">9</td>
 <td style="text-align: right;">2%</td>
 </tr>
 <tr>
@@ -3280,7 +3305,7 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 </tr>
 <tr>
 <td><strong>total</strong></td>
-<td style="text-align: right;"><strong>412</strong></td>
+<td style="text-align: right;"><strong>417</strong></td>
 <td style="text-align: right;"></td>
 </tr>
 </tbody>

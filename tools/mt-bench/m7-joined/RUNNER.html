@@ -4405,7 +4405,7 @@ an image, allocate a remote host or grant capacity acceptance.</p>
 below are explicit storage choices, not automatic runner defaults. A missing or
 unwritable <code>/mnt/data</code> is a storage error; do not fall back to the home drive.
 Existing runs and their original guards keep their current paths.</p>
-<p>Copy <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/tools/mt-bench/m7-joined/examples/local-rehearsal.json">the small rehearsal profile</a> to private
+<p>Copy <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/tools/mt-bench/m7-joined/examples/local-rehearsal.json">the small rehearsal profile</a> to private
 storage. Set its verified helper head, repository paths, existing diagnostic
 receipt, new project and unused explicit CIDRs. The receipt still binds the
 source pair, image, instrument and traffic duration through the adapter's
@@ -4481,7 +4481,7 @@ prepare/caller path on an already available qualified private driver; this tool
 has no paid-resource authority. Do not infer remote environment qualification
 from local source tests or from execution of the generated public probe alone.</p>
 <h2 id="joined-candidate-and-metric-meanings">Joined candidate and metric meanings<a class="headerlink" href="#joined-candidate-and-metric-meanings" title="Permanent link">&para;</a></h2>
-<p>The paired <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/tools/mt-bench/m7-joined/examples/joined-1000.json">1k</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/tools/mt-bench/m7-joined/examples/joined-3000.json">3k</a>
+<p>The paired <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/tools/mt-bench/m7-joined/examples/joined-1000.json">1k</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/tools/mt-bench/m7-joined/examples/joined-3000.json">3k</a>
 profiles hold ordinary cadence, hot factor 1, two clients per tenant, offered
 scenario rate 180/s and load duration 310 seconds constant. Primer concurrency
 is explicitly four and JWT setup is serial one. Client population and nominal
@@ -4718,7 +4718,7 @@ current memory and configured-limit checks keep their separate meanings.</p>
 <h2 id="outcome-evaluator-gate">Outcome evaluator gate<a class="headerlink" href="#outcome-evaluator-gate" title="Permanent link">&para;</a></h2>
 <p>Decision <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#outcome-evaluator-gate">outcome-evaluator-gate</a>
 replaces the lifetime <code>failedCompletions == 0</code> rule and the instant midpoint
-readiness rule. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/tools/mt-bench/m7-joined/outcome_gate.py">outcome_gate.py</a> is the one frozen gate; its
+readiness rule. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/tools/mt-bench/m7-joined/outcome_gate.py">outcome_gate.py</a> is the one frozen gate; its
 identity is the SHA-256 of that file. Tenants, rate, windows, budgets and
 <code>deadlineMs</code> (default 120000) are configuration under the same identity.</p>
 <table>
@@ -4788,7 +4788,7 @@ load. Example preparation fields are <code>restart-during-load-after-seconds: 60
 <code>load-seconds: 310</code>, and <code>probe-every-ms: 1000</code>. The default remains unchanged.
 A one-second probe adds one global clinical witness write per second, separately
 from ordinary offered scenario RPS. It does not write once per tenant per second.</p>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6a63eb057fa155bbeaecd7039d960dd849a58944/tools/mt-bench/m7-joined/examples/local-under-demand-recovery.json">The local recovery example</a> selects
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a419d6450e86bb8ac1c5da738180e3728d0086f9/tools/mt-bench/m7-joined/examples/local-under-demand-recovery.json">The local recovery example</a> selects
 37 tenants, 16 logical viewers, 20 offered scenario RPS and a restart after
 30 seconds of a 90-second load. Replace every source, image, dependency and
 receipt placeholder, then use <code>project</code> to generate the configuration-bound
