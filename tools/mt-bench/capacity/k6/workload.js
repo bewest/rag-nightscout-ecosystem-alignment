@@ -82,8 +82,29 @@ if (mix !== undefined &&
      Object.keys(realisticCadenceMs).some(name => !shapes[name]))) {
   throw Error('M7_REALISTIC_MIX_CONFIGURATION');
 }
+// Driver shape looping-v1 (m7-joined/looping_driver.py, lane mt-plannable-scale-20261121 E3): writes
+// shaped like the E1 looping fixture. Each tenant row carries loopKind from the seed's own role hash
+// (null: CGM-only, SGV only); devicestatus bodies are the generator's documents; treatments post once
+// per looping tenant every M7_LOOPING_TREATMENT_CYCLE_MS.
+const shape = __ENV.M7_DRIVER_SHAPE;
+const looping = shape === 'looping-v1';
+if (shape !== undefined && (!looping || mix !== 'realistic-v1' || __ENV.M7_DRIVER_PLAN)) throw Error('M7_DRIVER_SHAPE_CONFIGURATION');
+const LOOP = looping ? JSON.parse(__ENV.M7_LOOPING_TEMPLATES) : null;
+const LOOPERS = [];
+if (looping) for (let i = 0; i < TENANTS.length; i++) {
+  const kind = TENANTS[i].loopKind;
+  if (kind === null) continue;
+  if (typeof kind !== 'string' || !Object.hasOwn(LOOP.documents, kind)) throw Error('M7_DRIVER_SHAPE_CONFIGURATION');
+  LOOPERS.push(i);
+}
+const LOOP_TX_MS = looping ? Number(__ENV.M7_LOOPING_TREATMENT_CYCLE_MS) : null;
+if (looping && (!LOOPERS.length || !Number.isSafeInteger(LOOP_TX_MS) || LOOP_TX_MS < 60000)) throw Error('M7_DRIVER_SHAPE_CONFIGURATION');
+const LOOP_SHAPES = new Set(['w_devicestatus', 'w_treatments_v3']);
+// Tenants a write shape addresses: every tenant, or the looping ones under looping-v1.
+const population = name => (looping && LOOP_SHAPES.has(name) ? LOOPERS.length : weight);
 function cycleMs(name) {
   if (mix === undefined) return ARRIVAL_CYCLE_MS;
+  if (looping && name === 'w_treatments_v3') return Math.round(LOOP_TX_MS / workloadScale / writeScale);
   const interval = realisticCadenceMs[name] * shapes[name] / workloadScale;
   return Math.round(name.startsWith('w_') ? interval / writeScale : interval);
 }
@@ -104,7 +125,7 @@ export const DRIVER_HEADROOM = __ENV.DRIVER_HEADROOM === undefined ? 1.5 : Numbe
 if (!Number.isFinite(DRIVER_HEADROOM) || DRIVER_HEADROOM <= 0 || DRIVER_HEADROOM > 100) throw Error('M7_DRIVER_HEADROOM_RANGE');
 const scenarios = {};
 for (const [name, perCycle] of Object.entries(shapes)) {
-  const rate = perCycle * weight; // iterations per cycle
+  const rate = perCycle * population(name); // iterations per cycle
   scenarios[name] = {
     executor: 'constant-arrival-rate', exec: name, rate, timeUnit: cycleMs(name) + 'ms',
     duration: DURATION + 's', ...driverVUs(rate * 1000 / cycleMs(name), DRIVER_HEADROOM),
@@ -132,6 +153,10 @@ export const options = {
 function pick () {
   if (exec.scenario.iterationInTest === 0) {
     console.log(JSON.stringify({ event: 'scenario-first-iteration', shape: exec.scenario.name, atMs: Date.now() }));
+  }
+  if (looping && LOOP_SHAPES.has(exec.scenario.name)) {
+    const i = LOOPERS[exec.scenario.iterationInTest % LOOPERS.length];
+    return { i, t: TENANTS[i] };
   }
   const r = exec.scenario.iterationInTest % weight;
   const i = r < HOT ? 0 : r - HOT + 1;
@@ -187,7 +212,7 @@ export function teardown () {
 }
 
 // Current nominal arrival time, unique per scenario iteration.
-const stamp = () => START + Math.floor(exec.scenario.iterationInTest * cycleMs(exec.scenario.name) / weight);
+const stamp = () => START + Math.floor(exec.scenario.iterationInTest * cycleMs(exec.scenario.name) / population(exec.scenario.name));
 const iso = ms => new Date(ms).toISOString();
 
 export function w_sgv () {
@@ -198,6 +223,12 @@ export function w_sgv () {
 }
 export function w_devicestatus () {
   const { t } = pick(); const ms = stamp(); const at = iso(ms);
+  if (looping) {
+    const docs = LOOP.documents[t.loopKind];
+    const doc = JSON.parse(docs[Math.floor(exec.scenario.iterationInTest / LOOPERS.length) % docs.length].split(LOOP.placeholder).join(at));
+    doc.device = RUN_ID;
+    return write(t, 'devicestatus', BASE + '/api/v1/devicestatus?token=' + t.token, [doc], {}, [200], 'POST v1 devicestatus');
+  }
   write(t, 'devicestatus', BASE + '/api/v1/devicestatus?token=' + t.token,
     [{ device: RUN_ID, created_at: at, uploader: { battery: 88 },
       loop: { name: 'Loop', version: '3.4', timestamp: at, iob: { timestamp: at, iob: 1.234 }, cob: { timestamp: at, cob: 12 },

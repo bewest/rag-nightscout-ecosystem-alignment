@@ -27,7 +27,10 @@ def ordinary_roster(c, tenants, need):
 def validate(w, need, tenants=None):
     need(isinstance(w, dict) and set(w) <= {'loadSeconds', 'offeredRps', 'workloadMix',
          'workloadScale', 'logicalPollingClients', 'viewerSetup', 'probeEveryMs', 'hotFactor', 'pointId', 'setupSeconds', 'drainSeconds',
-         'driverPlan', 'driverShards', 'driverHeadroom', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget','drainObservation','latencyObservation'}, 'WORKLOAD_FIELDS')
+         'driverPlan', 'driverShards', 'driverHeadroom', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget','drainObservation','latencyObservation','driverShape'}, 'WORKLOAD_FIELDS')
+    # looping-v1 (m7-joined/looping_driver.py): realistic-v1 cadence, writes shaped like the E1 fixture.
+    need('driverShape' not in w or (w['driverShape'] == 'looping-v1' and w.get('workloadMix') == REALISTIC_MIX
+         and 'driverPlan' not in w), 'WORKLOAD_DRIVER_SHAPE')
     need(w.get('latencyObservation', 'polling-sql-v1') in ('polling-sql-v1', 'offline-v1'), 'WORKLOAD_LATENCY_OBSERVATION')
     viewer_plan.setup(w, need)
     need(workload_inputs.seconds(w.get('loadSeconds')), 'WORKLOAD_LOAD_SECONDS')
@@ -102,6 +105,9 @@ def environment(w, inherited, need):
              'WORKLOAD_ENVIRONMENT_CONFLICT')
     env = {key: value for key, value in inherited.items() if key not in SELECTORS and key != 'JWT_SETUP_CONCURRENCY'}
     env.update(selected, DRIVER_HEADROOM=repr(float(headroom(w))))
+    if 'driverShape' in w:
+        import looping_driver
+        env.update(looping_driver.environment())
     return env
 
 

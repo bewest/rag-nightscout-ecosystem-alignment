@@ -93,6 +93,9 @@ def profile(base, *, tenants, history_mode=LOOPING_2D, anchor_ms=None, name=None
         need(type(anchor_ms) is int and anchor_ms > 0, 'ANCHOR')
         history['anchorUnixMs'] = anchor_ms
     value['history'] = history
+    # E3: on the looping fixture the live writes take its shape (m7-joined/looping_driver.py).
+    if history_mode == LOOPING_2D and value.get('workload', {}).get('workloadMix') == 'realistic-v1':
+        value['workload']['driverShape'] = 'looping-v1'
     value['name'] = name or 'n%d-%s' % (tenants, history_mode.removeprefix('synthetic-history-'))
     if work_seconds is not None:
         value['phases']['workSeconds'] = work_seconds
