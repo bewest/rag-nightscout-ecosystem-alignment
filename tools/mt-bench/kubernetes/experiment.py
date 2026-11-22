@@ -232,6 +232,14 @@ def run(packet, grant_path, expected_digest, group=None):
                 k.write(attempt/'result.json', outcome)
             except Exception as exc:
                 k.write(attempt/'reduction-failure.json', failure(exc))
+            if c.get('nativeLoad') and execute.latency_observation(c.get('workload', {}), c) != 'polling-sql-v1':
+                import capacity_results
+                try:
+                    published = capacity_results.publish(d/'load', attempt/'capacity-results', c['driver']['node'])
+                except Exception as exc:
+                    # A failed export keeps the original product measurements and raw inputs for retry.
+                    published = {'verdict': 'UNMEASURED', 'reason': type(exc).__name__, 'detail': str(exc)[:300]}
+                k.write(attempt/'capacity-publication.json', published)
         # The outer lifecycle indexes its case after it verifies absence.
         if d.name != 'packet' or d.parent.name != 'runtime':
             auto_catalog(d, k.write)
@@ -300,6 +308,8 @@ def main():
     standard.add_argument('--node-pool', help='Multi-node layout: keep every workload and the load Job on this provider pool '
                                               '(nodeSelector doks.digitalocean.com/node-pool); exclusive with --node-name')
     standard.add_argument('--resources', type=Path, help='JSON per-container resources (requests/limits) for a one-change arm')
+    standard.add_argument('--writer-publication', type=Path,
+                          help='JSON selection for a dedicated Retain volume mounted by the native result exporter')
     standard.add_argument('--binding-input', type=Path, help='JSON object merged into the binding inputs last (for example roleEnv)')
     standard.add_argument('--fixture', choices=('reuse', 'build'),
                           help='find the CSI snapshot fixture by key (tenants, seed name, schema, images, transport, '
@@ -317,7 +327,7 @@ def main():
         import standard_case
         options = dict(app_image=a.app_image, postgres_image=a.postgres_image, namespace_prefix=a.namespace_prefix,
                        core=a.core, taint=a.reserved_worker_taint, node_name=a.node_name, node_pool=a.node_pool,
-                       resources_file=a.resources, binding_extra=a.binding_input)
+                       resources_file=a.resources, binding_extra=a.binding_input, writer_publication=a.writer_publication)
         if a.fixture:
             import fixture_catalog
             return standard_case.keyed(a.fixture, a.template_case, a.binding, a.profile, a.output, seed=a.fixture_seed,
