@@ -147,6 +147,7 @@ class Looping(unittest.TestCase):
             seen.add(t.kind)
             for d in ds[::50]:
                 self.assertTrue(d['device'] in L.DS_DEVICES and 'pump' in d and 'uploader' in d)
+                self.assertIn('loop' if t.kind == 'loop' else 'openaps', d)
                 if t.kind == 'loop':
                     self.assertGreaterEqual(len(d['loop']['predicted']['values']), 48)
                     self.assertTrue({'iob', 'cob', 'automaticDoseRecommendation'} <= set(d['loop']))
