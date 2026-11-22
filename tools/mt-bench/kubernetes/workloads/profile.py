@@ -197,7 +197,7 @@ def main():
         if len(args.paths) not in (2, 3):
             parser.error('populate requires ANCHOR_UNIX_MS OUTPUT_PROFILE [MODE]')
         mode = str(args.paths[2]) if len(args.paths) == 3 else history.MODE
-        p['history'] = dict(mode=mode, anchorUnixMs=int(str(args.paths[0])))
+        p['history'] = history.default_spec(mode, int(str(args.paths[0])))
         # Standard cases bind source pins from the candidate during their own preparation.
         write(args.paths[1], validate(p, require_pins=False))
     elif args.action == 'describe':
