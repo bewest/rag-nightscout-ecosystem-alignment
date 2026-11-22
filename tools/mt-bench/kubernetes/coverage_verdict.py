@@ -299,7 +299,7 @@ def _progress_verdict(before, after, ids):
         return (error.verdict + '_' + str(error)) if hasattr(error, 'verdict') else 'UNMEASURED_' + type(error).__name__
 
 
-def from_case(load, slices=None, clock_bound_ms=None, local=None, *, summary_path=None):
+def from_case(load, slices=None, clock_bound_ms=None, local=None, *, summary_path=None, include_snapshot=True):
     """Assess one completed load stage directory (runtime/packet/load) after the run, offline.
 
     Reads progress-after.json (end read), stored-counts.json and k6-summary.json (writes), window.json (load
@@ -311,7 +311,7 @@ def from_case(load, slices=None, clock_bound_ms=None, local=None, *, summary_pat
     stored = _read(load/'stored-counts.json') or {}
     summary = (_read(summary_path or load/'k6-summary.json') or {}).get('metrics', {})
     window = _read(load/'window.json') or {}
-    receipt = _read(load/'metrics-snapshot.json') or {}
+    receipt = (_read(load/'metrics-snapshot.json') or {}) if include_snapshot else {}
     ids = sorted((baseline.get('tenants') or {}).keys() | (bookend.get('tenants') or {}).keys() | stored.keys())
     end = end_from_bookend(bookend, ids)
     count = lambda key: (summary.get(key) or {}).get('count')

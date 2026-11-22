@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Publish and rescore the native capacity run's durable deadline and viewer evidence."""
 import argparse
+from collections import Counter
 import hashlib
 import json
 from pathlib import Path
@@ -22,7 +23,7 @@ import latency_oracle
 BOOKENDS = ('progress-before.json', 'progress-after.json')
 COUNTS = 'stored-counts.json'
 FRAMES = 'viewer-frames.jsonl'
-FILES = (*BOOKENDS, COUNTS, FRAMES)
+FILES = ('window.json', *BOOKENDS, COUNTS, FRAMES)
 WRITER_FILES = ('k6.log', 'k6-summary.json')
 
 
@@ -121,17 +122,21 @@ def publish(load, root, node='node'):
     native = read(load / 'native-load.json')
     run, pod = component(native['runId']), component(native['podUid'])
     root.mkdir(mode=0o700, parents=True, exist_ok=True)
-    cmd = [node, str(HERE / 'native-artifacts.cjs'), 'publish', str(load.resolve()), run, pod, str(root)]
-    export = subprocess.run(cmd, stdout=subprocess.DEVNULL)
-    # An incomplete native writer still leaves a committed partial receipt for the scorer.
-    if export.returncode not in (0, 78):
-        export.check_returncode()
-    writer = read(root / run / pod / 'writer' / 'publication.json')
-    observer = publish_observer(load, root)
+    # The two producers can finish independently. Keep either publication when its peer is lost.
+    try:
+        observer = publish_observer(load, root)
+    finally:
+        cmd = [node, str(HERE / 'native-artifacts.cjs'), 'publish', str(load.resolve()), run, pod, str(root)]
+        export = subprocess.run(cmd, stdout=subprocess.DEVNULL)
+    writer_dir = root / run / pod / 'writer'
+    if export.returncode not in (0, 78) or not (writer_dir / 'publication.json').is_file():
+        return {'directory': str(root), 'runId': run, 'podUid': pod, 'status': 'partial',
+                'missingObservations': observer['missing'], 'writer': 'unavailable', 'exportExitCode': export.returncode}
+    writer = read(writer_dir / 'publication.json')
     complete = (writer.get('status') == 'complete' and not observer['missing'] and observer['terminalWindow']
                 and not observer.get('viewerCaptureFailure') and observer.get('writerContinuity') != 'UNMEASURED')
     return {'directory': str(root), 'runId': run, 'podUid': pod, 'status': 'complete' if complete else 'partial',
-            'missingObservations': observer['missing']}
+            'missingObservations': observer['missing'], 'writer': writer['status']}
 
 
 def rescore(root, writer=None, clock_bound_ms=None, offset_ms=0):
@@ -160,13 +165,14 @@ def rescore(root, writer=None, clock_bound_ms=None, offset_ms=0):
         return result
     if set(receipt['files']) != set(WRITER_FILES):
         raise ValueError('complete writer publication is missing evidence')
-    result['http'] = http_accounting.assess(read(writer / 'k6-summary.json')['metrics'])
+    metrics = read(writer / 'k6-summary.json')['metrics']
+    result['http'] = http_accounting.assess(metrics)
     if not data or not data['terminalWindow']:
         result['reason'] = 'observer or terminal window unavailable'
         return result
     if set((*BOOKENDS, COUNTS)) <= data['files'].keys():
         result['evaluatorDeadline'] = coverage_verdict.from_case(
-            observer, data['evaluatorSlices'], clock_bound_ms, summary_path=writer / 'k6-summary.json')
+            observer, data['evaluatorSlices'], clock_bound_ms, summary_path=writer / 'k6-summary.json', include_snapshot=False)
     if data.get('viewerCaptureFailure'):
         result['viewerDelivery'] = {'verdict': 'UNMEASURED', 'reason': data['viewerCaptureFailure']}
     elif FRAMES in data['files']:
@@ -174,6 +180,14 @@ def rescore(root, writer=None, clock_bound_ms=None, offset_ms=0):
         summary, _ = latency_oracle.join(writes, latency_oracle.frames(observer / FRAMES, run), offset_ms)
         result['viewerDelivery'] = {'driver': counts, 'domains': summary, 'offsetMs': offset_ms,
                                     'offsetBasis': 'driver minus viewer; zero means same clock or unmeasured'}
+        # Each successful request in the three viewed domains emits one acceptance event.
+        # A batched request can store several documents. Profile writes have no viewer event.
+        seen = Counter(row[1] for row in writes)
+        expected = {d: metrics.get('writes_ok{kind:' + d + '}', {}).get('count') for d in latency_oracle.DOMAINS}
+        mismatch = any(n is not None and n != seen[d] for d, n in expected.items())
+        if mismatch or any(counts[k] for k in ('malformed', 'otherRun', 'noAcceptanceTime')):
+            result['viewerDelivery'].update(verdict='UNMEASURED', reason='acceptance ledger incomplete',
+                                            expectedRequests=expected)
     return result
 
 

@@ -88,6 +88,26 @@ class CapacityPublication(unittest.TestCase):
         self.assertEqual(report['evaluatorDeadline']['verdict'], 'UNMEASURED')
         self.assertIn('DURABLE_LAG_TENANT_MISSING', report['evaluatorDeadline']['unmeasured'])
 
+    def test_summary_exposes_a_missing_accepted_event(self):
+        path = self.load / 'k6-summary.json'
+        summary = results.read(path)
+        summary['metrics']['writes_ok{kind:entries}'] = {'count': 2}
+        write(path, summary)
+        manifest = results.read(self.load / 'native-artifacts.json')
+        manifest['files'][path.name]['bytes'] = path.stat().st_size
+        write(self.load / 'native-artifacts.json', manifest)
+        results.publish(self.load, self.root)
+        self.assertEqual(results.rescore(self.root)['viewerDelivery']['reason'], 'acceptance ledger incomplete')
+
+    def test_controller_packet_can_rejoin_independent_volume_after_writer_capture_loss(self):
+        results.publish(self.load, self.root)
+        writer = self.root / self.run / self.pod / 'writer'
+        (self.load / 'native-artifacts.json').unlink()
+        recovered = self.root.parent / 'interrupted'
+        self.assertEqual(results.publish(self.load, recovered)['writer'], 'unavailable')
+        shutil.rmtree(self.load.parent)
+        self.assertEqual(results.rescore(recovered, writer)['evaluatorDeadline']['verdict'], 'PASS')
+
     def test_partial_writer_is_retained_and_unmeasured(self):
         (self.load / 'k6-summary.json').unlink()
         self.assertEqual(results.publish(self.load, self.root)['status'], 'partial')
