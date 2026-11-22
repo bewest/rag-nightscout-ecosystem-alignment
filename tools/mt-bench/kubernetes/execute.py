@@ -919,14 +919,14 @@ def assess_stage(d, out, c, objects, client):
 
     def clinical():
         k.need((out/'probe.json').is_file(), 'CLINICAL_UNMEASURED', 'UNMEASURED')
-        probe = k.document(out/'probe.json')
+        probe = k.probe_document(out/'probe.json')
         # Timings only; the single assessor (assessor.py) judges the clinical property.
         return {'clinicalTiming': (probe.get('completedOutput') or {}).get('clinicalTiming', 'UNMEASURED')}
 
     def delivery():
         k.need(all((out/name).is_file() for name in ('fanout.json', 'probe.json')),
                'CLIENT_FRAME_UNMEASURED', 'UNMEASURED')
-        probe = k.document(out/'probe.json')
+        probe = k.probe_document(out/'probe.json')
         k.need('window' in probe, 'CLIENT_FRAME_UNMEASURED', 'UNMEASURED')
         by_tenant = k.document(out/'fanout.json')['probeWrites']['byTenant']
         try:
@@ -1042,7 +1042,7 @@ def continuity(d, c, independent_directory):
     k.need(c['pins']['appImageId'] == other['pins']['appImageId'], 'CONTINUITY_IMAGE_CHANGED')
     window = k.document(peer / 'load/window.json')
     result = k.document(peer / 'load/result.json')
-    capture = k.document(peer / 'load/probe.json')
+    capture = k.probe_document(peer / 'load/probe.json')
     k.need(type(window.get('loadStartedAt')) in (int,float) and type(window.get('loadEndedAt')) in (int,float) and
            window['loadStartedAt'] < restart['startedAt'] < restart['endedAt'] < window['loadEndedAt'] and
            result.get('verdict') == 'OBSERVED', 'CONTINUITY_WINDOW_UNMEASURED', 'UNMEASURED')

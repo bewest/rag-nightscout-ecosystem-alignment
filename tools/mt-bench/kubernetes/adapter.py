@@ -71,6 +71,16 @@ def document(path, *, max_bytes=32 * 1024 * 1024):
     return json.loads(p.read_text())
 
 
+# probe.json is the harness's own child output on the driver's disk. Its frame rows grow with
+# viewers x load seconds (50.5 MB at 100 viewers x 1,800 s, reported 2026-11-22), so the 32 MB
+# bound for configuration-sized documents refused a complete load packet.
+PROBE_MAX_BYTES = 512 * 1024 * 1024
+
+
+def probe_document(path):
+    return document(path, max_bytes=PROBE_MAX_BYTES)
+
+
 def write(path, value):
     p = Path(path)
     raw = json.dumps(value, sort_keys=True, indent=2, allow_nan=False) + '\n'
@@ -613,6 +623,12 @@ def active_baseline(d):
     return initial
 
 
+def table_read_seconds(c):
+    """Limit for a read that scans every stored document: its own (K8S_HISTORY_READ_SECONDS,
+    default 900) inside the work deadline, not the 20 s observation default."""
+    return max(1, min(int(os.environ.get('K8S_HISTORY_READ_SECONDS', '900')), deadline(c)))
+
+
 def sql(d, c, objects, query, client=None, timeout=None):
     need(isinstance(query, str) and query.strip().startswith('SELECT ') and len(query.encode()) < 131072, 'SQL_READ_ONLY')
     client = client or Client(c)
@@ -631,6 +647,27 @@ def postgres_read(client, pod, container, query, **options):
     return raw.decode()
 
 
+SEED_CENSUS_SECONDS = 10
+
+
+def seed_census(client, pod, container):
+    """Stored source-primer seed rows and their tenants. No index covers doc->>'device', so the
+    count reads every stored entry and its cost grows with tenants x history. It runs apart from
+    the epoch read under a fixed server-side limit; past it the counts are UNMEASURED and the
+    observation is kept. The serving-evidence capture that follows still judges the Pod."""
+    query = ('SET LOCAL statement_timeout=%d;\n' % (SEED_CENSUS_SECONDS * 1000) +
+             "SELECT count(*), count(DISTINCT tenant_id) FROM nsdemo_entries.entries WHERE doc->>'device'='synthetic-compose-demo';")
+    try:
+        fields = postgres_read(client, pod, container, query, timeout=SEED_CENSUS_SECONDS + 5).strip().split('\t')
+    except Refused as error:
+        if str(error) != 'K8S_OBSERVATION_LOST':
+            raise
+        return {'seedCensus': 'UNMEASURED', 'seedCensusCode': 'K8S_SEED_CENSUS_BOUND', 'seedCensusLimitSeconds': SEED_CENSUS_SECONDS,
+                'storedRows': 'UNMEASURED', 'storedTenants': 'UNMEASURED'}
+    need(len(fields) == 2 and all(n.isdigit() for n in fields), 'SQL_OBSERVATION_UNMEASURED', 'UNMEASURED')
+    return {'seedCensus': 'OBSERVED', 'storedRows': int(fields[0]), 'storedTenants': int(fields[1])}
+
+
 def observe_sql(d, c, objects, output, client):
     """Fixed source seed aggregate, with separate terminal Job and serving evidence."""
     baseline = active_baseline(d)
@@ -647,21 +684,18 @@ def observe_sql(d, c, objects, output, client):
         return pod, container, evidence
     pod, container, before = capture()
     write(output / 'before.json', before)
-    query = """SELECT s.system_identifier::text, c.timeline_id, current_database(),
-      count(e.tenant_id), count(DISTINCT e.tenant_id)
-      FROM pg_catalog.pg_control_system() s CROSS JOIN pg_catalog.pg_control_checkpoint() c
-      LEFT JOIN nsdemo_entries.entries e ON e.doc->>'device'='synthetic-compose-demo'
-      GROUP BY s.system_identifier,c.timeline_id;"""
+    query = """SELECT s.system_identifier::text, c.timeline_id, current_database()
+      FROM pg_catalog.pg_control_system() s CROSS JOIN pg_catalog.pg_control_checkpoint() c;"""
     fields = postgres_read(client, pod, container, query).strip().split('\t')
-    need(len(fields) == 5 and re.fullmatch('[0-9]{1,20}', fields[0]) and
-         fields[1].isdigit() and int(fields[1]) > 0 and fields[2] == 'nightscout_compose_test'
-         and all(n.isdigit() for n in fields[3:]), 'SQL_OBSERVATION_UNMEASURED', 'UNMEASURED')
+    need(len(fields) == 3 and re.fullmatch('[0-9]{1,20}', fields[0]) and
+         fields[1].isdigit() and int(fields[1]) > 0 and fields[2] == 'nightscout_compose_test',
+         'SQL_OBSERVATION_UNMEASURED', 'UNMEASURED')
+    seed = seed_census(client, pod, container)
     _, _, after = capture()
     write(output / 'after.json', after)
     epoch = {'system_id': fields[0], 'timeline': int(fields[1]), 'database': fields[2]}
-    row = {'verdict': 'OBSERVED', 'scope': 'stored source-primer seed rows in the fixture database',
-           'runSha256': digest(d / 'run.json'), 'source': c['pins']['pair'], 'nativeSource': epoch,
-           'storedRows': int(fields[3]), 'storedTenants': int(fields[4]),
+    row = {'verdict': 'OBSERVED', 'scope': 'database epoch and serving evidence; stored source-primer seed rows when seedCensus is OBSERVED',
+           'runSha256': digest(d / 'run.json'), 'source': c['pins']['pair'], 'nativeSource': epoch, **seed,
            'setupJobs': after['setupJobs'], 'dataCredentials': 'UNMEASURED', 'capacityAcceptance': 'NOT_GRANTED'}
     write(output / 'result.json', row)
     return row
@@ -673,7 +707,8 @@ def stored(d, c, objects, runid, client=None):
     selects += [('entries', 'probe', 'device', '-probe')]
     query = '\nUNION ALL\n'.join("SELECT tenant_id::text,'" + result + "',count(*) FROM nsdemo_" + domain + '.' + domain + " WHERE doc->>'" + field + "'='" + runid + suffix + "' GROUP BY 1" for domain, result, field, suffix in selects) + ';'
     values = {}
-    for line in sql(d, c, objects, query, client).splitlines():
+    # Four counts by run marker, each over every stored document of its table.
+    for line in sql(d, c, objects, query, client, timeout=table_read_seconds(c)).splitlines():
         tenant, kind, count = line.split('\t')
         need(kind not in values.setdefault(tenant, {}), 'SQL_DUPLICATE_GROUP')
         values[tenant][kind] = int(count)

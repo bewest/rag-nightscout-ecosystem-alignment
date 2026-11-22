@@ -183,9 +183,12 @@ An initial read records the owned evaluator's progress and tenant scope before t
 The access witness checks both own-token exchanges, both cross-tenant refusals, and foreign frames on the selected socket connections. Missing socket observations yield `UNMEASURED`. A foreign frame, an accepted wrong credential or a cross-tenant read stops the run.
 
 For an independent database observation within the original work deadline, run
-`adapter.py observe-sql PACKET NEW_DIRECTORY`. It counts the source primer's
-stored seed rows and distinct tenants, checks the candidate database epoch and
-requires the original Ready PostgreSQL Pod. Setup Pod retirement requires the
+`adapter.py observe-sql PACKET NEW_DIRECTORY`. It checks the candidate database
+epoch, requires the original Ready PostgreSQL Pod, and counts the source
+primer's stored seed rows and distinct tenants. That count reads every stored
+entry, so it runs apart from the epoch read under a fixed 10 s server-side
+limit; past it `seedCensus`, `storedRows` and `storedTenants` are `UNMEASURED`
+and the rest of the observation is kept. Setup Pod retirement requires the
 original Job UID, recognized terminal condition and original Pod controller
 identity. Before/after captures retain serving Pod UIDs, Job failure and last
 observed exit codes. Missing exits stay UNMEASURED. Full workload admission

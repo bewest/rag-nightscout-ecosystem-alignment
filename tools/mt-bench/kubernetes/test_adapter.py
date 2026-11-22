@@ -188,11 +188,10 @@ class Adapter(unittest.TestCase):
             k.write(d/'observation.initial.json', baseline)
             def call(argv, **kw):
                 self.assertIn('BEGIN READ ONLY;', kw['data'].decode())
-                self.assertIn('synthetic-compose-demo', kw['data'].decode())
-                return b'1\t1\tnightscout_compose_test\t0\t0\n'
+                return b'0\t0\n' if 'synthetic-compose-demo' in kw['data'].decode() else b'1\t1\tnightscout_compose_test\n'
             self.client.call = call
             observed = k.observe_sql(d, self.c, self.objects, d/'independent', self.client)
-            self.assertEqual(observed['storedTenants'], 0)
+            self.assertEqual((observed['seedCensus'], observed['storedRows'], observed['storedTenants']), ('OBSERVED', 0, 0))
             self.assertEqual(observed['dataCredentials'], 'UNMEASURED')
             self.assertEqual(observed['setupJobs']['Job/primer']['condition'], 'Failed')
             self.assertEqual(k.document(d/'independent/after.json')['retiredJobs']['primer-old'], value)
