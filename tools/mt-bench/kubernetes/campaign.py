@@ -847,7 +847,8 @@ def main(argv=None):
     if a.action == 'controller':
         if os.environ.get('KUBERNETES_SERVICE_HOST'):
             in_cluster_kubeconfig('/work/kubeconfig', m.get('standard', {}).get('context', 'in-cluster'))
-        return Controller(m, store_for(m), kubectl_caller()).run()
+        return Controller(m, store_for(m), kubectl_caller(), sync_seconds=m.get('syncSeconds', 30),
+                          heartbeat_seconds=m.get('heartbeatSeconds', 30)).run()
     store = store_for(m)
     if a.action == 'status':
         return statuses(store, m['campaign'])
