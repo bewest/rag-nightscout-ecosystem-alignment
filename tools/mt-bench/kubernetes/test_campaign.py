@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import campaign
 import evidence_store
@@ -443,6 +444,64 @@ class Catalog(Base):
             campaign.sync_catalog(call, self.tmp / 'pod/catalog')
 
 
+class StandardPhases(Base):
+    def test_one_restored_case_launch_keeps_both_point_results(self):
+        import time
+        import standard_case
+        first = {'workload': {'pointId': 'half'}}
+        second = {'workload': {'pointId': 'full'}}
+        settings = {'template': '/template', 'core': '/core', 'binding': '/binding',
+                    'images': {'app': {'reference': 'app'}, 'postgres': {'reference': 'pg'}},
+                    'profile': first, 'fixture': {'action': 'reuse'}}
+        runner = campaign.StandardRunner(manifest(standard=settings), self.kube)
+        case = {'name': 'ladder', 'options': {'nextPoints': [second]}}
+
+        def prepared(action, template, binding, profile, output, **options):
+            self.assertEqual(json.loads(profile.read_bytes()), first)
+            self.assertEqual([json.loads(p.read_bytes()) for p in options['next_points']], [second])
+            self.assertEqual(action, 'reuse')
+            output.mkdir()
+            return {}
+
+        points = [{'pointId': 'half', 'stageVerdict': 'PASS'}, {'pointId': 'full', 'stageVerdict': 'FAIL'}]
+        for name, verdict, completed, exit_code, expected in (
+                ('complete', 'FAIL', points, 0, 'FAIL'),
+                ('incomplete', 'PASS', points[:1], 0, 'UNMEASURED'),
+                ('crashed', 'PASS', points, 1, 'UNMEASURED')):
+            with self.subTest(name=name):
+                directory = self.tmp / name
+
+                def run_case(argv, **kwargs):
+                    (directory / 'result.json').write_bytes(campaign.jdump({'stageVerdict': verdict, 'points': completed}))
+                    return subprocess.CompletedProcess(argv, exit_code)
+
+                with patch.object(campaign, 'sync_catalog', return_value=self.tmp / 'catalog'), \
+                     patch.object(standard_case, 'keyed', side_effect=prepared) as prepare, \
+                     patch.object(campaign.subprocess, 'run', side_effect=run_case) as launch:
+                    result = runner.run(case, name, 'ns-' + name, directory, time.time() + 60)
+                self.assertEqual(result['verdict'], expected)
+                self.assertEqual(result['state'], 'scored' if expected == 'FAIL' else 'UNMEASURED')
+                self.assertEqual(result['points'], completed)
+                prepare.assert_called_once()
+                launch.assert_called_once()
+
+
+    def test_standard_pod_is_bounded_by_the_two_actors_real_allocation(self):
+        run = {'driver': {'resources': {'millicpus': 1000, 'memoryBytes': 1024**3}},
+               'observer': {'resources': {'millicpus': 200, 'memoryBytes': 256 * 1024**2}}}
+        (self.tmp / 'native-run-template.json').write_bytes(campaign.jdump(run))
+        m = manifest(runner='standard', standard={'template': str(self.tmp)})
+        container = campaign.render(m)['items'][-1]['spec']['template']['spec']['containers'][0]
+        budget = {'cpu': '1200m', 'memory': str(1280 * 1024**2)}
+        self.assertEqual(container['resources'], {'requests': budget, 'limits': budget})
+        self.assertIn({'name': 'NS_CAMPAIGN_ATTACH_SCOPE', 'value': 'pod'}, container['env'])
+        m['controllerResources'] = {'limits': {'cpu': '600m', 'memory': '1Gi'}}
+        self.assertEqual(campaign.controller_resources(m)['limits'], m['controllerResources']['limits'])
+        m['controllerResources'] = {'limits': {'cpu': '2'}}
+        with self.assertRaisesRegex(campaign.Refused, 'CONTROLLER_LIMIT_MISMATCH_CPU'):
+            campaign.render(m)
+
+
 class Rescore(Base):
     def test_a_fetched_packet_rescores_offline_like_the_original(self):
         import capacity_results
@@ -452,14 +511,17 @@ class Rescore(Base):
         self.addCleanup(source.doCleanups)
         case = source.load.parent.parent / 'case'
         root = case / 'runtime/packet/experiment/capacity-results'
-        capacity_results.publish(source.load, root)
+        roots = [root, *(case / 'runtime/points' / point / 'packet/experiment/capacity-results'
+                         for point in ('half', 'full'))]
+        for target in roots:
+            capacity_results.publish(source.load, target)
         expected = capacity_results.rescore(root)
         pfx = campaign.attempt_prefix('c1', 'one', 1)
         packet_seal.Uploader(self.store, pfx).seal(case, 'scored')
         self.store.put(campaign.case_prefix('c1', 'one') + 'status.json', b'{"state": "scored", "attempts": [{"attempt": 1}]}')
         campaign.collect(self.store, 'c1', self.tmp / 'out')
         got = campaign.rescore(self.tmp / 'out')
-        self.assertEqual(list(got.values()), [expected])
+        self.assertEqual(got, {'one/attempt-1/files/' + str(target.relative_to(case)): expected for target in roots})
 
 
 @unittest.skipUnless(os.environ.get('EVIDENCE_STORE_TEST_ENDPOINT'), 'set EVIDENCE_STORE_TEST_ENDPOINT (+_ACCESS_KEY/_SECRET_KEY) to a local S3-compatible store')

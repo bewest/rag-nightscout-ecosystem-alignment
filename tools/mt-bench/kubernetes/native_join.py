@@ -322,6 +322,32 @@ def run(d,out,c,objects,client,tenants,*,runid,setup,failures):
         input_codec=s.get('inputCodec','raw-v1'))
 
 
+def preparation_config(manifest, template, selection):
+    import application_topology
+    import experiment
+    import frozen
+    delivery=frozen.candidate(manifest);source=frozen.source(manifest)
+    preparing=copy.deepcopy(template)
+    preparing['pins']={'appImage':delivery['app'],'appImageId':delivery['appImageId'],
+                   'pair':{'core':source['coreCommit'],'deploy':source['deployCommit']},
+                   'bindingCommit':manifest['bindingCommit'],'instrument':k.instrument()['sha256']}
+    c=experiment.profile.bind(experiment.workload(manifest),preparing)
+    c.update(tier=manifest.get('tier','discovery'),nativeLoad=selection,
+             applicationTopology=application_topology.selection(manifest,k.need))
+    return c
+
+
+def point_render(case, manifest, template):
+    """Keep the shared application declaration, rebinding only its suspended native test Job."""
+    result = k.document(Path(case) / 'render.json')
+    c = preparation_config(manifest, template, manifest[FIELD])
+    job, = (row for row in declarations(c) if k.key(row) == JOB)
+    actors = result['nativeLoadResources']
+    index, = (index for index, row in enumerate(actors) if k.key(row) == JOB)
+    actors[index] = job
+    return result
+
+
 def prepare_case(case, selection):
     """Offline opt-in for a fresh, uncaptured existing prepared case.
 
@@ -343,14 +369,8 @@ def prepare_case(case, selection):
     manifest=k.document(case/'intent.json');template=frozen.read_ref(control['runTemplate'])
     inventory=k.document(case/'inventory.json');render=k.document(case/'render.json')
     k.need(not any(value.get(FIELD) for value in (manifest,template,inventory)), 'NATIVE_LOAD_ALREADY_DECLARED')
-    delivery=frozen.candidate(manifest);source=frozen.source(manifest)
-    preparing=copy.deepcopy(template)
-    preparing['pins']={'appImage':delivery['app'],'appImageId':delivery['appImageId'],
-                   'pair':{'core':source['coreCommit'],'deploy':source['deployCommit']},
-                   'bindingCommit':manifest['bindingCommit'],'instrument':k.instrument()['sha256']}
-    c=experiment.profile.bind(experiment.workload(manifest),preparing)
-    c.update(tier=manifest.get('tier','discovery'),nativeLoad=selection,
-             applicationTopology=application_topology.selection(manifest,k.need))
+    source=frozen.source(manifest)
+    c=preparation_config(manifest,template,selection)
     # Freeze the private DATA channel on new cases. Existing packets retain
     # the codec and Job template their original instrument declared.
     import native_input

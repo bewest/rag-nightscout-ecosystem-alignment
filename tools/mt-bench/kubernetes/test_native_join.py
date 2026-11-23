@@ -391,7 +391,7 @@ class NativeJoin(unittest.TestCase):
         class Cube:
             def __init__(self):self.suspended=True;self.patches=[];self.rounds=0
             def call(self,args,**kw):
-                if args[0]=='create':return ''  # input Secret only; the Job already exists
+                if args[0]=='create':return 'owned-inputs'  # input Secret only; the Job already exists
                 if args[0]=='patch':
                     value=json.loads(args[-1]);self.patches.append(value)
                     self.suspended=value[-1]['value']

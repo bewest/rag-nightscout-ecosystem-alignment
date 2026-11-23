@@ -17,7 +17,7 @@ FIELDS = {'version','caseDirectory','instrumentDirectory','alignmentCommit','can
           'toolsDirectory','snapshotDirectory','cacheAbsence','runTemplate','coreRepository',
           'k6','readonlyGuard','observerScript','nativeLimits','primerConcurrency','edgePort','pullSecretCommand','inputs',
           'startupWindowPreflight','primerOptionsPreflight',
-          'populationCeilingPreflight','schedulerPlacement','capturedSourceCommit','fixture'}
+          'populationCeilingPreflight','schedulerPlacement','capturedSourceCommit','fixture','loadPoints'}
 STAGES = ('namespace','cluster-trust','foundation','stores','provision','private-admin','primer','serving')
 
 def need(ok, code):
@@ -98,6 +98,18 @@ def fixture_config(path, capture=False):
         import fixture_copy
         import populated_history as history
         history.check_snapshot(m['profile']['history'], fixture_copy.read_manifest(c['fixture']['directory']))
+    if 'loadPoints' in c:
+        points = c['loadPoints']
+        need(isinstance(points, list) and points and
+             all(isinstance(point, str) and re.fullmatch(r'[a-z0-9]([-a-z0-9]{0,29}[a-z0-9])?', point)
+                 for point in points) and len(set(points)) == len(points), 'WORKLOAD_POINT_ID')
+        need(points[0] == m['profile']['workload'].get('pointId'), 'FIRST_WORKLOAD_POINT')
+        for point in points:
+            path = d/'points'/point
+            selected = read(path/'intent.json')['profile']
+            need(selected['workload'].get('pointId') == point and selected['history'] == m['profile']['history']
+                 and selected['population']['provisionedTenants'] == e['tenantCount'], 'WORKLOAD_POINT_FIXTURE')
+            files.extend(path/name for name in ('intent.json','native-run-template.json','preflight.json','render.json'))
     primer = primer_options.from_profile(m['profile'],need)
     population=population_ceiling.from_profile(m['profile'],need)
     need(e.get(population_ceiling.FIELD)==population,'POPULATION_CEILING_CHANGED')

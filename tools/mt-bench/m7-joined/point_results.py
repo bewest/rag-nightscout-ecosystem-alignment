@@ -142,19 +142,22 @@ def publish_compose(root, result, cleanup=None):
     return result
 
 
+def native_point(packet):
+    load = packet/'load'
+    attempt = read(packet/'experiment'/'result.json')
+    accounting = read(load/'load-functional.json').get('http', {})
+    return {'stageVerdict': attempt.get('verdict', 'UNMEASURED'),
+            'firstFailure': attempt.get('firstFailure'),
+            'measurements': load_report(load, accounting, attempt.get('observations', {}).get('outcomeGate'))}
+
+
 def publish_native(case, *, mem_available_at_entry_bytes=None):
     case = Path(case)
     runtime = case/'runtime'
-    packet = runtime/'packet'
-    load = packet/'load'
-    attempt = read(packet/'experiment'/'result.json')
-    failure = read(runtime/'first-failure.json') or attempt.get('firstFailure')
-    functional = read(load/'load-functional.json')
-    accounting = functional.get('http', {})
-    reduced = attempt.get('observations', {})
-    result = {'case': case.name, 'stageVerdict': attempt.get('verdict', 'UNMEASURED'),
-              'firstFailure': failure, 'measurements': load_report(load, accounting, reduced.get('outcomeGate')),
-              'capacityAcceptance': 'NOT_GRANTED'}
+    failure = read(runtime/'first-failure.json')
+    result = {'case': case.name, 'capacityAcceptance': 'NOT_GRANTED', **native_point(runtime/'packet')}
+    if failure:
+        result['firstFailure'] = failure
     result['memAvailableAtEntryBytes'] = mem_available_at_entry_bytes
     result['memoryObservationHost'] = 'local Kubernetes controller'
     fresh = (read(runtime/'custody.json').get('namespaceUid')
@@ -172,8 +175,62 @@ def publish_native(case, *, mem_available_at_entry_bytes=None):
                'namespaceAndClusterTrust': absence or 'UNMEASURED',
                'hostUnit': host_unit or ('UNMEASURED' if unit_attempted else 'NOT_OBSERVED'),
                'portForward': forward or ('UNMEASURED' if observed_forward else 'NOT_OBSERVED')}
+    for entry in runtime.glob('controller-attach-*.json'):
+        point = entry.stem[len('controller-attach-'):]
+        exit_receipt = read(runtime/('controller-exit-' + point + '.json'))
+        cleanup.setdefault('controllerProcessGroups', {})[point] = exit_receipt
+        if exit_receipt.get('absent') is not True:
+            cleanup['status'] = 'UNMEASURED'
     if cleanup_failure:
         cleanup.update(status=cleanup_failure.get('verdict', 'UNMEASURED'), evidence=cleanup_failure)
+    control = read(case/'lifecycle-input.json')
+    if control.get('loadPoints'):
+        points = []
+        writers, secrets, markers = set(), set(), set()
+        namespace = read(runtime/'custody.json').get('namespaceUid')
+        postgres = None
+        same_database = bool(namespace)
+        independent = True
+        forwards = {}
+        for point in control['loadPoints']:
+            directory = runtime/'points'/point
+            row = native_point(directory/'packet')
+            identity = read(directory/'phase-identity.json')
+            job, secret, marker = (identity.get(field) for field in ('jobUid','inputSecretUid','marker'))
+            claim = identity.get('postgresClaimUid')
+            same_database = bool(same_database and claim and claim == (postgres or claim)
+                                 and identity.get('namespaceUid') == namespace)
+            independent = bool(independent and job and secret and job not in writers and secret not in secrets
+                               and identity.get('pointId') == point and marker == f'{case.name}-{point}-load'
+                               and marker not in markers)
+            if not row.get('firstFailure'):
+                row['firstFailure'] = read(directory/'phase-failure.json') or None
+            postgres = postgres or claim
+            writers.add(job)
+            secrets.add(secret)
+            markers.add(marker)
+            if (directory/'forward.log').exists():
+                forwards[point] = read(directory/'forward-closed.json')
+                if not isinstance(forwards[point].get('returncode'), int):
+                    cleanup['status'] = 'UNMEASURED'
+            points.append(dict(row, pointId=point, identity=identity, packet=str((directory/'packet').relative_to(case))))
+        result.pop('measurements')
+        result['points'] = points
+        cleanup['pointForwards'] = forwards
+        verdicts = {point['stageVerdict'] for point in points}
+        if not result.get('firstFailure'):
+            result['firstFailure'] = next((row['firstFailure'] for row in points if row['firstFailure']), None)
+        if 'FAIL' in verdicts:
+            result['stageVerdict'] = 'FAIL'
+        elif (same_database and independent and not failure and verdicts == {'PASS'}
+              and cleanup['status'] == 'ABSENT' and absence.get('namespaceUid') == namespace):
+            result['stageVerdict'] = 'PASS'
+        else:
+            result['stageVerdict'] = 'UNMEASURED'
+        result['oneDatabaseObserved'] = same_database
+        result['independentPointsObserved'] = independent
+        if same_database and control.get('fixture', {}).get('mode') == 'restore':
+            result['fixtureReuse'] = 'reused'
     destination = case
     if (case.parent.name == 'raw' and case.parent.parent.name == case.name
             and list(case.parent.iterdir()) == [case]):

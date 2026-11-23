@@ -289,12 +289,23 @@ nsuid=trustuid=None;events=[];uids=[];current='create-namespace'
 native_scope = 'ns-' + rid + '-native.scope'
 def attach(*args):
     limits=cfg['nativeLimits']
+    argv = [sys.executable, '-B', str(Path(__file__).with_name('attach.py')), str(Path(sys.argv[1]).resolve()), *args]
+    if os.environ.get('NS_CAMPAIGN_ATTACH_SCOPE') == 'pod':
+        import controller_attach
+        if not (os.environ.get('KUBERNETES_SERVICE_HOST') and os.environ.get('NS_CAMPAIGN_POD')):
+            raise RuntimeError('K8S_CONTROLLER_POD_REQUIRED')
+        scope = controller_attach.allocation(read(Path(cfg['runTemplate']['path'])))
+        point = args[-1] if args else 'load'
+        put('controller-attach-' + point + '.json', {'pod': os.environ['NS_CAMPAIGN_POD'], 'allocation': scope})
+        controller_attach.run(argv, env, max(1, int(work-time.time())-6),
+                              lambda result: put('controller-exit-' + point + '.json', result))
+        return
     put('native-unit.json', {'unit': native_scope})
     command(['systemd-run','--user','--scope','--quiet','--unit='+native_scope,
              '-p','CPUQuota='+str(limits['millicpus']/10)+'%',
              '-p','MemoryMax='+str(limits['memoryBytes']),'-p','MemorySwapMax=0',
              '-p','RuntimeMaxSec='+str(max(1,int(work-time.time())-6)),
-             sys.executable,'-B',Path(__file__).with_name('attach.py'),str(Path(sys.argv[1]).resolve()),*args],
+             *argv],
             timeout=int(work-time.time())-3)
 
 def interrupted(signum, frame):raise RuntimeError('CONTROLLER_SIGNAL_'+str(signum))
@@ -385,8 +396,14 @@ try:
              **fixture_copy.slices_record(read(d/'inventory.json'))},work))
         step('fixture captured')
         raise SystemExit(0)
-    step('attach released runtime')
-    attach()
+    if cfg.get('loadPoints'):
+        for point in cfg['loadPoints']:
+            step('load point ' + point)
+            owned()
+            attach('--point', point)
+    else:
+        step('attach released runtime')
+        attach()
 
 except Exception as exc:
     failure={'stage':current,'code':str(exc)[:500],'time':timestamp()}
