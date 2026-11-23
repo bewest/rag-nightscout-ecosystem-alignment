@@ -138,17 +138,17 @@ The scratch byte measurement preceded these structures. A fresh-install design s
 collection after measuring the real reader, writer and restore paths. Historical lab fixtures alone do not justify
 maintaining two storage implementations.
 
-**First arrival-order replay.** With 100 tenants over two days and 76,504 device-status inserts, the implemented
+**Arrival-order replay at two history depths.** With 100 tenants over two days and 76,504 device-status inserts, the implemented
 chunks consumed **224.1 MB** after ordinary vacuum versus **174.8 MB** for the cleaned document layout
 (reproduced). The chunk table had 4,900 inserts and 71,604 updates. Its identity table stored 76,504
 key-to-location rows in 16.2 MB. These rows support lookup and uniqueness, and contain no copy of the document
-body. The two-day test replayed one transaction per document as the serving role. It does not establish a
-steady-state slope. After a diagnostic full table rewrite, the chunk and lookup relations occupied 31.6 MB
-and 12.4 MB respectively. File reuse during ordinary ingestion determines operating space. If the growth
-persists, compare writing each open-hour document once and sealing the hour into a compressed chunk once,
-including immediate reads and late changes. The forecast below remains a design target pending sustained
-writes at two history depths. Retained evidence: `devicestatus-chunks-20261123/bytes/d2s2{b,c}.json` and
-`full-2d.txt`.
+body. After a diagnostic full table rewrite, the two relations occupied 31.6 MB and 12.4 MB respectively.
+At fourteen days and 535,444 inserts, ordinary-vacuum sizes reached **726.1 MB with chunks versus 1,230.0 MB
+with the cleaned row layout**, a **41.0% saving** (reproduced). The identity table accounted for 115.2 MB.
+Each replay used one transaction per document as the serving role. The short seed and the deeper seed give
+different rates of space reuse. An alternative worth comparing writes each open-hour document once and
+seals the hour into a compressed chunk once, preserving immediate reads and late changes. Retained evidence:
+`devicestatus-chunks-20261123/bytes/d2s2{b,c}.json`, `d2s14{b,c}.json` and `full-2d.txt`.
 
 ### Stages 1 and 2 together
 
@@ -158,8 +158,10 @@ overhead.
 
 ### Predicted database and primary volume sizes
 
-Read-derived forecasts for 30 retained days per tenant at the synthetic uploader mix and cadence. Values are decimal GB
-of PostgreSQL data and indexes, before WAL, free space, backup copies and temporary restore space.
+Read-derived forecasts for 30 retained days per tenant at the synthetic uploader mix and cadence. The last two
+columns are compact-layout targets based on scratch tables. The implemented chunk writer gives higher estimates
+in the arrival-order forecast below. Values are decimal GB of PostgreSQL data and indexes before WAL, free space,
+backup copies and temporary restore space.
 
 | Tenants | Original layout | Candidate 2 cleanup | Cleanup plus device-status chunks | Chunks plus typed entries and treatments |
 |---:|---:|---:|---:|---:|
@@ -196,6 +198,16 @@ The read-derived database estimates are **3.40 TB** on the original layout, **2.
 assumptions the combined layout needs about **892 GiB of primary volume**, which fits a **1 TiB** primary.
 Every 0.10 MB change in the measured daily footprint changes the three-year database estimate by 175 GB.
 
+**Working full-history forecast using the implemented chunk writer: 1.13–1.30 TB of database data** for those
+1,600 tenants, assuming the typed entries and treatments achieve their projected 0.224 MB/day. The lower scenario
+starts at the measured fourteen-day footprint and extends it at the two-to-fourteen-day incremental rate
+(`(726,097,920 − 224,116,736) / 1,200` = 0.418 MB per additional tenant-day). The other scenario carries the
+fourteen-day average of 0.519 MB/day through all three years. These are two extrapolations from the same
+synthetic replay. With the WAL and free-space allowances above they imply **1.41–1.62 TiB** of primary volume.
+For 10,000 tenants at 30 days the same methods give **211–227 GB** of database data and **305–325 GiB** of
+primary volume. A longer steady workload and uploader mixes measure drift in either direction. The earlier
+684 GB and 121 GB figures describe the compact targets for the two installations.
+
 If the typed entries and treatments qualify first, the cleaned device-status table can continue to serve
 the full history. In the arrival-order replay it grew from 174,817,280 to 1,229,971,456 bytes across 1,200
 additional tenant-days, or 0.879 MB per tenant-day (reproduced, `devicestatus-chunks-20261123/bytes/d2s14b.json`).
@@ -231,14 +243,17 @@ by **17% at one lookup row per document**. All lookup tuples decoded to their or
 that lowercased opaque keys lost information. Two depths provided the incremental rates, with 327,168
 synthetic documents at the larger depth. At one lookup row per cold document, the three-year estimate for
 hot data, cold bodies and this table becomes **477 GB with packed keys or 524 GB with text**. At one lookup
-per ten documents the corresponding projections are **271 GB or 277 GB**. Both lookup frequencies are
-illustrative. Some documents carry two lookup keys. Measure the actual
+per ten documents the corresponding projections are **271 GB or 277 GB**. These examples use the compact
+target for the 30 hot days. Pricing that month with the implemented chunk writer adds 14–17 GB to each
+example, bringing the one-packed-key case to **491–494 GB**. Both lookup frequencies are illustrative.
+Some documents carry two lookup keys. Measure the actual
 frequency, order/history metadata, changes to old records, and live WAL before sizing volumes for this design.
 Retained evidence: `deep-history-locator-20261123/sizes.csv` and `locator.sql`.
 
 **Choose a shorter device-status history.** Keeping entries and treatments for three years but device status
-for 30, 90 or 365 days projects **402, 418 or 491 GB** respectively. These read-derived values use the separate
-collection rates underlying the 684 GB estimate. Older device-status uploads, including predictions and
+for 30, 90 or 365 days projects **416–419, 456–468 or 640–697 GB** respectively with the implemented
+chunk writer and proposed typed layout. The more compact scratch target projects 402, 418 or 491 GB.
+Older device-status uploads, including predictions and
 uploader state, disappear from historical API reads and exports. Nightscout already exposes an optional
 collection-specific retention setting in single-site mode. A default or an operator option for the multitenant
 service is a product decision. [Nightscout configuration](https://github.com/nightscout/cgm-remote-monitor#readme)
