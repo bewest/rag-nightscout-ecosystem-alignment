@@ -4,9 +4,11 @@
 FROM python:3.12-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f
 RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && rm -rf /var/lib/apt/lists/*
 COPY kubectl /usr/local/bin/kubectl
-COPY harness /opt/harness
+RUN useradd --uid 10001 --create-home controller
+# The template's inputs are private (0600/0700) on the workstation; the controller (uid 10001) must own them.
+COPY --chown=10001:10001 harness /opt/harness
 RUN ln -s /opt/harness/tools/mt-bench/kubernetes /app && git config --system --add safe.directory '*' \
- && useradd --uid 10001 --create-home controller && mkdir -p /work && chown 10001 /work
-COPY ws/ /
+ && mkdir -p /work && chown 10001 /work
+COPY --chown=10001:10001 ws/ /
 USER 10001
 WORKDIR /work

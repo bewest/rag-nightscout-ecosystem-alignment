@@ -141,6 +141,8 @@ class Runner:
         self.call(['apply', '-f', '-'], json.dumps({'kind': 'Namespace', 'metadata': {'name': ns, 'labels': {'nightscout.org/run-id': rid}}}))
         directory.mkdir(parents=True, exist_ok=True)
         (directory / 'k6-summary.json').write_text('{"metrics": {}}')
+        (directory.parent / (rid + '.inputs')).mkdir(exist_ok=True)
+        (directory.parent / (rid + '.inputs/profile.json')).write_text('{}')   # the existing path's sibling directory
         import time
         time.sleep(0.3)   # long enough for the watcher to see the namespace and apply the supervisor
         if isinstance(Runner.outcome, Exception):
@@ -290,6 +292,7 @@ class ControllerRuns(Base):
         for case in ('one', 'two'):
             seal = json.loads(self.store.objects[campaign.attempt_prefix('c1', case, 1) + 'SEAL.json'])
             self.assertIn('k6-summary.json', seal['files'])
+            self.assertIn('campaign-siblings/c1-%s-a1.inputs/profile.json' % case, seal['files'])
             cleanup = json.loads(self.store.objects[campaign.attempt_prefix('c1', case, 1) + 'files/campaign-cleanup.json'])
             self.assertEqual((cleanup['verdict'], cleanup['by'], cleanup['reason']), ('CLEANED', 'supervisor', 'released'))
         self.assertEqual(self.kube.namespaces, {})

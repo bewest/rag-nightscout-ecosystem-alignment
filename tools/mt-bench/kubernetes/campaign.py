@@ -365,6 +365,11 @@ class Controller:
             watcher.join(timeout=60)
         cleanup = self.await_cleanup(rid, ns, released=True)
         directory.mkdir(parents=True, exist_ok=True)
+        # Siblings the existing path writes next to the case (<rid>.failed-*/prepare-error.json, <rid>.inputs) belong
+        # to this attempt's evidence too.
+        for sibling in sorted(directory.parent.glob(rid + '.*')):
+            if sibling.is_dir():
+                shutil.copytree(sibling, directory / 'campaign-siblings' / sibling.name, dirs_exist_ok=True)
         (directory / 'campaign-cleanup.json').write_bytes(jdump(cleanup))
         (directory / 'campaign-outcome.json').write_bytes(jdump(outcome))
         if cleanup.get('verdict') != 'CLEANED':
