@@ -2895,3 +2895,11 @@ controls:
       2026-11-22: exits 1 on official/dev 79144cbd0 (3,996,002 reads of an old _id for one record
       merged into 2,000; v15.0.9 c6a0d8ed the same) and 0 on the fix branch f97df2c1c (4,000 reads,
       2,000 cases equal to the loop). An empty QUEUE_GATE_ROOT exits 1.
+
+  - gate: >-
+      NODE_MODULES_FROM="$(realpath --relative-to=. /mnt/data/nightscout-workspace/worktrees/cgm-remote-monitor/shared-loader-order-20261123)" sh tools/queue/gates/bf204-207-views-data.sh tests/dataloader.test.js 43f9ae804 d0aa44d2e
+    control: >-
+      NODE_MODULES_FROM="$(realpath --relative-to=. /mnt/data/nightscout-workspace/worktrees/cgm-remote-monitor/shared-loader-order-20261123)" sh tools/queue/gates/bf204-207-views-data.sh tests/dataloader.test.js 43f9ae804 43f9ae804
+    proves: >
+      The native suite must distinguish the frozen base from the fix. Giving the instrument
+      the fixed loader on both sides removes that distinction and must fail.

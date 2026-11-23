@@ -27807,3 +27807,37 @@ items:
       branch is the single-tenant port from official/dev. 2026-11-22 on f97df2c1c (Node 22.23.4,
       MongoDB 8.0.34 container): test:affected 3133/3/0, npm test 6369/3/0, prcheck OK. When it merges, switch the gate's --ref to
       official/dev and the control's to v15.0.9 (exits 1 there, measured 2026-11-22).
+
+  - id: BFQ-247
+    title: "BF-247 - preserve treatment history across parallel read orders"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: codex/shared-loader-order-20261123
+    base: claude/nominal-join-20261123@d0aa44d2e
+    worktree: /mnt/data/nightscout-workspace/worktrees/cgm-remote-monitor/shared-loader-order-20261123
+    state: in-progress
+    ships_to_operators_today: true
+    blast_radius: >
+      The single-site and multitenant loaders assemble their treatment results in a fixed order.
+      The change is in the shared loader and its unit tests.
+    review: maintainer, plus one independent reviewer
+    operator_visible: >
+      A profile switch has the same treatment fields on repeated loads. An older switch still
+      supplies the active profile after it leaves the recent treatment window.
+    semver: patch
+    semver_reason: Restores repeatable derived treatment data without changing the stored records or queries.
+    register: [BF-247]
+    gates:
+      - run: >-
+          NODE_MODULES_FROM="$(realpath --relative-to=. /mnt/data/nightscout-workspace/worktrees/cgm-remote-monitor/shared-loader-order-20261123)" sh tools/queue/gates/bf204-207-views-data.sh tests/dataloader.test.js 43f9ae804 d0aa44d2e
+        kind: unit
+        describe: >
+          The loader suite passes on the fix. Its recent-switch comparison fails on the
+          frozen base. The older switch remains available in both completion orders.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/30-design/tenancy/execution-log.md
+    notes: >
+      Fixed at 43f9ae804. Next integration is by the join owner. The active capacity
+      campaign uses its own frozen image. Single-site publication remains with the maintainer.

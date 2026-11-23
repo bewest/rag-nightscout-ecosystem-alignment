@@ -31,18 +31,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 418 |
-| runnable gates | 458 |
+| items | 419 |
+| runnable gates | 459 |
 | explicit `no-gate:` markers | 415 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 415 of the 873 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 415 of the 874 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 80 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-ANDROID-LAB, PERF-IMAGE-DIGEST-CACHE, BFQ-242, BFQ-243, BFQ-244 |
-| `in-progress` | 30 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-BENCH-BASELINE, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-TENANT-LIVE-ADD, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST, MT-D6-SLOT-READER |
+| `in-progress` | 31 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-BENCH-BASELINE, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-TENANT-LIVE-ADD, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST, MT-D6-SLOT-READER, BFQ-247 |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | WS-LAB, BFQ-241, BFQ-246 |
 | `blocked` | 12 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164, BFQ-245 |
@@ -174,6 +174,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-244** BF-244 - API v3 answers 500 for oversized or malformed request bodies
 - **BFQ-245** BF-245 - profile and food uploads capped at 1 MB; bring them under UPLOAD_BODY_LIMIT
 - **BFQ-246** BF-246 - linear mergeProcessSort in the shared dataloader (16.0.0)
+- **BFQ-247** BF-247 - preserve treatment history across parallel read orders
 
 ---
 
@@ -2852,7 +2853,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 170 items
+`parcel: register-open` &mdash; 171 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -3030,6 +3031,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-244` | BF-244 - API v3 answers 500 for oversized or malformed request bodies | `not-started` | `none` | patch | 1 run |
 | `BFQ-245` | BF-245 - profile and food uploads capped at 1 MB; bring them under UPLOAD_BODY_LIMIT | `blocked` | `none` | minor | 1 run |
 | `BFQ-246` | BF-246 - linear mergeProcessSort in the shared dataloader (16.0.0) | `ready-to-push` | `claude/bf-246-dataloader-merge-linear` | patch | 1 run |
+| `BFQ-247` | BF-247 - preserve treatment history across parallel read orders | `in-progress` | `codex/shared-loader-order-20261123` | patch | 1 run |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
 
@@ -8566,6 +8568,38 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Approved by the maintainer for 16.0.0 on 2026-11-22 (file, queue, fix). Found in the #8898 evaluator round (INC-E2, multitenant fix 76e2ec0df on claude/inc-e2-hotspots-20261122); this branch is the single-tenant port from official/dev. 2026-11-22 on f97df2c1c (Node 22.23.4, MongoDB 8.0.34 container): test:affected 3133/3/0, npm test 6369/3/0, prcheck OK. When it merges, switch the gate's --ref to official/dev and the control's to v15.0.9 (exits 1 there, measured 2026-11-22).
+
+### `BFQ-247` &mdash; BF-247 - preserve treatment history across parallel read orders
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/shared-loader-order-20261123` |
+| base | `claude/nominal-join-20261123@d0aa44d2e` |
+| worktree | `/mnt/data/nightscout-workspace/worktrees/cgm-remote-monitor/shared-loader-order-20261123` |
+| semver | `patch` |
+| review | maintainer, plus one independent reviewer |
+| ships to operators today | **yes** |
+| register | `BF-247` |
+
+**Blast radius.** The single-site and multitenant loaders assemble their treatment results in a fixed order. The change is in the shared loader and its unit tests.
+
+**What an operator sees.** A profile switch has the same treatment fields on repeated loads. An older switch still supplies the active profile after it leaves the recent treatment window.
+
+**Why `patch`.** Restores repeatable derived treatment data without changing the stored records or queries.
+
+**Gates.**
+
+- `[unit]` `NODE_MODULES_FROM="$(realpath --relative-to=. /mnt/data/nightscout-workspace/worktrees/cgm-remote-monitor/shared-loader-order-20261123)" sh tools/queue/gates/bf204-207-views-data.sh tests/dataloader.test.js 43f9ae804 d0aa44d2e`
+  - The loader suite passes on the fix. Its recent-switch comparison fails on the frozen base. The older switch remains available in both completion orders.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/30-design/tenancy/execution-log.md`
+
+**Notes.** Fixed at 43f9ae804. Next integration is by the join owner. The active capacity campaign uses its own frozen image. Single-site publication remains with the maintainer.
 
 ---
 
