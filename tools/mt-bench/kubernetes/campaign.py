@@ -9,6 +9,7 @@
   campaign.py census CAMPAIGN [--context C] [--doctl-cluster N] every billable thing the campaign created; exit 1 if any
   campaign.py rescore DIR                                       capacity_results.rescore over every collected packet
   campaign.py catalog-import DIGEST [--catalog F] [--context C] put one workstation fixture record into bench-control
+  campaign.py image REF                                         the manifest's image block, from docker image inspect
 
 The store's credentials and endpoint come from the environment (evidence_store.py). Nothing here pushes images or calls
 the DigitalOcean API except `census --doctl-cluster`, which only lists.
@@ -187,6 +188,7 @@ def render(m):
                     'activeDeadlineSeconds': m['caseDeadlineSeconds'] * m.get('maxAttempts', 2) * len(m['cases']) + 3600,
                     'template': {'metadata': {'labels': labels}, 'spec': {
                         'serviceAccountName': name, 'restartPolicy': 'Never',
+                        **({'imagePullSecrets': [{'name': m['pullSecret']}]} if m.get('pullSecret') else {}),
                         **({'nodeSelector': m['controllerNodeSelector']} if m.get('controllerNodeSelector') else {}),
                         'containers': [{'name': 'controller', 'image': m['controllerImage'], 'imagePullPolicy': 'IfNotPresent',
                                         'command': ['python3', '-B', '/app/campaign.py', 'controller', '/etc/campaign/manifest.json'],
@@ -408,6 +410,8 @@ class Controller:
                                           cluster_scoped_names=self.runner.cluster_scoped(rid))
         for item in manifest['items']:
             item['metadata'].setdefault('labels', {})[CAMPAIGN_LABEL] = self.m['campaign']
+            if item['kind'] == 'Job' and self.m.get('pullSecret'):   # the supervisor runs the controller image
+                item['spec']['template']['spec']['imagePullSecrets'] = [{'name': self.m['pullSecret']}]
         self.call(['apply', '-f', '-'], json.dumps(manifest))
 
     def await_cleanup(self, rid, ns, released):
@@ -838,10 +842,16 @@ def main(argv=None):
             a.add_argument('--doctl-cluster', help='also list node pools, unattached pvc volumes and load balancers (read-only doctl)')
     a = s.add_parser('collect'); a.add_argument('manifest', type=Path); a.add_argument('--out', type=Path, required=True); a.add_argument('--case')
     a = s.add_parser('rescore'); a.add_argument('directory', type=Path)
+    a = s.add_parser('image', help='the manifest block for one local image (docker image inspect on the workstation)')
+    a.add_argument('reference')
     a = s.add_parser('catalog-import'); a.add_argument('digest'); a.add_argument('--catalog', type=Path); a.add_argument('--context')
     a = p.parse_args(argv)
     if a.action == 'rescore':
         return rescore(a.directory)
+    if a.action == 'image':
+        import standard_case
+        got = standard_case.resolve_image(a.reference)
+        return {'reference': got['reference'], 'imageId': got['imageId'], 'core': got['core'], 'deploy': got['deploy']}
     if a.action == 'catalog-import':
         return catalog_import(a.digest, a.catalog, kubectl_caller(a.context))
     m = validate(json.loads(a.manifest.read_bytes()))

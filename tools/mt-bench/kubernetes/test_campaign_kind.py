@@ -173,6 +173,34 @@ class Kind(unittest.TestCase):
         # after close the identity has no policy and no binding: its writes are refused by RBAC instead
         self.assertNotEqual(self.k(*sa, '-n', 'lane9-foreign', 'create', 'configmap', 'y', check=False).returncode, 0)
 
+    def test_a_workstation_fixture_record_restores_from_bench_control(self):
+        import fixture_catalog
+        import fixture_copy
+        from test_campaign import Catalog
+        with tempfile.TemporaryDirectory() as tmp:
+            helper = Catalog('test_a_workstation_fixture_restores_from_bench_control_objects')
+            key = fixture_catalog.key(tenants=1000, image='sha256:' + 'c' * 64, postgres_image='sha256:' + 'd' * 64,
+                                      schema='migrations-tree:kind', transport='writer-driven')
+            catalog = fixture_catalog.Catalog(Path(tmp) / 'ws/catalog.json')
+            directory = catalog.reserve(key, 'kubernetes')
+            directory.mkdir(mode=0o700)
+            parts = fixture_copy.PARTS
+            (directory / fixture_copy.MANIFEST).write_text(json.dumps({'version': 1, 'fixtureId': 'kind-seed', 'driver': 'd',
+                'handles': dict.fromkeys(parts, 'h'), 'sizes': dict.fromkeys(parts, '1Gi'), 'seedContents': dict.fromkeys(parts, 'c'),
+                'storageClass': 's', 'snapshotClass': 'v'}))
+            (directory / fixture_copy.SECRETS).write_text(json.dumps([{'name': 'ns-ca', 'type': 'Opaque', 'data': {'k': 'dg=='}}]))
+            for f in (fixture_copy.MANIFEST, fixture_copy.SECRETS):
+                (directory / f).chmod(0o600)
+            catalog.register(key, 'kubernetes', {'fixtureId': 'kind-seed', 'volumeSnapshotContents': {}, 'providerSnapshots': {}, 'seedCase': 'x'})
+            digest = fixture_catalog.digest(key)
+            self.k('create', 'namespace', 'bench-control', check=False)
+            self.addCleanup(self.k, '-n', 'bench-control', 'delete', 'configmap,secret', 'fixture-' + digest, '--ignore-not-found=true')
+            campaign.catalog_import(digest, Path(tmp) / 'ws/catalog.json', self.call)
+            path = campaign.sync_catalog(self.call, Path(tmp) / 'pod/catalog')
+            hit = fixture_catalog.Catalog(path).lookup(key, 'kubernetes')
+            self.assertEqual(fixture_copy.read_manifest(hit['directory'])['fixtureId'], 'kind-seed')
+            del helper
+
 
 if __name__ == '__main__':
     unittest.main()

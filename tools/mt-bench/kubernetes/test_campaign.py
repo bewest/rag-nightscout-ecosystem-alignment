@@ -189,6 +189,10 @@ class Manifest(unittest.TestCase):
         env = job['spec']['template']['spec']['containers'][0]['env']
         self.assertTrue(all('value' not in e for e in env if 'KEY' in e['name']))
         self.assertNotIn('Secret', kinds)
+        self.assertNotIn('imagePullSecrets', job['spec']['template']['spec'])
+        pulled = campaign.render(manifest(pullSecret='campaign-pull'))['items'][-1]['spec']['template']['spec']
+        self.assertEqual(pulled['imagePullSecrets'], [{'name': 'campaign-pull'}])
+        self.assertIn({'name': 'pull', 'secret': {'secretName': 'campaign-pull'}}, pulled['volumes'])
 
 
 class Seal(Base):
