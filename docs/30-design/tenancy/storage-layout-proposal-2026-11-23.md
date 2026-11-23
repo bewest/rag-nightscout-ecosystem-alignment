@@ -20,6 +20,16 @@ On the matched two-day schema replay, clinical storage fell from 1.865 to 1.546 
 The per-tenant counter preserves restore ordering. The stored evaluator frame serves cold realtime readers.
 The maintainer kept both. [Storage decision and measurements](multitenancy-decisions.md#storage-machinery-removal)
 
+**Clinical audit and change history.** At candidate 2, ordinary inserts and edits write the clinical document.
+V3 history filters the collection by `srvModified` (`lib/api3/generic/history/operation.js`). A soft delete
+marks the stored document for synchronization. The former size trigger updated the same row a second time.
+The remaining ordinal trigger maintains one counter per tenant in each ordered collection. Neither path
+creates database roles or appends an audit copy of each document (read-derived at `1aaa5af33`).
+Five operational audit tables plus owner settings history occupied **557,056 bytes at both two and fourteen
+days** in the 100-tenant census (reproduced, retained `pg-bytes-20261123/out/*02-seeded.sizes.tsv`).
+These records cover settings, credentials, policy and lifecycle events. The forecast includes their measured
+footprint. Removing a hypothetical clinical audit log supplies no further reduction.
+
 This proposal goes further, in two stages:
 
 1. **Typed columns for entries and treatments**, with the fields that are not typed kept in a small remainder document.
@@ -127,6 +137,14 @@ the chunks, maintains identity and time bounds, rewrites chunks in triggers, and
 The scratch byte measurement preceded these structures. A fresh-install design should select one representation per
 collection after measuring the real reader, writer and restore paths. Historical lab fixtures alone do not justify
 maintaining two storage implementations.
+
+**First arrival-order replay.** With 100 tenants over two days and 76,504 device-status inserts, the implemented
+chunks consumed **224.1 MB** after ordinary vacuum versus **174.8 MB** for the cleaned document layout
+(reproduced). The chunk table had 4,900 inserts and 71,604 updates. Its identity table stored 76,504
+key-to-location rows in 16.2 MB. These rows support lookup and uniqueness, and contain no copy of the document
+body. The two-day test replayed one transaction per document as the serving role. It does not establish a
+steady-state slope. The forecast below remains a design target pending sustained writes at two history depths.
+Retained evidence: `devicestatus-chunks-20261123/bytes/d2s2{b,c}.json`.
 
 ### Stages 1 and 2 together
 
