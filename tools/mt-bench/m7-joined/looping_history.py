@@ -109,7 +109,18 @@ def kind(spec, ordinal):
 
 
 def days_for(spec, role):
-    return spec['deepHistoryDays'] if role == 'deep' else DAYS
+    """Days of rows for a role. `historyDays` (looping-v2 only, absent = DAYS) deepens every non-deep tenant."""
+    return spec['deepHistoryDays'] if role == 'deep' else spec.get('historyDays', DAYS)
+
+
+def phase_ms(spec, ordinal):
+    """Per-tenant offset of the whole history grid, in [0, phaseSpreadMs): the tenant's rows sit `phase` ms
+    before the shared 5-minute grid, so tenants stop sharing their due instants. Deterministic from
+    (seed, ordinal); 0 for every tenant when the optional `phaseSpreadMs` is absent or 0."""
+    spread = spec.get('phaseSpreadMs', 0)
+    if not spread:
+        return 0
+    return int(hashlib.sha256(f"{spec['seed']}:{ordinal}:phase".encode()).hexdigest(), 16) % spread
 
 
 def rows_per_tenant(spec, role='looping'):
@@ -153,12 +164,18 @@ class Tenant:
         self.days = days_for(spec, role)
         self.n = self.days * CYCLES_PER_DAY
         self.anchor = spec['anchorUnixMs']
-        self.first = self.anchor - (self.n - 1) * STEP_MS
+        self.phase = phase_ms(spec, ordinal)
+        self.first = self.anchor - (self.n - 1) * STEP_MS - self.phase
         self.treatments = self._treatments()
         self._series()
 
     def stamp(self, index):
         return self.first + index * STEP_MS
+
+    def grid(self, index):
+        """The shared 5-minute grid (no phase): clock-slot choices and block seeds use it, so a phase moves
+        timestamps only."""
+        return self.first + self.phase + index * STEP_MS
 
     def _rng(self, *parts):
         return random.Random(':'.join(map(str, ('looping-v1', self.spec['seed'], self.ordinal) + parts)))
@@ -168,7 +185,7 @@ class Tenant:
         out = []
         for block in range(self.days):
             base = block * CYCLES_PER_DAY
-            block_start = self.stamp(base)
+            block_start = self.grid(base)
             rng = self._rng('block', block_start)
             minute = lambda c: ((block_start + c * STEP_MS) % DAY_MS) // 60_000
             by_minute = {minute(c): c for c in range(CYCLES_PER_DAY)}  # each 5-minute clock slot once
@@ -603,7 +620,7 @@ def seed_and_verify(g, spec, tenants, base, sql, until, window_seconds, *, verif
     if missing:
         require(not verify_only, 'RESTORED_ROWS_MISSING')
         ids = ','.join("'" + t['id'] + "'" for _, t in missing)
-        oldest = anchor - (max(g.DAYS, spec['deepHistoryDays']) * g.CYCLES_PER_DAY - 1) * STEP_MS
+        oldest = anchor - (max(g.DAYS, spec['deepHistoryDays'], spec.get('historyDays', 0)) * g.CYCLES_PER_DAY - 1) * STEP_MS
         collisions = sql(f"""SELECT DISTINCT tenant_id::text FROM {tables['entries']}
             WHERE tenant_id::text IN ({ids}) AND doc->>'type'='sgv' AND doc->>'device' IS DISTINCT FROM '{g.DEVICE}'
               AND jsonb_typeof(doc->'date')='number' AND (doc->>'date')::bigint BETWEEN {oldest} AND {anchor};""").splitlines()
