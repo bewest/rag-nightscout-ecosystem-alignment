@@ -18,6 +18,8 @@ import workload_runtime
 import primer_options
 import population_ceiling
 import populated_history as history
+sys.path.insert(0, str(HERE.parent / 'connectors'))
+import connectors
 SHAPES = workload_runtime.SHAPES
 
 
@@ -77,6 +79,11 @@ def validate(p, *, require_pins=True):
     w = p['workload']
     need(workload_runtime.workload_inputs.tenants(n) and n >= 2, 'TENANTS')
     ordinary = workload_runtime.ordinary_count(n, p['population']['ordinaryRosterTenants'], need)
+    # vcpool connector tenants (connectors.py): outside the ordinary roster, or refused.
+    try:
+        connectors.validate(p['population'])
+    except ValueError as error:
+        raise ValueError('K8S_LOAD_' + str(error)[len('K8S_CONNECTORS_'):]) from error
     workload_runtime.validate(w, need, ordinary)
     if w.get('driverShape') in ('looping-v1', 'looping-v2'):
         need(p['history'].get('mode') in history.LOOPING_MODES, 'DRIVER_SHAPE_REQUIRES_LOOPING_FIXTURE')
@@ -138,6 +145,8 @@ def describe(p):
             'ordinaryWritesPerSecond': sum(v for k, v in rates.items() if k.startswith('w_')),
             'ordinaryReadsPerSecond': sum(v for k, v in rates.items() if k.startswith('r_')),
             'setupJwtExchanges': n, 'stockViewers': stock_viewers(w, n),
+            **({'connectorTenants': connectors.count(p['population']['provisionedTenants'], p['population']['connectorShare'])}
+               if p['population'].get('connectorShare') else {}),
             'viewerSetup': workload_runtime.viewer_plan.setup(w),
             'probeWritesPerSecondWhileOpen': 1000 / w['probeEveryMs'],
             'probeWrites': 'observed independently; initial write and drain can extend the nominal window',
