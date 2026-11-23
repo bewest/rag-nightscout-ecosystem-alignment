@@ -52,7 +52,7 @@ paths = [template, Path(control['toolsDirectory']), Path(control['k6']), Path(co
 for p in paths:
     target = ws/p.relative_to('/')
     target.parent.mkdir(parents=True, exist_ok=True)
-    (shutil.copytree if p.is_dir() else shutil.copy2)(p, target, symlinks=True)
+    shutil.copytree(p, target, symlinks=True) if p.is_dir() else shutil.copy2(p, target)
 copy = ws/template.relative_to('/')
 for name in ('environment.json', 'native-run-template.json'):
     doc = json.loads((copy/name).read_bytes()); doc['context'] = 'in-cluster'
