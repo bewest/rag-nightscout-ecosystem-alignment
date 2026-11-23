@@ -83,13 +83,15 @@ def live_treatment_cycle_ms():
     return treatment_cycle_ms()
 
 
-def kind_counts(spec, tenants):
-    """{'loop', 'aaps', 'trio', 'cgm'}: tenants of each kind in a roster of `tenants` (the seed's roles)."""
+def kind_counts(spec, tenants, *, provisioned=None):
+    """Count client kinds in the active host-ordered prefix of the seeded population."""
     hm = history_module(spec)
     hm.validate(spec)
-    roles = hm.roles(spec, tenants)
+    population = tenants if provisioned is None else provisioned
+    lh.require(type(tenants) is int and type(population) is int and 1 <= tenants <= population, 'LOOPING_ROSTER')
+    roles = hm.roles(spec, population)
     out = dict(loop=0, aaps=0, trio=0, cgm=0)
-    for i, role in enumerate(roles):
+    for i, role in enumerate(roles[:tenants]):
         out['cgm' if role == 'cgm-only' else hm.kind(spec, i)] += 1
     return out
 
@@ -99,17 +101,15 @@ def wheel_slots(counts):
     return DS_PERIOD * sum(counts.values()) + LOOP_EXTRA[0] * counts['loop'] + DS_PERIOD * counts['trio']
 
 
-def write_offers(spec, tenants, uniform_scale, write_scale, device_cycle, shape=SHAPE):
+def write_offers(spec, tenants, uniform_scale, write_scale, device_cycle, shape=SHAPE, *, provisioned=None):
     """Return the selected population (iterations per time unit) and k6 time unit for the two looping writes."""
-    hm = history_module(spec)
-    hm.validate(spec)
-    cgm_only = (tenants * spec['cgmOnlyPercent'] + 50) // 100
-    loopers = tenants - cgm_only
-    lh.require(loopers >= max(1, spec['deepHistoryTenants']), 'LOOPING_ROSTER')
+    counts = kind_counts(spec, tenants, provisioned=provisioned)
+    loopers = tenants - counts['cgm']
+    lh.require(loopers >= 1, 'LOOPING_ROSTER')
     if shape == SHAPE_V2:
         unit = math.floor(V2_TREATMENT_CYCLE_MS / uniform_scale / write_scale + .5)
         lh.require(1 <= unit <= 9223372036854 and 1 <= DS_PERIOD * device_cycle <= 9223372036854, 'TREATMENT_TIME_UNIT')
-        return {'w_devicestatus': (wheel_slots(kind_counts(spec, tenants)), DS_PERIOD * device_cycle),
+        return {'w_devicestatus': (wheel_slots(counts), DS_PERIOD * device_cycle),
                 'w_treatments_v3': (loopers, unit)}
     lh.require(shape == SHAPE, 'DRIVER_SHAPE')
     unit = math.floor(live_treatment_cycle_ms() / uniform_scale / write_scale + .5)

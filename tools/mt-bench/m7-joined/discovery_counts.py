@@ -88,7 +88,7 @@ def probe_metadata(a,out,runid,expected,*,probe_ledger=None):
         require(all(acks.get(t,0)==rows.get(t,{}).get('accepted',0) for t in expected),'M7_PROBE_COUNTS_ACK_MISMATCH')
     return value,acks
 
-def observe(a,d,out,runid,metrics,*,probe_ledger=None,ordinary_ids=None):
+def observe(a,d,out,runid,metrics,*,probe_ledger=None,ordinary_ids=None,probe_ordinary_only=False):
     # Caller has revalidated ownership/source before the existing single SQL.
     findings={'verdict':'UNMEASURED','code':'M7_DISCOVERY_COUNTS_MISSING','failures':[],'failureCount':0,'probeCountProof':'UNMEASURED'}
     def fail(code):
@@ -102,7 +102,8 @@ def observe(a,d,out,runid,metrics,*,probe_ledger=None,ordinary_ids=None):
         ordinary = expected if ordinary_ids is None else set(ordinary_ids)
         require(ordinary and ordinary <= expected and (ordinary_ids is None or len(ordinary) == len(ordinary_ids)),
                 'M7_DISCOVERY_ORDINARY_ROSTER')
-        ledger,legacy=probe_metadata(a,out,runid,expected,probe_ledger=probe_ledger)
+        probe_scope = ordinary if probe_ordinary_only else expected
+        ledger,legacy=probe_metadata(a,out,runid,probe_scope,probe_ledger=probe_ledger)
         require(isinstance(metrics,dict),'M7_DISCOVERY_COUNTER_INVALID')
         domains = dict.fromkeys(('entries', 'devicestatus', 'treatments'), 0)
         # k6 counts writes per kind and in total, never per tenant; the per-tenant

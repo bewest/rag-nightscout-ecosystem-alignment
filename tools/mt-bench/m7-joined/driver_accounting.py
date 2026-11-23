@@ -109,7 +109,8 @@ def expected_plans(m):
         require(n == 1 and realistic is not None and hot == 1 and m.get('history'),
                 'M7_DRIVER_LOOPING_FIXTURE')
         looping = looping_driver.write_offers(m['history'], count, c.get('workloadScale', 1),
-                                              cfg.get('writeRateScale', 1), realistic['w_devicestatus'], c['driverShape'])
+                                              cfg.get('writeRateScale', 1), realistic['w_devicestatus'], c['driverShape'],
+                                              provisioned=m.get('provisionedTenants'))
     plans = []
     # k6 v1.3.0 constant_arrival_rate.go:300-335 races the duration context
     # with a timer at the endpoint. Native controls reproduce the optional

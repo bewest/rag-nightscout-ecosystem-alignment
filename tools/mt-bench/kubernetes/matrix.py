@@ -13,6 +13,7 @@ import time
 
 import kube_adapter as k
 import execute as e
+import workload_runtime
 
 DIMS = ('millicpus', 'memoryBytes', 'ephemeralBytes')
 
@@ -160,7 +161,7 @@ def joined_point(d, c, baseline, current):
     frames = probe.get('kubernetesFrames', {})
     k.need(frames.get('overflow') is False and isinstance(frames.get('rows'), list),
            'MATRIX_FRAME_UNMEASURED', 'UNMEASURED')
-    tenants = e.roster(c)
+    tenants = workload_runtime.viewer_roster(c, e.roster(c), k.need)
     bindings = k.viewer_plan.counts({'tenants': len(tenants), 'cadence': c['workload']}, tenants)
     rows = frames['rows']
     expected_bindings = {r['socket']: r['tenant'] for r in probe['viewerBindings']}

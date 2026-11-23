@@ -447,6 +447,20 @@ class Adapter(unittest.TestCase):
             report('restored')
             self.assertEqual(execute.accepted_writes(out, config, values)['verdict'], 'GREEN')
 
+            # Looping subset: only the active host receives probe writes; both
+            # tenants still enter the independent database readback.
+            roster[0]['host'] = 'z.test'
+            roster[1]['host'] = 'a.test'
+            k.write(root / 'tenants.json', roster)
+            config['workload'] = {'driverShape': 'looping-v2'}
+            ledger['roster'] = [A]
+            k.write(out / 'probe-accounting.json', ledger)
+            values = {A: {'entries': 1, 'probe': 1}}
+            self.assertEqual(execute.accepted_writes(out, config, values)['verdict'], 'GREEN')
+            for field in ('entries', 'probe'):
+                with self.subTest(inactive_field=field), self.assertRaisesRegex(RuntimeError, 'M7_DISCOVERY_WRONG_DATA'):
+                    execute.accepted_writes(out, config, {**values, B: {field: 1}})
+
     def test_matrix_collision_headroom_and_restore(self):
         with tempfile.TemporaryDirectory() as name:
             d=Path(name)

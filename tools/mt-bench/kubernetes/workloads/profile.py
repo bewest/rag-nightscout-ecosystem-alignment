@@ -7,6 +7,7 @@ import json
 import math
 import os
 from pathlib import Path
+import re
 import sys
 
 HERE = Path(__file__).resolve().parent
@@ -47,6 +48,24 @@ def stock_viewers(w, n, plan=None):
     return sum(plan.mix_counts(mix, n))
 
 
+def active_profile(base, count, point_id):
+    """Prepare a looping load phase on the existing fixture, keeping the seed and topology reusable."""
+    from trace_bounds import apply as size_trace
+
+    need(re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,29}[a-z0-9])?', point_id), 'WORKLOAD_POINT_ID')
+    p = copy.deepcopy(base)
+    traffic = p['workload']
+    need(traffic.get('driverShape') in ('looping-v1', 'looping-v2'), 'DRIVER_SHAPE_REQUIRES_LOOPING_FIXTURE')
+    provisioned = p['population']['provisionedTenants']
+    p['population']['ordinaryRosterTenants'] = workload_runtime.ordinary_count(provisioned, count, need)
+    traffic['pointId'] = point_id
+    traffic['logicalPollingClients'] = stock_viewers(traffic, count)
+    if 'driverPlan' in traffic:
+        _, rates = workload_runtime.rates(traffic, count, p['history'], provisioned=provisioned)
+        size_trace(p, sum(rates.values()), traffic['loadSeconds'])
+    return validate(p, require_pins=False)
+
+
 def validate(p, *, require_pins=True):
     need(p['version'] == 1 and p['kind'] == 'k8s-m7-workload-profile', 'PROFILE')
     if require_pins or 'referencePins' in p:
@@ -60,8 +79,7 @@ def validate(p, *, require_pins=True):
     ordinary = workload_runtime.ordinary_count(n, p['population']['ordinaryRosterTenants'], need)
     workload_runtime.validate(w, need, ordinary)
     if w.get('driverShape') in ('looping-v1', 'looping-v2'):
-        need(p['history'].get('mode') in history.LOOPING_MODES and n == ordinary,
-             'LOOPING_OFFER_REQUIRES_FULL_FIXTURE_ROSTER')
+        need(p['history'].get('mode') in history.LOOPING_MODES, 'DRIVER_SHAPE_REQUIRES_LOOPING_FIXTURE')
     need(workload_runtime.workload_inputs.tenants(p['population']['hotFactor']) and
          p['population']['hotFactor'] == w.get('hotFactor', 1),
          'ADAPTER_ROSTER_OR_HOT_FACTOR_UNSUPPORTED')
@@ -91,7 +109,7 @@ def describe(p):
     validate(p)
     n = p['population']['ordinaryRosterTenants']
     w = p['workload']
-    cycles, rates = workload_runtime.rates(w, n, p['history'])
+    cycles, rates = workload_runtime.rates(w, n, p['history'], provisioned=p['population']['provisionedTenants'])
     cycle_ms = cycles['w_sgv']
     inputs=workload_runtime.workload_inputs
     startup=inputs.startup_selection(p['phases'],need)
@@ -186,8 +204,14 @@ def dry(p, target):
     import workload
     receipt = workload.generate(ROOT, target / 'workload.js')
     n = p['population']['ordinaryRosterTenants']
+    looping = p['workload'].get('driverShape') in ('looping-v1', 'looping-v2')
+    population = p['population']['provisionedTenants'] if looping else n
     roster = [{'id': f'00000000-0000-4000-8000-{i:012d}', 'host': f'load-{i}.test',
-               'token': 'synthetic-loopback-only'} for i in range(n)]
+               'token': 'synthetic-loopback-only'} for i in range(population)]
+    if looping:
+        import looping_driver
+        config = dict(tenants=population, ordinaryRosterTenants=n, workload=p['workload'])
+        roster = looping_driver.annotate(p['history'], roster, workload_runtime.ordinary_roster(config, roster, need))
     write(target / 'tenants.json', roster)
     env = {'DURATION': str(p['workload']['loadSeconds']), 'ACCEL': '1', 'HOT_FACTOR': str(p['workload'].get('hotFactor', 1)),
            'SHAPES': ','.join(SHAPES), 'RUN_ID': 'synthetic-profile-dry',
@@ -202,12 +226,16 @@ def dry(p, target):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=('describe', 'dry', 'bind', 'populate'))
+    parser.add_argument('action', choices=('describe', 'dry', 'bind', 'populate', 'active'))
     parser.add_argument('profile', type=Path)
     parser.add_argument('paths', nargs='*', type=Path)
     args = parser.parse_args()
     p = read(args.profile)
-    if args.action == 'populate':
+    if args.action == 'active':
+        if len(args.paths) != 3:
+            parser.error('active requires ACTIVE_TENANTS POINT_ID OUTPUT_PROFILE')
+        write(args.paths[2], active_profile(p, int(str(args.paths[0])), str(args.paths[1])))
+    elif args.action == 'populate':
         if len(args.paths) not in (2, 3):
             parser.error('populate requires ANCHOR_UNIX_MS OUTPUT_PROFILE [MODE]')
         mode = str(args.paths[2]) if len(args.paths) == 3 else history.MODE
