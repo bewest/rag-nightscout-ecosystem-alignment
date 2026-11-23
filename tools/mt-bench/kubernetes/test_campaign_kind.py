@@ -176,9 +176,7 @@ class Kind(unittest.TestCase):
     def test_a_workstation_fixture_record_restores_from_bench_control(self):
         import fixture_catalog
         import fixture_copy
-        from test_campaign import Catalog
         with tempfile.TemporaryDirectory() as tmp:
-            helper = Catalog('test_a_workstation_fixture_restores_from_bench_control_objects')
             key = fixture_catalog.key(tenants=1000, image='sha256:' + 'c' * 64, postgres_image='sha256:' + 'd' * 64,
                                       schema='migrations-tree:kind', transport='writer-driven')
             catalog = fixture_catalog.Catalog(Path(tmp) / 'ws/catalog.json')
@@ -199,7 +197,6 @@ class Kind(unittest.TestCase):
             path = campaign.sync_catalog(self.call, Path(tmp) / 'pod/catalog')
             hit = fixture_catalog.Catalog(path).lookup(key, 'kubernetes')
             self.assertEqual(fixture_copy.read_manifest(hit['directory'])['fixtureId'], 'kind-seed')
-            del helper
 
 
 if __name__ == '__main__':
