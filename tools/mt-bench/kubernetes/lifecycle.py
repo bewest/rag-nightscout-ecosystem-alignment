@@ -46,6 +46,11 @@ def unentered_failure(kind, error, trace):
     finally:
         sys.__excepthook__(kind, error, trace)
 sys.excepthook = unentered_failure
+def command_codes(output):
+    """Error codes named in a failed command's output. A name followed by `=` is an
+    environment assignment echoed with the command line (VAULT_MAX_RETRIES=0), not a code."""
+    import re
+    return sorted(set(re.findall(rb'\b(?:K8S_|M7_|PRIMER_|BOOTSTRAP_|PLATFORM_|VAULT_|EVALUATOR_)[A-Z0-9_]{2,90}\b(?!=)',output)))
 def command(argv,data=None,timeout=None,private=False,environment=None):
     rem=cleanup-time.time() if cleaning else work-time.time()
     if not cleaning and phase_cutoff is not None:
@@ -55,8 +60,7 @@ def command(argv,data=None,timeout=None,private=False,environment=None):
     q=subprocess.run([str(x) for x in argv],input=data,capture_output=True,
                      timeout=ProgressWindow.read_seconds(min(timeout,rem)),env=environment or env)
     if q.returncode:
-        import re
-        codes=sorted(set(re.findall(rb'\b(?:K8S_|M7_|PRIMER_|BOOTSTRAP_|PLATFORM_|VAULT_|EVALUATOR_)[A-Z0-9_]{2,90}\b',q.stderr+q.stdout)))
+        codes=command_codes(q.stderr+q.stdout)
         error = {'program':Path(str(argv[0])).name,'returncode':q.returncode,'codes':[x.decode() for x in codes]}
         if cfg.get('schedulerPlacement') and not private:
             error['stderr'] = q.stderr[-1500:].decode(errors='replace')
