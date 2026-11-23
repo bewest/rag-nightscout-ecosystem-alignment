@@ -32,6 +32,10 @@ COUNT = 'nightscout_evaluator_completion_lag_seconds_count'
 BUCKET = 'nightscout_evaluator_completion_lag_seconds_bucket'
 UNOBSERVED = 'nightscout_evaluator_completion_unobserved_total'
 VERSION = 'all-input-coverage-v1'
+# api 503 answers by storage refusal code (core lib/metrics nightscout_storage_refusals_total{code, route_class, phase}).
+# Reported beside the verdict; never part of it.
+REFUSALS = 'nightscout_storage_refusals_total'
+REFUSAL_CODES = ('STORAGE_BUSY', 'STORAGE_TIMEOUT', 'STORAGE_UNAVAILABLE')
 # Durable M1 (lane m1-durable, core work catalogue 0010): bucket upper bounds in ms, +inf last (None).
 BOUNDS_MS = [250, 500, 1000, 2000, 5000, 10000, 30000, 60000, 120000, None]
 
@@ -64,6 +68,63 @@ def m1_from_prometheus(query, start_s, end_s, bookend_s):
             'resets': (resets.get(key) or 0) + (unobserved_resets.get(key) or 0),
             'lastSampleS': last.get(key)}
     return {'source': 'prometheus-snapshot', 'startS': start_s, 'endS': end_s, 'bookendS': bookend_s, 'series': series}
+
+
+def refusals_from_prometheus(query, start_s, end_s):
+    """api storage refusals (503) per code, code and phase, and code and route class over [START_S, END_S].
+
+    Per series: the last sample in the window minus the sample at the start; a series absent at the start
+    counts from 0 (the api exports every code at zero from boot, so a Pod that started during the load
+    begins at 0). A series that reset in the window (a restarted container) uses increase() instead and is
+    counted in resetSeries. No series at all reads NO-INSTRUMENT (an image without the counter), never 0."""
+    if not end_s or end_s <= start_s:
+        return {'verdict': 'UNMEASURED', 'reason': 'no window end', 'metric': REFUSALS, 'startS': start_s, 'endS': end_s}
+    w = max(1, int(end_s - start_s) + 1)
+    coded = lambda rows: [row for row in rows if (row.get('labels') or {}).get('code') in REFUSAL_CODES]
+    end = _by_series(coded(query('last_over_time(%s[%ds])' % (REFUSALS, w), end_s)))
+    window = {'metric': REFUSALS, 'startS': start_s, 'endS': end_s}
+    if not end:
+        return {'verdict': 'NO-INSTRUMENT', **window}
+    start = _by_series(coded(query(REFUSALS, start_s)))
+    resets = _by_series(coded(query('resets(%s[%ds])' % (REFUSALS, w), end_s)))
+    grown = _by_series(coded(query('increase(%s[%ds])' % (REFUSALS, w), end_s)))
+    by_code, by_phase, by_route, reset_series = dict.fromkeys(REFUSAL_CODES, 0), {}, {}, 0
+    for key, value in end.items():
+        labels = dict(key)
+        if resets.get(key):
+            reset_series += 1
+            count = grown.get(key) or 0
+        else:
+            count = value - (start.get(key) or 0)
+        count = int(count) if float(count).is_integer() else count
+        code = labels['code']
+        by_code[code] += count
+        for table, label in ((by_phase, 'phase'), (by_route, 'route_class')):
+            name = code + '/' + str(labels.get(label))
+            table[name] = table.get(name, 0) + count
+    return {'verdict': 'OBSERVED', **window, 'byCode': by_code, 'byCodePhase': dict(sorted(by_phase.items())),
+            'byCodeRouteClass': dict(sorted(by_route.items())), 'resetSeries': reset_series,
+            'basis': 'per api series, last sample in the window minus the sample at the load start; '
+                     'phase: checkout = no pooled client, open = the transaction\'s opening statements, '
+                     'clock = a statement taking or holding the tenant write clock row lock, statement = any other, '
+                     'suspended = a suspended operation window, none = another outage'}
+
+
+def refusals_from_load(load, local=None):
+    """refusals_from_prometheus over a retained load stage (metrics-snapshot.json, metrics-tsdb.tar, window.json),
+    from the load start to the snapshot (or the load end). UNMEASURED when either record is missing."""
+    load = Path(load)
+    receipt, window = _read(load/'metrics-snapshot.json') or {}, _read(load/'window.json') or {}
+    if receipt.get('verdict') != 'OBSERVED' or not window.get('loadStartedAt'):
+        return {'verdict': 'UNMEASURED', 'reason': 'no retained metrics snapshot or no load start'}
+    if local is None:
+        from case_observer import LocalPrometheus as local
+    server = local(load/receipt['file'])
+    try:
+        return refusals_from_prometheus(server.query, window['loadStartedAt'],
+                                        max(receipt.get('observedAt') or 0, window.get('loadEndedAt') or 0))
+    finally:
+        server.close()
 
 
 def slice_of(tenant, slices):
@@ -332,19 +393,24 @@ def from_case(load, slices=None, clock_bound_ms=None, local=None, *, summary_pat
         # Durable M1 (lane m1-durable): the two SQL bookends are the source; Prometheus becomes a cross-check.
         durable = m1_from_durable(baseline, bookend, ids, bookend.get('durableLagBoundsMs', baseline.get('durableLagBoundsMs')), slices)
     m1 = None
+    refusals = {'verdict': 'UNMEASURED', 'reason': 'no retained metrics snapshot or no load start'}
     read_at = end.get('readAtMs')
-    if receipt.get('verdict') == 'OBSERVED' and window.get('loadStartedAt') and read_at:
+    if receipt.get('verdict') == 'OBSERVED' and window.get('loadStartedAt'):
         if local is None:
             from case_observer import LocalPrometheus as local
         server = local(load/receipt['file'])
         try:
-            m1 = m1_from_prometheus(server.query, window['loadStartedAt'], max(receipt.get('observedAt') or 0, read_at / 1000),
-                                    read_at / 1000)
+            if read_at:
+                m1 = m1_from_prometheus(server.query, window['loadStartedAt'], max(receipt.get('observedAt') or 0, read_at / 1000),
+                                        read_at / 1000)
+            refusals = refusals_from_prometheus(server.query, window['loadStartedAt'],
+                                                max(receipt.get('observedAt') or 0, (read_at or 0) / 1000, window.get('loadEndedAt') or 0))
         finally:
             server.close()
     value = assess(m1, end, writes, clock_bound_ms=clock_bound_ms, slices=slices, durable=durable,
                    progress_verdict=_progress_verdict(baseline, bookend, ids) if durable is not None else
                    'PASS' if (bookend.get('source') == 'sql-completed-v1') else 'MISSING')
+    value['storageRefusals'] = refusals
     value['inputs'] = {'metricsSnapshot': receipt.get('verdict'), 'endRead': 'progress-after.json' if bookend else None,
                        'loadStartedAt': window.get('loadStartedAt')}
     return value

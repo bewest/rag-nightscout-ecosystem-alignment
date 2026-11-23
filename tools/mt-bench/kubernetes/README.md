@@ -959,6 +959,11 @@ Incomplete writer evidence, missing SQL bookends and failed viewer capture leave
 scores unmeasured. The compact packet supports durable evaluator counters. Older images that relied
 on Prometheus for that measure still need their raw case and retained TSDB. An interrupted
 controller can lose viewer and SQL evidence even when the exporter volume preserves the writer.
+API 503s by storage refusal code (`STORAGE_BUSY`, `STORAGE_TIMEOUT`, `STORAGE_UNAVAILABLE`, from core's
+`nightscout_storage_refusals_total{code, route_class, phase}`) are read from the retained TSDB over the
+load window: `coverage_verdict.py case LOAD_DIR` reports them as `storageRefusals`, and `capacity_results.py
+rescore --metrics-load LOAD_DIR` adds them beside the HTTP accounting. An image without the counter reads
+`NO-INSTRUMENT`, never zero. The figures are reported beside the verdicts and do not change them.
 [Capacity and comparison modes](workloads/README.md)
 
 The joined disposable binding uses `secrets.sh seed`, waits for the provision Job and role readiness,
