@@ -41,7 +41,7 @@ if [ -n "$template" ]; then
   [ -n "$core" ] && [ -n "$deploy" ] || { echo "--template needs --core and --deploy" >&2; exit 2; }
   shallow "$core"; shallow "$deploy"
   template=$(cd "$template" && pwd)
-  python3 - "$template" "$ctx/ws" <<'PY'
+  python3 - "$template" "$ctx/ws" "$ctx/Dockerfile" <<'PY'
 import json, shutil, sys
 from pathlib import Path
 template, ws = Path(sys.argv[1]), Path(sys.argv[2])
@@ -59,6 +59,9 @@ for name in ('environment.json', 'native-run-template.json'):
     (copy/name).write_text(json.dumps(doc, indent=2) + '\n')
 control['pullSecretCommand'] = ['cat', '/var/run/campaign-pull/.dockerconfigjson']
 (copy/'lifecycle-input.json').write_text(json.dumps(control, indent=2) + '\n')
+# render_checks and the probe call `node` by name: the template's node goes first on PATH.
+with open(sys.argv[3], 'a') as dockerfile:
+    dockerfile.write('ENV PATH=%s:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n' % Path(run['driver']['node']).parent)
 PY
   cp "$(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['toolsDirectory'])" "$template/lifecycle-input.json")/kubectl" "$ctx/kubectl"
 else
