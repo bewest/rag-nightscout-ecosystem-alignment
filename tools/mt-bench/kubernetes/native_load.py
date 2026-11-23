@@ -305,7 +305,14 @@ def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, 
     # Preflight above has completed before these first actor mutations.
     if failures:
         raise failures[0]
-    kube.call(['create', '-f', '-'], data=json.dumps(secret), namespace=ns)
+    identifier = kube.call(['create', '-f', '-', '-o', 'jsonpath={.metadata.uid}'],
+                           data=json.dumps(secret), namespace=ns)
+    if isinstance(identifier, bytes):
+        identifier = identifier.decode()
+    k.need(isinstance(identifier, str) and re.fullmatch(r'[A-Za-z0-9-]+', identifier),
+           'NATIVE_LOAD_SECRET_IDENTITY')
+    receipt['inputSecretUid'] = identifier
+    k.write(out / 'native-load.json', receipt)
     if predeclared is None:
         created = kube.call(['create', '-f', '-', '-o', 'json'], data=json.dumps(wanted), namespace=ns)
         created = json.loads(created)

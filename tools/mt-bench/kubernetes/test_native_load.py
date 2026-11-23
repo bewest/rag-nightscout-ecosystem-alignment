@@ -68,6 +68,8 @@ class Kube:
         self.calls.append(args)
         if args[0] == 'create':
             self.created.append(json.loads(kw['data']))
+            if self.created[-1]['kind'] == 'Secret':
+                return 'owned-inputs'
             value = copy.deepcopy(self.created[-1]); value['metadata']['uid'] = 'owned-job'
             return json.dumps(value)
         if args[0] == 'wait' and self.failure == 'wait':

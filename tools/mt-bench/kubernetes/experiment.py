@@ -233,7 +233,8 @@ def run(packet, grant_path, expected_digest, group=None):
                     published = {'verdict': 'UNMEASURED', 'reason': type(exc).__name__, 'detail': str(exc)[:300]}
                 k.write(attempt/'capacity-publication.json', published)
         # The outer lifecycle indexes its case after it verifies absence.
-        if d.name != 'packet' or d.parent.name != 'runtime':
+        if d.name != 'packet' or (d.parent.name != 'runtime' and not (d.parent.parent.name == 'points'
+                                         and d.parent.parent.parent.name == 'runtime')):
             auto_catalog(d, k.write)
     return outcome
 
@@ -331,6 +332,9 @@ def main():
     standard.add_argument('--writer-publication', type=Path,
                           help='JSON selection for a dedicated Retain volume mounted by the native result exporter')
     standard.add_argument('--binding-input', type=Path, help='JSON object merged into the binding inputs last (for example roleEnv)')
+    standard.add_argument('--next-point', type=Path, action='append', default=[], metavar='PROFILE',
+                          help='run another profile on the same commissioned database before cleanup; '
+                               'each profile must declare a distinct workload.pointId')
     standard.add_argument('--fixture', choices=('reuse', 'build'),
                           help='find the CSI snapshot fixture by key (tenants, seed name, schema, images, transport, '
                                'history, evaluator K): reuse restores it into this case, building and registering it '
@@ -347,7 +351,8 @@ def main():
         import standard_case
         options = dict(app_image=a.app_image, postgres_image=a.postgres_image, namespace_prefix=a.namespace_prefix,
                        core=a.core, taint=a.reserved_worker_taint, node_name=a.node_name, node_pool=a.node_pool,
-                       resources_file=a.resources, binding_extra=a.binding_input, writer_publication=a.writer_publication)
+                       resources_file=a.resources, binding_extra=a.binding_input, writer_publication=a.writer_publication,
+                       next_points=a.next_point)
         if a.fixture:
             import fixture_catalog
             return standard_case.keyed(a.fixture, a.template_case, a.binding, a.profile, a.output, seed=a.fixture_seed,

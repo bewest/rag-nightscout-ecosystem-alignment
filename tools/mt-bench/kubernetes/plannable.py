@@ -258,14 +258,29 @@ def case_readback(case_dir, *, server_factory=None, owned=None, first_alarm_ms=N
     budget = inventory.get('connectionBudget')
     need(budget, 'INVENTORY_HAS_NO_BUDGET')
     case = type('Case', (), {'d': case_dir})()
-    load = co.load_directory(case)
+    points = co.point_ids(case_dir)
+    def measure(point):
+        return readback_point(case, budget, point, server_factory, owned, first_alarm_ms, step_s)
+    if points:
+        return {'points': [dict(pointId=point, **measure(point)) for point in points],
+                'warmupBasis': 'evaluator process start through each point on the shared restore'}
+    return measure(None)
+
+
+def readback_point(case, budget, point, server_factory, owned, first_alarm_ms, step_s):
+    import case_observer as co
+    load = co.load_directory(case, point)
     receipt = co.read(load/'metrics-snapshot.json')
-    if not receipt or receipt.get('verdict') != 'OBSERVED':
-        return {'connections': {'verdict': 'UNMEASURED', 'reason': 'no retained metrics snapshot'},
-                'warmup': {'verdict': 'UNMEASURED', 'reason': 'no retained metrics snapshot'}}
-    _, start, end = co.window(case)
-    if start is None:
+    _, start, end = co.window(case, point)
+    if start is None and point is None:
         start, end = co.load_window(case)
+    reason = None
+    if not receipt or receipt.get('verdict') != 'OBSERVED':
+        reason = 'no retained metrics snapshot'
+    elif point is not None and start is None:
+        reason = 'no retained load window'
+    if reason:
+        return {name: {'verdict': 'UNMEASURED', 'reason': reason} for name in ('connections', 'warmup')}
     need(start is not None and end > start, 'WINDOW')
     server = (server_factory or co.LocalPrometheus)(load/receipt['file'])
     try:
@@ -301,7 +316,7 @@ def main(argv=None):
     p = sub.add_parser('ownership', help='slice ownership of a roster under a rendered inventory')
     p.add_argument('inventory', type=Path)
     p.add_argument('roster', type=Path, help='JSON list of tenant ids, or {"tenants": [...]} ')
-    p = sub.add_parser('readback', help='connections and warm-up for a launched case (offline)')
+    p = sub.add_parser('readback', help='connections and warm-up per workload point for a launched case (offline)')
     p.add_argument('case', type=Path)
     p.add_argument('--first-alarm-ms', type=int)
     a = ap.parse_args(argv)

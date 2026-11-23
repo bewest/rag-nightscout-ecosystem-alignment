@@ -134,6 +134,38 @@ def controller_name(m):
     return 'campaign-' + m['campaign']
 
 
+def standard_load(m):
+    if m['runner'] != 'standard' or m['standard'].get('prepareOnly'):
+        return False
+    default = m['standard'].get('caseDefaults', {}).get('prepareOnly')
+    return any(not case.get('options', {}).get('prepareOnly', default) for case in m['cases'])
+
+
+def controller_resources(m):
+    authored = m.get('controllerResources') or {}
+    if not standard_load(m):
+        return authored or {'requests': {'cpu': '500m', 'memory': '1Gi'}, 'limits': {'memory': '3Gi'}}
+
+    # The standard attach, observer and their children inherit the controller container's cgroup.
+    # Read their declared allocation from the same template the image build copies into the Pod.
+    limits = dict(authored.get('limits', {}))
+    path = Path(m['standard']['template']) / 'native-run-template.json'
+    if path.is_file():
+        import resource_budget
+        run = json.loads(path.read_bytes())
+        for resource, key, suffix in [('cpu', 'millicpus', 'm'), ('memory', 'memoryBytes', '')]:
+            budget = sum(run[actor]['resources'][key] for actor in ('driver', 'observer'))
+            need(budget > 0, 'CONTROLLER_BUDGET')
+            limit = limits.setdefault(resource, str(budget) + suffix)
+            need(0 < resource_budget.exact_quantity(limit, resource == 'cpu', need) <= budget,
+                 'CONTROLLER_LIMIT_MISMATCH_' + resource.upper())
+    else:
+        # A separate apply host can carry explicit limits. The controller checks them against its own template.
+        need(all(limits.get(key) for key in ('cpu', 'memory')), 'CONTROLLER_TEMPLATE_OR_LIMITS_REQUIRED')
+    return dict(authored, requests={**{key: limits[key] for key in ('cpu', 'memory')},
+                                    **authored.get('requests', {})}, limits=limits)
+
+
 def render(m):
     """Every Kubernetes object of the campaign's control plane. The store Secret is created by `apply` from the
     environment and never rendered."""
@@ -181,7 +213,12 @@ def render(m):
     if m.get('pullSecret'):
         volumes.append({'name': 'pull', 'secret': {'secretName': m['pullSecret']}})
         mounts.append({'name': 'pull', 'mountPath': '/var/run/campaign-pull', 'readOnly': True})
-    resources = m.get('controllerResources') or {'requests': {'cpu': '500m', 'memory': '1Gi'}, 'limits': {'memory': '3Gi'}}
+    resources = controller_resources(m)
+    command = ['python3', '-B', '/app/campaign.py', 'controller', '/etc/campaign/manifest.json']
+    if standard_load(m):
+        env.append({'name': 'NS_CAMPAIGN_ATTACH_SCOPE', 'value': 'pod'})
+        # PID 1 reaps orphaned attach descendants when the lifecycle cancels their process group.
+        command = ['/usr/bin/tini', '--', *command]
     job = {'apiVersion': 'batch/v1', 'kind': 'Job', 'metadata': meta(name),
            # A replacement Pod starts only after the old one has terminated: one controller at a time.
            'spec': {'backoffLimit': m.get('controllerRestarts', 6), 'podReplacementPolicy': 'Failed',
@@ -191,7 +228,7 @@ def render(m):
                         **({'imagePullSecrets': [{'name': m['pullSecret']}]} if m.get('pullSecret') else {}),
                         **({'nodeSelector': m['controllerNodeSelector']} if m.get('controllerNodeSelector') else {}),
                         'containers': [{'name': 'controller', 'image': m['controllerImage'], 'imagePullPolicy': 'IfNotPresent',
-                                        'command': ['python3', '-B', '/app/campaign.py', 'controller', '/etc/campaign/manifest.json'],
+                                        'command': command,
                                         'env': env + [{'name': 'NS_CAMPAIGN_POD', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}}}],
                                         'volumeMounts': mounts, 'resources': resources}],
                         'volumes': volumes}}}}
@@ -212,6 +249,7 @@ def render(m):
 
 def apply(m, call, env=None, create_bucket=False, store=None):
     validate(m)
+    manifests = render(m)
     env = os.environ if env is None else env
     store = store or evidence_store.Store.from_env(dict(env, NS_EVIDENCE_ENDPOINT=m['store']['endpoint'],
                                                         NS_EVIDENCE_REGION=m['store'].get('region', 'us-east-1'),
@@ -229,7 +267,6 @@ def apply(m, call, env=None, create_bucket=False, store=None):
               'data': {k: base64.b64encode(env[k].encode()).decode() for k in ('NS_EVIDENCE_ACCESS_KEY', 'NS_EVIDENCE_SECRET_KEY')}}
     call(['apply', '-f', '-'], json.dumps(secret))
     # The policy must be in force before the controller starts writing.
-    manifests = render(m)
     first, job = manifests['items'][:-1], manifests['items'][-1]
     call(['apply', '-f', '-'], json.dumps({'apiVersion': 'v1', 'kind': 'List', 'items': first}))
     call(['apply', '-f', '-'], json.dumps(job))
@@ -382,6 +419,8 @@ class Controller:
                                    cleanup=cleanup.get('verdict'), endedAt=self.clock(), sealed=True)
         retry = outcome['state'] == 'failed' and outcome.get('retry', False) and attempt < self.m.get('maxAttempts', 2)
         doc['state'] = 'retry' if retry else outcome['state']
+        if 'points' in outcome:
+            doc['attempts'][-1]['points'] = outcome['points']
         if not retry:
             doc.update(verdict=outcome.get('verdict'), reason=outcome.get('reason'))
         return status.write(doc)
@@ -554,6 +593,15 @@ class StandardRunner:
                        namespace_prefix=self.s.get('namespacePrefix', 'ns-synth-'), core=Path(self.s['core']),
                        taint=o.get('taint'), node_name=o.get('nodeName'), node_pool=o.get('nodePool'),
                        binding_extra=extra, inspect=self.inspect)
+        next_profiles = o.get('nextPoints', [])
+        need(isinstance(next_profiles, list), 'STANDARD_NEXT_POINTS')
+        if next_profiles:
+            options['next_points'] = []
+            for index, point in enumerate(next_profiles, start=2):
+                need(isinstance(point, dict), 'STANDARD_POINT_PROFILE')
+                path = inputs / ('profile-%d.json' % index)
+                path.write_bytes(jdump(point))
+                options['next_points'].append(path)
         fixture = self.s.get('fixture')
         if fixture:
             import fixture_catalog
@@ -568,15 +616,31 @@ class StandardRunner:
         (inputs / 'preparation.json').write_bytes(jdump(prepared))
         if o.get('prepareOnly') or self.s.get('prepareOnly'):
             return {'state': 'scored', 'verdict': 'PREPARED', 'reason': 'prepare-only'}
+        if os.environ.get('NS_CAMPAIGN_ATTACH_SCOPE') == 'pod':
+            controller_resources(self.m)   # verify an apply host's explicit limits against the baked template
+        remaining = deadline - time.time()
+        need(remaining > 0, 'CASE_DEADLINE')
         q = subprocess.run([sys.executable, '-B', str(HERE / 'experiment.py'), 'launch', str(directory / 'lifecycle-bound.json')],
-                           timeout=max(60, deadline - time.time()))
-        result = directory / 'runtime/packet/experiment/result.json'
+                           timeout=remaining)
+        result = directory / ('result.json' if next_profiles else 'runtime/packet/experiment/result.json')
         if result.is_file():
-            verdict = json.loads(result.read_bytes()).get('verdict')
+            receipt = json.loads(result.read_bytes())
+            verdict = receipt.get('stageVerdict' if next_profiles else 'verdict')
+            if next_profiles:
+                points = [{key: point[key] for key in ('pointId', 'stageVerdict', 'packet', 'firstFailure') if key in point}
+                          for point in receipt.get('points', [])]
+                # Preserve a product FAIL. A crashed launcher or an incomplete set cannot report a pass.
+                complete = len(points) == len(next_profiles) + 1
+                if verdict in ('PASS', 'OBSERVED') and (q.returncode or not complete):
+                    verdict = 'UNMEASURED'
+                return {'state': 'scored' if verdict in ('PASS', 'FAIL', 'OBSERVED') else 'UNMEASURED',
+                        'verdict': verdict, 'points': points, 'exitCode': q.returncode,
+                        'reason': (receipt.get('firstFailure') or {}).get('code')}
+
             if verdict in ('PASS', 'FAIL'):
                 return {'state': 'scored', 'verdict': verdict, 'exitCode': q.returncode}
             return {'state': 'UNMEASURED', 'verdict': verdict, 'exitCode': q.returncode,
-                    'reason': (json.loads(result.read_bytes()).get('firstFailure') or {}).get('code')}
+                    'reason': (receipt.get('firstFailure') or {}).get('code')}
         return {'state': 'failed', 'exitCode': q.returncode, 'reason': 'no experiment result'}
 
     def workdir_catalog(self, directory):

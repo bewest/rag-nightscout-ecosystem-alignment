@@ -3,16 +3,24 @@ import datetime as dt,hashlib,json,os,re,socket,subprocess,sys,time
 from pathlib import Path
 from lifecycle_config import fixture_config
 control=fixture_config(Path(sys.argv[1]))
-d=Path(control['caseDirectory']); live=d/'runtime'
+d=Path(control['caseDirectory'])
+runtime=d/'runtime'
+point = sys.argv[3] if len(sys.argv) == 4 and sys.argv[2] == '--point' else None
+if point is not None and (not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,30}', point) or point not in control['loadPoints']):
+    raise ValueError('K8S_POINT_UNKNOWN')
+source = d/'points'/point if point else d
+live = runtime/'points'/point if point else runtime
+if point:
+    live.mkdir(mode=0o700, parents=True, exist_ok=False)
 K=Path(__file__).resolve().parent
 read=lambda f:json.loads(f.read_bytes())
 sha=lambda f:hashlib.sha256(f.read_bytes()).hexdigest()
 def write(p,v):p.write_text(json.dumps(v,indent=2)+'\n');p.chmod(0o600)
 def ref(p):return {'path':str(p),'sha256':sha(p)}
-e=read(d/'environment.json');m=read(d/'intent.json');ns=e['namespace'];uid=read(live/'custody.json')['namespaceUid'];now=time.time()
-dl=read(live/'deadlines.json');until=dt.datetime.fromisoformat(dl['workUntil']).timestamp()-5
+e=read(d/'environment.json');m=read(source/'intent.json');ns=e['namespace'];uid=read(runtime/'custody.json')['namespaceUid'];now=time.time()
+dl=read(runtime/'deadlines.json');until=dt.datetime.fromisoformat(dl['workUntil']).timestamp()-5
 os.umask(0o077)
-base=Path(control['runTemplate']['path'])
+base=source/'native-run-template.json' if point else Path(control['runTemplate']['path'])
 cfg=read(base)
 for key in ('pins','completion','workload','ordinaryRosterTenants'):cfg.pop(key,None)
 core=Path(control['coreRepository'])
@@ -29,13 +37,15 @@ def execute(label,args,deadline=1800):
     with path.open('xb') as f:
         result=subprocess.run([str(x) for x in args],stdout=f,stderr=subprocess.STDOUT,timeout=remaining)
     if result.returncode:
+        if label == 'load' and point and phase_actors.scored_failure(packet):
+            return path
         detail=sorted(set(re.findall(r'\b(?:K8S_|M7_|PRIMER_)[A-Z_]{2,88}',path.read_text(errors='replace')[-2500:])))
         write(live/'attachment-refusal.json',{'stage':label,'exit':result.returncode,'codes':detail})
         raise RuntimeError('ATTACH_'+label)
     return path
 HISTORY_READ_SECONDS=int(os.environ.get('K8S_HISTORY_READ_SECONDS','900'))
 exp=[sys.executable,'-B',K/'experiment.py'];ad=[sys.executable,'-B',K/'adapter.py']
-obj=read(live/'latest-edge.json');edge=obj['name'];edgeuid=obj['uid']
+obj=read(runtime/'latest-edge.json');edge=obj['name'];edgeuid=obj['uid']
 kub=[cfg['kubectl'],'--context',cfg['context'],'-n',ns]
 def edge_id():return subprocess.check_output(kub+['get','pod',edge,'-o','jsonpath={.metadata.uid}'],timeout=12).decode()
 assert edge_id()==edgeuid
@@ -53,12 +63,35 @@ try:
     cfg['baseUrl']='http://127.0.0.1:'+match[1]
     import fixture
     import kube_adapter as k
-    private = live/'fixture'
+    private = runtime/'fixture'
     location = 'pod' if m['primerLocation'] == 'controller' else m['primerLocation']
     inventory = read(d/'inventory.json')
-    primer = next(obj for obj in k.manifests(read(d/'render.json')) if k.key(obj) == 'Job/primer')
-    held = read(live/'fixture-reader.json') if (live/'fixture-reader.json').exists() else None
-    tenants, reuse = fixture.read_roster(kub, primer, inventory, private, cfg['tenants'], until, location, held)
+    primer = next(obj for obj in k.manifests(read(source/'render.json')) if k.key(obj) == 'Job/primer')
+    held = read(runtime/'fixture-reader.json') if (runtime/'fixture-reader.json').exists() else None
+    prior = None
+    if point:
+        import phase_actors
+        import native_join
+        k.need(m['profile']['workload'].get('pointId') == point, 'POINT_MARKER_CHANGED')
+        api = fixture.runner(kub, until)
+        claim = inventory['storage']['claims']['postgres']
+        storage = phase_actors.storage_identity(api, ns, uid, e['runId'], claim)
+        position = control['loadPoints'].index(point)
+        if position:
+            previous = control['loadPoints'][position-1]
+            prior = read(runtime/'points'/previous/'phase-identity.json')
+            k.need(prior['pointId'] == previous, 'POINT_PREDECESSOR_CHANGED')
+            job, = (obj for obj in k.manifests(read(source/'render.json')) if k.key(obj) == native_join.JOB)
+            job_uid = phase_actors.new_job(api, ns, e['runId'], storage, prior, job, until)
+        else:
+            job_uid = phase_actors.owned_uid(api, 'job', 'k6', e['runId'])
+    roster = private/'data-roster.private.json'
+    if prior:
+        k.need(sha(roster) == prior['rosterSha256'], 'POINT_FIXTURE_ROSTER_CHANGED')
+        tenants = read(roster)
+        reuse = read(runtime/'fixture.json')['reuse']
+    else:
+        tenants, reuse = fixture.read_roster(kub, primer, inventory, private, cfg['tenants'], until, location, held)
     from populated_history import BASELINE, run as prepare_history
     if len(sys.argv) == 3 and sys.argv[2] == '--seed-history':
         pg = read(live/'latest-postgres.json')
@@ -86,33 +119,53 @@ try:
         cfg['restoredFixture'] = {'catalog': control['fixture'].get('digest'), 'fixtureId': record.get('fixtureId'),
                                   'historyLogicalSha256': record.get('historyLogicalSha256'),
                                   'archiveSha256': (record.get('archive') or {}).get('sha256')}
-    cfg['tenantsFile'] = str(private/'data-roster.private.json')
-    write(Path(cfg['tenantsFile']), tenants)
-    write(live/'fixture.json', {'location':location,'reuse':reuse,'tenants':len(tenants)})
-    instance={'config':str(live/'input.json'),'inventory':str(d/'inventory.json'),'render':str(d/'render.json'),
+    cfg['tenantsFile'] = str(roster)
+    if not prior:
+        write(roster, tenants)
+        write(runtime/'fixture.json', {'location':location,'reuse':reuse,'tenants':len(tenants)})
+    instance={'config':str(live/'input.json'),'inventory':str(d/'inventory.json'),'render':str(source/'render.json'),
               'binding':control['bindingDirectory']}
     write(live/'instance.json',instance)
     selected = control['candidate']
     pair = {'core':selected['coreCommit'], 'deploy':selected['deployCommit']}
     cfg['completion'] = fixture.completion(kub,cfg['roles'],pair,selected['appImageId'],k.instrument()['sha256'])
     write(live/'input.json',cfg)
-    execute('prepare',exp+['prepare',d/'intent.json',live/'instance.json',packet])
+    execute('prepare',exp+['prepare',source/'intent.json',live/'instance.json',packet])
     execute('observe',ad+['observe',packet])
     # Capture read-only SQL independently of optional client measurements.
     try:execute('sql',ad+['observe-sql',packet,live/'sql'],120)
     except RuntimeError:pass
     execute('access',ad+['access',packet],65)
-    pre=read(d/'preflight.json');profile=m['profile']
+    pre=read(source/'preflight.json');profile=m['profile']
     actor=cfg['driver']['hostId']
     assert actor==cfg['observer']['hostId']
     mode=cfg.get('resourceAccounting','limits-v1')
     assert mode in ('limits-v1','requests-v1') and pre['trialEnvelope'].get('resourceAccounting','limits-v1')==mode,'RESOURCE_ACCOUNTING_MISMATCH'
     grant={'version':1,'status':'RELEASED','existingCapacityOnly':True,'context':cfg['context'],**cfg['deadlines'],
            'resourceAccounting':mode,
-           'preflight':ref(d/'preflight.json'),'experimentSha256':sha(d/'intent.json'),'placementMode':'scheduler',
+           'preflight':ref(source/'preflight.json'),'experimentSha256':sha(source/'intent.json'),'placementMode':'scheduler',
            'fixtures':[{'runId':e['runId'],'namespace':ns,'namespaceUid':uid,'runSha256':sha(packet/'run.json')}]}
     write(live/'grant.json',grant)
     execute('load',exp+['run',packet,live/'grant.json',sha(live/'grant.json')],until-time.time())
+    if point:
+        record = read(packet/'load/native-load.json')
+        marker = native_join.stage_runid(read(packet/'run.json'))
+        k.need(record.get('capture') == 'CAPTURED' and record['process']['complete'] and
+               (packet/'load/runid').read_text().strip() == record['runId'] == marker and
+               record['namespaceUid'] == uid and record['jobUid'] == job_uid and
+               record['inputSecretUid'] == phase_actors.owned_uid(api, 'secret', 'ns-k6-inputs', e['runId']),
+               'POINT_NATIVE_CAPTURE_CHANGED')
+        k.need(storage == phase_actors.storage_identity(api, ns, uid, e['runId'], claim), 'POINT_RESTORE_CHANGED')
+        write(live/'phase-identity.json', {**storage, 'pointId':point, 'marker':marker, 'jobUid':job_uid,
+            'inputSecretUid':record['inputSecretUid'], 'rosterSha256':sha(roster),
+            'verdict':read(packet/'experiment/result.json')['verdict']})
+except Exception as error:
+    if point:
+        # Subprocess errors can include private command arguments. Retain only the refusal code.
+        code = str(error)
+        write(live/'phase-failure.json', {'pointId': point, 'code': code if re.fullmatch(
+            r'(?:K8S_|M7_|ATTACH_)[A-Za-z0-9_:-]+', code) else type(error).__name__})
+    raise
 finally:
     if forward and forward.poll() is None:
         forward.terminate()

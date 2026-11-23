@@ -58,6 +58,48 @@ def fixture_key(template_case, profile_path, *, app_image, postgres_image=None, 
         evaluator_slices=inputs.get('slices', {}).get('evaluator', 1))
 
 
+def point_profiles(first, following):
+    """Select workloads that can run against the same commissioned database and roles."""
+    profiles = [first, *(k.document(path) for path in following)]
+    if not following:
+        return profiles
+    seen = set()
+    for profile in profiles:
+        experiment.profile.validate(profile, require_pins=False)
+        point = profile['workload'].get('pointId')
+        k.need(isinstance(point, str) and len(point) <= 31 and k.NAME.fullmatch(point), 'WORKLOAD_POINT_ID')
+        k.need(point not in seen, 'DUPLICATE_WORKLOAD_POINT')
+        seen.add(point)
+        k.need(profile['population']['provisionedTenants'] == first['population']['provisionedTenants']
+               and profile['history'] == first['history'], 'WORKLOAD_POINT_FIXTURE_CHANGED')
+        # The data primer and serving roles start once, before all traffic points.
+        for field in ('primerOptions', 'producerStartup', 'startupWindows', 'cohortReadySeconds'):
+            k.need(profile['phases'].get(field) == first['phases'].get(field), 'WORKLOAD_POINT_STARTUP_CHANGED')
+        k.need(profile['population'].get('maxTenants') == first['population'].get('maxTenants'),
+               'WORKLOAD_POINT_POPULATION_CEILING_CHANGED')
+    return profiles
+
+
+def prepare_points(case, profiles, instance):
+    # The native Job includes the generated offer. Only its declaration varies per point.
+    manifest = k.document(case/'intent.json')
+    template = k.document(case/'native-run-template.json')
+    preflight = k.document(case/'preflight.json')
+    for profile in profiles:
+        point = case/'points'/profile['workload']['pointId']
+        point.mkdir(parents=True, mode=0o700)
+        intent = dict(manifest, profile=profile)
+        run = dict(template, workload=profile['workload'])
+        k.write(point/'intent.json', intent)
+        k.write(point/'native-run-template.json', run)
+        k.write(point/'render.json', native_join.point_render(case, intent, run))
+        source = dict(instance, config=str(point/'native-run-template.json'), render=str(point/'render.json'))
+        experiment.prepare(point/'intent.json', source, point/'offline-final', await_primer=True)
+        identity = dict(preflight['experiment'], experimentSha256=k.digest(point/'intent.json'),
+                        renderSha256=k.digest(point/'render.json'))
+        k.write(point/'preflight.json', dict(preflight, experiment=identity))
+
+
 def keyed(action, template_case, binding, profile_path, output, *, seed='default', catalog=None,
           storage_class=None, snapshot_class=None, postgres_size=None, launch=None, **options):
     """Find the fixture by key. `reuse` restores it into the case at OUTPUT, building and registering
@@ -68,6 +110,10 @@ def keyed(action, template_case, binding, profile_path, output, *, seed='default
     catalog = catalog or fixture_catalog.Catalog()
     key = fixture_key(template_case, profile_path, seed=seed, **{name: options.get(name) for name in
                       ('app_image', 'postgres_image', 'core', 'binding_extra', 'inspect')})
+    following = options.get('next_points') or []
+    if following:
+        k.need(action == 'reuse', 'WORKLOAD_POINTS_REQUIRE_TRAFFIC_CASE')
+        point_profiles(k.document(profile_path), following)
     hit = catalog.lookup(key, 'kubernetes')
     lookup = 'hit' if hit else 'miss'
     forward = None
@@ -98,7 +144,7 @@ def keyed(action, template_case, binding, profile_path, output, *, seed='default
         try:
             chosen = fixture_copy.selection('seed', directory, storage_class, snapshot_class, postgres_size)
             # A seed has no load stage; the writer volume is reserved for the traffic case.
-            seed_options = {key: value for key, value in options.items() if key != 'writer_publication'}
+            seed_options = {key: value for key, value in options.items() if key not in ('writer_publication', 'next_points')}
             prepare(template_case, binding, profile_path, seed_case, fixture={**chosen, 'key': key}, **seed_options)
             (launch or _launch)(seed_case/'lifecycle-bound.json')
             manifest = fixture_copy.read_manifest(directory)
@@ -125,7 +171,7 @@ def _launch(bound):
 
 def prepare(template_case, binding, profile_path, output, *, app_image, postgres_image=None,
             namespace_prefix=NAMESPACE_PREFIX, core=None, taint=None, inspect=None, fixture=None, node_name=None, resources_file=None, binding_extra=None,
-            node_pool=None, writer_publication=None):
+            node_pool=None, writer_publication=None, next_points=()):
     output = output.resolve()
     inputs = (template_case, binding)
     k.need(all(not output.is_relative_to(path.resolve()) for path in inputs),
@@ -137,7 +183,7 @@ def prepare(template_case, binding, profile_path, output, *, app_image, postgres
     try:
         return _materialize(template_case,binding,profile_path,output,core,taint,
                             app_image,postgres_image,namespace_prefix,inspect,fixture,node_name,resources_file,binding_extra,
-                            node_pool,writer_publication)
+                            node_pool,writer_publication,next_points)
     except Exception as error:
         failed = output.with_name(output.name+'.failed-'+str(time.time_ns()))
         output.rename(failed)
@@ -155,7 +201,7 @@ def prepare(template_case, binding, profile_path, output, *, app_image, postgres
 
 def _materialize(template_case, binding, profile_path, output, core, taint,
                  app_image, postgres_image, namespace_prefix, inspect, fixture=None, node_name=None, resources_file=None, binding_extra=None,
-                 node_pool=None, writer_publication=None):
+                 node_pool=None, writer_publication=None, next_points=()):
     template_case = template_case.resolve()
     binding = binding.resolve()
     output = output.resolve()
@@ -165,7 +211,10 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     k.need(re.fullmatch(r'[a-z0-9][a-z0-9-]*[a-z0-9]', run_id) and k.NAME.fullmatch(namespace),
            'STANDARD_CASE_NAME')
     profile = k.document(profile_path)
-    profile['name'] = run_id
+    profiles = point_profiles(profile, next_points)
+    for point in profiles:
+        point['name'] = run_id
+        point.pop('proposedEnvelope', None)
     control = k.document(template_case/'lifecycle-input.json')
     core = (core or Path(control['coreRepository'])).resolve()
     prior = k.document(template_case/'intent.json')
@@ -208,8 +257,11 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
         selection['nodeSelector'] = {POOL_LABEL: node_pool}
     phases = profile['phases']
     traffic = profile['workload']
-    grace = max(v.get('gracefulStopSeconds', 30) for v in traffic['driverPlan']['scenarios'].values())
-    selection['deadlineSeconds'] = max(selection['deadlineSeconds'], traffic.get('setupSeconds',310) + traffic['loadSeconds'] + grace + 5)
+    for point in profiles:
+        offer = point['workload']
+        grace = max(v.get('gracefulStopSeconds', 30) for v in offer['driverPlan']['scenarios'].values())
+        selection['deadlineSeconds'] = max(selection['deadlineSeconds'],
+                                           offer.get('setupSeconds',310) + offer['loadSeconds'] + grace + 5)
     app = resolve_image(app_image, inspect)
     postgres = resolve_image(postgres_image or binding_inputs['images']['postgres'], inspect)
     candidate = {'app': app['reference'], 'appImageId': app['imageId'],
@@ -217,13 +269,16 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
                  'coreCommit': app['core'], 'deployCommit': app['deploy']}
     alignment = k.instrument()['commit']
     binding_head = subprocess.check_output(['git','-C',binding,'rev-parse','HEAD'],text=True,timeout=15).strip()
+    pins = {'core': app['core'], 'deploy': app['deploy'], 'bindingCommit': binding_head}
+    for point in profiles:
+        k.need(point.pop('referencePins', pins) == pins, 'SOURCE_PROFILE_MISMATCH')
     retired = ('nativeLoad', 'profile', 'sourceReceipt', 'buildReceipt', 'postgresImageId', 'candidate', 'alignmentCommit')
     intent = {key: value for key, value in prior.items() if key not in retired}
     intent.update(profile=profile, candidate=candidate, alignmentCommit=alignment, bindingCommit=binding_head)
     source = frozen.source(intent)
     # Carry forward only the platform setup allowance, independently of the selected load duration.
     setup_allowance = env['workDeadlineSeconds'] - prior['profile']['phases']['workSeconds']
-    outer = phases['workSeconds'] + setup_allowance
+    outer = sum(point['phases']['workSeconds'] for point in profiles) + setup_allowance
     tenants = profile['population']['provisionedTenants']
     images = {'app': candidate['app'], 'postgres': candidate['postgres']}
     binding_inputs.pop('resources', None)
@@ -249,7 +304,6 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
         k.write(output/(name+'.json'),json.loads(data))
     rendered = k.document(output/'render.json')
     inventory = k.document(output/'inventory.json')
-    profile.pop('proposedEnvelope', None)
     stages = {name:[] for name in lc.STAGES}
     workload_stages = {'postgres':'stores', 'vault':'stores', 'provision':'provision',
                        'admin':'private-admin', 'primer':'primer'}
@@ -291,7 +345,7 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     k.write(output/'intent.json',intent)
     env.update(namespace=namespace,runId=run_id,images=images,tenantCount=tenants,sourceCommit=source['coreCommit'],
                imageDeployCommit=source['deployCommit'],provisionDeadlineSeconds=outer,workDeadlineSeconds=outer,
-               cleanupDeadlineSeconds=outer+phases['cleanupSeconds'],resourceAccounting='requests-v1')
+               cleanupDeadlineSeconds=outer+max(point['phases']['cleanupSeconds'] for point in profiles),resourceAccounting='requests-v1')
     k.write(output/'environment.json',env)
     now = datetime.now(timezone.utc)
     run['driver']['coreRepository'] = str(core)
@@ -313,13 +367,18 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
                             schedulerPlacement=True,coreRepository=str(core),runTemplate=lc.ref(output/'native-run-template.json'),
                             candidate=candidate,alignmentCommit=alignment,nativeLimits=control['nativeLimits'],
                             primerConcurrency=phases.get('primerOptions',{}).get('concurrency',control['primerConcurrency']))
+    if next_points:
+        selected_control['loadPoints'] = [point['workload']['pointId'] for point in profiles]
     if fixture:
         selected_control['fixture'] = fixture
     k.write(output/'lifecycle-input.json',selected_control)
     native_join.prepare_case(output,selection)
     instance = {'config':str(output/'native-run-template.json'),'render':str(output/'render.json'),
                 'inventory':str(output/'inventory.json'),'binding':str(binding)}
-    experiment.prepare(output/'intent.json',instance,output/'offline-final',await_primer=True)
+    if next_points:
+        prepare_points(output, profiles, instance)
+    else:
+        experiment.prepare(output/'intent.json',instance,output/'offline-final',await_primer=True)
     result = experiment.launch(output/'lifecycle-input.json', True)
     preflight = k.document(output/'preflight.json')
     return {**result, 'identity':preflight['identity'], 'topology':preflight['topology']}

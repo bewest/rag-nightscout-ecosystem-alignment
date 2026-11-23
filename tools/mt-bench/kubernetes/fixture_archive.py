@@ -653,6 +653,7 @@ def main(argv=None):
             s.add_argument('--snapshot-class', default='do-block-storage')
             s.add_argument('--postgres-image-ref', required=True)
             s.add_argument('--catalog', help='own catalog file; it then chooses the fixture directory (pass - as target)')
+            s.add_argument('--postgres-size', help='PostgreSQL claim (e.g. 100Gi); never below the size the archive needs')
     s = sub.add_parser('export-compose')
     s.add_argument('project')
     s.add_argument('state')
@@ -671,8 +672,14 @@ def main(argv=None):
     if a.action == 'export-k8s':
         out = export_k8s(a.source, a.target, a.context, a.namespace, a.run_id, a.jsonnet, a.library, a.pull_secret)
     elif a.action == 'import-k8s':
+        sizes = None
+        if a.postgres_size:
+            need(re.fullmatch(r'[1-9][0-9]*Gi', a.postgres_size), 'POSTGRES_SIZE')
+            sizes = claim_sizes(verify(a.source))
+            need(int(a.postgres_size[:-2]) >= int(sizes['postgres'][:-2]), 'POSTGRES_SIZE_BELOW_ARCHIVE')
+            sizes['postgres'] = a.postgres_size
         out = import_k8s(a.source, None if a.target == '-' else a.target, a.context, a.namespace, a.run_id, a.jsonnet, a.library, a.storage_class,
-                         a.snapshot_class, a.postgres_image_ref, a.pull_secret, catalog=a.catalog)
+                         a.snapshot_class, a.postgres_image_ref, a.pull_secret, sizes=sizes, catalog=a.catalog)
     elif a.action == 'export-compose':
         rows = compose_secrets(a.state, a.app_image, a.evaluator_workers)
         out = export_compose(a.project, a.state, a.target, a.provenance, rows, a.postgres_image)

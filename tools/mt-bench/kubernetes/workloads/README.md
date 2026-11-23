@@ -84,6 +84,20 @@ ordinary window and phase budget, retaining all actual observation limits.
 The adapter supports 1..86,400 seconds within the real deadline and the stock
 probe ledger's attempt bound; it does not extend an entered grant.
 
+For looping workloads, the same populated fixture profile can supply both traffic phases.
+
+```bash
+python3 -B tools/mt-bench/kubernetes/workloads/profile.py active seed-10000.json 5000 active-5k load-5k.json
+python3 -B tools/mt-bench/kubernetes/workloads/profile.py active seed-10000.json 10000 active-10k load-10k.json
+```
+
+Both profiles retain the provisioned population and fixture history. The partial phase selects tenants in
+seed host order and runs ordinary uploads, viewers and probe writes on that group. Driver rates use the
+client kinds assigned by the full seed. Stored-write and clinical checks cover the whole provisioned
+population. Full-roster runs keep their existing traffic order. Use distinct point IDs and output
+directories for the [sequential points on one deployment](../README.md). The `active` command only writes
+a workload profile. Two independent standard-case launches each restore their own database.
+
 The ordinary viewer opens at a configured rate and prefers WebSocket.
 `workload.viewerSetup` takes `opensPerSecond`, `stallSeconds`,
 `transport` (`websocket-first` or `polling`) and `scenario` (`ordinary` or

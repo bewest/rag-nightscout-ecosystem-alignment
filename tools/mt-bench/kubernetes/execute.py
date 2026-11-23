@@ -577,7 +577,11 @@ def execute(d, c, objects, client, load=False, recovery=False):
     (out / 'runid').write_text(runid)
     node = c['driver']['node']
     viewer_workload = k.viewer_plan.stage_cadence(settings, load)
-    argv = [node, str(d / 'probe.cjs'), '--base', c['baseUrl'], '--tenants', c['tenantsFile'], '--runid', runid,
+    probe_roster = c['tenantsFile']
+    if load and workload_runtime.partial_looping(c):
+        probe_roster = str(out / 'probe-tenants.private.json')
+        k.write(probe_roster, workload_runtime.viewer_roster(c, tenants, k.need))
+    argv = [node, str(d / 'probe.cjs'), '--base', c['baseUrl'], '--tenants', probe_roster, '--runid', runid,
             '--per', '2', '--clients', str(settings['logicalPollingClients']), *k.viewer_plan.setup_args(viewer_workload), '--window', str(settings['loadSeconds']),
             '--probeEvery', str(settings['probeEveryMs'] if load else 1000), '--restart', '0', '--evalTimeout', '120',
             '--out', str(out / 'probe.json'), '--signal', str(out / '.window')]
@@ -822,6 +826,7 @@ def accepted_writes(out, c, values, metrics=None):
     facade = SimpleNamespace(document=k.document, write=k.write, stored=lambda *_: values)
     counts, known = k.discovery_counts.observe(facade, view, out, runid, metrics,
                                                ordinary_ids=[row['id'] for row in ordinary],
+                                               probe_ordinary_only=out.name == 'load' and workload_runtime.partial_looping(c),
                                                probe_ledger=c.get('workload', {}).get('probeLedger'))
     k.need(known, 'ACCEPTED_WRITE_UNMEASURED', 'UNMEASURED')
     k.need(counts.get('uncertain') == 0 and counts.get('accepted') == counts.get('stored'),
@@ -930,7 +935,8 @@ def assess_stage(d, out, c, objects, client):
         k.need('window' in probe, 'CLIENT_FRAME_UNMEASURED', 'UNMEASURED')
         by_tenant = k.document(out/'fanout.json')['probeWrites']['byTenant']
         try:
-            frames = k.viewer_plan.check({'tenants': len(tenants), 'cadence': c['workload']}, tenants, probe, by_tenant)
+            viewers = workload_runtime.viewer_roster(c, tenants, k.need) if out.name == 'load' else tenants
+            frames = k.viewer_plan.check({'tenants': len(viewers), 'cadence': c['workload']}, viewers, probe, by_tenant)
         except RuntimeError as error:
             raise k.Refused(str(error), 'FAIL') from error
         k.need(frames['verdict'] == 'PASS' or c['workload']['logicalPollingClients'] == 0 and

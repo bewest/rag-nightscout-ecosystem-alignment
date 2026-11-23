@@ -301,6 +301,22 @@ exact UIDs, obtain the finite point allocation, and capture a fresh initial
 observation. Never edit an entered packet or reuse a point marker with existing
 stored writes. Concurrent fixtures still require separate namespaces/state.
 
+The standard launcher accepts an ordered set of profiles on one restore. The first positional
+profile selects the first load. Add `--next-point PROFILE` for each later load. For example:
+
+```sh
+python3 experiment.py standard TEMPLATE BINDING active-5k.json OUTPUT --fixture reuse \
+  --fixture-seed "$SEED" --app-image "$APP_DIGEST" --next-point active-10k.json
+python3 experiment.py launch OUTPUT/lifecycle-bound.json
+```
+
+Each profile carries a distinct `workload.pointId` and the same provisioned population and
+history. Size the shared deployment for the largest phase. The first phase's writes and cached
+pages carry forward. Each `runtime/points/<pointId>/packet/experiment/result.json` scores only
+that point's traffic. The case's `result.json` lists the points in order, and `cleanup.json`
+records final absence. An incomplete collection stops the launcher and retains both the earlier
+packets and the partial attempt.
+
 The original dependency tree hash function rejects escaping links. Preparation
 does not copy or install packages. Runtime requires an existing finite cgroup v2
 scope covering the combined driver and observer budgets, with zero swap. It
@@ -975,6 +991,17 @@ an ended agent session does not lose a case. Apply the campaign once. The contro
 uploads each case's directory to a private S3-API bucket as it grows and seals it with a sha256
 manifest at the end. A restarted controller skips finished cases. It seals what an interrupted attempt
 uploaded, waits for that case's cleanup and reruns the case in a fresh namespace (`<campaign>-<case>-a<n>`).
+
+To run several load phases on one restore, use one standard case. Set `options.profile` (or
+`standard.profile`) to the first profile and `options.nextPoints` to an ordered array of the
+remaining profile objects. Give each profile a distinct `workload.pointId` and the same seeded
+population and history. Allow time for every phase in `caseDeadlineSeconds`. One attempt then
+owns the namespace through all phases. The seal retains each packet under
+`runtime/points/<pointId>/packet`, and `campaign.py rescore` names each collected packet by path.
+The standard controller takes its CPU and memory limits from the template’s driver and observer
+allocation. Smaller finite limits can be supplied in `controllerResources.limits`. An apply host
+without the template needs explicit CPU and memory limits. The controller checks them against its
+copy before load. The standard controller image runs `tini` as PID 1 to reap subprocesses after a timeout.
 
 ```sh
 export NS_EVIDENCE_ACCESS_KEY=... NS_EVIDENCE_SECRET_KEY=...    # bucket-scoped key; never in the manifest

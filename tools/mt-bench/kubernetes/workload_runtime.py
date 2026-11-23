@@ -18,10 +18,23 @@ def driver_count(c, need):
     return ordinary_count(c['tenants'], c.get('ordinaryRosterTenants', c['tenants']), need)
 
 
+def partial_looping(c):
+    return (c.get('workload', {}).get('driverShape') in ('looping-v1', 'looping-v2')
+            and c.get('ordinaryRosterTenants', c['tenants']) < c['tenants'])
+
+
 def ordinary_roster(c, tenants, need):
     """Select the same verified roster prefix for ordinary traffic and its ACKs."""
     need(c.get('tenants') == len(tenants), 'TENANT_ROSTER')
-    return tenants[:driver_count(c, need)]
+    count = driver_count(c, need)
+    if partial_looping(c):
+        # The seed assigns roles by sorted host ordinal over the full fixture.
+        tenants = sorted(tenants, key=lambda row: row['host'])
+    return tenants[:count]
+
+
+def viewer_roster(c, tenants, need):
+    return ordinary_roster(c, tenants, need) if partial_looping(c) else tenants
 
 
 def validate(w, need, tenants=None):
@@ -88,9 +101,11 @@ def driver_manifest(c):
              cadence=cadence, pair=c['pins']['pair'], imageId=c['pins']['appImageId'],
              instrument=c['pins']['instrument'], runPurpose='discovery', transport='kubernetes-native')
     if 'driverShape' in cadence:
-        if m['tenants'] != c['tenants'] or not c.get('history'):
-            raise ValueError('K8S_LOOPING_OFFER_REQUIRES_FULL_FIXTURE_ROSTER')
+        if not c.get('history'):
+            raise ValueError('K8S_DRIVER_SHAPE_REQUIRES_LOOPING_FIXTURE')
         m['history'] = c['history']
+        if partial_looping(c):
+            m['provisionedTenants'] = c['tenants']
     driver.expected_plans(m)
     return m
 
@@ -117,7 +132,7 @@ def environment(w, inherited, need):
     return env
 
 
-def rates(w, n, history=None):
+def rates(w, n, history=None, *, provisioned=None):
     if 'workloadMix' in w:
         cycles = realistic_cycle_ms(w.get('workloadScale', 1), w.get('driverPlan', {}).get('writeRateScale', 1))
     else:
@@ -128,7 +143,8 @@ def rates(w, n, history=None):
     if w.get('driverShape') in ('looping-v1', 'looping-v2'):
         import looping_driver
         for shape, (tenants, unit) in looping_driver.write_offers(history, n, w.get('workloadScale', 1),
-                w.get('driverPlan', {}).get('writeRateScale', 1), cycles['w_devicestatus'], w['driverShape']).items():
+                w.get('driverPlan', {}).get('writeRateScale', 1), cycles['w_devicestatus'], w['driverShape'],
+                provisioned=provisioned).items():
             cycles[shape] = unit
             offer[shape] = tenants * 1000 / unit
     return cycles, offer
