@@ -959,7 +959,41 @@ Incomplete writer evidence, missing SQL bookends and failed viewer capture leave
 scores unmeasured. The compact packet supports durable evaluator counters. Older images that relied
 on Prometheus for that measure still need their raw case and retained TSDB. An interrupted
 controller can lose viewer and SQL evidence even when the exporter volume preserves the writer.
+API 503s by storage refusal code (`STORAGE_BUSY`, `STORAGE_TIMEOUT`, `STORAGE_UNAVAILABLE`, from core's
+`nightscout_storage_refusals_total{code, route_class, phase}`) are read from the retained TSDB over the
+load window: `coverage_verdict.py case LOAD_DIR` reports them as `storageRefusals`, and `capacity_results.py
+rescore --metrics-load LOAD_DIR` adds them beside the HTTP accounting. An image without the counter reads
+`NO-INSTRUMENT`, never zero. The figures are reported beside the verdicts and do not change them.
 [Capacity and comparison modes](workloads/README.md)
+
+### Cluster-resident campaigns
+
+`campaign.py` runs a whole campaign inside the cluster so that a workstation reboot, a network loss or
+an ended agent session does not lose a case. Apply the campaign once. The controller Job in
+`bench-control` then runs the ordered cases through the existing standard path (`standard_case`, then
+`experiment.py launch`). Each case gets lane A's `case_supervisor.py` and a heartbeat. The controller
+uploads each case's directory to a private S3-API bucket as it grows and seals it with a sha256
+manifest at the end. A restarted controller skips finished cases. It seals what an interrupted attempt
+uploaded, waits for that case's cleanup and reruns the case in a fresh namespace (`<campaign>-<case>-a<n>`).
+
+```sh
+export NS_EVIDENCE_ACCESS_KEY=... NS_EVIDENCE_SECRET_KEY=...    # bucket-scoped key; never in the manifest
+python3 -B campaign.py apply MANIFEST --context CONTEXT         # store Secret, RBAC, admission policy, Job
+python3 -B campaign.py status MANIFEST                          # per-case status.json from the store
+python3 -B campaign.py collect MANIFEST --out DIR [--case C]     # fetch, verify against the seal, delete what verified
+python3 -B campaign.py rescore DIR                              # capacity_results.rescore on every fetched packet
+python3 -B campaign.py close MANIFEST --context CONTEXT         # controller objects, then the empty bucket
+python3 -B campaign.py census MANIFEST --context CONTEXT [--doctl-cluster NAME]   # exit 1 while anything bills
+```
+
+The controller identity has broad RBAC (lifecycle needs it). A ValidatingAdmissionPolicy confines its
+writes to namespaces whose `nightscout.org/run-id` starts with `<campaign>-`, the objects inside them,
+`bench-control`, and cluster-scoped objects with that label. Reads are not confined, so use a cluster
+dedicated to benches. Fixtures restore from `bench-control` (`catalog-import` copies a workstation
+catalog record there, with the seed Secrets in a Secret). A catalog miss refuses the case
+(`CAMPAIGN_FIXTURE_MISS`); seeding stays a separate step. `controller-image/build.sh` builds the image
+from committed sources and the template case's recorded inputs. The kind controls are in
+`test_campaign_kind.py`.
 
 The joined disposable binding uses `secrets.sh seed`, waits for the provision Job and role readiness,
 then runs the deployment's primer as an init container using the private admin and API Services.

@@ -139,7 +139,7 @@ def publish(load, root, node='node'):
             'missingObservations': observer['missing'], 'writer': writer['status']}
 
 
-def rescore(root, writer=None, clock_bound_ms=None, offset_ms=0):
+def rescore(root, writer=None, clock_bound_ms=None, offset_ms=0, metrics_load=None):
     observer = root / 'observer'
     data = None
     if observer.exists():
@@ -159,7 +159,11 @@ def rescore(root, writer=None, clock_bound_ms=None, offset_ms=0):
     verify_files(writer, receipt, receipt['files'])
     unavailable = {'verdict': 'UNMEASURED'}
     result = {'runId': run, 'podUid': pod, 'originalStageVerdict': (data or {}).get('originalStageVerdict'),
-              'http': unavailable, 'viewerDelivery': unavailable, 'evaluatorDeadline': unavailable}
+              'http': unavailable, 'viewerDelivery': unavailable, 'evaluatorDeadline': unavailable,
+              # api 503s by storage refusal code: the published packet carries no TSDB, so this reads the
+              # retained load stage when one is named (--metrics-load).
+              'storageRefusals': coverage_verdict.refusals_from_load(metrics_load) if metrics_load else
+              {'verdict': 'UNMEASURED', 'reason': 'no retained load stage named (--metrics-load)'}}
     if (data or {}).get('writerContinuity') == 'UNMEASURED' or receipt.get('status') != 'complete' or receipt.get('exitCode') != 0:
         result['reason'] = 'incomplete writer evidence'
         return result
@@ -202,13 +206,14 @@ def main():
     score.add_argument('--writer', type=Path, help='writer directory recovered from a retained volume')
     score.add_argument('--clock-bound-ms', type=int, help='measured bound across writer, evaluator and database clocks')
     score.add_argument('--viewer-offset-ms', type=int, default=0)
+    score.add_argument('--metrics-load', type=Path, help='retained load stage holding metrics-snapshot.json and its TSDB')
     args = parser.parse_args()
     if args.command == 'publish':
         result = publish(args.load, args.directory)
     else:
         if args.clock_bound_ms is not None and args.clock_bound_ms < 0:
             parser.error('clock bound must be nonnegative')
-        result = rescore(args.directory, args.writer, args.clock_bound_ms, args.viewer_offset_ms)
+        result = rescore(args.directory, args.writer, args.clock_bound_ms, args.viewer_offset_ms, args.metrics_load)
     print(json.dumps(result, sort_keys=True, indent=2))
 
 

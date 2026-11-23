@@ -208,6 +208,29 @@ class Case(unittest.TestCase):
                 value = cv.from_case(load, slices=1, clock_bound_ms=0, local=local)
                 self.assertEqual(value['verdict'], verdict, (above, age, value))
 
+    def test_early_stop_packet_is_accepted_explicitly(self):
+        """No window.json and no progress-after.json (the run stopped on a harness bound): progress-stop.json is the end
+        read and the window comes from the scheduling trace. The result says both; a trace-less packet stays UNMEASURED."""
+        import gzip, tempfile
+        with tempfile.TemporaryDirectory() as d:
+            load, local = self.write_case(d)
+            start_ms = int((BOOKEND_S - 1800) * 1000)
+            (load/'progress-after.json').rename(load/'progress-stop.json')
+            (load/'window.json').unlink()
+            with gzip.open(load/'k6-scheduling.csv.gz', 'wt') as f:
+                f.write('metric_name,timestamp,metric_value,scenario\n')
+                f.write('m7_driver_started,%d,1.0,w\n' % start_ms)
+                f.write('iterations,%d,1.0,w\n' % (start_ms + 1800000))
+            value = cv.from_case(load, slices=1, clock_bound_ms=0, local=local)
+            self.assertEqual(value['verdict'], 'PASS', value)
+            self.assertEqual(value['inputs']['endRead'], 'progress-stop.json')
+            self.assertTrue(value['inputs']['earlyStop'])
+            self.assertIn('trace-derived', value['inputs']['windowBasis'])
+            self.assertEqual(value['inputs']['loadStartedAt'], start_ms / 1000)
+            (load/'k6-scheduling.csv.gz').unlink()
+            value = cv.from_case(load, slices=1, clock_bound_ms=0, local=local)
+            self.assertEqual(value['storageRefusals']['verdict'], 'UNMEASURED')
+
     def test_missing_snapshot_reads_unmeasured(self):
         import tempfile
         with tempfile.TemporaryDirectory() as d:
@@ -216,6 +239,72 @@ class Case(unittest.TestCase):
             value = cv.from_case(load, slices=1, clock_bound_ms=0, local=local)
             self.assertEqual(value['verdict'], 'UNMEASURED')
             self.assertIn('M1_NOT_EXPORTED', value['unmeasured'])
+
+
+
+class Refusals(unittest.TestCase):
+    """api 503 storage refusals per code from the retained snapshot (core nightscout_storage_refusals_total)."""
+
+    START, END = BOOKEND_S - 1800, BOOKEND_S + 60
+
+    def labels(self, pod, code, phase, route='entries_write'):
+        return {'__name__': cv.REFUSALS, 'pod': pod, 'role': 'api', 'code': code, 'phase': phase, 'route_class': route}
+
+    def query(self, start_rows, end_rows, resets=(), grown=()):
+        calls = []
+
+        def query(expr, at):
+            calls.append((expr, at))
+            if expr.startswith('resets('):
+                return [{'labels': {k: v for k, v in l.items() if k != '__name__'}, 'value': n} for l, n in resets]
+            if expr.startswith('increase('):
+                return [{'labels': {k: v for k, v in l.items() if k != '__name__'}, 'value': n} for l, n in grown]
+            if expr.startswith('last_over_time('):
+                return [{'labels': {k: v for k, v in l.items() if k != '__name__'}, 'value': n} for l, n in end_rows]
+            return [{'labels': l, 'value': n} for l, n in start_rows]
+        return query, calls
+
+    def test_counts_per_code_phase_and_route_class_over_the_load_window(self):
+        clock = self.labels('api-a', 'STORAGE_TIMEOUT', 'clock')
+        statement = self.labels('api-a', 'STORAGE_TIMEOUT', 'statement')
+        busy = self.labels('api-b', 'STORAGE_BUSY', 'checkout', 'treatments_write')
+        late = self.labels('api-c', 'STORAGE_BUSY', 'checkout')  # a Pod that started during the load
+        idle = self.labels('api-a', 'STORAGE_UNAVAILABLE', 'none', 'other_write')
+        query, calls = self.query([(clock, 3), (statement, 0), (busy, 1), (idle, 0)],
+                                  [(clock, 10), (statement, 2), (busy, 4), (late, 5), (idle, 0)])
+        value = cv.refusals_from_prometheus(query, self.START, self.END)
+        self.assertEqual(value['verdict'], 'OBSERVED')
+        self.assertEqual(value['byCode'], {'STORAGE_BUSY': 8, 'STORAGE_TIMEOUT': 9, 'STORAGE_UNAVAILABLE': 0})
+        self.assertEqual(value['byCodePhase'], {'STORAGE_BUSY/checkout': 8, 'STORAGE_TIMEOUT/clock': 7,
+                                                'STORAGE_TIMEOUT/statement': 2, 'STORAGE_UNAVAILABLE/none': 0})
+        self.assertEqual(value['byCodeRouteClass'], {'STORAGE_BUSY/entries_write': 5, 'STORAGE_BUSY/treatments_write': 3,
+                                                     'STORAGE_TIMEOUT/entries_write': 9, 'STORAGE_UNAVAILABLE/other_write': 0})
+        self.assertEqual(value['resetSeries'], 0)
+        self.assertEqual({at for _, at in calls if _.startswith(cv.REFUSALS)}, {self.START})
+        self.assertTrue(all('[1861s]' in expr for expr, _ in calls if not expr.startswith(cv.REFUSALS)))
+
+    def test_a_series_that_reset_uses_increase_and_is_flagged(self):
+        clock = self.labels('api-a', 'STORAGE_TIMEOUT', 'clock')
+        query, _ = self.query([(clock, 30)], [(clock, 2)], resets=[(clock, 1)], grown=[(clock, 6.5)])
+        value = cv.refusals_from_prometheus(query, self.START, self.END)
+        self.assertEqual((value['byCode']['STORAGE_TIMEOUT'], value['resetSeries']), (6.5, 1))
+
+    def test_no_series_reads_no_instrument_never_zero(self):
+        query, _ = self.query([], [])
+        value = cv.refusals_from_prometheus(query, self.START, self.END)
+        self.assertEqual(value['verdict'], 'NO-INSTRUMENT')
+        self.assertNotIn('byCode', value)
+
+    def test_from_case_reports_refusals_beside_the_verdict_and_unmeasured_without_a_snapshot(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            load, local = Case().write_case(d)
+            value = cv.from_case(load, slices=1, clock_bound_ms=0, local=local)
+            self.assertEqual(value['verdict'], 'PASS')
+            self.assertIn(value['storageRefusals']['verdict'], ('OBSERVED', 'NO-INSTRUMENT'))
+            (load/'metrics-snapshot.json').unlink()
+            value = cv.from_case(load, slices=1, clock_bound_ms=0, local=local)
+            self.assertEqual(value['storageRefusals']['verdict'], 'UNMEASURED')
 
 
 if __name__ == '__main__':

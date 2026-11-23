@@ -36,6 +36,17 @@ def write(path, value):
         stream.write('\n')
 
 
+def stock_viewers(w, n, plan=None):
+    """Viewer sockets the profile opens: the declared logicalPollingClients, or, when viewerSetup.mix is present
+    (lane fixture-realism, viewer_plan.mix_counts), the sum of the per-tenant socket counts over the N tenants."""
+    plan = plan or workload_runtime.viewer_plan
+    mix = (w.get('viewerSetup') or {}).get('mix')
+    if mix is None:
+        return w['logicalPollingClients']
+    need(hasattr(plan, 'mix_counts'), 'VIEWER_MIX_UNSUPPORTED')   # needs claude/fixture-realism-20261123 joined
+    return sum(plan.mix_counts(mix, n))
+
+
 def validate(p, *, require_pins=True):
     need(p['version'] == 1 and p['kind'] == 'k8s-m7-workload-profile', 'PROFILE')
     if require_pins or 'referencePins' in p:
@@ -108,7 +119,7 @@ def describe(p):
             'nominalScenarioRequests': sum(rates.values()) * w['loadSeconds'],
             'ordinaryWritesPerSecond': sum(v for k, v in rates.items() if k.startswith('w_')),
             'ordinaryReadsPerSecond': sum(v for k, v in rates.items() if k.startswith('r_')),
-            'setupJwtExchanges': n, 'stockViewers': w['logicalPollingClients'],
+            'setupJwtExchanges': n, 'stockViewers': stock_viewers(w, n),
             'viewerSetup': workload_runtime.viewer_plan.setup(w),
             'probeWritesPerSecondWhileOpen': 1000 / w['probeEveryMs'],
             'probeWrites': 'observed independently; initial write and drain can extend the nominal window',

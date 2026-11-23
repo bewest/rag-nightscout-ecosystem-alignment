@@ -219,6 +219,25 @@ def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, p
                 storedDocBytes=sum(r['storedDocBytes'] for r in per_tenant), tenants=per_tenant)
 
 
+def restored(spec, until, window_seconds, *, now=time.time):
+    """A restored fixture's receipt without a census. Its identity is the catalog key and the readback
+    the import ran against the archive's logical digest; on reuse only the anchor's clinical window is
+    checked (the same bound the readback applies), with no SQL."""
+    validate(spec)
+    require(spec != BASELINE and type(window_seconds) is int and window_seconds >= 0, 'INPUT')
+    anchor = spec['anchorUnixMs']
+    at = int(now() * 1000)
+    horizon = max(window_seconds*1000, math.ceil(until*1000)-at if until is not None else 0)
+    if is_looping(spec) or spec['mode'] in SHAPES:
+        fresh = at + horizon - anchor <= MAX_STALE_4W_MS
+    else:
+        fresh = at + horizon - LOOKBACK_MS <= anchor - (ROWS-1)*STEP_MS
+    require(anchor <= at and fresh, 'OUTSIDE_CLINICAL_WINDOW')
+    return dict(version=1, history=spec, observedUnixMs=at, anchorAgeMs=at-anchor,
+                eligibilityThroughUnixMs=max(at+window_seconds*1000, math.ceil(until*1000) if until else 0),
+                measuredWindowSeconds=window_seconds, coldEntriesLookbackMs=LOOKBACK_MS, seededBatches=0)
+
+
 def window(workload):
     return sum(workload.get(key, default) for key, default in
                (('setupSeconds', 310), ('loadSeconds', 0), ('drainSeconds', 120)))

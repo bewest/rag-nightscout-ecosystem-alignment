@@ -200,15 +200,7 @@ def run(packet, grant_path, expected_digest, group=None):
                                                 namespaceUid=k.active_baseline(d)['namespace']['uid']))
         execute.authority(d, c)
         if c.get('history', profile.history.BASELINE) != profile.history.BASELINE:
-            receipt = profile.history.run(c['history'], execute.roster(c), c['baseUrl'],
-                        # The history readback scans every stored document (about 2 min at 10k
-                        # tenants): its own limit inside the work deadline, not the 20 s observation default.
-                        lambda query: k.sql(d, c, objects, query, client, timeout=max(1, min(
-                            int(k.os.environ.get('K8S_HISTORY_READ_SECONDS', '900')),
-                            k.timestamp(c['deadlines']['workUntil']) - k.time.time()))),
-                        k.timestamp(c['deadlines']['workUntil']), profile.history.window(c['workload']),
-                        verify_only=c.get('restoredHistory', False))
-            k.write(attempt/'populated-history.json', receipt)
+            k.write(attempt/'populated-history.json', history_receipt(d, c, objects, client))
         outcome['load'] = execute.execute(d, c, objects, client, load=True)
         outcome['verdict'] = outcome['load']['verdict']
     except Exception as exc:
@@ -244,6 +236,34 @@ def run(packet, grant_path, expected_digest, group=None):
         if d.name != 'packet' or d.parent.name != 'runtime':
             auto_catalog(d, k.write)
     return outcome
+
+
+def history_receipt(d, c, objects, client, history=profile.history):
+    """The populated-history step before load.
+
+    A seeded case seeds the missing tenants and reads every one back: its scan of every stored document
+    gets its own limit inside the work deadline (K8S_HISTORY_READ_SECONDS), not the 20 s observation default.
+
+    A restored case (a keyed catalog restore) runs no census. Its identity is the catalog key and the
+    readback the import ran in place against the archive's logical digest before the Retain snapshot;
+    the receipt carries that digest (`restoredFixture`, from the fixture record) and checks only the
+    anchor's clinical window. The census it replaced scanned every stored row (about 17.6M at 10k
+    tenants), outlived 900 s on a freshly restored volume and failed w5-10k-k20 before load.
+    K8S_RESTORED_HISTORY_CENSUS=full is the operator's opt-in full readback (seeded-case limit)."""
+    until = k.timestamp(c['deadlines']['workUntil'])
+    window = history.window(c['workload'])
+    restored = bool(c.get('restoredHistory', False))
+    if restored and os.environ.get('K8S_RESTORED_HISTORY_CENSUS', '') != 'full':
+        receipt = history.restored(c['history'], until, window)
+        identity = c.get('restoredFixture') or {}
+        receipt.update(readback='NOT_RUN_ON_REUSE', restoredFixture=identity,
+                       logicalSha256=identity.get('historyLogicalSha256'),
+                       logicalSha256Source='import-time readback (fixture record)' if identity else 'UNRECORDED')
+        return receipt
+    return history.run(c['history'], execute.roster(c), c['baseUrl'],
+                       lambda query: k.sql(d, c, objects, query, client, timeout=max(1, min(
+                           int(os.environ.get('K8S_HISTORY_READ_SECONDS', '900')), until - k.time.time()))),
+                       until, window, verify_only=restored)
 
 
 def require_preflight(pre, config):
