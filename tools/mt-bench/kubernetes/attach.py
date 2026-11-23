@@ -80,6 +80,12 @@ try:
         raise SystemExit(0)
     if control.get('fixture', {}).get('mode') == 'restore' and m['profile']['history'] != BASELINE:
         cfg['restoredHistory'] = True
+        # Reuse runs no history census: the fixture record's import-time readback digest stands for it.
+        record = read(Path(control['fixture']['directory'])/'fixture.json')
+        assert record.get('history') == m['profile']['history'], 'RESTORED_HISTORY_SPEC_CHANGED'
+        cfg['restoredFixture'] = {'catalog': control['fixture'].get('digest'), 'fixtureId': record.get('fixtureId'),
+                                  'historyLogicalSha256': record.get('historyLogicalSha256'),
+                                  'archiveSha256': (record.get('archive') or {}).get('sha256')}
     cfg['tenantsFile'] = str(private/'data-roster.private.json')
     write(Path(cfg['tenantsFile']), tenants)
     write(live/'fixture.json', {'location':location,'reuse':reuse,'tenants':len(tenants)})
