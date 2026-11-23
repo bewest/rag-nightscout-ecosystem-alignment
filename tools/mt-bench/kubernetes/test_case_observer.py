@@ -3,6 +3,7 @@ import io
 import json
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import threading
 import unittest
@@ -186,6 +187,32 @@ class FakePrometheus:
 
 
 class Capture(unittest.TestCase):
+    def test_summarize_cli_selects_each_points_samples_snapshot_and_window(self):
+        with tempfile.TemporaryDirectory() as temp:
+            c = case(temp, None)
+            out = Path(temp)
+            points = ['small', 'larger', 'unfinished']
+            (c.d/'lifecycle-input.json').write_text(json.dumps({'loadPoints':points}))
+            measurements = {'byShard':[{'executorWindows':{'upload':{'executorStartMs':1000, 'steadyEndMs':3000}}}]}
+            (c.d/'result.json').write_text(json.dumps({'points':[{'pointId':'small', 'measurements':measurements}]}))
+            for point, start, end in [('small', .5, 4), ('larger', 5, 8)]:
+                load = c.runtime/'points'/point/'packet/load'
+                load.mkdir(parents=True)
+                (load/'window.json').write_text(json.dumps({'loadStartedAt':start,'loadEndedAt':end}))
+                (load/'metrics-snapshot.json').write_text(json.dumps({'verdict':'UNMEASURED','code':point}))
+            samples = [{'at':f'1970-01-01T00:00:0{index}+00:00', 'stage':o.TRAFFIC,
+                        'podUsage':[f'api-0 api {index}m 1Mi']} for index in range(1, 9)]
+            (out/'samples.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in samples))
+            result = json.loads(subprocess.check_output([sys.executable, '-B', o.__file__, 'summarize', c.d, out]))
+            rows = result['points']
+            self.assertEqual([row['pointId'] for row in rows], points)
+            self.assertEqual([row['samples'] for row in rows], [2, 3, 0])
+            self.assertEqual([row['window'] for row in rows],
+                             ['k6 executor start to steady end', 'controller load window', 'UNMEASURED'])
+            self.assertEqual([row['steadyContainerUsage']['api']['cpuMillicores']['median'] for row in rows[:2]],
+                             [1.5, 6])
+            self.assertEqual([row['prometheus']['reason'] for row in rows[:2]], points[:2])
+
     def test_traffic_samples_make_no_exec(self):
         # The hand capture (/proc threads, walsender, pg_stat_statements, slot) is retired on
         # Kubernetes: with the node's CPU model known, a traffic sample makes no exec at all.

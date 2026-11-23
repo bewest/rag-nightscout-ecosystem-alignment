@@ -134,11 +134,16 @@ def controller_name(m):
     return 'campaign-' + m['campaign']
 
 
+def standard_load(m):
+    if m['runner'] != 'standard' or m['standard'].get('prepareOnly'):
+        return False
+    default = m['standard'].get('caseDefaults', {}).get('prepareOnly')
+    return any(not case.get('options', {}).get('prepareOnly', default) for case in m['cases'])
+
+
 def controller_resources(m):
     authored = m.get('controllerResources') or {}
-    if m['runner'] != 'standard' or m['standard'].get('prepareOnly') or all(
-            case.get('options', {}).get('prepareOnly', m['standard'].get('caseDefaults', {}).get('prepareOnly'))
-            for case in m['cases']):
+    if not standard_load(m):
         return authored or {'requests': {'cpu': '500m', 'memory': '1Gi'}, 'limits': {'memory': '3Gi'}}
 
     # The standard attach, observer and their children inherit the controller container's cgroup.
@@ -209,8 +214,11 @@ def render(m):
         volumes.append({'name': 'pull', 'secret': {'secretName': m['pullSecret']}})
         mounts.append({'name': 'pull', 'mountPath': '/var/run/campaign-pull', 'readOnly': True})
     resources = controller_resources(m)
-    if m['runner'] == 'standard':
+    command = ['python3', '-B', '/app/campaign.py', 'controller', '/etc/campaign/manifest.json']
+    if standard_load(m):
         env.append({'name': 'NS_CAMPAIGN_ATTACH_SCOPE', 'value': 'pod'})
+        # PID 1 reaps orphaned attach descendants when the lifecycle cancels their process group.
+        command = ['/usr/bin/tini', '--', *command]
     job = {'apiVersion': 'batch/v1', 'kind': 'Job', 'metadata': meta(name),
            # A replacement Pod starts only after the old one has terminated: one controller at a time.
            'spec': {'backoffLimit': m.get('controllerRestarts', 6), 'podReplacementPolicy': 'Failed',
@@ -220,7 +228,7 @@ def render(m):
                         **({'imagePullSecrets': [{'name': m['pullSecret']}]} if m.get('pullSecret') else {}),
                         **({'nodeSelector': m['controllerNodeSelector']} if m.get('controllerNodeSelector') else {}),
                         'containers': [{'name': 'controller', 'image': m['controllerImage'], 'imagePullPolicy': 'IfNotPresent',
-                                        'command': ['python3', '-B', '/app/campaign.py', 'controller', '/etc/campaign/manifest.json'],
+                                        'command': command,
                                         'env': env + [{'name': 'NS_CAMPAIGN_POD', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}}}],
                                         'volumeMounts': mounts, 'resources': resources}],
                         'volumes': volumes}}}}
@@ -623,9 +631,9 @@ class StandardRunner:
                           for point in receipt.get('points', [])]
                 # Preserve a product FAIL. A crashed launcher or an incomplete set cannot report a pass.
                 complete = len(points) == len(next_profiles) + 1
-                if verdict == 'PASS' and (q.returncode or not complete):
+                if verdict in ('PASS', 'OBSERVED') and (q.returncode or not complete):
                     verdict = 'UNMEASURED'
-                return {'state': 'scored' if verdict in ('PASS', 'FAIL') else 'UNMEASURED',
+                return {'state': 'scored' if verdict in ('PASS', 'FAIL', 'OBSERVED') else 'UNMEASURED',
                         'verdict': verdict, 'points': points, 'exitCode': q.returncode,
                         'reason': (receipt.get('firstFailure') or {}).get('code')}
 

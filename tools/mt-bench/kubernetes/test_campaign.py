@@ -4,6 +4,8 @@ run when EVIDENCE_STORE_TEST_ENDPOINT is set (a local S3-compatible store), the 
 import base64
 import json
 import os
+import shutil
+import sys
 from pathlib import Path
 import subprocess
 import tempfile
@@ -466,6 +468,8 @@ class StandardPhases(Base):
         points = [{'pointId': 'half', 'stageVerdict': 'PASS'}, {'pointId': 'full', 'stageVerdict': 'FAIL'}]
         for name, verdict, completed, exit_code, expected in (
                 ('complete', 'FAIL', points, 0, 'FAIL'),
+                ('observed', 'OBSERVED', [dict(p, stageVerdict='OBSERVED') for p in points], 0, 'OBSERVED'),
+                ('interrupted', 'OBSERVED', points[:1], 1, 'UNMEASURED'),
                 ('incomplete', 'PASS', points[:1], 0, 'UNMEASURED'),
                 ('crashed', 'PASS', points, 1, 'UNMEASURED')):
             with self.subTest(name=name):
@@ -480,10 +484,36 @@ class StandardPhases(Base):
                      patch.object(campaign.subprocess, 'run', side_effect=run_case) as launch:
                     result = runner.run(case, name, 'ns-' + name, directory, time.time() + 60)
                 self.assertEqual(result['verdict'], expected)
-                self.assertEqual(result['state'], 'scored' if expected == 'FAIL' else 'UNMEASURED')
+                self.assertEqual(result['state'], 'scored' if expected in ('FAIL', 'OBSERVED') else 'UNMEASURED')
                 self.assertEqual(result['points'], completed)
                 prepare.assert_called_once()
                 launch.assert_called_once()
+
+
+    @unittest.skipUnless(shutil.which('tini') or shutil.which('docker-init'), 'needs the controller init (tini)')
+    def test_cancelled_attach_with_grandchild_leaves_no_process_group(self):
+        # Outside a PID namespace, -s gives tini the same orphan-reaping duty it has as Pod PID 1.
+        init = shutil.which('tini') or shutil.which('docker-init')
+        child = """import subprocess, sys
+from pathlib import Path
+grandchild = subprocess.Popen(['sleep', '30'])
+Path(sys.argv[1]).write_text(str(grandchild.pid))
+grandchild.wait()
+"""
+        lifecycle = """import json, os, subprocess, sys
+from controller_attach import run
+try:
+    run([sys.executable, '-c', sys.argv[1], sys.argv[2]], os.environ, 1, lambda row: print(json.dumps(row)))
+except subprocess.TimeoutExpired:
+    pass
+else:
+    raise AssertionError('attach should time out')
+"""
+        pid_file = self.tmp / 'grandchild'
+        output = subprocess.check_output([init, '-s', '--', sys.executable, '-B', '-c', lifecycle, child, str(pid_file)],
+                                         cwd=Path(__file__).parent, timeout=12)
+        self.assertTrue(json.loads(output)['absent'])
+        self.assertFalse((Path('/proc') / pid_file.read_text()).exists())
 
 
     def test_standard_pod_is_bounded_by_the_two_actors_real_allocation(self):
@@ -495,6 +525,10 @@ class StandardPhases(Base):
         budget = {'cpu': '1200m', 'memory': str(1280 * 1024**2)}
         self.assertEqual(container['resources'], {'requests': budget, 'limits': budget})
         self.assertIn({'name': 'NS_CAMPAIGN_ATTACH_SCOPE', 'value': 'pod'}, container['env'])
+        self.assertEqual(container['command'][:3], ['/usr/bin/tini', '--', 'python3'])
+        prepare_only = dict(m, standard=dict(m['standard'], prepareOnly=True))
+        prepared_job = campaign.render(prepare_only)['items'][-1]
+        self.assertEqual(prepared_job['spec']['template']['spec']['containers'][0]['command'][0], 'python3')
         m['controllerResources'] = {'limits': {'cpu': '600m', 'memory': '1Gi'}}
         self.assertEqual(campaign.controller_resources(m)['limits'], m['controllerResources']['limits'])
         m['controllerResources'] = {'limits': {'cpu': '2'}}

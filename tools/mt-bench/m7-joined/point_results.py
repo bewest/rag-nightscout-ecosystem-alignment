@@ -222,9 +222,10 @@ def publish_native(case, *, mem_available_at_entry_bytes=None):
             result['firstFailure'] = next((row['firstFailure'] for row in points if row['firstFailure']), None)
         if 'FAIL' in verdicts:
             result['stageVerdict'] = 'FAIL'
-        elif (same_database and independent and not failure and verdicts == {'PASS'}
+        elif (same_database and independent and not failure and verdicts <= {'PASS', 'OBSERVED'}
               and cleanup['status'] == 'ABSENT' and absence.get('namespaceUid') == namespace):
-            result['stageVerdict'] = 'PASS'
+            # Discovery stages publish OBSERVED; each product gate keeps its own verdict in the packet.
+            result['stageVerdict'] = 'OBSERVED' if 'OBSERVED' in verdicts else 'PASS'
         else:
             result['stageVerdict'] = 'UNMEASURED'
         result['oneDatabaseObserved'] = same_database

@@ -1001,7 +1001,7 @@ owns the namespace through all phases. The seal retains each packet under
 The standard controller takes its CPU and memory limits from the template’s driver and observer
 allocation. Smaller finite limits can be supplied in `controllerResources.limits`. An apply host
 without the template needs explicit CPU and memory limits. The controller checks them against its
-copy before load.
+copy before load. The standard controller image runs `tini` as PID 1 to reap subprocesses after a timeout.
 
 ```sh
 export NS_EVIDENCE_ACCESS_KEY=... NS_EVIDENCE_SECRET_KEY=...    # bucket-scoped key; never in the manifest

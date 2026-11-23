@@ -164,7 +164,7 @@ class StandardPoint(unittest.TestCase):
             self.assertEqual(result['measurements']['components'], gate['components'])
 
     def test_points_require_independent_writers_same_restore_and_final_cleanup(self):
-        def run(case, same_job=False, different_db=False, missing_second=False, cleaned=True):
+        def run(case, same_job=False, different_db=False, missing_second=False, cleaned=True, verdict='PASS'):
             runtime = case/'runtime'
             runtime.mkdir(parents=True)
             points.write(case/'lifecycle-input.json', {'loadPoints': ['half', 'full'],
@@ -177,7 +177,7 @@ class StandardPoint(unittest.TestCase):
                 directory = runtime/'points'/point
                 result = directory/'packet/experiment'
                 result.mkdir(parents=True)
-                points.write(result/'result.json', {'verdict': 'PASS'})
+                points.write(result/'result.json', {'verdict': verdict})
                 points.write(directory/'phase-identity.json', {
                     'namespaceUid': 'ns', 'postgresClaimUid': point if different_db else 'pg',
                     'jobUid': 'job' if same_job else point, 'inputSecretUid': point, 'pointId': point,
@@ -189,6 +189,9 @@ class StandardPoint(unittest.TestCase):
             good = run(Path(temp)/'ok')
             self.assertEqual(good['stageVerdict'], 'PASS')
             self.assertEqual([p['pointId'] for p in good['points']], ['half', 'full'])
+            observed = run(Path(temp)/'discovery', verdict='OBSERVED')
+            self.assertEqual(observed['stageVerdict'], 'OBSERVED')
+            self.assertEqual(observed['points'][0]['stageVerdict'], 'OBSERVED')
             for failure in ('same_job', 'different_db', 'missing_second'):
                 bad = run(Path(temp)/failure, **{failure: True})
                 self.assertNotEqual(bad['stageVerdict'], 'PASS')

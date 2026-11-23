@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 import uuid
@@ -112,6 +113,39 @@ class Ownership(unittest.TestCase):
     def test_resident_shortfall_is_reported(self):
         v = p.ownership(roster(1001), inventory(8, tenants=1001))
         self.assertEqual(v['residentShortfall'], max(0, v['evaluator']['maxOwned'] - 126))
+
+
+class CaseReadback(unittest.TestCase):
+    def test_readback_selects_each_point_archive_and_query_bookend(self):
+        class Server:
+            def __init__(self, archive):
+                self.archive = archive
+
+            def query(self, expression, when):
+                queries.add((self.archive.name, when))
+                return []
+
+            def close(self):
+                pass
+
+        with tempfile.TemporaryDirectory() as temp:
+            case = Path(temp)
+            points = ['small', 'larger', 'unfinished']
+            (case/'lifecycle-input.json').write_text(json.dumps({'loadPoints': points}))
+            (case/'inventory.json').write_text(json.dumps({'connectionBudget': {'poolConnections': 10}}))
+            command = [sys.executable, '-B', p.__file__, 'readback', case]
+            cli = json.loads(subprocess.check_output(command))
+            self.assertEqual([row['pointId'] for row in cli['points']], points)
+            self.assertTrue(all(row['connections']['verdict'] == 'UNMEASURED' for row in cli['points']))
+            for name, start, end in [('small', 10, 20), ('larger', 25, 35)]:
+                load = case/'runtime/points'/name/'packet/load'
+                load.mkdir(parents=True)
+                (load/'window.json').write_text(json.dumps({'loadStartedAt': start, 'loadEndedAt': end}))
+                (load/'metrics-snapshot.json').write_text(json.dumps({'verdict': 'OBSERVED', 'file': name + '.tar'}))
+            queries = set()
+            readback = p.case_readback(case, server_factory=Server)
+            self.assertEqual(queries, {('small.tar', 20), ('larger.tar', 35)})
+            self.assertEqual(readback['points'][2]['connections']['verdict'], 'UNMEASURED')
 
 
 class Connections(unittest.TestCase):
