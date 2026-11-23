@@ -53,6 +53,20 @@ STEP_MS = h.STEP_MS
 KEYS = ('mode', 'anchorUnixMs', 'seed', 'cgmOnlyPercent', 'cgmOnlyWithoutProfilePercent', 'deepHistoryTenants',
         'deepHistoryDays')
 DEFAULTS = dict(seed=20261121, cgmOnlyPercent=20, cgmOnlyWithoutProfilePercent=50, deepHistoryTenants=0, deepHistoryDays=90)
+# Optional realism keys (lane fixture-realism-20261123). Absent = the 2026-11-21 fixture, byte for byte and key for
+# key; present, they are part of the spec and so of the fixture-catalog key.
+#   phaseSpreadMs 1..299999  each tenant's history grid sits phase ms before the shared 5-minute grid, phase in
+#                            [0, phaseSpreadMs) from sha256(seed:ordinal:phase). Tenants stop sharing due instants.
+#   historyDays   3..60      every non-deep tenant carries this many days instead of 2 (deepHistoryDays still
+#                            governs the deep role)
+OPTIONAL_KEYS = ('phaseSpreadMs', 'historyDays')
+MAX_HISTORY_DAYS = 60
+PRESETS = {   # name -> option changes over DEFAULTS; each is its own fixture key
+    'spread-v1': dict(phaseSpreadMs=299_000),
+    'depth-14d-v1': dict(historyDays=14),
+    'depth-30d-v1': dict(historyDays=30),
+    'spread-depth-14d-v1': dict(phaseSpreadMs=299_000, historyDays=14),
+}
 MAX_DEEP_DAYS = v1.MAX_DEEP_DAYS
 KINDS = v1.KINDS
 DS_PREFIX = {'loop': 'loop://', 'aaps': 'openaps://', 'trio': 'openaps://', 'cgm': 'xdrip://'}
@@ -86,14 +100,16 @@ def default_spec(anchor, **changes):
 
 
 def validate(spec):
-    require(isinstance(spec, dict) and tuple(sorted(spec)) == tuple(sorted(KEYS)) and spec['mode'] == MODE,
+    require(isinstance(spec, dict) and spec.get('mode') == MODE and set(KEYS) <= set(spec) <= set(KEYS) | set(OPTIONAL_KEYS),
             'UNSUPPORTED')
-    ints = all(type(spec[k]) is int for k in KEYS[1:])
+    ints = all(type(spec[k]) is int for k in KEYS[1:] + tuple(k for k in OPTIONAL_KEYS if k in spec))
+    require(ints and 1 <= spec.get('phaseSpreadMs', 1) < STEP_MS and 3 <= spec.get('historyDays', 3) <= MAX_HISTORY_DAYS,
+            'LOOPING_OPTIONS')
     require(ints and 0 <= spec['seed'] < 2**63 and 0 <= spec['cgmOnlyPercent'] <= 100
             and 0 <= spec['cgmOnlyWithoutProfilePercent'] <= 100
             and 0 <= spec['deepHistoryTenants'] <= 1000 and 3 <= spec['deepHistoryDays'] <= MAX_DEEP_DAYS, 'LOOPING_OPTIONS')
     anchor = spec['anchorUnixMs']
-    require(max(DAYS, spec['deepHistoryDays'], AAPS_SWITCH_AGE_DAYS + 1) * CYCLES_PER_DAY * STEP_MS <= anchor < 253402300800000
+    require(max(DAYS, spec['deepHistoryDays'], spec.get('historyDays', 0), AAPS_SWITCH_AGE_DAYS + 1) * CYCLES_PER_DAY * STEP_MS <= anchor < 253402300800000
             and anchor % STEP_MS == 0, 'ANCHOR')
 
 
@@ -133,7 +149,7 @@ def tenant_factory(spec, n):
 
 
 def days_for(spec, role):
-    return spec['deepHistoryDays'] if role == 'deep' else DAYS
+    return v1.days_for(spec, role)
 
 
 def loop_extra(index):
@@ -202,7 +218,7 @@ class Tenant(v1.Tenant):
         out = []
         for block in range(self.days):
             base = block * CYCLES_PER_DAY
-            block_start = self.stamp(base)
+            block_start = self.grid(base)
             rng = self._rng('block', block_start)
             minute = lambda c: ((block_start + c * STEP_MS) % DAY_MS) // 60_000
             by_minute = {minute(c): c for c in range(CYCLES_PER_DAY)}
@@ -555,10 +571,18 @@ def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, p
 if __name__ == '__main__':
     import argparse
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument('action', choices=('describe',))
+    p.add_argument('action', choices=('describe', 'spec'))
+    p.add_argument('--preset', choices=sorted(PRESETS))
+    p.add_argument('--phaseSpreadMs', type=int)
+    p.add_argument('--historyDays', type=int)
     p.add_argument('--anchor', type=int, default=1_800_000_000_000 // STEP_MS * STEP_MS)
     p.add_argument('--tenants', type=int, default=10_000)
     for key, value in DEFAULTS.items():
         p.add_argument('--' + key, type=int, default=value)
     a = p.parse_args()
-    print(json.dumps(describe(default_spec(a.anchor, **{k: getattr(a, k) for k in DEFAULTS}), a.tenants), indent=2))
+    changes = {k: getattr(a, k) for k in DEFAULTS}
+    changes.update(PRESETS.get(a.preset, {}))
+    changes.update({k: getattr(a, k) for k in OPTIONAL_KEYS if getattr(a, k) is not None})
+    spec = default_spec(a.anchor, **changes)
+    validate(spec)
+    print(json.dumps(spec if a.action == 'spec' else describe(spec, a.tenants), indent=2))

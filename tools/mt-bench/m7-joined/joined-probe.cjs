@@ -34,7 +34,12 @@ if (!['off', 'on'].includes(witnessSql) || (witnessSql === 'off' && args.restart
 const base = new URL(args.base);
 const tenants = JSON.parse(fs.readFileSync(args.tenants, 'utf8'));
 const PER = Number(args.per ?? 2), OPEN = Number(args.open ?? 5), PROBE = Number(args.probeEvery ?? 3000);
-const TOTAL=Number(args.clients??tenants.length*PER);if(!Number.isSafeInteger(TOTAL)||TOTAL<0||TOTAL>0xffffffff||!tenants.length||new Set(tenants.map(t=>t.id)).size!==tenants.length)throw Error('M7_VIEWER_TOTAL_RANGE');const viewers=tenants.map((_,i)=>Math.floor(TOTAL/tenants.length)+(i<TOTAL%tenants.length?1:0));
+// Optional viewerSetup.mix: per-tenant socket counts by hashed rank (mirrors viewer_plan.mix_counts; test_viewer_mix.py pins agreement).
+function mixCounts(mix,n){const rank=[...Array(n).keys()].map(i=>[require('node:crypto').createHash('sha256').update(`${mix.seed}:${i}:viewers`).digest('hex'),i]).sort((a,b)=>a[0]<b[0]?-1:a[0]>b[0]?1:0).map(r=>r[1]);const out=Array(n).fill(0);let start=0,done=0;mix.shares.forEach(([sockets,percent],k)=>{done+=percent;const end=k===mix.shares.length-1?n:Math.floor((n*done+50)/100);for(const i of rank.slice(start,end))out[i]=sockets;start=end;});return out;}
+const MIX=(args.viewerSetup?JSON.parse(args.viewerSetup):{}).mix;
+if(!tenants.length||new Set(tenants.map(t=>t.id)).size!==tenants.length)throw Error('M7_VIEWER_TOTAL_RANGE');
+const mixed=MIX===undefined?null:mixCounts(MIX,tenants.length);
+const TOTAL=mixed?mixed.reduce((a,b)=>a+b,0):Number(args.clients??tenants.length*PER);if(!Number.isSafeInteger(TOTAL)||TOTAL<0||TOTAL>0xffffffff)throw Error('M7_VIEWER_TOTAL_RANGE');const viewers=mixed||tenants.map((_,i)=>Math.floor(TOTAL/tenants.length)+(i<TOTAL%tenants.length?1:0));
 const EVAL_TIMEOUT = Number(args.evalTimeout ?? 900) * 1000;
 const STOCK = Number(process.env.STOCK_MS || 300000), RECOVERY = Number(process.env.RECOVERY_MS || 120000);
 const completionSource=process.env.M7_COMPLETION_SOURCE?JSON.parse(process.env.M7_COMPLETION_SOURCE):null;
