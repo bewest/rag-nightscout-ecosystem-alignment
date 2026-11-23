@@ -133,11 +133,13 @@ class Kind(unittest.TestCase):
         self.apply(m)
         self.wait(lambda: self.k('-n', 'bench-control', 'get', 'job', 'case-supervisor-k3-orphan-a1', check=False).returncode == 0,
                   300, 'the supervisor')
+        killed = time.time()
         self.k('-n', 'bench-control', 'delete', 'job', 'campaign-k3', '--cascade=foreground', '--wait=true')
         result = self.wait(lambda: self.k('-n', 'bench-control', 'get', 'configmap', 'case-cleanup-k3-orphan-a1', '-o', 'json',
                                           check=False).stdout, 200, 'the supervisor result')
         doc = json.loads(json.loads(result)['data']['result'])
         self.assertEqual((doc['verdict'], doc['reason']), ('CLEANED', 'heartbeat-stale'))
+        self.assertGreaterEqual(doc['at'], int(killed))   # this run's result, not a leftover
         self.assertEqual(self.k('get', 'namespace', 'ns-k3-orphan-a1', '--ignore-not-found=true', '-o', 'name').stdout, '')
         store = self.store('lane9-k3')
         self.assertEqual(self.statuses(m)['orphan']['state'], 'running')

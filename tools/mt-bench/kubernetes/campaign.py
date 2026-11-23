@@ -737,12 +737,22 @@ def close(m, store, call):
                  ['delete', 'clusterrolebinding,clusterrole', '-l', CAMPAIGN_LABEL + '=' + c, '--ignore-not-found=true'],
                  ['delete', 'validatingadmissionpolicybinding,validatingadmissionpolicy', name, '--ignore-not-found=true']):
         call(argv)
+    # The supervisors' result ConfigMaps (case_supervisor.record) carry no campaign label: found by name.
+    for name_ in supervisor_results(call, c):
+        call(['-n', CONTROL_NS, 'delete', 'configmap', name_, '--ignore-not-found=true'])
     if store.bucket_exists():
         # Re-checked after the controller is gone: it could have written between the first check and its deletion.
         left = store.list('')
         need(not left, 'BUCKET_NOT_EMPTY_AFTER_STOP:%d' % len(left))
         store.delete_bucket()
     return census(m, store, call)
+
+
+def supervisor_results(call, campaign_name):
+    if not kjson(call, ['get', 'namespace', CONTROL_NS, '--ignore-not-found=true']):
+        return []
+    return sorted(i['metadata']['name'] for i in kjson(call, ['-n', CONTROL_NS, 'get', 'configmaps'])['items']
+                  if i['metadata']['name'].startswith('case-cleanup-%s-' % campaign_name))
 
 
 def census(m, store, call, doctl=None, doctl_cluster=None):
@@ -780,6 +790,7 @@ def census(m, store, call, doctl=None, doctl_cluster=None):
                       for i in kjson(call, ['-n', CONTROL_NS, 'get', kind, '-l', CAMPAIGN_LABEL + '=' + c])['items']]
     for kind in ('clusterroles', 'clusterrolebindings', 'validatingadmissionpolicies', 'validatingadmissionpolicybindings'):
         owned += ['%s/%s' % (kind, i['metadata']['name']) for i in kjson(call, ['get', kind, '-l', CAMPAIGN_LABEL + '=' + c])['items']]
+    owned += ['configmaps/' + n for n in supervisor_results(call, c)]
     rows['controlObjects'] = sorted(owned)
     if doctl and doctl_cluster:
         pools = json.loads(doctl(['kubernetes', 'cluster', 'node-pool', 'list', doctl_cluster, '-o', 'json']))

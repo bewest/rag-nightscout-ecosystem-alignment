@@ -80,6 +80,8 @@ class FakeKube:
             return json.dumps({'metadata': {'name': a[2], 'labels': got['labels'], 'annotations': got['annotations']}}) if got else ''
         if a[:2] == ['get', 'namespaces']:
             return json.dumps({'items': [{'metadata': {'name': n, 'labels': v['labels']}} for n, v in self.namespaces.items()]})
+        if a[:2] == ['get', 'configmaps'] and '-l' not in argv:
+            return json.dumps({'items': [{'metadata': {'name': n}} for n in self.configmaps]})
         if a[0] == 'get' and a[1] in ('pvc', 'pv', 'services', 'volumesnapshotcontents', 'clusterroles', 'clusterrolebindings',
                                       'validatingadmissionpolicies', 'validatingadmissionpolicybindings', 'jobs', 'pods',
                                       'configmaps', 'secrets', 'serviceaccounts', 'roles', 'rolebindings'):
@@ -375,6 +377,10 @@ class CensusClose(Base):
         self.assertEqual(got['billable']['loadBalancers'], ['ns-c1-one-a1/edge'])
         self.assertEqual(got['billable']['volumeSnapshotContents'], ['run-snap'])
         self.assertEqual(got['retainedByFixture'], ['seed-snap'])
+        self.kube.namespaces['bench-control'] = {'labels': {}, 'annotations': {}}
+        self.kube.configmaps['case-cleanup-c1-one-a1'] = '{}'   # a supervisor result left by an orphaned case
+        self.kube.configmaps['case-cleanup-c2-one-a1'] = '{}'   # another campaign's
+        self.assertIn('configmaps/case-cleanup-c1-one-a1', campaign.census(m, self.store, self.kube)['billable']['controlObjects'])
         with self.assertRaisesRegex(campaign.Refused, 'BUCKET_NOT_EMPTY'):
             campaign.close(m, self.store, self.kube)
         self.assertTrue(self.store.exists)
@@ -383,6 +389,7 @@ class CensusClose(Base):
         self.kube.cluster.update(pv=[], services=[], volumesnapshotcontents=[])
         got = campaign.close(m, self.store, self.kube)
         self.assertEqual((got['empty'], self.store.exists), (True, False))
+        self.assertEqual(sorted(self.kube.configmaps), ['case-cleanup-c2-one-a1'])
 
     def test_doctl_rows_are_read_only_lists(self):
         seen = []
