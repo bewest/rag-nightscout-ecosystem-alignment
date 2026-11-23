@@ -474,6 +474,8 @@ or to 17.0.0 if it changes a default. The identity work is the core: it is the s
 the Loop maintainers. Multitenant items may ship dormant, labelled alpha behind `serve`, or not ship. The tag
 is gated by the bar and the pre-tag items, not by a date.
 
+**Update, 2026-11-22, BF-246 candidate fix** (maintainer approval 2026-11-22: file, queue for 16.0.0, fix): the data loader's `mergeProcessSort` is quadratic in the records it holds ([register](../../docs/30-design/remedial/nightscout-backfix-register.md), queue `BFQ-246`). Local branch `claude/bf-246-dataloader-merge-linear` `f97df2c1c` on `official/dev` `79144cbd0`, not pushed: a set of ids where every id is a string, the loop otherwise; no operator-visible change besides CPU. Suites on `f97df2c1c` (Node 22.23.4, disposable MongoDB 8.0.34 container with a raised open-file limit): `npm run test:affected` 3,133 passing / 3 pending / 0 failing; `npm test` 6,369 passing / 3 pending / 0 failing; ESLint on the changed files clean; `prcheck.sh` OK (already contains `official/dev` `79144cbd0`).
+
 **Handoff, 2026-10-31 (read with `git ls-remote` and `gh pr list` at about 03:00Z; plan owner session -49).**
 `dev` is `368e6c23` (#8874 merged 2026-10-31 02:02Z). Merge order on `dev` from here: #8883, then #8879 once
 slice 4 is rebuilt on it, then the unique-index PR. The cohort window (one window over #8874 and the identity work)

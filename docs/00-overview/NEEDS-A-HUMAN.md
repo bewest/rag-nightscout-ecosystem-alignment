@@ -70,17 +70,18 @@ every item that was `merged-upstream` then is `released`.
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
 
+### Maintainer + a second human &mdash; 2 items
+
+| id | claimed state | what it is | PR |
+|---|---|---|---|
+| `BFQ-241` | `ready-to-push` | BF-241 - one upload limit, UPLOAD_BODY_LIMIT, for entries, treatments and device | &mdash; |
+| `BFQ-246` | `ready-to-push` | BF-246 - linear mergeProcessSort in the shared dataloader (16.0.0) | &mdash; |
+
 ### SAFETY reviewer &mdash; 1 item
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `A7A-7` | `unsettled` | §7a item 7 - the clock question | &mdash; |
-
-### Maintainer + a second human &mdash; 1 item
-
-| id | claimed state | what it is | PR |
-|---|---|---|---|
-| `BFQ-241` | `ready-to-push` | BF-241 - one upload limit, UPLOAD_BODY_LIMIT, for entries, treatments and device | &mdash; |
 
 <!-- END GENERATED: needs-a-human -->
 

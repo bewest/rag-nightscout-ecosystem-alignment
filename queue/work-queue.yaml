@@ -27770,3 +27770,40 @@ items:
       Reproduced 2026-11-21 on dev 79144cbd0 (2 MB refused with 413 on both). Kept out of BF-241
       by the maintainer's scope (three routes only). Loop sends up to 400 settings per request
       sized to about 1 MB.
+
+  - id: BFQ-246
+    title: "BF-246 - linear mergeProcessSort in the shared dataloader (16.0.0)"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: claude/bf-246-dataloader-merge-linear
+    base: official/dev@79144cbd0
+    worktree: /mnt/data/nightscout-workspace/worktrees/cgm-remote-monitor/bf-246-dataloader-merge-linear
+    state: ready-to-push
+    ships_to_operators_today: true
+    blast_radius: >
+      1 commit (f97df2c1c), 2 files: lib/data/dataloader.js (+33/-1: stringIds helper, the
+      set-based branch of mergeProcessSort, mergeProcessSort exported for the test) and
+      tests/dataloader.test.js (3 tests). No setting, route, response or stored record changes.
+    review: maintainer, plus one reviewer who has not merged their own work here
+    operator_visible: >
+      Nothing changes in what Nightscout shows. Sites with many treatments or device statuses spend
+      less processor time each time new data is loaded, so the server answers sooner during loads.
+    semver: patch
+    semver_reason: >
+      Performance only; the same records in the same order. No surface moves.
+    register: [BF-246]
+    gates:
+      - run: node tools/queue/gates/dataloader-merge-linear.js --ref claude/bf-246-dataloader-merge-linear
+        kind: unit
+        describe: >
+          The branch's mergeProcessSort keeps the loop's records, order and errors over 2,000 seeded
+          cases and reads an old _id at most 3 times per record (dev's loop: about n^2/2).
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Approved by the maintainer for 16.0.0 on 2026-11-22 (file, queue, fix). Found in the #8898
+      evaluator round (INC-E2, multitenant fix 76e2ec0df on claude/inc-e2-hotspots-20261122); this
+      branch is the single-tenant port from official/dev. 2026-11-22 on f97df2c1c (Node 22.23.4,
+      MongoDB 8.0.34 container): test:affected 3133/3/0, npm test 6369/3/0, prcheck OK. When it merges, switch the gate's --ref to
+      official/dev and the control's to v15.0.9 (exits 1 there, measured 2026-11-22).

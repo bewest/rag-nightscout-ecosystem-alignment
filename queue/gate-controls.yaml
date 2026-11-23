@@ -2886,3 +2886,12 @@ controls:
     proves: >
       2026-11-21: exits 1 on 15.0.9 c6a0d8ed and on official/dev 79144cbd0, where the defect is
       present. No positive control until a fix branch exists; add one then.
+
+  - gate: node tools/queue/gates/dataloader-merge-linear.js --ref claude/bf-246-dataloader-merge-linear
+    cwd: .
+    control: node tools/queue/gates/dataloader-merge-linear.js --ref official/dev
+    positive-control: node tools/queue/gates/dataloader-merge-linear.js --ref claude/bf-246-dataloader-merge-linear
+    proves: >
+      2026-11-22: exits 1 on official/dev 79144cbd0 (3,996,002 reads of an old _id for one record
+      merged into 2,000; v15.0.9 c6a0d8ed the same) and 0 on the fix branch f97df2c1c (4,000 reads,
+      2,000 cases equal to the loop). An empty QUEUE_GATE_ROOT exits 1.

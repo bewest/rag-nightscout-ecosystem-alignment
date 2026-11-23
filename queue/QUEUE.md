@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 417 |
-| runnable gates | 457 |
+| items | 418 |
+| runnable gates | 458 |
 | explicit `no-gate:` markers | 415 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 415 of the 872 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 415 of the 873 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -44,7 +44,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 80 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-ANDROID-LAB, PERF-IMAGE-DIGEST-CACHE, BFQ-242, BFQ-243, BFQ-244 |
 | `in-progress` | 30 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-BENCH-BASELINE, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-TENANT-LIVE-ADD, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST, MT-D6-SLOT-READER |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 2 | WS-LAB, BFQ-241 |
+| `ready-to-push` | 3 | WS-LAB, BFQ-241, BFQ-246 |
 | `blocked` | 12 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164, BFQ-245 |
 | `in-flight-upstream` | 27 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, MT-OIDC-NATIVE, MT-M6A-JOIN, MT-M6B-JOIN, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-ADMIN-ROLE-OWNERSHIP, MT-ROOT-ADMIN-PARITY, MT-INTERNAL-LISTENER, MT-ACTIVITY-ELIGIBILITY, MT-EXPORT-EXPIRY, MT-ADMIN-LIFECYCLE-FIT, MT-CONSUMER-STALE-RESELECT, MT-TENANT-EXTENDED-SETTINGS, MT-BATCH-JOIN-1110, MT-OWNER-LAST-GUARD, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE, MT-PERF-DB, MT-PERF-REALTIME, MT-PERF-EVALUATOR, MT-EVAL-COST |
 | `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
@@ -173,6 +173,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-243** BF-243 - with SECURE_CSP=true the CSP report parser refuses API uploads over 100 KB
 - **BFQ-244** BF-244 - API v3 answers 500 for oversized or malformed request bodies
 - **BFQ-245** BF-245 - profile and food uploads capped at 1 MB; bring them under UPLOAD_BODY_LIMIT
+- **BFQ-246** BF-246 - linear mergeProcessSort in the shared dataloader (16.0.0)
 
 ---
 
@@ -2851,7 +2852,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 169 items
+`parcel: register-open` &mdash; 170 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -3028,6 +3029,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-243` | BF-243 - with SECURE_CSP=true the CSP report parser refuses API uploads over 100 KB | `not-started` | `none` | patch | 1 run |
 | `BFQ-244` | BF-244 - API v3 answers 500 for oversized or malformed request bodies | `not-started` | `none` | patch | 1 run |
 | `BFQ-245` | BF-245 - profile and food uploads capped at 1 MB; bring them under UPLOAD_BODY_LIMIT | `blocked` | `none` | minor | 1 run |
+| `BFQ-246` | BF-246 - linear mergeProcessSort in the shared dataloader (16.0.0) | `ready-to-push` | `claude/bf-246-dataloader-merge-linear` | patch | 1 run |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
 
@@ -8533,6 +8535,37 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Reproduced 2026-11-21 on dev 79144cbd0 (2 MB refused with 413 on both). Kept out of BF-241 by the maintainer's scope (three routes only). Loop sends up to 400 settings per request sized to about 1 MB.
+
+### `BFQ-246` &mdash; BF-246 - linear mergeProcessSort in the shared dataloader (16.0.0)
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `claude/bf-246-dataloader-merge-linear` |
+| base | `official/dev@79144cbd0` |
+| worktree | `/mnt/data/nightscout-workspace/worktrees/cgm-remote-monitor/bf-246-dataloader-merge-linear` |
+| semver | `patch` |
+| review | maintainer, plus one reviewer who has not merged their own work here |
+| ships to operators today | **yes** |
+| register | `BF-246` |
+
+**Blast radius.** 1 commit (f97df2c1c), 2 files: lib/data/dataloader.js (+33/-1: stringIds helper, the set-based branch of mergeProcessSort, mergeProcessSort exported for the test) and tests/dataloader.test.js (3 tests). No setting, route, response or stored record changes.
+
+**What an operator sees.** Nothing changes in what Nightscout shows. Sites with many treatments or device statuses spend less processor time each time new data is loaded, so the server answers sooner during loads.
+
+**Why `patch`.** Performance only; the same records in the same order. No surface moves.
+
+**Gates.**
+
+- `[unit]` `node tools/queue/gates/dataloader-merge-linear.js --ref claude/bf-246-dataloader-merge-linear`
+  - The branch's mergeProcessSort keeps the loop's records, order and errors over 2,000 seeded cases and reads an old _id at most 3 times per record (dev's loop: about n^2/2).
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Approved by the maintainer for 16.0.0 on 2026-11-22 (file, queue, fix). Found in the #8898 evaluator round (INC-E2, multitenant fix 76e2ec0df on claude/inc-e2-hotspots-20261122); this branch is the single-tenant port from official/dev. 2026-11-22 on f97df2c1c (Node 22.23.4, MongoDB 8.0.34 container): test:affected 3133/3/0, npm test 6369/3/0, prcheck OK. When it merges, switch the gate's --ref to official/dev and the control's to v15.0.9 (exits 1 there, measured 2026-11-22).
 
 ---
 
