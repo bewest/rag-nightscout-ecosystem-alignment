@@ -168,6 +168,12 @@ is an illustrative planning assumption. Peak WAL can exceed its target. With tho
 forecast needs about 375 GiB and candidate 2 about 646 GiB. Size backup storage and simultaneous restores separately
 from the serving primary. The dedicated-node measurements still determine latency and throughput.
 
+For **1,600 tenants each keeping three years**, 1,095 days per tenant gives 1,752,000 retained tenant-days.
+The read-derived database estimates are **3.40 TB** on the original layout, **2.81 TB** on candidate 2,
+**1.54 TB** with device-status chunks and **684 GB** with both stages. Under the same WAL and free-space
+assumptions the combined layout needs about **892 GiB of primary volume**, which fits a **1 TiB** primary.
+Every 0.10 MB change in the measured daily footprint changes the three-year database estimate by 175 GB.
+
 ### Not proposed
 
 - **Typed device status** (predictions as `int2[]`, enacted object deduplicated). It measured worse: 1,026 MB against
