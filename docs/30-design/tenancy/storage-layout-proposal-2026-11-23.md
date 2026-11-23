@@ -143,8 +143,12 @@ chunks consumed **224.1 MB** after ordinary vacuum versus **174.8 MB** for the c
 (reproduced). The chunk table had 4,900 inserts and 71,604 updates. Its identity table stored 76,504
 key-to-location rows in 16.2 MB. These rows support lookup and uniqueness, and contain no copy of the document
 body. The two-day test replayed one transaction per document as the serving role. It does not establish a
-steady-state slope. The forecast below remains a design target pending sustained writes at two history depths.
-Retained evidence: `devicestatus-chunks-20261123/bytes/d2s2{b,c}.json`.
+steady-state slope. After a diagnostic full table rewrite, the chunk and lookup relations occupied 31.6 MB
+and 12.4 MB respectively. File reuse during ordinary ingestion determines operating space. If the growth
+persists, compare writing each open-hour document once and sealing the hour into a compressed chunk once,
+including immediate reads and late changes. The forecast below remains a design target pending sustained
+writes at two history depths. Retained evidence: `devicestatus-chunks-20261123/bytes/d2s2{b,c}.json` and
+`full-2d.txt`.
 
 ### Stages 1 and 2 together
 
@@ -191,6 +195,12 @@ The read-derived database estimates are **3.40 TB** on the original layout, **2.
 **1.54 TB** with device-status chunks and **684 GB** with both stages. Under the same WAL and free-space
 assumptions the combined layout needs about **892 GiB of primary volume**, which fits a **1 TiB** primary.
 Every 0.10 MB change in the measured daily footprint changes the three-year database estimate by 175 GB.
+
+If the typed entries and treatments qualify first, the cleaned device-status table can continue to serve
+the full history. In the arrival-order replay it grew from 174,817,280 to 1,229,971,456 bytes across 1,200
+additional tenant-days, or 0.879 MB per tenant-day (reproduced, `devicestatus-chunks-20261123/bytes/d2s14b.json`).
+Adding the projected 0.224 MB/day for typed entries and treatments gives a **1.93 TB** three-year fallback
+for 1,600 tenants. This estimate assumes the typed footprint and preserves the same retention.
 
 ### Where a three-year installation could save more
 
@@ -241,9 +251,9 @@ service is a product decision. [Nightscout configuration](https://github.com/nig
   still see uncompressed pages, so it does not address the 10k symptoms. An operator may still choose it.
 - **lz4 or `toast_tuple_target` alone.** No effect below the threshold (measured).
 - **Per-tenant-day cold chunks for every collection** (lane R's candidate B, 0.13 MB per tenant-day for the cold
-  part). It needs a compaction job, a read union and history rules for moving rows between hot and cold. Stage 2 gets
-  most of that gain for the collection that dominates the bytes, with no background job. Revisit only if multi-year
-  history makes entries and treatments dominant after stage 1.
+  part). It needs compaction, reads across both representations and history rules for moving rows.
+  For multi-year installations, the scenarios above price the potential benefit. The measured open-chunk rewrite
+  cost and the number of keys each uploader needs are inputs to that choice.
 
 ## 5. What must not change
 
@@ -284,8 +294,10 @@ table. The shorter path left zero. An entries database carrying the old ledger c
 when checked with the shorter catalogue. Retained evidence: `fresh-clinical-schema-20261123`. The comparison
 covers the six clinical schemas. Whole-role startup, fixture conversion and production changes remain separate.
 
-For the next clean baseline, define the retained tables, indexes and grants directly and remove the paired steps
-and their special ledger-validation code together. Compare fresh and current end schemas, including privileges,
+The local core branch `codex/clinical-bootstrap-cleanup-20261123` removes the paired steps and their retired
+validation logic in all nine catalogue variants (`0ca92678f`, fixture pins `d946bd5ee`). The 62 focused
+tests passed. Whole-role startup, restore and the full suite on the joined candidate remain open. Other
+index-creation and removal pairs require their own end-schema comparison, including privileges,
 tenant restore ordinals and API-visible values. Re-seed disposable fixtures from their recipes. For an expensive
 fixture, a one-time conversion on a copy can be worthwhile if counts, document digests, ordinals and a post-restore
 write agree. Preserve the source snapshot for runs pinned to its original schema. The first operator release
