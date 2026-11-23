@@ -27,7 +27,8 @@ import sys
 from pathlib import Path
 
 DEADLINE_MS = 120000
-EDGES_MS = (1000, 30000, 120000)
+EDGES_MS = (1000, 4000, 10000, 30000, 120000)   # 4/10/30 s: the browser-frame bands (maintainer direction 2026-11-22)
+BANDS_MS = (4000, 10000, 30000)
 DOMAINS = ('entries', 'devicestatus', 'treatments')
 
 
@@ -136,6 +137,24 @@ def join(writes, by_tenant, offset_ms=0):
     return summary, rows
 
 
+def overall(summary, rows):
+    """All domains pooled: p50/p95/p99 of the matched lags and, per 4/10/30 s band, the count under it, the share of
+    matched writes and the share of viewed writes (matched + unmatched + censored; censored counts against the band,
+    the conservative reading). Writes of tenants without a viewer are not part of either share."""
+    lags = [r['lagMs'] for r in rows]
+    n = len(lags)
+    unmatched = sum(b['unmatched'] for b in summary.values())
+    censored = sum(b['censored'] for b in summary.values())
+    viewed = n + unmatched + censored
+    out = {'matched': n, 'unmatched': unmatched, 'censored': censored, 'unviewed': sum(b['unviewed'] for b in summary.values()),
+           'p50Ms': pct(lags, 50), 'p95Ms': pct(lags, 95), 'p99Ms': pct(lags, 99), 'maxMs': max(lags) if lags else None, 'bands': {}}
+    for edge in BANDS_MS:
+        within = sum(1 for v in lags if v <= edge)
+        out['bands']['%ds' % (edge // 1000)] = {'within': within, 'shareOfMatched': round(within / n, 4) if n else None,
+                                                'shareOfViewedWrites': round(within / viewed, 4) if viewed else None}
+    return out
+
+
 def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument('--k6', required=True, help='directory with k6.log or k6-shard-*.log')
@@ -154,7 +173,7 @@ def main(argv=None):
                 stream.write(json.dumps(row) + '\n')
     json.dump({'version': 2, 'kind': 'm3-offline-latency-v2', 'runId': a.run, 'offsetMs': a.offset_ms,
                'offsetBasis': 'driver clock minus viewer clock; 0 means not measured or same host',
-               'deadlineMs': DEADLINE_MS, 'driver': counts, 'domains': summary}, sys.stdout, indent=1)
+               'deadlineMs': DEADLINE_MS, 'driver': counts, 'domains': summary, 'overall': overall(summary, rows)}, sys.stdout, indent=1)
     sys.stdout.write('\n')
 
 

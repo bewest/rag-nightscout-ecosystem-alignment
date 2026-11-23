@@ -208,6 +208,29 @@ class Case(unittest.TestCase):
                 value = cv.from_case(load, slices=1, clock_bound_ms=0, local=local)
                 self.assertEqual(value['verdict'], verdict, (above, age, value))
 
+    def test_early_stop_packet_is_accepted_explicitly(self):
+        """No window.json and no progress-after.json (the run stopped on a harness bound): progress-stop.json is the end
+        read and the window comes from the scheduling trace. The result says both; a trace-less packet stays UNMEASURED."""
+        import gzip, tempfile
+        with tempfile.TemporaryDirectory() as d:
+            load, local = self.write_case(d)
+            start_ms = int((BOOKEND_S - 1800) * 1000)
+            (load/'progress-after.json').rename(load/'progress-stop.json')
+            (load/'window.json').unlink()
+            with gzip.open(load/'k6-scheduling.csv.gz', 'wt') as f:
+                f.write('metric_name,timestamp,metric_value,scenario\n')
+                f.write('m7_driver_started,%d,1.0,w\n' % start_ms)
+                f.write('iterations,%d,1.0,w\n' % (start_ms + 1800000))
+            value = cv.from_case(load, slices=1, clock_bound_ms=0, local=local)
+            self.assertEqual(value['verdict'], 'PASS', value)
+            self.assertEqual(value['inputs']['endRead'], 'progress-stop.json')
+            self.assertTrue(value['inputs']['earlyStop'])
+            self.assertIn('trace-derived', value['inputs']['windowBasis'])
+            self.assertEqual(value['inputs']['loadStartedAt'], start_ms / 1000)
+            (load/'k6-scheduling.csv.gz').unlink()
+            value = cv.from_case(load, slices=1, clock_bound_ms=0, local=local)
+            self.assertEqual(value['storageRefusals']['verdict'], 'UNMEASURED')
+
     def test_missing_snapshot_reads_unmeasured(self):
         import tempfile
         with tempfile.TemporaryDirectory() as d:

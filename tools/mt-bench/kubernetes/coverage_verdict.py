@@ -114,7 +114,8 @@ def refusals_from_load(load, local=None):
     """refusals_from_prometheus over a retained load stage (metrics-snapshot.json, metrics-tsdb.tar, window.json),
     from the load start to the snapshot (or the load end). UNMEASURED when either record is missing."""
     load = Path(load)
-    receipt, window = _read(load/'metrics-snapshot.json') or {}, _read(load/'window.json') or {}
+    import packet_scoring
+    receipt, window = _read(load/'metrics-snapshot.json') or {}, packet_scoring.load_window(load) or {}
     if receipt.get('verdict') != 'OBSERVED' or not window.get('loadStartedAt'):
         return {'verdict': 'UNMEASURED', 'reason': 'no retained metrics snapshot or no load start'}
     if local is None:
@@ -367,11 +368,12 @@ def from_case(load, slices=None, clock_bound_ms=None, local=None, *, summary_pat
     start) and the retained metrics snapshot (metrics-snapshot.json, metrics-tsdb.tar) through a local,
     network-less Prometheus (case_observer.LocalPrometheus). Missing records read UNMEASURED."""
     load = Path(load)
-    bookend = _read(load/'progress-after.json') or {}
+    import packet_scoring
+    bookend, bookend_file = packet_scoring.end_read(load)   # progress-after.json, or progress-stop.json of an early stop
     baseline = _read(load/'progress-before.json') or {}
     stored = _read(load/'stored-counts.json') or {}
     summary = (_read(summary_path or load/'k6-summary.json') or {}).get('metrics', {})
-    window = _read(load/'window.json') or {}
+    window = packet_scoring.load_window(load) or {}      # window.json, or the trace-derived window of an early stop
     receipt = (_read(load/'metrics-snapshot.json') or {}) if include_snapshot else {}
     ids = sorted((baseline.get('tenants') or {}).keys() | (bookend.get('tenants') or {}).keys() | stored.keys())
     end = end_from_bookend(bookend, ids)
@@ -411,8 +413,9 @@ def from_case(load, slices=None, clock_bound_ms=None, local=None, *, summary_pat
                    progress_verdict=_progress_verdict(baseline, bookend, ids) if durable is not None else
                    'PASS' if (bookend.get('source') == 'sql-completed-v1') else 'MISSING')
     value['storageRefusals'] = refusals
-    value['inputs'] = {'metricsSnapshot': receipt.get('verdict'), 'endRead': 'progress-after.json' if bookend else None,
-                       'loadStartedAt': window.get('loadStartedAt')}
+    value['inputs'] = {'metricsSnapshot': receipt.get('verdict'), 'endRead': bookend_file,
+                       'loadStartedAt': window.get('loadStartedAt'), 'windowBasis': window.get('basis'),
+                       'earlyStop': bool(window.get('earlyStop') or bookend_file == 'progress-stop.json')}
     return value
 
 

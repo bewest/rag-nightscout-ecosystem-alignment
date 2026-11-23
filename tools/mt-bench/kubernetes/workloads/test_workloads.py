@@ -99,5 +99,28 @@ class Coverage(unittest.TestCase):
                 self.assertEqual(raw['capacityAcceptance'], 'NOT_GRANTED')
 
 
+class StockViewers(unittest.TestCase):
+    class Plan:
+        @staticmethod
+        def mix_counts(mix, n):
+            return [mix['perTenant']] * n
+
+    def test_mix_total_replaces_the_declared_count_and_absence_is_unchanged(self):
+        w = {'logicalPollingClients': 100}
+        self.assertEqual(profiles.stock_viewers(w, 1000, self.Plan), 100)
+        self.assertEqual(profiles.stock_viewers(dict(w, viewerSetup={'mix': {'perTenant': 3}}), 1000, self.Plan), 3000)
+
+    def test_a_mix_without_the_planner_is_refused_not_ignored(self):
+        with self.assertRaisesRegex(ValueError, 'VIEWER_MIX_UNSUPPORTED'):
+            profiles.stock_viewers({'logicalPollingClients': 1, 'viewerSetup': {'mix': {}}}, 10, object())
+
+    def test_real_planner_total_when_lane_e_is_joined(self):
+        plan = profiles.workload_runtime.viewer_plan
+        if not hasattr(plan, 'mix_counts'):
+            self.skipTest('needs claude/fixture-realism-20261123 (viewer_plan.mix_counts)')
+        mix = plan.MIX_PRESETS['followers-v1']
+        self.assertEqual(profiles.stock_viewers({'logicalPollingClients': 1, 'viewerSetup': {'mix': mix}}, 1000), sum(plan.mix_counts(mix, 1000)))
+
+
 if __name__ == '__main__':
     unittest.main()
