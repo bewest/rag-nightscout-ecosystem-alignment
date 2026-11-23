@@ -103,6 +103,13 @@ class Stage(unittest.TestCase):
         calls = []
         def call(argv, data=None, read=True, timeout=None):
             calls.append((argv, data))
+            if argv[:2] == ['get', 'deployment']:
+                return b'1'
+            if argv[:2] == ['get', 'job']:
+                return b'1:'
+            if argv[:2] == ['get', 'pods']:
+                return json.dumps({'items': [{'spec': {'nodeName': 'node-b', 'volumes': [{'persistentVolumeClaim': {'claimName': 'primer-results'}}]},
+                                              'status': {'phase': 'Running'}}]}).encode()
             return b''
         rows = [{'id': r['id'], 'host': r['host'], 'token': r['dataToken']} for r in roster(20)]
         c = {'runId': 'r1', 'namespace': 'lanev-vcpool', 'connectors': {'share': 0.25, 'ordinaryRosterTenants': 15,
@@ -121,6 +128,15 @@ class Stage(unittest.TestCase):
         self.assertIn(['patch', 'job', 'connector-entry', '--type=merge', '-p', '{"spec":{"suspend":false}}'], [a[0] for a in calls])
         applied = json.loads(next(d for a, d in calls if a[0] == 'apply'))
         self.assertEqual(len(applied['items']), 5)
+        self.assertEqual(record['entryNode'], 'node-b')
+        self.assertIn(['patch', 'job', 'connector-entry', '--type=merge', '-p',
+                       '{"spec": {"template": {"spec": {"nodeSelector": {"kubernetes.io/hostname": "node-b"}}}}}'], [a[0] for a in calls])
+        failing = lambda argv, data=None, read=True, timeout=None: (b'1' if argv[:2] == ['get', 'deployment'] else b':1' if argv[:2] == ['get', 'job']
+                                                                    else b'{"items": []}' if argv[:2] == ['get', 'pods'] else b'')
+        with tempfile.TemporaryDirectory() as d, self.assertRaisesRegex(RuntimeError, 'K8S_CONNECTOR_ENTRY_FAILED'):
+            stage.start(failing, c, rows, Path(d), now=1795463000)
+        # Every wait is a guarded read (`get`), never `wait` or `rollout`, which the read-only guard refuses.
+        self.assertFalse(any(a[0][0] in ('wait', 'rollout') for a in calls))
         # Secret values never appear in argv.
         self.assertFalse(any('tok1' in ' '.join(a[0]) for a in calls))
 
