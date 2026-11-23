@@ -174,6 +174,47 @@ The read-derived database estimates are **3.40 TB** on the original layout, **2.
 assumptions the combined layout needs about **892 GiB of primary volume**, which fits a **1 TiB** primary.
 Every 0.10 MB change in the measured daily footprint changes the three-year database estimate by 175 GB.
 
+### Where a three-year installation could save more
+
+At the fixture cadence of about 852 documents per tenant-day, this installation would retain about
+1.49 billion entries, treatments and device-status documents. The 684 GB forecast averages roughly 460 bytes
+per document, including indexes. On the same documents the measured single-site MongoDB growth rates of 0.38
+and 0.24 MB per tenant-day imply about 666 GB with Snappy and 420 GB with zstd in three years of incremental
+data and indexes. These are comparisons at this uploader mix. WiredTiger compresses records together in blocks
+and shares key prefixes within indexes. [MongoDB 8.0 storage engine](https://www.mongodb.com/docs/v8.0/core/wiredtiger/)
+
+**Keep every document.** Qualify a single representation for each collection first. The scratch typed entries
+and treatments had 89.3 MB and 60.9 MB of indexes respectively. Those indexes alone were about 30% of the
+combined 497 MB layout. Their query plans, use during representative API traffic, and identity and ordering
+obligations determine which can be combined. The 684 GB forecast already assumes the smaller index set.
+
+For deeper savings, TimescaleDB keeps recent data in rows and converts older time chunks to compressed columnar
+storage. An equivalent storage experiment here keeps 30 days in the combined layout and groups older complete
+documents by tenant, collection and day. Lane R measured 26.8 MB of cold chunk tables over 200 tenant-days.
+At 1,600 tenants this gives 248 GB for hot data, cold bodies and fixed costs, **before** the cold lookup and
+history structures. A historical correction, an identity-based resend, an export spanning the boundary and a
+restore interrupted during compaction all need to return the same documents in the same order. Retained
+evidence: `HANDOFF-storage-alternatives-20261123.md`. [TimescaleDB chunks and columnstore](https://www.tigerdata.com/docs/reference/timescaledb/hypertables)
+
+A prepaid PostgreSQL 16.15 scratch run priced one possible cold lookup table. Its unique key covered tenant,
+collection, identity kind and lookup value. Its row stored the destination day. Compactly encoding canonical
+ObjectId and UUID strings while preserving arbitrary UTF-8 keys reduced incremental table-plus-index bytes
+by **17% at one lookup row per document**. All lookup tuples decoded to their original values; a variant
+that lowercased opaque keys lost information. Two depths provided the incremental rates, with 327,168
+synthetic documents at the larger depth. At one lookup row per cold document, the three-year estimate for
+hot data, cold bodies and this table becomes **477 GB with packed keys or 524 GB with text**. At one lookup
+per ten documents the corresponding projections are **271 GB or 277 GB**. Both lookup frequencies are
+illustrative. Some documents carry two lookup keys. Measure the actual
+frequency, order/history metadata, changes to old records, and live WAL before sizing volumes for this design.
+Retained evidence: `deep-history-locator-20261123/sizes.csv` and `locator.sql`.
+
+**Choose a shorter device-status history.** Keeping entries and treatments for three years but device status
+for 30, 90 or 365 days projects **402, 418 or 491 GB** respectively. These read-derived values use the separate
+collection rates underlying the 684 GB estimate. Older device-status uploads, including predictions and
+uploader state, disappear from historical API reads and exports. Nightscout already exposes an optional
+collection-specific retention setting in single-site mode. A default or an operator option for the multitenant
+service is a product decision. [Nightscout configuration](https://github.com/nightscout/cgm-remote-monitor#readme)
+
 ### Not proposed
 
 - **Typed device status** (predictions as `int2[]`, enacted object deduplicated). It measured worse: 1,026 MB against
