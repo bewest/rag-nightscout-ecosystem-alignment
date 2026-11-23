@@ -6,7 +6,7 @@
 #                                                  standard runner: also the template case and every input it names
 #
 # The harness is the alignment commit at HEAD of this checkout (a shallow clone, so kube_adapter.instrument() reads
-# the same commit). Core and deploy are shallow fetches of the named commits, placed at the paths the manifest's
+# the same commit). Core is a full fetch of the named commit (ancestry for forward fixture reuse), deploy a shallow one, placed at the paths the manifest's
 # `standard.core` / `standard.binding` name (the checkout paths given here). The template case, its toolsDirectory,
 # k6, readonlyGuard, driver node and driver dependencies are copied to the same absolute paths. Two template fields
 # are changed in the copy, both for running inside the cluster: the kube context (environment.json and
@@ -32,14 +32,15 @@ cp "$here/Dockerfile" "$ctx/"
 head=$(git -C "$repo" rev-parse HEAD)
 git init -q "$ctx/harness" && git -C "$ctx/harness" fetch -q --depth 1 "file://$repo" "$head" && git -C "$ctx/harness" checkout -q FETCH_HEAD
 mkdir -p "$ctx/ws"
-shallow() {  # DIR@COMMIT -> same path under ws/
-  local dir=${1%@*} commit=${1##*@}
+checkout() {  # DIR@COMMIT [git fetch options] -> same path under ws/
+  local dir=${1%@*} commit=${1##*@}; shift
   mkdir -p "$ctx/ws$dir"
-  git init -q "$ctx/ws$dir" && git -C "$ctx/ws$dir" fetch -q --depth 1 "file://$dir" "$commit" && git -C "$ctx/ws$dir" checkout -q FETCH_HEAD
+  git init -q "$ctx/ws$dir" && git -C "$ctx/ws$dir" fetch -q "$@" "file://$dir" "$commit" && git -C "$ctx/ws$dir" checkout -q FETCH_HEAD
 }
 if [ -n "$template" ]; then
   [ -n "$core" ] && [ -n "$deploy" ] || { echo "--template needs --core and --deploy" >&2; exit 2; }
-  shallow "$core"; shallow "$deploy"
+  # Core keeps its history: fixture reuse across images checks migration ancestry (fixture_copy.can_migrate_forward).
+  checkout "$core"; checkout "$deploy" --depth 1
   template=$(cd "$template" && pwd)
   python3 - "$template" "$ctx/ws" "$ctx/Dockerfile" <<'PY'
 import json, shutil, sys
