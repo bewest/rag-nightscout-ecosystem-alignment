@@ -1,5 +1,7 @@
 """Select the existing M7 generator inputs, independently of roster and viewers."""
 from workload import REALISTIC_MIX, realistic_cycle_ms
+from pathlib import Path
+import sys
 import workload_inputs
 import viewer_plan
 

@@ -572,6 +572,11 @@ def execute(d, c, objects, client, load=False, recovery=False):
     out.mkdir(mode=0o700)
     k.write(out / 'before.json', before)
     k.write(out / 'driver.json', readback)
+    if load and c.get('connectors'):
+        # vcpool connector tenants (connectors/stage.py): entered before the probe, scored at the end.
+        sys.path.insert(0, str(k.HERE / 'connectors'))
+        import stage as connector_stage
+        connector_stage.start(client.call, c, tenants, out)
     capture_bookend(d, out, c, objects, client, 'progress-before')
     runid = stage_runid(c, name)
     (out / 'runid').write_text(runid)
@@ -740,6 +745,9 @@ def execute(d, c, objects, client, load=False, recovery=False):
         log.close()
         if load:
             metrics_snapshot(out, c, objects, client)
+            if c.get('connectors') and (out / 'connectors.json').exists():
+                import stage as connector_stage
+                connector_stage.collect(client.call, c, out)
 
 
 # One exec: ask the run's Prometheus (lab metrics component) for a TSDB snapshot, head included,

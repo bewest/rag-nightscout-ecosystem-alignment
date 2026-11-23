@@ -1,0 +1,75 @@
+"""The vcpool connector stage of a load case (execute.py, when the run carries `connectors`).
+
+start(call, c, tenants, out): before the probe starts, give the connector tenants (connectors.select:
+the roster tail, outside the ordinary roster) a connector. It creates three run-labelled Secrets
+(ns-upstream-sites, ns-connector-entry, ns-connector-score), applies the upstream and scorer objects,
+unsuspends the binding's connector-entry Job and waits for it. Secret contents go only to stdin.
+collect(call, c, out): reads the in-cluster scorer's log into connector-poll.private.jsonl and writes
+connector-score.json (score.cjs summarize). A collection failure is retained as UNMEASURED.
+
+`call` is the adapter's kubectl client: call(argv, data=bytes, read=bool) -> bytes.
+"""
+import json
+from pathlib import Path
+import subprocess
+import time
+
+import connectors
+
+SECRETS = ('ns-upstream-sites', 'ns-connector-entry', 'ns-connector-score')
+HISTORY_SECONDS = 3 * 3600
+
+
+def plan(c, tenants, now=None):
+    """The connector tenants and the three Secret payloads (private) for this run."""
+    selected = c['connectors']
+    population = {'provisionedTenants': len(tenants), 'ordinaryRosterTenants': selected['ordinaryRosterTenants'],
+                  'connectorShare': selected['share']}
+    rows = [dict(r, dataToken=r.get('dataToken') or r['token']) for r in tenants]
+    chosen = connectors.select(rows, population)
+    connectors.need(chosen, 'NO_CONNECTOR_TENANTS')
+    history = int(((now or time.time()) - HISTORY_SECONDS) * 1000)
+    sites = connectors.sites(chosen)
+    return {'tenants': chosen, 'historyStartMs': history,
+            'secrets': {'ns-upstream-sites': sites, 'ns-connector-entry': connectors.entry_input(chosen, sites),
+                        'ns-connector-score': connectors.score_input(chosen, history)}}
+
+
+def start(call, c, tenants, out, now=None):
+    p = plan(c, tenants, now)
+    labels = {'nightscout.org/run-id': c['runId']}
+    for name in SECRETS:
+        key = 'sites.json' if name == 'ns-upstream-sites' else 'input.json'
+        call(['create', 'secret', 'generic', name, '--from-file=' + key + '=/dev/stdin', '-o', 'name'],
+             data=json.dumps(p['secrets'][name]).encode(), read=False)
+        call(['label', 'secret', name, 'nightscout.org/run-id=' + c['runId']], read=False)
+    objects = connectors.manifests(c['namespace'], c['connectors']['image'], p['historyStartMs'], labels)
+    call(['apply', '-f', '-', '-o', 'name'], data=json.dumps({'apiVersion': 'v1', 'kind': 'List', 'items': objects}).encode(), read=False)
+    call(['patch', 'job', 'connector-entry', '--type=merge', '-p', '{"spec":{"suspend":false}}'], read=False)
+    call(['wait', '--for=condition=complete', 'job/connector-entry', '--timeout=600s'], read=True, timeout=610)
+    entered = int(time.time() * 1000)
+    call(['rollout', 'status', 'deployment/connector-score', '--timeout=300s'], read=True, timeout=310)
+    record = {'version': 1, 'tenants': len(p['tenants']), 'share': c['connectors']['share'], 'historyStartMs': p['historyStartMs'],
+              'enteredAt': entered, 'scriptsSha256': connectors.scripts_digest()}
+    (out / 'connectors.json').write_text(json.dumps(record, indent=2) + '\n')
+    private = {'historyStartMs': p['historyStartMs'], 'tenants': [{'site': r['site'], 'enteredAt': entered} for r in p['tenants']]}
+    path = out / 'connector-score-input.private.json'
+    path.write_text(json.dumps(private) + '\n'); path.chmod(0o600)
+    return record
+
+
+def collect(call, c, out, until=None, miss_after_seconds=360):
+    try:
+        raw = call(['logs', 'deployment/connector-score', '--limit-bytes=67108864'], read=True)
+        log = out / 'connector-poll.private.jsonl'
+        log.write_bytes(raw); log.chmod(0o600)
+        record = json.loads((out / 'connectors.json').read_text())
+        until = until or int(time.time() * 1000)
+        result = subprocess.run(['node', str(connectors.HERE / 'score.cjs'), 'summarize', str(out / 'connector-score-input.private.json'), str(log),
+                                 '--from', str(record['enteredAt']), '--until', str(until), '--miss-after-seconds', str(miss_after_seconds)],
+                                capture_output=True, text=True, timeout=120)
+        score = json.loads(result.stdout)
+    except Exception as error:  # retained, never a pass
+        score = {'verdict': 'UNMEASURED', 'code': 'K8S_CONNECTOR_SCORE_UNAVAILABLE', 'errorType': type(error).__name__}
+    (out / 'connector-score.json').write_text(json.dumps(score, indent=2) + '\n')
+    return score

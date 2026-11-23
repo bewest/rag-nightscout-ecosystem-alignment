@@ -291,6 +291,11 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
                           placement=placement, placementByWorkload={}, provisionDeadlineSeconds=outer,
                           sourceCommit=source['coreCommit'], imageDeployCommit=source['deployCommit'],
                           bindingIdentity=intent['bindingCommit'],resourceAccounting='requests-v1')
+    connector_share = profile['population'].get('connectorShare')
+    if connector_share:
+        # vcpool connector tenants (connectors/connectors.py): the binding renders the role and the
+        # connector-entry Job; execute.py enters and scores them around the load window.
+        binding_inputs['vcpool'] = {'enabled': True, 'allowHosts': ['nightscout-upstream'], 'allowInsecureHttp': True}
     if binding_extra:
         # Extra binding inputs (e.g. roleEnv on a binding that supports it), merged last.
         binding_inputs.update(k.document(Path(binding_extra)))
@@ -306,7 +311,9 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     inventory = k.document(output/'inventory.json')
     stages = {name:[] for name in lc.STAGES}
     workload_stages = {'postgres':'stores', 'vault':'stores', 'provision':'provision',
-                       'admin':'private-admin', 'primer':'primer'}
+                       'admin':'private-admin', 'primer':'primer',
+                       # Suspended like the primer; execute.py unsuspends it after the roster is read.
+                       'connector-entry':'primer'}
     for document in (run, intent):
         document.pop('applicationTopology', None)
         document['primerLocation'] = 'claim' if inventory['results']['primer'].get('claim') else 'pod'
@@ -349,6 +356,9 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     k.write(output/'environment.json',env)
     now = datetime.now(timezone.utc)
     run['driver']['coreRepository'] = str(core)
+    if connector_share:
+        run['connectors'] = {'share': connector_share, 'ordinaryRosterTenants': profile['population']['ordinaryRosterTenants'],
+                             'image': candidate['app']}
     run.update(runId=run_id,namespace=namespace,tenants=tenants,workload=traffic,resourceAccounting='requests-v1',
                tenantsFile=str(output/'runtime/fixture/data-roster.private.json'), deadlines={kind:(now+timedelta(seconds=env[seconds])).isoformat().replace('+00:00','Z')
                for kind,seconds in [('workUntil','workDeadlineSeconds'),('cleanupUntil','cleanupDeadlineSeconds')]})

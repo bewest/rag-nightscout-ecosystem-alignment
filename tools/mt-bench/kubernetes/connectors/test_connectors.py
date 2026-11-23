@@ -66,5 +66,64 @@ class Profile(unittest.TestCase):
             workload_profile.validate(p)
 
 
+class LoopingGroup(unittest.TestCase):
+    """looping-v2 covers every fixture tenant except the connector group, which receives no uploads."""
+    def profile(self, **population):
+        sys.path.insert(0, str(HERE.parent))
+        import kube_adapter  # noqa: F401
+        import plannable
+        import populated_history as h
+        base = {'version': 1, 'kind': 'k8s-m7-workload-profile', 'name': 'b', 'basis': 'x',
+                'history': {'mode': 'synthetic-history-2d-v1', 'anchorUnixMs': 1},
+                'phases': {'workSeconds': 7200, 'cleanupSeconds': 600, 'restart': False, 'reconnectBurstClients': 0},
+                'workload': {'workloadMix': 'realistic-v1', 'loadSeconds': 1800, 'logicalPollingClients': 0, 'probeEveryMs': 300000},
+                'population': {'hotFactor': 1, 'provisionedTenants': 1000, 'ordinaryRosterTenants': 1000}, 'capacityAcceptance': 'NOT_GRANTED'}
+        p = plannable.profile(base, tenants=1000, history_mode=plannable.LOOPING_2D_V2)
+        p['history'] = {'mode': 'synthetic-history-looping-2d-v2', 'anchorUnixMs': 1795000200000 - 1795000200000 % h.STEP_MS, 'seed': 7,
+                        'cgmOnlyPercent': 10, 'cgmOnlyWithoutProfilePercent': 0, 'deepHistoryTenants': 0, 'deepHistoryDays': 3}
+        p['population'].update(population)
+        p['referencePins'] = {'core': 'a' * 40, 'deploy': 'b' * 40, 'bindingCommit': 'c' * 40}
+        return p
+
+    def test_connector_group_is_outside_the_looping_offer(self):
+        workload_profile.validate(self.profile(), require_pins=False)
+        p = self.profile(ordinaryRosterTenants=900, connectorShare=0.1)
+        workload_profile.validate(p, require_pins=False)
+        self.assertEqual(workload_profile.describe(p)['connectorTenants'], 100)
+        with self.assertRaisesRegex(ValueError, 'LOOPING_OFFER_REQUIRES_FULL_FIXTURE_ROSTER'):
+            workload_profile.validate(self.profile(ordinaryRosterTenants=900), require_pins=False)
+        with self.assertRaisesRegex(ValueError, 'CONNECTOR_TENANTS_RECEIVE_ORDINARY_WRITES'):
+            workload_profile.validate(self.profile(ordinaryRosterTenants=950, connectorShare=0.1), require_pins=False)
+
+
+class Stage(unittest.TestCase):
+    def test_start_creates_labelled_secrets_objects_and_runs_the_entry_job(self):
+        import tempfile
+        import stage
+        calls = []
+        def call(argv, data=None, read=True, timeout=None):
+            calls.append((argv, data))
+            return b''
+        rows = [{'id': r['id'], 'host': r['host'], 'token': r['dataToken']} for r in roster(20)]
+        c = {'runId': 'r1', 'namespace': 'lanev-vcpool', 'connectors': {'share': 0.25, 'ordinaryRosterTenants': 15,
+                                                                       'image': 'localhost:14100/app@sha256:' + '0' * 64}}
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d)
+            record = stage.start(call, c, rows, out, now=1795463000)
+            self.assertEqual(record['tenants'], 5)
+            self.assertEqual(oct((out / 'connector-score-input.private.json').stat().st_mode & 0o777), '0o600')
+        verbs = [a[0][:2] for a in calls]
+        self.assertEqual(verbs[:6], [['create', 'secret'], ['label', 'secret']] * 3)
+        self.assertEqual([a[0][3] for a in calls if a[0][:2] == ['create', 'secret']], list(stage.SECRETS))
+        entry = json.loads(next(d for a, d in calls if a[:4] == ['create', 'secret', 'generic', 'ns-connector-entry']))
+        self.assertEqual([t['id'] for t in entry['tenants']], [r['id'] for r in rows[15:]])
+        self.assertTrue(all(not a[0][0] == 'label' or a[0][-1] == 'nightscout.org/run-id=r1' for a in calls))
+        self.assertIn(['patch', 'job', 'connector-entry', '--type=merge', '-p', '{"spec":{"suspend":false}}'], [a[0] for a in calls])
+        applied = json.loads(next(d for a, d in calls if a[0] == 'apply'))
+        self.assertEqual(len(applied['items']), 5)
+        # Secret values never appear in argv.
+        self.assertFalse(any('tok1' in ' '.join(a[0]) for a in calls))
+
+
 if __name__ == '__main__':
     unittest.main()

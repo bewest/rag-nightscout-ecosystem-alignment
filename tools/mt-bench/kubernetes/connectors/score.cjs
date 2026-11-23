@@ -27,7 +27,9 @@ const sha1 = text => crypto.createHash('sha1').update(text).digest('hex');
 
 function get (origin, host, route, secret) {
   return new Promise((resolve, reject) => {
-    const req = http.request(new URL(route, origin), { headers: { Host: host, 'API-SECRET': sha1(secret), accept: 'application/json' }, timeout: 20000 }, res => {
+    // A data JWT goes as a bearer; a legacy subject token as API-SECRET sha1(token), as an uploader sends it.
+    const auth = /^[\w-]+\.[\w-]+\.[\w-]+$/.test(secret) ? { Authorization: 'Bearer ' + secret } : { 'API-SECRET': sha1(secret) };
+    const req = http.request(new URL(route, origin), { headers: { Host: host, ...auth, accept: 'application/json' }, timeout: 20000 }, res => {
       const chunks = []; res.on('data', c => chunks.push(c));
       res.on('end', () => { try { resolve({ status: res.statusCode, body: JSON.parse(Buffer.concat(chunks).toString('utf8')) }); } catch { resolve({ status: res.statusCode, body: null }); } });
     });
