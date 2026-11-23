@@ -89,7 +89,8 @@ def manifests(namespace, image, history_start_ms, run_labels=None):
     def pod(component, args, env, secret, mount):
         return {'metadata': {'labels': dict(labels, **{LABEL: component})}, 'spec': {
             'automountServiceAccountToken': False, 'enableServiceLinks': False,
-            'securityContext': {'seccompProfile': {'type': 'RuntimeDefault'}},
+            # fsGroup: the mounted Secret (0440, root-owned files) is readable by the non-root user.
+            'securityContext': {'fsGroup': 1000, 'fsGroupChangePolicy': 'OnRootMismatch', 'seccompProfile': {'type': 'RuntimeDefault'}},
             'containers': [{'name': component, 'image': image, 'imagePullPolicy': 'IfNotPresent', 'command': ['node', *args],
                             'env': env, 'securityContext': hardened,
                             'resources': {'requests': {'cpu': '20m', 'memory': '64Mi'}},

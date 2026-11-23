@@ -45,6 +45,7 @@ def start(call, c, tenants, out, now=None):
         call(['label', 'secret', name, 'nightscout.org/run-id=' + c['runId']], read=False)
     objects = connectors.manifests(c['namespace'], c['connectors']['image'], p['historyStartMs'], labels)
     call(['apply', '-f', '-', '-o', 'name'], data=json.dumps({'apiVersion': 'v1', 'kind': 'List', 'items': objects}).encode(), read=False)
+    call(['rollout', 'status', 'deployment/' + connectors.UPSTREAM, '--timeout=300s'], read=True, timeout=310)
     call(['patch', 'job', 'connector-entry', '--type=merge', '-p', '{"spec":{"suspend":false}}'], read=False)
     call(['wait', '--for=condition=complete', 'job/connector-entry', '--timeout=600s'], read=True, timeout=610)
     entered = int(time.time() * 1000)
