@@ -99,8 +99,15 @@ holding exactly the fields not represented by a column.
 - **Measured on scratch copies of the 14-day rows:**
   - entries 146 MB against 721 MB;
   - treatments 139 MB against 464 MB.
-- **Lossless:** `sysTime` and `dateString` are dropped only where they equal what `date` derives; otherwise they stay
-  in `rest`.
+- **Value and query fidelity.** In the synthetic HTTP corpus at `official/dev` `79144cbd0`, two fresh MongoDB sites
+  produced equivalent results across 27 observations (reproduced). A v1 numeric date-range query returned seven
+  entries. V3 history returned all eight, including a string-valued date. V1 rendered a string-valued insulin field
+  as a number while v3 history preserved its original string. The comparison also caught float32 rounding, a lost
+  null, and a lost nested field. Retained evidence: `stage1-storage-oracle-20261123`, `reference-responses.json`
+  and `controls.log`.
+- Keep an original value in `rest` whenever promoting it to a column would discard a distinction visible on these
+  paths, including missing versus null. Numeric filter pushdown must preserve membership. Preserve `sysTime` and
+  `dateString` when they differ from the strings that `date` derives. Measure the lossless implementation's footprint.
 
 ### Stage 2 — device status by tenant-hour
 
@@ -114,6 +121,12 @@ index maps `_id` and `identifier` to the chunk.
 - **Writes:** the hour being written is the open chunk, rewritten on each upload of about 12 documents per hour.
 - **Updates and deletes:** a device-status update or delete rewrites its chunk. Read-derived: uploaders rarely update
   device status; this needs a count from a real-shaped corpus.
+
+The first adapter on core `a5402ca99` points to the complexity cost (read-derived). It presents a document view over
+the chunks, maintains identity and time bounds, rewrites chunks in triggers, and prunes the chunks read for a query.
+The scratch byte measurement preceded these structures. A fresh-install design should select one representation per
+collection after measuring the real reader, writer and restore paths. Historical lab fixtures alone do not justify
+maintaining two storage implementations.
 
 ### Stages 1 and 2 together
 
@@ -194,8 +207,17 @@ from the serving primary. The dedicated-node measurements still determine latenc
 Read-derived at core `1aaa5af33`: nine candidate catalogue files across six clinical domains still carry both
 `0099_*_storage_bytes` (ten statements to install and populate the statistic) and `0100_*_storage_bytes_removed`
 (three statements to remove it). Standard and socket-order catalogues are alternatives. Some initial migrations
-also build indexes that `0101` drops. These steps add bootstrap code and fixture-upgrade work. Removing the steps
-from a fresh baseline would yield the same steady-state data size.
+also build indexes that `0101` drops. The volume model assigns no daily savings to removing obsolete bootstrap steps.
+
+**Reproduced on PostgreSQL 16.15** using the frozen migration runner, with a disposable database for each layout.
+Omitting the `0099` and `0100` pair in each of the six selected catalogues reduced the number of applied migrations
+from 41 to 29 and removed 78 SQL statements from the fresh bootstrap. Both sets passed migration checks.
+Schema-only dumps including policies, grants and indexes matched, as did the synthetic row returned after a write
+in each domain. An added index made the comparison fail and the
+original result returned after the control was removed. The old path left one dropped column slot per clinical
+table. The shorter path left zero. An entries database carrying the old ledger correctly returned `MIG_UNKNOWN`
+when checked with the shorter catalogue. Retained evidence: `fresh-clinical-schema-20261123`. The comparison
+covers the six clinical schemas. Whole-role startup, fixture conversion and production changes remain separate.
 
 For the next clean baseline, define the retained tables, indexes and grants directly and remove the paired steps
 and their special ledger-validation code together. Compare fresh and current end schemas, including privileges,
