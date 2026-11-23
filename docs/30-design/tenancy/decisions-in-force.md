@@ -237,6 +237,7 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [one-large-postgresql-primary](multitenancy-decisions.md#one-large-postgresql-primary) — One PostgreSQL primary on its own node, grown vertically; cells are a later fleet option; load starts after autovacuum and warm-up.
 - [no-realtime-fast-path](multitenancy-decisions.md#no-realtime-fast-path) — No rows to browsers ahead of the evaluator; realtime sends delta frames computed from evaluator output.
 - [storage-machinery-removal](multitenancy-decisions.md#storage-machinery-removal) — Remove `storage_bytes` and its trigger, the per-tenant counter (one sequence under the write clock), the stored output frame and pgstream-era checkpoint leftovers; index cuts wait for `idx_scan`.
+- [connector-secret-entry-admin](multitenancy-decisions.md#connector-secret-entry-admin) — Connector secrets enter through a write-only admin resource that writes record and audit row; no other writer.
 - [preload-is-a-signal](multitenancy-decisions.md#preload-is-a-signal) — Whole-roster preload convergence is a signal; traffic starts when roles are ready.
 - [m7-envelope-measured-not-declared](multitenancy-decisions.md#m7-envelope-measured-not-declared) — Operating limits come from measurement (narrowed by [operable-architecture-first](multitenancy-decisions.md#operable-architecture-first)).
 - [local-10k-release](multitenancy-decisions.md#local-10k-release) — Run the local 10,000-tenant realistic-mix point now on the a72 reference.
