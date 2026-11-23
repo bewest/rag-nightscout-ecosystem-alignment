@@ -67,7 +67,7 @@ class Profile(unittest.TestCase):
 
 
 class LoopingGroup(unittest.TestCase):
-    """looping-v2 covers every fixture tenant except the connector group, which receives no uploads."""
+    """The connector group (roster tail) never overlaps the looping offer (an active prefix of the roster)."""
     def profile(self, **population):
         sys.path.insert(0, str(HERE.parent))
         import kube_adapter  # noqa: F401
@@ -90,8 +90,8 @@ class LoopingGroup(unittest.TestCase):
         p = self.profile(ordinaryRosterTenants=900, connectorShare=0.1)
         workload_profile.validate(p, require_pins=False)
         self.assertEqual(workload_profile.describe(p)['connectorTenants'], 100)
-        with self.assertRaisesRegex(ValueError, 'LOOPING_OFFER_REQUIRES_FULL_FIXTURE_ROSTER'):
-            workload_profile.validate(self.profile(ordinaryRosterTenants=900), require_pins=False)
+        # Candidate 2 (alignment 9ddced9e92) runs looping on an active prefix: a partial ordinary roster is valid.
+        workload_profile.validate(self.profile(ordinaryRosterTenants=900), require_pins=False)
         with self.assertRaisesRegex(ValueError, 'CONNECTOR_TENANTS_RECEIVE_ORDINARY_WRITES'):
             workload_profile.validate(self.profile(ordinaryRosterTenants=950, connectorShare=0.1), require_pins=False)
 
