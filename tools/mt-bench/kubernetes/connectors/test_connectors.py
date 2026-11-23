@@ -141,5 +141,58 @@ class Stage(unittest.TestCase):
         self.assertFalse(any('tok1' in ' '.join(a[0]) for a in calls))
 
 
+class FailureEvidence(unittest.TestCase):
+    """A connector stage failure keeps the entry Job, its Pods and logs and the namespace events before cleanup."""
+    c = {'runId': 'r1', 'namespace': 'lanev-vcpool', 'connectors': {'share': 0.25, 'ordinaryRosterTenants': 15,
+                                                                   'image': 'localhost:14100/app@sha256:' + '0' * 64}}
+
+    def rows(self):
+        return [{'id': r['id'], 'host': r['host'], 'token': r['dataToken']} for r in roster(20)]
+
+    def fake(self, job):
+        calls = []
+        def call(argv, data=None, read=True, timeout=None):
+            calls.append(argv)
+            if argv[:2] == ['get', 'deployment']:
+                return b'1'
+            if argv[:2] == ['get', 'job'] and 'jsonpath' in argv[-1]:
+                return job
+            if argv[0] == 'logs':
+                raise RuntimeError('K8S_OBSERVATION_LOST')  # e.g. a Pending Pod has no log yet
+            if argv[:2] == ['get', 'pods'] and '-l' not in argv:
+                return b'{"items": []}'
+            return b'{"kind": "List", "items": []}'
+        return call, calls
+
+    def check(self, job, code):
+        import tempfile
+        import stage
+        call, calls = self.fake(job)
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d)
+            with self.assertRaisesRegex(RuntimeError, code):
+                stage.start(call, self.c, self.rows(), out, now=1795463000)
+            kept = out / 'connector-failure'
+            receipt = json.loads((kept / 'receipt.json').read_text())
+            self.assertEqual(receipt['code'], code)
+            for name in ('connector-entry-job.json', 'connector-entry-pods.json', 'events.json', 'vcpool-pods.json', 'upstream-pods.json'):
+                self.assertTrue((kept / name).is_file(), name)
+                self.assertEqual(oct((kept / name).stat().st_mode & 0o777), '0o600')
+            # A refused read is listed, never a stop.
+            self.assertEqual(receipt['files']['connector-entry.log']['refused'], 'RuntimeError')
+        # Secret objects are never read.
+        self.assertFalse(any(a[:2] == ['get', 'secret'] or a[:2] == ['get', 'secrets'] for a in calls))
+
+    def test_a_failed_entry_job_keeps_its_evidence(self):
+        self.check(b':1', 'K8S_CONNECTOR_ENTRY_FAILED')
+
+    def test_an_entry_job_that_never_finishes_is_a_timeout_and_keeps_its_evidence(self):
+        import stage
+        clock = type('Clock', (), {'t': 0.0, 'time': lambda self: self.t, 'sleep': lambda self, s: setattr(self, 't', self.t + 1000)})()
+        with self.assertRaisesRegex(RuntimeError, 'K8S_CONNECTOR_ENTRY_TIMEOUT'):
+            stage.until(lambda argv, read=True: b':', ['get'], lambda t: t.startswith('1:'), 600, 'K8S_CONNECTOR_ENTRY_FAILED',
+                        clock=clock, failed=lambda t: t.endswith(':1'), timeout_code='K8S_CONNECTOR_ENTRY_TIMEOUT')
+
+
 if __name__ == '__main__':
     unittest.main()
