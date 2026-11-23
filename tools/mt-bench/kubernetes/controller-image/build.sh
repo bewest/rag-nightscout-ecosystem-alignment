@@ -12,7 +12,7 @@
 # are changed in the copy, both for running inside the cluster: the kube context (environment.json and
 # native-run-template.json: "in-cluster", the context campaign.py writes into the Pod's kubeconfig) and
 # pullSecretCommand (cat of the mounted pull Secret instead of doctl). Pushing the image is a separate,
-# maintainer-approved step.
+# maintainer-approved step. The context holds about 1.5 GB in standard mode: set TMPDIR to a roomy disk.
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 repo=$(git -C "$here" rev-parse --show-toplevel)
@@ -27,7 +27,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 [ -z "$(git -C "$repo" status --porcelain -- tools/mt-bench)" ] || { echo "tools/mt-bench has uncommitted changes" >&2; exit 2; }
-ctx=$(mktemp -d); trap 'rm -rf "$ctx"' EXIT
+ctx=$(mktemp -d -p "${TMPDIR:-/tmp}"); trap 'rm -rf "$ctx"' EXIT
 cp "$here/Dockerfile" "$ctx/"
 head=$(git -C "$repo" rev-parse HEAD)
 git init -q "$ctx/harness" && git -C "$ctx/harness" fetch -q --depth 1 "file://$repo" "$head" && git -C "$ctx/harness" checkout -q FETCH_HEAD
@@ -49,7 +49,7 @@ template, ws = Path(sys.argv[1]), Path(sys.argv[2])
 control = json.loads((template/'lifecycle-input.json').read_bytes())
 run = json.loads((template/'native-run-template.json').read_bytes())
 paths = [template, Path(control['toolsDirectory']), Path(control['k6']), Path(control['readonlyGuard']),
-         Path(run['driver']['node']).parent.parent, Path(run['driver']['dependencies'])]
+         Path(run['driver']['node']), Path(run['driver']['dependencies'])]
 for p in paths:
     target = ws/p.relative_to('/')
     target.parent.mkdir(parents=True, exist_ok=True)
