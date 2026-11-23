@@ -90,7 +90,9 @@ def hold_reader(run, job, inventory, cutoff, clock=time):
             'primerPods': len(rows), 'createdAt': clock.time()}
 
 
-def read_roster(kubectl, job, inventory, directory, count, cutoff, location, held=None):
+def read_roster(kubectl, job, inventory, directory, count, cutoff, location, held=None, inside=None):
+    """`inside(kubectl, pod, rows)`, when given, runs while the reader still holds the roster (the
+    vcpool connector entry, connectors/stage.py enter_in_reader); management credentials stay in the Pod."""
     from contract import tenant_projection
     directory.mkdir(mode=0o700, parents=True, exist_ok=False)
     run = runner(kubectl, cutoff)
@@ -122,6 +124,8 @@ const tenants = r.tenants.map(({id, host, dataToken}) => ({id, host, dataToken})
 process.stdout.write(JSON.stringify({version: r.version, tenants}));"""
         result = run(['exec', name, '-c', 'reader', '--', 'node', '-e', project])
         rows = tenant_projection(json.loads(result.stdout), count)
+        if inside is not None:
+            inside(kubectl, name, rows)
         if location == 'pod':
             return rows, 'fresh'
         claims = inventory['storage'].get('claims', {})

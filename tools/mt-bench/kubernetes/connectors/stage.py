@@ -11,6 +11,14 @@ keeps the connector-entry Job status, its Pods and their logs, the connector obj
 namespace events under out/connector-failure/ (receipt.json lists what was read and what was refused).
 
 `call` is the adapter's kubectl client: call(argv, data=bytes, read=bool) -> bytes.
+
+enter_in_reader(kubectl, pod, rows, c, directory, cutoff): the launch path. Disposable storage keeps the
+primer's roster, with each tenant's root secret, only on the fixture reader Pod's emptyDir, and the
+binding renders no connector-entry Job there (nightscout-deploy vcpool.libsonnet). The harness keeps
+management credentials inside that Pod (fixture.read_roster), so the entry runs there: the image's
+connector-entry.js, its input on stdin, the roster at /results. The plan (site tokens, the connector
+group's DATA credentials) is kept privately; start() then reads it (c.connectors.planFile) and creates
+only the upstream and scorer, never the entry Secret or Job.
 """
 import json
 from pathlib import Path
@@ -100,6 +108,51 @@ def plan(c, tenants, now=None):
                         'ns-connector-score': connectors.score_input(chosen, history)}}
 
 
+ENTRY_SCRIPT = 'deploy/multitenant/connector-entry.js'
+ENTRY_SECONDS = 600
+
+
+def kubectl_call(kubectl, run=subprocess.run):
+    """A read client over a kubectl prefix, for evidence outside the adapter (the fixture stage)."""
+    def call(argv, data=None, read=True, timeout=None):
+        result = run([*kubectl, *argv], input=data, capture_output=True, timeout=timeout or 30)
+        if result.returncode:
+            raise RuntimeError(' '.join(argv[:3]) + ': ' + result.stderr.decode(errors='replace')[-300:])
+        return result.stdout
+    return call
+
+
+def enter_in_reader(kubectl, pod, rows, c, directory, cutoff, now=None, run=subprocess.run, clock=time):
+    p = plan(c, rows, now)
+    directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+    argv = [*kubectl, 'exec', '-i', pod, '-c', 'reader', '--', 'env', 'NS_CONNECTOR_ENTRY_INPUT=/dev/stdin', 'NS_PRIMER_STATE=/results',
+            'NS_CONNECTOR_API_ORIGIN=http://api:1337', 'NS_CONNECTOR_ADMIN_ORIGIN=http://admin:1342', 'node', ENTRY_SCRIPT]
+    started = clock.time()
+    receipt = {'version': 1, 'where': 'fixture-reader', 'tenants': len(p['tenants']), 'startedAt': started}
+    try:
+        seconds = min(ENTRY_SECONDS, cutoff - started)
+        connectors.need(seconds > 0, 'CONNECTOR_ENTRY_DEADLINE')
+        result = run(argv, input=json.dumps(p['secrets']['ns-connector-entry']).encode(), capture_output=True, timeout=seconds)
+        # connector-entry.js prints counts and fixed codes only (never ids, hosts or credentials).
+        receipt.update(exit=result.returncode, seconds=round(clock.time() - started, 3),
+                       stdout=result.stdout.decode(errors='replace')[-2000:], stderr=result.stderr.decode(errors='replace')[-2000:])
+        if result.returncode:
+            raise RuntimeError('K8S_CONNECTOR_ENTRY_FAILED')
+        outcome = json.loads(result.stdout.decode().strip().splitlines()[-1])
+        connectors.need(outcome.get('state') == 'connectors-entered' and outcome.get('tenants') == len(p['tenants']), 'CONNECTOR_ENTRY_INCOMPLETE')
+        receipt['result'] = outcome
+    except Exception as error:
+        receipt.setdefault('code', str(error) if str(error).startswith(('K8S_', 'CONNECTOR_')) else 'K8S_CONNECTOR_ENTRY_FAILED')
+        (directory / 'connector-entry.json').write_text(json.dumps(receipt, indent=2) + '\n')
+        failure_evidence(kubectl_call(kubectl, run), directory, error)
+        raise
+    entered = int(clock.time() * 1000)
+    path = directory / 'connector-plan.private.json'
+    path.write_text(json.dumps({**p, 'enteredAt': entered}) + '\n'); path.chmod(0o600)
+    (directory / 'connector-entry.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    return path
+
+
 def start(call, c, tenants, out, now=None):
     try:
         return _start(call, c, tenants, out, now)
@@ -109,9 +162,16 @@ def start(call, c, tenants, out, now=None):
 
 
 def _start(call, c, tenants, out, now=None):
-    p = plan(c, tenants, now)
+    entered_in_reader = bool(c['connectors'].get('planFile'))
+    if entered_in_reader:
+        p = json.loads(Path(c['connectors']['planFile']).read_text())
+        connectors.need({r['id'] for r in p['tenants']} <= {r['id'] for r in tenants}, 'CONNECTOR_PLAN_ROSTER_CHANGED')
+    else:
+        p = plan(c, tenants, now)
     labels = {'nightscout.org/run-id': c['runId']}
     for name in SECRETS:
+        if entered_in_reader and name == 'ns-connector-entry':
+            continue
         key = 'sites.json' if name == 'ns-upstream-sites' else 'input.json'
         call(['create', 'secret', 'generic', name, '--from-file=' + key + '=/dev/stdin', '-o', 'name'],
              data=json.dumps(p['secrets'][name]).encode(), read=False)
@@ -119,6 +179,8 @@ def _start(call, c, tenants, out, now=None):
     objects = connectors.manifests(c['namespace'], c['connectors']['image'], p['historyStartMs'], labels)
     call(['apply', '-f', '-', '-o', 'name'], data=json.dumps({'apiVersion': 'v1', 'kind': 'List', 'items': objects}).encode(), read=False)
     ready(call, connectors.UPSTREAM)
+    if entered_in_reader:
+        return _record(call, c, p, out, None)
     node = claim_node(call)
     if node:
         # A suspended, never-started Job admits a scheduling change: pin it beside the claim's holder.
@@ -128,9 +190,15 @@ def _start(call, c, tenants, out, now=None):
     until(call, ['get', 'job', 'connector-entry', '-o', 'jsonpath={.status.succeeded}:{.status.failed}'],
           lambda t: t.startswith('1:'), 600, 'K8S_CONNECTOR_ENTRY_FAILED', failed=lambda t: t.endswith(':1'),
           timeout_code='K8S_CONNECTOR_ENTRY_TIMEOUT')
-    entered = int(time.time() * 1000)
+    return _record(call, c, p, out, node)
+
+
+def _record(call, c, p, out, node):
+    # Scored from here: the upstream serves and the scorer is ready.
     ready(call, 'connector-score')
-    record = {'version': 1, 'tenants': len(p['tenants']), 'entryNode': node, 'share': c['connectors']['share'], 'historyStartMs': p['historyStartMs'],
+    entered = int(time.time() * 1000)
+    record = {'version': 1, 'tenants': len(p['tenants']), 'entryNode': node, 'entry': 'fixture-reader' if c['connectors'].get('planFile') else 'job',
+              'share': c['connectors']['share'], 'historyStartMs': p['historyStartMs'],
               'enteredAt': entered, 'scriptsSha256': connectors.scripts_digest()}
     (out / 'connectors.json').write_text(json.dumps(record, indent=2) + '\n')
     private = {'historyStartMs': p['historyStartMs'], 'tenants': [{'site': r['site'], 'enteredAt': entered} for r in p['tenants']]}

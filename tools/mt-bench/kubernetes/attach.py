@@ -85,13 +85,23 @@ try:
             job_uid = phase_actors.new_job(api, ns, e['runId'], storage, prior, job, until)
         else:
             job_uid = phase_actors.owned_uid(api, 'job', 'k6', e['runId'])
+    inside = None
+    plan_file = runtime/'connectors'/'connector-plan.private.json'
+    if cfg.get('connectors') and sys.argv[2:] != ['--seed-history']:
+        # vcpool connectors: entered once, in the reader, where the roster's root secrets live (connectors/stage.py).
+        sys.path.insert(0, str(K/'connectors'))
+        import stage as connector_stage
+        def inside(kubectl, pod, rows):
+            connector_stage.enter_in_reader(kubectl, pod, rows, cfg, runtime/'connectors', until)
     roster = private/'data-roster.private.json'
     if prior:
         k.need(sha(roster) == prior['rosterSha256'], 'POINT_FIXTURE_ROSTER_CHANGED')
         tenants = read(roster)
         reuse = read(runtime/'fixture.json')['reuse']
     else:
-        tenants, reuse = fixture.read_roster(kub, primer, inventory, private, cfg['tenants'], until, location, held)
+        tenants, reuse = fixture.read_roster(kub, primer, inventory, private, cfg['tenants'], until, location, held, inside)
+    if inside is not None and plan_file.is_file():
+        cfg['connectors']['planFile'] = str(plan_file)
     from populated_history import BASELINE, run as prepare_history
     if len(sys.argv) == 3 and sys.argv[2] == '--seed-history':
         pg = read(live/'latest-postgres.json')

@@ -194,5 +194,67 @@ class FailureEvidence(unittest.TestCase):
                         clock=clock, failed=lambda t: t.endswith(':1'), timeout_code='K8S_CONNECTOR_ENTRY_TIMEOUT')
 
 
+class ReaderEntry(unittest.TestCase):
+    """Disposable storage: the entry runs in the fixture reader (the roster's root secrets never leave it);
+    the load stage then creates only the upstream and scorer from the kept plan."""
+    c = {'runId': 'r1', 'namespace': 'lanev-vcpool', 'connectors': {'share': 0.25, 'ordinaryRosterTenants': 6,
+                                                                   'image': 'localhost:14100/app@sha256:' + '0' * 64}}
+
+    def rows(self):
+        return [{'id': r['id'], 'host': r['host'], 'token': r['dataToken']} for r in roster(8)]
+
+    def test_entry_in_reader_keeps_a_private_plan_and_the_load_stage_skips_the_job(self):
+        import subprocess
+        import tempfile
+        import stage
+        seen = []
+        def run(argv, input=None, capture_output=True, timeout=None):
+            seen.append((argv, input))
+            return subprocess.CompletedProcess(argv, 0, b'{"state":"connectors-entered","tenants":2,"counts":{}}\n', b'')
+        with tempfile.TemporaryDirectory() as d:
+            c = copy.deepcopy(self.c)
+            path = stage.enter_in_reader(['kubectl', '-n', 'x'], 'fixture-reader-abc', self.rows(), c, Path(d) / 'connectors', 1e12,
+                                         now=1795463000, run=run)
+            self.assertEqual(oct(path.stat().st_mode & 0o777), '0o600')
+            argv, data = seen[0]
+            self.assertEqual(argv[3:8], ['exec', '-i', 'fixture-reader-abc', '-c', 'reader'])
+            self.assertIn('NS_PRIMER_STATE=/results', argv)
+            self.assertEqual([t['id'] for t in json.loads(data)['tenants']], [r['id'] for r in self.rows()[6:]])
+            self.assertFalse(any('tok7' in a for a in argv), 'no credential in argv')
+            receipt = json.loads((Path(d) / 'connectors' / 'connector-entry.json').read_text())
+            self.assertEqual(receipt['result']['tenants'], 2)
+            c['connectors']['planFile'] = str(path)
+            calls = []
+            def call(argv, data=None, read=True, timeout=None):
+                calls.append(argv)
+                return b'1' if argv[:2] == ['get', 'deployment'] else b''
+            out = Path(d) / 'load'; out.mkdir()
+            record = stage.start(call, c, self.rows(), out)
+            self.assertEqual(record['entry'], 'fixture-reader')
+            created = [a[3] for a in calls if a[:2] == ['create', 'secret']]
+            self.assertEqual(created, ['ns-upstream-sites', 'ns-connector-score'])
+            self.assertFalse(any(a[:2] == ['patch', 'job'] or a[:2] == ['get', 'job'] for a in calls))
+            # The upstream serves the sites entered in the reader.
+            plan = json.loads(path.read_text())
+            self.assertEqual(sorted(plan['secrets']['ns-upstream-sites']), ['s0', 's1'])
+
+    def test_a_failed_entry_in_the_reader_keeps_its_output_and_evidence(self):
+        import subprocess
+        import tempfile
+        import stage
+        def run(argv, input=None, capture_output=True, timeout=None):
+            if 'exec' in argv:
+                return subprocess.CompletedProcess(argv, 1, b'', b'{"error":"CONNECTOR_ENTRY_SUBJECT_CREATE_REFUSED","status":403}\n')
+            return subprocess.CompletedProcess(argv, 0, b'{"items": []}', b'')
+        with tempfile.TemporaryDirectory() as d, self.assertRaisesRegex(RuntimeError, 'K8S_CONNECTOR_ENTRY_FAILED'):
+            try:
+                stage.enter_in_reader(['kubectl'], 'fixture-reader-abc', self.rows(), copy.deepcopy(self.c), Path(d), 1e12, run=run)
+            finally:
+                receipt = json.loads((Path(d) / 'connector-entry.json').read_text())
+                self.assertIn('CONNECTOR_ENTRY_SUBJECT_CREATE_REFUSED', receipt['stderr'])
+                self.assertTrue((Path(d) / 'connector-failure' / 'events.json').is_file())
+                self.assertFalse((Path(d) / 'connector-plan.private.json').exists())
+
+
 if __name__ == '__main__':
     unittest.main()
