@@ -49,6 +49,7 @@ For storage, read the [SQL guide](sql-and-migration-architecture.md) for tenant 
 | Document | Owns |
 |---|---|
 | `nightscout-deploy` (sibling repository; local `/home/bewest/src/nightscout-deploy`) | The Compose tree, edge, identity-provider profiles and Vault Agent overlay, [from the next #8898 batch on](multitenancy-decisions.md#deploy-tree-home-now); see the [scope split](claimed-public-names-and-deploy-companion-2026-11-09.md#2-scope-split-core-sibling-repository-hoster-private). |
+| [Operations runbook](operations-runbook.md) | Restart, node loss, whole-installation rollback, tenant restore and the limits of the synthetic recovery drill. |
 | [Deployment and rig testing](deployment-and-rig-testing.md) | Fault domains, the ed2 Compose runbook, client and rig setup, restore/restart scenarios. |
 | [Deployment bindings and public names](deployment-bindings-and-public-names.md) | Kubernetes/Jsonnet resource translation, public-name lifetimes, transports and load-herd experiments. |
 

@@ -11,6 +11,8 @@ are proposals for the maintainer; nothing here is decided until §5 says so. A d
 16.0.0 scope decided 2026-10-30 follows; the rest of the page is kept as written, with notes where that
 decision supersedes it.*
 
+**Closing scope.** The [16.0.0 candidate](../../../releases/cgm-remote-monitor-16.0.0/contents.md) is single-tenant. The October allowance for dormant multitenant roles below was an earlier planning option. Current multitenant work is tracked in the [tenancy execution log](../tenancy/execution-log.md).
+
 ## 16.0.0 scope, decided 2026-10-30
 
 *Added 2026-10-30 at cgm-remote-monitor `official/dev` `991b0654` (merge of #8865). Source: the

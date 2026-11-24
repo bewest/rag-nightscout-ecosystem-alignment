@@ -15,6 +15,7 @@ source-scoped measurements. They are not current plans or lane assignments.*
 
 | Retained journal | What it preserves | Current home |
 |---|---|---|
+| [November 3–7 preview integration runs](preview-integration-runs-2026-11-03-to-07.md) | R23–R77 from the separate multitenant preview, with frozen source heads, controls and outcomes. | [Multitenant execution log](../../30-design/tenancy/execution-log.md) |
 | [November 16 runtime topology](pgstream-topology-2026-11-16.md) | Role inventory, original plates, fixed-roster placement and fleet proposals before writer-driven transport. | [Current runtime topology](../../30-design/tenancy/runtime-topology.md) |
 | [November 16 pgstream communication](pgstream-communication-2026-11-16.md) | Receiver and raw journal, transaction-cohort proposal, bounded-window query survey and evidence on the named pgstream sources. | [Writer-driven communication](../../30-design/tenancy/evaluator-realtime-communication.md) |
 | [November 15 realtime placement](realtime-placement-2026-11-15.md) | Versioned map, controlled moves and source-scoped native tests before the adoption of static hash ownership. | [Current realtime placement](../../30-design/tenancy/realtime-sharding-plan.md) |

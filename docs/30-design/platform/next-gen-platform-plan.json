@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-16 read-derived reconciliation against selected runtime records at alignment 5fdc4bf0685d35d2fac980bad1b28bd66525ccdb and selected core 5e112547b31252ec428747c821d3cd1b3684ce2b. Current architecture is stream acceptance, bounded clinical working state, completed result/checkpoint and independent raw storage delivery. Named records retain executed source/image/instrument and failed/pending limits. M6a/M6b and earlier R72/R73 keep their source-scoped acceptance; parent queue states are not milestone or production promotion. Workload/resource/recovery envelopes and the separately qualified amplification/retirement source keep their own evidence scope; matched operating comparison remains separate. Application dev merge, operator release, deployment trust, HA/fleet/provider admission require their own evidence.",
+ "measured": "2026-11-24, read-derived from official/dev 79144cbd0 and the separate multitenant candidate 5 qualification. The closing 16.0.0 candidate is single-tenant. Candidate 5 uses writer-driven hints and durable evaluator work. Its operating evidence is workload-specific and production capacity remains open.",
  "tracks": [
   {
    "id": "storage",
@@ -52,28 +52,28 @@
   {
    "id": "done",
    "label": "done",
-   "mark": "\u2713",
+   "mark": "✓",
    "style": "done",
    "means": "the named item/component is complete or merged to dev; inspect its scope/source; this does not mean released, whole-milestone accepted or production admitted"
   },
   {
    "id": "review",
    "label": "in review",
-   "mark": "\u25d0",
+   "mark": "◐",
    "style": "review",
    "means": "a pull request is open, possibly draft; its existence does not establish acceptance"
   },
   {
    "id": "ready",
    "label": "ready to push",
-   "mark": "\u25b6",
+   "mark": "▶",
    "style": "review",
    "means": "a branch is built and checked; the push and PR are the maintainer's"
   },
   {
    "id": "planned",
    "label": "planned",
-   "mark": "\u25cb",
+   "mark": "○",
    "style": "planned",
    "means": "scoped, not started"
   },
@@ -87,14 +87,14 @@
   {
    "id": "progress",
    "label": "in progress",
-   "mark": "\u25b7",
+   "mark": "▷",
    "style": "planned",
    "means": "partial implementation/evidence exists; remaining item acceptance is open"
   },
   {
    "id": "blocked",
    "label": "blocked",
-   "mark": "\u22a3",
+   "mark": "⊣",
    "style": "planned",
    "means": "full acceptance awaits prerequisites; a bounded preview slice may already pass"
   }
@@ -283,7 +283,7 @@
    "short": "views without ddata",
    "title": "Computed views without a resident ddata: what the page, the socket's dataUpdate, the plugins and the alarms compute comes from bounded queries (newest n of each type within a time bound), materialised, used and discarded (historical computed-view stage, not multitenant M4)",
    "where": "lib/data/dataloader.js and ddata.js, the socket's dataUpdate, the plugin sandbox, notifications",
-   "check": "each view's output equal to today's ddata-based output on the corpus fixtures; for alarms, the execution plan \u00a77b measurement (32.7 KB and 1.94 ms per tenant per evaluation, the identical alarm, against 852 KB and 27.5 ms for all of ddata)",
+   "check": "each view's output equal to today's ddata-based output on the corpus fixtures; for alarms, the execution plan §7b measurement (32.7 KB and 1.94 ms per tenant per evaluation, the identical alarm, against 852 KB and 27.5 ms for all of ddata)",
    "depends": [
     "ST-READS"
    ],
@@ -313,7 +313,7 @@
    "spec": [
     {
      "label": "R62/R64 published acceptance and verification",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-64"
     },
     {
      "label": "R55 independent profile / scope limits",
@@ -325,15 +325,15 @@
     },
     {
      "label": "R47 independent v1 evaluator replay",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r47---independent-shipping-v1-evaluator-replay-on-0c98ad06-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-47"
     },
     {
      "label": "R45 actual HTTP profile replay",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r45---independent-actual-http-profile-writers-on-dff9a8d4-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-45"
     },
     {
      "label": "R43 independent acceptance",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-43"
     },
     {
      "label": "architecture execution plan",
@@ -361,11 +361,11 @@
     },
     {
      "label": "R72 accepted criterion disposition",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-72"
     },
     {
      "label": "R62/R64 published acceptance and verification",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-64"
     },
     {
      "label": "R54 cumulative / native scope limits",
@@ -377,23 +377,23 @@
     },
     {
      "label": "R46 bounded PG consolidation and indexed races",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-46"
     },
     {
      "label": "R44 local composition and direct identity",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-44"
     },
     {
      "label": "R42 local acceptance",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-42"
     },
     {
      "label": "R41 local acceptance",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-41"
     },
     {
      "label": "R40 acceptance",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-40"
     },
     {
      "label": "milestone dashboard",
@@ -405,11 +405,11 @@
     },
     {
      "label": "R67 bounded clinical native controls",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r67---bounded-recovered-clinical-projection-native-controls-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-67"
     },
     {
      "label": "R68 fresh-schema DATA native controls",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-68"
     },
     {
      "label": "Adopted promotion bars and reader-mode withdrawal",
@@ -460,7 +460,7 @@
    "phase": "now",
    "state": "done",
    "short": "Identity spec after #8845",
-   "title": "A conformance case for the mandatory identifier on registered instances; identity I2 and \u00a76 state API v3's refusal of a client _id (BF-170)",
+   "title": "A conformance case for the mandatory identifier on registered instances; identity I2 and §6 state API v3's refusal of a client _id (BF-170)",
    "spec": [
     {
      "label": "identity spec",
@@ -558,7 +558,7 @@
    "ref": "#8857 is draft at head 5f6c1275 and BEHIND dev 497d08c9. Its current-head PR checks are green, but it must be rebased and retested before the 16.0.0 entry bar.",
    "spec": [
     {
-     "label": "registration \u00a74",
+     "label": "registration §4",
      "href": "spec/registration.md#4-the-capability-document"
     }
    ],
@@ -577,7 +577,7 @@
    "title": "The product resource: submit, etag, retire; MongoDB collections; single mode with API_SECRET or a subject's token",
    "spec": [
     {
-     "label": "registration \u00a75",
+     "label": "registration §5",
      "href": "spec/registration.md#5-the-product-resource"
     }
    ],
@@ -597,7 +597,7 @@
    "title": "Content-addressed definitions and leased instances; channels, roles and provenance. Instances on one flat root: PUT and DELETE /api/v4/instances/:instanceId with the product named in the body, GET /api/v4/instances for the owner's listing",
    "spec": [
     {
-     "label": "registration \u00a77\u2013\u00a79",
+     "label": "registration §7–§9",
      "href": "spec/registration.md#7-definitions"
     }
    ],
@@ -617,7 +617,7 @@
    "title": "The owner's actions on a single-tenant site with API_SECRET: retire, block, release, transfer, free-namespaces, pins, transfer-role and the instance listing",
    "spec": [
     {
-     "label": "registration \u00a715",
+     "label": "registration §15",
      "href": "spec/registration.md#15-binding-credentials-and-the-owner"
     }
    ],
@@ -638,7 +638,7 @@
    "title": "Typed writes and read selection for accepted elements, applied by the write step",
    "spec": [
     {
-     "label": "registration \u00a711\u2013\u00a712",
+     "label": "registration §11–§12",
      "href": "spec/registration.md#11-typed-writes-and-attribution"
     }
    ],
@@ -658,7 +658,7 @@
    "title": "Hub-projected read-only views of typed records for older readers",
    "spec": [
     {
-     "label": "registration \u00a713",
+     "label": "registration §13",
      "href": "spec/registration.md#13-projected-views-for-older-readers"
     }
    ],
@@ -741,16 +741,16 @@
      "href": "../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md"
     },
     {
-     "label": "R72 accepted M1\u2013M4 criterion disposition",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
+     "label": "R72 accepted M1–M4 criterion disposition",
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-72"
     },
     {
      "label": "R62/R64 published acceptance and verification",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-64"
     },
     {
      "label": "R40 API preview acceptance",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-40"
     },
     {
      "label": "architecture and compatibility",
@@ -809,7 +809,7 @@
    "spec": [
     {
      "label": "R62/R64 published acceptance and verification",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-64"
     },
     {
      "label": "Adopted owner authority and token verification",
@@ -846,11 +846,11 @@
    "spec": [
     {
      "label": "R72 accepted criterion disposition",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-72"
     },
     {
      "label": "R62/R64 published acceptance and verification",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-64"
     },
     {
      "label": "Resolution/lifecycle remaining scope",
@@ -891,15 +891,15 @@
     },
     {
      "label": "R72 accepted criterion disposition",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-72"
     },
     {
      "label": "R62/R64 published acceptance and verification",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-64"
     },
     {
      "label": "R48 bounded local data-token API acceptance",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-48"
     },
     {
      "label": "Adopted owner authority and token verification",
@@ -907,15 +907,15 @@
     },
     {
      "label": "R42 local acceptance",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-42"
     },
     {
      "label": "R41 local acceptance",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-41"
     },
     {
      "label": "R40 evidence",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-40"
     },
     {
      "label": "single vs multitenant",
@@ -949,11 +949,11 @@
     },
     {
      "label": "R72 accepted criterion disposition",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-72"
     },
     {
      "label": "R62/R64 published acceptance and verification",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-64"
     },
     {
      "label": "R54 cumulative / native scope limits",
@@ -973,19 +973,19 @@
     },
     {
      "label": "R46 bounded PG consolidation and indexed races",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-46"
     },
     {
      "label": "R44 local composition and direct identity",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-44"
     },
     {
      "label": "R42 local acceptance",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-42"
     },
     {
      "label": "R41 local acceptance",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-41"
     },
     {
      "label": "milestone promotion criteria",
@@ -993,7 +993,7 @@
     },
     {
      "label": "acceptance evidence",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-40"
     },
     {
      "label": "Adopted promotion bars and reader-mode withdrawal",
@@ -1025,7 +1025,7 @@
     },
     {
      "label": "R40",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-40"
     }
    ]
   },
@@ -1040,11 +1040,11 @@
    "spec": [
     {
      "label": "R72 accepted criterion disposition",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-72"
     },
     {
      "label": "R62/R64 published acceptance and verification",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-64"
     },
     {
      "label": "R54 cumulative / native scope limits",
@@ -1052,7 +1052,7 @@
     },
     {
      "label": "R48 bounded local data-token API acceptance",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-48"
     },
     {
      "label": "Adopted owner authority and token verification",
@@ -1060,11 +1060,11 @@
     },
     {
      "label": "R42 local acceptance",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-42"
     },
     {
      "label": "R41 local acceptance",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-41"
     },
     {
      "label": "configuration gates",
@@ -1096,7 +1096,7 @@
     },
     {
      "label": "R48 bounded local data-token API acceptance",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-48"
     },
     {
      "label": "Adopted owner authority and token verification",
@@ -1164,7 +1164,7 @@
    "spec": [
     {
      "label": "R46 bounded PG consolidation and indexed races",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-46"
     },
     {
      "label": "architecture execution plan",
@@ -1178,13 +1178,13 @@
    "phase": "multi",
    "state": "progress",
    "short": "Current-property reuse / raw frames",
-   "title": "The selected multitenant stream delivers completed evaluator output without a second raw clinical projection. Independent raw storage events preserve stock subscription semantics.",
+   "title": "The assigned evaluator persists completed clinical output. Realtime serves that output and independently receives raw storage events.",
    "check": "Derived-output characterization has intended corruption/stale/cross-tenant/settings/deletion/partial-input controls and restored success. This is synthetic component evidence, not complete public auth/role, provider or distributed publication acceptance.",
    "depends": [
     "ST-VIEWS-PROFILE",
     "ARCH-SEAM-COMPOSE"
    ],
-   "ref": "The communication contract and selected integration own current behavior. Earlier characterization retains its original source; universal computed-single and broader publication/capacity claims remain separate.",
+   "ref": "The writer-driven communication guide describes the serving path. Earlier frame comparisons retain their original source and scope.",
    "spec": [
     {
      "label": "Current completed output and independent raw delivery",
@@ -1196,7 +1196,7 @@
     },
     {
      "label": "R62/R64 published acceptance and verification",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-64"
     },
     {
      "label": "R54 cumulative / native scope limits",
@@ -1224,11 +1224,11 @@
     },
     {
      "label": "R67 bounded clinical native controls",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r67---bounded-recovered-clinical-projection-native-controls-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-67"
     },
     {
      "label": "R68 fresh-schema DATA native controls",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-68"
     }
    ]
   },
@@ -1237,16 +1237,24 @@
    "track": "tenancy",
    "phase": "multi",
    "state": "progress",
-   "short": "Stream runtime / operating limits",
-   "title": "Selected local stream runtime has source-scoped functional qualification: recoverably accepted cohorts, bounded clinical state, completed output and independent raw delivery. Parent runtime/production work remains open.",
-   "ref": "Ordinary slot recovery and populated upgrade/cold rollback retain executed pair attribution. Capacity/latency, production trust, live provider/device, HA and fleet scope remain separate; the amplification/retirement follow-on has separate functional qualification, with matched operating comparison still open.",
+   "short": "Writer-driven runtime and operating limits",
+   "title": "Candidate 5 joins writer-driven clinical updates, fixed tenant ownership and separate raw storage delivery.",
+   "ref": "The candidate 5 execution record identifies the qualified source and deployment, the local mixed connector workload and the paid observations. Production capacity remains open.",
    "spec": [
     {
-     "label": "Qualified follow-on amplification and executable retirement",
+     "label": "Candidate 5 qualification and nominal discovery",
+     "href": "../tenancy/execution-log.md#candidate-5-qualification-and-nominal-discovery"
+    },
+    {
+     "label": "Writer-driven evaluation and realtime",
+     "href": "../tenancy/evaluator-realtime-communication.md"
+    },
+    {
+     "label": "November 16 pgstream evidence — amplification and retirement checks",
      "href": "../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#stream-amplification-and-executable-retirement--2026-11-16"
     },
     {
-     "label": "Selected stream integration and its limits",
+     "label": "November 16 pgstream evidence — functional qualification",
      "href": "../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16"
     },
     {
@@ -1255,7 +1263,7 @@
     },
     {
      "label": "R73 accepted functional M5 and bounded SQL operations",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-73"
     },
     {
      "label": "M5 bounded PostgreSQL recorded evidence",
@@ -1271,11 +1279,11 @@
     },
     {
      "label": "R72 accepted criterion disposition",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-72"
     },
     {
      "label": "R62/R64 published acceptance and verification",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-64"
     },
     {
      "label": "Adopted durable delivery direction and experiments",
@@ -1287,11 +1295,11 @@
     },
     {
      "label": "R67 bounded clinical native controls",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r67---bounded-recovered-clinical-projection-native-controls-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-67"
     },
     {
      "label": "R68 fresh-schema DATA native controls",
-     "href": "../remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06"
+     "href": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#run-68"
     },
     {
      "label": "Adopted promotion bars and reader-mode withdrawal",
@@ -1306,7 +1314,7 @@
      "href": "../tenancy/tenant-admission-and-activity.md"
     }
    ],
-   "check": "Current selected-runtime record owns final functional qualification and pending cases. Recorded-evidence gates do not execute a fresh campaign or promote the whole milestone."
+   "check": "Read the sealed per-workload verdict and the outstanding admission criteria in the production guide."
   }
  ],
  "decisions": [
@@ -1314,7 +1322,7 @@
    "id": "D-EVENT",
    "short": "Commit event (decided 2026-10-31)",
    "owner": "maintainer; decided 2026-10-31",
-   "question": "Adopted in-process write(intent) event policy retains its own scope. Current multitenant cross-process flow uses platform pgstream, recoverably accepted cohorts and atomically completed output/checkpoint/next due, with independent raw storage delivery. The communication contract owns this mechanism. R73 polling and old snapshot proofs retain their historical source; a wake alone is not recoverable completion. Live provider/device, HA and fleet admission remain separate.",
+   "question": "The in-process event records a committed write. In the multitenant runtime the writer marks work pending in the transaction and sends a post-commit hint. The assigned evaluator checks durable work and publishes completed results. Realtime also receives raw storage changes. The communication guide owns these contracts.",
    "holds": [],
    "options": [
     {
@@ -1327,9 +1335,9 @@
   },
   {
    "id": "D-EXEC-PROFILE",
-   "short": "Tenancy \u00d7 execution: three profiles",
+   "short": "Tenancy × execution: three profiles",
    "owner": "maintainer; framed 2026-10-31, evidence from the profile prototype",
-   "question": "Tenancy (one site's data or many) and execution (a resident ddata kept current, or views computed from bounded queries when a write, a timer or a request needs them) are separate axes. Today the subcommand couples them: single is one tenant with a resident ddata; the explicit multitenant API preview now builds request-local loader frames. R73 accepts the functional one-host multitenant evaluator/realtime reference; the independent computed-single prototype has a separate entry bar. A third profile, one tenant computed on demand, would let an independent or low-cost single-tenant site skip the resident ddata without taking on multitenancy or PostgreSQL. It also takes the alarm trigger inside one process, so it does not wait on a cross-process change feed. Default single keeps its resident path. Current multitenant separate processes and the independent computed-single prototype do not select a universal process/host topology. Execution mode is chosen by evidence (maintainer, 2026-10-31): \"If the evidence suggested that single tenant needs ddata for cost savings/freemium quotas, then we need to keep that behavior as appropriate.\" Evidence needed: alarm and properties equality through the profile's own trigger (replay lab, the execution plan \u00a77b cases), and per-tenant memory, CPU per evaluation, database operations per write and per tick, idle cost, and the latest-reading latency, resident against computed, at the full windows the views need (60 h treatments, 24 h device statuses), giving the break-even between the two. Roles are a third axis (maintainer, 2026-10-31, follow-up open): a single-tenant site already runs a headless API v3, so `nightscout single [roles,...]` beside `nightscout multitenant [roles,...]` would give single-tenant and multitenant sites one theory of operations, with the monolithic single-tenant site staying the default.",
+   "question": "Tenancy (one site's data or many) and execution (a resident ddata kept current, or views computed from bounded queries when a write, a timer or a request needs them) are separate axes. Today the subcommand couples them: single is one tenant with a resident ddata; the explicit multitenant API preview now builds request-local loader frames. R73 accepts the functional one-host multitenant evaluator/realtime reference; the independent computed-single prototype has a separate entry bar. A third profile, one tenant computed on demand, would let an independent or low-cost single-tenant site skip the resident ddata without taking on multitenancy or PostgreSQL. It also takes the alarm trigger inside one process, so it does not wait on a cross-process change feed. Default single keeps its resident path. Current multitenant separate processes and the independent computed-single prototype do not select a universal process/host topology. Execution mode is chosen by evidence (maintainer, 2026-10-31): \"If the evidence suggested that single tenant needs ddata for cost savings/freemium quotas, then we need to keep that behavior as appropriate.\" Evidence needed: alarm and properties equality through the profile's own trigger (replay lab, the execution plan §7b cases), and per-tenant memory, CPU per evaluation, database operations per write and per tick, idle cost, and the latest-reading latency, resident against computed, at the full windows the views need (60 h treatments, 24 h device statuses), giving the break-even between the two. Roles are a third axis (maintainer, 2026-10-31, follow-up open): a single-tenant site already runs a headless API v3, so `nightscout single [roles,...]` beside `nightscout multitenant [roles,...]` would give single-tenant and multitenant sites one theory of operations, with the monolithic single-tenant site staying the default.",
    "holds": [
     "ST-VIEWS-PROFILE"
    ],
@@ -1356,7 +1364,7 @@
    "id": "D-LOOP-ID",
    "short": "Identity rules adopted; external feedback remains",
    "owner": "maintainer; current identity specification owns the rules",
-   "question": "Proceed under the adopted identity specification and compatibility A/B/C. The server owns _id; clients own identifier, with legacy API v1 forms preserved. Current identifier format is 1\u2013256 characters with URL path encoding; strict/lenient handling is path/configuration-specific. Current resend modes are replace, merge-except-treatments, acknowledge and refuse; bare merge refuses startup. Per-client D20 overrides remain future work. Earlier Loop correspondence is retained as context; waiting for a reply does not block the already merged identifier-first work.",
+   "question": "Proceed under the adopted identity specification and compatibility A/B/C. The server owns _id; clients own identifier, with legacy API v1 forms preserved. Current identifier format is 1–256 characters with URL path encoding; strict/lenient handling is path/configuration-specific. Current resend modes are replace, merge-except-treatments, acknowledge and refuse; bare merge refuses startup. Per-client D20 overrides remain future work. Earlier Loop correspondence is retained as context; waiting for a reply does not block the already merged identifier-first work.",
    "holds": [],
    "options": [
     {
