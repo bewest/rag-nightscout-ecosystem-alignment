@@ -4,8 +4,7 @@
 source named in each section unless a row says **measured**. The one drill reported below ran on a
 workstation with synthetic data; it is not a production figure. Decisions are linked, not restated:
 start at [decisions in force](decisions-in-force.md). Alert rules that point at these sections live in
-the deployment repository, `observability/alerts/multitenant.rules.yml` (branch
-`claude/ops-readiness-20261123`, not pushed).*
+the deployment repository at `2d1fa41`, in `observability/alerts/multitenant.rules.yml`.*
 
 Operator-facing safety note: Nightscout is a secondary display. Operators must tell people who rely on
 alarms that during any restart, failover or restore on this page alarms and displayed values can be late
@@ -30,7 +29,7 @@ dependencies are up and tenants warm afterwards ([readiness-serve-then-warm](mul
 narrowed for the api by [api-tenant-cache-bounded-lru](multitenancy-decisions.md#api-tenant-cache-bounded-lru)).
 "Ready" therefore does not mean "every tenant is warm".
 
-## Planned restart and K change {#planned-restart-and-k-change}
+## Planned restart and K change
 
 Governing decision: [evaluator-k-planned-restart](multitenancy-decisions.md#evaluator-k-planned-restart).
 K (evaluator and realtime slice count) changes only by a planned restart of the role, with headroom
@@ -51,7 +50,7 @@ backlog returned to baseline about 228 s after the delete; about 1.3% of complet
 an unrestarted control. That is one run at 1,000 tenants. At 10,000 tenants expect a longer tail
 ([warm-up plan](#warm-up-plan)).
 
-## Node loss {#node-loss}
+## Node loss
 
 Read-derived. A node hosting an api or realtime pod: Kubernetes reschedules; the api's cache is a
 bounded optimization, so a replacement serves cold tenants inline. An evaluator ordinal (StatefulSet pod)
@@ -71,9 +70,9 @@ and then warm lazily. The alert is `NightscoutRoleDown`.
 Node loss of a role is a restart of that role from a clinical point of view; it has no recovery-time bound
 today ([production-critical-path](production-critical-path.md), failure and recovery section).
 
-## PostgreSQL restart and failover {#postgresql-restart-and-failover}
+## PostgreSQL restart and failover
 
-[One large PostgreSQL primary on its own node](multitenancy-decisions.md) is the current shape; there is no
+[One large PostgreSQL primary on its own node](multitenancy-decisions.md#one-large-postgresql-primary) is the current shape; there is no
 automatic failover in the supported shape. Alerts: `PostgresDown`, `PostgresExporterDown`,
 `NightscoutStorageUnavailable`, `PostgresRestarted`.
 
@@ -97,7 +96,7 @@ automatic failover in the supported shape. Alerts: `PostgresDown`, `PostgresExpo
 Whether replication lag is bounded is not measured here; `PostgresReplicationLagHigh` exists in the
 rules but no replica topology is part of the supported shape yet.
 
-## Restore {#restore}
+## Restore
 
 Two different operations share the word. **Tenant-local restore** (one tenant's history, through the
 lifecycle controller, with other tenants continuing) is specified by
@@ -105,19 +104,18 @@ lifecycle controller, with other tenants continuing) is specified by
 in [deployment-and-rig-testing](deployment-and-rig-testing.md#restore-and-failure-scenarios); do not do it by hand in
 SQL. **Whole-database restore** (the primary is lost or corrupt) is below.
 
-Whole-database restore, read-derived procedure with the drill figures after it:
+Whole-installation rollback requires a PostgreSQL backup and the matching Vault state. The
+read-derived procedure below follows the [platform backup decision](multitenancy-decisions.md#platform-backup-and-test-fixtures).
 
-1. Stop or scale to zero the evaluator and realtime roles first, then api, so nothing writes to a
-   half-restored database. Tell people alarms are unavailable until step 6.
+1. Close admission and stop all writers, including connectors and admin jobs, before restoring either store. Keep serving roles offline. Tell people alarms are unavailable during recovery.
 2. Restore either a physical base backup (`pg_basebackup`, plus WAL if point-in-time recovery is
    wanted) or a logical dump (`pg_restore -j`). A physical backup restores identical bytes, including
    the tenant write clock rows; prefer it for the primary. A logical dump is for moves between
    versions, and requires running `ANALYZE` afterwards.
-3. Run the schema check (`/healthz/schema` on a role, or `node bin/nightscout.js migrate check`) before
+3. Restore the matching Vault state and verify access to tenant key material. Run the schema check (`/healthz/schema` on a role, or `node bin/nightscout.js migrate check`) before
    starting roles.
 4. Start api, then realtime, then evaluators. Each ordinal reloads its tenants lazily.
-5. Check the isolation endpoint and the tenant census; a restored database that is older than the
-   clients' cursors makes clients converge through the history-forward correction, not by manual repair.
+5. Check isolation, the tenant census and client readback across the rollback point. History-forward correction applies to same-ID logical tenant restore. Physical rollback has no demonstrated guarantee for clients whose saved cursors are ahead of the backup.
 6. Follow [Warm-up after restart](#warm-up-after-restart) and close the incident when completion-lag p95 is
    below 30 s for ten minutes.
 
@@ -148,7 +146,7 @@ procedure works end to end and that the database part is small at this size. The
 restore time at production size, which should be re-measured on the real node class with a realistic
 database before an operator relies on a recovery-time figure.
 
-## Warm-up after restart {#warm-up-after-restart}
+## Warm-up after restart
 
 After any restart of PostgreSQL or an evaluator, evaluators reload tenants lazily, tenants with a due
 alarm first ([evaluator-k-planned-restart](multitenancy-decisions.md#evaluator-k-planned-restart)). Until
@@ -162,7 +160,7 @@ the cache is warm, completions take longer.
    evaluator-lag alerts and check event-loop utilisation and storage refusals.
 4. Do not restart a slice again to "clear" a warm-up; each restart repeats the cold start.
 
-### Evaluator lag {#evaluator-lag}
+### Evaluator lag
 
 When completion lag or the pending age is high with warm-up complete: check `nodejs_eventloop_utilization`
 (above 0.9 means the evaluator is CPU-bound and K or the per-slice density is wrong; K changes by
@@ -170,19 +168,19 @@ planned restart only), then `nightscout_storage_refusals_total` and PostgreSQL c
 10,000 tenants PostgreSQL and the api pool limited throughput, not the evaluator
 ([execution log](execution-log.md), 10k K=20 row).
 
-### Realtime lag {#realtime-lag}
+### Realtime lag
 
 Frame lag high with evaluator lag normal: check the realtime pending age and event-loop utilisation of
 the realtime pods; K for realtime follows evaluator K.
 
-### Storage refusals {#storage-refusals}
+### Storage refusals
 
 `STORAGE_BUSY` (checkout: no pooled client): the pool is exhausted; do not add api replicas without
 first checking PostgreSQL connection headroom (`PostgresConnectionsNearLimit`). `STORAGE_TIMEOUT`
 (statement or clock row lock): look for a long transaction. `STORAGE_UNAVAILABLE`: the database is
 suspended or unreachable; go to [PostgreSQL restart and failover](#postgresql-restart-and-failover).
 
-## Warm-up plan {#warm-up-plan}
+## Warm-up plan
 
 Basis (**measured**, 10k K=20 run, execution log 2026-11-22): durable completions over 120 s were 6.2%
 of the run, and 97% of those fell in the first 10 minutes after the restore. The run's case verdict was
@@ -210,7 +208,7 @@ Success measure for any option: over-120 s completions in the 10 minutes after a
 `nightscout_evaluator_resident_tenants` to reach its target, at the same tenant count and load as the
 baseline run.
 
-## Migration-rule transition {#migration-rule-transition}
+## Migration-rule transition
 
 Today ([prerelease-schema-in-place](multitenancy-decisions.md#prerelease-schema-in-place)) the multitenant
 schema and its migrations may change in place because no operator database exists. From the first release
@@ -239,8 +237,7 @@ Plan:
 5. **Interrupted migration and rollback.** Rehearse an interrupted `up` (the runner commits each migration
    and its ledger row in one transaction, so a kill leaves a whole prefix) and a rollback to the previous
    release before the remove step ([multitenant-upgrade-shape](multitenancy-decisions.md#multitenant-upgrade-shape)).
-6. **Fixtures.** Retained fixtures and seeds built on the old schema stay rebuilt, not migrated, until a
-   fixture is declared to be an operator-shaped database.
+6. **Fixtures.** Prefer an exact fixture key. For a writer-driven Kubernetes fixture from an ancestor core commit, match the tenant count, seed, full history specification, PostgreSQL image and transport. Verify the bootstrap migration receipt for the source and target before starting roles. [Fixture reuse decision](multitenancy-decisions.md#one-call-usable-provisioning)
 7. **Record.** On the first operator release, mark prerelease-schema-in-place superseded in the same edit
    that records the baseline cut ([decisions in force](decisions-in-force.md) conventions).
 

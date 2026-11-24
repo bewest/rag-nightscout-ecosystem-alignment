@@ -731,7 +731,7 @@
       "work": "TEN-LAB",
       "stage": "integrated-accepted",
       "commit": "74d7b3fc",
-      "evidence": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06",
+      "evidence": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06",
       "result": "Coherent full/browser/all40 enabled corpus/finalprcheck acceptance, current actor/policy/presentation native controls and real client/pooler proofs. M1–M4 promoted at adopted scope; exact74d7/7015 attribution preserved. M5/M6 remain open."
     },
     {
@@ -763,7 +763,7 @@
       "work": "MT-RUNTIME-PLAN",
       "stage": "integrated-accepted",
       "commit": "f0fac99a",
-      "evidence": "../remedial/rc-16.0.0-integration-record.md#r73---durable-runtime-and-bounded-operations-batch-2026-11-07",
+      "evidence": "../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.md#r73---durable-runtime-and-bounded-operations-batch-2026-11-07",
       "result": "Complete full suite, entire default browser and all45 enabled corpus suites pass; only declared pending cases, final prcheck unchanged. Explicit family disposition promotes M5 reference; M6 blocked. Later publication/CI is recorded below; this checkpoint retains its executed scope. Earlier failure/cleanup receipts remain attributed to their captures."
     },
     {
