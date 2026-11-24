@@ -4435,7 +4435,7 @@ change refuses. Hard-map keys, pod counts, scopes and other fields remain exact;
 unknown dimensions and masked values have no inferred equality. Resource
 readback refusals retain only the safe resource kind/name beside the code.</p>
 <p>Use a <strong>new</strong> copy of the released commissioner source with
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/kubernetes/commissioning-accounting.patch"><code>commissioning-accounting.patch</code></a>. The patch
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/cfa74fdc1777796ee2f4844983196384b30fb352/tools/mt-bench/kubernetes/commissioning-accounting.patch"><code>commissioning-accounting.patch</code></a>. The patch
 header identifies the base source hash; retained instruments are unchanged. From
 the new staging directory containing <code>bin/preflight.py</code>, apply the patch with
 <code>git apply /absolute/helper/tools/mt-bench/kubernetes/commissioning-accounting.patch</code>.
@@ -4529,7 +4529,7 @@ is gone.</p>
 <h2 id="outcome-evaluator-gate-on-kubernetes">Outcome evaluator gate on Kubernetes<a class="headerlink" href="#outcome-evaluator-gate-on-kubernetes" title="Permanent link">&para;</a></h2>
 <p>Decision <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#outcome-evaluator-gate">outcome-evaluator-gate</a>
 replaces the lifetime <code>failedCompletions == 0</code> rule and the instant midpoint
-readiness rule. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/m7-joined/outcome_gate.py">outcome_gate.py</a> is the one frozen gate; its
+readiness rule. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/cfa74fdc1777796ee2f4844983196384b30fb352/tools/mt-bench/m7-joined/outcome_gate.py">outcome_gate.py</a> is the one frozen gate; its
 identity is the SHA-256 of that file. Tenants, rate, windows, budgets and
 <code>deadlineMs</code> (default 120000) are configuration under the same identity.</p>
 <table>
@@ -4587,7 +4587,7 @@ not-ready owner at the midpoint continues. Raw responses are written before
 any decoder reads them (<code>progress-*.private.jsonl</code>; after an early load stop, <code>progress-stop.private.jsonl</code>, then <code>stored-counts.json</code>, recorded in <code>stop-evidence.json</code>). The runner publishes <code>load/outcome-gate.json</code> and a stage summary in <code>result.json</code> before returning a failure or missing measurement. It also reports HTTP latency over all k6 shard summaries, including the exact pooled count and mean, plus the quantile range across shards.
 The progress reader checks the evaluator's runtime identity, owner and foreign counters across captured rounds. It records the observed work delta, including zero for idle tenants. The workload outcome combines these checks with storage, sampled clinical results and per-input catch-up. A missing component leaves the load stage <code>UNMEASURED</code>.</p>
 <p><code>assessor.py &lt;load&gt;</code> re-reduces a retained run into a new file beside it and refuses if any original file changes. Set <code>outcomeGate.midpointStop</code> to <code>never</code> to record a hard midpoint signal and continue collecting evidence.</p>
-<p>The accepted-input observer starts before the probe and follows run-marked writes through drain. Its Kubernetes transport brackets each read-only SQL transaction with checks of the owned namespace and Pods. Each call honors the observer timeout and the entered work deadline. The observer reconciles its inputs against the workload and probe acceptance counts. Tenants with no accepted input owe no output. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/kubernetes/catchup.py">Kubernetes transport</a> · <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#deadline-from-acceptance">Deadline and drain decision</a></p>
+<p>The accepted-input observer starts before the probe and follows run-marked writes through drain. Its Kubernetes transport brackets each read-only SQL transaction with checks of the owned namespace and Pods. Each call honors the observer timeout and the entered work deadline. The observer reconciles its inputs against the workload and probe acceptance counts. Tenants with no accepted input owe no output. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/cfa74fdc1777796ee2f4844983196384b30fb352/tools/mt-bench/kubernetes/catchup.py">Kubernetes transport</a> · <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#deadline-from-acceptance">Deadline and drain decision</a></p>
 <h2 id="one-intent-for-compose-and-kubernetes">One intent for Compose and Kubernetes<a class="headerlink" href="#one-intent-for-compose-and-kubernetes" title="Permanent link">&para;</a></h2>
 <p><code>toolchain.py</code> projects a version 1 <code>multitenant-experiment</code> into the existing
 Compose runner or Kubernetes experiment contract. It starts no actor. Immutable

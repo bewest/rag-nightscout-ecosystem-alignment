@@ -2597,6 +2597,8 @@
       
         
       
+        
+      
     
     
     
@@ -3086,6 +3088,34 @@
     
   
     Architecture seams and execution-profile integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="candidate-5-nominal-run-plan-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning the next nominal multitenant run
   
 
     
@@ -3785,6 +3815,17 @@
     <span class="md-ellipsis">
       
         Not proposed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#beyond-the-row-layout-extensions-and-storage-by-age" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Beyond the row layout: extensions and storage by age
       
     </span>
   </a>
@@ -6136,6 +6177,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#beyond-the-row-layout-extensions-and-storage-by-age" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Beyond the row layout: extensions and storage by age
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -6636,6 +6688,16 @@ service is a product decision. <a href="https://github.com/nightscout/cgm-remote
   For multi-year installations, the scenarios above price the potential benefit. The measured open-chunk rewrite
   cost and the number of keys each uploader needs are inputs to that choice.</li>
 </ul>
+<h3 id="beyond-the-row-layout-extensions-and-storage-by-age">Beyond the row layout: extensions and storage by age<a class="headerlink" href="#beyond-the-row-layout-extensions-and-storage-by-age" title="Permanent link">&para;</a></h3>
+<p>This proposal changes how one row is stored. The alternatives that change the database or store data by age
+are evaluated in the <a href="storage-tiering-proposal-2026-11-24.html">storage tiering proposal</a>:
+- native time partitioning and its partition key (section 5.1–5.2);
+- cold monthly bundles, which revisit candidate B above for data older than a tenant-chosen boundary (5.4);
+- TimescaleDB, Citus, columnar and Parquet extensions, filesystem compression, BRIN indexes, dictionary
+  compression and reports on a standby, each with predicted impact on bytes, the clinical path, long-range
+  reads and operations (section 7).</p>
+<p>TimescaleDB is not proposed there because row-level security is not supported on its compressed chunks or under
+its continuous aggregates (vendor-documented), which conflicts with <a href="multitenancy-decisions.html#d3">d3</a>.</p>
 <h2 id="5-what-must-not-change">5. What must not change<a class="headerlink" href="#5-what-must-not-change" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>The API contract.</strong> v1 and v3 return each stored document with its unknown fields, and the same value a single

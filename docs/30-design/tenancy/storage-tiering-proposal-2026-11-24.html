@@ -2597,6 +2597,8 @@
       
         
       
+        
+      
     
     
     
@@ -3086,6 +3088,34 @@
     
   
     Architecture seams and execution-profile integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="candidate-5-nominal-run-plan-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning the next nominal multitenant run
   
 
     
@@ -3915,6 +3945,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="7. Plugins and alternatives evaluated">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-predicted-impact-of-each-alternative" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Predicted impact of each alternative
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -6310,6 +6357,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="7. Plugins and alternatives evaluated">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-predicted-impact-of-each-alternative" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Predicted impact of each alternative
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -6643,7 +6707,7 @@ tenant-month</strong>. Storage passes compute at about one year of hot detail, a
   (layout proposal, gate 2).
 - Many sites upload only CGM data and are far smaller than looping sites. The fleet mix sets the real average.</p>
 <h2 id="4-use-cases-set-the-tiers">4. Use cases set the tiers<a class="headerlink" href="#4-use-cases-set-the-tiers" title="Permanent link">&para;</a></h2>
-<p>Nightscout data is read in three distinct ways. Today all three share one layout and one latency expectation.</p>
+<p>The <a href="multitenancy-decisions.html#nominal-clinical-write-age">nominal write-age decision</a> distinguishes ongoing writes from bulk historical recovery. A tenant’s existing history can be much older than its next upload. Read use cases determine the proposed tier boundaries.</p>
 <table>
 <thead>
 <tr>
@@ -6729,8 +6793,7 @@ more component).</p>
 <p>Predicted gains (read-derived from the 10k evidence; none measured yet):
 - <strong>The working set stays in memory.</strong> Reads of the last few days touch only the newest partition and its indexes.
   The failed 10k run coincided with a buffer hit rate of 0.952 and autovacuum running across a 13 GiB relation.
-- <strong>Vacuum stays small.</strong> Only the current partition takes writes. Older partitions are frozen once and then left
-  alone.
+- <strong>Vacuum work may concentrate in recent partitions.</strong> Near a month boundary, recent uploads can touch two partitions. Bulk imports and historical corrections can also write older months. Measure vacuum on each workload.
 - <strong>Fewer indexes on older partitions.</strong> PostgreSQL allows an index on some partitions only. Warm partitions can
   drop indexes that only live traffic uses. Indexes are about half of every table today (measured).
 - <strong>Moving data to cold, or deleting it, becomes detaching a partition</strong>, not deleting billions of rows.</p>
@@ -6782,14 +6845,14 @@ are all defined on clinical time.</p>
 </tr>
 <tr>
 <td>Performance: writes</td>
-<td>Late uploads write into older partitions</td>
-<td>Every write goes to the newest partition</td>
-<td>Late uploads write into older partitions; uploads are overwhelmingly recent</td>
+<td>Ordinary uploads concentrate in recent months. Bulk recovery can touch older months</td>
+<td>New inserts land by receipt time</td>
+<td>Ordinary uploads concentrate in recent months. Bulk history lands in clinical months</td>
 </tr>
 <tr>
 <td>Performance: v3 history</td>
 <td>Scans <code>srvModified</code> on every attached partition</td>
-<td>Prunes</td>
+<td>The <code>srvModified</code> predicate alone cannot prune creation months. An old document can be edited today</td>
 <td>Scans every attached partition. Tiering keeps that to a few (hot and warm); cold edits are promoted (5.4)</td>
 </tr>
 <tr>
@@ -6807,8 +6870,7 @@ needs a measured comparison before adoption (phase 2). It would come with:
 - an <strong>identity table</strong> <code>(tenant_id, collection, key) → clinical_ms</code> keeping <code>_id</code> and <code>identifier</code> unique across
   partitions (about 172 bytes per document, measured in stage 2);
 - the insertion ordinal kept unique by its allocator; per-partition indexes need not be unique.</p>
-<p>Server receipt time is simpler and best for history, but it breaks the tiering policy for imported history and
-loses pruning on the paths that matter most.</p>
+<p>Receipt time simplifies placement of new inserts. Imported old records then arrive in a recent partition. Compare the actual clinical-time and history query plans before choosing a key.</p>
 <h3 id="53-index-cut-first-and-independently">5.3 Index cut, first and independently<a class="headerlink" href="#53-index-cut-first-and-independently" title="Permanent link">&para;</a></h3>
 <p>Before partitioning, read <code>pg_stat_user_indexes.idx_scan</code> from a 1k run with the realistic mix and drop indexes
 never used, behind the existing end-schema comparison and API differential. Entries carries 15 indexes and 11
@@ -7081,6 +7143,110 @@ one most often trimmed elsewhere; entries and treatments carry the long-range st
 </tr>
 </tbody>
 </table>
+<h3 id="71-predicted-impact-of-each-alternative">7.1 Predicted impact of each alternative<a class="headerlink" href="#71-predicted-impact-of-each-alternative" title="Permanent link">&para;</a></h3>
+<p>None of these is measured here. Figures are read-derived from our own measurements, which are cited, or are
+vendor claims, labelled as such. "Clinical path" means the evaluator window, realtime and recent v1/v3 reads.
+Baseline: today's layout at ~1.6 MB per tenant-day; MongoDB 0.24–0.38.</p>
+<table>
+<thead>
+<tr>
+<th>Alternative</th>
+<th>Bytes</th>
+<th>Clinical path</th>
+<th>Long-range reads</th>
+<th>Operations</th>
+<th>Basis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Native time partitioning</strong></td>
+<td>About the same; plus ~0.15 MB per tenant-day if every document needs an identity-table row (852 documents × ~172 B)</td>
+<td>Vacuum and index maintenance confined to the current partition; the 10k symptom of vacuum running through load should go. Cache gain is modest: at 10k tenants even a week of today's layout is ~110 GB, so the hot set fits in memory only after bytes per row fall</td>
+<td>Pruned to the months asked for</td>
+<td>Partition creation; identity table</td>
+<td>Stage 2 identity bytes; 10k run evidence</td>
+</tr>
+<tr>
+<td><strong>Fewer indexes, BRIN on time for warm and cold partitions</strong></td>
+<td>Indexes are ~50 % of every table today; a BRIN index on an append-ordered time column is a few pages per partition (vendor-documented)</td>
+<td>More rows fit in cache; fewer index writes per insert</td>
+<td>Time-range scans stay efficient; selective lookups on warm data slow</td>
+<td>None</td>
+<td>Layout §2</td>
+</tr>
+<tr>
+<td><strong>Cold monthly bundles (ours)</strong></td>
+<td>~0.13–0.15 MB per tenant-day for cold data, a ~90 % cut</td>
+<td>Unchanged</td>
+<td>Seconds per range (decompress and filter)</td>
+<td>Tiering job, manifest, edit promotion</td>
+<td>Lane R scratch, layout §4</td>
+</tr>
+<tr>
+<td><strong>TimescaleDB compressed chunks</strong></td>
+<td>Similar order to cold bundles (vendor claims ~90 % on time series; JSONB bodies compress less than numeric columns)</td>
+<td>Unchanged on rowstore chunks</td>
+<td>Faster than application-side bundles: decompression happens in SQL</td>
+<td>Extension and licence; <strong>no row-level security on compressed chunks, and continuous aggregates require no row-level security on the hypertable</strong> (<a href="https://www.tigerdata.com/docs/use-timescale/latest/continuous-aggregates/create-a-continuous-aggregate">vendor-documented</a>)</td>
+<td>Would save writing the tiering job, but tenant isolation for old data and summaries moves out of the database</td>
+</tr>
+<tr>
+<td><strong>Citus, distributed</strong></td>
+<td>Same per row; total spread over N workers, each with its own replicas</td>
+<td>Throughput scales with workers for tenant-local queries; an extra coordinator hop per query</td>
+<td>Unchanged</td>
+<td>N + 1 database nodes; requalify triggers, write clock, restore</td>
+<td>Vendor-documented</td>
+</tr>
+<tr>
+<td><strong>Citus columnar for old partitions</strong></td>
+<td>Vendor claims 3–10×</td>
+<td>Unchanged if kept to old partitions</td>
+<td>Fast scans</td>
+<td>Historically append-only: an edit to old data needs a rewrite path; a Citus dependency without distribution</td>
+<td><a href="https://learn.microsoft.com/azure/cosmos-db/postgresql/concepts-columnar">Vendor-documented</a></td>
+</tr>
+<tr>
+<td><strong>Columnar or Parquet extensions</strong> (pg_duckdb, pg_mooncake, ColdFront)</td>
+<td>Object-storage prices for cold data (section 3)</td>
+<td>Unchanged</td>
+<td>Fast analytical scans; good fit for the statistics API over years</td>
+<td>Young; vendor distributions; access control outside row-level security</td>
+<td>Vendor-documented</td>
+</tr>
+<tr>
+<td><strong>Filesystem compression</strong> (ZFS, btrfs) on a warm or cold tablespace</td>
+<td>~4.5× on disk</td>
+<td>None (the cache holds uncompressed pages)</td>
+<td>None</td>
+<td>Node-level setup on Kubernetes</td>
+<td>Lane R proxy</td>
+</tr>
+<tr>
+<td><strong>Per-row compression with a shared dictionary</strong> (application-side zstd)</td>
+<td>Small JSON documents could shrink several-fold (not tried)</td>
+<td>Every read decompresses; queries need typed columns as in stage 1</td>
+<td>—</td>
+<td>Dictionary versioning; stage-1-style query columns</td>
+<td>Not tried; stage 1 showed the query-column cost</td>
+</tr>
+<tr>
+<td><strong>Reports on a standby</strong></td>
+<td>None</td>
+<td>Report and statistics queries leave the primary</td>
+<td>Unchanged</td>
+<td>Routing to replicas already paid for in the three copies</td>
+<td>Read-derived</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What this suggests.</strong> The cheapest clinical-path gains come from removing bytes and maintenance from the
+recent data (index cut, partitioning). The large byte savings all come from compressing old data, by one of three
+routes: our bundles, TimescaleDB or a columnar extension. Only our bundles keep row-level security in force for
+every row. TimescaleDB is the strongest off-the-shelf alternative and would be worth revisiting if old data and
+summaries were served only through a narrow, audited database function rather than row-level security; that
+would be a change to <a href="multitenancy-decisions.html#d3">d3</a>.</p>
 <h2 id="8-plan">8. Plan<a class="headerlink" href="#8-plan" title="Permanent link">&para;</a></h2>
 <p>Each phase is one lane with its own gates; performance results are signals
 (<a href="multitenancy-decisions.html#performance-signals-not-gates">performance-signals-not-gates</a>) and correctness gates
@@ -7121,7 +7287,7 @@ stay strict.</p>
 </tr>
 </tbody>
 </table>
-<p>Phases 1 and 2 also improve latency at 10k independently of cost.</p>
+<p>Any 10k latency benefit from index changes or time partitioning remains a prediction. Measure it on the corresponding read and write paths.</p>
 <h2 id="9-maintainer-direction-and-open-questions">9. Maintainer direction and open questions<a class="headerlink" href="#9-maintainer-direction-and-open-questions" title="Permanent link">&para;</a></h2>
 <p><strong>Direction, 2026-11-24</strong> (maintainer; shapes this proposal, adopts nothing):
 - Relaxed latency for data older than about 90 days: <strong>probably acceptable</strong>, given a holistic retention
