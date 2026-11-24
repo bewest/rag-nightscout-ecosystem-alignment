@@ -1,5 +1,7 @@
 # Nightscout multitenancy: next priorities, PostgreSQL RLS and Celld
 
+*Historical assessment. For the current runtime, adopted storage decisions and candidate evidence, start with the [tenancy guide](../30-design/tenancy/README.md) and [decisions in force](../30-design/tenancy/decisions-in-force.md).*
+
 **Assessment: 2026-11-02. Recommendations, not newly adopted decisions or
 production acceptance.** Public `dev` was checked through GitHub and read from
 the local `official/dev` ref at `61eb37335954ae42c91345a0823bd67331025165`.

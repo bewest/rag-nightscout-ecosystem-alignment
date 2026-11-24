@@ -12,7 +12,9 @@ This directory contains analysis, research, and decisions extracted from the Nig
 | asking "what is blocked on me" | [`00-overview/NEEDS-A-HUMAN.md`](00-overview/NEEDS-A-HUMAN.md) |
 | picking up one pull request | [`../reports/reviewer-packets/`](../reports/reviewer-packets/) |
 | looking for item state | [`../queue/QUEUE.md`](../queue/QUEUE.md) (generated; the source is `queue/work-queue.yaml`) |
-| comparing tenant storage architectures | [Cell/SQLite, PostgreSQL and MongoDB decision guide](10-domain/tenant-cell-sqlite-deep-dive.md) (experimental evidence, diagrams and promotion gates) |
+| reviewing the closing single-tenant 16.0.0 release | [Release contents](../releases/cgm-remote-monitor-16.0.0/contents.md) and [testing notes](../releases/cgm-remote-monitor-16.0.0/testing-notes.md) |
+| reviewing multitenant support | [Tenancy guide](30-design/tenancy/README.md), [decisions in force](30-design/tenancy/decisions-in-force.md) and [execution log](30-design/tenancy/execution-log.md) |
+| researching earlier tenant storage alternatives | [Cell/SQLite, PostgreSQL and MongoDB decision guide](10-domain/tenant-cell-sqlite-deep-dive.md) (experimental evidence, diagrams and promotion gates) |
 
 ## The programme axis, added 2026-09-16
 

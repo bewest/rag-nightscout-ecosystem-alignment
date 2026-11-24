@@ -1,13 +1,13 @@
 # Nightscout v16 ecosystem and release acceptance
 
-**Evidence refresh: 2026-11-03.** This is the current contributor-facing follow-up to
+**Evidence snapshot, 2026-11-03.** The [closing 16.0.0 release record](../../releases/cgm-remote-monitor-16.0.0/contents.md) tracks the current candidate. This analysis follows
 the [November 1 readiness snapshot](nightscout-rc-readiness-2026-11-01.md).
 It records upstream metadata, maintainer reports and proposed next work separately.
 It is not a release approval, clinical validation or a claim of a certified QMS.
 
 ## Release position
 
-`official/dev` at `4a482627bfdafb1fef8dcbe0ac6c484811cae563` is the current
+`official/dev` at `4a482627bfdafb1fef8dcbe0ac6c484811cae563` was the November 3
 16.0.0 release candidate. Release preparation is in progress, not blocked; the
 remaining acceptance and staging steps are pending. The latest published
 release is still `v15.0.9`, and no 16.0.0 tag or release is published. The

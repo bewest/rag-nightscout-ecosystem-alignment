@@ -5,14 +5,10 @@ derived from this document has its own rules — §5.6.*
 
 **Status: living document.** Three parts with different standing:
 
-- **The release train (§8.3) is adopted.** Maintainer, 2026-09-15: 15.0.9, then cut 1
-  (`chore/retire-jsdom`) alone, then cut 2, then cuts 3+5 combined, with cut 4 last. Maintainer,
-  2026-09-23: there is no separate deprecation release (queue `RT-4`; the legacy-ingestion notice
-  is in 15.0.9's release notes), the legacy Dexcom and MiniMed bridge removal moves from cut 4
-  onto cut 1 (`RT-1`), and BF-61's hard stop at boot is intended (`RT-5`). Still open: whether the
-  cuts ship as separate releases or as one combined release
-  ([15.0.9 decisions](../../../releases/cgm-remote-monitor-15.0.9/decisions.md)), and register **BF-64** (cut 4
-  is an ancestor of cut 5), which bears on how step 4 is built.
+- **The modernization train is merged into the 16.0.0 candidate.** The September
+  decisions and cut-by-cut rationale are retained in [§8.3](#83-the-release-train).
+  The [16.0.0 release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md)
+  identify the assembled candidate and its remaining release work.
 - **15.0.9's number is decided: `15.0.9`** (maintainer, 2026-09-22, queue `RT-VERSION`). On
   2026-09-24 the maintainer decided that reads tolerate the `count` shapes oref0 and GluPredKit
   send, so that 15.0.9 stays a patch under §3.2's test (`RT-COUNT-COMPAT`, merged as #8761). §8.1
@@ -1323,7 +1319,7 @@ The draft release notes state the reasoning to operators ("About the version num
 that was never intended, not new features, and they are listed under "Corrections: requests
 answered differently".
 
-**`15.0.9` has never been tagged** (`git tag -l` stops at `15.0.8`), and dev Docker builds are
+**At the September checkpoint, `15.0.9` had yet to be tagged** (`git tag -l` stops at `15.0.8`), and dev Docker builds are
 tagged `dev_<sha>` and `latest_dev`, not by version. **But the running application reports its
 package.json version** (`lib/server/env.js:137`, `lib/api/status.js:32`), so dev-channel
 deployments already answer `/api/v1/status` with `15.0.9`; the draft release notes say that a
@@ -1371,6 +1367,12 @@ Classes are the queue's `semver` fields.
 | BF-142 fix, PR to be opened (`bf/api3-delete-nonstring-identifier` `1c3aeb8c`) | `BFQ-142` | patch | a v3 delete reaches a record whose `_id` v3 reads show as its identifier, as on 15.0.8 |
 
 ### 8.3 The release train
+
+**Outcome, read from `official/dev` on 2026-11-24.** #8828, #8837, #8844
+and #8605 merged the modernization work into the single-tenant 16.0.0
+candidate. The cut numbers, open questions and rebase counts below describe
+the September sequencing decision. For the closing build and tag decision,
+see the [release record](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
 
 **Adopted by the maintainer, 2026-09-15, and amended by the maintainer on 2026-09-23.** The order
 is the decision; the cut numbers are this policy's proposal for separate releases.

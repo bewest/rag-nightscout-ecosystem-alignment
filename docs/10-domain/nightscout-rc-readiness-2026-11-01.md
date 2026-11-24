@@ -2,7 +2,8 @@
 
 **Historical snapshot:** for the November 2 cohort update, removal of the 4.4
 protection requirement, new #8829 reporter evidence and both maintainers'
-non-reproduction, see the [current ecosystem/acceptance record](nightscout-v16-ecosystem-deep-dive.md).
+non-reproduction, see the [November 3 ecosystem assessment](nightscout-v16-ecosystem-deep-dive.md). The
+[release contents](../../releases/cgm-remote-monitor-16.0.0/contents.md) track the closing candidate.
 The dated observations below are retained, not current gate claims.
 
 This is a dated readiness record, not a release announcement. Official `dev`
