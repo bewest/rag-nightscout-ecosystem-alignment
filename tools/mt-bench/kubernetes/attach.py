@@ -157,6 +157,10 @@ try:
     # Capture read-only SQL independently of optional client measurements.
     try:execute('sql',ad+['observe-sql',packet,live/'sql'],120)
     except RuntimeError:pass
+    # The catch-up gate first (execute.gate_before_access): the access witness runs on caught-up roles.
+    gate=m['profile']['workload'].get('catchupGate')
+    if gate is not None:
+        execute('catchup',ad+['catchup',packet],{**{'deadlineSeconds':3600},**(gate if isinstance(gate,dict) else {})}['deadlineSeconds']+120)
     execute('access',ad+['access',packet],65)
     pre=read(source/'preflight.json');profile=m['profile']
     actor=cfg['driver']['hostId']

@@ -79,3 +79,30 @@ class CatchupGate(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class GateBeforeAccess(unittest.TestCase):
+    """Round 2 (2026-11-24): the access witness runs after the catch-up gate reports CAUGHT_UP (lanel-c4-02/03 timed out
+    the witness during the 10k post-restore catch-up), and the load stage reuses that record as its warm-up."""
+
+    def test_attach_runs_the_gate_before_access(self):
+        text = Path(g.__file__).with_name('attach.py').read_text()
+        self.assertIn("execute('catchup'", text)
+        self.assertLess(text.index("execute('catchup'"), text.index("execute('access'"))
+
+    def test_adapter_has_a_catchup_command(self):
+        text = Path(g.__file__).with_name('adapter.py').read_text()
+        self.assertIn("'catchup'", text)
+        self.assertIn('gate_before_access(', text)
+
+    def test_load_stage_reuses_the_pre_access_record(self):
+        import tempfile
+        import execute
+        with tempfile.TemporaryDirectory() as tmp:
+            d = Path(tmp); out = d / 'load'; out.mkdir()
+            record = {'verdict': 'CAUGHT_UP', 'warmupSeconds': 412.0, 'caughtUpAtMs': 1, 'samples': []}
+            (d / 'catchup-gate.json').write_text(json.dumps(record))
+            got = execute.wait_for_catchup(d, out, {'completion': {}}, None, None, {'windowSeconds': 300})
+            self.assertEqual(got['warmupSeconds'], 412.0)
+            self.assertEqual(got['gatedBefore'], 'access')
+            self.assertEqual(json.loads((out / 'catchup.json').read_text())['gatedBefore'], 'access')

@@ -814,7 +814,7 @@ def main():
     p = sub.add_parser('prepare')
     for arg in ('config', 'inventory', 'render', 'directory'):
         p.add_argument(arg)
-    for name in ('observe', 'sql', 'clinical-sql', 'commission', 'recovery', 'access', 'policy', 'load', 'cleanup-plan', 'assess'):
+    for name in ('observe', 'sql', 'clinical-sql', 'commission', 'recovery', 'catchup', 'access', 'policy', 'load', 'cleanup-plan', 'assess'):
         p = sub.add_parser(name)
         p.add_argument('directory')
     p = sub.add_parser('observe-sql')
@@ -885,7 +885,9 @@ def main():
         value = cleanup_plan(c, initial, current)
         write(d / 'cleanup-plan.json', value)
         return value
-    from execute import execute, access, assess, restart, continuity, policy
+    from execute import execute, access, assess, restart, continuity, policy, gate_before_access
+    if args.command == 'catchup':
+        return gate_before_access(d, c, objects, client)
     if args.command == 'continuity':
         return continuity(d, c, args.independent_directory)
     if args.command == 'access':

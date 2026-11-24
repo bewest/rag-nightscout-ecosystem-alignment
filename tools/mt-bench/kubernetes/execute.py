@@ -357,9 +357,29 @@ def sql_bookend(d, out, c, objects, client, name):
     return value
 
 
-def wait_for_catchup(d, out, c, objects, client, value):
+GATE_RECORD = 'catchup-gate.json'
+
+
+def gate_before_access(d, c, objects, client):
+    """The catch-up gate as its own step, before the access witness (attach.py): the witness and everything after it
+    run on caught-up roles. Writes D/catchup-gate.json(l); the load stage reuses that record as its warm-up."""
+    value = c.get('workload', {}).get('catchupGate')
+    if value is None:
+        return {'verdict': 'NOT_SELECTED'}
+    return wait_for_catchup(d, d, c, objects, client, value, name='catchup-gate', reuse=False)
+
+
+def wait_for_catchup(d, out, c, objects, client, value, name='catchup', reuse=True):
     """Viewer priming and load wait for the evaluator catch-up after restore (catchup_gate.py); the gate's
-    duration is warm-up, recorded apart. Not caught up by the deadline: the stage is UNMEASURED."""
+    duration is warm-up, recorded apart. Not caught up by the deadline: the stage is UNMEASURED. When the attach
+    step already gated before the access witness (D/catchup-gate.json CAUGHT_UP), that record is the warm-up."""
+    prior = d / GATE_RECORD
+    if reuse and prior.is_file():
+        record = json.loads(prior.read_text())
+        if record.get('verdict') == 'CAUGHT_UP':
+            record = dict(record, gatedBefore='access')
+            k.write(out / (name + '.json'), record)
+            return record
     import catchup_gate, clinical_sql
     s = catchup_gate.settings(value)
     sql = catchup_gate.query(c['completion'], s['overdueGraceSeconds'])
@@ -367,16 +387,16 @@ def wait_for_catchup(d, out, c, objects, client, value):
     def fetch():
         pod, container = clinical_sql.observe(c, objects, client, baseline, continuity_verdict='UNMEASURED')
         return k.postgres_read(client, pod, container, 'SET LOCAL statement_timeout=60000;\n' + sql, timeout=90)
-    progress = out / 'catchup.jsonl'
+    progress = out / (name + '.jsonl')
     def log(sample):
         with progress.open('a') as f:
             f.write(json.dumps(sample) + '\n')
     try:
         record = catchup_gate.wait(fetch, s, log=log)
     except catchup_gate.NotCaughtUp as error:
-        k.write(out / 'catchup.json', error.record)
+        k.write(out / (name + '.json'), error.record)
         raise k.Refused('K8S_CATCHUP_NOT_REACHED', 'UNMEASURED') from None
-    k.write(out / 'catchup.json', record)
+    k.write(out / (name + '.json'), record)
     return record
 
 
