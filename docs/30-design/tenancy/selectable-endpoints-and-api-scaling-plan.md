@@ -2,14 +2,11 @@
 
 *Living contributor-facing implementation plan, refreshed 2026-11-10 for the
 adopted [internal listener shape](multitenancy-decisions.md#internal-listener-ory-pattern) and
-[graceful shutdown](multitenancy-decisions.md#internal-listener-graceful-shutdown). Current
-mechanisms are **read-derived** from joined application `dc795bd1`; carried
+[graceful shutdown](multitenancy-decisions.md#internal-listener-graceful-shutdown). The mechanisms below are **read-derived** from joined application `dc795bd1`; carried
 measurements retain their original source/instrument in the linked evidence.
 Remaining criteria are **UNMEASURED** until their instruments run. Queue homes:
 `MT-ENDPOINT-TRANSPORT`, `MT-API-FIXED-ROSTER`; scaling and partitioning retain
-`MT-SCALE-UNBOUND` and `MT-EVALUATOR-PARTITION`. Read with the
-[runtime topology](runtime-topology.md). No production/default enablement follows
-from implementation or a diagram.*
+`MT-SCALE-UNBOUND` and `MT-EVALUATOR-PARTITION`. For the current API Deployment, evaluator and realtime StatefulSets, and tenant routing, see [runtime topology](runtime-topology.md). The “remaining” column records the work outstanding at the November 10 capture. Later policy adopted [internal metrics](multitenancy-decisions.md#prometheus-metrics-narrow) and [generation-fenced restore](multitenancy-decisions.md#restore-suspend-drain-replace).*
 
 ## Implemented foundation and remaining boundary
 

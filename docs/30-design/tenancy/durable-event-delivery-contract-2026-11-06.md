@@ -9,18 +9,7 @@ evaluator or realtime wiring. It promotes no milestone, selects no provider,
 admits nothing to a release candidate, and infers no consistency stronger than
 what the cited records reproduced.*
 
-**Current direction, 2026-11-16:** the [stream-fed clinical materializer decision](multitenancy-decisions.md#stream-fed-clinical-materializer)
-supersedes routine D6 polling and snapshot rediscovery for the maintained default
-evaluator. The [current architecture](evaluator-realtime-communication.md#stream-fed-clinical-materializer--adopted-target-2026-11-16)
-owns row intake, recoverable acceptance, cohorts, scheduling and output delivery.
-The historical provider/backstop/snapshot sections below retain their original
-source and evidence; they do not authorize restoring those paths as defaults.
-Consistent snapshots remain bootstrap/recovery/history tools. Clinical, identity,
-isolation, authority and restore obligations remain required. The
-[transaction-coverage direction](evaluator-realtime-communication.md#transaction-coverage-and-mechanism-retirement)
-distinguishes current clock-event sealing from a proposed connector-framed
-replacement. Historical clock-specific assertions do not require retaining that
-internal mechanism after a qualified semantic replacement exists.
+**Transport scope.** This November 6 B7 contract preserves the original consumer requirements, experiments and named sources. The [writer-driven decision](multitenancy-decisions.md#writer-driven-transport-direction) governs tenant work discovery on candidate 5. The [current communication guide](evaluator-realtime-communication.md) traces a write through clinical and viewer delivery. The intervening [November 16 pgstream guide](../../archive/tenancy/pgstream-communication-2026-11-16.md) retains the receipt, cohort, snapshot and clock-sealing evidence.
 
 | Anchor | Read from tool output at the time of writing |
 |---|---|

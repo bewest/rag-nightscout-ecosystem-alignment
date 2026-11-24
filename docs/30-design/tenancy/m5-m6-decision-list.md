@@ -1,11 +1,11 @@
 # M5/M6: current decisions and next review
 
-*Living contributor-facing decision index, 2026-11-10. Read this before older
-question packets. Release decisions own adopted policy; the roadmap owns
+*Index of the November 10 M5/M6 decision round. For later policy read [decisions in force](decisions-in-force.md). The [execution log](execution-log.md) owns subsequent results; the roadmap owns
 acceptance; the queue/dashboard own claimed work/milestone state. This index
 records no new application measurement or promotion.*
 
-## Execute now
+<a id="execute-now"></a>
+## November 10 decisions and proof scope
 
 **2026-11-09 restructure.** M6 is now M6a identity and owner API, M6b lifecycle and keys,
 M6c deployment trust (in `nightscout-deploy`), M6d connector sync, and M7 production

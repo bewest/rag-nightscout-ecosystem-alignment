@@ -1,5 +1,7 @@
 # Writer-driven transport: refactor and retirement ledger
 
+> This ledger records S4 implementation and retirement work at the adoption boundary. The [writer-driven decision](multitenancy-decisions.md#writer-driven-transport-direction) and [candidate 5 qualification](execution-log.md#candidate-5-qualification-and-nominal-discovery) cover the adopted path and later candidate.
+
 *Contributor-facing, 2026-11-20. Living list for
 [writer-driven-transport-direction](multitenancy-decisions.md#writer-driven-transport-direction).
 Under [prerelease-schema-in-place](multitenancy-decisions.md#prerelease-schema-in-place), no

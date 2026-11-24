@@ -1,19 +1,10 @@
 # Multitenant delivery roadmap
 
-*Contributor-facing living plan. Reconciled 2026-11-16 to the selected stream integration records and adopted release decisions,
-without a new application campaign or milestone promotion. This page owns delivery boundaries and promotion criteria.
-The [dashboard](multitenant-delivery-dashboard.md) owns recorded milestone claims;
-the [queue](../../../queue/work-queue.yaml) owns item states, gates and blockers.*
+This page owns delivery boundaries and milestone promotion criteria. The [dashboard](multitenant-delivery-dashboard.md) records dated milestone decisions. The [queue](../../../queue/work-queue.yaml) owns work items and gates. The [execution log](execution-log.md) records the source and scope of each multitenant experiment.
 
 ## Reading and execution order
 
-Use the [reading guide](README.md) to select a contract. Use the
-[completion schedule](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06)
-for current batch ownership, implementation order and verification depth. The
-[integration record](../remedial/rc-16.0.0-integration-record.md) owns executed heads,
-failures, controls and campaign limits; [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md)
-owns publication and cycle updates. A source branch, an incorporated change, an
-accepted batch and a promoted milestone are distinct claims.
+Use the [reading guide](README.md) to select a contract and the [batching plan](multitenant-integration-batching-plan-2026-11-06.md#completion-focused-coordination) for integration practice. For the present candidate, read the [qualification and discovery record](execution-log.md#candidate-5-qualification-and-nominal-discovery). Earlier joins retain the evidence identified at each milestone.
 
 Delivery uses three completion stages: **A**, data/control/clients through M4;
 **B**, durable runtime for M5; **C**, synthetic operations for M6, split on
@@ -30,22 +21,9 @@ explicitly deferred enhancements; do not substitute a component pass for a miles
 
 ## Current implementation and remaining qualification
 
-The [selected runtime record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16)
-closes source-scoped stream, bounded clinical-state, raw delivery, stock-client
-and functional regression criteria. Its ordinary recovery and populated
-upgrade/cold rollback retain their own executed pairs. The
-[communication contract](evaluator-realtime-communication.md) and
-[current stream topology](runtime-topology.md#current-stream-runtime) explain the
-implementation. These closures do not promote every M6/M7 criterion.
+The [runtime topology](runtime-topology.md) describes static ownership and deployment placement. The [communication guide](evaluator-realtime-communication.md) describes writer-driven work discovery, clinical completion and delivery. The November [pgstream qualification](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16) and its recovery rehearsals remain measurements of that earlier source.
 
-Workload/resource limits and recovery under load belong to the existing operating
-report. The [follow-on source qualification](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#stream-amplification-and-executable-retirement--2026-11-16)
-closes bounded subscription/intake amplification, addressed delivery and executable
-retirement. Its operating comparison retains a separate evidence boundary. The
-[production path](production-critical-path.md) owns deployment admission criteria;
-optional fleet, HA and multihost work follows the declared profile. Progress is
-reported by completed capability and remaining criterion, rather than by counting
-historical dispatch lanes or treating every open parent item as unimplemented.
+Candidate 5 has local source qualification and a mixed connector discovery point. The recorded capacity verdict, measured outcomes and larger direct-upload experiments have their own scopes. [Candidate record](execution-log.md#candidate-5-qualification-and-nominal-discovery) · [Production admission](production-critical-path.md)
 
 ## Supported boundary and owner journeys
 
@@ -108,22 +86,7 @@ drop the incompatible optional subject-reader clamping mode. Any replacement mus
 preserve existing tenant-root credentials. Proposed-grant management enforcement
 and full lifecycle authority are separate contracts.
 
-The secrets component owns recoverable secrets and private signing keys. New
-asymmetric tokens may verify locally with trusted public keys and current
-PostgreSQL authority; private keys remain protected. Vault Transit does not store
-submitted application data: tenant-bound ciphertext/references, scoped consumers,
-key versions, redacted audit, renewal and recovery remain necessary. Owner reveal
-is an explicitly authorized audited action, not a data-API decrypt. The built-in
-encrypted development/small-operator option remains adopted; production adapters
-must meet the same contract. A disposable Vault lab does not establish TLS,
-unseal/recovery, production identity, HA or operational suitability. Failures
-never fall back to plaintext, another tenant's key or an unapproved signer.
-The [deployment and trust decisions](multitenancy-decisions.md#m6-deployment-and-trust-2026-11-07)
-keep Vault Transit at every stage and admit a deployment by trust record plus live
-probes. Connectivity is a [Vault Agent sidecar](multitenancy-decisions.md#vault-agent-sidecar) with
-[one AppRole per deployment](multitenancy-decisions.md#vault-one-approle-per-deployment); core reads the
-token from the sink file per call (`MT-VAULT-TOKEN-FILE`) instead of carrying a
-service-login adapter.
+The deployment supplies a signing secret. Roles derive signing keys by tenant, purpose and version. PostgreSQL holds current versions, authority and sessions. The per-tenant Vault Transit data key protects recoverable secrets, including connector credentials. Token issuance requires the signing secret and current authority. Custody, rotation and recovery of the data key remain part of the deployment trust and lifecycle criteria. [Signing decision](multitenancy-decisions.md#deployment-signing-secret) · [Deployment admission](multitenancy-decisions.md#deployment-admission-probes-and-trust-record)
 
 ## Tenant identity, migrations and import
 
@@ -192,7 +155,7 @@ an intentional PG-only difference. No threshold is invented by a passing lab.
 | M6b: lifecycle and keys | M6a | Operator-assisted ownership add/transfer/recovery (tenant-bound, audited, no orphan, no silent replacement); retained-key destruction after the 30-day window and after-window refusal; export/delete ceremony as adopted. One SQL/HTTP family each, each with a red control. |
 | M6c: deployment trust (nightscout-deploy) | M6a; core `tokenFile` change | Vault Agent sidecar with auto-auth, sink and renewal; Authentik profile over HTTPS with synthetic people; live spoof, host/selector conflict and outage probes against the Compose edge and Vault; written trust record from the template. Admission is per deployment by record plus probes. |
 | M6d: connector sync | M6a | nightscout-connect pulls from a tenant with a pre-issued reader credential; independent stored/history outcomes; revocation stops the pull. Outbound first; inbound tenant-side connector is a later contract. |
-| M7: production readiness | M6a–M6d | Measured, not declared ([decision](multitenancy-decisions.md#m7-envelope-measured-not-declared)): benchmark the one-host reference at stepped tenant counts with a hot tenant and publish the numbers; contrast against N single-tenant processes and the per-site model at equal synthetic load; prove each component scales horizontally or vertically as intended with a binding inventory (any binding is a `file:line` finding); evaluator partitioning by member count and ordinal with a pool-membership table ([decision](multitenancy-decisions.md#evaluator-static-partition)). [Realtime tenant sharding and controlled recovery](realtime-sharding-plan.md), including checkpoint and complete participant coverage; larger single-tenant connection fanout remains separately bounded. Android emulator lab; selectable endpoints and fixed-roster API scaling; Kubernetes binding equivalence. Limits follow the measurements. Required before a production cohort, not before the dormant alpha release. |
+| M7: production readiness | M6a–M6d | Measure the declared workload, interference, clinical deadlines, current authority, datastore health and recovery on a named deployment. Evaluate API replicas, static evaluator/realtime slices and the dedicated primary at actual load. Include applicable Android/client, binding and operational trust evidence. Preserve the original discovery and acceptance verdicts. Promote only after the deployment satisfies its [production criteria](production-critical-path.md). [Test tiers](multitenancy-decisions.md#capacity-test-tiers) · [Product outcomes](multitenancy-decisions.md#four-product-failures) |
 
 M6 was split into M6a–M6d and M7 on 2026-11-09 ([decision](multitenancy-decisions.md#m6-split-and-queue-collapse)). The acceptance families below keep their text; the family-to-milestone mapping is: bounded owner API → M6a; operator-assisted ownership, lifecycle and trust (keys, deletion) → M6b; deployment trust rows → M6c; operations and clients → M7 (Android) with populated backup/restore retained in M6b; operating envelope and final review → M7.
 
@@ -242,8 +205,7 @@ is distinct from dev merge, release and production/default admission.
 | [M6b joined candidate](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md) | Listener composition, key retention, operator-assisted ownership and single-site OIDC provisioning on one frozen head. Ownership in a serving role, real role processes over Compose and the production key custodian remain open. |
 | [Vault Agent sidecar](../../../reports/tenancy/vault-agent-2026-11-09/README.md), [connector sync](../../../reports/tenancy/connector-sync-2026-11-10/README.md) | M6c Vault connectivity and the M6d outbound connector lab. Identity-provider profile, live trust probes and the remaining connector scope are open queue items. |
 
-Publication state, CI and the open boundaries of each candidate are in the
-[release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md); the
+The [execution log](execution-log.md) records subsequent candidate evidence. The
 [dashboard](multitenant-delivery-dashboard.md) lists the M6a–M6d and M7 items with
 their claimed state. Measured operating budgets are M7 work. The
 [current decision index](m5-m6-decision-list.md) separates human choices from

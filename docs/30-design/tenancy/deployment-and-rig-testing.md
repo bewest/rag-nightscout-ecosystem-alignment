@@ -21,7 +21,7 @@ the documentation scope of MT-DOC-DEPLOY; current claims live in the
 | One-host synthetic Compose preview | Exercise separate services, browser/API/socket paths and tenant-local restore | Fixed participants, private Unix sockets, direct PostgreSQL and locally generated credentials. [Cold functional acceptance](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json) passed on ed2; real-client, capacity and production admission have separate gates. |
 | Headless client lab | Compare pinned clients against the admitted API surface | Follow the [binary client lab](../../../tools/lab/m4-client-binaries/README.md); its evidence does not establish every mobile device or every new source head. |
 | Physical mobile or pump/CGM rig | Verify the chosen client, network path, upload/history and reconnect behavior | A separately recorded experiment using synthetic input. Device execution is not implied by source-pattern replay. |
-| Multi-host, orchestrated replicas or failover | Explore later deployment design | Proposed topology: the current private socket roster is a one-host contract, not distributed discovery or HA. |
+| Nominal Kubernetes workload | Measure accepted writes, clinical completion, viewer delivery and restart behavior under the selected placement | [Candidate 5 discovery](execution-log.md#candidate-5-qualification-and-nominal-discovery) identifies the fixture, measured point and admission limits. Failover and operator recovery require separate evidence. |
 
 The [application Compose guide](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/README.md)
 owns runnable packaging instructions at the ed2 reference. The Compose tree
@@ -30,9 +30,7 @@ and is [its home from the next #8898 batch on](multitenancy-decisions.md#deploy-
 then keeps only the fixture its own tests boot. The commands below describe the
 ed2 reference as accepted; run current packaging from `nightscout-deploy`. The
 [service-process decision](multitenancy-decisions.md#restore-service-processes)
-owns the deployment requirement. Compose is implemented; a Jsonnet generator is
-an optional way to produce configuration, not another runtime component or a
-selected prerequisite.
+owns the deployment requirement. The [Kubernetes binding](multitenancy-decisions.md#tanka-binding-parallel) uses Jsonnet in the deployment repository.
 
 The [binding and public-name contract](deployment-bindings-and-public-names.md)
 maps ordinary Kubernetes resources onto these logical roles without assuming
@@ -53,13 +51,7 @@ it is not a prerequisite for discovering that candidate's faults.
 | Performance comparison | Experiment prerequisites plus matched workload and declared host contention | Compare only compatible observations. Record setup, steady traffic, recovery and observer cost separately. |
 | Candidate acceptance | Frozen coherent source/configuration plus applicable full, browser, clinical, isolation and recovery checks | Promote only the criteria actually measured on that candidate. |
 
-Use the existing discovery path, including `pgstream-sample` with
-`--run-purpose discovery` on the runner branch, for bounded experiments on pending or accepted sources.
-Keep strict/default acceptance separate. The existing
-[fresh-image diagnostic](../../../tools/mt-bench/m7-joined/DIAGNOSTIC-SEAM.md)
-is a small functional profile; its limits do not define every discovery workload.
-The reusable runner's current local qualification and remaining remote boundary
-are recorded in the [release update](execution-log.md#update--concurrent-branch-experiments-and-runner-reuse-2026-11-15).
+Identify the exact harness used for the scenario. The [nominal candidate record](execution-log.md#candidate-5-qualification-and-nominal-discovery) names the writer-driven controller and its retained evidence. The earlier [pgstream discovery entry](execution-log.md#update--concurrent-branch-experiments-and-runner-reuse-2026-11-15) documents the November 15 instrument.
 
 Give each concurrent lane its own worktree, project identity, database/state,
 ports, networks and cleanup custody. Record contention on shared hosts. Reserve

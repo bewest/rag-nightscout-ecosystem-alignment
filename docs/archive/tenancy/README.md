@@ -15,11 +15,13 @@ source-scoped measurements. They are not current plans or lane assignments.*
 
 | Retained journal | What it preserves | Current home |
 |---|---|---|
+| [November 16 runtime topology](pgstream-topology-2026-11-16.md) | Role inventory, original plates, fixed-roster placement and fleet proposals before writer-driven transport. | [Current runtime topology](../../30-design/tenancy/runtime-topology.md) |
+| [November 16 pgstream communication](pgstream-communication-2026-11-16.md) | Receiver and raw journal, transaction-cohort proposal, bounded-window query survey and evidence on the named pgstream sources. | [Writer-driven communication](../../30-design/tenancy/evaluator-realtime-communication.md) |
+| [November 15 realtime placement](realtime-placement-2026-11-15.md) | Versioned map, controlled moves and source-scoped native tests before the adoption of static hash ownership. | [Current realtime placement](../../30-design/tenancy/realtime-sharding-plan.md) |
 | [Superseded decision rows](multitenancy-decisions-superseded-2026-11-18.md) | The 28 rows the [decisions-in-force index](../../30-design/tenancy/decisions-in-force.md#superseded-or-retired) lists as superseded or retired, moved unchanged from alignment `b0645f9298` on 2026-11-18; the live file keeps a stub per anchor. | [Decisions in force](../../30-design/tenancy/decisions-in-force.md); the replacing row named in each stub |
 | [Counter/restore alternatives](counter-and-restore-options-2026-11-07.md) | Original f0 global-allocator baseline, tenant-local prototype, restore alternatives and source surveys, retained from alignment `e9f9430e4ada20f35163253a6179c2dae3b1ffb6` on 2026-11-16. | [Current ordering/history guide](../../30-design/tenancy/counter-and-restore-options.md); SQL guide for the implemented allocator |
-| [Transactional history-clock proof plan](postgres-tenant-clock-proof-2026-11-06.md) | November 6 concurrency/rollback/recovery/public-history proof and original dispatch assumptions, retained from the same alignment head on 2026-11-16. Public no-missed-write outcomes remain required. | [Current ordering/history guide](../../30-design/tenancy/counter-and-restore-options.md); [communication guide](../../30-design/tenancy/evaluator-realtime-communication.md#transaction-coverage-and-mechanism-retirement) for proposed internal stream coverage |
-
-| [Evaluator/realtime reference](evaluator-realtime-reference-2026-11-16.md) | November 7 inspected polling/snapshot source map and November 13 stream prototype/integration plan, retained from alignment `5fdc4bf0685d35d2fac980bad1b28bd66525ccdb` on 2026-11-16. Original criteria, source-scoped evidence and pending statements retain their capture scope. | [Communication guide](../../30-design/tenancy/evaluator-realtime-communication.md) for current stream/working-state/raw-tail ownership; existing integration report and release contents for later execution |
+| [Transactional history-clock proof plan](postgres-tenant-clock-proof-2026-11-06.md) | November 6 concurrency/rollback/recovery/public-history proof and original dispatch assumptions, retained from the same alignment head on 2026-11-16. Public no-missed-write outcomes remain required. | [Current ordering/history guide](../../30-design/tenancy/counter-and-restore-options.md); [communication guide](../../30-design/tenancy/evaluator-realtime-communication.md#transaction-coverage-and-mechanism-retirement) for the retained stream-cohort coverage proposal |
+| [Evaluator/realtime reference](evaluator-realtime-reference-2026-11-16.md) | November 7 inspected polling/snapshot source map and November 13 stream prototype/integration plan, retained from alignment `5fdc4bf0685d35d2fac980bad1b28bd66525ccdb` on 2026-11-16. Original criteria, source-scoped evidence and pending statements retain their capture scope. | [Communication guide](../../30-design/tenancy/evaluator-realtime-communication.md) for current pending-work, evaluator and realtime ownership. The [execution log](../../30-design/tenancy/execution-log.md) records later results |
 | [Production-path assessment](production-path-assessment-2026-11-10.md) | November 8–10 gap table, first-topology/HA recommendations and commit-pinned prior-art survey, captured from alignment `8ae6f4a3729548de0c88cc0ee5b3c0aede9aba61` on 2026-11-12. Old implementation gaps retain their capture scope. | [Production guide](../../30-design/tenancy/production-critical-path.md) for current explanation/closure criteria; queue and release records for current implementation/acceptance |
 | [Multitenancy execution and decision journal](nightscout-multitenancy-execution-plan-2026-09-14.md) | September architecture rationale, decision detail, original seam-chain tasks and later decision amendments through this capture. Old task states and release claims describe their named baselines. | [Tenancy decisions](../../30-design/tenancy/multitenancy-decisions.md); current contracts linked from that reference |
 | [Current-dev delivery journal](multitenant-delivery-roadmap-2026-11-02.md) | November dispatch packets, lane checkpoints, integration commands, semantic controls, failed experiments and capacity holds. | [Delivery roadmap](../../30-design/tenancy/multitenant-delivery-roadmap.md) for boundaries/criteria; [completion schedule](../../30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06) for sequencing |
@@ -32,8 +34,7 @@ source-scoped measurements. They are not current plans or lane assignments.*
 
 Use the [tenancy reading guide](../../30-design/tenancy/README.md) for current
 work. The [dashboard](../../30-design/tenancy/multitenant-delivery-dashboard.md)
-owns recorded milestone claims, the queue owns item state/gates, and the release
-integration record and linked reports own later measurements. A journal's
+owns recorded milestone claims, the queue owns item state/gates, and the [tenancy execution log](../../30-design/tenancy/execution-log.md) and linked reports own later measurements. A journal's
 “current,” “next” or “this session” wording belongs to its captured context.
 
 ## Retention and use
@@ -44,6 +45,6 @@ or remove unique content. The [consolidation record](../../../reports/tenancy/te
 records source identity and the link-only preservation check.
 
 Do not append new progress here. Correct current rules in their decision/contract
-home and put new acceptance in the release integration record or a dated report.
+home and put multitenant acceptance in the tenancy execution log or a dated report.
 Git supplies intermediate revisions; this index supplies scope and successors
 without a commit-by-commit listing.

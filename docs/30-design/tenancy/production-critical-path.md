@@ -1,13 +1,6 @@
 # From multitenant preview to production
 
-*Living contributor-facing production guide, reconciled 2026-11-16 against the
-release records at alignment `5fdc4bf0685d35d2fac980bad1b28bd66525ccdb`.
-This is **read-derived** sequencing and explanation, not an application measurement.
-[Release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md) own
-adopted policy; the [queue](../../../queue/work-queue.yaml) owns claimed work state;
-[release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md) and linked
-reports own executed acceptance, source heads and publication. Use those records
-for the current candidate and blockers.*
+The [tenancy decisions](multitenancy-decisions.md) govern deployment and test policy. The [execution log](execution-log.md#candidate-5-qualification-and-nominal-discovery) records candidate qualification and operating results. The [milestone roadmap](multitenant-delivery-roadmap.md) owns promotion criteria.
 
 Production means a particular deployment is admitted for a stated workload and
 failure/recovery envelope. It is a stronger claim than implementing a component,
@@ -17,26 +10,11 @@ to testing an independently ready capability.
 
 ## Immediate M7 priority
 
-The [single-host streaming decision](multitenancy-decisions.md#single-host-streaming-first)
-sets the current order: use the existing evaluator/realtime composition and UDS
-interfaces, measure a bounded local workload, and qualify the supported candidate.
-Explore toward 10,000 synthetic tenants as measured resources permit. Keep actual
-transport, accepted/stored/completed progress, due work and client behavior explicit.
-The selected stream runtime has source-scoped functional qualification in the
-[existing integration record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16).
-Its ordinary lost-slot recovery and populated upgrade/cold rollback rehearsals
-retain their own executed revision pairs. The [communication guide](evaluator-realtime-communication.md)
-owns the implemented architecture; [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md)
-own current integration/publication. Capacity measurements and incomplete or failed
-points remain in the [operating report](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md).
-Functional qualification does not admit a workload or deployment profile.
+Candidate 5 measures nominal work on the [writer-driven architecture](evaluator-realtime-communication.md). The local mixed workload includes pooled connectors and an evaluator restart. The paid experiment varies the active direct-upload population on a restored 10,000-tenant roster with a dedicated PostgreSQL node. These answer different sizing questions. See the [dated results and original verdicts](execution-log.md#candidate-5-qualification-and-nominal-discovery).
 
-Optional desired-N, selected-v2/HOLD, full platform recommission, Kubernetes and
-multihost operating-model proofs proceed independently. They do not block a
-supported single-host clinical witness, load experiment or qualification. Keep
-existing correctness gates for the configuration actually claimed and one final
-coherent candidate campaign; do not add a campaign or deliverable per leaf.
-This sequencing changes no workload qualification, publication or budget claim.
+Size normal service from accepted-write-to-durable-output p95 within 30 s and the recovery of the loaded slices after restart. Roughly 1 s is a stretch objective. A clinical output over 120 s from acceptance or missing after drain is a product failure. Check stored writes, isolation and authorization, and datastore health. Count delivered viewer frames independently. Missing outcome evidence stays UNMEASURED. [Latency objectives](multitenancy-decisions.md#latency-objectives) · [Evaluator headroom](multitenancy-decisions.md#evaluator-capacity-headroom) · [Product failure criteria](multitenancy-decisions.md#four-product-failures)
+
+Discovery locates the limiting component and measures headroom at a stated mix, history, placement and load. Acceptance uses the frozen candidate and the applicable controls. Operator admission also requires trust, recovery and release evidence for the selected deployment. [Capacity test tiers](multitenancy-decisions.md#capacity-test-tiers)
 
 ## The proposed first production boundary
 
@@ -54,13 +32,7 @@ nodes, a replicated database or an external secrets service are not automatic
 proofs of availability. Specify which dependency or failure domain may be lost,
 what continues serving, and what recovery must establish before service resumes.
 
-The capacity campaign's tenant levels are experimental points. The
-[adopted capacity gate](multitenancy-decisions.md#m7-capacity-gate)
-defines its current milestone and stretch target; it does not select a production
-node type or an ultimate fleet size. Small-group efficiency and a larger fleet's
-bounded growth must be evaluated separately. Multiple independently admitted
-deployments are a fleet option, not an adopted cell architecture or implemented
-tenant-migration service.
+The adopted nominal topology scales a single primary vertically on a dedicated node. Static tenant slices distribute evaluator and realtime work. More than one deployment database and moves across a fleet remain deferred. The measured envelope needs its actual active population, provisioned roster, history, viewers, hardware and recovery scenario. [Primary placement](multitenancy-decisions.md#one-large-postgresql-primary) · [Static ownership](multitenancy-decisions.md#static-hash-ownership)
 
 ## Dependency map
 
@@ -93,17 +65,17 @@ permission to admit that workload to production.
 
 These are enduring closure criteria, not a second live task list. Identify each
 remaining implementation change in the queue and its exact failing or missing
-criterion in the release record. Existing measurements are evidence inputs, not
+criterion in the [execution log](execution-log.md). Existing measurements are evidence inputs, not
 blanket admission for a changed source or topology. A skipped criterion remains
 UNMEASURED.
 
 | Boundary | Design question | Closing evidence and canonical home |
 |---|---|---|
-| Workload and resource envelope | How much useful work fits, including interference and recovery? | Matched synthetic measurements with stored-write, authority and evaluator/consumer outcomes; latency/freshness tails, CPU, memory, pool/lock waits and recovery. Follow [M7 measurement policy](multitenancy-decisions.md#m7-envelope-measured-not-declared) and the [capacity gate](multitenancy-decisions.md#m7-capacity-gate). The latter closes the separate single-site contrast requirement. Historical counts or node density are assumptions until reproduced on comparable inputs. |
+| Workload and resource envelope | How much useful work fits, including interference and recovery? | Matched synthetic measurements with stored-write, authority and evaluator/consumer outcomes; latency/freshness tails, CPU, memory, pool/lock waits and recovery. Follow [M7 measurement policy](multitenancy-decisions.md#m7-envelope-measured-not-declared) and the [target ladder and test tiers](multitenancy-decisions.md#capacity-test-tiers). The single-site contrast was retired in the [earlier capacity decision](../../archive/tenancy/multitenancy-decisions-superseded-2026-11-18.md#m7-capacity-gate). Historical counts or node density are assumptions until reproduced on comparable inputs. |
 | Human identity and owner authority | Does the selected identity provider preserve current tenant authority throughout sessions and streams? | Actual provider/HTTPS login, renewal, logout, revocation and outage behavior, owner settings consumed by roles, legacy-client compatibility and strict audience separation. [Owner authority](owner-authority.md), M6a criteria in the [roadmap](multitenant-delivery-roadmap.md#milestones-and-continuous-integration). |
 | Provisioning, ingress and secrets | Are storage, authority and keys ready before serving; are private controls actually private? | Operator provisioning and recoverable partial failures; current grants/RLS; TLS/host/selector/client-IP/socket probes; service credential renewal, expiry, revocation and outage/recovery, CA verification/rotation and recoverable Vault unseal custody. A disposable lab bootstrap is not an operator provisioner. Existing Agent proofs retain their scope; the selected deployment needs a [trust record and probes](multitenancy-decisions.md#deployment-admission-probes-and-trust-record). |
 | Lifecycle, keys and recovery | Can supported operations finish or stop safely, and can an operator recover? | Provision/pause/suspend/export/delete/ownership, retained-key destruction, production key-custodian responsibilities and artifact fidelity; interrupted restore/upgrade, lost acknowledgement, participant death and dependency/host replacement. Verify the affected tenant and an independent tenant's progress. Use [M6 acceptance families](multitenant-delivery-roadmap.md#m5m6-acceptance-families) and the [recovery boundaries](deployment-and-rig-testing.md#credential-and-recovery-boundaries). Safe refusal is distinct from eventual recovery. |
-| Connectors and supported clients | Which actual journeys work through the selected ingress and credentials? | Declared collection coverage, independent stored/history outcomes, cadence/retry/revocation and supported credential renewal; required Android and pinned client journeys. Source-pattern replay is distinct from executing a client binary. [Roadmap](multitenant-delivery-roadmap.md) and current release evidence own the supported scope; do not infer an all-client claim or treat an old entries-only run as the latest result. |
+| Connectors and supported clients | Which actual journeys work through the selected ingress and credentials? | Declared collection coverage, independent stored/history outcomes, cadence/retry/revocation and supported credential renewal; required Android and pinned client journeys. Source-pattern replay is distinct from executing a client binary. [Roadmap](multitenant-delivery-roadmap.md) and [execution log](execution-log.md) own the supported scope; do not infer an all-client claim or treat an old entries-only run as the latest result. |
 | Shared-fault and operating behavior | What happens when bursts or outages affect many tenants together? | Hot tenant, reconnect flood, large history, active-alarm work, backlog, slow/down dependencies, restores/upgrades and storage/backup growth. Measure other-tenant progress and authorized effects while queues fill and recover. [Experiment contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments). |
 | Release and deployment admission | Are the actual source, configuration, image and operational procedure qualified together? | Applicable full/browser/enabled-corpus/native/client acceptance, named pending cases, final prcheck, deployment trust and recovery rehearsal, rollback and explicit operator admission. [Release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md), [deployment admission decision](multitenancy-decisions.md#deployment-admission-probes-and-trust-record). |
 
@@ -127,7 +99,7 @@ on the application being unable to reuse its components at another scale.
 | Capability | Can wait when | Required before enabling it |
 |---|---|---|
 | Dynamic API membership | A fixed roster meets workload and outage needs | Admission/removal serialized with maintenance; all-instance drain/invalidation and incarnation-aware replacement. Request replicas are not evaluator owners. |
-| Additional evaluator/realtime workers | The qualified worker set meets its measured budget | Explicit tenant assignments, complete participant coverage, checkpoint/effect continuity and safe moves. Additional workers distribute ownership; they are not automatically standby failover replicas. |
+| Additional evaluator/realtime workers | The qualified worker set meets its measured budget | Static hash assignment, matched edge routing, continuity of effects and recovery after a planned restart. Additional workers distribute ownership; they are not automatically standby failover replicas. |
 | Cross-host placement | The selected local transport and fixed roster meet the profile | Qualified private reachability, lifetime/uncertainty behavior, complete direct instance control and partition/late-join refusal. The application owns these semantics; the platform supplies placement/network primitives. |
 | Automatic failover | Operator-led recovery meets the outage/data-loss objectives | Old-owner exclusion, uncertain commits, dependency/key recovery and measured cutover. Backups and rehearsed restoration remain necessary with or without HA. |
 | Fleet placement and tenant migration | Independently provisioned deployments suffice | Durable tenant-to-deployment mapping, compatible target initialization, credential/data/checkpoint handling and a controlled routing cutover. This is a separate design proposal, not a replica-count flag. |
@@ -177,4 +149,4 @@ The [November 8–10 assessment](../../archive/tenancy/production-path-assessmen
 preserves the original gap table, topology/HA proposals and source survey from
 alignment `8ae6f4a3729548de0c88cc0ee5b3c0aede9aba61`. Its present-tense statuses
 belong to that capture. Use this guide for sequencing, runtime topology for
-architecture, and the release/queue/report homes for current state and evidence.
+architecture, and the execution log, queue and reports for current state and evidence.
