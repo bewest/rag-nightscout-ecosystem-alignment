@@ -106,6 +106,15 @@ class WriterPublication(unittest.TestCase):
             (source / 'native-load.json').write_text(json.dumps(custody))
             self.assertEqual(json.loads(replay().stdout), record)
             self.assertIn(b'CUSTODY', replay('11111111-2222-4333-8444-555555555555').stderr)
+            # Replay is bound by the captured writer's per-file budget, just like the exporter.
+            lower_uid = '22222222-2222-4333-8444-555555555555'
+            lower = dict(custody, podUid=lower_uid, artifactSource={'podUid': lower_uid},
+                         files={'k6.log': (source / 'k6.log').stat().st_size - 1})
+            (source / 'native-load.json').write_text(json.dumps(lower))
+            bounded = replay(lower_uid)
+            self.assertEqual(bounded.returncode, 78)
+            self.assertEqual(json.loads(bounded.stdout)['problems'], {'k6.log': 'invalid-or-missing'})
+            (source / 'native-load.json').write_text(json.dumps(custody))
             (source / 'k6.log').unlink()
             self.assertIn(b'CONFLICT', replay().stderr)
             self.assertEqual(json.loads((writer / 'publication.json').read_text()), record)
