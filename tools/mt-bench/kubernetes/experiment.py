@@ -194,8 +194,8 @@ def run(packet, grant_path, expected_digest, group=None):
             primer.require_roster(d, c, k.active_baseline(d))
         else:
             k.need(k.digest(c['tenantsFile']) == c['rosterSha256'], 'EXPERIMENT_ROSTER_CHANGED')
-        k.need(k.re.fullmatch(r'http://127\.0\.0\.1:[0-9]{1,5}', c['baseUrl'])
-               and 0 < execute.urlparse(c['baseUrl']).port <= 65535, 'LOOPBACK_FORWARD_REQUIRED')
+        import edge_base
+        k.need(edge_base.ok(c['baseUrl']), 'LOOPBACK_FORWARD_REQUIRED')
         k.write(attempt/'allocation.json', dict(sha256=expected_digest, accounting=usage,
                                                 namespaceUid=k.active_baseline(d)['namespace']['uid']))
         execute.authority(d, c)

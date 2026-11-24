@@ -13,6 +13,8 @@ from threading import Event
 import time
 from urllib.parse import quote, urlsplit
 
+import edge_base
+
 
 BASELINE = {'mode': 'existing-provisioner-only', 'additionalSeedRows': 0, 'retention': 'UNMEASURED'}
 MODE = 'synthetic-sgv-6h-v1'
@@ -159,7 +161,7 @@ def run(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, p
         return run_4w(spec, tenants, base, sql, until, window_seconds, verify_only=verify_only,
                       post_batch=post_batch, now=now)
     require(spec != BASELINE and tenants and type(window_seconds) is int and window_seconds >= 0, 'INPUT')
-    require(re.fullmatch(r'http://127\.0\.0\.1:[0-9]{1,5}', base), 'EDGE')
+    require(edge_base.ok(base, seeding=not verify_only), 'EDGE')
     port = urlsplit(base).port
     require(port and len({row['id'] for row in tenants}) == len(tenants)
             and len({row['host'] for row in tenants}) == len(tenants), 'ROSTER')
@@ -427,7 +429,7 @@ CHECKED_4W = ('entries', 'entriesMd5', 'devicestatus', 'dsBattery', 'treatments'
 
 def run_4w(spec, tenants, base, sql, until, window_seconds, *, verify_only=False, post_batch=post, now=time.time):
     require(tenants and type(window_seconds) is int and window_seconds >= 0, 'INPUT')
-    require(re.fullmatch(r'http://127\.0\.0\.1:[0-9]{1,5}', base), 'EDGE')
+    require(edge_base.ok(base, seeding=not verify_only), 'EDGE')
     port = urlsplit(base).port
     require(port and len({row['id'] for row in tenants}) == len(tenants)
             and len({row['host'] for row in tenants}) == len(tenants), 'ROSTER')
