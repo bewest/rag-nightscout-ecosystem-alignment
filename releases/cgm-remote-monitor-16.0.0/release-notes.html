@@ -1183,6 +1183,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Fixes and optional improvements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dashboard-and-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard and reports
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2357,6 +2374,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Fixes and optional improvements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dashboard-and-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard and reports
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2399,16 +2433,14 @@
 
 
 <h1 id="nightscout-1600---release-notes-draft">Nightscout 16.0.0 - release notes (DRAFT)<a class="headerlink" href="#nightscout-1600---release-notes-draft" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-03 at <code>22d0bdd41</code>.</em></p>
-<p><strong>Draft for maintainer review, 2026-11-03. Not a release announcement.</strong>
-The version is decided: 16.0.0. The current release candidate is
-<code>official/dev</code> <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>. Informal testing is
-underway; private security integration and final release acceptance remain
-pending. No tag or v16 release is published.</p>
+<p><em>Living document, last changed 2026-11-24 at <code>06d3e9fa5</code>.</em></p>
+<p><strong>Draft for maintainer review, 2026-11-24.</strong> The single-tenant 16.0.0
+candidate is <code>79144cbd0</code> on <code>dev</code>. The published release is <strong>v15.0.9</strong>.
+Private security integration, final acceptance and staging review remain open.
+<a href="contents.html#closing-candidate-2026-11-24">Candidate and staging evidence</a></p>
 <p>Nightscout 16 modernizes both the backend and frontend: shared storage and write
 contracts, more consistent record identity and re-send handling, refreshed
-runtime dependencies and browser bundles, and an optional responsive modern
-theme. It also includes reporting, notification and interoperability fixes.
+runtime dependencies and browser bundles, and a responsive dashboard. It also includes reporting, notification and interoperability fixes.
 It is <strong>not</strong> an automated-insulin-delivery algorithm upgrade, and it does not
 require all connected apps to release together.</p>
 <p>Nightscout 16 is designed to preserve interoperability with existing clients
@@ -2430,7 +2462,7 @@ outside that range. The image uses Node 24.22.1.</p>
 4.4, but 4.4 is unsupported and untested. MongoDB 3.6, 4.0 and 4.2 no longer
 serve data; the boot error page names the version and minimum.
 Compose changes its default from MongoDB 5.0.32 to 6.0.27: follow the upstream
-<a href="https://github.com/nightscout/cgm-remote-monitor/blob/61eb37335954ae42c91345a0823bd67331025165/docs/runtime-upgrade.md">runtime upgrade guide</a>,
+<a href="https://github.com/nightscout/cgm-remote-monitor/blob/79144cbd006e1137bd776ffd56560debdf880e81/docs/runtime-upgrade.md">runtime upgrade guide</a>,
 including database upgrade steps and backup/restore, rather than treating it
 as an ordinary image-only update.</p>
 <p>The legacy built-in Dexcom Share and MiniMed CareLink bridges are removed.
@@ -2479,9 +2511,25 @@ report additions are described in <a href="contents.html">contents.md</a>.</p>
 validated clinical PGR thresholds"; PGR is a research metric and the numerical
 checks "do not constitute third-party clinical validation". It is a report
 figure, not a treatment recommendation; talk to the care team before acting on it.</p>
-<p><code>THEME=modern</code> selects the optional responsive dashboard; existing themes remain.
-<code>SHOW_SECONDS</code> is optional. Runtime/database/library refreshes and page bundles
-modernize internals without making either option mandatory.</p>
+<h3 id="dashboard-and-reports">Dashboard and reports<a class="headerlink" href="#dashboard-and-reports" title="Permanent link">&para;</a></h3>
+<p>Modern is the default dashboard when the site has no configured theme and
+the browser has no saved choice. Existing server settings and saved browser
+choices still apply. Choose <strong>Classic</strong> in Settings for the previous default
+appearance, or set <code>THEME=default</code> for the site. Resetting browser preferences
+returns to the site's configured theme. <code>SHOW_SECONDS</code> remains optional.</p>
+<ul>
+<li>Distribution and Daily Stats start with bar charts. Each report remembers
+  its own Bar or Pie choice and prints the selected style.</li>
+<li>Hourly Stats shows <strong>Hourly basal adjustments (U)</strong> from historical profiles
+  and temporary basals. You can open it first. The report distinguishes
+  unavailable history from zero adjustment. Day to Day uses the same totals
+  with its basal chart hidden. Historical profile calculations in Day to Day
+  and Loopalyzer retain the original profile information for later reports and edits.</li>
+<li>Calibrations matches meter readings to recent raw sensor signals, labels
+  missing data and explains how it selects readings for the chart. Day to Day
+  removes the overlapping black rings from connected readings in the OpenAPS
+  view and keeps the hover details. <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8907">Merged report changes</a></li>
+</ul>
 <h2 id="notes-for-people-running-sites-and-writing-apps">Notes for people running sites and writing apps<a class="headerlink" href="#notes-for-people-running-sites-and-writing-apps" title="Permanent link">&para;</a></h2>
 <p>Legacy API v1 replies remain the default. Requesting
 <code>Nightscout-Write-Results: items</code> or <code>?results=items</code> opts into an item-results
@@ -2515,7 +2563,7 @@ follow-up, not claimed fixed.</p>
 release-time disclosure remain pending. Live Pushover/APNs, cohort outcomes,
 upgrade/rollback and final-candidate quiet-period acceptance are not closed by
 24-48 hours of informal use alone.</p>
-<p>The full residual-defect list is in <a href="contents.html">contents.md</a>. Draft proposals
+<p>The <a href="../../docs/30-design/remedial/nightscout-backfix-register.html">backfix register</a> records outstanding defects. Draft proposals
 for controller registration, nonresident profiles, APNs background pushes and
 new reports are not promised by these notes.</p>
 <p><strong>Before final publication:</strong> reconcile every operator-visible change and

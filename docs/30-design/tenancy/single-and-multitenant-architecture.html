@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3692,6 +3700,34 @@
   
   
     <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -3700,6 +3736,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -5928,24 +6048,9 @@
 
 
 <h1 id="single-and-multitenant-nightscout-architecture-and-compatibility">Single and multitenant Nightscout: architecture and compatibility<a class="headerlink" href="#single-and-multitenant-nightscout-architecture-and-compatibility" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
-<p><em>Contributor-facing living explanation, groomed 2026-11-08; header 2026-11-10. The
-restore/Compose reference this page explains is cgm-remote-monitor
-<code>ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364</code>, recorded in the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication measurement</a>.
-Draft PR #8898 has since moved on (M6a and M6b joins); its current head and
-verification are in the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>,
-and private service composition is in the <a href="runtime-topology.html">runtime topology guide</a>.
-PR #8898 remains open/draft, not merged or released. Architecture interpretation
-is </em><em>read-derived</em><em>; linked runtime results are </em><em>recorded reproductions</em><em>, not
-new executions for this document. The retained shared-code/module survey is
-explicitly pinned to <code>83582e87</code>; it does not describe every file in the current
-candidate. Current delivery and milestone claims live in the
-<a href="multitenant-delivery-dashboard.html">delivery dashboard</a>.</em></p>
-<p>For the current multitenant implementation, read the <a href="evaluator-realtime-communication.html">communication guide</a>
-and its linked selected-runtime qualification. The sections below retain the
-source-pinned single/multitenant comparison and earlier restore/Compose proof
-boundaries; they do not describe the selected stream's normal data path.</p>
+<p><em>Living document, last changed 2026-11-24 at <code>7b8bfd465</code>.</em></p>
+<p>Single-tenant Nightscout retains the single-site server and MongoDB. The multitenant branch places tenant-bound clinical writes behind the API on PostgreSQL, with evaluator and realtime slices. Read the <a href="runtime-topology.html">runtime guide</a> for role ownership and the <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">candidate record</a> for qualification.</p>
+<p>The comparisons below are <strong>read-derived</strong> at the named sources. The ed2 Compose and restore reference has its own <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication receipt</a>. The shared-code survey describes <code>83582e87</code>. Use the measured records linked in each section for the boundaries of the earlier proofs.</p>
 <h2 id="what-the-earlier-proofs-can-inform">What the earlier proofs can inform<a class="headerlink" href="#what-the-earlier-proofs-can-inform" title="Permanent link">&para;</a></h2>
 <p>The useful result is an executable one-host multitenant reference with separate
 services and tenant-local restore. It gives current architecture decisions a
@@ -5963,7 +6068,7 @@ need their own evidence; an accepted component is not a completed platform track
 <tbody>
 <tr>
 <td>Separate API/realtime/evaluator/admin and packaged UI</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose acceptance</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose acceptance</a></td>
 <td>One-host role composition, existing client/browser routes and private control channels work together.</td>
 <td>Multi-host discovery, replicas/failover, production ingress/service identity and operating limits.</td>
 </tr>
@@ -5981,7 +6086,7 @@ need their own evidence; an accepted component is not a completed platform track
 </tr>
 <tr>
 <td>Existing client compatibility</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 actual pinned clients</a>; <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/index.html">39f4 enabled corpus</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 actual pinned clients</a>; <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/index.html">39f4 enabled corpus</a></td>
 <td>Use the admitted API/history/credential shapes and the named clients' stored outcomes.</td>
 <td>Wider/mobile clients, other query shapes and all-client acceptance.</td>
 </tr>
@@ -6415,8 +6520,8 @@ write seam or a fresh historical comparison of the multitenant preview.</p>
   end
   %% Layout-only link, not a comparison between the experiments
   Historical ~~~ Preview</code></pre>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
 record v15.0.9 <code>c6a0d8ed</code> versus dev <code>497d08c9</code>, twice per endpoint:
 <strong>4,916 synthetic write cells, 2,803 changed outputs, zero unexplained differences</strong>.
 The recorded classifications contain no Defect-verdict cells; this is not a proof

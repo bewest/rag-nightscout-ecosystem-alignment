@@ -3874,7 +3874,7 @@
 
 
 <h1 id="bounded-kubernetes-workload-inputs">Bounded Kubernetes workload inputs<a class="headerlink" href="#bounded-kubernetes-workload-inputs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-20 at <code>6acfa00d0</code>.</em></p>
+<p><em>Living document, last changed 2026-11-23 at <code>b95ecafed</code>.</em></p>
 <p>Living contributor-facing instrument guide. Definitions are <strong>read-derived</strong> from
 the existing M7 generator and frozen C2 core
 <code>6463f24eea02a9e4355d988b1353f238f21d3609</code>; local generator/retained-data controls
@@ -3949,21 +3949,21 @@ read back; they are not assumed empty or production-sized.</p>
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/kubernetes/workloads/small.json">small.json</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/kubernetes/workloads/small.json">small.json</a></td>
 <td>22 s / 1 request/s</td>
 <td>22 s per tenant</td>
 <td>300 s globally</td>
 <td>Small-path diagnostic and native generator shape control</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/kubernetes/workloads/representative-mix.json">representative-mix.json</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/kubernetes/workloads/representative-mix.json">representative-mix.json</a></td>
 <td>330 s / 1 request/s</td>
 <td>22 s per tenant</td>
 <td>300 s globally</td>
 <td>Selected request mix across a nominal five-minute wall-clock interval; ordinary ingestion remains accelerated</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/kubernetes/workloads/stress-discovery.json">stress-discovery.json</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/kubernetes/workloads/stress-discovery.json">stress-discovery.json</a></td>
 <td>22 s / 10 requests/s</td>
 <td>2.2 s per tenant</td>
 <td>1 s globally</td>
@@ -3988,19 +3988,19 @@ adapter; it does not round a fractional aggregate rate to an integer.</p>
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/kubernetes/workloads/realistic-500.json">realistic-500.json</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/kubernetes/workloads/realistic-500.json">realistic-500.json</a></td>
 <td style="text-align: right;">500 / 50</td>
 <td style="text-align: right;">6.9444</td>
 <td style="text-align: right;">1,800 s</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/kubernetes/workloads/realistic-1000.json">realistic-1000.json</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/kubernetes/workloads/realistic-1000.json">realistic-1000.json</a></td>
 <td style="text-align: right;">1,000 / 100</td>
 <td style="text-align: right;">13.8889</td>
 <td style="text-align: right;">1,800 s</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/kubernetes/workloads/realistic-3000.json">realistic-3000.json</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/kubernetes/workloads/realistic-3000.json">realistic-3000.json</a></td>
 <td style="text-align: right;">3,000 / 300</td>
 <td style="text-align: right;">41.6667</td>
 <td style="text-align: right;">1,800 s</td>
@@ -4027,6 +4027,16 @@ window plus 600 seconds cleanup. A shorter diagnostic may declare a shorter
 ordinary window and phase budget, retaining all actual observation limits.
 The adapter supports 1..86,400 seconds within the real deadline and the stock
 probe ledger's attempt bound; it does not extend an entered grant.</p>
+<p>For looping workloads, the same populated fixture profile can supply both traffic phases.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/workloads/profile.py<span class="w"> </span>active<span class="w"> </span>seed-10000.json<span class="w"> </span><span class="m">5000</span><span class="w"> </span>active-5k<span class="w"> </span>load-5k.json
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/workloads/profile.py<span class="w"> </span>active<span class="w"> </span>seed-10000.json<span class="w"> </span><span class="m">10000</span><span class="w"> </span>active-10k<span class="w"> </span>load-10k.json
+</code></pre></div>
+<p>Both profiles retain the provisioned population and fixture history. The partial phase selects tenants in
+seed host order and runs ordinary uploads, viewers and probe writes on that group. Driver rates use the
+client kinds assigned by the full seed. Stored-write and clinical checks cover the whole provisioned
+population. Full-roster runs keep their existing traffic order. Use distinct point IDs and output
+directories for the <a href="../index.html">sequential points on one deployment</a>. The <code>active</code> command only writes
+a workload profile. Two independent standard-case launches each restore their own database.</p>
 <p>The ordinary viewer opens at a configured rate and prefers WebSocket.
 <code>workload.viewerSetup</code> takes <code>opensPerSecond</code>, <code>stallSeconds</code>,
 <code>transport</code> (<code>websocket-first</code> or <code>polling</code>) and <code>scenario</code> (<code>ordinary</code> or
@@ -4040,6 +4050,21 @@ remain scoped to the independent probe writes; only assigned viewers require
 client observations. Zero viewers records client delivery NOT_EXERCISED.
 The bounded raw frame recorder refuses overflow; a longer or larger run does
 not silently turn lost frame evidence into a pass.</p>
+<p>In discovery load, <code>workload.latencyObservation: offline-v1</code> disables both the
+accepted-input SQL observer and the independent probe's writer baseline and
+per-witness SQL reads. The probe still sends its synthetic entries and records
+stock viewer frames through the configured drain. The after-run M3 join uses
+the ordinary driver's accepted writes and that frame ledger. Per-witness
+clinical completion is <code>NOT_COLLECTED</code>. Stage bookends and storage readback
+retain their own SQL receipts.</p>
+<p>For a matched control, change only <code>latencyObservation</code> to
+<code>offline-with-witness-sql-v1</code>. This enables the sparse probe SQL while using
+the same offered traffic, frame ledger and drain. <code>polling-sql-v1</code> enables both
+live observers. An explicit discovery tier defaults to offline observation on
+every image. Missing evaluator timing evidence leaves the deadline unmeasured.
+Legacy loads without a tier or observation setting default to offline on
+durable-M1 images and polling on older images. Smoke and acceptance tiers use
+polling, and commission and recovery stages always retain their clinical probe.</p>
 <p>Workload profiles carry no resource envelope. Kubernetes requests come from the
 render; the scheduler decides placement (decisions <code>generous-run-resources</code>,
 <code>requests-typical-scheduler-decides</code>).</p>
@@ -4048,13 +4073,13 @@ seconds, followed by 600 seconds for exact owned cleanup. These bounds include
 setup/prime, load and observation/drain; unchanged source timeouts can consume
 the available window. The work deadline remains authoritative if they overrun.
 No entry is seeded toward 10,000 tenants by these files.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/workloads/profile.py<span class="w"> </span>describe<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span>tools/mt-bench/kubernetes/workloads/small.json
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/workloads/profile.py<span class="w"> </span>dry<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>tools/mt-bench/kubernetes/workloads/small.json<span class="w"> </span>/absolute/owned/artifacts/dry01
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/workloads/profile.py<span class="w"> </span><span class="nb">bind</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span>tools/mt-bench/kubernetes/workloads/small.json<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span>/absolute/private/fresh-config.json<span class="w"> </span>/absolute/owned/profile-config.json
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/workloads/profile.py<span class="w"> </span>describe<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>tools/mt-bench/kubernetes/workloads/small.json
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/workloads/profile.py<span class="w"> </span>dry<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span>tools/mt-bench/kubernetes/workloads/small.json<span class="w"> </span>/absolute/owned/artifacts/dry01
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/workloads/profile.py<span class="w"> </span><span class="nb">bind</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span>tools/mt-bench/kubernetes/workloads/small.json<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span>/absolute/private/fresh-config.json<span class="w"> </span>/absolute/owned/profile-config.json
 </code></pre></div>
 <p><code>bind</code> replaces the selected workload fields after checking the pinned
 core/image-deployment/binding tuple, roster, planned native envelope and finite
@@ -4103,13 +4128,13 @@ different binding/instrument, or a changed pending source tuple.</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/workloads/reduce.py<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>/absolute/owned/run/load<span class="w"> </span>/absolute/owned/reduction01
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># Retained M7 fixture instead of a T config:</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/workloads/reduce.py<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span>/absolute/retained/fixture/load<span class="w"> </span>/absolute/owned/reduction02<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span>--fixture<span class="w"> </span>/absolute/retained/fixture
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/mt-bench/kubernetes/workloads<span class="w"> </span>-p<span class="w"> </span><span class="s1">'test_*.py'</span><span class="w"> </span>-v
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/workloads/reduce.py<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>/absolute/owned/run/load<span class="w"> </span>/absolute/owned/reduction01
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># Retained M7 fixture instead of a T config:</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/workloads/reduce.py<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span>/absolute/retained/fixture/load<span class="w"> </span>/absolute/owned/reduction02<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span>--fixture<span class="w"> </span>/absolute/retained/fixture
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/mt-bench/kubernetes/workloads<span class="w"> </span>-p<span class="w"> </span><span class="s1">'test_*.py'</span><span class="w"> </span>-v
 </code></pre></div>
 <p>T stores configuration as <code>run.json</code>; the reducer reads that exact contract.
 Output keeps source/placement/actor identity, independent HTTP and stored results,
@@ -4160,9 +4185,9 @@ HA and production admission retain their own unmeasured boundaries.</p>
 <h2 id="populated-clinical-history">Populated clinical history<a class="headerlink" href="#populated-clinical-history" title="Permanent link">&para;</a></h2>
 <p>To compare with a populated entries window, choose one five-minute UTC boundary for the whole pair.
 Apply it to each existing rate profile before preparing either binding. For example, in Bash:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nv">history_anchor_ms</span><span class="o">=</span><span class="k">$((</span><span class="w"> </span><span class="k">$(</span>date<span class="w"> </span>-u<span class="w"> </span>+%s<span class="k">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">300</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">300000</span><span class="w"> </span><span class="k">))</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>python3<span class="w"> </span>tools/mt-bench/kubernetes/workloads/profile.py<span class="w"> </span>populate<span class="w"> </span><span class="s2">"</span><span class="nv">$profile_90</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$history_anchor_ms</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$out90</span><span class="s2">"</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>python3<span class="w"> </span>tools/mt-bench/kubernetes/workloads/profile.py<span class="w"> </span>populate<span class="w"> </span><span class="s2">"</span><span class="nv">$profile_120</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$history_anchor_ms</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$out120</span><span class="s2">"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nv">history_anchor_ms</span><span class="o">=</span><span class="k">$((</span><span class="w"> </span><span class="k">$(</span>date<span class="w"> </span>-u<span class="w"> </span>+%s<span class="k">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">300</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">300000</span><span class="w"> </span><span class="k">))</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>python3<span class="w"> </span>tools/mt-bench/kubernetes/workloads/profile.py<span class="w"> </span>populate<span class="w"> </span><span class="s2">"</span><span class="nv">$profile_90</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$history_anchor_ms</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$out90</span><span class="s2">"</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>python3<span class="w"> </span>tools/mt-bench/kubernetes/workloads/profile.py<span class="w"> </span>populate<span class="w"> </span><span class="s2">"</span><span class="nv">$profile_120</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$history_anchor_ms</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$out120</span><span class="s2">"</span>
 </code></pre></div>
 <p>The command changes only <code>history</code>. Supply the derived file to the standard Kubernetes case or put
 its history object in the Compose runner configuration. The shared toolchain projects it onto both

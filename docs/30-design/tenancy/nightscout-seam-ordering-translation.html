@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3642,6 +3650,34 @@
   
   
     <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -3650,6 +3686,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -5834,7 +5954,7 @@ crosses the storage seam.</strong> Proposal, for whoever owns the adapter. Writt
 (<code>externals/work/crm-seam</code> @ <code>81a1f6ce</code>); not implemented beyond what §5 marks done. Decisions it
 assumes: D3, D4, D8 — <a href="multitenancy-decisions.html#1-decisions">execution plan §1</a>.
 Evidence: <a href="../../60-research/tenancy/seam-ordering-and-pagination-2026-09-14.html">ordering and pagination</a> ·
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/qc/order-arm.js"><code>tools/qc/order-arm.js</code></a></p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/qc/order-arm.js"><code>tools/qc/order-arm.js</code></a></p>
 <p>The filter got an AST. Ordering did not, and T2.5 landed a PostgreSQL backend without one — it
 has an <code>orderBy</code> in <code>lib/api3/storage/pgCollection/sql.js</code> that solves one of the three
 sub-problems correctly and records a second as a known difference. This is the missing design:
@@ -5921,7 +6041,7 @@ in that set. From the emitted DDL:</p>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">       </span><span class="k">THEN</span><span class="w"> </span><span class="p">(</span><span class="n">doc</span><span class="w"> </span><span class="o">#&gt;&gt;</span><span class="w"> </span><span class="s1">'{sgv}'</span><span class="p">)::</span><span class="nb">numeric</span><span class="w"> </span><span class="k">END</span><span class="p">)</span><span class="w"> </span><span class="n">STORED</span>
 </code></pre></div>
 <p><code>orderBy</code> sorts on that column whenever one exists. Measured against <code>mongod</code> 7 with
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/qc/typeguard-arm.js"><code>tools/qc/typeguard-arm.js</code></a>:</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/qc/typeguard-arm.js"><code>tools/qc/typeguard-arm.js</code></a>:</p>
 <p><strong>On single-typed data it matches mongod exactly, ascending and descending.</strong> That is the first
 translation of the five to do so, and the guard is what earns it — without it a mixed column
 raises 22P02 (divergence class D).</p>

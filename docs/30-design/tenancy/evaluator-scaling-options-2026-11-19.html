@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3636,6 +3644,34 @@
   
   
     <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -3644,6 +3680,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -5820,13 +5940,7 @@
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-11-19. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing collection of proposals, 2026-11-19. Status: </em><em>proposed</em><em>, not a decision.
-Options can be added here as they come up. Measurements will be added to the results section as
-they arrive. It relates to
-<a href="multitenancy-decisions.html#evaluator-scale-direction">evaluator-scale-direction</a> (profile first,
-then K processes), <a href="multitenancy-decisions.html#private-stream-router">private-stream-router</a>
-(deferred routing for K&gt;1) and
-<a href="multitenancy-decisions.html#ack-path-tenant-independent">ack-path-tenant-independent</a>.</em></p>
+<p>The alternatives and results below follow the November 19 investigation. The adopted strategy adds evaluator slices and reduces work per cycle with identical clinical output. Worker threads and incremental plugin implementations were rejected. The writer-driven join retired the stream-router and broker proposals for this path. <a href="multitenancy-decisions.html#evaluator-scaling-strategy">Evaluator scaling decision</a> · <a href="multitenancy-decisions.html#writer-driven-transport-direction">Transport decision</a> · <a href="production-critical-path.html#immediate-m7-priority">Current capacity study</a></p>
 <h2 id="question">Question<a class="headerlink" href="#question" title="Permanent link">&para;</a></h2>
 <p>At 1,000 tenants the evaluator is the first role to bind. How should its ceiling be raised? The
 options are cheaper work in the same process, more cores in the same process, more evaluator

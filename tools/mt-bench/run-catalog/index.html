@@ -3706,7 +3706,7 @@
 
 
 <h1 id="experiment-run-catalog">Experiment run catalog<a class="headerlink" href="#experiment-run-catalog" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-17 at <code>06bdad605</code>.</em></p>
+<p><em>Living document, last changed 2026-11-23 at <code>9001468a6</code>.</em></p>
 <p>The catalog reads retained Compose observations and Kubernetes packets. It
 keeps one immutable private JSON record per run directory under
 <code>/mnt/data/nightscout-workspace/artifacts/capacity-index/</code>. The directory path
@@ -3749,7 +3749,8 @@ samples from every shard when each shard's timing sample count reconciles with
 its completed HTTP accounting. The histogram reports the 1 ms upper bound
 of the nearest-rank p95 and includes scenario completions during the configured
 drain. JWT setup is excluded. Pooled latency remains <code>UNMEASURED</code> when trace
-data is missing, cannot be reconciled, or exceeds the catalog's trace budget.</p>
+data is missing, cannot be reconciled, or exceeds a shard's gzip, decoded byte
+or row budget. The catalog uses the retained driver plan where available.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python3<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/mt-bench/run-catalog<span class="w"> </span>-v
 </code></pre></div>
 <p>The configured controllers index terminal evidence after normal result

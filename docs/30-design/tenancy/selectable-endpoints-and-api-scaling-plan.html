@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3614,6 +3622,34 @@
   
   
     <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -3622,6 +3658,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -5772,20 +5892,17 @@
 
 
 <h1 id="private-api-composition-deployment-bindings-and-fixed-roster-scaling">Private API composition, deployment bindings and fixed-roster scaling<a class="headerlink" href="#private-api-composition-deployment-bindings-and-fixed-roster-scaling" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
+<p><em>Living document, last changed 2026-11-24 at <code>7b8bfd465</code>.</em></p>
 <p><em>Living contributor-facing implementation plan, refreshed 2026-11-10 for the
 adopted <a href="multitenancy-decisions.html#internal-listener-ory-pattern">internal listener shape</a> and
-<a href="multitenancy-decisions.html#internal-listener-graceful-shutdown">graceful shutdown</a>. Current
-mechanisms are </em><em>read-derived</em><em> from joined application <code>dc795bd1</code>; carried
+<a href="multitenancy-decisions.html#internal-listener-graceful-shutdown">graceful shutdown</a>. The mechanisms below are </em><em>read-derived</em><em> from joined application <code>dc795bd1</code>; carried
 measurements retain their original source/instrument in the linked evidence.
 Remaining criteria are </em><em>UNMEASURED</em><em> until their instruments run. Queue homes:
 <code>MT-ENDPOINT-TRANSPORT</code>, <code>MT-API-FIXED-ROSTER</code>; scaling and partitioning retain
-<code>MT-SCALE-UNBOUND</code> and <code>MT-EVALUATOR-PARTITION</code>. Read with the
-<a href="runtime-topology.html">runtime topology</a>. No production/default enablement follows
-from implementation or a diagram.</em></p>
+<code>MT-SCALE-UNBOUND</code> and <code>MT-EVALUATOR-PARTITION</code>. For the current API Deployment, evaluator and realtime StatefulSets, and tenant routing, see <a href="runtime-topology.html">runtime topology</a>. The “remaining” column records the work outstanding at the November 10 capture. Later policy adopted <a href="multitenancy-decisions.html#prometheus-metrics-narrow">internal metrics</a> and <a href="multitenancy-decisions.html#restore-suspend-drain-replace">generation-fenced restore</a>.</em></p>
 <h2 id="implemented-foundation-and-remaining-boundary">Implemented foundation and remaining boundary<a class="headerlink" href="#implemented-foundation-and-remaining-boundary" title="Permanent link">&para;</a></h2>
 <p>The <a href="../../../reports/tenancy/internal-service-api-2026-11-09/index.html">internal API implementation</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/c70e6ce29bfd6a945466456929f755fc0fef2f82/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">joined dc795bd1 acceptance</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/bb95d169b17aee9cc72fea106f1cf17799da9c40/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">joined dc795bd1 acceptance</a>
 carry the shared transport, three service registries, executable request/response
 schemas, named clients, strict public/private separation and consuming-role
 configuration. UDS and actual loopback HTTP tests exist; the joined regression,

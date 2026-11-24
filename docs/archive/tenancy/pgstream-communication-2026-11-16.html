@@ -1,0 +1,6026 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/archive/tenancy/pgstream-communication-2026-11-16.html">
+      
+      
+        <link rel="prev" href="owner-lifecycle-decision-packet-2026-11-06.html">
+      
+      
+        <link rel="next" href="pgstream-topology-2026-11-16.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Evaluator, realtime and API communication - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#evaluator-realtime-and-api-communication" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Evaluator, realtime and API communication
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_32" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_32" id="__nav_5_32_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_32_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_32">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    archive/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../domain-backlog-archive-2026-02-01.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain Backlog Archive - 2026-02-01
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implementation-summary-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Summary: Enhanced Tooling for Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-archive-2026-01-17-to-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress Archive: 2026-01-17 to 2026-01-23
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-archive-2026-01-28.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress Archive: 2026-01-28
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-archive-2026-01-29-batch1.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress Archive: 2026-01-29 (Batch 1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-archive-2026-01-29-batch2.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress Archive: 2026-01-29 (Batch 2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-archive-2026-01-29-batch3.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress Archive - 2026-01-29 Batch 3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-archive-2026-01-30-batch1.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress Archive - 2026-01-30 Batch 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-archive-2026-01-30-batch2.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress Archive - 2026-01-30 Batch 2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-archive-2026-01-30-batch3.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress Archive - 2026-01-30 Batch 3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-archive-2026-01-30-batch4.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress Archive - 2026-01-30 Batch 4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-archive-2026-02-01.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress Archive - 2026-02-01
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-archive-2026-02-to-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress archive: 2026-02 to 2026-09
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-archive-2026-03-18-to-31.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress Archive: 2026-03-18 to 2026-03-31
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_32_16" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_32_16" id="__nav_5_32_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_32_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_32_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tenancy/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="counter-and-restore-options-2026-11-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Counter and restore alternatives — November 7 baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="evaluator-realtime-reference-2026-11-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluator/realtime polling reference and stream integration plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="execution-log-2026-11-03-to-2026-11-13.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant execution log, 2026-11-03 to 2026-11-13 (archived)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenancy-decisions-superseded-2026-11-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Superseded multitenancy decision rows (archived 2026-11-18)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenant-delivery-roadmap-2026-11-02.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant delivery roadmap: current-dev integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenant-integration-batching-journal-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant integration batching plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenant-open-decisions-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant: the five decisions on the critical path (2026-11-06)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-deployable-components-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployable components: entrypoints, program structure, and what an operator actually runs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout multitenancy: evidence and options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-multitenancy-execution-plan-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenancy execution plan: decisions, tasks, and the context each one needs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="owner-lifecycle-decision-packet-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Owner session and issuer lifecycle: the decision packet (2026-11-06)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluator, realtime and API communication
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="pgstream-communication-2026-11-16.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluator, realtime and API communication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#stream-fed-clinical-materializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stream-fed clinical materializer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#single-evaluator-efficiency-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single-evaluator efficiency plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Single-evaluator efficiency plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keep-replace-and-regroup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep, replace and regroup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reconcile-evaluator-realtime-and-rest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reconcile evaluator, realtime and REST
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#existing-work-and-integration-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing work and integration boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#measurements-and-implementation-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measurements and implementation order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#preserve-the-horizontal-execution-seam" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preserve the horizontal execution seam
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transaction-coverage-and-mechanism-retirement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transaction coverage and mechanism retirement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#internal-trust-and-state-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Internal trust and state ownership
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bounded-clinical-input-selected-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bounded clinical input: selected contract
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bounded clinical input: selected contract">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#raw-storage-delivery-is-independent-of-clinical-membership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Raw storage delivery is independent of clinical membership
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notification-intents-retries-and-alarm-handoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notification intents, retries and alarm handoff
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#browser-authorization-and-mutations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Browser authorization and mutations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recovery-compatibility-and-qualification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recovery, compatibility and qualification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#retained-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retained reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pgstream-topology-2026-11-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime topology: zones, components and private APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="postgres-tenant-clock-proof-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transactional history clock — retained proof plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="preview-integration-runs-2026-11-03-to-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant preview integration runs, November 3–7, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="production-path-assessment-2026-11-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From accepted one-host preview to production
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="realtime-placement-2026-11-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../guides/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    guides/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#stream-fed-clinical-materializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stream-fed clinical materializer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#single-evaluator-efficiency-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single-evaluator efficiency plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Single-evaluator efficiency plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keep-replace-and-regroup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep, replace and regroup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reconcile-evaluator-realtime-and-rest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reconcile evaluator, realtime and REST
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#existing-work-and-integration-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing work and integration boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#measurements-and-implementation-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measurements and implementation order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#preserve-the-horizontal-execution-seam" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preserve the horizontal execution seam
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transaction-coverage-and-mechanism-retirement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transaction coverage and mechanism retirement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#internal-trust-and-state-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Internal trust and state ownership
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bounded-clinical-input-selected-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bounded clinical input: selected contract
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bounded clinical input: selected contract">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#raw-storage-delivery-is-independent-of-clinical-membership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Raw storage delivery is independent of clinical membership
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notification-intents-retries-and-alarm-handoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notification intents, retries and alarm handoff
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#browser-authorization-and-mutations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Browser authorization and mutations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recovery-compatibility-and-qualification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recovery, compatibility and qualification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#retained-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retained reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="evaluator-realtime-and-api-communication">Evaluator, realtime and API communication<a class="headerlink" href="#evaluator-realtime-and-api-communication" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-11-16. A point-in-time document; it is not kept up to date.</p>
+</div>
+<blockquote>
+<p>Archived from alignment <code>b8b2b823ca</code>. The clinical materializer, receipt and raw journal described here belonged to the November 16 pgstream integration. <a href="../../30-design/tenancy/evaluator-realtime-communication.html">Current guide</a>.</p>
+</blockquote>
+<p><em>Contributor-facing living explanation, reconciled 2026-11-16 against selected
+cgm-remote-monitor <code>5e112547b31252ec428747c821d3cd1b3684ce2b</code> and alignment records
+<code>5fdc4bf0685d35d2fac980bad1b28bd66525ccdb</code>. Architecture is </em><em>read-derived</em><em>;
+reproduced acceptance retains its executed source/image in the
+<a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">current integration record</a>.
+These mechanisms are fixed on local branches, not merged into dev or released.
+The bounded-input query census retains its separate inspected source below.</em></p>
+<p>This guide owns component responsibilities, accepted versus completed state,
+raw storage delivery and recovery. Decisions remain in <a href="../../30-design/tenancy/multitenancy-decisions.html">tenancy decisions</a>,
+the <a href="../../30-design/tenancy/durable-event-delivery-contract-2026-11-06.html">durable event contract</a>,
+<a href="../../30-design/tenancy/owner-authority.html">owner authority</a> and
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">release decisions</a>.
+The queue owns claimed work state; release contents own qualification and publication.</p>
+<p><a id="stream-fed-clinical-materializer--adopted-target-2026-11-16"></a></p>
+<h2 id="stream-fed-clinical-materializer">Stream-fed clinical materializer<a class="headerlink" href="#stream-fed-clinical-materializer" title="Permanent link">&para;</a></h2>
+<p>The evaluator consumes committed clinical inserts, updates and deletes into a
+bounded tenant working set. Routine warm changes apply accepted rows; they do
+not reacquire a full clinical source snapshot.
+Settings, policy and lifecycle changes join the same processing contract.
+Preserve existing identity, ordering, units, clinical algorithms, extension
+fields and client contracts. Source JSONB retains original clinical fields;
+generated typed SQL columns and typed metadata already support identity, ordering
+and stream admission.</p>
+<p>Transport acknowledgement follows cheap validation and recoverably accepted
+input. Evaluation, viewer delivery and provider I/O run separately. Transport
+position and clinically completed input/settings versions are distinct. A
+transaction cohort becomes visible coherently; clinical dates do not define
+coverage. Durable input or consistent snapshot/replay recovery must reconstruct
+all accepted work after process loss. Snapshots serve bootstrap, gaps, cache
+loss and missing historical needs; warm event handling applies streamed rows.</p>
+<p>One bounded scheduler owns startup, unfinished versions, actual clinical due
+work and recovery, with fair tenant selection and serial execution per tenant.
+Completion atomically persists covered versions, result/frame/revision and next
+due under current authority, ownership and restore fences before RAM advances.
+Newer input stays pending. Realtime consumes completed output, applies current
+viewer authority/demand, and keeps one retry responsibility per owed delivery.
+Durable receipts recover lost wakes; external exactly-once delivery is not claimed.
+Healthy idle has no hot full-roster polling or per-event catalogue screening.</p>
+<table>
+<thead>
+<tr>
+<th>Boundary</th>
+<th>Implemented branch behavior and qualification boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clinical CDC and durable acceptance</td>
+<td>Six clinical routes retain typed identity, extension fields, physical storage size and insertion order. Raw rows commit to the existing input checkpoint before transport ACK. In the inspected implementation, an XID (transaction identifier) cohort seals with its matching clock-table event, atomically with the typed observed-work receipt. That current dependency is evaluated under the <a href="#transaction-coverage-and-mechanism-retirement">transaction-coverage direction</a>. Same-LSN COPY rows remain distinct.</td>
+</tr>
+<tr>
+<td>Working set and recovery</td>
+<td>Warm evaluation reads the accepted clinical window, without full clinical source reacquisition. Consistent bootstrap uses the engine's historical exceptions and settings; whole-history storage statistics stay authoritative outside the clinical cache. A known row/byte overflow durably marks a non-ready gap, evicts the input cache and preserves the sealed clinical floor and completed output; bounded successful bootstrap is required before evaluation resumes. Malformed data is refused.</td>
+</tr>
+<tr>
+<td>Scheduling and completion</td>
+<td>One bounded scheduler owns startup, pending, due and recovery. A held tenant leaves free slots and later recovery pages available to neighbors. Retry backoff belongs to the failed tenant. Concurrent earliest-due reads coalesce, with a fresh lookup after changed work and safe ownership release before settlement. TIME acquires newly observed input before completion; input arriving during evaluation remains owed. Result/frame/revision, covered versions and next due commit under existing ownership/current-authority/restore fences before RAM completion.</td>
+</tr>
+<tr>
+<td>Realtime</td>
+<td>The completed-output path distinguishes upstream pending, unwatched/deferred and ineligible work from actual failed delivery. Durable receipts own owed-delivery retries. Realtime does not build a raw clinical projection.</td>
+</tr>
+<tr>
+<td>Optional path</td>
+<td>The separate selected-intake materializer remains unqualified and is explicitly refused before effects by the public evaluator configuration. It is not the default path or a prerequisite.</td>
+</tr>
+<tr>
+<td>Qualification</td>
+<td>Focused default native tests include coherent corrections/deletes, process recovery, due work without a write, held-neighbor progress and unchanged warm snapshot/statistics query counts. Source-scoped controls are in the <a href="../../../tools/mt-bench/m7-joined/index.html#stream-materializer-discriminators">existing discriminator harness</a>. The <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">current integration record</a> owns selected-source qualification; operating measurements retain separate attribution.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="single-evaluator-efficiency-plan">Single-evaluator efficiency plan<a class="headerlink" href="#single-evaluator-efficiency-plan" title="Permanent link">&para;</a></h2>
+<p><em>Execution priority requested by the maintainer, 2026-11-16: improve one evaluator
+before expanding evaluator replication, while preserving a path to the
+<a href="pgstream-topology-2026-11-16.html#scale-envelopes-and-fleet-planning">100,000-plus-tenant fleet</a>.
+This is a plan, not a capacity qualification. Mechanism assessments are
+</em><em>read-derived</em><em> from qualified core <code>c31c6e0b69a2a2f2a5320b9e4d32195f1b3e1878</code>
+and receipt follow-on <code>c1173eab7c4fea1270eb585aff5961142849d048</code>, with deployment
+<code>92227d9d4853ed75c5f1ea10c0ba00f03bd2dac5</code>. Linked records own reproduced results.
+Proposed alternatives below are not selected by this plan.</em></p>
+<p>The objective is more correct clinical completions per unit of evaluator CPU,
+memory and database work, within declared input-to-output freshness, clinical
+clock deadlines and recovery bounds. Count source writes, accepted input,
+completed clinical opportunities, connected viewers and delivered frames
+separately. An unchanged frame can still cover new input; a due cycle can be
+required without a source write. Fleet population is not a claim that one
+process or database serves that population.</p>
+<h3 id="keep-replace-and-regroup">Keep, replace and regroup<a class="headerlink" href="#keep-replace-and-regroup" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Responsibility or mechanism</th>
+<th>Disposition and boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shared committed-change detection</td>
+<td><strong>Keep pgstream</strong> as the selected transport. Discover work once rather than restore per-worker/per-tenant polling. One receiver and one replication slot do not distribute clinical execution by themselves.</td>
+</tr>
+<tr>
+<td>Durable acceptance, completed coverage and pending work</td>
+<td><strong>Keep the distinct outcomes.</strong> Acknowledge only recoverable input; completion covers only the input/configuration actually evaluated. Newer input remains pending. Reuse existing durable stores rather than add a broker or general event log.</td>
+</tr>
+<tr>
+<td>Clinically sufficient input and source truth</td>
+<td><strong>Keep explicit row/byte bounds and consistent recovery.</strong> Clinical windows, historical exceptions, typed identity, ordering and extension fields remain required. Source history is authoritative; a clinical cache is replaceable. Incremental windows versus coalesced snapshot rebuilds are a measured design comparison, not a reason to narrow clinical inputs.</td>
+</tr>
+<tr>
+<td>Clinical scheduling</td>
+<td><strong>Regroup under the existing bounded scheduler:</strong> startup, accepted pending work, recovery and actual due deadlines. Keep serial work within a tenant, progress for healthy neighbors, tenant-local retry backoff and bounded concurrency. Do not add an independent retry owner for the same obligation.</td>
+</tr>
+<tr>
+<td>Clinical result and browser frame</td>
+<td><strong>Keep one clinical interpretation.</strong> Evaluator produces both using shared engine primitives. Realtime consumes completed output and does not reacquire clinical history or run a second clinical projection. Remove redundant copies only with equivalent clinical/client output and recovery controls.</td>
+</tr>
+<tr>
+<td>Transaction completeness and internal progress</td>
+<td><strong>Evaluate replacing clock-event sealing</strong> using the exact connector contract or a coherent invalidation/snapshot alternative. See <a href="#transaction-coverage-and-mechanism-retirement">transaction coverage</a>. Native WAL semantics alone do not qualify the webhook boundary. Public history and insertion ordering retain their separate contracts.</td>
+</tr>
+<tr>
+<td>Receipt SQL, JSONB envelopes and encoding</td>
+<td><strong>Optimize physical work, preserve semantics.</strong> A mandatory row rewrite, SQL shape, RAM generation or acquisition/TIME label is not a product obligation. Retire displaced executable code and mechanism-only assertions together, with semantic controls. Acknowledged input must never exist only in RAM.</td>
+</tr>
+<tr>
+<td>Authority, activity, ownership, schema and restore checks</td>
+<td><strong>Keep their guarantees; consolidate equivalent reads.</strong> Batch addressed trusted metadata work and keep current effect/completion fences. Do not replace current authorization with a cached prior allow decision, or run expensive catalogue admission for every event without a demonstrated requirement.</td>
+</tr>
+<tr>
+<td>Completed frames, raw mutations and alarms</td>
+<td><strong>Keep different delivery contracts.</strong> Current display frames may supersede older frames; raw subscriptions preserve required operation order or explicitly lose continuity; alarms retain stable intents, suppression, attempts and retry deadlines. Shared helpers must not erase these distinctions.</td>
+</tr>
+<tr>
+<td>Optional membership, placement and process topology</td>
+<td><strong>Keep outside the unpartitioned hot path.</strong> A standalone evaluator owns its configured eligible tenants without fabricated membership leases. Existing optional partitioning remains available. Additional workers, threads, services and pool connections need a measured reason.</td>
+</tr>
+</tbody>
+</table>
+<p>The selected design already separates input acceptance, clinical completion and
+external effects. Co-locating code may remove a network hop; it does not remove
+these durable boundaries. Conversely, different logical responsibilities do not
+require different processes. Bound intake, clinical and delivery work so a slow
+provider, viewer burst or expensive tenant cannot exhaust the whole worker.</p>
+<h3 id="reconcile-evaluator-realtime-and-rest">Reconcile evaluator, realtime and REST<a class="headerlink" href="#reconcile-evaluator-realtime-and-rest" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Owns</th>
+<th>Efficiency and compatibility rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>REST API</td>
+<td>Canonical storage reads/writes, request authorization and versioned adapters</td>
+<td>Ordinary authorized storage operations remain independent of clinical readiness while storage/backlog policy permits them. Writes do not wait for evaluation or viewer delivery. Preserve truthful write uncertainty and supported history.</td>
+</tr>
+<tr>
+<td>Evaluator</td>
+<td>Background clinical interpretation, covered input, completed frame and next due</td>
+<td>Viewer count does not multiply clinical calculation. A source write, settings change or clinical deadline can create work without a viewer.</td>
+</tr>
+<tr>
+<td>Realtime</td>
+<td>Connections, subscriptions, currently authorized frame/raw delivery and socket forwarding</td>
+<td>Use evaluator output for the current clinical display. Forward original mutation/acknowledgement authority to the canonical API handler. No parallel clinical source acquisition.</td>
+</tr>
+<tr>
+<td>Notification producer and delivery</td>
+<td>Durable alarm identity, suppression, attempt state and retries</td>
+<td>Keep external I/O outside stream acknowledgement and clinical execution slots. One retry responsibility per obligation; provider/browser handoff is not proof of human receipt.</td>
+</tr>
+</tbody>
+</table>
+<p>Reuse input-selection, normalization and calculation primitives for REST derived
+endpoints. Each endpoint retains its stated consistency/freshness contract; do
+not silently substitute a retained evaluator frame. Reuse mathematical credential
+proofs where qualified, while checking current claims and database authority as
+required. API replicas and realtime placement keep their existing independent
+ownership and maintenance contracts.</p>
+<h3 id="existing-work-and-integration-boundaries">Existing work and integration boundaries<a class="headerlink" href="#existing-work-and-integration-boundaries" title="Permanent link">&para;</a></h3>
+<p>The canonical <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">runtime qualification</a>,
+<a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#stream-amplification-and-executable-retirement--2026-11-16">amplification retirement</a>
+and <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#realtime-receipt-write-and-planning-cost--2026-11-16">receipt efficiency</a>
+retain their exact source/image and test scope. They do not establish a matched
+operating improvement on later sources.</p>
+<table>
+<thead>
+<tr>
+<th>Work</th>
+<th>Already covered or currently owned</th>
+<th>Next boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qualified runtime and bounded state</td>
+<td>Incremental warm input, consistent recovery, one clinical scheduler, atomic completion, independent bounded raw tail, output-only realtime and stock-client qualification</td>
+<td>Preserve and reuse unchanged source-scoped qualification. Do not rebuild a second clinical cache in realtime.</td>
+</tr>
+<tr>
+<td>Qualified amplification and receipt changes</td>
+<td>Subscription caching, normalized replay without redundant updates, addressed output delivery with lost-wake recovery, executable untyped-runtime retirement, duplicate realtime receipt rewrite avoidance and bounded prepared statements</td>
+<td>Measure residual unique-event work and the actual operating duplicate fraction; primitive savings are not a frame-latency gain.</td>
+</tr>
+<tr>
+<td>Incremental snapshot-to-stream handover</td>
+<td>The dedicated handover source owner owns exact snapshot/stream overlap, connector integration and internal progress while preserving incremental warm processing without routine window rereads. The predecessor keeps its frozen coalesced dirty/snapshot qualification and bounded lost-wake repair.</td>
+<td>Handover owner completes its coherent correctness capability. The fallback remains an unqualified comparison, not the selected replacement. The profiling continuation does not repeat connector/handover proof or implement another intake path.</td>
+</tr>
+<tr>
+<td>Operating and HTTP/delivery diagnostics</td>
+<td>Existing operating owner retains runs, helpers, pins, budget and cleanup. Existing diagnostics work provides bounded HTTP classification, partial captures and revision-correlation facilities.</td>
+<td>Reuse released instruments and inspect their remaining coverage. Exact cross-process/raw-delivery correlation and sustained instrument overhead require evidence; do not create a competing telemetry framework.</td>
+</tr>
+<tr>
+<td>Single-evaluator efficiency continuation</td>
+<td>The <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#single-evaluator-accepted-input-profile--2026-11-16">accepted-input component profile</a> is closed with a retain decision; its rejected experiment is not adopted.</td>
+<td>Further optimization needs a distinct measured hypothesis and explicit source boundary. SQL/statistics, real scheduling and operating costs remain separate evidence gaps; reuse existing instruments and preserve the handover and operating owners' boundaries.</td>
+</tr>
+</tbody>
+</table>
+<p>The predecessor's unqualified snapshot candidate is a deliberate trade: less internal staging
+and clock coupling, but source rereads on dirty acquisitions. A dirty burst may
+coalesce many receipts into one snapshot; steady writes or large required windows
+may make those reads expensive. The selected incremental contract above remains
+the qualified reference. The active handover lane aims to preserve incremental
+warm work; adoption of any alternative still needs source acceptance and an
+explicit decision.</p>
+<h3 id="measurements-and-implementation-order">Measurements and implementation order<a class="headerlink" href="#measurements-and-implementation-order" title="Permanent link">&para;</a></h3>
+<p>Use the existing runner and bounded diagnostics. Freeze source/deployment/image,
+instrument, workload, CPU/memory limits and database history for each comparison.
+Retain originals outside Git and report shared-host interference. Start with the
+smallest discriminator that can select a design; a broad capacity sweep is not
+the prerequisite for isolated synthetic profiling. An independently owned branch
+experiment may start before final source acceptance; label its unqualified source
+and scope. Source-owner release means permission to use the named checkpoint, not
+a requirement to wait for every acceptance tier before collecting evidence.</p>
+<table>
+<thead>
+<tr>
+<th>Priority / owner</th>
+<th>Measurement and decision</th>
+<th>Required discriminator and exit criterion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 — efficiency continuation, using released diagnostic helpers</strong></td>
+<td>Attribute source commit → durable acceptance → queue wait → input acquisition → clinical calculation → output commit → realtime selection/send → client callback. Record process-local durations; use exact revisions and process incarnations for joins. Separately record intake backlog, accepted-versus-completed lag and overdue clinical work.</td>
+<td>A delayed stage must appear in that stage; missing/corrupt revision links remain UNMEASURED. Reconcile accepted writes to independent storage and completed opportunities to output. Select the dominant supported cost, rather than infer it from HTTP success or a late frame alone.</td>
+</tr>
+<tr>
+<td><strong>2 — efficiency continuation; connector changes remain with source owner</strong></td>
+<td>Compare unique and replayed input: receipt transactions, statements, tuple rewrites, parameter/result bytes, lock wait, WAL and recovery. Compare the released coalesced snapshot candidate with incremental input at equal clinical output. Vary burst/coalescing, transaction size and required history size.</td>
+<td>Preserve complete clinical transactions, same-LSN distinct rows, receipt-before-ACK, uncertain-COMMIT replay, input arriving during evaluation/snapshot and recovery. Report snapshot queries/WAL as well as intake savings. Choose a mechanism only when total cost and freshness justify it; batching is conditional on a real bounded transport/ACK contract.</td>
+</tr>
+<tr>
+<td><strong>3 — efficiency continuation</strong></td>
+<td>Profile CPU and allocation/GC across cache application, decoding/encoding/freezing, view materialization, engine execution, digest and frame creation. Measure resident/peak memory, cache rebuild frequency and authoritative whole-history statistics queries.</td>
+<td>Hold output and clinical windows equal. First reuse existing data and calculation paths; change representation or statistics maintenance only for a measured cost. Deletes/corrections, settings expansion, historical fallback, expiry, restore and byte accounting remain correct. A cached-window byte sum is not whole-history storage size.</td>
+</tr>
+<tr>
+<td><strong>4 — efficiency continuation; operating owner consumes result</strong></td>
+<td>Tune bounded concurrency, resident input limits and intake/clinical/delivery pool budgets together. Inspect real pending/due query plans, lock/pool waits and event-loop delay under busy-tenant plus due-only-neighbor load.</td>
+<td>Healthy neighbors and actual deadlines progress under one held/failed tenant; memory and backlog stay bounded. More promises overlap I/O, not synchronous JavaScript CPU. Threads/processes or new indexes follow a demonstrated bottleneck, not a tenant-count assumption.</td>
+</tr>
+<tr>
+<td><strong>5 — operating owner after source release</strong></td>
+<td>Run a matched sustained operating comparison on the coherent selected candidate, including startup, steady traffic, quiet due work, burst, restart and backlog drain. Include evaluator, PostgreSQL, pgstream, API, realtime and provider-adapter costs.</td>
+<td>Report freshness tails and correct completed opportunities per CPU time, peak/RSS/GC, database work/WAL and recovery bounds. Preserve original failures. Accept workload/resource limits explicitly; do not extrapolate a primitive or one operating point into fleet capacity.</td>
+</tr>
+</tbody>
+</table>
+<p>An optimization closes when a meaningful break fails the retained behavior,
+restoration passes, and the matched measurement supports its intended benefit
+without moving unreported work into PostgreSQL, API or realtime. If evidence
+refutes a prescribed fix, retain the measured result and choose the simpler
+supported mechanism. Missing optional metrics narrow that claim rather than
+invalidate independent observations. Join planned repairs before one coherent
+applicable final campaign and final prcheck; leaf changes do not each trigger a
+new comprehensive campaign.</p>
+<h3 id="preserve-the-horizontal-execution-seam">Preserve the horizontal execution seam<a class="headerlink" href="#preserve-the-horizontal-execution-seam" title="Permanent link">&para;</a></h3>
+<p>Keep intake ownership separate from permission to execute clinical work. The
+unpartitioned evaluator owns all its eligible tenants; future selected workers
+own subsets through the existing assignment contract. Pending input, completed
+coverage, output and due obligations survive process replacement. Completion and
+effects reject stale authority/ownership/restore state; assignment alone does
+not prove those checks or duplicate-effect safety.</p>
+<p>A future worker must select only its assigned pending/due work, without replaying
+all tenants' input or performing full-roster screening. Qualify membership change,
+cache transfer/rebuild, old-worker exclusion or the admitted overlap policy,
+duplicate alarm prevention and recovery before claiming horizontal execution.
+Equal tenant counts need not mean equal CPU or memory. A single intake owner can
+feed several execution workers only with a qualified work-distribution boundary;
+a load-balanced receiver address is not that boundary. Keep this seam explicit
+now; defer new fleet/placement machinery until single-worker measurements justify
+it. The <a href="pgstream-topology-2026-11-16.html#evaluator-inspection-and-workload-ownership">topology ownership inventory</a>
+owns the other roles' scaling semantics.</p>
+<h2 id="transaction-coverage-and-mechanism-retirement">Transaction coverage and mechanism retirement<a class="headerlink" href="#transaction-coverage-and-mechanism-retirement" title="Permanent link">&para;</a></h2>
+<p><strong>Direction for evaluation, 2026-11-16; replacement proposed, unimplemented and
+unqualified.</strong> The <a href="../../30-design/tenancy/multitenancy-decisions.html#stream-native-coverage-direction">release decision</a>
+directs internal ordering and coverage toward the PostgreSQL committed stream.
+Evaluator still owns recoverable accepted versus completed work, clinically
+sufficient bounded state and actual due obligations. Realtime consumes completed
+output under current authority. These outcomes do not require one particular
+application clock, cache generation, counter label or physical write pattern.</p>
+<table>
+<thead>
+<tr>
+<th>Boundary</th>
+<th>Status and requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clinical, isolation, authorization, restore, durable acceptance and supported-client outcomes</td>
+<td>Adopted obligations. Preserve correct output, coherent committed input, no early acknowledgement, recovery and current-effect fences.</td>
+</tr>
+<tr>
+<td>Current clock-event sealing</td>
+<td>Read-derived at qualified c31 <code>lib/storage/clinical-stream-sql.js:30–41</code>: a clock-table event seals the staged XID cohort, and its floor becomes observed work. Existing qualification remains valid for that source. This coupling is an implementation dependency to evaluate, not an enduring product requirement.</td>
+</tr>
+<tr>
+<td>Connector-framed internal coverage</td>
+<td>Proposed replacement. PostgreSQL native commit semantics alone do not prove that the selected pgstream webhook interface preserves transaction completeness. No stream-native replacement is implemented or accepted by this direction.</td>
+</tr>
+<tr>
+<td>Public history and insertion ordering</td>
+<td>Separate supported contracts. The <a href="../../30-design/tenancy/counter-and-restore-options.html">ordering guide</a> distinguishes clinical time, legacy history stamps/cursors, already-present tenant/collection insertion ordinals and internal transport/processing positions. Do not substitute one for another.</td>
+</tr>
+</tbody>
+</table>
+<p>The first discriminator uses the exact pinned connector and its actual
+transaction framing, replay and acknowledgement behavior. It must distinguish
+multiple rows sharing an LSN, a complete commit from a partial cohort, rollback,
+consistent snapshot/replay overlap, and source/restore-generation changes.
+Only evidence that this interface preserves the required boundary can qualify a
+replacement. Reuse the selected transport and durable stores; this direction
+introduces no new CDC engine, general event log, per-tenant replication slots or
+opaque-cursor subsystem.</p>
+<p>Tests are evidence of adopted behavior, not independent authority to preserve an
+implementation. In the same capability change, retire or replace assertions that
+demand a mechanism being removed. Name the old assertion, retained user-visible
+invariant and replacement semantic control; show the meaningful break fail and
+restored behavior pass. Preserve public history no-missed-write checks while that
+client contract is supported. Do not restore an obsolete path just to satisfy a
+source regex, and do not delete correctness because its old test mentions clocks.</p>
+<p>Potential retirement candidates include stable RAM generation, acquisition/TIME
+labels, unexplained absolute failed-attempt counts, blanket evaluator-ready
+admission for otherwise authorized REST load, exact private ordinal values,
+mandatory physical row rewrites and clock-specific internal seals. Each depends
+on its actual outcome contract; none authorizes ignoring wrong output, lost
+committed input, authority/restore changes or durable progress rewinds. Authorized
+REST durability remains independently observable during evaluator recovery;
+explicit storage/backlog bounds can still refuse writes.</p>
+<p>Completion requires one owner for each responsibility, obsolete executable paths
+and their mechanism-specific assertions retired together, focused semantic
+controls, compatible recovery/client behavior, then one coherent applicable final
+acceptance on the changed source. Existing pinned-source qualification and entered
+experiments remain unchanged. The source/operating lane owns the proposed proof;
+release contents and the canonical report own any later measured acceptance.</p>
+<h2 id="internal-trust-and-state-ownership">Internal trust and state ownership<a class="headerlink" href="#internal-trust-and-state-ownership" title="Permanent link">&para;</a></h2>
+<p>Evaluator and realtime are trusted internal roles that work across tenants.
+Internal CDC payloads may contain clinical, configuration and completed-output
+rows. A blanket non-clinical-only feed is not an isolation requirement. Reuse
+existing rows and versions; add a marker only where it makes coalescing or
+recovery simpler. Do not add tables or rereads solely to hide data from these
+trusted workers. Current tenant identity, authority, ownership and restore state
+still govern computation, persistence and externally visible effects. Trusted
+metadata work may batch across tenants without a per-event catalogue screen or
+public request-admission path.</p>
+<p>One receiver in the evaluator role durably coalesces <strong>observed</strong> versions before
+returning HTTP success. Evaluation drains observed-versus-completed differences
+separately, so clinical computation does not hold the serial CDC delivery open.
+The existing evaluator checkpoint consumer retains observed and completed
+versions, completed result/frame, content revision, next due instant and
+ownership/restore generation. Acquisition and clinical completion remain separate.</p>
+<p>The <a href="../../30-design/tenancy/multitenancy-decisions.html#evaluator-platform-restart">platform restart decision</a>
+places pgstream in an independently managed service. It sends webhooks to the
+evaluator's private receiver. The platform owns the pinned process and its restart
+policy; the evaluator owns durable receipt, clinical completion and application
+readiness. A stream outage withdraws readiness and recovery reconciles current
+state. Restarting pgstream does not itself require evaluator exit. Existing
+internal API and deployment trust conventions apply.</p>
+<p>Each replication slot has one active stream consumer. Delivery must reach the
+current receiver owner, or an ingress implementation that provides equivalent
+durable admission. The current selected binding targets its sole intake owner;
+ordinary load balancing across evaluator replicas is not qualified by the private
+Service address. Receiver availability and clinical readiness are separate so
+service discovery does not require clinical readiness before delivery can start.</p>
+<p>The historical <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/reports/tenancy/switch-over-finish-2026-11-15/external-platform04.json">bounded platform witness</a>
+measures a Docker-managed stream replacement with the same evaluator and exact
+durable catch-up. It does not qualify the new application image, Kubernetes,
+general failover or a capacity limit.</p>
+<p>Completion commits the result, processed versions and next due together under a
+current ownership/restore fence. A newer version remains pending when an older
+cycle finishes. Reuse current transactional write clocks, settings/activity
+versions, notification producer identities and recovery contracts. Clinical dates
+and CDC arrival order never stand in for commit versions.</p>
+<pre class="mermaid"><code>flowchart LR
+  PG[(Existing committed rows and versions)] --&gt; PS[Pinned pgstream service]
+  Platform[Platform restart policy] -.-&gt; PS
+  PS --&gt; RX[Current evaluator receiver]
+  RX --&gt; P[(Durable observed vs completed work)]
+  P --&gt; E[Evaluator and due work]
+  E --&gt; O[(Completed result / frame / next due)]
+  O --&gt; PS
+  RX --&gt; H[Output/control hint]
+  H --&gt; RT[Realtime: watched tenants]
+  O --&gt; RT
+  RT --&gt; C[Currently authorized clients]</code></pre>
+<p>Input, output, heartbeat and schema/control routes are explicit. Output and
+receiver acknowledgement writes must not feed an input-evaluation loop. A
+validated output payload may accelerate delivery. Durable output revision remains
+truth; reconnect and bounded reconciliation for watched tenants recover a missed
+private/local hint. This hint may use an existing private interface; successful
+RPC is not the sole delivery/recovery path. Realtime does not build a second raw
+clinical projection. Preserve the adopted connection-driven lifecycle and update
+its move-readiness contract in the same source cut where that behavior changes.</p>
+<p><a id="bounded-clinical-input-next-batch-contract"></a></p>
+<h2 id="bounded-clinical-input-selected-contract">Bounded clinical input: selected contract<a class="headerlink" href="#bounded-clinical-input-selected-contract" title="Permanent link">&para;</a></h2>
+<p><em>Selected contract, 2026-11-16. The query census below is </em><em>read-derived</em><em> from
+application commit <code>543808784e0f5f03945b840142a0df31177443ba</code>; its path/line anchors
+retain that source. The selected implementation and reproduced qualification now
+belong to the <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">current integration record</a>.
+Historical sources are not relabeled as the executed selected candidate.</em></p>
+<p>The evaluator needs the rows its existing property view can read, plus recoverable
+state needed to maintain those answers. It does not need all source history in
+RAM. The property view supplies both clinical properties and the completed browser
+frame (<code>lib/data/tenant-projection-evaluator.js:141–154</code>). Its windows below are
+existing query contracts, not new clinical retention policy. Narrowing those
+windows needs the existing equality and replay controls
+(<code>lib/data/views/bounds.js:20–25</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Existing need and source</th>
+<th>Required cache semantics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Entries</td>
+<td>Empty-cache loader reads <code>date &gt;= now - 2 days</code>, ascending; property view keeps that query (<code>lib/data/dataloader.js:179–192</code>; <code>lib/data/views/bounds.js:97–107</code>).</td>
+<td>Preserve every matching type and extension field, not only SGV. This includes meter readings and calibrations. Do not substitute the alarm-only view's newest-12/newest-1 queries.</td>
+</tr>
+<tr>
+<td>Ordinary treatments</td>
+<td>Every <code>created_at &gt;= now - 60 hours</code>, ascending (<code>lib/data/views/bounds.js:37–44,85–89</code>). COB chains absorption across treatments and uses historical device-status IOB; a DIA-only window changes output (<code>lib/data/views/bounds.js:64–79</code>).</td>
+<td>Retain the full window. Duration, carbohydrate/insulin fields, units and unfamiliar fields remain engine input. An ongoing duration does not authorize inventing an additional lookback or dropping part of the existing one.</td>
+</tr>
+<tr>
+<td>Treatment history exceptions</td>
+<td>Latest of each exact event type: Sensor Start, Sensor Change, Sensor Stop, Site Change, Insulin Change and Pump Battery Change within 62 days (<code>lib/data/dataloader.js:406–437</code>). Latest duration-zero Profile Switch within <code>31 * 12</code> days (<code>lib/data/dataloader.js:362–381</code>).</td>
+<td>A conservative cache may retain all candidates in each specified range. Keeping only each winner requires historical fallback when a correction, soft delete or hard delete removes it. These exceptions survive ordinary 60-hour expiry.</td>
+</tr>
+<tr>
+<td>Device status</td>
+<td><code>created_at &gt;= now - 24 hours</code>, or 48 hours when extended <code>devicestatus.days == 2</code> (<code>lib/data/views/bounds.js:46–55,90</code>).</td>
+<td>Preserve complete nested uploader, pump, openaps, loop and xdripjs data. Larger plugin alert thresholds do not widen this existing query. A 24-to-48-hour settings change must recover the missing day before completing that settings version.</td>
+</tr>
+<tr>
+<td>Profile</td>
+<td><code>profile.last()</code> reads one visible profile sorted by <code>startDate DESC, _id DESC</code> (<code>lib/server/profile.js:21,176–178</code>; <code>lib/data/dataloader.js:448–457</code>).</td>
+<td>There is no age cutoff and no selection of “latest before now” here. Keep the selected document, including its complete <code>store</code>, or a bounded candidate set with explicit historical fallback on winner removal. Retaining every profile has no automatic population bound.</td>
+</tr>
+<tr>
+<td>Food and activity</td>
+<td>Property view answers both with no rows (<code>lib/data/views/bounds.js:92–93</code>; <code>lib/data/views/index.js:174–193</code>).</td>
+<td>Do not load their history into this clinical cache. This preserves the current property view's result; it does not change REST or export. The completed frame retains its existing <code>food</code> field and current empty answer (<code>lib/data/ddata.js:134–158</code>); activity is absent from that frame. Both domains still contribute to storage accounting.</td>
+</tr>
+<tr>
+<td>Storage statistics</td>
+<td>Tenant logical JSONB bytes across the configured source tables, including invalid and old rows (<code>lib/storage/postgres-tenant-stats.js:15–32</code>).</td>
+<td>Maintain an independent authoritative aggregate or read that aggregate through its existing contract. Clinical eviction must not reduce <code>dataSize</code>. Per-row bytes of cached rows alone cannot answer this statistic.</td>
+</tr>
+</tbody>
+</table>
+<p>The query compiler and existing engine own type handling, units and ordering.
+Entries use numeric <code>date</code>; the other range queries compare <code>created_at</code> with an
+ISO string. Replacing that membership test with a permissive date parser can
+change answers for legacy or malformed values. Preserve the existing filter's
+type and array semantics. Those queries have no upper time bound unless the
+loader is explicitly asked for a framed historical read
+(<code>lib/data/dataloader.js:188–192,367–368,423–424</code>). Future records therefore stay
+eligible input. They become clinical work when their time arrives
+(<code>lib/data/evaluator-due.js:62–65</code>). The cache does not discard them as “too new.”</p>
+<p>Typed identity is <code>(domain, id_kind, _id)</code>; a string and an ObjectId with the same
+hex text remain distinct (<code>lib/storage/postgres-identity.js:13–38</code>). Preserve each
+row's insertion ordinal and the existing total-order tie-break. Keep original
+clinical values in durable input; unit and duration normalization remains in
+<code>ddata</code>, including temporary-target conversion
+(<code>lib/data/ddata.js:37–79,469–505</code>). A record with <code>isValid: false</code> stays out of
+clinical answers, while source history and byte accounting still include it
+(<code>lib/server/soft-deleted.js:3–24</code>). A late correction is classified by its new
+contents; commit coverage is classified by the stream's versions and cohort,
+never by the record's clinical date.</p>
+<pre class="mermaid"><code>stateDiagram-v2
+  [*] --&gt; Recovering: start, cache loss or incompatible input contract
+  Recovering --&gt; Ready: consistent required-history snapshot plus replay overlap
+  Ready --&gt; Ready: durable cohort seal, window expiry or time-only computation
+  Ready --&gt; Recovering: settings expansion, missing history, restore or GAP
+  Recovering --&gt; Pending: required input exceeds declared bound or fetch fails
+  Pending --&gt; Recovering: existing scheduler retries eligible work
+  Ready --&gt; Completed: result, covered versions and next due commit together
+  Completed --&gt; Ready: newer input remains pending</code></pre>
+<p>One existing scheduler owns expiry, clinical due work and recovery. Expiry removes
+only derived rows and schedules the next boundary even without an input write.
+Shrinking a window can prune its derived state. Expansion, backward clock movement
+or a ranked winner lost from a reduced candidate set requires a named historical
+recovery path before completion. A consistent tenant-bound snapshot includes the
+required source ranges and its input floor; replay overlap skips cohorts already
+covered by that floor and applies later committed cohorts whole. Restart may
+reuse a compatible durable working set. An incompatible policy, schema or restore
+generation must recover rather than reinterpret old coverage. Routine warm
+changes apply accepted row data; a legitimate missing-history fetch has a
+separate recovery reason and is not an every-change full-source reconcile.</p>
+<p>Window membership is not a hard memory bound. Declared row and byte limits still
+refuse a clinically required set that exceeds them; the implementation must retain
+pending work and the last completed output without certifying the refused version.
+Fleet admission must also account for retained decoded/prepared input, plugin and
+date caches, staged cohorts, result/frame copies and in-flight evaluations. Cold
+cache eviction preserves durable pending versions, deadlines, notification state
+and completed output. It must not turn tenant admission into roster scans or
+repeated failed bootstrap attempts. Viewer presence does not control clinical
+admission or deadlines.</p>
+<p>Derived expiry never deletes source rows. Source retention is separately optional:
+API v3 autoprune runs only when configured, and profile pruning is an explicit
+API DELETE operation (<code>lib/api3/generic/collection.js:33,139–180</code>;
+<code>lib/api/profile/index.js:232–240</code>). Neither guarantees the population fits a
+clinical cache. REST history/export and logical restore retain their existing
+source contracts. Restore invalidates derived membership under its existing
+suspension, authority and generation fences. Whole-history accounting must survive
+that invalidation independently; identity-only deletes and unchanged-TOAST updates
+cannot derive an evicted row's former byte size from its absent cached document.</p>
+<p>Clinical evaluation remains current-state computation. This cache does not create
+a guarantee to evaluate every superseded intermediate row version. Transaction
+cohorts must remain coherent, and durable notification requests already produced
+retain their identities, suppression and retries. Any consumer that requires an
+intermediate transition needs retained event/effect semantics before coalescing;
+window expiry or latest-state replacement cannot silently satisfy that obligation.
+Realtime continues to consume the completed result and current viewer authority,
+not a second raw projection. Qualification must compare actual engine answers and
+frame fields, distinguish required historical recovery from warm rediscovery, and
+prove that expiry neither deletes source data nor completes unseen input.</p>
+<h3 id="raw-storage-delivery-is-independent-of-clinical-membership">Raw storage delivery is independent of clinical membership<a class="headerlink" href="#raw-storage-delivery-is-independent-of-clinical-membership" title="Permanent link">&para;</a></h3>
+<p>The focused precursor implementation is application branch
+<code>codex/bounded-storage-20261116</code>, commit
+<code>3e085e056330d2f0ddf29c4000e526a968462620</code>. It includes the integrator's committed
+<code>1dc7a74576b5d77f99cc4a42d900e1692d94a393</code> scheduler and populated-backfill repairs. It is fixed on that branch and
+joined into the selected streamlined candidate. Its focused evidence retains its
+original source; the current integration record owns joined acceptance.</p>
+<p>The input checkpoint carries two JSONB envelopes: the clinically sufficient
+working set first, a bounded source-mutation tail second. An accepted source row
+and its existing completed-checkpoint delivery revision commit in the same
+transaction before transport acknowledgement. The raw tail shares the existing
+input-row write; the completed frame is not rewritten for each raw event.
+Clinical bootstrap, expiry and GAP replacement preserve the second envelope.
+Lifecycle/schema invalidation resets its continuity under the existing fences.
+No new tenant table, broker, consumer retry loop or source-history projection is
+introduced. Whole-history statistics still use <code>postgres-tenant-stats</code>.</p>
+<p>The existing realtime receipt drain refreshes addressed controls once, consumes
+completed frames without clinical row transfer, and independently delivers raw
+mutations to storage subscribers. Each raw delivery failure remains local to its
+tenant. Current worker, owner, restore-generation, activity and viewer authority
+still fence publication. No viewers means no raw-tail fetch or retained offline
+client obligation. Notifications keep their independent clinical deadlines.</p>
+<p>A storage subscription records the current mutation sequence and then receives
+later normalized operations in source order. Its existing packet supplies no
+initial population, offline cursor or reset event; reconnect begins another live
+subscription. Exact retained retries are idempotent within the live cursor;
+external exactly-once delivery is not promised. A temporarily uncertain authority
+holds its cursor for recheck. If that cursor falls behind the bounded tail, the
+server disconnects it with <code>REALTIME_STORAGE_CONTINUITY_LOST</code>; it does not silently
+coalesce required mutations. An older concurrent tail read cannot move a cursor
+backwards. Clinical expiry emits no source event. Food/activity and out-of-window
+corrections/deletes remain raw events even when absent from clinical input.</p>
+<p>Append-only migration <code>0100_&lt;domain&gt;_storage_identity</code> sets source tables to
+<code>REPLICA IDENTITY FULL</code>. Actual old documents preserve public delete identifiers
+that differ from typed <code>_id</code>, including TOAST values. Metadata-only updates with
+unchanged documents emit no client mutation. Catalogue checks accept only this
+exact typed operation; readiness refuses the old identity mode. Existing RLS,
+grants, logical export/restore/delete inventory and single-tenant socket wiring
+remain the authority for those responsibilities.</p>
+<p>The <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/bounded-storage-2026-11-16.html">focused qualification record</a>
+contains the reproduced engine/history/expiry, native WAL/COPY/replay/RLS,
+current-authority, fleet-cache and mutation-control results, exact sources and
+retained evidence. The integration record now owns selected-source actual-role
+client and full/browser/enabled-native qualification. Operating profiles and
+capacity retain separate source, evidence and claims.</p>
+<p>The selected stream path keeps warm replay read-only, including time-only expiry.
+It reads only the clinical component, without transferring the raw delivery tail.
+The existing receipt seal advances the window using the last completed clinical
+engine instant and prunes it while owning the input transaction. Idle state cannot grow. Evaluation
+can remove more expired rows locally; distinct remaining subsets carry distinct
+progress identities. Clock rewind or settings expansion uses consistent recovery.
+This avoids a checkpoint write and full policy comparison on each warm cycle.</p>
+<p>Completed stream output keeps the clinical result and stock-client frame without
+a second copy of raw clinical rows. The input checkpoint owns those rows; the
+independent mutation tail owns raw delivery. Nonstream snapshot output preserves
+its established row contract. Realtime reads completed output and the raw tail
+under current tenant authority; it does not reconstruct clinical projections.</p>
+<p>Raw publication opens its tenant operation before it validates a captured tail.
+It then checks current authority and every send within that operation. A closed
+read operation cannot supply an active publication scope; retries retain the
+owed delivery instead of bypassing restore checks.</p>
+<p>Bounded state transitions replace changed envelopes and arrays while sharing
+read-only retained values. Raw-tail eviction counts exact UTF8 bytes once and
+subtracts removed elements. Persisted size estimates do not override an exact
+fresh bound; overflow, cohort and prior-state mutation controls remain.</p>
+<p>Qualification follows durable outcomes. Cache eviction may advance a disposable
+component generation, and due work may need an acquisition after cache loss.
+Neither a stable RAM generation nor a particular acquisition/TIME counter split
+is an enduring clinical requirement. Preserve process/restart provenance,
+monotone completed coverage, pending work, due obligations, current authority and
+restore fences. A counter-only observation cannot establish those durable
+properties or justify relabeling an earlier failed capture.</p>
+<p>FULL replica identity is retained for the selected candidate. It supplies the
+old public identifier and unchanged TOAST document required for truthful deletes
+and corrections without another history projection. Its synthetic WAL cost is
+material, so this is an explicit correctness/storage trade-off. It is not an
+established throughput cause or an assertion that every future storage design
+must use FULL. A replacement must preserve old identity semantics and recoverable
+acceptance before acknowledgement.</p>
+<p>Full old identity adds WAL bytes for unchanged documents; the qualification
+record measures that trade-off in a synthetic fixture. It does not establish
+serving latency, capacity or the cause of the earlier delay. Whole-history
+statistic scans and total fleet heap/RSS remain unmeasured here. The bounded
+clinical set may still exceed its declared limits when actual required input is
+too large; that stays pending/refused rather than completed.</p>
+<h2 id="notification-intents-retries-and-alarm-handoff">Notification intents, retries and alarm handoff<a class="headerlink" href="#notification-intents-retries-and-alarm-handoff" title="Permanent link">&para;</a></h2>
+<p>The evaluator notification component owns durable producer, suppression, request
+and attempt state. Realtime owns authorized connected-browser fanout. A stable
+request identity survives an uncertain response or restart. Attempt state commits
+before external I/O; retries recheck current eligibility, suppression, authority
+and restore state. A handoff receipt does not prove browser display, human
+acknowledgement or provider/device delivery. External exactly-once delivery is
+not claimed.</p>
+<p>Content-identical clinical cycles keep their output revision under the
+<a href="../../30-design/tenancy/multitenancy-decisions.html#evaluator-revision-on-content-change">content-revision decision</a>.
+Durable completed coverage may advance without changing the frame. An active,
+unacknowledged, unsnoozed alarm repeats on its own
+<a href="../../30-design/tenancy/multitenancy-decisions.html#alarm-repeat-clock">heartbeat clock</a>.
+Paused or suspended tenants neither compute nor deliver alarms; resuming requires
+current eligible output under the <a href="../../30-design/tenancy/multitenancy-decisions.html#activity-is-pause-suspend">activity policy</a>.</p>
+<p><a id="alarm-repeat-and-targeted-wake-diagram"></a>
+<pre class="mermaid"><code>flowchart LR
+  E[Eligible completed output] --&gt; P[Durable notification requests]
+  T[Alarm repeat clock] --&gt; P
+  P --&gt; C[Current authority and suppression checks]
+  C --&gt; R[Realtime handoff]
+  R --&gt; B[Authorized connected browsers]
+  R --&gt; A[Persist attempt outcome or retain retry]
+  A --&gt; P</code></pre></p>
+<h2 id="browser-authorization-and-mutations">Browser authorization and mutations<a class="headerlink" href="#browser-authorization-and-mutations" title="Permanent link">&para;</a></h2>
+<p>Main, storage and alarm namespaces retain their existing credential, subscription
+and callback contracts. Realtime forwards the original client authorization and
+mutation envelope to the API's private contract. API independently resolves the
+tenant, checks the current credential and permission, and invokes the canonical
+socket write or suppression handler. Transport identity does not replace client
+authority. Ambiguous failures produce no synthetic success or automatic mutation
+retry. REST v1/v2/v3 remain adapters of the same request-serving component.</p>
+<p>A registered tenant operation lasts through actual response or publication
+completion. Each send rechecks current authority inside that operation. Maintenance
+uses the complete participant roster and actual backend/incarnation pins to drain
+work and invalidate tenant state. A service address is not that roster. The
+<a href="pgstream-topology-2026-11-16.html">runtime topology</a> owns private listener composition and
+<a href="../../30-design/tenancy/owner-authority.html">owner authority</a> owns credential/audience boundaries.</p>
+<h2 id="recovery-compatibility-and-qualification">Recovery, compatibility and qualification<a class="headerlink" href="#recovery-compatibility-and-qualification" title="Permanent link">&para;</a></h2>
+<p>Process-local caches may be evicted or rebuilt. Durable accepted/completed
+positions, pending input, actual due work and current ownership/restore generation
+determine recovery. Due work must complete whether the runtime labels its cycle
+acquisition or TIME. A later next-due time can be legitimate; completion does not
+require all future deadlines to disappear. Unclassified rejected-attempt counters
+alone cannot establish a clinical failure or its cause. Actual wrong output,
+missing coverage, authority loss and durable rewinds remain failures.</p>
+<p>Lost-slot recovery stops serving, reconstructs consistent accepted/completed
+state and verifies current due/restore state before explicit reopening. A revision
+upgrade and rollback require the admitted source/deployment pair and compatible
+WAL/input contracts. The <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">existing integration record</a>
+owns the reproduced ordinary recovery, populated upgrade, cold rollback, selected
+client and final full/browser/enabled-native results, including pending cases.
+It preserves the different executed image/helper attributions. The
+<a href="../../30-design/tenancy/production-critical-path.html">production path</a> explains remaining deployment
+admission; the <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html">operating report</a>
+owns workload measurements. Functional qualification does not establish capacity,
+HA, a live provider or all clinical production behavior.</p>
+<p>Single-tenant behavior, stock client code and wire formats retain their existing
+contracts. Stream output omits duplicated clinical rows; the nonstream snapshot
+contract and independent raw storage events retain their own fields.</p>
+<h2 id="retained-reference">Retained reference<a class="headerlink" href="#retained-reference" title="Permanent link">&para;</a></h2>
+<p>The <a href="evaluator-realtime-reference-2026-11-16.html">polling reference and stream integration plan</a>
+preserve the November 7 source map and snapshot/polling diagrams, November 13
+prototype criteria and original evidence limits. Independent raw clinical
+projections, feed-reader polling and their dispatch instructions describe those
+baselines. They are outside the current normal stream path. Existing clinical,
+authority, notification, restore and compatibility obligations still apply.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+  
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+  <script src="https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js"></script>
+  
+
+  </body>
+</html>

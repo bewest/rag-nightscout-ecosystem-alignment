@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3637,6 +3645,34 @@
   
   
     <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -3645,6 +3681,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -5818,15 +5938,9 @@
 
 
 <h1 id="deployment-bindings-public-names-and-load-behavior">Deployment bindings, public names and load behavior<a class="headerlink" href="#deployment-bindings-public-names-and-load-behavior" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
-<p><em>Living contributor-facing deployment contract and decision-preparation guide,
-reconciled 2026-11-12 against release decisions at alignment
-<code>8ae6f4a3729548de0c88cc0ee5b3c0aede9aba61</code>. Mechanisms below are </em><em>read-derived</em><em>;
-this edit runs no cluster or provider. <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">Release contents</a>
-and named reports own implementation, qualification and publication; the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/queue/work-queue.yaml">queue</a> owns claimed state. Resource profiles,
-sharing schedules and fleet arrangements are proposals unless adopted in their
-canonical decision home.</em></p>
+<p><em>Living document, last changed 2026-11-24 at <code>7b8bfd465</code>.</em></p>
+<p>The current Kubernetes binding uses separate API, evaluator and realtime workloads. API replicas serve equivalent requests. Evaluator and realtime StatefulSet ordinals own tenant hash slices. Tanka renders the placement and a migration Job prepares the schema. The dedicated primary grows vertically. <a href="multitenancy-decisions.html#statefulset-ordinal-scaling">Ordinal binding</a> · <a href="multitenancy-decisions.html#one-large-postgresql-primary">Primary placement</a> · <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">Candidate measurements</a></p>
+<p>The one-Pod cohort, direct participant inventory and UDS layout below describe the November 12 reference and its portability questions. Its acceptance remains pinned to that topology. The public-name, tenant identity and trust requirements apply to each selected binding.</p>
 <p>A deployment binding translates application contracts into processes, addresses,
 credentials, placement and lifecycle actions. It reuses the same roles across
 supported topology choices; it cannot create missing ownership, migration or
@@ -5859,7 +5973,7 @@ a new mandatory per-request network hop. The registry/policy lookup may be a
 current-authority component inside an admitted application. DNS locates an edge;
 it supplies neither tenant authority nor permission to see data.</p>
 <h2 id="what-a-kubernetes-binding-must-preserve">What a Kubernetes binding must preserve<a class="headerlink" href="#what-a-kubernetes-binding-must-preserve" title="Permanent link">&para;</a></h2>
-<p>The colocated reference uses a fixed participant roster and private Unix control
+<p>The November 12 colocated reference used a fixed participant roster and private Unix control
 sockets. A normal TCP Service does not transport a filesystem socket. A colocated
 binding can place role containers in one Pod with a private shared socket volume.
 Independent role placement instead requires the selected private network binding
@@ -5884,7 +5998,7 @@ remain the database and admitted secret/artifact stores.</p>
 <td>Actual TLS, Host, forwarded-client identity, socket upgrades and trusted-peer behavior; unknown/conflicting names refuse. Public DATA ingress cannot bypass separately authenticated owner controls or reach private operator/database controls.</td>
 </tr>
 <tr>
-<td>Fixed application cohort</td>
+<td>November 12 fixed application cohort</td>
 <td>Separate containers/processes with the same explicit roster and private IPC; one-Pod placement is an initial candidate.</td>
 <td>Effective UID/socket permissions, actual participants and incarnations, drains/invalidation acknowledgements, A restore and B continuity; individual container restart and whole-Pod replacement retain uncertainty/refusal semantics.</td>
 </tr>
@@ -5949,7 +6063,7 @@ Local state can be reconstructed. Each instance still has connections, caches,
 in-flight responses and restore obligations.</p>
 <p>The shared transport implements service schemas and named clients over UDS or
 explicit TCP/HTTP endpoints. The <a href="../../../reports/tenancy/internal-service-api-2026-11-09/index.html">original implementation record</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/c70e6ce29bfd6a945466456929f755fc0fef2f82/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">joined acceptance</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/bb95d169b17aee9cc72fea106f1cf17799da9c40/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">joined acceptance</a>
 retain their tested scope; current deployment qualification is recorded separately
 in <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>.</p>
 <p>Bindings render the adopted <a href="multitenancy-decisions.html#internal-listener-ory-pattern"><code>serve.internal</code> listener</a>.

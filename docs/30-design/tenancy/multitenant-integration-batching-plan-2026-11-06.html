@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3653,6 +3661,34 @@
   
   
     <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -3661,6 +3697,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -5856,7 +5976,7 @@
 </div>
 <p><em>Contributor-facing living coordination plan, refreshed 2026-11-15. This page owns
 capability boundaries, integration order and verification depth. The
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/queue/work-queue.yaml">queue</a> owns claimed item state; the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/queue/work-queue.yaml">queue</a> owns claimed item state; the
 <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims;
 <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a> and the
 <a href="../remedial/rc-16.0.0-integration-record.html">integration record</a> own actual source,
@@ -5980,7 +6100,7 @@ preserves original branch identities, commands, predictions, failures, controls
 and ownership. Those completed/older lanes are evidence inputs, not today's task
 list. The schedule below governs further work.</p>
 <h2 id="5-current-completion-schedule-adopted-2026-11-06">5. Current completion schedule (adopted 2026-11-06)<a class="headerlink" href="#5-current-completion-schedule-adopted-2026-11-06" title="Permanent link">&para;</a></h2>
-<p><strong>Current order, 2026-11-15:</strong> the <a href="multitenancy-decisions.html#single-host-streaming-first">single-host streaming decision</a> governs the immediate baseline. Use the existing runnable UDS composition and existing performance lane; finish supported-path qualification and bounded operating-envelope experiments without waiting for optional topology or platform expansion. Preserve their research checkpoints and gates, but do not add them to the baseline critical path. One outcome, existing evidence homes and one final coherent candidate campaign are sufficient.</p>
+<p>The A/B/C table records the integration boundaries of the November batches. For current work, follow the <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">candidate 5 qualification and discovery record</a>, <a href="multitenancy-decisions.html#capacity-test-tiers">test tiers</a> and <a href="production-critical-path.html">M7 admission criteria</a>.</p>
 <table>
 <thead>
 <tr>
@@ -5992,7 +6112,7 @@ list. The schedule below governs further work.</p>
 <tbody>
 <tr>
 <td><strong>A — data, control and clients (M0–M4)</strong></td>
-<td><a href="../remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a> retains M0 and promotes M1/M2, then M3/M4, at the adopted bounded scope. The later <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">pinned-client campaign</a> belongs to its own source/instrument.</td>
+<td><a href="../remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a> retains M0 and promotes M1/M2, then M3/M4, at the adopted bounded scope. The later <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">pinned-client campaign</a> belongs to its own source/instrument.</td>
 <td>Preserve legacy root/subject behavior and supported PG differences. Android emulator and measured operating limits remain C; no all-client claim. A's closed criteria are not new prerequisites to re-run for the documentation refresh.</td>
 </tr>
 <tr>
@@ -6013,7 +6133,7 @@ list. The schedule below governs further work.</p>
 <tr>
 <td><strong>M6b — lifecycle, keys and the joined candidate</strong></td>
 <td><a href="../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">MT-M6B-JOIN acceptance</a> joins listener composition, key retention, ownership operations and single-site OIDC provisioning.</td>
-<td>Ownership in a serving role and its deploy grants, real role processes over Compose and the production key custodian remain open; the release contents carry the full list.</td>
+<td>Ownership in a serving role and its deploy grants, real role processes over Compose and the production key custodian remain open; the dated acceptance record identifies the boundaries of this join.</td>
 </tr>
 <tr>
 <td><strong>M6c — deployment trust</strong> (in <code>nightscout-deploy</code>)</td>
@@ -6023,12 +6143,12 @@ list. The schedule below governs further work.</p>
 <tr>
 <td><strong>M6d — connector sync</strong></td>
 <td><a href="../../../reports/tenancy/connector-sync-2026-11-10/index.html">MT-CONNECTOR-SYNC lab</a>.</td>
-<td>Other collections, cadence, token refresh and real ingress remain UNMEASURED.</td>
+<td>For the later synthetic live and backfill measurements and their limits, see the <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">candidate 5 connector result</a>. Production ingress and credential lifecycle need evidence on the selected deployment.</td>
 </tr>
 <tr>
 <td><strong>M7 — production readiness</strong></td>
 <td>Plans: <a href="production-critical-path.html">production critical path</a>, <a href="selectable-endpoints-and-api-scaling-plan.html">selectable endpoints and API scaling</a>, <a href="realtime-sharding-plan.html">realtime sharding</a>.</td>
-<td>Measure and qualify the declared single-host baseline first. Partition, sharding, Kubernetes and multihost operating-model proofs retain their own queue scope and are parallel research, not prerequisites for that baseline. Applicable client and correctness gates remain; no milestone is promoted by this ordering change.</td>
+<td>The nominal campaign measures the selected roles, resource placement and workload. Use the frozen candidate, deployment trust record and applicable recovery and client results for an admission decision.</td>
 </tr>
 </tbody>
 </table>

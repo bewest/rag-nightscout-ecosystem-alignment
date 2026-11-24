@@ -4394,7 +4394,7 @@
 
 
 <h1 id="reuse-the-canonical-local-runner">Reuse the canonical local runner<a class="headerlink" href="#reuse-the-canonical-local-runner" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-20 at <code>c6082a7ed</code>.</em></p>
+<p><em>Living document, last changed 2026-11-23 at <code>ef8b39a5f</code>.</em></p>
 <p><code>runner.py</code> replaces copied per-attempt preparation and execution scripts with
 one configuration and the existing <code>adapter.py</code> entrypoints. It does not build
 an image, allocate a remote host or grant capacity acceptance.</p>
@@ -4405,7 +4405,7 @@ an image, allocate a remote host or grant capacity acceptance.</p>
 below are explicit storage choices, not automatic runner defaults. A missing or
 unwritable <code>/mnt/data</code> is a storage error; do not fall back to the home drive.
 Existing runs and their original guards keep their current paths.</p>
-<p>Copy <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/m7-joined/examples/local-rehearsal.json">the small rehearsal profile</a> to private
+<p>Copy <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/m7-joined/examples/local-rehearsal.json">the small rehearsal profile</a> to private
 storage. Set its verified helper head, repository paths, existing diagnostic
 receipt, new project and unused explicit CIDRs. The receipt still binds the
 source pair, image, instrument and traffic duration through the adapter's
@@ -4481,7 +4481,7 @@ prepare/caller path on an already available qualified private driver; this tool
 has no paid-resource authority. Do not infer remote environment qualification
 from local source tests or from execution of the generated public probe alone.</p>
 <h2 id="joined-candidate-and-metric-meanings">Joined candidate and metric meanings<a class="headerlink" href="#joined-candidate-and-metric-meanings" title="Permanent link">&para;</a></h2>
-<p>The paired <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/m7-joined/examples/joined-1000.json">1k</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/m7-joined/examples/joined-3000.json">3k</a>
+<p>The paired <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/m7-joined/examples/joined-1000.json">1k</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/m7-joined/examples/joined-3000.json">3k</a>
 profiles hold ordinary cadence, hot factor 1, two clients per tenant, offered
 scenario rate 180/s and load duration 310 seconds constant. Primer concurrency
 is explicitly four and JWT setup is serial one. Client population and nominal
@@ -4718,7 +4718,7 @@ current memory and configured-limit checks keep their separate meanings.</p>
 <h2 id="outcome-evaluator-gate">Outcome evaluator gate<a class="headerlink" href="#outcome-evaluator-gate" title="Permanent link">&para;</a></h2>
 <p>Decision <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#outcome-evaluator-gate">outcome-evaluator-gate</a>
 replaces the lifetime <code>failedCompletions == 0</code> rule and the instant midpoint
-readiness rule. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/m7-joined/outcome_gate.py">outcome_gate.py</a> is the one frozen gate; its
+readiness rule. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/m7-joined/outcome_gate.py">outcome_gate.py</a> is the one frozen gate; its
 identity is the SHA-256 of that file. Tenants, rate, windows, budgets and
 <code>deadlineMs</code> (default 120000) are configuration under the same identity.</p>
 <table>
@@ -4788,7 +4788,7 @@ load. Example preparation fields are <code>restart-during-load-after-seconds: 60
 <code>load-seconds: 310</code>, and <code>probe-every-ms: 1000</code>. The default remains unchanged.
 A one-second probe adds one global clinical witness write per second, separately
 from ordinary offered scenario RPS. It does not write once per tenant per second.</p>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/m7-joined/examples/local-under-demand-recovery.json">The local recovery example</a> selects
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/m7-joined/examples/local-under-demand-recovery.json">The local recovery example</a> selects
 37 tenants, 16 logical viewers, 20 offered scenario RPS and a restart after
 30 seconds of a 90-second load. Replace every source, image, dependency and
 receipt placeholder, then use <code>project</code> to generate the configuration-bound
@@ -5054,7 +5054,7 @@ not a capacity gate. CSV defaults to 512 MiB compressed per file and five millio
 requires an already-installed immutable k6 image ID. It runs at most two driver
 containers concurrently, each limited to one CPU and 1 GiB without swap. This
 qualifies driver mechanics, not Nightscout storage, topology, clinical delivery,
-remote transport or capacity. The <a href="../../../reports/tenancy/capacity-driver-config-2026-11-17.md">dated capability record</a>
+remote transport or capacity. The <a href="../../../reports/tenancy/capacity-driver-config-2026-11-17.html">dated capability record</a>
 owns the captured results and integration boundary.</p>
 <h3 id="actual-serving-instances-and-observer-cost">Actual serving instances and observer cost<a class="headerlink" href="#actual-serving-instances-and-observer-cost" title="Permanent link">&para;</a></h3>
 <p>Fresh manifests record <code>servingInstances</code> from the frozen Compose services. The
@@ -5315,11 +5315,12 @@ within its actual released allocation. A larger numeric range grants no custody
 or cleanup extension to an entered run. Acceptance presets keep their ranges.
 Primer concurrency remains the selected deployment source's explicit 1–32
 contract; extending it requires updating and qualifying that source path.</p>
-<p>Configured driver <code>maxTraceBytes</code> and <code>maxTraceRows</code> replace reference budgets;
-capture byte and row bounds still stop observation and retain partial results.
-The decompressed capture allowance remains sixteen times the authored compressed
-byte budget and must fit an exact integer. Historical fixed diagnostic modes
-retain their original selections.</p>
+<p>Configured drivers can set per-file <code>maxTraceBytes</code>, <code>maxDecodedTraceBytes</code>
+and <code>maxTraceRows</code>. When <code>maxDecodedTraceBytes</code> is omitted, the reader allows
+sixteen times <code>maxTraceBytes</code>. The Kubernetes workload binder raises scheduling
+trace budgets from the busiest shard's offered iterations and keeps larger
+profile values. Capture stops at the finite byte and row budgets. Historical
+fixed diagnostic modes keep their original selections.</p>
 <p>A selected source that declares <code>PREVIEW_MAX_TENANTS=10000</code> still refuses a
 12,001-tenant execution. Extending that source path requires changing its tenant
 ceiling and propagating the selection into the deployment generator's registry,

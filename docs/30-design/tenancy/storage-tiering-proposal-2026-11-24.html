@@ -1,0 +1,7400 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/storage-tiering-proposal-2026-11-24.html">
+      
+      
+        <link rel="prev" href="storage-layout-proposal-2026-11-23.html">
+      
+      
+        <link rel="next" href="tenant-config-schema-2026-10-27.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Multitenant clinical storage by age: brief and proposal - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#multitenant-clinical-storage-by-age-brief-and-proposal" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Multitenant clinical storage by age: brief and proposal
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24" id="__nav_5_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    30-design/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-telemetry-emitter-map-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Telemetry Emitter Integration Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-adoption-roadmap-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hub-and-spoke adoption across projects: who builds what, in what order
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-integration-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Integration Guide for App Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-backend-service-design-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Backend Service Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Deployment Lifecycle Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-implementation-breakdown-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Implementation Breakdown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-lifecycle-policy-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Lifecycle Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-local-integration-plan-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Local Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-scheduling-dedupe-model-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Scheduling and Dedupe Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ns2parquet-keyed-pseudonyms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet keyed pseudonyms: design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../platform/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    platform/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_15" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_15" id="__nav_5_24_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_24_15_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tenancy/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="runtime-topology.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant runtime topology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sql-and-migration-architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, migrations and tenant recovery architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-admission-and-activity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant admission, activity and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="single-and-multitenant-architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single and multitenant Nightscout: architecture and compatibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deployment-and-rig-testing.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment scenarios and rig testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="evaluator-realtime-communication.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluator, realtime and API communication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="owner-authority.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant owner authority and token verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="m5-m6-decision-list.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M5/M6: current decisions and next review
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenancy-decisions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenancy decisions and architectural contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenant-delivery-dashboard.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant delivery dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenant-delivery-roadmap.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant delivery roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenant-integration-batching-plan-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant integration batching plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="production-critical-path.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From multitenant preview to production
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="selectable-endpoints-and-api-scaling-plan.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Private API composition, deployment bindings and fixed-roster scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deployment-bindings-and-public-names.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment bindings, public names and load behavior
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture-seams-execution-plan-2026-11-05.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture seams and execution-profile integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="claimed-public-names-and-deploy-companion-2026-11-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claimed public names, the alias registry and the deploy companion: scope split and line of sight
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="counter-and-restore-options.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ordering, history and restore responsibilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="decisions-in-force.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant decisions in force
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="derived-output-boundary-2026-11-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived output ownership: evaluator, realtime and HTTP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="durable-event-delivery-contract-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Durable event delivery contract for multitenant consumers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="evaluator-scaling-options-2026-11-19.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluator scaling options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="execution-log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant execution log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="k1-capacity-test-plan-2026-11-19.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposed K=1 capacity study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="m4-client-binary-lab-packet-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M4 existing-client surface: client-binary lab packet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenant-rest-api-delivery-plan-2026-11-04.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant REST v1–v3: design and parallel implementation plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-configuration-and-delegation-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings, extensibility, new data, and delegated access: four open questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-control-plane-reconciliation-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The earlier control-plane draft and the specifications proposed to supersede it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-seam-ordering-translation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design — how ordering crosses the storage seam
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-storage-seam-interface-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T1.1 — the storage seam: interface definition and call-site classification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="realtime-sharding-plan.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-what-has-been-tried" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. What has been tried
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-what-storage-costs-on-digitalocean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. What storage costs on DigitalOcean
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. What storage costs on DigitalOcean">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prices-vendor-documented-read-2026-11-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prices (vendor-documented, read 2026-11-24)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-three-sizes-asked-about" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The three sizes asked about
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#per-tenant-against-compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per tenant, against compute
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-use-cases-set-the-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Use cases set the tiers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-proposal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Proposal
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Proposal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#51-hot-and-warm-native-time-partitioning-no-new-dependency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Hot and warm: native time partitioning (no new dependency)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-the-partition-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 The partition key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-index-cut-first-and-independently" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Index cut, first and independently
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-cold-compressed-monthly-bundles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Cold: compressed monthly bundles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-summaries-and-detail-retention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Summaries and detail retention
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#56-ten-year-cost-with-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6 Ten-year cost with tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#57-one-statistics-api-for-both-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.7 One statistics API for both modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-retention-policy-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Retention policy framework
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Retention policy framework">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#policy-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy dimensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#who-decides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Who decides
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-plugins-and-alternatives-evaluated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Plugins and alternatives evaluated
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Plan
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-maintainer-direction-and-open-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Maintainer direction and open questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-levers-trade-offs-and-priorities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Levers, trade-offs and priorities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Levers, trade-offs and priorities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#now-before-or-at-the-first-production-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Now: before or at the first production boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#next-after-the-first-production-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next: after the first production boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#later-when-multi-year-history-dominates-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Later: when multi-year history dominates cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deferred" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deferred
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#not-proposed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not proposed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-config-schema-2026-10-27.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant configuration schema for hosted Nightscout (T30-SCHEMA-CONFIG)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-owner-config-surface-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The tenant-owner configuration surface — T3.0's missing schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="write-contract-spec-2026-10-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WRITE-CONTRACT: the measured write matrix, and one write step behind the storage interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="writer-driven-refactor-ledger-2026-11-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Writer-driven transport: refactor and retirement ledger
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="diagrams/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    diagrams/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../guides/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    guides/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-what-has-been-tried" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. What has been tried
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-what-storage-costs-on-digitalocean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. What storage costs on DigitalOcean
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. What storage costs on DigitalOcean">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prices-vendor-documented-read-2026-11-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prices (vendor-documented, read 2026-11-24)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-three-sizes-asked-about" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The three sizes asked about
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#per-tenant-against-compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per tenant, against compute
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-use-cases-set-the-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Use cases set the tiers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-proposal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Proposal
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Proposal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#51-hot-and-warm-native-time-partitioning-no-new-dependency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Hot and warm: native time partitioning (no new dependency)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-the-partition-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 The partition key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-index-cut-first-and-independently" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Index cut, first and independently
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-cold-compressed-monthly-bundles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Cold: compressed monthly bundles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-summaries-and-detail-retention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Summaries and detail retention
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#56-ten-year-cost-with-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6 Ten-year cost with tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#57-one-statistics-api-for-both-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.7 One statistics API for both modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-retention-policy-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Retention policy framework
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Retention policy framework">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#policy-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy dimensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#who-decides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Who decides
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-plugins-and-alternatives-evaluated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Plugins and alternatives evaluated
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Plan
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-maintainer-direction-and-open-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Maintainer direction and open questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-levers-trade-offs-and-priorities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Levers, trade-offs and priorities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Levers, trade-offs and priorities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#now-before-or-at-the-first-production-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Now: before or at the first production boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#next-after-the-first-production-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next: after the first production boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#later-when-multi-year-history-dominates-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Later: when multi-year history dominates cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deferred" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deferred
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#not-proposed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not proposed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="multitenant-clinical-storage-by-age-brief-and-proposal">Multitenant clinical storage by age: brief and proposal<a class="headerlink" href="#multitenant-clinical-storage-by-age-brief-and-proposal" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-11-24. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><em>Contributor- and maintainer-facing proposal, 2026-11-24. </em><em>Proposed; nothing here is adopted.</em><em> It builds on the
+measured <a href="storage-layout-proposal-2026-11-23.html">storage layout proposal</a> and restates none of its figures beyond
+what the argument needs. Figures are labelled </em><em>measured</em><em> (ours, linked), </em><em>read-derived</em><em> (arithmetic or reading
+of code and records), or </em><em>vendor-documented</em><em> (a provider's page as read on 2026-11-24, linked). Prices change;
+re-read them before quoting.</em></p>
+<h2 id="1-summary">1. Summary<a class="headerlink" href="#1-summary" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Accept the larger volume for the first production boundary.</strong> On the current layout, multitenant PostgreSQL
+  stores about 1.6 MB per tenant-day where single-site MongoDB stores 0.24–0.38 MB on the same documents
+  (measured). At 30–90 retained days this costs cents per tenant-month and the 1,000-tenant run passes with a
+  0.9996 buffer hit rate. Bytes are not yet the problem.</li>
+<li><strong>Keeping years of detail in the hot layout is the problem.</strong> Ten years at today's layout on replicated block
+  storage costs about <strong>$2.30 per tenant-month</strong>, roughly ten times an illustrative compute share of
+  $0.10–0.25 (section 3). That would erode the savings from consolidating compute.</li>
+<li><strong>Store data by age, matching how Nightscout is used.</strong> Recent days serve live coordination at today's latency.
+  Up to about 90 days serve reports and comparisons. Older data serves statistics and audits, which can be slower.
+  A tiered layout keeps ten-year detail for about <strong>$0.06–0.27 per tenant-month</strong> (read-derived). A
+  detail-retention limit with summaries kept beyond it is a later, deferred option.</li>
+<li><strong>Every lever, its trade-off and its priority</strong> is in section 10.</li>
+<li><strong>Stay on plain PostgreSQL.</strong> Native time partitioning and our own cold tier get most of the benefit.
+  TimescaleDB's compressed chunks do not support row-level security (vendor-documented), which conflicts with
+  <a href="multitenancy-decisions.html#d3">D3</a>. Citus solves a scale-out problem we have not measured and adds a cluster of
+  database nodes.</li>
+</ul>
+<h2 id="2-what-has-been-tried">2. What has been tried<a class="headerlink" href="#2-what-has-been-tried" title="Permanent link">&para;</a></h2>
+<p>All measured on synthetic tenants written through the product unless marked; detail and evidence in the
+<a href="storage-layout-proposal-2026-11-23.html">layout proposal</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Attempt</th>
+<th>Result</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Remove the size trigger and four redundant indexes</td>
+<td>−17.1 % clinical bytes</td>
+<td>Adopted, <a href="multitenancy-decisions.html#storage-machinery-removal">storage-machinery-removal</a></td>
+</tr>
+<tr>
+<td><code>lz4</code> or <code>toast_tuple_target</code></td>
+<td>No effect: rows under ~2 KB are never compressed</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>Typed device status (predictions as arrays)</td>
+<td>Larger (1,026 vs 825 MB): smaller rows fall under the compression threshold</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>Device status as one compressed row per tenant-hour (stage 2)</td>
+<td>−82 % per added day; evaluator window p95 82 → 113–276 ms; 288-document write hold 45 → 638 ms</td>
+<td>Parked, <a href="multitenancy-decisions.html#devicestatus-hour-chunks">devicestatus-hour-chunks</a></td>
+</tr>
+<tr>
+<td>Typed entries and treatments (stage 1)</td>
+<td>−24.7 %; indexes unchanged and 72 % of the result; window read ~2× slower, settings-off resends 1.13 → 5.23 s, a selective lookup scans the tenant</td>
+<td>Built locally, not adopted</td>
+</tr>
+<tr>
+<td>Prediction curve cap</td>
+<td>Saves nothing: uploaders send at most 48 points</td>
+<td>Parity only, <a href="multitenancy-decisions.html#predictions-max-size-single-tenant-parity">predictions-max-size-single-tenant-parity</a></td>
+</tr>
+<tr>
+<td>Filesystem compression (ZFS, proxy)</td>
+<td>~4.5× on disk; buffer cache and vacuum see uncompressed pages</td>
+<td>Not proposed for hot data</td>
+</tr>
+<tr>
+<td>Per-tenant-day cold chunks (scratch)</td>
+<td>~0.13 MB per tenant-day for cold data</td>
+<td>Priced, not built</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The lesson.</strong> Every attempt that compressed hot rows traded clinical read or write latency for bytes. The ones
+that helped removed work (a trigger, indexes). The remaining large wins are in data nobody reads at low latency.</p>
+<h2 id="3-what-storage-costs-on-digitalocean">3. What storage costs on DigitalOcean<a class="headerlink" href="#3-what-storage-costs-on-digitalocean" title="Permanent link">&para;</a></h2>
+<h3 id="prices-vendor-documented-read-2026-11-24">Prices (vendor-documented, read 2026-11-24)<a class="headerlink" href="#prices-vendor-documented-read-2026-11-24" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Price</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Block storage volume</td>
+<td>$0.10 per GiB-month</td>
+<td>1 GiB to 16 TiB per volume; snapshots $0.06 per GiB-month (<a href="https://docs.digitalocean.com/products/volumes/details/pricing/">volumes</a>)</td>
+</tr>
+<tr>
+<td>Managed PostgreSQL, Advanced Edition storage</td>
+<td>$0.115 per GiB-month</td>
+<td>Primary from $130/month; standby and read-only nodes cost the same as the primary (<a href="https://docs.digitalocean.com/products/databases/postgresql/details/pricing/">pricing</a>)</td>
+</tr>
+<tr>
+<td>Spaces object storage</td>
+<td>$5/month includes 250 GiB, then $0.02 per GiB-month</td>
+<td>(<a href="https://docs.digitalocean.com/products/spaces/details/pricing">Spaces</a>)</td>
+</tr>
+<tr>
+<td>Spaces Cold Storage</td>
+<td>$0.007 per GiB-month</td>
+<td>$0.01 per GiB retrieved beyond an allowance; 30-day minimum retention</td>
+</tr>
+<tr>
+<td>General Purpose droplet, 8 vCPU / 32 GiB</td>
+<td>$252/month</td>
+<td>CPU-Optimized 8 vCPU / 16 GiB is $168 (<a href="https://www.digitalocean.com/pricing/droplets">droplets</a>)</td>
+</tr>
+</tbody>
+</table>
+<p>From 30 November 2026 every new managed PostgreSQL cluster that needs more than 4 GiB of RAM, a standby or a
+read replica must use Advanced Edition (<a href="https://docs.digitalocean.com/release-notes/upcoming/dbaas-plan-changes/">plan changes</a>).
+The multitenant deployment currently runs PostgreSQL itself on Kubernetes with block volumes
+(<code>nightscout-deploy</code> <code>bindings/kubernetes/lib/ns/nightscout.libsonnet:258</code>, read-derived), so the block price
+applies.</p>
+<h3 id="the-three-sizes-asked-about">The three sizes asked about<a class="headerlink" href="#the-three-sizes-asked-about" title="Permanent link">&para;</a></h3>
+<p>Three copies means a primary and two replicas, each on its own volume; backups are extra. Read-derived from the
+prices above.</p>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Roughly</th>
+<th style="text-align: right;">Block, 1 copy</th>
+<th style="text-align: right;">Block, 3 copies</th>
+<th style="text-align: right;">Spaces standard</th>
+<th style="text-align: right;">Spaces Cold</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>600 GB</td>
+<td>10k tenants × 30 days today</td>
+<td style="text-align: right;">$56</td>
+<td style="text-align: right;">$168</td>
+<td style="text-align: right;">$11</td>
+<td style="text-align: right;">$4</td>
+</tr>
+<tr>
+<td>60 TB</td>
+<td>10k tenants × 10 years today (≈102k tenant-years at 1.61 MB/day)</td>
+<td style="text-align: right;">$5,588</td>
+<td style="text-align: right;">$16,764</td>
+<td style="text-align: right;">$1,118</td>
+<td style="text-align: right;">$391</td>
+</tr>
+<tr>
+<td>600 TB</td>
+<td>100k tenants × 10 years today</td>
+<td style="text-align: right;">$55,879</td>
+<td style="text-align: right;">$167,638</td>
+<td style="text-align: right;">$11,176</td>
+<td style="text-align: right;">$3,912</td>
+</tr>
+</tbody>
+</table>
+<p>Monthly figures. 60 TB needs at least four 16 TiB volumes per copy; 600 TB needs 35, which is not a sensible
+single database. Object storage prices include the provider's own redundancy, so one copy is shown.</p>
+<h3 id="per-tenant-against-compute">Per tenant, against compute<a class="headerlink" href="#per-tenant-against-compute" title="Permanent link">&para;</a></h3>
+<p>A per-tenant view makes the comparison with consolidated compute direct. Block storage, three copies, with a
+1.4× allowance for WAL and free space (the allowance the layout proposal uses), read-derived:</p>
+<table>
+<thead>
+<tr>
+<th>Detail kept</th>
+<th style="text-align: right;">Today, ~1.61 MB/day</th>
+<th style="text-align: right;">Stage 2 only, ~0.88</th>
+<th style="text-align: right;">MongoDB-equivalent, ~0.38</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>90 days</td>
+<td style="text-align: right;">$0.06</td>
+<td style="text-align: right;">$0.03</td>
+<td style="text-align: right;">$0.01</td>
+</tr>
+<tr>
+<td>1 year</td>
+<td style="text-align: right;">$0.23</td>
+<td style="text-align: right;">$0.13</td>
+<td style="text-align: right;">$0.05</td>
+</tr>
+<tr>
+<td>3 years</td>
+<td style="text-align: right;">$0.69</td>
+<td style="text-align: right;">$0.38</td>
+<td style="text-align: right;">$0.16</td>
+</tr>
+<tr>
+<td>10 years</td>
+<td style="text-align: right;">$2.30</td>
+<td style="text-align: right;">$1.26</td>
+<td style="text-align: right;">$0.54</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Compute share, illustrative and not measured as a fleet:</strong> the capacity ladder targets 1,000–3,000 tenants per
+host (<a href="multitenancy-decisions.html#capacity-test-tiers">capacity-test-tiers</a>), and one General Purpose 8 vCPU host is
+$252/month. A handful of such hosts plus a database node for a few thousand tenants is about <strong>$0.10–0.25 per
+tenant-month</strong>. Storage passes compute at about one year of hot detail, and is ten times compute at ten years.</p>
+<p>Two caveats:
+- 1.61 MB/day is the synthetic looping mix. Real MongoDB sites measure 0.25–0.6 MB/day; synthetic data repeats
+  more than real data, so real sites could be higher or lower in PostgreSQL. A real-shaped corpus is still owed
+  (layout proposal, gate 2).
+- Many sites upload only CGM data and are far smaller than looping sites. The fleet mix sets the real average.</p>
+<h2 id="4-use-cases-set-the-tiers">4. Use cases set the tiers<a class="headerlink" href="#4-use-cases-set-the-tiers" title="Permanent link">&para;</a></h2>
+<p>Nightscout data is read in three distinct ways. Today all three share one layout and one latency expectation.</p>
+<table>
+<thead>
+<tr>
+<th>Use</th>
+<th>Age read</th>
+<th>Who</th>
+<th>Latency need</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Live coordination: dashboards, alarms, followers, the evaluator</td>
+<td>Last ~48–60 hours, sometimes a week</td>
+<td>Clients, evaluator, realtime</td>
+<td>Today's: tens of milliseconds</td>
+</tr>
+<tr>
+<td>Reports and comparisons: a 4–12 week period against another</td>
+<td>Up to 90 days routinely; comparison periods 1–3 years back</td>
+<td>Owners, clinicians, report tools</td>
+<td>Seconds are acceptable</td>
+</tr>
+<tr>
+<td>Statistics and audit</td>
+<td>Months to years</td>
+<td>Owners, auditors, researchers</td>
+<td>Minutes, or an asynchronous job, are acceptable</td>
+</tr>
+</tbody>
+</table>
+<p>Beyond about 90 days, detail is rarely looked at directly; it feeds statistics and occasional audit. At five to
+ten years it is debatable whether full detail is still needed, or only summaries.</p>
+<h2 id="5-proposal">5. Proposal<a class="headerlink" href="#5-proposal" title="Permanent link">&para;</a></h2>
+<h3 id="tiers">Tiers<a class="headerlink" href="#tiers" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Age (defaults; the tenant chooses within operator limits, section 6)</th>
+<th>Storage</th>
+<th>Served by</th>
+<th>Latency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hot</strong></td>
+<td>0–14 days</td>
+<td>Today's row layout, in the current time partition</td>
+<td>Every API, evaluator, realtime</td>
+<td>Unchanged</td>
+</tr>
+<tr>
+<td><strong>Warm</strong></td>
+<td>14–90 days</td>
+<td>Same rows, older partitions, fewer indexes</td>
+<td>Every API</td>
+<td>Same order, may be slower on unindexed filters</td>
+</tr>
+<tr>
+<td><strong>Cold</strong></td>
+<td>Over 90 days</td>
+<td>One compressed bundle per tenant, collection and month</td>
+<td>v1/v3 reads with a relaxed latency; export; report jobs</td>
+<td>Seconds; audit-scale reads as jobs</td>
+</tr>
+<tr>
+<td><strong>Summary</strong></td>
+<td>Any age, kept beyond a detail-retention limit if one is chosen</td>
+<td>One small statistics row per tenant-day</td>
+<td>Reports</td>
+<td>Fast</td>
+</tr>
+</tbody>
+</table>
+<p>Hot and warm differ only in partition and index set, so a report over 90 days reads ordinary rows. The 14- and
+90-day boundaries are defaults (section 6).</p>
+<h3 id="51-hot-and-warm-native-time-partitioning-no-new-dependency">5.1 Hot and warm: native time partitioning (no new dependency)<a class="headerlink" href="#51-hot-and-warm-native-time-partitioning-no-new-dependency" title="Permanent link">&para;</a></h3>
+<p>PostgreSQL's declarative partitioning splits each clinical table by time, for example monthly, under the same
+table name. Row-level security, grants and the API are unchanged; serving roles keep grants only on the parent.
+Partitions are created ahead of time by the <code>admin</code> role on a schedule (<code>pg_partman</code> would also do it but is one
+more component).</p>
+<p>Predicted gains (read-derived from the 10k evidence; none measured yet):
+- <strong>The working set stays in memory.</strong> Reads of the last few days touch only the newest partition and its indexes.
+  The failed 10k run coincided with a buffer hit rate of 0.952 and autovacuum running across a 13 GiB relation.
+- <strong>Vacuum stays small.</strong> Only the current partition takes writes. Older partitions are frozen once and then left
+  alone.
+- <strong>Fewer indexes on older partitions.</strong> PostgreSQL allows an index on some partitions only. Warm partitions can
+  drop indexes that only live traffic uses. Indexes are about half of every table today (measured).
+- <strong>Moving data to cold, or deleting it, becomes detaching a partition</strong>, not deleting billions of rows.</p>
+<p>Costs and open design points:
+- <strong>No global unique index.</strong> A unique index on a partitioned table must include the partition key, so
+  tenant-wide uniqueness of <code>_id</code> and <code>identifier</code> (<a href="multitenancy-decisions.html#d20">d20</a>) needs a small identity
+  table mapping each key to its time. Stage 2 measured that structure at about 172 bytes per document.
+- <strong>Queries without a time range read every partition.</strong> Identity lookups go through the identity table.
+  Resend matching keys already carry a time (<code>created_at</code>, <code>date</code>), read-derived; confirm per collection.
+- <strong>The partition key</strong> is chosen in section 5.2.
+- <strong>Late or backfilled data</strong> writes into its older partition; this must stay under the bounded write-lock hold
+  (<a href="multitenancy-decisions.html#per-tenant-lock-bounded-hold">per-tenant-lock-bounded-hold</a>).</p>
+<h3 id="52-the-partition-key">5.2 The partition key<a class="headerlink" href="#52-the-partition-key" title="Permanent link">&para;</a></h3>
+<p>Three candidates, judged on architecture, performance and compatibility. Read-derived from candidate 5's
+catalogues (core <code>0952306f7</code>, <code>migrations/candidates/postgres-{entries,treatments-socket-order,devicestatus}-v1.json</code>)
+and the read paths; nothing here is measured yet.</p>
+<p><strong>What the key must serve.</strong> Today's indexes show the access paths: entries by <code>date</code> (and <code>dateString</code>,
+<code>sysTime</code>); treatments and device status by <code>created_at</code>; v3 history by <code>srvModified</code> in every collection; identity
+through the unique <code>(tenant_id, identifier)</code> indexes and <code>_id</code>; tie order through the unique
+<code>(tenant_id, insertion_ordinal)</code> index. The evaluator window, v1 lists, reports and the tier and retention policy
+are all defined on clinical time.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Clinical time as uploaded (<code>date</code>, <code>created_at</code>)</th>
+<th>Server receipt time (<code>srvCreated</code>)</th>
+<th><strong>Normalized clinical time</strong> (leading option)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What it is</td>
+<td>The collection's own time field, as stored</td>
+<td>When the hub received the record</td>
+<td>A <code>clinical_ms</code> column computed at write from the collection's time field, parsed to UTC; <code>srvCreated</code> when missing or unparseable</td>
+</tr>
+<tr>
+<td>Architecture: tiers and retention</td>
+<td>Matches the policy, but <code>created_at</code> is text with mixed spellings and offsets, so ranges do not partition cleanly</td>
+<td>Ages data by arrival. <strong>An imported five-year history, the expected path for migrating existing sites, would all sit in the newest partition</strong>, and a policy written in clinical age could not drop partitions</td>
+<td>Matches the policy; one numeric range per partition; imports land in the right months</td>
+</tr>
+<tr>
+<td>Performance: evaluator, lists, reports</td>
+<td>Prunes on <code>date</code>; <code>created_at</code> text filters prune unreliably</td>
+<td><strong>No pruning</strong> for the main read paths: they filter by clinical time, which the database cannot relate to arrival</td>
+<td>Prunes. <code>ORDER BY date DESC LIMIT n</code> reads the newest partition first. A text <code>created_at</code> range maps to a safe numeric bound widened by the largest UTC offset (±14 h)</td>
+</tr>
+<tr>
+<td>Performance: writes</td>
+<td>Late uploads write into older partitions</td>
+<td>Every write goes to the newest partition</td>
+<td>Late uploads write into older partitions; uploads are overwhelmingly recent</td>
+</tr>
+<tr>
+<td>Performance: v3 history</td>
+<td>Scans <code>srvModified</code> on every attached partition</td>
+<td>Prunes</td>
+<td>Scans every attached partition. Tiering keeps that to a few (hot and warm); cold edits are promoted (5.4)</td>
+</tr>
+<tr>
+<td>Compatibility</td>
+<td>Visible behaviour unchanged; a stored-value edit moving a row between partitions is a delete and insert inside PostgreSQL</td>
+<td>Unchanged</td>
+<td>Unchanged; the column is internal and never returned. Odd values (string <code>date</code>, missing <code>created_at</code>) fall back to receipt time and stay readable</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Leading option: normalized clinical time,</strong> monthly ranges. It compares best on the three criteria above but
+needs a measured comparison before adoption (phase 2). It would come with:
+- a <strong>default partition</strong> that takes rows whose month is already cold (late uploads, imports into old months);
+  the tiering job folds them into that month's bundle;
+- an <strong>identity table</strong> <code>(tenant_id, collection, key) → clinical_ms</code> keeping <code>_id</code> and <code>identifier</code> unique across
+  partitions (about 172 bytes per document, measured in stage 2);
+- the insertion ordinal kept unique by its allocator; per-partition indexes need not be unique.</p>
+<p>Server receipt time is simpler and best for history, but it breaks the tiering policy for imported history and
+loses pruning on the paths that matter most.</p>
+<h3 id="53-index-cut-first-and-independently">5.3 Index cut, first and independently<a class="headerlink" href="#53-index-cut-first-and-independently" title="Permanent link">&para;</a></h3>
+<p>Before partitioning, read <code>pg_stat_user_indexes.idx_scan</code> from a 1k run with the realistic mix and drop indexes
+never used, behind the existing end-schema comparison and API differential. Entries carries 15 indexes and 11
+generated columns copied from MongoDB's list; generated columns alone cost 120–136 bytes per row (measured).
+Lowest risk, no layout change, and it benefits every tier.</p>
+<h3 id="54-cold-compressed-monthly-bundles">5.4 Cold: compressed monthly bundles<a class="headerlink" href="#54-cold-compressed-monthly-bundles" title="Permanent link">&para;</a></h3>
+<p>When a month passes the cold boundary, a job writes each tenant's documents for that collection and month as one
+compressed bundle (zstd-compressed NDJSON or similar), with a small manifest of time range, counts and
+identities, and then detaches the warm partition once every tenant's bundle verifies. Scratch measurement of a
+similar layout: about 0.13 MB per tenant-day (measured, lane R).</p>
+<ul>
+<li><strong>Where bundles live.</strong> First in a PostgreSQL table, so backup, restore and row-level security stay as they are.
+  Moving them to object storage (Spaces, or Cold Storage) is a later step that changes backup and access control,
+  and is what takes the 600 TB case from impossible to about $4,000/month.</li>
+<li><strong>Reading.</strong> A v1/v3 query reaching cold months decompresses the months it covers and filters with <code>mingo</code>,
+  already the query oracle under <a href="multitenancy-decisions.html#d8">d8</a>. Results and order match the warm path;
+  latency is seconds. Very large ranges may run as jobs.</li>
+<li><strong>Edits promote.</strong> Editing or deleting a cold document copies it back to the hot table with a new
+  <code>srvModified</code> and marks it superseded in the bundle's manifest. v3 history keeps working from the hot table
+  (<a href="multitenancy-decisions.html#write-clock-history-arms">write-clock-history-arms</a>).</li>
+<li><strong>Export and restore get cheaper:</strong> a tenant export of old data is a copy of its bundles.</li>
+</ul>
+<h3 id="55-summaries-and-detail-retention">5.5 Summaries and detail retention<a class="headerlink" href="#55-summaries-and-detail-retention" title="Permanent link">&para;</a></h3>
+<p><strong>What the ecosystem computes.</strong> The <a href="reports-survey-2026-11-24.html">reports survey</a> read the report and statistics
+code of cgm-remote-monitor (<code>official/dev</code> <code>79144cbd0</code>), nightscout-reporter, Nocturne, nighttroop, AndroidAPS,
+Trio, LoopFollow, xDrip, xdripswift, nightguard and GlycemicGPT, against the 2019 time-in-range consensus, GMI
+and the AGP layout (read-derived and cited):
+- <strong>Spans.</strong> Users pick 1, 7, 14, 30 and 90 days nearly everywhere. cgm-remote-monitor's reports default to
+  7 days and cap at 186; xdripswift offers 365; nightscout-reporter compares a window with the same window up
+  to 12 months earlier. The clinical standards work on 14–90 whole days with at least 70 % coverage.
+- <strong>cgm-remote-monitor computes every report in the browser</strong> from day-by-day API v1 reads; there is no
+  statistics endpoint. Its low/in/high split uses a target the user types per request.
+- <strong>Persisted daily aggregates are rare:</strong> AndroidAPS and Trio keep insulin totals; nighttroop keeps a full
+  per-day row (including a 288-slot glucose trace) rebuilt by a background job when writes mark a day stale. It
+  is the closest prior art. cgm-remote-monitor's CGP pentagon already reduces each day to sums and merges days
+  by addition.
+- <strong>Thresholds and weighting differ between tools</strong> (inclusive or exclusive band edges, count- or
+  time-weighted, population or sample SD), so a summary must store raw ingredients, not finished percentages.</p>
+<p><strong>Proposed summary row</strong> (one per tenant and local day, in the profile time zone; survey section 5): coverage
+counts and observed minutes; count- and time-weighted Σ and Σ²; a 1 mg/dL glucose histogram over 39–400;
+standard band minutes; the pentagon's AUC terms; per-day variability path sums; hypo episode counts; a
+288-slot 5-minute glucose trace and per-hour sums; insulin and food totals per day and per hour; optionally
+5-minute IOB and COB series. About <strong>1.0–1.3 KB per tenant-day, about 2 KB with the loop series</strong> (estimated,
+not measured), about 1–2 % of a cold bundle; about 4–7 MB per tenant over ten years.</p>
+<table>
+<thead>
+<tr>
+<th>From the summary row</th>
+<th>Statistics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Exact</strong></td>
+<td>Coverage and the 14-day/70 % sufficiency check; mean, SD (either form), CV, GMI, eA1c over any day range; every standard band and any user target band; pooled median and quartiles; GRI, LBGI/HBGI, ADRR; the CGP pentagon; daily and average insulin, basal/bolus split and carbohydrates; hourly means; calendar-aligned week, month and comparison periods</td>
+</tr>
+<tr>
+<td><strong>Exact for 5-minute sensors</strong></td>
+<td>AGP and time-of-day percentiles across days, from the 5-minute trace. With one reading per 5 minutes the trace holds every reading, so the result equals one computed from detail. Sensors that report more often keep one value per 5-minute slot, which can shift a percentile slightly; storing every reading per time-of-day bin would remove that at about 1–2 KB more per day, which this proposal does not take</td>
+</tr>
+<tr>
+<td><strong>Needs detail</strong></td>
+<td>Day-by-day charts (daytoday, weektoweek, reporter's daily graphics); loopalyzer's meal alignment; treatment lists and edits; calibrations; prediction overlays; audit and single-document reads</td>
+</tr>
+</tbody>
+</table>
+<p>The reports that need detail are viewed over 1–14 days and occasionally up to the 90–186-day caps, which is the
+hot and warm tiers, with cold reads at seconds beyond. Treatments are small and back several of them, so they are
+a candidate for longer detail retention than entries and device status (section 6), pending per-collection bytes.</p>
+<p><strong>Rules for summaries:</strong>
+- <strong>Built from detail, before any deletion.</strong> Once detail is gone a new statistic or a fix cannot be recomputed;
+  <code>schema_version</code> records what a row carries.
+- <strong>Stale and rebuilt</strong> when a backfill, an edit, a promoted cold document or a time-zone change touches the day.
+- <strong>Same deduplication as the reports</strong> (one reading per minute, values 39–600), so a summary and a detail read
+  agree.
+- <strong>Both modes.</strong> The row is computed above the storage seam, so single-site MongoDB can build the same rows.</p>
+<p>Detail retention stays <strong>keep everything</strong> by default, matching the decision taken today for device status;
+section 6 sets out who may limit it. Summaries are derived statistics for reports, not dosing state; section 5.7
+treats them as a cache of the statistics API, which this proposal reads as within <a href="multitenancy-decisions.html#d18">d18</a>.</p>
+<h3 id="56-ten-year-cost-with-tiers">5.6 Ten-year cost with tiers<a class="headerlink" href="#56-ten-year-cost-with-tiers" title="Permanent link">&para;</a></h3>
+<p>Read-derived, per tenant-month, block storage three copies with the 1.4× allowance for hot and warm (90 days at
+today's layout, $0.06), plus cold detail for the remaining 9.75 years:</p>
+<table>
+<thead>
+<tr>
+<th>Cold bundles stored in</th>
+<th style="text-align: right;">Cold at ~0.15 MB/day</th>
+<th style="text-align: right;">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Block storage, 3 copies</td>
+<td style="text-align: right;">$0.21</td>
+<td style="text-align: right;"><strong>$0.27</strong></td>
+</tr>
+<tr>
+<td>Spaces standard</td>
+<td style="text-align: right;">$0.01</td>
+<td style="text-align: right;"><strong>$0.07</strong></td>
+</tr>
+<tr>
+<td>Spaces Cold Storage</td>
+<td style="text-align: right;">$0.004</td>
+<td style="text-align: right;"><strong>$0.06</strong></td>
+</tr>
+<tr>
+<td>Untiered, today's layout</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;"><strong>$2.30</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="57-one-statistics-api-for-both-modes">5.7 One statistics API for both modes<a class="headerlink" href="#57-one-statistics-api-for-both-modes" title="Permanent link">&para;</a></h3>
+<p>Today every reader computes its own statistics from raw reads (survey sections 2–4). cgm-remote-monitor's reports
+run in the browser and fetch each day with up to three v1 calls, so a 90-day report is up to 270 requests
+returning every reading; nightscout-reporter, LoopFollow, xDrip and others each repeat the same work with their
+own band edges, weighting and SD form.</p>
+<p><strong>Proposal:</strong> a standard, versioned set of report endpoints, served by both single-site MongoDB and multitenant
+PostgreSQL, with one statistics library in core behind them. Proposed shape (read-derived from the survey;
+names illustrative):
+- <strong>daily summaries</strong> over a date range: the section 5.5 statistics per local day;
+- <strong>period statistics</strong> for one or more ranges, for comparisons (bands, mean, SD, CV, GMI, GRI, percentiles,
+  insulin and carbohydrate totals);
+- <strong>time-of-day profile</strong> (AGP percentiles) over a range.</p>
+<p>Parameters cover the variations the survey found: target range and band edges, count- or time-weighting,
+population or sample SD, time zone and day boundary. Defaults follow the 2019 time-in-range consensus. Read
+permission is the same as for the underlying collections. Raw v1 and v3 reads stay as they are; clients adopt
+the endpoints when their maintainers choose. Nocturne's analytics endpoints (period windows and comparisons) are
+prior art.</p>
+<p><strong>Why it stacks with the other optimizations.</strong> The endpoint is the contract; what sits behind it can change
+without clients noticing, provided every step returns the same answer as computing from detail:
+1. <strong>Compute from detail on request,</strong> in both modes. Fewer requests and less data transferred than today's
+   per-day raw reads, and one implementation of every statistic.
+2. <strong>Read per-day summary rows</strong> (section 5.5) for the days they cover, in both modes, falling back to detail for
+   stale or missing days.
+3. <strong>Tiers</strong> (multitenant): long ranges read summaries instead of decompressing cold bundles; detail is read only
+   for the hot and warm days a chart shows.
+4. <strong>Cache finished responses</strong> for repeated report views.</p>
+<p>Each step is gated by a differential against step 1 on a synthetic corpus. Because the endpoint computes from
+records with a shared library, storing summaries is a cache of that computation while detail exists, which this
+proposal reads as within <a href="multitenancy-decisions.html#d18">d18</a>; only after a detail-retention limit deletes detail do summaries
+become the only copy.</p>
+<h2 id="6-retention-policy-framework">6. Retention policy framework<a class="headerlink" href="#6-retention-policy-framework" title="Permanent link">&para;</a></h2>
+<p>Retention today is one rule, "keep everything", and age-related settings are scattered: <code>PREDICTIONS_MAX_SIZE</code>,
+single site's devicestatus cleanup tool, <code>DBSIZE_MAX</code>, the deleted-tenant retention window. Tiering needs one
+model that covers every use case, so an operator and a tenant can reason about it in one place.</p>
+<h3 id="policy-dimensions">Policy dimensions<a class="headerlink" href="#policy-dimensions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Values</th>
+<th>Example default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Data class</strong></td>
+<td>entries, treatments, device status, profile, food, activity; summaries</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Hot boundary</strong></td>
+<td>days at today's latency</td>
+<td>14 days</td>
+</tr>
+<tr>
+<td><strong>Warm boundary</strong></td>
+<td>days served as ordinary rows</td>
+<td>90 days</td>
+</tr>
+<tr>
+<td><strong>Detail retention</strong></td>
+<td>days, years or unlimited; after it, detail is deleted and summaries stay</td>
+<td>Unlimited</td>
+</tr>
+<tr>
+<td><strong>Summary retention</strong></td>
+<td>years or unlimited</td>
+<td>Unlimited</td>
+</tr>
+</tbody>
+</table>
+<p>Each dimension is set per data class. Device status (loop decisions and predictions) is the largest class and the
+one most often trimmed elsewhere; entries and treatments carry the long-range statistics.</p>
+<h3 id="who-decides">Who decides<a class="headerlink" href="#who-decides" title="Permanent link">&para;</a></h3>
+<p>Three layers, each narrowing the one above:
+1. <strong>Product floors and ceilings</strong>, fixed in code because something depends on them. The hot boundary covers at
+   least the evaluator's window (about 60 hours) and a week of coordination. The warm boundary covers at least
+   14 days, the minimum period for a glucose profile report. Summaries are never deleted before the detail
+   they summarise.
+2. <strong>Operator limits</strong> per deployment: the range the tenant may choose for each dimension, and the default.
+   This is where cost is controlled: an operator bounds hot and warm days and may cap detail retention.
+3. <strong>Tenant choice</strong> within the operator's range, made by the owner through the owner settings surface. Changes
+   are recorded in the existing owner settings history.</p>
+<h3 id="rules">Rules<a class="headerlink" href="#rules" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Deletion by age is a setting.</strong> Detail is deleted by age only where a detail-retention limit is set, by the
+  tenant within the operator's range. Changes are recorded in the owner settings history. Lengthening applies
+  to data that still exists; deleted detail does not come back. Notices and export prompts need a user
+  interface, which is out of scope.</li>
+<li><strong>Same model in both modes.</strong> Single-site MongoDB maps the same settings onto its own mechanisms (a scheduled
+  delete with summaries kept) so the behaviour matches; tiers are internal to multitenant storage, latency aside.</li>
+<li><strong>Inactive sites.</strong> A site that stops uploading keeps its history under the same policy. Removing whole
+  inactive tenants stays a lifecycle decision (deletion, export, key retention), not a retention setting.</li>
+<li><strong>Clinical age, not arrival.</strong> Every boundary is measured in the record's clinical time (section 5.2), so an
+  imported history is tiered as it would have been had it arrived live.</li>
+</ul>
+<h2 id="7-plugins-and-alternatives-evaluated">7. Plugins and alternatives evaluated<a class="headerlink" href="#7-plugins-and-alternatives-evaluated" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>What it is</th>
+<th>For</th>
+<th>Against</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Native partitioning</strong></td>
+<td>Built into PostgreSQL</td>
+<td>No new component; works with row-level security; available everywhere</td>
+<td>No global unique index; partition creation to schedule</td>
+<td><strong>Proposed</strong> (5.1)</td>
+</tr>
+<tr>
+<td><strong>pg_partman</strong></td>
+<td>Extension that creates and drops partitions</td>
+<td>Mature, saves writing the scheduler</td>
+<td>Another component; not available on DigitalOcean Advanced Edition (vendor-documented)</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td><strong>TimescaleDB</strong></td>
+<td>Extension: time-chunked "hypertables", compressed columnar old chunks, retention policies</td>
+<td>Exactly the hot/cold pattern; typically large compression</td>
+<td>Row-level security is <strong>not supported</strong> on compressed (columnstore) chunks (<a href="https://www.tigerdata.com/docs/reference/timescaledb/hypercore">vendor-documented</a>), against <a href="multitenancy-decisions.html#d3">d3</a>. Compression is under the Timescale License: free when not offering TimescaleDB itself as a hosted database (<a href="https://www.tigerdata.com/legal/licenses">licence</a>); some operators would need a licence reading. Listed only for DigitalOcean Standard Edition, not Advanced (<a href="https://docs.digitalocean.com/products/databases/postgresql/details/supported-extensions/">extensions</a>). Unique indexes must include the time column, as with native partitioning</td>
+<td><strong>Not proposed.</strong> Revisit only if cold data is served through a narrow, audited function rather than row-level security</td>
+</tr>
+<tr>
+<td><strong>Citus</strong></td>
+<td>Extension that spreads tables across worker nodes by <code>tenant_id</code>; also a columnar format</td>
+<td>Built for tenant-keyed SaaS; row-level security on distributed tables since 11.0 (<a href="https://www.citusdata.com/updates/v11-0">vendor-documented</a>)</td>
+<td>A multi-node database cluster to operate; not on DigitalOcean managed PostgreSQL; our triggers and write clock need requalifying; columnar is historically append-only. Solves a single-node limit we have not measured: hot and warm at 10k × 90 days is about 1.5 TB at today's layout, much less after cuts</td>
+<td><strong>Not now.</strong> Several independent deployments, each with its own database and placed by the tenant registry, scale out with no new software</td>
+</tr>
+<tr>
+<td><strong>Columnar extensions</strong> (pg_duckdb, pg_mooncake, pgEdge ColdFront)</td>
+<td>DuckDB or Iceberg/Parquet beside PostgreSQL</td>
+<td>Analytics and cold data in object storage</td>
+<td>Young; ColdFront announced June 2026 inside a vendor distribution; pg_mooncake mirrors rather than moves data</td>
+<td>Watch</td>
+</tr>
+<tr>
+<td><strong>Filesystem compression for cold partitions</strong></td>
+<td>A tablespace on a compressed filesystem</td>
+<td>No schema change; ~4.5× (measured proxy)</td>
+<td>Node-level setup on Kubernetes; disk only</td>
+<td>Possible stopgap for warm partitions</td>
+</tr>
+<tr>
+<td><strong>MongoDB for multitenant</strong></td>
+<td>Single-site's store</td>
+<td>Compresses well</td>
+<td>No database-enforced tenant isolation</td>
+<td>Excluded by <a href="multitenancy-decisions.html#d3">d3</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-plan">8. Plan<a class="headerlink" href="#8-plan" title="Permanent link">&para;</a></h2>
+<p>Each phase is one lane with its own gates; performance results are signals
+(<a href="multitenancy-decisions.html#performance-signals-not-gates">performance-signals-not-gates</a>) and correctness gates
+stay strict.</p>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Work</th>
+<th>Gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0 — first production boundary</strong></td>
+<td>Accept today's volume. PostgreSQL on its own node with memory for the hot set. Size volumes for the admitted retention (90 days to 1 year). Keep everything.</td>
+<td>The paid 5k/10k run on the qualified candidate</td>
+</tr>
+<tr>
+<td><strong>1 — index cut</strong></td>
+<td><code>idx_scan</code> from a realistic 1k run; drop unused indexes</td>
+<td>End-schema comparison and API differential red then green; bytes and latency signals before and after</td>
+</tr>
+<tr>
+<td><strong>2 — time partitioning</strong></td>
+<td>Compare the partition keys of section 5.2 on device status, then partition entries and treatments; identity table; warm index set; partition creation in <code>admin</code></td>
+<td>Key comparison on the same reads and writes; contract differential against <code>official/dev</code>; evaluator window, v1/v3, resend and lock hold at 1k and 10k; export and restore round trip</td>
+</tr>
+<tr>
+<td><strong>3 — cold bundles</strong></td>
+<td>Tiering job, manifest, cold read path, edit promotion; bundles in PostgreSQL</td>
+<td>As phase 2, plus cold reads equal warm reads; an interrupted tiering job leaves every document readable once</td>
+</tr>
+<tr>
+<td><strong>4 — statistics API, summaries and retention options</strong></td>
+<td>The statistics API computing from detail (section 5.7; can start any time, both modes), then summary rows (section 5.5), retention settings (section 6) and bundles in object storage</td>
+<td>Report statistics from summaries equal the same statistics from detail on a synthetic corpus, for the exact set in section 5.5; maintainer decisions in section 9</td>
+</tr>
+</tbody>
+</table>
+<p>Phases 1 and 2 also improve latency at 10k independently of cost.</p>
+<h2 id="9-maintainer-direction-and-open-questions">9. Maintainer direction and open questions<a class="headerlink" href="#9-maintainer-direction-and-open-questions" title="Permanent link">&para;</a></h2>
+<p><strong>Direction, 2026-11-24</strong> (maintainer; shapes this proposal, adopts nothing):
+- Relaxed latency for data older than about 90 days: <strong>probably acceptable</strong>, given a holistic retention
+  framework across the use cases (section 6). The 90-day boundary is configurable: the tenant sets it within
+  operator limits.
+- Hot and warm boundaries: <strong>the tenant sets them within operator limits</strong> (section 6, "Who decides").
+- Summaries: the statistics to keep need an analysis of the report definitions used across the open-source
+  ecosystem and Nightscout's built-in reports. Done in the <a href="reports-survey-2026-11-24.html">reports survey</a>;
+  the resulting row is in section 5.5.
+- Partition key: normalized clinical time is a potential option when compared against the alternatives
+  (section 5.2); it is measured against them in phase 2 before a choice.
+- Automatic deletion by age: <strong>unclear whether to build it</strong>; if built, the tenant chooses within operator limits
+  (section 6).
+- Notice before deletion: <strong>not in scope</strong>; there is no user interface to deliver one (section 6, rules).
+- Summaries and d18: produce the same statistics optimizations for both modes behind <strong>a standard set of report
+  endpoints</strong>, so reports reuse one implementation instead of per-reader logic (section 5.7).
+- AGP fidelity: settled in section 5.5 (the 5-minute trace is exact for 5-minute sensors).</p>
+<ul>
+<li>Deletion by age: <strong>may be deferred</strong>, for example past the initial production release; first see every lever
+  with its trade-offs and priority (section 10).</li>
+<li>Statistics API placement and first clients: <strong>unclear, needs more research; deferred and out of scope for now.</strong></li>
+</ul>
+<h2 id="10-levers-trade-offs-and-priorities">10. Levers, trade-offs and priorities<a class="headerlink" href="#10-levers-trade-offs-and-priorities" title="Permanent link">&para;</a></h2>
+<p>Every idea raised in this proposal and the <a href="storage-layout-proposal-2026-11-23.html">layout proposal</a>, in one place.
+"Gain" is what it buys; figures are as labelled in the sections cited. Priorities are proposed.</p>
+<h3 id="now-before-or-at-the-first-production-boundary">Now: before or at the first production boundary<a class="headerlink" href="#now-before-or-at-the-first-production-boundary" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Lever</th>
+<th>Gain</th>
+<th>Trade-off</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PostgreSQL on its own node, memory sized to the hot set, larger <code>/dev/shm</code></td>
+<td>Addresses the 10k signature (buffer hit 0.952, vacuum during load, failed parallel <code>VACUUM</code>)</td>
+<td>Operations only; a bigger node</td>
+<td>5.1, layout §2</td>
+</tr>
+<tr>
+<td>Size volumes for the admitted retention <strong>including imported history</strong></td>
+<td>Migrated sites bring years of history on day one; today's layout at ~1.6 MB per tenant-day sets the volume</td>
+<td>Larger volumes than a 30-day plan</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Index cut from <code>idx_scan</code> on a realistic 1k run</td>
+<td>Bytes, WAL, vacuum and cache in every tier; no layout change</td>
+<td>A dropped index a rare query needed; the API differential guards it</td>
+<td>5.3</td>
+</tr>
+<tr>
+<td>Real-shaped corpus (per uploader) for bytes per tenant-day</td>
+<td>Replaces the synthetic 1.61 MB/day with fleet-shaped figures; every cost row depends on it</td>
+<td>Lab time only</td>
+<td>3, layout §6</td>
+</tr>
+<tr>
+<td>Keep everything</td>
+<td>No policy, no deletion machinery</td>
+<td>Storage grows linearly with history</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<h3 id="next-after-the-first-production-boundary">Next: after the first production boundary<a class="headerlink" href="#next-after-the-first-production-boundary" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Lever</th>
+<th>Gain</th>
+<th>Trade-off</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Time partitioning, comparing the candidate keys first</td>
+<td>Hot set stays cached, vacuum stays small, partitions detach instead of mass deletes; predicted latency gain at 10k</td>
+<td>Identity table for uniqueness (~172 B per document); partition maintenance; queries without time ranges touch every attached partition</td>
+<td>5.1, 5.2</td>
+</tr>
+<tr>
+<td>Warm index set</td>
+<td>Fewer bytes in older partitions</td>
+<td>Slower unindexed filters on warm data</td>
+<td>5.1</td>
+</tr>
+<tr>
+<td>Statistics API, computing from detail</td>
+<td>One implementation of every statistic, far fewer report requests, both modes</td>
+<td>New API surface to define and maintain; placement deferred</td>
+<td>5.7</td>
+</tr>
+<tr>
+<td>Retention settings framework (hot and warm boundaries, tenant within operator limits)</td>
+<td>Operators bound cost; tenants choose latency for their history</td>
+<td>Settings, validation and documentation in both modes</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<h3 id="later-when-multi-year-history-dominates-cost">Later: when multi-year history dominates cost<a class="headerlink" href="#later-when-multi-year-history-dominates-cost" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Lever</th>
+<th>Gain</th>
+<th>Trade-off</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cold monthly bundles in PostgreSQL</td>
+<td>Ten-year detail ~0.15 MB per tenant-day instead of ~1.6</td>
+<td>Reads over 90 days take seconds; tiering job, manifest, edit promotion, restore of an interrupted tiering</td>
+<td>5.4</td>
+</tr>
+<tr>
+<td>Per-day summary rows</td>
+<td>Long-range reports without detail; about 1–2 KB per tenant-day</td>
+<td>Rebuilds on backfill, edits and time-zone changes; schema versioning</td>
+<td>5.5</td>
+</tr>
+<tr>
+<td>Statistics API reading summaries, then cached responses</td>
+<td>Report latency independent of range length</td>
+<td>Differential gate against computing from detail</td>
+<td>5.7</td>
+</tr>
+<tr>
+<td>Filesystem compression for warm or cold tablespaces</td>
+<td>~4.5× on disk with no schema change (measured proxy)</td>
+<td>Node-level setup on Kubernetes; disk only</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+<h3 id="deferred">Deferred<a class="headerlink" href="#deferred" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Lever</th>
+<th>Gain</th>
+<th>Trade-off</th>
+<th>Why deferred</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deletion by age (detail limit, summaries kept)</td>
+<td>Caps storage per tenant</td>
+<td>Irreversible; needs summaries first; behaviour change in both modes</td>
+<td>Maintainer, 2026-11-24</td>
+</tr>
+<tr>
+<td>Cold bundles in object storage</td>
+<td>Takes the 600 TB case from impossible to ~$4,000/month</td>
+<td>Backup, restore and access control move outside PostgreSQL</td>
+<td>Needed only at tens of terabytes</td>
+</tr>
+<tr>
+<td>Statistics API placement and first clients</td>
+<td>Adoption beyond core</td>
+<td>Coordination with client maintainers</td>
+<td>Needs research</td>
+</tr>
+<tr>
+<td>Several independent deployments placed by the tenant registry</td>
+<td>Scales out without new software</td>
+<td>Fleet operations; tenant placement</td>
+<td>No single-node limit measured yet</td>
+</tr>
+</tbody>
+</table>
+<h3 id="not-proposed">Not proposed<a class="headerlink" href="#not-proposed" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Lever</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Typed entries and treatments (stage 1) as built</td>
+<td>−24.7 % bytes for slower window reads, resends and selective lookups; indexes dominate the result</td>
+</tr>
+<tr>
+<td>Device status by tenant-hour (stage 2) for hot data</td>
+<td>Parked: evaluator read and write hold regressed; cold bundles take its saving for old data</td>
+</tr>
+<tr>
+<td><code>lz4</code>, <code>toast_tuple_target</code>, typed device status, prediction caps</td>
+<td>Measured no gain or a loss</td>
+</tr>
+<tr>
+<td>TimescaleDB</td>
+<td>No row-level security on compressed chunks; licence and hosting limits</td>
+</tr>
+<tr>
+<td>Citus</td>
+<td>A database cluster to operate for an unmeasured limit</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+  
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+
+  </body>
+</html>

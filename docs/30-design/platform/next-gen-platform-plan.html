@@ -3837,6 +3837,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -5836,16 +5844,10 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
-<p><em>Contributor-facing living plan, reconciled 2026-11-16 against the
-<a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">selected stream integration record</a>
-and <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>.
-Architecture interpretation is </em><em>read-derived</em><em>; reproduced runs keep their own
-source, deployment and instrument attribution. Queue/dashboard claims, local
-functional qualification, application publication and production admission remain
-separate. Release placement lives in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
+<p><em>Living document, last changed 2026-11-24 at <code>40f346647</code>.</em></p>
+<p><em>Contributor-facing living plan, reconciled 2026-11-24. The <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release record</a> owns the closing single-tenant candidate. The <a href="../tenancy/decisions-in-force.html">tenancy decisions</a> and <a href="../tenancy/execution-log.html#candidate-5-qualification-and-nominal-discovery">execution log</a> own multitenant architecture and candidate evidence. This map is read-derived. Each measurement applies to its recorded source and workload.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
-<p>This plan covers the work that follows the 16.0.0 modernization:</p>
+<p>The platform tracks span the 16.0.0 single-tenant release and subsequent development:</p>
 <ul>
 <li>storage behind one write path;</li>
 <li>the client and server identifiers Loop asked to separate;</li>
@@ -5868,18 +5870,18 @@ use this map to see how the platform tracks meet.</p>
 <tbody>
 <tr>
 <td>Foundations, data and tenant authority</td>
-<td><a href="../remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a> retains M0 and promotes M1–M4: admitted PG ports/import, actual typed/versioned owner settings, tenant refusal and route separation, pinned headless clients and source-pattern replay.</td>
+<td><a href="../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.html#run-72">R72</a> retains M0 and promotes M1–M4: admitted PG ports/import, actual typed/versioned owner settings, tenant refusal and route separation, pinned headless clients and source-pattern replay.</td>
 <td>Wider owner catalogue/lifecycle and production resolution trust; Android emulator and resource bounds in C. No all-client claim.</td>
 </tr>
 <tr>
-<td>Stream runtime and completed output</td>
-<td>The <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">selected integration</a> qualifies the bounded clinical working set, independent raw storage delivery, current stock-client effects and final functional regression on its recorded source/image.</td>
-<td>Workload/resource and recovery envelopes; matched comparison of the separately <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#stream-amplification-and-executable-retirement--2026-11-16">qualified amplification/retirement source</a>. Provider/device, HA and fleet claims need their own evidence.</td>
+<td>Writer-driven evaluation and browser delivery</td>
+<td>Writers commit a pending mark with the data, then notify the assigned evaluator and realtime role. The evaluator recomputes from a bounded window and persists completion. Realtime serves clinical output and independent raw storage events. <a href="../tenancy/evaluator-realtime-communication.html">Communication guide</a></td>
+<td>Candidate 5 has source qualification and workload-specific observations. Capacity and production admission remain open. <a href="../tenancy/execution-log.html#candidate-5-qualification-and-nominal-discovery">Candidate evidence</a></td>
 </tr>
 <tr>
 <td>Recovery and revision transitions</td>
-<td>The same record retains ordinary two-tenant lost-slot recovery, the admitted populated upgrade pair and separate cold-backup rollback, with exact authority/due/completed-state checks. Earlier restore/restart captures retain their original scope.</td>
-<td>Broader version/topology matrices and production recovery objectives. Operator-led recovery does not imply automatic failover.</td>
+<td>The <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">November 16 pgstream record</a> retains its lost-slot and rollback results. The <a href="../tenancy/operations-runbook.html">operations runbook</a> distinguishes tenant restore from whole-installation rollback.</td>
+<td>Qualify the recovery window and workload on the chosen deployment.</td>
 </tr>
 <tr>
 <td>Deployment and human identity</td>
@@ -5895,8 +5897,7 @@ use this map to see how the platform tracks meet.</p>
 </table>
 <p>The named acceptance records own exact source/instrument identities and
 immutable failed and successful runs;
-the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release record</a> owns
-programme disposition. This reconciliation is <strong>read-derived</strong> from those records,
+the <a href="../tenancy/execution-log.html">execution log</a> owns multitenant candidate disposition. This reconciliation is <strong>read-derived</strong> from those records,
 not a rerun of the application. Recorded-evidence gates replay archived captures;
 they do not execute a fresh native/current-HEAD campaign.</p>
 <h3 id="what-is-complete-enough-to-inform-a-decision">What is complete enough to inform a decision?<a class="headerlink" href="#what-is-complete-enough-to-inform-a-decision" title="Permanent link">&para;</a></h3>
@@ -5916,7 +5917,7 @@ and failure recovery under the selected topology.</p>
 <tr>
 <td>Keep API, realtime and evaluator as explicit cooperating roles</td>
 <td>Functional one-host M5 and later cold Compose demonstrate consumed role boundaries and restart behavior.</td>
-<td><a href="../tenancy/selectable-endpoints-and-api-scaling-plan.html">Fixed-roster API scaling</a> needs instance-complete drain/invalidation and endpoint trust, separately from singleton evaluator ownership. Multi-host/HA adds failover and partition acceptance; platform placement/assignment does not replace application operation lifetime.</td>
+<td><a href="../tenancy/selectable-endpoints-and-api-scaling-plan.html">Fixed-roster API scaling</a> needs instance-complete drain/invalidation and endpoint trust, alongside fixed tenant-slice ownership. Multi-host/HA adds failover and partition acceptance; platform placement/assignment does not replace application operation lifetime.</td>
 </tr>
 <tr>
 <td>Keep restore tenant-local in the reference topology</td>
@@ -5929,9 +5930,9 @@ and failure recovery under the selected topology.</p>
 <td>Supported production workloads, pool limits, noisy-neighbor behavior, capacity and restore/upgrade budgets.</td>
 </tr>
 <tr>
-<td>Consume the evaluator's completed result in realtime</td>
-<td>The selected stream implementation persists completed clinical output/checkpoint and delivers raw storage mutations independently. The <a href="../tenancy/evaluator-realtime-communication.html">communication contract</a> owns the boundary.</td>
-<td>Qualification for changed sources/profiles; no universal computed-single or fleet result-store claim.</td>
+<td>Consume completed clinical results in realtime</td>
+<td>The <a href="../tenancy/evaluator-realtime-communication.html">communication guide</a> describes writer hints, durable pending work and generation-fenced completion. Raw storage delivery follows its own path.</td>
+<td>Exercise each changed source and workload against its deadlines and recovery criteria.</td>
 </tr>
 <tr>
 <td>Choose resident versus computed execution for single-tenant sites</td>
@@ -5949,9 +5950,8 @@ and failure recovery under the selected topology.</p>
 backend, execution profile, service placement and host topology. These are
 independent choices: more processes improve operational separation, while a
 shared host, PostgreSQL service, Vault or edge can still fail all tenants.
-The <a href="../tenancy/m5-m6-decision-list.html">current M5/M6 decision list</a> owns remaining
-policy questions; the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">release decisions</a>
-own adopted answers. A deferred decision keeps its prototypes and benches running.</p>
+The <a href="../tenancy/decisions-in-force.html">decisions in force</a> own adopted tenancy policy.
+The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">16.0.0 decisions</a> own release scope. A deferred decision keeps its prototypes and benches running.</p>
 <h3 id="current-architecture-clarifications">Current architecture clarifications<a class="headerlink" href="#current-architecture-clarifications" title="Permanent link">&para;</a></h3>
 <p>For current module/worker placement, read the
 <a href="../tenancy/runtime-topology.html#logical-rest-cohesion-and-worker-placement">logical REST/API map</a>
@@ -5959,7 +5959,7 @@ and the <a href="../../../site/pages/multitenant-database-design.html">database 
 REST v1/v2/v3, authorization and owner REST form one logical stateless
 request-serving API component, retaining version-specific adapters and
 audience/listener contracts. This grouping neither splits services by protocol
-version nor admits routes outside the recorded compatibility scope. Realtime, singleton evaluation,
+version nor admits routes outside the recorded compatibility scope. Realtime, tenant-sliced evaluation,
 connector work and private operator maintenance have separate workload roles;
 API participants consume admission/invalidation hooks rather than run restoration
 orchestration. This is a clarification of responsibilities, not a new process layout.</p>
@@ -6002,12 +6002,12 @@ miss rolls to 16.1.0, or to 17.0.0 if it changes a default.
   - The write rule (ID-Q5) still refuses to create a second record with a stored identifier.
   - <code>require</code> refuses to start until the index exists. <code>off</code> skips building it but leaves any existing index enforced; <code>drop</code> removes the index at boot, then runs as <code>off</code>.
   - An operator-run tool reports duplicate groups and resolves them by the P4 pick.
-- <strong>Multitenant items may ship dormant, labelled alpha behind explicit <code>multitenant</code> configuration, or not ship.</strong></p>
+- <strong>The closing 16.0.0 candidate is single-tenant.</strong> It includes the reserved CLI namespace. Multitenant roles follow their own qualification and release decisions.</p>
 <p>Feasibility, from the 7 days to 2026-10-30: 53 PRs merged into <code>dev</code>, and 14 of this plan's 36 items went
 to done. Build speed is not the limit. Time on <code>dev</code>, cohort checks and review are, so items land in
 priority order and early, and the tag is gated by the bar, not by a date.</p>
 <h2 id="1a-priority-and-merge-order-2026-10-29">1a. Priority and merge order (2026-10-29)<a class="headerlink" href="#1a-priority-and-merge-order-2026-10-29" title="Permanent link">&para;</a></h2>
-<p>The <a href="release-allocation-2026-10-27.html">release allocation</a> owns release ordering,
+<p>The <a href="release-allocation-2026-10-27.html">October allocation</a> records the original release ordering,
 the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
 own merged and tested state, and the queue owns item claims. Identity and the
 write path remain the single-tenant release priority; a multitenant prototype
@@ -6071,7 +6071,7 @@ release hypotheses. It is historical context, not a current dispatch queue.</p>
 </tr>
 </tbody>
 </table>
-<p>The forward constraints are two mature backends behind one interface (D2–D4), the closed query operator set as a filter tree (D8), a source label and later a tenant binding on every write, and one commit fact the change feed can carry (D6; D-EVENT decided 2026-10-31: one in-process event per write, named from WriteResult.items[], and the per-database-call event kept as backend instrumentation; delivery between processes is decided with the serve roles; its card in §5). Under #8854's merge conditions, the commit event stays internal and unstable, and the intent layer gets its own name. The later <a href="../tenancy/durable-event-delivery-contract-2026-11-06.html">B7 recovery direction</a> uses a durable feed and the adopted <a href="../tenancy/multitenancy-decisions.html#m5-bounded-snapshot-reconciliation">bounded full current-state snapshot backstop</a>; the time-only alarm tick remains separate from that reconciliation schedule.</p>
+<p>The forward constraints are two mature backends behind one interface (D2–D4), the closed query operator set as a filter tree (D8), a source label and later a tenant binding on every write, and one commit fact the change feed can carry (D6; D-EVENT decided 2026-10-31: one in-process event per write, named from WriteResult.items[], and the per-database-call event kept as backend instrumentation; delivery between processes is decided with the serve roles; its card in §5). Under #8854's merge conditions, the commit event stays internal and unstable, and the intent layer gets its own name. The <a href="../tenancy/multitenancy-decisions.html#writer-driven-transport-direction">writer-driven transport decision</a> defines the current cross-process path. A durable pending mark survives a missed hint. Evaluators also handle time-driven clinical work.</p>
 <h2 id="3-the-map">3. The map<a class="headerlink" href="#3-the-map" title="Permanent link">&para;</a></h2>
 <p>For multitenant status and sequencing, use the
 <a href="../tenancy/multitenant-delivery-dashboard.html">multitenant delivery dashboard</a>.
@@ -6135,7 +6135,7 @@ deployment's trust record and measured probes.</p>
 <td>ST-VIEWS-PROFILE</td>
 <td>R55 retains independent local acceptance on <code>2ee8b493</code>; earlier #8891 and R43 captures retain their own heads. Explicit single/nonresident launcher computes bounded alarms/properties after admitted physical writes and heartbeat, retaining the last cycle properties; default single stays resident. Logical no-op/refusal admission, full alarm/writer coverage, live stats freshness, quiet-hardware cost and placement remain open. It is not joined into #8898.</td>
 <td>ST-VIEWS</td>
-<td><a href="../remedial/rc-16.0.0-integration-record.html#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05">R43</a>: actual trigger/timer/freshness and teardown controls; remaining entry bar is explicit</td>
+<td><a href="../../archive/tenancy/preview-integration-runs-2026-11-03-to-07.html#run-43">R43</a>: actual trigger/timer/freshness and teardown controls; remaining entry bar is explicit</td>
 </tr>
 <tr>
 <td>ST-PG</td>
@@ -6353,7 +6353,7 @@ contains later tenancy policies; this map does not create a second decision log.
 <li><strong>Red controls.</strong> Every new test is shown failing against the code it guards before the change, with the original symptom.</li>
 <li><strong>Conformance.</strong> The registration and identity cases in <code>specs/sync/conformance/</code> run against a booted server by a harness in this repository (D12), reported case by case as passed, mapped or not applicable.</li>
 <li><strong>Agents.</strong> Agents build slices in their own worktrees, run the checks and hand back a branch, a PR body and the push commands. They never push. Maintainers push, open, review and merge.</li>
-<li><strong>Releases.</strong> #8865 (one executable, the image's start and stop, the boot split; <code>multitenant</code> is the current namespace after #8899; the explicitly configured separate-process Compose preview is implemented in #8898) merged into 16.0.0 on 2026-10-30. Since 2026-10-30 every single-tenant item of this plan targets 16.0.0 through the entry bar (§1); a miss merges after the tag, one theme per minor; the 16.0.0 quiet period starts when its merge list is closed, not on a date. Components shipped before they are mature are labelled alpha; the label belongs to the multitenant bindings, not to code every single-tenant site runs.</li>
+<li><strong>Releases.</strong> #8865 (one executable, the image's start and stop, the boot split; <code>multitenant</code> is the current namespace after #8899; the explicitly configured separate-process Compose preview is implemented in #8898) merged into 16.0.0 on 2026-10-30. Since 2026-10-30 every single-tenant item of this plan targets 16.0.0 through the entry bar (§1); a miss merges after the tag, one theme per minor; the 16.0.0 quiet period starts when its merge list is closed, not on a date. The closing candidate ships only the single-tenant role.</li>
 <li><strong>Records.</strong> Each landed slice updates its queue item (<code>queue/work-queue.yaml</code>) and this plan's data file, and the page is re-rendered.</li>
 </ul>
 <h2 id="7-sources">7. Sources<a class="headerlink" href="#7-sources" title="Permanent link">&para;</a></h2>

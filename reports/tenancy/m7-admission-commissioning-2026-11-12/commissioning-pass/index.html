@@ -2066,10 +2066,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -2572,6 +2568,8 @@
       
         
       
+        
+      
     
     
     
@@ -2725,6 +2723,34 @@
     
   
     Batch A PgBouncer foundation continuation — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../capacity-driver-config-2026-11-17.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configurable load-driver measurement — 2026-11-17
   
 
     
@@ -7424,7 +7450,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_93" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_94" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -7446,14 +7472,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_7_18_93" id="__nav_7_18_93_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_7_18_94" id="__nav_7_18_94_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_93_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_93">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_94_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_94">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -7493,7 +7519,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_93_2" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_94_2" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -7516,8 +7542,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_7_18_93_2_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_93_2">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_7_18_94_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_94_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -12352,7 +12378,7 @@
 
 <h1 id="admission-commissioning-passed">Admission commissioning passed<a class="headerlink" href="#admission-commissioning-passed" title="Permanent link">&para;</a></h1>
 <p><em>Living document, last changed 2026-11-13 at <code>d634793ac</code>.</em></p>
-<p><strong>Reproduced: commissioning passes on exact cored003/deploymentd831/image9366.</strong> The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/reports/tenancy/m7-admission-commissioning-2026-11-12/commissioning-pass/summary.json">selected summary</a> pins source, image, reviewed runner, collector and plan. The <a href="../first-attempt/index.html">first</a> and <a href="../second-attempt/index.html">second</a> attempts retain their failures.</p>
+<p><strong>Reproduced: commissioning passes on exact cored003/deploymentd831/image9366.</strong> The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/reports/tenancy/m7-admission-commissioning-2026-11-12/commissioning-pass/summary.json">selected summary</a> pins source, image, reviewed runner, collector and plan. The <a href="../first-attempt/index.html">first</a> and <a href="../second-attempt/index.html">second</a> attempts retain their failures.</p>
 <p>Bootstrap and private plan-view validation succeeded. Admin, API and API2 passed their actual shipped health checks without consuming another startup claim. One API stopped normally, received its exact clean retirement acknowledgement, restarted as a new generation and passed health again. All four started generations retired with matching ACKs.</p>
 <p>Three charged captures bracket startup, restart and final retirement: held generations 3/3/0 and authenticated tagged clients 20/19/0; unmanaged clients were zero. PostgreSQL’s configured maximum was 314 with three superuser-reserved slots. These are scoped observations: a census cannot see preauthentication, infer historical peaks or refund credits. The configured eleven-slot/sixteen-tenant profile is not a measured production envelope.</p>
 <p>An independent whole-project census matched the five exact retained PostgreSQL/Vault/admin/API/API2 identities, all stopped with exit code zero. The replaced old API container was independently absent. Cleanup did not grant retirement; the source/controller/ACK protocol did. Both earlier failed states remain unchanged. Raw captures and private identifiers remain outside Git.</p>

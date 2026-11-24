@@ -3857,6 +3857,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="One intent for Compose and Kubernetes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rescore-a-capacity-run-after-cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rescore a capacity run after cleanup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-resident-campaigns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster-resident campaigns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -3877,7 +3905,7 @@
 
 
 <h1 id="kubernetes-boundary-for-the-m7-synthetic-instrument">Kubernetes boundary for the M7 synthetic instrument<a class="headerlink" href="#kubernetes-boundary-for-the-m7-synthetic-instrument" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-20 at <code>90614934e</code>.</em></p>
+<p><em>Living document, last changed 2026-11-23 at <code>74793e4d3</code>.</em></p>
 <p>This adapter prepares and observes one independently owned Kubernetes fixture.
 It reuses the <a href="../m7-joined/RUNNER.html">existing M7 workload, stock client and oracles</a>.
 Preparation and offline controls start no services. An operator or explicitly
@@ -4037,9 +4065,12 @@ The packet retains the exact policy and keeps an exhausted capture <code>UNMEASU
 <p>An initial read records the owned evaluator's progress and tenant scope before traffic starts. A tenant without input may have zero completed acquisitions. Legacy profiles may still contain <code>phases.preloadConvergence</code>; the standard load ignores that field.</p>
 <p>The access witness checks both own-token exchanges, both cross-tenant refusals, and foreign frames on the selected socket connections. Missing socket observations yield <code>UNMEASURED</code>. A foreign frame, an accepted wrong credential or a cross-tenant read stops the run.</p>
 <p>For an independent database observation within the original work deadline, run
-<code>adapter.py observe-sql PACKET NEW_DIRECTORY</code>. It counts the source primer's
-stored seed rows and distinct tenants, checks the candidate database epoch and
-requires the original Ready PostgreSQL Pod. Setup Pod retirement requires the
+<code>adapter.py observe-sql PACKET NEW_DIRECTORY</code>. It checks the candidate database
+epoch, requires the original Ready PostgreSQL Pod, and counts the source
+primer's stored seed rows and distinct tenants. That count reads every stored
+entry, so it runs apart from the epoch read under a fixed 10 s server-side
+limit; past it <code>seedCensus</code>, <code>storedRows</code> and <code>storedTenants</code> are <code>UNMEASURED</code>
+and the rest of the observation is kept. Setup Pod retirement requires the
 original Job UID, recognized terminal condition and original Pod controller
 identity. Before/after captures retain serving Pod UIDs, Job failure and last
 observed exit codes. Missing exits stay UNMEASURED. Full workload admission
@@ -4209,6 +4240,18 @@ synthetic write marker to each stage. Keep the same source/rendered fixture and
 exact UIDs, obtain the finite point allocation, and capture a fresh initial
 observation. Never edit an entered packet or reuse a point marker with existing
 stored writes. Concurrent fixtures still require separate namespaces/state.</p>
+<p>The standard launcher accepts an ordered set of profiles on one restore. The first positional
+profile selects the first load. Add <code>--next-point PROFILE</code> for each later load. For example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python3<span class="w"> </span>experiment.py<span class="w"> </span>standard<span class="w"> </span>TEMPLATE<span class="w"> </span>BINDING<span class="w"> </span>active-5k.json<span class="w"> </span>OUTPUT<span class="w"> </span>--fixture<span class="w"> </span>reuse<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>--fixture-seed<span class="w"> </span><span class="s2">"</span><span class="nv">$SEED</span><span class="s2">"</span><span class="w"> </span>--app-image<span class="w"> </span><span class="s2">"</span><span class="nv">$APP_DIGEST</span><span class="s2">"</span><span class="w"> </span>--next-point<span class="w"> </span>active-10k.json
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>python3<span class="w"> </span>experiment.py<span class="w"> </span>launch<span class="w"> </span>OUTPUT/lifecycle-bound.json
+</code></pre></div>
+<p>Each profile carries a distinct <code>workload.pointId</code> and the same provisioned population and
+history. Size the shared deployment for the largest phase. The first phase's writes and cached
+pages carry forward. Each <code>runtime/points/&lt;pointId&gt;/packet/experiment/result.json</code> scores only
+that point's traffic. The case's <code>result.json</code> lists the points in order, and <code>cleanup.json</code>
+records final absence. An incomplete collection stops the launcher and retains both the earlier
+packets and the partial attempt.</p>
 <p>The original dependency tree hash function rejects escaping links. Preparation
 does not copy or install packages. Runtime requires an existing finite cgroup v2
 scope covering the combined driver and observer budgets, with zero swap. It
@@ -4218,8 +4261,8 @@ can use an existing delegated scope; the adapter installs no service. Include
 both actors in headroom accounting; a shared host is recorded as shared.</p>
 <p>Source projections read private exports; redirect their output only to private
 files and merge the safe <code>completion</code> object into <code>run.json</code> before preparation:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>completion-source<span class="w"> </span>/absolute/private/run.json<span class="w"> </span>/absolute/private/evaluator/config.json<span class="w"> </span>/absolute/private/realtime/config.json
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>tenant-projection<span class="w"> </span>/absolute/private/provisioned.json<span class="w"> </span><span class="m">2</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>completion-source<span class="w"> </span>/absolute/private/run.json<span class="w"> </span>/absolute/private/evaluator/config.json<span class="w"> </span>/absolute/private/realtime/config.json
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/adapter.py<span class="w"> </span>tenant-projection<span class="w"> </span>/absolute/private/provisioned.json<span class="w"> </span><span class="m">2</span>
 </code></pre></div>
 <p>Every command below that contacts Kubernetes or sends synthetic application
 traffic needs the environment owner's concrete finite allocation and explicit
@@ -4348,9 +4391,13 @@ Pod durability. Source acceptance and comprehensive application acceptance remai
 with the joined candidate's existing owner. Performance is reported separately
 from correctness, and capacity acceptance stays <code>NOT_GRANTED</code> throughout.</p>
 <p>Focused controls, using synthetic API replies and loopback/fake process boundaries:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/mt-bench/kubernetes<span class="w"> </span>-p<span class="w"> </span><span class="s1">'test_*.py'</span><span class="w"> </span>-v
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>node<span class="w"> </span>tools/mt-bench/kubernetes/claims.test.cjs
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>node<span class="w"> </span>tools/mt-bench/kubernetes/access.test.cjs
+<p>The render checks in <code>test_plannable.py</code> read a deploy tree named by <code>NS_DEPLOY_BINDING</code> (an absolute
+path to a nightscout-deploy checkout or to a <code>git archive</code> of the ref under test). There is no default:
+unset, they refuse with <code>K8S_PLAN_DEPLOY_BINDING_REQUIRED</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">NS_DEPLOY_BINDING</span><span class="o">=</span>/absolute/nightscout-deploy
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/mt-bench/kubernetes<span class="w"> </span>-p<span class="w"> </span><span class="s1">'test_*.py'</span><span class="w"> </span>-v
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>node<span class="w"> </span>tools/mt-bench/kubernetes/claims.test.cjs
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>node<span class="w"> </span>tools/mt-bench/kubernetes/access.test.cjs
 </code></pre></div>
 <p>The <a href="workloads/index.html">workload profiles</a> bind both aggregate commissioning
 and realistic per-shape demand through this same prepare/load/assess path.
@@ -4388,7 +4435,7 @@ change refuses. Hard-map keys, pod counts, scopes and other fields remain exact;
 unknown dimensions and masked values have no inferred equality. Resource
 readback refusals retain only the safe resource kind/name beside the code.</p>
 <p>Use a <strong>new</strong> copy of the released commissioner source with
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/kubernetes/commissioning-accounting.patch"><code>commissioning-accounting.patch</code></a>. The patch
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/kubernetes/commissioning-accounting.patch"><code>commissioning-accounting.patch</code></a>. The patch
 header identifies the base source hash; retained instruments are unchanged. From
 the new staging directory containing <code>bin/preflight.py</code>, apply the patch with
 <code>git apply /absolute/helper/tools/mt-bench/kubernetes/commissioning-accounting.patch</code>.
@@ -4431,9 +4478,9 @@ and deployment topology. Supply the frozen package (source/build/delivery
 receipts), its captured deploy binding, a workload profile and a fresh case
 directory. Each point uses the same entrypoint and the same deploy request
 defaults, including the k6 Job. The directory basename identifies the run.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>standard<span class="w"> </span><span class="s2">"</span><span class="nv">$TEMPLATE_CASE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$PACKAGE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$PROFILE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$CASE</span><span class="s2">"</span><span class="w"> </span>--binding<span class="w"> </span><span class="s2">"</span><span class="nv">$BINDING</span><span class="s2">"</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>describe<span class="w"> </span><span class="s2">"</span><span class="nv">$CASE</span><span class="s2">/intent.json"</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>launch<span class="w"> </span><span class="s2">"</span><span class="nv">$CASE</span><span class="s2">/lifecycle-bound.json"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>standard<span class="w"> </span><span class="s2">"</span><span class="nv">$TEMPLATE_CASE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$PACKAGE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$PROFILE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$CASE</span><span class="s2">"</span><span class="w"> </span>--binding<span class="w"> </span><span class="s2">"</span><span class="nv">$BINDING</span><span class="s2">"</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>describe<span class="w"> </span><span class="s2">"</span><span class="nv">$CASE</span><span class="s2">/intent.json"</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>launch<span class="w"> </span><span class="s2">"</span><span class="nv">$CASE</span><span class="s2">/lifecycle-bound.json"</span>
 </code></pre></div>
 <p>The first command prepares and checks the run offline. An error leaves its
 partial output and reason in a sibling <code>*.failed-*/prepare-error.json</code>. The
@@ -4460,9 +4507,9 @@ seeds DATA through the private Services. For archived candidates, the runner
 interprets the startup contract recorded in their receipts. See the
 <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#platform-verification-removal">platform verification decision</a>.</p>
 <p>Focused controls use real scratch Jsonnet renders and patched commissioner code:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nv">K8S_BINDING_SOURCE</span><span class="o">=</span>/absolute/deployment-repository<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nv">K8S_COMMISSIONING_SOURCE</span><span class="o">=</span>/absolute/released/staging/ops/staging-k8s/bin<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/mt-bench/kubernetes
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nv">K8S_BINDING_SOURCE</span><span class="o">=</span>/absolute/deployment-repository<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nv">K8S_COMMISSIONING_SOURCE</span><span class="o">=</span>/absolute/released/staging/ops/staging-k8s/bin<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/mt-bench/kubernetes
 </code></pre></div>
 <p>The external-fixture controls report a skip when their source is absent. A skipped
 commissioner or binding control does not qualify a runtime configuration.</p>
@@ -4482,7 +4529,7 @@ is gone.</p>
 <h2 id="outcome-evaluator-gate-on-kubernetes">Outcome evaluator gate on Kubernetes<a class="headerlink" href="#outcome-evaluator-gate-on-kubernetes" title="Permanent link">&para;</a></h2>
 <p>Decision <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#outcome-evaluator-gate">outcome-evaluator-gate</a>
 replaces the lifetime <code>failedCompletions == 0</code> rule and the instant midpoint
-readiness rule. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/m7-joined/outcome_gate.py">outcome_gate.py</a> is the one frozen gate; its
+readiness rule. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/m7-joined/outcome_gate.py">outcome_gate.py</a> is the one frozen gate; its
 identity is the SHA-256 of that file. Tenants, rate, windows, budgets and
 <code>deadlineMs</code> (default 120000) are configuration under the same identity.</p>
 <table>
@@ -4540,7 +4587,7 @@ not-ready owner at the midpoint continues. Raw responses are written before
 any decoder reads them (<code>progress-*.private.jsonl</code>; after an early load stop, <code>progress-stop.private.jsonl</code>, then <code>stored-counts.json</code>, recorded in <code>stop-evidence.json</code>). The runner publishes <code>load/outcome-gate.json</code> and a stage summary in <code>result.json</code> before returning a failure or missing measurement. It also reports HTTP latency over all k6 shard summaries, including the exact pooled count and mean, plus the quantile range across shards.
 The progress reader checks the evaluator's runtime identity, owner and foreign counters across captured rounds. It records the observed work delta, including zero for idle tenants. The workload outcome combines these checks with storage, sampled clinical results and per-input catch-up. A missing component leaves the load stage <code>UNMEASURED</code>.</p>
 <p><code>assessor.py &lt;load&gt;</code> re-reduces a retained run into a new file beside it and refuses if any original file changes. Set <code>outcomeGate.midpointStop</code> to <code>never</code> to record a hard midpoint signal and continue collecting evidence.</p>
-<p>The accepted-input observer starts before the probe and follows run-marked writes through drain. Its Kubernetes transport brackets each read-only SQL transaction with checks of the owned namespace and Pods. Each call honors the observer timeout and the entered work deadline. The observer reconciles its inputs against the workload and probe acceptance counts. Tenants with no accepted input owe no output. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/kubernetes/catchup.py">Kubernetes transport</a> · <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#deadline-from-acceptance">Deadline and drain decision</a></p>
+<p>The accepted-input observer starts before the probe and follows run-marked writes through drain. Its Kubernetes transport brackets each read-only SQL transaction with checks of the owned namespace and Pods. Each call honors the observer timeout and the entered work deadline. The observer reconciles its inputs against the workload and probe acceptance counts. Tenants with no accepted input owe no output. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/kubernetes/catchup.py">Kubernetes transport</a> · <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#deadline-from-acceptance">Deadline and drain decision</a></p>
 <h2 id="one-intent-for-compose-and-kubernetes">One intent for Compose and Kubernetes<a class="headerlink" href="#one-intent-for-compose-and-kubernetes" title="Permanent link">&para;</a></h2>
 <p><code>toolchain.py</code> projects a version 1 <code>multitenant-experiment</code> into the existing
 Compose runner or Kubernetes experiment contract. It starts no actor. Immutable
@@ -4565,7 +4612,7 @@ inputs, and carries the same selection in <code>manifest.json</code>. Merge that
 with the fresh instance's other constructor inputs using <code>std.mergePatch</code> before
 calling <code>ns.new</code>. Preparation requires the manifest, inventory and rendered
 ConfigMap to agree; forgetting the overlay refuses instead of ignoring it.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">{</span><span class="nt">"kubernetes"</span><span class="p">:{</span><span class="nt">"edge"</span><span class="p">:{</span><span class="nt">"workerProcesses"</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="nt">"workerConnections"</span><span class="p">:</span><span class="mi">8192</span><span class="p">}}}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span><span class="nt">"kubernetes"</span><span class="p">:{</span><span class="nt">"edge"</span><span class="p">:{</span><span class="nt">"workerProcesses"</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="nt">"workerConnections"</span><span class="p">:</span><span class="mi">8192</span><span class="p">}}}</span>
 </code></pre></div>
 <p>The same common intent can retain its independent <code>local</code> settings. Compose
 projection records <code>kubernetes.edge</code> as <code>notApplicable</code> and leaves local resource
@@ -4594,9 +4641,9 @@ by this binding. nginx documents the
 These settings configure a fresh fixture and do not qualify a capacity result
 or change edge replicas, socket topology, source images or an entered run.</p>
 <p>Project an intent with <code>toolchain.py</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nv">K</span><span class="o">=</span>tools/mt-bench/kubernetes
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/toolchain.py"</span><span class="w"> </span>compose<span class="w"> </span><span class="s2">"</span><span class="nv">$INTENT</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$FRESH_LOCAL_INSTANCE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PROJECTION</span><span class="s2">"</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/toolchain.py"</span><span class="w"> </span>kubernetes<span class="w"> </span><span class="s2">"</span><span class="nv">$INTENT</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$FRESH_INSTANCE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PROJECTION</span><span class="s2">"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nv">K</span><span class="o">=</span>tools/mt-bench/kubernetes
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/toolchain.py"</span><span class="w"> </span>compose<span class="w"> </span><span class="s2">"</span><span class="nv">$INTENT</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$FRESH_LOCAL_INSTANCE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PROJECTION</span><span class="s2">"</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/toolchain.py"</span><span class="w"> </span>kubernetes<span class="w"> </span><span class="s2">"</span><span class="nv">$INTENT</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$FRESH_INSTANCE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NEW_PROJECTION</span><span class="s2">"</span>
 </code></pre></div>
 <p>The Compose projection emits the normal <code>config.json</code> and existing diagnostic
 receipt template. The execution owner binds its fresh receipt and uses the
@@ -4639,7 +4686,7 @@ the selected alignment checkout in <code>instrumentDirectory</code>, the current
 and the operator's binding, run template, tools, delivery and controller allocation. All paths come from these inputs. Set <code>instrumentDirectory</code> once.
 Capture records the runtime digest. An explicit <code>instrumentSha256</code> pins a
 particular runtime. Test source edits leave that digest stable.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>launch<span class="w"> </span><span class="s2">"</span><span class="nv">$CASE</span><span class="s2">/lifecycle-input.json"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>python3<span class="w"> </span>-B<span class="w"> </span><span class="s2">"</span><span class="nv">$K</span><span class="s2">/experiment.py"</span><span class="w"> </span>launch<span class="w"> </span><span class="s2">"</span><span class="nv">$CASE</span><span class="s2">/lifecycle-input.json"</span>
 </code></pre></div>
 <p>For offline preparation, add <code>--prepare-only</code>. This writes
 <code>$CASE/lifecycle-bound.json</code> with exclusive creation. Pass the bound file to
@@ -4702,8 +4749,8 @@ custody, and emits the existing <code>k6.log</code> and <code>k6-summary.json</c
 Its appended <code>handleSummary</code> exports k6's actual counters/trends in framed
 chunks; it changes no workload function and includes no JWT setup data.</p>
 <p><code>native_join.py</code> adds an opt-in <code>nativeLoad</code> selection to the existing execution,
-census and fit path. The controller, probe, SQL, completed clinical output, frames and the accepted-input
-observer still run on the workstation. <code>assess_join()</code> verifies the
+census and fit path. The workstation runs the controller, viewer probe and SQL bookends. Correctness and recovery
+also run their selected live SQL witnesses. <code>assess_join()</code> verifies the
 capture/run/script bindings and calls the unchanged <code>execute.assess_stage()</code>;
 Job completion alone leaves the outcome gate UNMEASURED. The 120-second clinical
 contract and accepted-versus-stored accounting remain required. All-writer
@@ -4725,6 +4772,25 @@ credentials. It holds the Pod until an owned exec reader has verified each
 file's exact length/hash and acknowledged the manifest, or the finite Job and
 exporter deadlines expire. Raw CSV never depends on kubelet log retention.
 The exporter contributes its explicit requests/limits to Pod fit and quota.</p>
+<p>A capacity case can publish writer results from the exporter to a private, retained filesystem.
+Give <code>experiment.py standard</code> the option <code>--writer-publication /absolute/volume.json</code>,
+or set <code>nativeLoad.writerPublication</code> in the native Job selection. The object takes this form.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">{</span><span class="nt">"volumeName"</span><span class="p">:</span><span class="s2">"capacity-example"</span><span class="p">,</span><span class="nt">"storageClassName"</span><span class="p">:</span><span class="s2">""</span><span class="p">,</span><span class="nt">"storage"</span><span class="p">:</span><span class="s2">"64Mi"</span><span class="p">}</span>
+</code></pre></div>
+<p>Reserve the existing filesystem PV with <code>persistentVolumeReclaimPolicy: Retain</code> and a
+<code>claimRef</code> naming <code>writer-publication</code> in this run's exact namespace. The claim reference
+starts without a UID. Match its storage class and writable capacity to the selection. The
+exporter runs as UID/GID 1000 and needs write access at the mounted root. The lifecycle
+verifies the reservation, creates a PVC explicitly bound to that volume and records its UID.
+Namespace cleanup releases the PV. The storage owner can retrieve the files from the backing
+filesystem or rebind the released PV to a reader. Reserve each volume for only one run.</p>
+<p>After k6 exits, the exporter commits <code>&lt;stage-run-id&gt;/&lt;pod-uid&gt;/writer/publication.json</code>
+with the byte lengths and SHA-256 digests of the numeric k6 summary and the accepted-write
+ledger. This happens before the controller reads or acknowledges any artifacts. A nonzero
+writer exit or an invalid input records a partial publication. An interrupted copy has no
+committed manifest until the atomic directory rename. A writer killed before emitting its
+exit code can leave no publication. Repeating the export with identical inputs is idempotent.
+The original scheduling CSV and raw diagnostics still use the finite exec/ack collection.</p>
 <p>For a <strong>fresh, uncaptured prepared case</strong>, run <code>python3 -B native_join.py
 /absolute/case /absolute/selection.json</code>, then the normal lifecycle capture and
 fresh entry checks. Selection requires <code>version: 1</code>, <code>mode: "job-v1"</code>, immutable
@@ -4763,7 +4829,7 @@ UNMEASURED and retains the original failure. No failed workload is replayed.
 Job backoff is zero, replacement waits for Failed, and test Pods have a finite
 termination grace. Runtime application Pod and container identities stay strict;
 only the exact declared test Job has a separate dynamic census.</p>
-<p>The accepted-input observer runs across probe and driver traffic. After both writers exit, the controller reconciles storage, checks remaining clinical work through drain, captures terminal progress and calls <code>assess_stage()</code>. <code>assess_join()</code> adds capture/run/script/hash checks. The init
+<p>In polling mode the accepted-input observer covers probe and driver traffic. Discovery defaults to offline observation. After the writers exit, the controller reconciles storage, captures terminal progress and calls <code>assess_stage()</code>. <code>assess_join()</code> adds capture/run/script/hash checks. The init
 waiter alone gets <code>jobs/get</code> for <code>provision</code> and <code>primer</code> in its namespace. The
 exporter receives no Kubernetes API permission. The test Pod uses component
 <code>load</code>, so it does not match the application's
@@ -4808,6 +4874,67 @@ are published beside <code>raw/</code>. The native receipt includes the namespac
 labelled cluster trust, host unit and port-forward observations. The load
 report retains scheduling drops, per-executor start times and attributable
 actor transitions alongside the independently judged product components.</p>
+<h3 id="rescore-a-capacity-run-after-cleanup">Rescore a capacity run after cleanup<a class="headerlink" href="#rescore-a-capacity-run-after-cleanup" title="Permanent link">&para;</a></h3>
+<p>Native discovery runs that record viewer frames publish a private packet to
+<code>runtime/packet/experiment/capacity-results/</code>. The sibling <code>capacity-publication.json</code>
+reports the export status. The native exporter selects numeric k6 metrics and ordinary accepted-write
+events. The controller supplies the viewer frame ledger, stored counts, and evaluator counters from
+the start and end of the run. They share a run ID and writer Pod UID. Keep the packet on retained
+storage. Once both parts are present, scoring requires only Python and the harness checkout.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/kubernetes/capacity_results.py<span class="w"> </span>rescore<span class="w"> </span><span class="s2">"</span><span class="nv">$PACKET</span><span class="s2">"</span>
+</code></pre></div>
+<p>For an older retained load directory, first run
+<code>python3 -B tools/mt-bench/kubernetes/capacity_results.py publish "$LOAD" "$PACKET"</code>.
+To score a recovered exporter volume, point <code>rescore</code> at its <code>RUN_ID/POD_UID/writer</code>
+directory for HTTP accounting alone, or pass <code>--writer "$WRITER"</code> alongside the controller
+packet for all three measures. Supply <code>--clock-bound-ms</code> and <code>--viewer-offset-ms</code> when reproducing
+a score with previously measured clock settings.</p>
+<p>The report separates HTTP accounting, all-input evaluator deadline coverage and observed viewer
+delivery. It preserves the original stage verdict and verifies file digests and producer identity.
+Incomplete writer evidence, missing SQL bookends and failed viewer capture leave the corresponding
+scores unmeasured. The compact packet supports durable evaluator counters. Older images that relied
+on Prometheus for that measure still need their raw case and retained TSDB. An interrupted
+controller can lose viewer and SQL evidence even when the exporter volume preserves the writer.
+API 503s by storage refusal code (<code>STORAGE_BUSY</code>, <code>STORAGE_TIMEOUT</code>, <code>STORAGE_UNAVAILABLE</code>, from core's
+<code>nightscout_storage_refusals_total{code, route_class, phase}</code>) are read from the retained TSDB over the
+load window: <code>coverage_verdict.py case LOAD_DIR</code> reports them as <code>storageRefusals</code>, and <code>capacity_results.py
+rescore --metrics-load LOAD_DIR</code> adds them beside the HTTP accounting. An image without the counter reads
+<code>NO-INSTRUMENT</code>, never zero. The figures are reported beside the verdicts and do not change them.
+<a href="workloads/index.html">Capacity and comparison modes</a></p>
+<h3 id="cluster-resident-campaigns">Cluster-resident campaigns<a class="headerlink" href="#cluster-resident-campaigns" title="Permanent link">&para;</a></h3>
+<p><code>campaign.py</code> runs a whole campaign inside the cluster so that a workstation reboot, a network loss or
+an ended agent session does not lose a case. Apply the campaign once. The controller Job in
+<code>bench-control</code> then runs the ordered cases through the existing standard path (<code>standard_case</code>, then
+<code>experiment.py launch</code>). Each case gets lane A's <code>case_supervisor.py</code> and a heartbeat. The controller
+uploads each case's directory to a private S3-API bucket as it grows and seals it with a sha256
+manifest at the end. A restarted controller skips finished cases. It seals what an interrupted attempt
+uploaded, waits for that case's cleanup and reruns the case in a fresh namespace (<code>&lt;campaign&gt;-&lt;case&gt;-a&lt;n&gt;</code>).</p>
+<p>To run several load phases on one restore, use one standard case. Set <code>options.profile</code> (or
+<code>standard.profile</code>) to the first profile and <code>options.nextPoints</code> to an ordered array of the
+remaining profile objects. Give each profile a distinct <code>workload.pointId</code> and the same seeded
+population and history. Allow time for every phase in <code>caseDeadlineSeconds</code>. One attempt then
+owns the namespace through all phases. The seal retains each packet under
+<code>runtime/points/&lt;pointId&gt;/packet</code>, and <code>campaign.py rescore</code> names each collected packet by path.
+The standard controller takes its CPU and memory limits from the template’s driver and observer
+allocation. Smaller finite limits can be supplied in <code>controllerResources.limits</code>. An apply host
+without the template needs explicit CPU and memory limits. The controller checks them against its
+copy before load. The standard controller image runs <code>tini</code> as PID 1 to reap subprocesses after a timeout.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">NS_EVIDENCE_ACCESS_KEY</span><span class="o">=</span>...<span class="w"> </span><span class="nv">NS_EVIDENCE_SECRET_KEY</span><span class="o">=</span>...<span class="w">    </span><span class="c1"># bucket-scoped key; never in the manifest</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>python3<span class="w"> </span>-B<span class="w"> </span>campaign.py<span class="w"> </span>apply<span class="w"> </span>MANIFEST<span class="w"> </span>--context<span class="w"> </span>CONTEXT<span class="w">         </span><span class="c1"># store Secret, RBAC, admission policy, Job</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>python3<span class="w"> </span>-B<span class="w"> </span>campaign.py<span class="w"> </span>status<span class="w"> </span>MANIFEST<span class="w">                          </span><span class="c1"># per-case status.json from the store</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>python3<span class="w"> </span>-B<span class="w"> </span>campaign.py<span class="w"> </span>collect<span class="w"> </span>MANIFEST<span class="w"> </span>--out<span class="w"> </span>DIR<span class="w"> </span><span class="o">[</span>--case<span class="w"> </span>C<span class="o">]</span><span class="w">     </span><span class="c1"># fetch, verify against the seal, delete what verified</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>python3<span class="w"> </span>-B<span class="w"> </span>campaign.py<span class="w"> </span>rescore<span class="w"> </span>DIR<span class="w">                              </span><span class="c1"># capacity_results.rescore on every fetched packet</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>python3<span class="w"> </span>-B<span class="w"> </span>campaign.py<span class="w"> </span>close<span class="w"> </span>MANIFEST<span class="w"> </span>--context<span class="w"> </span>CONTEXT<span class="w">         </span><span class="c1"># controller objects, then the empty bucket</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>python3<span class="w"> </span>-B<span class="w"> </span>campaign.py<span class="w"> </span>census<span class="w"> </span>MANIFEST<span class="w"> </span>--context<span class="w"> </span>CONTEXT<span class="w"> </span><span class="o">[</span>--doctl-cluster<span class="w"> </span>NAME<span class="o">]</span><span class="w">   </span><span class="c1"># exit 1 while anything bills</span>
+</code></pre></div>
+<p>The controller identity has broad RBAC (lifecycle needs it). A ValidatingAdmissionPolicy confines its
+writes to namespaces whose <code>nightscout.org/run-id</code> starts with <code>&lt;campaign&gt;-</code>, the objects inside them,
+<code>bench-control</code>, and cluster-scoped objects with that label. Reads are not confined, so use a cluster
+dedicated to benches. Fixtures restore from <code>bench-control</code> (<code>catalog-import</code> copies a workstation
+catalog record there, with the seed Secrets in a Secret). A catalog miss refuses the case
+(<code>CAMPAIGN_FIXTURE_MISS</code>); seeding stays a separate step. <code>controller-image/build.sh</code> builds the image
+from committed sources and the template case's recorded inputs. The kind controls are in
+<code>test_campaign_kind.py</code>.</p>
 <p>The joined disposable binding uses <code>secrets.sh seed</code>, waits for the provision Job and role readiness,
 then runs the deployment's primer as an init container using the private admin and API Services.
 The reader mounts the same disposable results volume read-only and transfers the DATA roster for
@@ -4831,9 +4958,12 @@ and primer. On a miss it first runs a seed case at <code>OUTPUT-seed</code> (liv
 and primes on four labelled claims (<code>--storage-class</code>, <code>--snapshot-class</code>), stops every role,
 snapshots the claims through CSI, sets their contents to Retain under the <code>nightscout.org/fixture</code>
 label, writes the handles, the original Secrets and the key to a private catalog directory, and
-registers it; then it prepares the restore. <code>--fixture build</code> builds and registers the key's
-fixture ahead of time and prepares nothing else (a hit returns at once). A restore refuses another
-key, population, PostgreSQL image or evaluator K. Cleanup deletes the namespace and the run's
+registers it, then prepares the restore. <code>--fixture build</code> can build the seed ahead of time.
+A writer-driven case prefers an exact key. It can also reuse a seed from an ancestor core commit
+with the same tenant count, seed, history specification, transport and PostgreSQL image. A
+forward restore runs the provision Job's ordinary migrations and records the bootstrap result
+in <code>fixture-forward.json</code> before starting serving roles. Writer-driven fixtures can be used at
+different evaluator replica counts. Cleanup deletes the namespace and the run's
 labelled contents; <code>fixture_copy.py delete DIR CONTEXT</code> ends the fixture (the CSI driver deletes
 the provider snapshots) and retires its catalog entry. <code>python3 m7-joined/fixture_catalog.py list</code>
 shows the catalog. Snapshots and restored volumes are billed storage.</p>

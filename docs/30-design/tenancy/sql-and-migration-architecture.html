@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3808,6 +3816,34 @@
   
   
     <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -3816,6 +3852,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -6160,7 +6280,9 @@
 
 
 <h1 id="sql-migrations-and-tenant-recovery-architecture">SQL, migrations and tenant recovery architecture<a class="headerlink" href="#sql-migrations-and-tenant-recovery-architecture" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
+<p><em>Living document, last changed 2026-11-24 at <code>7b8bfd465</code>.</em></p>
+<p>Candidate 5 stores clinical documents in shared PostgreSQL tables with tenant-bound access. A clinical write and its pending evaluator work commit together. The evaluator owns the completed clinical result. Realtime serves it to authorized viewers. Candidate 5 keeps JSONB clinical documents, the per-tenant insertion counter and the stored output frame. The adopted storage changes removed the row-size trigger and redundant indexes. <a href="multitenancy-decisions.html#writer-driven-transport-direction">Writer-driven transport</a> · <a href="multitenancy-decisions.html#storage-machinery-removal">Storage decision</a> · <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">Candidate evidence</a></p>
+<p>The SQL reference below records the November implementations on their named source revisions. The <a href="multitenancy-decisions.html#tenant-copy-export">current logical restore contract</a> uses tenant COPY data, forward history correction and a generation fence. The platform owns <a href="multitenancy-decisions.html#platform-backup-and-test-fixtures">whole-deployment backup and rollback</a>.</p>
 <p><em>Living contributor-facing architecture guide. Source reading verified 2026-11-07
 against cgm-remote-monitor <code>151de0248a1e4301c85b5c638185eec3ca8c38e6</code>
 (tree <code>3bb46431a19e604dc028768f0e72e6ad29616c26</code>). Mechanisms and diagrams below are
@@ -6183,8 +6305,7 @@ sections are pinned to <code>16a1fc2d</code>; the other sections keep their <cod
 reading. The refresh is read-derived from source; acceptance of that head lives
 in the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>.</em></p>
 <h2 id="clinical-stream-storage-extension--selected-branch-2026-11-16">Clinical stream storage extension — selected branch, 2026-11-16<a class="headerlink" href="#clinical-stream-storage-extension--selected-branch-2026-11-16" title="Permanent link">&para;</a></h2>
-<p>The <a href="evaluator-realtime-communication.html#stream-fed-clinical-materializer--adopted-target-2026-11-16">adopted materializer contract</a>
-uses the existing evaluator input consumer checkpoint for bounded accepted rows
+<p>At the November 16 source, the <a href="../../archive/tenancy/pgstream-communication-2026-11-16.html#stream-fed-clinical-materializer--adopted-target-2026-11-16">pgstream materializer</a> used the existing evaluator input consumer checkpoint for bounded accepted rows
 and unfinished XID cohorts. The completed consumer continues to own completed
 versions, result/frame/revision and due state. Transport acceptance and clinical
 completion are separate commits. No new durable inbox table is introduced.
@@ -6206,17 +6327,14 @@ for this invoker trigger; it does not need document UPDATE solely for accounting
 Existing clinical-table
 restore/delete census includes these columns. Final qualification lives in the
 <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">selected integration record</a>.</p>
-<p>The exact reviewed <code>0099_&lt;domain&gt;_storage_bytes</code> migration is common to standard
+<p>In that source, the exact reviewed <code>0099_&lt;domain&gt;_storage_bytes</code> migration is common to standard
 and optional ordered variants. Its SQL does not depend on insertion ordinals, so
 it can commute with the existing empty-table ordering conversion. The migration
 inspector validates known names and exact checksums first, rejects duplicates,
 and retains strict ordinary-prefix history and a required base migration. It
 computes pending work from applied names. No other operation gains this exception;
 historical SQL/checksums and the empty-table conversion requirement remain fixed.</p>
-<p>The public evaluator boot explicitly refuses optional selected multiworker intake
-until its separate grants and ownership path adopt clinical materialization. The
-maintained single-host default is the baseline; lower profile/schema/ownership
-controls remain useful without qualifying an obsolete serving path.</p>
+<p>That branch refused optional multiworker intake. The writer-driven join retired the stream receiver and slot. Candidate 5 uses <a href="runtime-topology.html#logical-rest-cohesion-and-worker-placement">static evaluator slices</a>.</p>
 <h2 id="scope-and-evidence">Scope and evidence<a class="headerlink" href="#scope-and-evidence" title="Permanent link">&para;</a></h2>
 <p>For diagram-first review, open the <a href="../../../site/pages/multitenant-database-design.html">database and component ownership visual
 review</a>. It renders the
@@ -6249,7 +6367,7 @@ own admitted port behavior.</p>
 <td>Exact c23 executed source, fixed trusted cooperative cohort. No automatic orphan clearance, suspended-restore resume command or production recovery bound.</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
 <td><strong>Reproduced:</strong> packaged A restore preserved clinical value/public identity, forward history and B rows while B committed work; actual controller committed/reactivated; independent configuration/resource/process closure.</td>
 <td>Exact ed2 source/image, fixed cooperative one-host reference. Client and final regression gates remain separate.</td>
 </tr>
@@ -6299,19 +6417,11 @@ every REST responsibility become a separate service. Grouping the versions does
 not admit additional routes: the <a href="single-and-multitenant-architecture.html#current-bounded-compatibility">recorded compatibility scope</a>
 and admitted handler/storage contracts still bound actual coverage.</p>
 <h3 id="headless-workload-owners">Headless workload owners<a class="headerlink" href="#headless-workload-owners" title="Permanent link">&para;</a></h3>
-<p>Realtime owns live connections; the evaluator is a headless worker and remains
-one current workload owner. Connector actors (<code>vcpool</code>) belong to background
-polling/egress work and submit clinical writes through the canonical API boundary;
-the <a href="https://github.com/nightscout/cgm-remote-monitor/blob/5e112547b31252ec428747c821d3cd1b3684ce2b/lib/server/serve/roles.js">selected role registry</a>
-selects its explicit preview implementation. Fixed-roster evaluator assignment
-and realtime controlled placement have source-scoped implementation records;
-<a href="runtime-topology.html">runtime topology</a> and release contents own their qualification.
-A replica count does not establish workload ownership or capacity. These worker
-contracts are separate from request-serving API replicas.</p>
+<p>Realtime owns live connections for its slice. The headless evaluator owns clinical work for its own slice. Connector actors submit clinical writes through the API. Tenant hash and ordinal determine assignment, and the platform binds routing to the same ownership rule. <a href="runtime-topology.html">Runtime topology</a> · <a href="multitenancy-decisions.html#static-hash-ownership">Static hash ownership</a></p>
 <h3 id="private-maintenance-execution">Private maintenance execution<a class="headerlink" href="#private-maintenance-execution" title="Permanent link">&para;</a></h3>
 <p>The lifecycle/restore controller executes as a private operator CLI, job or
 worker; the <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/restore.js#L97">ed2 operator tool</a>
-composes it outside API serving. Each serving instance supplies generic
+composes it outside API serving. In that reference, each serving instance supplied generic
 operation-admission, lifetime and invalidation hooks; those hooks do not place a restore engine or maintenance
 credentials in every API replica. A future command/status REST surface could
 request or observe maintenance while the privileged worker executes it separately;
@@ -6319,7 +6429,7 @@ no new endpoint or process layout is selected here. The
 <a href="runtime-topology.html#logical-rest-cohesion-and-worker-placement">logical placement map</a>
 owns the broader component explanation.</p>
 <h3 id="maintenance-safety-is-distinct-from-desired-activity">Maintenance safety is distinct from desired activity<a class="headerlink" href="#maintenance-safety-is-distinct-from-desired-activity" title="Permanent link">&para;</a></h3>
-<p>The existing claim/generation-bound maintenance window determines whether an
+<p>The November reference’s claim/generation-bound maintenance window determined whether an
 operation can run safely during recovery. Operator-controlled resource/activity
 policy asks which serving, ingestion, evaluation or connector work should run at
 all. That policy is decided as two durable flags, pause and suspend
@@ -6357,9 +6467,9 @@ The following ownership map does not introduce a generic SQL-over-HTTP service.<
 <td>Existing <a href="evaluator-realtime-communication.html#browser-authorization-and-mutations">private authorization and mutation protocol</a>; realtime must not edit suppression rows as a substitute.</td>
 </tr>
 <tr>
-<td>Accepted input, clinical completion and raw delivery recovery</td>
-<td>Evaluator owns durable accepted clinical state and atomically completed result/checkpoint/next due. Realtime consumes completed output and the independent raw storage tail, with its own delivery receipts and live cursors.</td>
-<td>The <a href="evaluator-realtime-communication.html">current stream contract</a> replaces independent warm snapshot acquisition. Cold/GAP/missing-history recovery may read consistent source state. Admitted component-owned storage remains direct; cross-component commands use their owned APIs.</td>
+<td>Clinical writes, completion and socket delivery</td>
+<td>API writes the pending mark with the clinical change, then signals the evaluator. Realtime reads completed output and receives eligible storage events directly from the API.</td>
+<td><a href="evaluator-realtime-communication.html">Writer-driven contract</a>. A sweep recovers missed clinical hints.</td>
 </tr>
 <tr>
 <td>Notification intent, attempts and handoff</td>
@@ -6374,7 +6484,7 @@ The following ownership map does not introduce a generic SQL-over-HTTP service.<
 <tr>
 <td>Maintenance exclusion, restore, deletion and activation</td>
 <td>Private operator lifecycle controller coordinates each actual participant through its control API and owns controlled maintenance transactions. Explicit migration/provisioning tools own their separate catalogues and grants.</td>
-<td>Existing fixed-cohort restore protocol. A table update or clinical API write alone cannot drain in-flight responses, clear another process's cache or authorize a deletion ceremony.</td>
+<td>The fixed-cohort protocol is the earlier reference. Current restore suspends the tenant, drains transactions, replaces data under the generation fence, then activates it. <a href="multitenancy-decisions.html#restore-suspend-drain-replace">Restore decision</a></td>
 </tr>
 </tbody>
 </table>
@@ -6387,24 +6497,20 @@ mutation have separate authorization and acknowledgement contracts; the arrows d
   EV["Evaluator notification consumer"] --&gt;|"alarm handoff"| RT["Realtime"]
   RT --&gt;|"authorize / mutate / ack"| API["Unified REST/API&lt;br/&gt;v1 / v2 / v3 adapters"]</code></pre>
 <h3 id="stream-state-and-delivery-ownership">Stream state and delivery ownership<a class="headerlink" href="#stream-state-and-delivery-ownership" title="Permanent link">&para;</a></h3>
-<p><strong>Read-derived selected stream diagram.</strong> The input and completed checkpoints
-have different commit boundaries. Raw storage events remain independent of the
-clinical window. The <a href="evaluator-realtime-communication.html">communication contract</a>
-owns recovery, authority and compatibility; this view introduces no new table.</p>
+<p><strong>Read-derived writer-driven path.</strong> The API marks pending work in the same transaction as the source change. The evaluator sweeps pending work and uses hints to start sooner. Browser frames use completed clinical output. Raw storage events have their own authorization and do not await an evaluator cycle. <a href="evaluator-realtime-communication.html">Communication guide</a></p>
 <pre class="mermaid"><code>flowchart TB
-  PG["Committed source + WAL"] --&gt; PS["Platform pgstream service"]
-  PS --&gt; Input["Durable input checkpoint&lt;br/&gt;clinical state + raw tail + observed work"]
-  Input --&gt; Eval["Bounded clinical evaluator + due work"]
-  Eval --&gt; Done["Atomic completed output&lt;br/&gt;covered versions + result + next due"]
-  Done --&gt; RT["Realtime: completed frames and delivery receipts"]
-  Input --&gt;|"independent raw storage mutations"| RT
-  RT --&gt; Clients["Currently authorized clients"]</code></pre>
+  API["Tenant-authorized API write"] --&gt; PG["PostgreSQL clinical rows and pending mark"]
+  API -.-&gt;|"post-commit hint"| Eval["Owning evaluator slice"]
+  PG --&gt;|"read pending work and current rows"| Eval
+  Eval --&gt; Done["Completed result and next due time"]
+  Done --&gt; RT["Owning realtime slice"]
+  API -.-&gt;|"eligible storage events"| RT
+  RT --&gt; Clients["Authorized sockets"]</code></pre>
 <h3 id="component-storage-ownership">Component storage ownership<a class="headerlink" href="#component-storage-ownership" title="Permanent link">&para;</a></h3>
 <p><strong>Read-derived ownership matrix.</strong> Each row is an admitted component's storage
 responsibility, not a mandatory process or a separate physical database. The two
 REST/API rows are responsibilities within one logical component, retaining their
-separate authority/listener contracts. The selected stream evaluator and realtime have distinct input/completion/delivery responsibilities,
-read-derived at core <code>5e112547b31252ec428747c821d3cd1b3684ce2b</code>. Privilege checks
+separate authority/listener contracts. The evaluator and realtime rows follow the <a href="multitenancy-decisions.html#writer-driven-transport-direction">writer-driven decision</a>. Privilege checks
 remain specific to the selected catalogue and operation.</p>
 <table>
 <thead>
@@ -6422,13 +6528,13 @@ remain specific to the selected catalogue and operation.</p>
 </tr>
 <tr>
 <td>Realtime</td>
-<td>Completed evaluator output; bounded raw mutation tail; current configuration and admitted authority</td>
-<td>Delivery receipts and live cursor/connection state, without a second raw clinical projection</td>
+<td>Completed evaluator output, current configuration and authority</td>
+<td>Authorized frame and storage-event delivery, including live connection state</td>
 </tr>
 <tr>
 <td>Evaluator / notification component</td>
-<td>Accepted streamed clinical state; consistent source recovery when required; current configuration and suppression</td>
-<td>Input/observed work and completed result/checkpoint/next due; independent raw tail; notification producer state, requests and attempts</td>
+<td>Pending work, bounded clinical rows, settings and suppression</td>
+<td>Completed result, next due time, notification requests and attempts</td>
 </tr>
 <tr>
 <td>Logical REST/API — owner/authority modules</td>
@@ -6437,13 +6543,13 @@ remain specific to the selected catalogue and operation.</p>
 </tr>
 <tr>
 <td>Private operator lifecycle worker</td>
-<td>Current authority, durable operations and pinned participant identities</td>
-<td>Lifecycle windows, claims and audit; controlled clinical restore and forward history</td>
+<td>Current authority, tenant activity and restore generation</td>
+<td>Suspension, controlled clinical replacement, audit and forward history correction</td>
 </tr>
 </tbody>
 </table>
 <h3 id="lifecycle-control-boundary">Lifecycle control boundary<a class="headerlink" href="#lifecycle-control-boundary" title="Permanent link">&para;</a></h3>
-<p><strong>Read-derived control diagram.</strong> The participant group means every declared
+<p><strong>Read-derived November 7 control diagram.</strong> The participant group in this historical reference means every declared
 instance, including replicas. A load-balanced endpoint reaching just one instance
 cannot replace this control boundary. Controller orchestration belongs to the
 private operator worker; the receiving instances host participation hooks, not
@@ -6953,7 +7059,7 @@ full membership availability and operator recovery remain distinct from running
 B continuity. Realtime aggregate readiness remains strict while additive live
 and per-tenant fields describe partial tenant availability. The exact startup,
 health and fixed-cohort boundaries live in the <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/docs/tenant-operation-cohort.md#L74">application cohort guide</a>.
-The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold measurement</a>
+The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold measurement</a>
 adds the packaged ordinary-restore/UI/B-continuity scope. HA, multihost
 membership, capacity and whole M6 retain separate admission criteria. The
 <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">current acceptance family</a>

@@ -2066,10 +2066,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -2572,6 +2568,8 @@
       
         
       
+        
+      
     
     
     
@@ -2725,6 +2723,34 @@
     
   
     Batch A PgBouncer foundation continuation — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../capacity-driver-config-2026-11-17.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configurable load-driver measurement — 2026-11-17
   
 
     
@@ -3986,7 +4012,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_35" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_36" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -4008,14 +4034,14 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_7_18_35" id="__nav_7_18_35_label" tabindex="0">
+              <label class="md-nav__link md-nav__link--active" for="__nav_7_18_36" id="__nav_7_18_36_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_35_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_35">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_36_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_36">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -12425,12 +12451,12 @@ commit, <code>deploy/multitenant</code> replaced by the deploy commit's <code>bi
 <code>.overlay.json</code> written by hand because <code>SOURCE.md</code> names 0392acf9), <code>prepare.js</code> + <code>build.js</code>;
 both labels (<code>org.opencontainers.image.revision</code>, <code>org.nightscout.deploy.revision</code>) checked by
 <code>build.js --check-image</code> and by <code>cap.sh</code> at every deploy. Image 1 was built by
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/capacity/build.sh"><code>build.sh</code></a> (git archive of both commits).</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/capacity/build.sh"><code>build.sh</code></a> (git archive of both commits).</p>
 <p>Host: 16 threads, 62 GiB, shared with peer sessions' containers (listed per run in
 <code>host-deploy.txt</code> counts). PostgreSQL <code>max_connections</code> 100, <code>superuser_reserved_connections</code> 3
 (measured from the running stack).</p>
 <h2 id="harness">Harness<a class="headerlink" href="#harness" title="Permanent link">&para;</a></h2>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/mt-bench/capacity"><code>tools/mt-bench/capacity/</code></a>: <code>campaign.sh</code> (quiet-host wait,
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/mt-bench/capacity"><code>tools/mt-bench/capacity/</code></a>: <code>campaign.sh</code> (quiet-host wait,
 then per run: deploy, idle, real cadence + sockets + probe writes, full four-role restart, oracle,
 summary, teardown), <code>cap.sh</code> (the steps), <code>probe.js</code> (sockets, probe writes, restart measurements),
 <code>startup.js</code>, <code>summarize.js</code> (one <code>summary.json</code> per run), <code>aggregate.js</code> (tables), <code>k6/workload.js</code>.

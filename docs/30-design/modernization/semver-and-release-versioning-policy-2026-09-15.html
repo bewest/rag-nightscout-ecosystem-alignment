@@ -3474,6 +3474,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -6054,19 +6062,15 @@
 
 
 <h1 id="semver-and-release-versioning-policy--cgm-remote-monitor-and-nightscout-connect">Semver and release versioning policy — cgm-remote-monitor and nightscout-connect<a class="headerlink" href="#semver-and-release-versioning-policy--cgm-remote-monitor-and-nightscout-connect" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
+<p><em>Living document, last changed 2026-11-24 at <code>3cb41d6bb</code>.</em></p>
 <p><em>Contributor- and maintainer-facing. Full technical depth is intended. Operator-facing text
 derived from this document has its own rules — §5.6.</em></p>
 <p><strong>Status: living document.</strong> Three parts with different standing:</p>
 <ul>
-<li><strong>The release train (§8.3) is adopted.</strong> Maintainer, 2026-09-15: 15.0.9, then cut 1
-  (<code>chore/retire-jsdom</code>) alone, then cut 2, then cuts 3+5 combined, with cut 4 last. Maintainer,
-  2026-09-23: there is no separate deprecation release (queue <code>RT-4</code>; the legacy-ingestion notice
-  is in 15.0.9's release notes), the legacy Dexcom and MiniMed bridge removal moves from cut 4
-  onto cut 1 (<code>RT-1</code>), and BF-61's hard stop at boot is intended (<code>RT-5</code>). Still open: whether the
-  cuts ship as separate releases or as one combined release
-  (<a href="../../../releases/cgm-remote-monitor-15.0.9/decisions.html">15.0.9 decisions</a>), and register <strong>BF-64</strong> (cut 4
-  is an ancestor of cut 5), which bears on how step 4 is built.</li>
+<li><strong>The modernization train is merged into the 16.0.0 candidate.</strong> The September
+  decisions and cut-by-cut rationale are retained in <a href="#83-the-release-train">§8.3</a>.
+  The <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">16.0.0 release contents</a>
+  identify the assembled candidate and its remaining release work.</li>
 <li><strong>15.0.9's number is decided: <code>15.0.9</code></strong> (maintainer, 2026-09-22, queue <code>RT-VERSION</code>). On
   2026-09-24 the maintainer decided that reads tolerate the <code>count</code> shapes oref0 and GluPredKit
   send, so that 15.0.9 stays a patch under §3.2's test (<code>RT-COUNT-COMPAT</code>, merged as #8761). §8.1
@@ -6088,7 +6092,7 @@ is 498 commits and 82 first-parent merges.</p>
 (where the two disagree, this document is the later position);
 <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html">15.0.9 contents</a>;
 <a href="../remedial/nightscout-backfix-register.html">backfix register</a> (defect facts);
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> (item state);
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> (item state);
 <a href="../tenancy/multitenancy-decisions.html#1-decisions">execution plan §1</a>
 (decisions D1–D17, cited here by number).</p>
 <hr />
@@ -7683,7 +7687,7 @@ from the queue's <code>semver</code> fields where one exists:</p>
 <code>releases/cgm-remote-monitor-15.0.9/release-notes.md</code>): the refusals are corrections of behaviour
 that was never intended, not new features, and they are listed under "Corrections: requests
 answered differently".</p>
-<p><strong><code>15.0.9</code> has never been tagged</strong> (<code>git tag -l</code> stops at <code>15.0.8</code>), and dev Docker builds are
+<p><strong>At the September checkpoint, <code>15.0.9</code> had yet to be tagged</strong> (<code>git tag -l</code> stops at <code>15.0.8</code>), and dev Docker builds are
 tagged <code>dev_&lt;sha&gt;</code> and <code>latest_dev</code>, not by version. <strong>But the running application reports its
 package.json version</strong> (<code>lib/server/env.js:137</code>, <code>lib/api/status.js:32</code>), so dev-channel
 deployments already answer <code>/api/v1/status</code> with <code>15.0.9</code>; the draft release notes say that a
@@ -7845,6 +7849,11 @@ candidate, after the BF-142 fix merges.</p>
 </tbody>
 </table>
 <h3 id="83-the-release-train">8.3 The release train<a class="headerlink" href="#83-the-release-train" title="Permanent link">&para;</a></h3>
+<p><strong>Outcome, read from <code>official/dev</code> on 2026-11-24.</strong> #8828, #8837, #8844
+and #8605 merged the modernization work into the single-tenant 16.0.0
+candidate. The cut numbers, open questions and rebase counts below describe
+the September sequencing decision. For the closing build and tag decision,
+see the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release record</a>.</p>
 <p><strong>Adopted by the maintainer, 2026-09-15, and amended by the maintainer on 2026-09-23.</strong> The order
 is the decision; the cut numbers are this policy's proposal for separate releases.</p>
 <table>

@@ -1018,6 +1018,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor 16.0.0 — contents
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="contents.html" class="md-nav__link md-nav__link--active">
         
   
@@ -1034,6 +1052,53 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#closing-candidate-2026-11-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Closing candidate, 2026-11-24
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Closing candidate, 2026-11-24">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#november-3-candidate-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        November 3 candidate history
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2172,6 +2237,42 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#closing-candidate-2026-11-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Closing candidate, 2026-11-24
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Closing candidate, 2026-11-24">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#november-3-candidate-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        November 3 candidate history
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2188,17 +2289,52 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
-<p><strong>Current update, 2026-11-03:</strong> <code>official/dev</code> <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>
-is the current 16.0.0 release candidate. Release preparation is <strong>in progress</strong>,
-not blocked; the candidate is not tagged or released. Informal cohort/real-rig
-testing is underway, with over 24-48 hours reported by the maintainer, not yet a
-version-pinned acceptance record. Master protection no longer requires the absent 4.4 check; its two
-remaining required lanes are green and review/staging continues. #8829's reporter
-reports persistence on dev, but neither maintainer reproduced it and many DIY
-and production/service environments work. The maintainer dispositions #8829
-<strong>nonblocking</strong> for v16; diagnosis remains follow-up. #8855 now has green checks; new report proposal</p>
-<h1 id="8897-has-no-checks-returned-bf-72bf-161-remain-private-pre-tag-work">8897 has no checks returned. BF-72/BF-161 remain private pre-tag work.<a class="headerlink" href="#8897-has-no-checks-returned-bf-72bf-161-remain-private-pre-tag-work" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-11-24 at <code>724a36d6f</code>.</em></p>
+<h2 id="closing-candidate-2026-11-24">Closing candidate, 2026-11-24<a class="headerlink" href="#closing-candidate-2026-11-24" title="Permanent link">&para;</a></h2>
+<p>The single-tenant 16.0.0 candidate is <code>official/dev</code> at
+<code>79144cbd006e1137bd776ffd56560debdf880e81</code>. Operators on the latest
+published release are on <strong>v15.0.9</strong>. GitHub returned no tag matching
+<code>v16.0.0</code> or <code>16.0.0</code>. <a href="https://github.com/nightscout/cgm-remote-monitor/releases/tag/v15.0.9">Published release</a> · <a href="https://github.com/nightscout/cgm-remote-monitor/compare/c6a0d8ed...79144cbd006e1137bd776ffd56560debdf880e81">Candidate diff</a></p>
+<table>
+<thead>
+<tr>
+<th>Evidence</th>
+<th>Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Merged since the November 3 candidate (read-derived)</td>
+<td><a href="https://github.com/nightscout/cgm-remote-monitor/pull/8907">#8907</a> is the only first-parent change after <code>4a482627</code>. Merged November 17 at 13:53:21 UTC from <code>bfe46155b</code>. Modern becomes the default for an unconfigured site and browser. The reports gain chart controls and corrections to historical calculations and calibration displays. See the <a href="release-notes.html#dashboard-and-reports">operator notes</a>.</td>
+</tr>
+<tr>
+<td>Staging and checks (read-derived)</td>
+<td><a href="https://github.com/nightscout/cgm-remote-monitor/pull/8824">#8824</a> is open from <code>dev</code> to <code>master</code> at the candidate SHA. GitHub reports <code>BLOCKED</code> and <code>REVIEW_REQUIRED</code>. Master requires one approval and the passing MongoDB 6 lanes on Node 22 and 24. The recorded policy decision to require the aggregate <em>Tests pass</em> check still differs from that setting. <a href="https://github.com/nightscout/cgm-remote-monitor/actions/runs/44097248801">Push CI</a>, <a href="https://github.com/nightscout/cgm-remote-monitor/actions/runs/44097262198">PR CI</a> and CodeQL on both events passed. The dev image publish succeeded. Release-image publication was skipped.</td>
+</tr>
+<tr>
+<td>Pre-tag acceptance (reproduced queue verdicts)</td>
+<td><code>make queue-status ID="RT-16-RELEASE RT-16-LIVE-ALARMS RT-16-RIG-SOAK BFQ-72 BFQ-161"</code> reports UNMEASURED for release, live alarms and real-rig soak, and FAIL for the two private-fix items (BFQ-72 static check and BFQ-161 ancestry check). The maintainer still needs the private fixes and combined-tree validation, live Pushover delivery/acknowledgement/cancellation and APNs phone delivery, and build-pinned cohort, upgrade and rollback outcomes over the final quiet period. The November informal soak report belongs to the builds actually run. <a href="testing-notes.html">Cohort evidence guide</a></td>
+</tr>
+<tr>
+<td>Scope still under review (read-derived)</td>
+<td>BF-246 is approved for 16.0.0 and fixed on its branch at <code>f97df2c1c</code>. That commit is outside <code>79144cbd0</code>. Controller registration (#8857), the nonresident profile (#8891), iOS background pushes (#8810), translations (#8855) and the week-to-week report (#8897) remain open PRs. Other open changes to AAPS meal uploads (#8902), reports (#8910), API status (#8911), expired tokens (#8914) and chart navigation (#8916) also require review and a merge to enter the candidate. #8829 remains open and nonblocking by maintainer decision.</td>
+</tr>
+<tr>
+<td>Known history-read issue (BF-248)</td>
+<td><strong>Reproduced</strong> on the closing dev ref and on v15.0.9. An incremental reader can miss records at a page boundary. The register tracks the open repair and the queue carries the failing measurement. <a href="../../docs/30-design/remedial/nightscout-backfix-register.html">Backfix register</a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Measurement sources.</strong> In the official product checkout, use
+<code>git log --first-parent 4a482627..79144cbd0</code> for the increment and
+<code>git merge-base --is-ancestor f97df2c1c 79144cbd0</code> for BF-246 (exit 1).
+GitHub reads used <code>gh pr view</code>, <code>gh run list --commit</code>, and the
+<code>releases/latest</code>, tag matching-refs and master branch-protection endpoints.
+The <a href="../../site/pages/cgm-remote-monitor-16.0.0-write-compatibility.html">compatibility matrix</a>
+compares <code>v15.0.9</code> with <code>497d08c9</code>. Final acceptance requires results on the
+eventual integrated tree and a maintainer decision to stage and tag it.</p>
+<p>Local lane handoff: <code>/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-release-16-closing.md</code>.</p>
+<h3 id="november-3-candidate-history">November 3 candidate history<a class="headerlink" href="#november-3-candidate-history" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -2210,7 +2346,7 @@ and production/service environments work. The maintainer dispositions #8829
 <tbody>
 <tr>
 <td>2026-11-03</td>
-<td><code>official/dev</code> <code>61eb37335954ae42c91345a0823bd67331025165</code> is the current release candidate; release preparation is in progress. No tag or release is published.</td>
+<td><code>official/dev</code> <code>61eb37335954ae42c91345a0823bd67331025165</code> was the candidate before #8899 merged. Release preparation was in progress.</td>
 <td>Candidate anchor read from refreshed <code>official/dev</code>. Existing acceptance record has green integrated CI/CodeQL on this head; private security integration and final-tree checks, live alert checks, pinned cohort/rig/rollback evidence, and staging/review remain pending. No release-level test or cohort result is asserted here.</td>
 </tr>
 <tr>
@@ -2232,7 +2368,7 @@ Historical status/measurement sections below retain their dates.</p>
 records current CI/staging blockers, candidate PR dispositions, issue follow-up
 and isolated fix preparation. Historical measurements below keep their original
 commit labels; this follow-up does not declare a named RC.</p>
-<p><strong>Current acceptance roadmap (2026-11-01):</strong> scheduled backend storage/identity
+<p><strong>Historical acceptance roadmap (2026-11-01):</strong> scheduled backend storage/identity
 integration, dependency modernization and the opt-in modern theme are merged;
 do not read historical in-flight tables below as the current merge queue.
 The <a href="../../docs/10-domain/nightscout-rc-readiness-2026-11-01.html#current-test-totals-and-release-scope">current scope and hosted test totals</a>
@@ -2302,11 +2438,19 @@ a formal named-RC announcement is not yet issued.</p>
 <td><code>c6a0d8ed</code> = <code>v15.0.9</code> (released 2026-10-21)</td>
 </tr>
 <tr>
-<td><code>dev</code> head</td>
+<td>Candidate head</td>
+<td><code>79144cbd006e1137bd776ffd56560debdf880e81</code> (#8907). See <a href="#closing-candidate-2026-11-24">closing candidate</a> for staging and checks.</td>
+</tr>
+<tr>
+<td>Size of <code>c6a0d8ed..79144cbd0</code> (reproduced)</td>
+<td>1,200 commits (714 non-merge), 72 first-parent commits (71 merges), 1,052 files changed, +174,505/−20,308. Measured with <code>git rev-list --count</code> (also <code>--no-merges</code>, <code>--first-parent</code>, and <code>--first-parent --merges</code>) and <code>git diff --shortstat</code> between the two pinned commits.</td>
+</tr>
+<tr>
+<td><code>dev</code> head on 2026-11-01</td>
 <td><code>61eb37335954ae42c91345a0823bd67331025165</code> (#8896, 2026-11-01 17:52:18Z), after #8895 <code>bb85d10f</code> (17:45:01Z) and #8894 <code>497d08c9</code> (16:28:25Z). Earlier measured history remains in the dated rows below.</td>
 </tr>
 <tr>
-<td>CI on current <code>dev</code></td>
+<td>CI on the November 1 head</td>
 <td>Both CI runs 41333672054 / 41333677576 and CodeQL runs 41333672065 / 41333677478 passed on <code>61eb3733</code>. The push run published amd64/arm64 development images to <code>dev_61eb37335954ae42c91345a0823bd67331025165</code> and <code>latest_dev</code>; release-image publication was skipped. No named RC or live acceptance is implied.</td>
 </tr>
 <tr>
@@ -3228,7 +3372,7 @@ marked <em>owed</em> has a candidate change whose classification is not recorded
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> S2 plugin interface, boot sequence or client bundle: cut 2 (#8837) splits the client into page
   bundles and replaces the boot sequence and the client event bus with native code (a third-party
   plugin that hooks into the page is to be tested before upgrading; no plugin was run against it);
-  #8849 makes boot wait for its indexes; #8831 adds an opt-in theme</li>
+  #8849 makes boot wait for its indexes. #8831 introduced Modern as an opt-in theme and #8907 made it the default.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> S3 environment-variable surface: new <code>THEME=modern</code> (#8831), <code>WRITE_VALIDATION</code> (#8841),
   <code>API3_SETTINGS_STRICT_READ_ENABLED</code> (#8845) and <code>SHOW_SECONDS</code> (#8555); a start-up warning when
   <code>SECURE_HSTS_HEADER_INCLUDE_SUBDOMAINS</code> is set (BF-49); leftover legacy bridge settings stop the site
@@ -3268,8 +3412,10 @@ through the entry bar and in priority order. An item joins the merge list when i
 (0 cells, or named cells), its red controls and ablations pass, a revert has been rehearsed, and it has had time
 on <code>dev</code> with its cohort check (entry bar, 2026-10-29). An item that misses the bar at the tag rolls to 16.1.0,
 or to 17.0.0 if it changes a default. The identity work is the core: it is the substance of the agreement with
-the Loop maintainers. Multitenant items may ship dormant, labelled alpha behind <code>serve</code>, or not ship. The tag
-is gated by the bar and the pre-tag items, not by a date.</p>
+the Loop maintainers. The closing candidate is single-tenant. The maintainer sets the tag date after
+the entry and pre-tag checks.</p>
+<p><strong>Update, 2026-11-22, BF-246 candidate fix</strong> (maintainer approval 2026-11-22: file, queue for 16.0.0, fix): the data loader's <code>mergeProcessSort</code> is quadratic in the records it holds (<a href="../../docs/30-design/remedial/nightscout-backfix-register.html">register</a>, queue <code>BFQ-246</code>). Local branch <code>claude/bf-246-dataloader-merge-linear</code> <code>f97df2c1c</code> on <code>official/dev</code> <code>79144cbd0</code>, not pushed: a set of ids where every id is a string, the loop otherwise; no operator-visible change besides CPU. Suites on <code>f97df2c1c</code> (Node 22.23.4, disposable MongoDB 8.0.34 container with a raised open-file limit): <code>npm run test:affected</code> 3,133 passing / 3 pending / 0 failing; <code>npm test</code> 6,369 passing / 3 pending / 0 failing; ESLint on the changed files clean; <code>prcheck.sh</code> OK (already contains <code>official/dev</code> <code>79144cbd0</code>).</p>
+<p>The following dated handoffs retain their original merge order and findings. The <a href="#closing-candidate-2026-11-24">closing candidate</a> records current placement.</p>
 <p><strong>Handoff, 2026-10-31 (read with <code>git ls-remote</code> and <code>gh pr list</code> at about 03:00Z; plan owner session -49).</strong>
 <code>dev</code> is <code>368e6c23</code> (#8874 merged 2026-10-31 02:02Z). Merge order on <code>dev</code> from here: #8883, then #8879 once
 slice 4 is rebuilt on it, then the unique-index PR. The cohort window (one window over #8874 and the identity work)
@@ -3979,6 +4125,10 @@ alarm transports (Pushover native client, notification caches, APNs 8) need a li
 which this programme cannot do without real credentials; #8843 (CI diagonal) and each cut change
 <code>.github/workflows/main.yml</code>; #8843 landed first and each cut took its jobs.</p>
 <h2 id="known-defects-on-dev-now">Known defects on <code>dev</code> now<a class="headerlink" href="#known-defects-on-dev-now" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../docs/30-design/remedial/nightscout-backfix-register.html">backfix register</a>
+tracks current exposure and fix status. The table below records observations on
+the October trees. Read-derived correction for the closing candidate: the BF-215
+and BF-216 fixes merged in #8879 at <code>164e6ae8</code>.</p>
 <table>
 <thead>
 <tr>
@@ -4003,7 +4153,7 @@ which this programme cannot do without real credentials; #8843 (CI diagonal) and
 </tr>
 <tr>
 <td>BF-215, BF-216: identifier format</td>
-<td><strong>on <code>dev</code> now; fixes in #8879</strong> (ID-FIRST-MATCH slice 2, not merged). BF-215: a numeric <code>identifier</code>; BF-216: a placeholder <code>identifier</code> shared by two apps</td>
+<td><strong>Observed on October dev</strong> before #8879 merged (ID-FIRST-MATCH slice 2). BF-215: a numeric <code>identifier</code>; BF-216: a placeholder <code>identifier</code> shared by two apps</td>
 <td>BF-216 is dosing-relevant data loss, narrow</td>
 <td><code>ID-FIRST-MATCH</code></td>
 </tr>
@@ -4121,7 +4271,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
@@ -4292,8 +4442,8 @@ testers (<a href="testing-notes.html">testing-notes.md</a>), the tag message and
 from the list below), a full run on the candidate in the integration record, the verification record
 capture, the reconciliation in <a href="../index.html">releases/README.md</a>.</p>
 <h2 id="for-the-release-notes">For the release notes<a class="headerlink" href="#for-the-release-notes" title="Permanent link">&para;</a></h2>
-<p>A draft list of what the release notes must say; the notes themselves are written last, once the
-candidate is named.</p>
+<p>The <a href="release-notes.html">draft operator notes</a> cover the closing candidate. The following list retains
+the earlier rationale and caveats for final changelog reconciliation.</p>
 <ul>
 <li>(#8865, if merged) Nightscout stops cleanly on SIGTERM and SIGINT on every start path: it closes
   its connections and exits 0, or exits 1 if it is still open after 8 s. In the Docker image,
@@ -4332,7 +4482,9 @@ candidate is named.</p>
 <li>Docker Compose starts <code>mongo:6.0.27</code> instead of <code>mongo:5.0.32</code> (cut 3): for an existing Compose
   deployment this is a database major-version upgrade (<code>docs/runtime-upgrade.md</code>).</li>
 <li>Express 5 and Helmet 8 (cut 5), and the query-string array limit (above, open item 8).</li>
-<li>The opt-in <code>THEME=modern</code> dashboard (#8831) and the opt-in <code>SHOW_SECONDS</code> clock (#8555).</li>
+<li>
+<h1 id="8831-introduced-the-modern-dashboard-and-8907-made-it-the-default-where-no-theme-is-set">8831 introduced the Modern dashboard and #8907 made it the default where no theme is set.<a class="headerlink" href="#8831-introduced-the-modern-dashboard-and-8907-made-it-the-default-where-no-theme-is-set" title="Permanent link">&para;</a></h1>
+  Existing configured themes and saved browser choices take precedence. The <code>SHOW_SECONDS</code> clock (#8555) is opt-in.</li>
 <li>The opt-in <code>WRITE_VALIDATION</code> for Temporary Targets (#8841), what <code>log</code> and <code>reject</code> do, that most
   uploaders lose a refused record without showing an error, and that an unrecognised value means <code>off</code>.</li>
 <li>

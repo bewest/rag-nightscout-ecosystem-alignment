@@ -27,7 +27,7 @@
     
     
       
-        <title>Roadmap for cgm-remote-monitor: what comes next, and in what order - Nightscout ecosystem alignment</title>
+        <title>Roadmap for cgm-remote-monitor - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" class="md-skip">
+        <a href="#roadmap-for-cgm-remote-monitor" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Roadmap for cgm-remote-monitor: what comes next, and in what order
+              Roadmap for cgm-remote-monitor
             
           </span>
         </div>
@@ -984,7 +984,7 @@
   <span class="md-ellipsis">
     
   
-    Reviewer onboarding — read this first
+    Reviewing the cgm-remote-monitor programme
   
 
     
@@ -1077,7 +1077,7 @@
   <span class="md-ellipsis">
     
   
-    Roadmap for cgm-remote-monitor: what comes next, and in what order
+    Roadmap for cgm-remote-monitor
   
 
     
@@ -1095,7 +1095,7 @@
   <span class="md-ellipsis">
     
   
-    Roadmap for cgm-remote-monitor: what comes next, and in what order
+    Roadmap for cgm-remote-monitor
   
 
     
@@ -1121,10 +1121,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-1600-the-development-cycle-after-1509" class="md-nav__link">
+  <a href="#1-close-the-single-tenant-1600-candidate" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 16.0.0: the development cycle after 15.0.9
+        1. Close the single-tenant 16.0.0 candidate
       
     </span>
   </a>
@@ -1176,10 +1176,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-what-bounds-all-of-it" class="md-nav__link">
+  <a href="#6-review-and-decisions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. What bounds all of it
+        6. Review and decisions
       
     </span>
   </a>
@@ -1209,7 +1209,7 @@
   <span class="md-ellipsis">
     
   
-    Work waiting on a person: what to push, decide or review
+    Work waiting on a person
   
 
     
@@ -2331,10 +2331,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-1600-the-development-cycle-after-1509" class="md-nav__link">
+  <a href="#1-close-the-single-tenant-1600-candidate" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 16.0.0: the development cycle after 15.0.9
+        1. Close the single-tenant 16.0.0 candidate
       
     </span>
   </a>
@@ -2386,10 +2386,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-what-bounds-all-of-it" class="md-nav__link">
+  <a href="#6-review-and-decisions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. What bounds all of it
+        6. Review and decisions
       
     </span>
   </a>
@@ -2413,99 +2413,21 @@
 
 
 
-<h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-19 at <code>ccfdb355d</code>.</em></p>
-<p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
-status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
-Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
-2026-10-25 against cgm-remote-monitor <code>official/master</code> <code>c6a0d8ed</code> (tags <code>v15.0.9</code>, <code>15.0.9</code>) and
-<code>official/dev</code> <code>eb72a1d3</code> (16.0.0, cut 1 merged as #8828); §3 prose 2026-11-10; other prose dated 2026-10-08 against <code>dev</code> <code>fade2299</code> and <code>master</code>
-<code>92d08342</code> (tag <code>15.0.8</code>). The two order tables are generated from <code>queue/work-queue.yaml</code>, and
-<code>make views-check</code> fails when they drift.</em></p>
-<p>This page gives the order of the work ahead. It records no decisions itself. The decisions
-live in these places, and this page links to them:</p>
-<table>
-<thead>
-<tr>
-<th>what</th>
-<th>where it is decided</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>the release train and each release's number</td>
-<td><a href="../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.html#83-the-release-train">versioning policy §8.3</a></td>
-</tr>
-<tr>
-<td>tenancy decisions D1–D23</td>
-<td><a href="../30-design/tenancy/multitenancy-decisions.html">tenancy decisions reference</a></td>
-</tr>
-<tr>
-<td>defect facts, and what ships to operators today</td>
-<td><a href="../30-design/remedial/nightscout-backfix-register.html">backfix register</a></td>
-</tr>
-<tr>
-<td>each item's state, gate and blockers</td>
-<td><code>queue/work-queue.yaml</code>; <code>make queue-status</code> measures it</td>
-</tr>
-</tbody>
-</table>
-<p>For where things stand, see <a href="PROGRAMME-STATUS.html">PROGRAMME-STATUS</a>. For which decisions are
-waiting on a person, see <a href="NEEDS-A-HUMAN.html">NEEDS-A-HUMAN</a>. For how this work fits with the
-shared schemas, identity, research commons and new interfaces across the ecosystem, see
-<a href="ECOSYSTEM-PROGRAMME.html">ECOSYSTEM-PROGRAMME</a>. For who would do the work nobody is paid for, see the
-<a href="SPONSORED-TEAM-PROPOSAL.html">sponsored-team proposal</a>; for the rules the ecosystem's parties would
-work together under, and the dated work other organisations' calendars will bring, see
-<a href="COLLABORATION-MODEL.html">COLLABORATION-MODEL</a>.</p>
-<p><strong>How to read the order tables.</strong> An item's <em>wave</em> comes from the blockers it is still waiting
-on. An item waiting on nothing that is still open is wave 1. Any other item is one wave later
-than its latest-wave open blocker. Items that are merged, done, closed or answered are left out.
-A wave shows dependency, not a date. The states shown are claims about what the gates will say,
-not measurements.</p>
-<hr />
-<h2 id="1-1600-the-development-cycle-after-1509">1. 16.0.0: the development cycle after 15.0.9<a class="headerlink" href="#1-1600-the-development-cycle-after-1509" title="Permanent link">&para;</a></h2>
-<p><a id="1-1509-is-released-the-next-development-cycle"></a></p>
-<p><strong>16.0.0 is the next release</strong> (maintainer, 2026-10-21; <code>RT-VERSION</code>), and <strong>cut 1 is on <code>dev</code></strong>:
-AndyLow91 merged #8828 on 2026-10-25 at 16:29:06Z as <code>dev</code> <code>eb72a1d3</code> (head <code>12154df9</code>), after ten other
-PRs the same day. <code>dev</code> declares 16.0.0 and <code>engines.node</code> <code>^22.23.4 || ^24.22.1 || &gt;=26.12.1</code>
-(AndyLow91's <code>6a146a4c</code>, "require Node Brotli security patches", which supersedes the decided
-<code>^22.12 || &gt;=24</code>). The release record is open:
-<strong><a href="../../releases/cgm-remote-monitor-16.0.0/contents.html">releases/cgm-remote-monitor-16.0.0</a></strong>, with its
-<a href="../../releases/cgm-remote-monitor-16.0.0/decisions.html">decisions</a>, the open items a releaser must settle
-and the suggested order of the next merges, and the
-<a href="../30-design/remedial/rc-16.0.0-integration-record.html">16.0.0 integration record</a> for the runs.</p>
-<p><strong>Priorities for the next cycle</strong> (maintainer, 2026-10-21): (1) modernization, cut 1 first
-(<code>RT-REBASE</code>, <code>RT-1</code>); (2) backfixes that affect dosing or security; (3) other exposure fixes, only
-where no cut or modernization branch already covers them.</p>
-<p>What is left, as it stands on 2026-10-26, 19:10Z (<code>dev</code> <code>47723cda</code>, <code>master</code> <code>c6a0d8ed</code>):</p>
+<h1 id="roadmap-for-cgm-remote-monitor">Roadmap for cgm-remote-monitor<a class="headerlink" href="#roadmap-for-cgm-remote-monitor" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-11-24 at <code>620e5ab2b</code>.</em></p>
+<p><em>Contributor guide, updated 2026-11-24. Use this page for work order,
+<a href="PROGRAMME-STATUS.html">programme status</a> for the current state and
+<a href="NEEDS-A-HUMAN.html">review routing</a> for decisions.</em></p>
+<p><a id="1-1509-is-released-the-next-development-cycle"></a>
+<a id="1-1600-the-development-cycle-after-1509"></a></p>
+<h2 id="1-close-the-single-tenant-1600-candidate">1. Close the single-tenant 16.0.0 candidate<a class="headerlink" href="#1-close-the-single-tenant-1600-candidate" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>Merged to <code>dev</code>, none released:</strong> 34 PRs on 2026-10-25 and 2026-10-26, among them all five
-   modernization cuts (cut 1 #8828, cut 2 #8837, cut 3 #8844, cut 4 #8847, cut 5 #8605), the CI
-   diagonal (#8843), the alarm fixes (#8842), record identity (#8845), opt-in <code>WRITE_VALIDATION</code>
-   (#8841) and boot resilience (#8849). 857 commits and 35 first-parent commits ahead of <code>master</code>. CI
-   on <code>47723cda</code> passed and published the <code>dev</code> Docker image. The list, with each PR's register and
-   queue ids, is in <a href="../../releases/cgm-remote-monitor-16.0.0/contents.html#what-is-merged-so-far">16.0.0 contents</a>.</li>
-<li><strong>The staging PR #8824</strong> (<code>dev</code> → <code>master</code>) is open at <code>47723cda</code>, mergeable, review required, and
-   blocked by <code>master</code>'s required check <code>Run Tests (22, 4.4)</code>, which no <code>dev</code> workflow emits.</li>
-<li><strong>In flight.</strong> Draft #8854 (AndyLow91: a shared write step and stored-data contracts, on <code>dev</code>
-   <code>47723cda</code>). BF-72 and BF-161 are in the private forks of their draft advisories, no fork PR opened
-   yet, each owing a merge of <code>dev</code> (<code>BFQ-72</code>, <code>BFQ-161</code>); BF-191 goes through the maintainer's
-   advisory process.</li>
-<li><strong>Not started:</strong> <code>ID-SIMPLE-MATCH</code>, <code>RT-JSDOM-REST</code> and <code>RT-BUNDLE-THEME-SPLIT</code>.</li>
-<li><strong>Open decisions and settings</strong> are listed with their owners in
-   <a href="../../releases/cgm-remote-monitor-16.0.0/contents.html#open-items-a-releaser-must-settle">16.0.0 contents</a>,
-   with the maintainer's branch-protection changes and the live alarm-delivery checks owed before the
-   tag.</li>
-<li>The version class of #8772, #8775 and #8780 stays recorded as open in
-   <a href="../../releases/cgm-remote-monitor-15.0.9/decisions.html">15.0.9 decisions</a>.</li>
+<li>Identify the exact <code>official/dev</code> commit and image under test in the <a href="../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>. The <a href="../../releases/cgm-remote-monitor-16.0.0/decisions.html">release decisions</a> define its scope.</li>
+<li>Record the final-tree checks and the remaining live alarm, rig/cohort and rollback observations against that build. The <a href="../../releases/cgm-remote-monitor-16.0.0/testing-notes.html">testing notes</a> give the evidence to capture. The <a href="../30-design/remedial/rc-16.0.0-integration-record.html">integration record</a> identifies the builds covered by earlier runs.</li>
+<li>Complete the private pre-tag work through the maintainer, repeat affected checks on the resulting tree, and complete staging and release review. Record the tag and verification at publication.</li>
 </ol>
-<p><strong>15.0.9, for the record.</strong> Released on 2026-10-21 (queue <code>RT-0</code>, <code>released</code>): #8598 merged as <code>master</code>
-<code>c6a0d8ed</code> (tree <code>c53c2c7f</code>, <code>dev</code> <code>4bca2ac2</code>'s), GitHub release <code>v15.0.9</code> "Release 15.0.9 Cinnamon
-Muffin", tags <code>v15.0.9</code> and <code>15.0.9</code>, Docker <code>15.0.9</code> and <code>latest</code> published by <code>master</code> CI run
-39667944235 (attempt 2). Its records are in
-<a href="../../releases/cgm-remote-monitor-15.0.9/contents.html">releases/cgm-remote-monitor-15.0.9</a> and the
-<a href="../30-design/remedial/rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Open blockers of
-<code>RT-0</code>, generated:</p>
+<p>The prior train, <code>RT-0</code>, shipped as <a href="../../releases/cgm-remote-monitor-15.0.9/contents.html">15.0.9</a>.
+Its queue dependencies are retained here for readers following that release.</p>
 <!-- BEGIN GENERATED: release-waits -->
 
 <table>
@@ -2530,90 +2452,14 @@ Muffin", tags <code>v15.0.9</code> and <code>15.0.9</code>, Docker <code>15.0.9<
 </table>
 <!-- END GENERATED: release-waits -->
 
-<table>
-<thead>
-<tr>
-<th>for</th>
-<th>read</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>what 16.0.0 contains so far, what is in flight and what a releaser must settle</td>
-<td><a href="../../releases/cgm-remote-monitor-16.0.0/contents.html">16.0.0 contents.md</a></td>
-</tr>
-<tr>
-<td>the decisions that shape 16.0.0</td>
-<td><a href="../../releases/cgm-remote-monitor-16.0.0/decisions.html">16.0.0 decisions.md</a></td>
-</tr>
-<tr>
-<td>how 16.0.0 is being tested</td>
-<td><a href="../30-design/remedial/rc-16.0.0-integration-record.html">16.0.0 integration record</a></td>
-</tr>
-<tr>
-<td>what 15.0.9 contains and leaves broken</td>
-<td><a href="../../releases/cgm-remote-monitor-15.0.9/contents.html">15.0.9 contents.md</a></td>
-</tr>
-</tbody>
-</table>
 <h2 id="2-modernization-the-release-train">2. Modernization: the release train<a class="headerlink" href="#2-modernization-the-release-train" title="Permanent link">&para;</a></h2>
-<p>The adopted order (<a href="../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.html#83-the-release-train">§8.3</a>),
-as it stands on 2026-10-25:</p>
-<table>
-<thead>
-<tr>
-<th>step</th>
-<th>release</th>
-<th>contents</th>
-<th>state</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>15.0.9</td>
-<td><code>dev</code> as it stood at <code>4bca2ac2</code></td>
-<td>released 2026-10-21</td>
-</tr>
-<tr>
-<td>2</td>
-<td>16.0.0: cut 1, <code>chore/retire-jsdom</code>, PR #8828</td>
-<td>the real-browser test suite (option C), the Node floor <code>^22.23.4 \|\| ^24.22.1 \|\| &gt;=26.12.1</code>, removal of the legacy Dexcom and MiniMed bridges</td>
-<td>merged to <code>dev</code> 2026-10-25 (<code>eb72a1d3</code>); not released</td>
-</tr>
-<tr>
-<td>3</td>
-<td>cut 2, <code>chore/build-runtime-separation</code></td>
-<td>page bundles and the build/runtime split</td>
-<td>next: catch-up merge of <code>dev</code> <code>eb72a1d3</code> in progress; in 16.0.0 or its own release is open</td>
-</tr>
-<tr>
-<td>4</td>
-<td>cuts 3 + 5</td>
-<td>dependency majors, including the MongoDB driver and Express 5</td>
-<td>blocked on cut 2</td>
-</tr>
-<tr>
-<td>5</td>
-<td>cut 4, <code>chore/mime-exposure-review</code></td>
-<td>the remainder: trusted proxies, DOMPurify, Moment, MIME, webpack, ESLint</td>
-<td>blocked on cuts 3 + 5</td>
-</tr>
-</tbody>
-</table>
-<p>Two questions are open in §8.3:</p>
-<ul>
-<li>whether the cuts ship as separate releases or as one combined release, which now decides whether
-  cut 2 is in 16.0.0;</li>
-<li>BF-64: cut 4 is an ancestor of cut 5, so steps 4 and 5 cannot be separated as the branches stand.</li>
-</ul>
-<p><strong>Rebasing costs more with every merge to <code>dev</code>.</strong> Against <code>dev</code> <code>eb72a1d3</code> (<code>git rev-list
---left-right --count</code> and <code>git merge-tree --write-tree --name-only --no-messages</code>): cut 2 <code>b6e8c7cd</code> is
-459 behind and 159 ahead with 20 conflicting paths; cut 3 459 / 222, 25; cut 4 459 / 301, 43; cut 5
-<code>b1bdaca0</code> (#8605) 335 / 399, 42 (<code>RT-REBASE</code>). Cut 2's catch-up is under way, and it keeps cut 2's
-<code>queryLeaves</code> walker instead of the <code>traverse</code> package when it takes <code>dev</code>'s query rules (<code>948a142e</code>,
-2026-10-21). Cuts 2–5 still declare the old floors and take <code>dev</code>'s at their catch-up merges. The jsdom
-harness cut 1 keeps is retired later under scope B (<code>RT-JSDOM-REST</code>, decided 2026-10-21).</p>
+<p>The browser and runtime cut (#8828), the build/runtime split (#8837), the MongoDB
+cut (#8844) and the modernization merge (#8605) are ancestors of the 16.0.0 candidate.
+The <a href="../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.html#83-the-release-train">versioning policy</a>
+retains the rationale for their sequencing. The queue below includes follow-up
+work. The <code>RT-16-RELEASE</code> row identifies its declared pre-tag dependencies.</p>
+<p>A wave groups items by their outstanding dependencies. Wave 1 has no open
+predecessor. Higher waves follow their latest open predecessor.</p>
 <!-- BEGIN GENERATED: road-release-train -->
 
 <table>
@@ -2723,51 +2569,15 @@ harness cut 1 keeps is retired later under scope B (<code>RT-JSDOM-REST</code>, 
 <!-- END GENERATED: road-release-train -->
 
 <h2 id="3-multitenant">3. Multitenant<a class="headerlink" href="#3-multitenant" title="Permanent link">&para;</a></h2>
-<p>Self-hosted single-tenant Nightscout stays first-class permanently (D1, D4).
-Multitenant is an additional deployment target.</p>
-<p>The <a href="../30-design/tenancy/multitenant-delivery-roadmap.html">multitenant delivery roadmap</a>
-owns milestone acceptance criteria; the <a href="../30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">batching plan §5</a>
-owns the current completion sequence. Start with the
-<a href="../30-design/tenancy/index.html">tenancy reading guide</a>. Use the
-<a href="../30-design/tenancy/multitenant-delivery-dashboard.html">delivery dashboard</a> for bounded
-accepted evidence and remaining gates, and the
-<a href="../../site/pages/nightscout-next-gen-platform.html">next-generation platform map</a>
-for architecture dependencies and parallel lanes. The generated table below gives
-queue dependencies; <code>make queue-status</code> measures its claimed states. Release readiness
-is recorded separately in the
-<a href="../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>.</p>
-<p>The <a href="../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">published one-host reference</a>
-now includes cold Compose/UI/restore/client acceptance; native shared-role restart
-and the functional M5 runtime retain their exact source scope. This evidence can
-inform component and recovery decisions. M6 is split into M6a–M6d and M7
-(<a href="../30-design/tenancy/multitenancy-decisions.html#m6-split-and-queue-collapse">decision</a>):
-the M6a and M6b joined candidates have acceptance records on draft #8898
-(<a href="../../reports/tenancy/m6a-join-2026-11-09/index.html">M6a</a>,
-<a href="../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">M6b</a>), with
-no milestone promoted. Deployment trust (M6c) remains open. The selected M7 stream runtime has
-<a href="../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">source-scoped functional qualification</a>,
-including bounded clinical state and independent raw delivery. The
-<a href="../30-design/tenancy/evaluator-realtime-communication.html">current architecture</a>
-owns these mechanisms; the same operating report owns separately attributed
-capacity observations. Current tests may proceed independently of optional
-multihost/platform work under the <a href="../30-design/tenancy/production-critical-path.html">production sequencing</a>.
-The current priority is <a href="../30-design/tenancy/evaluator-realtime-communication.html#single-evaluator-efficiency-plan">single-evaluator efficiency</a>:
-complete exact incremental snapshot-to-stream handover and attribute remaining
-CPU, allocation, encoding, statistics and SQL cost in independently owned lanes.
-The plan owns their order and integration boundaries. Preserve the horizontal
-execution seam; additional workers follow measured need and qualification.
-The coalesced snapshot alternative remains unqualified and is not adopted by
-this priority. The operating owner then establishes useful workload/resource
-and recovery limits on the selected coherent source. Deployment trust and
-admission criteria retain their own acceptance gates. Performance
-experiments and source work can proceed concurrently without repinning entered
-runs. The generated table retains queue dependencies; each state remains a claim
-until its gate measures it. This documentation change promotes no milestone. Multi-host
-failover has no acceptance.
-Use the <a href="../30-design/tenancy/deployment-and-rig-testing.html">deployment models and fault domains</a>
-to distinguish these boundaries. Tenant-local suppression and controlled notification
-handoff are measured; live provider/device delivery remains separately gated by
-<a href="../30-design/tenancy/multitenancy-decisions.html#5-runtime-isolation-and-clinical-acceptance">runtime and clinical acceptance</a>.</p>
+<p>Multitenant development proceeds independently of the 16.0.0 release. Use the
+<a href="../30-design/tenancy/decisions-in-force.html">decisions in force</a> for role ownership,
+writer-driven updates, storage and restore policy. The <a href="../30-design/tenancy/execution-log.html">execution log</a>
+identifies which changes joined each candidate and what its tests measured.</p>
+<p>For a capacity claim, match the application, deployment and harness to the run,
+then read its workload, completed interval, connector results and recovery evidence.
+A passing point applies to that configuration. The <a href="../30-design/tenancy/multitenant-delivery-dashboard.html">delivery dashboard</a>
+and <a href="../30-design/tenancy/production-critical-path.html">production critical path</a> give the
+remaining admission criteria.</p>
 <!-- BEGIN GENERATED: road-tenancy -->
 
 <table>
@@ -3311,10 +3121,9 @@ handoff are measured; live provider/device delivery remains separately gated by
 <!-- END GENERATED: road-tenancy -->
 
 <h2 id="4-remedial-fix-what-ships">4. Remedial: fix what ships<a class="headerlink" href="#4-remedial-fix-what-ships" title="Permanent link">&para;</a></h2>
-<p>The remedial work is not a sequence. It is prioritized by what reaches operators today: the
-operator-exposure table on <a href="PROGRAMME-STATUS.html#status-words-merged-is-not-released">PROGRAMME-STATUS</a>
-lists the queue items for defects that reach the tagged release named by the register. A fix reaches operators only in a
-release, so each merged fix joins the next step on the release train.</p>
+<p>The <a href="../30-design/remedial/nightscout-backfix-register.html">register</a> gives affected
+versions and evidence for each defect. Use the <a href="PROGRAMME-STATUS.html#status-words-merged-is-not-released">operator exposure table</a>
+to find the queue items that cover the shipping release.</p>
 <h2 id="5-proposals">5. Proposals<a class="headerlink" href="#5-proposals" title="Permanent link">&para;</a></h2>
 <p>These are proposals for discussion with other projects and maintainers. None is scheduled in the
 queue.</p>
@@ -3348,11 +3157,9 @@ server can run, and one record shape for every test run, built in four stages. I
 requirements that touch several projects are agreed. Detail:
 <a href="QUALITY-SYSTEM.html">quality-system proposal</a>, measured by the
 <a href="../60-research/programme/stack-census-2026-09-30.html">stack census</a>.</p>
-<h2 id="6-what-bounds-all-of-it">6. What bounds all of it<a class="headerlink" href="#6-what-bounds-all-of-it" title="Permanent link">&para;</a></h2>
-<p>Review capacity, not engineering. Most queue items route to the maintainer, and the SECURITY and
-SAFETY review rows do not name a person. The current split is on
-<a href="PROGRAMME-STATUS.html#the-two-constraints-neither-of-them-engineering">PROGRAMME-STATUS</a>. Onboarding
-for reviewers is in <a href="REVIEWER-ONBOARDING.html">REVIEWER-ONBOARDING</a>.</p>
+<h2 id="6-review-and-decisions">6. Review and decisions<a class="headerlink" href="#6-review-and-decisions" title="Permanent link">&para;</a></h2>
+<p>The <a href="REVIEWER-ONBOARDING.html">reviewer guide</a> identifies the evidence a reviewer needs.
+<a href="NEEDS-A-HUMAN.html">Work waiting on a person</a> groups the queue by reviewer and decision owner.</p>
 <!-- BEGIN GENERATED: provenance -->
 
 <p><em>Generated from <code>queue/work-queue.yaml</code> by <code>tools/queue/emit_views.py</code>. Manifest <code>measured_at</code> </em><em>2026-09-27</em><em>, against cgm-remote-monitor-official <code>7000eb18</code> and this repository at <code>18cdcce0</code>. Every state above is a </em><em>claim</em><em> about what the gates will say &mdash; <code>make queue-status</code> is the measurement.</em></p>

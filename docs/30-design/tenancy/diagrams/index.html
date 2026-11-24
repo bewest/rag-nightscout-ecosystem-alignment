@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3490,6 +3498,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -3498,6 +3534,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -3651,7 +3771,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_15_37" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_15_41" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -3674,8 +3794,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_24_15_37_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5_24_15_37">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_24_15_41_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_15_41">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -5577,16 +5697,15 @@
 
 
 <h1 id="tenancy-topology-plates">Tenancy topology plates<a class="headerlink" href="#tenancy-topology-plates" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-16 at <code>4617eee29</code>.</em></p>
-<p><em>Contributor-facing architecture figures, 2026-11-10 (second refresh). Interpretation is
-read-derived; linked acceptance retains its actual source. Trust zones do not
-mean physical hosts, and logical endpoints do not imply additional processes.</em></p>
+<p><em>Living document, last changed 2026-11-24 at <code>7b8bfd465</code>.</em></p>
+<p>For the candidate 5 data path see the <a href="../evaluator-realtime-communication.html#from-a-write-to-a-viewer">writer-driven communication diagram</a>. The plates below preserve earlier source readings and deployment evidence. A zone marks a trust boundary. Placement and capacity require their own measurements.</p>
 <ul>
-<li><a href="current-stream-runtime-topology.svg">Current stream runtime — SVG</a> / <a href="current-stream-runtime-topology.png">PNG</a>: read-derived from selected core <code>5e112547b31252ec428747c821d3cd1b3684ce2b</code>. Durable accepted cohorts, bounded clinical state, atomic completed output/checkpoint/next due and independent raw storage events have separate ownership. The <a href="../evaluator-realtime-communication.html">communication contract</a> owns the explanation and <a href="../../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">selected integration</a> owns executed qualification. Capacity, future optimization, production trust and HA/fleet admission are separate.</li>
-</ul>
-<p>The following plates retain their named source or placement scope:</p>
-<ul>
-<li><a href="accepted-one-host-topology.svg">Accepted one-host reference — SVG</a> / <a href="accepted-one-host-topology.png">PNG</a>: ed2 cold Compose/UI/restore and c23 native separate-role restart evidence, within the <a href="../../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">operation-window acceptance family</a>. Its public-facing synthetic origin uses HTTP; Vault uses TLS. No OIDC, external ingress TLS, capacity or production acceptance is added by the drawing.</li>
+<li>
+<p><a href="current-stream-runtime-topology.svg">November 16 pgstream runtime — SVG</a> / <a href="current-stream-runtime-topology.png">PNG</a>. The figure describes core <code>5e112547b31252ec428747c821d3cd1b3684ce2b</code>. Its accepted XID cohorts, raw journal and delivery checkpoints belong to the <a href="../../../archive/tenancy/pgstream-communication-2026-11-16.html">archived communication guide</a> and <a href="../../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">integration report</a>.</p>
+</li>
+<li>
+<p><a href="accepted-one-host-topology.svg">Accepted one-host reference — SVG</a> / <a href="accepted-one-host-topology.png">PNG</a>: ed2 cold Compose/UI/restore and c23 native separate-role restart evidence, within the <a href="../../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">operation-window acceptance family</a>. Its public-facing synthetic origin uses HTTP; Vault uses TLS. No OIDC, external ingress TLS, capacity or production acceptance is added by the drawing.</p>
+</li>
 <li><a href="current-internal-api-topology.svg">Private API composition, one internal listener per role — SVG</a> / <a href="current-internal-api-topology.png">PNG</a>: read-derived from the 2026-11-10 lanes joined on <code>codex/batch-join-20261110</code> (internal listener <code>78ecba76</code>, admin role <code>1376c294</code>/<code>66655756</code>, activity <code>07981b55</code>, alarm repeat <code>956d0940</code>); its acceptance and publication statements describe that captured join. Each role process opens one <code>serve.internal</code> (unix socket under the runtime directory by default, host/port by environment); role code fixes its contracts. The <code>admin</code> role keeps its own operator-plane listener for ownership operations. The <a href="../../../../reports/tenancy/internal-listener-2026-11-10/index.html">internal-listener evidence</a> and <a href="../../../../reports/tenancy/admin-lifecycle-2026-11-10/index.html">admin-lifecycle evidence</a> retain their lane sources. #8898 at <code>b70ad83f</code> still opens one listener per contract (<a href="../../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">its acceptance</a>). Beyond-loopback HTTP, cluster and multi-host admission remain unmeasured.</li>
 <li><a href="proposed-fixed-roster-network-topology.svg">Proposed fixed-roster API-scale target — SVG</a> / <a href="proposed-fixed-roster-network-topology.png">PNG</a>: the <a href="../selectable-endpoints-and-api-scaling-plan.html">current implementation plan</a>. It starts from one internal listener per role instance. REST replica A/B are explicit instances of one REST component. Maintenance still uses every exact instance endpoint, not a load-balanced sample. Current source-scoped implementation and qualification belong to the <a href="../selectable-endpoints-and-api-scaling-plan.html">scaling plan</a> and release records; this placement drawing does not grant capacity or production admission. Optional gateway middleware and evaluator assignment are separate contracts.</li>
 </ul>
@@ -5623,7 +5742,7 @@ retain their own binding and acceptance boundaries.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3<span class="w"> </span>tools/site/render_tenancy_topologies.py<span class="w"> </span>--png
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python3<span class="w"> </span>tools/site/render_tenancy_topologies.py<span class="w"> </span>--check
 </code></pre></div>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/tools/site/render_tenancy_topologies.py">renderer</a> uses Python's
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/tools/site/render_tenancy_topologies.py">renderer</a> uses Python's
 standard library for SVG and installed ImageMagick for PNG previews. These are
 repo-native vector diagrams. Rendering does not run application services or
 establish deployment acceptance.</p>

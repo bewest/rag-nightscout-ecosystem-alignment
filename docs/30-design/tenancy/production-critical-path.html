@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3625,6 +3633,34 @@
   
   
     <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -3633,6 +3669,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -5794,40 +5914,17 @@
 
 
 <h1 id="from-multitenant-preview-to-production">From multitenant preview to production<a class="headerlink" href="#from-multitenant-preview-to-production" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
-<p><em>Living contributor-facing production guide, reconciled 2026-11-16 against the
-release records at alignment <code>5fdc4bf0685d35d2fac980bad1b28bd66525ccdb</code>.
-This is </em><em>read-derived</em><em> sequencing and explanation, not an application measurement.
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">Release decisions</a> own
-adopted policy; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/queue/work-queue.yaml">queue</a> owns claimed work state;
-<a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a> and linked
-reports own executed acceptance, source heads and publication. Use those records
-for the current candidate and blockers.</em></p>
+<p><em>Living document, last changed 2026-11-24 at <code>7b8bfd465</code>.</em></p>
+<p>The <a href="multitenancy-decisions.html">tenancy decisions</a> govern deployment and test policy. The <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">execution log</a> records candidate qualification and operating results. The <a href="multitenant-delivery-roadmap.html">milestone roadmap</a> owns promotion criteria.</p>
 <p>Production means a particular deployment is admitted for a stated workload and
 failure/recovery envelope. It is a stronger claim than implementing a component,
 passing a functional preview or running a capacity experiment. This guide explains
 how those pieces join without making every later production feature a prerequisite
 to testing an independently ready capability.</p>
 <h2 id="immediate-m7-priority">Immediate M7 priority<a class="headerlink" href="#immediate-m7-priority" title="Permanent link">&para;</a></h2>
-<p>The <a href="multitenancy-decisions.html#single-host-streaming-first">single-host streaming decision</a>
-sets the current order: use the existing evaluator/realtime composition and UDS
-interfaces, measure a bounded local workload, and qualify the supported candidate.
-Explore toward 10,000 synthetic tenants as measured resources permit. Keep actual
-transport, accepted/stored/completed progress, due work and client behavior explicit.
-The selected stream runtime has source-scoped functional qualification in the
-<a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">existing integration record</a>.
-Its ordinary lost-slot recovery and populated upgrade/cold rollback rehearsals
-retain their own executed revision pairs. The <a href="evaluator-realtime-communication.html">communication guide</a>
-owns the implemented architecture; <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
-own current integration/publication. Capacity measurements and incomplete or failed
-points remain in the <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html">operating report</a>.
-Functional qualification does not admit a workload or deployment profile.</p>
-<p>Optional desired-N, selected-v2/HOLD, full platform recommission, Kubernetes and
-multihost operating-model proofs proceed independently. They do not block a
-supported single-host clinical witness, load experiment or qualification. Keep
-existing correctness gates for the configuration actually claimed and one final
-coherent candidate campaign; do not add a campaign or deliverable per leaf.
-This sequencing changes no workload qualification, publication or budget claim.</p>
+<p>Candidate 5 measures nominal work on the <a href="evaluator-realtime-communication.html">writer-driven architecture</a>. The local mixed workload includes pooled connectors and an evaluator restart. The paid experiment varies the active direct-upload population on a restored 10,000-tenant roster with a dedicated PostgreSQL node. These answer different sizing questions. See the <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">dated results and original verdicts</a>.</p>
+<p>Size normal service from accepted-write-to-durable-output p95 within 30 s and the recovery of the loaded slices after restart. Roughly 1 s is a stretch objective. A clinical output over 120 s from acceptance or missing after drain is a product failure. Check stored writes, isolation and authorization, and datastore health. Count delivered viewer frames independently. Missing outcome evidence stays UNMEASURED. <a href="multitenancy-decisions.html#latency-objectives">Latency objectives</a> · <a href="multitenancy-decisions.html#evaluator-capacity-headroom">Evaluator headroom</a> · <a href="multitenancy-decisions.html#four-product-failures">Product failure criteria</a></p>
+<p>Discovery locates the limiting component and measures headroom at a stated mix, history, placement and load. Acceptance uses the frozen candidate and the applicable controls. Operator admission also requires trust, recovery and release evidence for the selected deployment. <a href="multitenancy-decisions.html#capacity-test-tiers">Capacity test tiers</a></p>
 <h2 id="the-proposed-first-production-boundary">The proposed first production boundary<a class="headerlink" href="#the-proposed-first-production-boundary" title="Permanent link">&para;</a></h2>
 <p>Qualify a bounded deployment of the reusable API, evaluator, realtime, admin and
 supporting roles. The <a href="runtime-topology.html">runtime topology</a> explains their
@@ -5841,13 +5938,7 @@ only when its outage and operator-led recovery are acceptable. Multiple applicat
 nodes, a replicated database or an external secrets service are not automatic
 proofs of availability. Specify which dependency or failure domain may be lost,
 what continues serving, and what recovery must establish before service resumes.</p>
-<p>The capacity campaign's tenant levels are experimental points. The
-<a href="multitenancy-decisions.html#m7-capacity-gate">adopted capacity gate</a>
-defines its current milestone and stretch target; it does not select a production
-node type or an ultimate fleet size. Small-group efficiency and a larger fleet's
-bounded growth must be evaluated separately. Multiple independently admitted
-deployments are a fleet option, not an adopted cell architecture or implemented
-tenant-migration service.</p>
+<p>The adopted nominal topology scales a single primary vertically on a dedicated node. Static tenant slices distribute evaluator and realtime work. More than one deployment database and moves across a fleet remain deferred. The measured envelope needs its actual active population, provisioned roster, history, viewers, hardware and recovery scenario. <a href="multitenancy-decisions.html#one-large-postgresql-primary">Primary placement</a> · <a href="multitenancy-decisions.html#static-hash-ownership">Static ownership</a></p>
 <h2 id="dependency-map">Dependency map<a class="headerlink" href="#dependency-map" title="Permanent link">&para;</a></h2>
 <p>There are two boundaries: learn from a scoped-ready capability, then admit a
 coherent deployment. Independent experiments can run before full acceptance;
@@ -5872,7 +5963,7 @@ permission to admit that workload to production.</p>
 <h2 id="what-blocks-the-path-and-what-closes-it">What blocks the path, and what closes it<a class="headerlink" href="#what-blocks-the-path-and-what-closes-it" title="Permanent link">&para;</a></h2>
 <p>These are enduring closure criteria, not a second live task list. Identify each
 remaining implementation change in the queue and its exact failing or missing
-criterion in the release record. Existing measurements are evidence inputs, not
+criterion in the <a href="execution-log.html">execution log</a>. Existing measurements are evidence inputs, not
 blanket admission for a changed source or topology. A skipped criterion remains
 UNMEASURED.</p>
 <table>
@@ -5887,7 +5978,7 @@ UNMEASURED.</p>
 <tr>
 <td>Workload and resource envelope</td>
 <td>How much useful work fits, including interference and recovery?</td>
-<td>Matched synthetic measurements with stored-write, authority and evaluator/consumer outcomes; latency/freshness tails, CPU, memory, pool/lock waits and recovery. Follow <a href="multitenancy-decisions.html#m7-envelope-measured-not-declared">M7 measurement policy</a> and the <a href="multitenancy-decisions.html#m7-capacity-gate">capacity gate</a>. The latter closes the separate single-site contrast requirement. Historical counts or node density are assumptions until reproduced on comparable inputs.</td>
+<td>Matched synthetic measurements with stored-write, authority and evaluator/consumer outcomes; latency/freshness tails, CPU, memory, pool/lock waits and recovery. Follow <a href="multitenancy-decisions.html#m7-envelope-measured-not-declared">M7 measurement policy</a> and the <a href="multitenancy-decisions.html#capacity-test-tiers">target ladder and test tiers</a>. The single-site contrast was retired in the <a href="../../archive/tenancy/multitenancy-decisions-superseded-2026-11-18.html#m7-capacity-gate">earlier capacity decision</a>. Historical counts or node density are assumptions until reproduced on comparable inputs.</td>
 </tr>
 <tr>
 <td>Human identity and owner authority</td>
@@ -5907,7 +5998,7 @@ UNMEASURED.</p>
 <tr>
 <td>Connectors and supported clients</td>
 <td>Which actual journeys work through the selected ingress and credentials?</td>
-<td>Declared collection coverage, independent stored/history outcomes, cadence/retry/revocation and supported credential renewal; required Android and pinned client journeys. Source-pattern replay is distinct from executing a client binary. <a href="multitenant-delivery-roadmap.html">Roadmap</a> and current release evidence own the supported scope; do not infer an all-client claim or treat an old entries-only run as the latest result.</td>
+<td>Declared collection coverage, independent stored/history outcomes, cadence/retry/revocation and supported credential renewal; required Android and pinned client journeys. Source-pattern replay is distinct from executing a client binary. <a href="multitenant-delivery-roadmap.html">Roadmap</a> and <a href="execution-log.html">execution log</a> own the supported scope; do not infer an all-client claim or treat an old entries-only run as the latest result.</td>
 </tr>
 <tr>
 <td>Shared-fault and operating behavior</td>
@@ -5951,7 +6042,7 @@ on the application being unable to reuse its components at another scale.</p>
 <tr>
 <td>Additional evaluator/realtime workers</td>
 <td>The qualified worker set meets its measured budget</td>
-<td>Explicit tenant assignments, complete participant coverage, checkpoint/effect continuity and safe moves. Additional workers distribute ownership; they are not automatically standby failover replicas.</td>
+<td>Static hash assignment, matched edge routing, continuity of effects and recovery after a planned restart. Additional workers distribute ownership; they are not automatically standby failover replicas.</td>
 </tr>
 <tr>
 <td>Cross-host placement</td>
@@ -6037,7 +6128,7 @@ single successful run supplies that recipe.</p>
 preserves the original gap table, topology/HA proposals and source survey from
 alignment <code>8ae6f4a3729548de0c88cc0ee5b3c0aede9aba61</code>. Its present-tense statuses
 belong to that capture. Use this guide for sequencing, runtime topology for
-architecture, and the release/queue/report homes for current state and evidence.</p>
+architecture, and the execution log, queue and reports for current state and evidence.</p>
 
 
 

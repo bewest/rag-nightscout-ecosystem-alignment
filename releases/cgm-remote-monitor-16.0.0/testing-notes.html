@@ -2277,14 +2277,13 @@
 
 
 <h1 id="nightscout-1600--testing-notes-for-the-release-candidate">Nightscout 16.0.0 — testing notes for the release candidate<a class="headerlink" href="#nightscout-1600--testing-notes-for-the-release-candidate" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-03 at <code>7ecc8b0d6</code>.</em></p>
-<p><strong>Working cohort guide, 2026-11-03.</strong>
-The current 16.0.0 release candidate is <code>official/dev</code>
-<code>61eb37335954ae42c91345a0823bd67331025165</code>. Informal testing has already
-started: the maintainer reports multiple testers have run the code for over
-24-48 hours. No v16 tag or release is published. Record the exact commit/image
-each tester actually ran rather than assuming it is this one.
-The measured automated runs remain in the
+<p><em>Living document, last changed 2026-11-24 at <code>06d3e9fa5</code>.</em></p>
+<p><strong>Working cohort guide, 2026-11-24.</strong> The closing single-tenant candidate is
+<code>official/dev</code> at <code>79144cbd006e1137bd776ffd56560debdf880e81</code>. Record the
+exact build each tester ran. The November 2 maintainer report described
+24–48 hours or more of informal testing across earlier builds.
+<a href="contents.html#closing-candidate-2026-11-24">Candidate and acceptance status</a></p>
+<p>The measured automated runs remain in the
 <a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html">integration record</a>;
 release scope is in <a href="contents.html">contents.md</a>.</p>
 <p>The maintainer reports that contributed patches were already tested before
@@ -2299,8 +2298,9 @@ duplicates, unexpected displayed values, browser reconnect failures or alerts
 that did not arrive or stop as expected. Include app/server versions, display
 units, approximate observation interval and what happened, without personal
 records, credentials or screenshots containing health data.</p>
-<p>Check your usual phone and desktop views, including an optional modern theme
-only if you chose it. Keep independent device alerts enabled; do not rely on
+<p>Check your usual phone and desktop views. A browser with no saved theme uses Modern
+when the site has no configured theme. Confirm that a saved choice such as Classic
+survives an upgrade. Keep independent device alerts enabled; do not rely on
 an experimental Nightscout build as your only alarm source. This is not dosing
 advice. Do not create test treatments on an active-care site.</p>
 <h2 id="part-2-operators-and-app-authors">Part 2: operators and app authors<a class="headerlink" href="#part-2-operators-and-app-authors" title="Permanent link">&para;</a></h2>

@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3647,6 +3655,34 @@
   
   
     <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -3655,6 +3691,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -5838,19 +5958,10 @@
 
 
 <h1 id="multitenant-delivery-roadmap">Multitenant delivery roadmap<a class="headerlink" href="#multitenant-delivery-roadmap" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
-<p><em>Contributor-facing living plan. Reconciled 2026-11-16 to the selected stream integration records and adopted release decisions,
-without a new application campaign or milestone promotion. This page owns delivery boundaries and promotion criteria.
-The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims;
-the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
+<p><em>Living document, last changed 2026-11-24 at <code>7b8bfd465</code>.</em></p>
+<p>This page owns delivery boundaries and milestone promotion criteria. The <a href="multitenant-delivery-dashboard.html">dashboard</a> records dated milestone decisions. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/queue/work-queue.yaml">queue</a> owns work items and gates. The <a href="execution-log.html">execution log</a> records the source and scope of each multitenant experiment.</p>
 <h2 id="reading-and-execution-order">Reading and execution order<a class="headerlink" href="#reading-and-execution-order" title="Permanent link">&para;</a></h2>
-<p>Use the <a href="index.html">reading guide</a> to select a contract. Use the
-<a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a>
-for current batch ownership, implementation order and verification depth. The
-<a href="../remedial/rc-16.0.0-integration-record.html">integration record</a> owns executed heads,
-failures, controls and campaign limits; <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
-owns publication and cycle updates. A source branch, an incorporated change, an
-accepted batch and a promoted milestone are distinct claims.</p>
+<p>Use the <a href="index.html">reading guide</a> to select a contract and the <a href="multitenant-integration-batching-plan-2026-11-06.html#completion-focused-coordination">batching plan</a> for integration practice. For the present candidate, read the <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">qualification and discovery record</a>. Earlier joins retain the evidence identified at each milestone.</p>
 <p>Delivery uses three completion stages: <strong>A</strong>, data/control/clients through M4;
 <strong>B</strong>, durable runtime for M5; <strong>C</strong>, synthetic operations for M6, split on
 2026-11-09 into M6a–M6d, followed by M7 production readiness. Independent
@@ -5863,21 +5974,8 @@ verdicts on the applicable final tree.</p>
 questions and measurement prerequisites. Prefer a minimal working reference with
 explicitly deferred enhancements; do not substitute a component pass for a milestone.</p>
 <h2 id="current-implementation-and-remaining-qualification">Current implementation and remaining qualification<a class="headerlink" href="#current-implementation-and-remaining-qualification" title="Permanent link">&para;</a></h2>
-<p>The <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">selected runtime record</a>
-closes source-scoped stream, bounded clinical-state, raw delivery, stock-client
-and functional regression criteria. Its ordinary recovery and populated
-upgrade/cold rollback retain their own executed pairs. The
-<a href="evaluator-realtime-communication.html">communication contract</a> and
-<a href="runtime-topology.html#current-stream-runtime">current stream topology</a> explain the
-implementation. These closures do not promote every M6/M7 criterion.</p>
-<p>Workload/resource limits and recovery under load belong to the existing operating
-report. The <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#stream-amplification-and-executable-retirement--2026-11-16">follow-on source qualification</a>
-closes bounded subscription/intake amplification, addressed delivery and executable
-retirement. Its operating comparison retains a separate evidence boundary. The
-<a href="production-critical-path.html">production path</a> owns deployment admission criteria;
-optional fleet, HA and multihost work follows the declared profile. Progress is
-reported by completed capability and remaining criterion, rather than by counting
-historical dispatch lanes or treating every open parent item as unimplemented.</p>
+<p>The <a href="runtime-topology.html">runtime topology</a> describes static ownership and deployment placement. The <a href="evaluator-realtime-communication.html">communication guide</a> describes writer-driven work discovery, clinical completion and delivery. The November <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">pgstream qualification</a> and its recovery rehearsals remain measurements of that earlier source.</p>
+<p>Candidate 5 has local source qualification and a mixed connector discovery point. The recorded capacity verdict, measured outcomes and larger direct-upload experiments have their own scopes. <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">Candidate record</a> · <a href="production-critical-path.html">Production admission</a></p>
 <h2 id="supported-boundary-and-owner-journeys">Supported boundary and owner journeys<a class="headerlink" href="#supported-boundary-and-owner-journeys" title="Permanent link">&para;</a></h2>
 <p>The supported owner deliverable is a <strong>headless, documented, versioned API</strong>, with
 conformance independent of vendor UI. A first-party owner UI is deferred; vendor
@@ -5962,22 +6060,7 @@ an interchangeable reviewed identity provider, not a new password/recovery syste
 drop the incompatible optional subject-reader clamping mode. Any replacement must
 preserve existing tenant-root credentials. Proposed-grant management enforcement
 and full lifecycle authority are separate contracts.</p>
-<p>The secrets component owns recoverable secrets and private signing keys. New
-asymmetric tokens may verify locally with trusted public keys and current
-PostgreSQL authority; private keys remain protected. Vault Transit does not store
-submitted application data: tenant-bound ciphertext/references, scoped consumers,
-key versions, redacted audit, renewal and recovery remain necessary. Owner reveal
-is an explicitly authorized audited action, not a data-API decrypt. The built-in
-encrypted development/small-operator option remains adopted; production adapters
-must meet the same contract. A disposable Vault lab does not establish TLS,
-unseal/recovery, production identity, HA or operational suitability. Failures
-never fall back to plaintext, another tenant's key or an unapproved signer.
-The <a href="multitenancy-decisions.html#m6-deployment-and-trust-2026-11-07">deployment and trust decisions</a>
-keep Vault Transit at every stage and admit a deployment by trust record plus live
-probes. Connectivity is a <a href="multitenancy-decisions.html#vault-agent-sidecar">Vault Agent sidecar</a> with
-<a href="multitenancy-decisions.html#vault-one-approle-per-deployment">one AppRole per deployment</a>; core reads the
-token from the sink file per call (<code>MT-VAULT-TOKEN-FILE</code>) instead of carrying a
-service-login adapter.</p>
+<p>The deployment supplies a signing secret. Roles derive signing keys by tenant, purpose and version. PostgreSQL holds current versions, authority and sessions. The per-tenant Vault Transit data key protects recoverable secrets, including connector credentials. Token issuance requires the signing secret and current authority. Custody, rotation and recovery of the data key remain part of the deployment trust and lifecycle criteria. <a href="multitenancy-decisions.html#deployment-signing-secret">Signing decision</a> · <a href="multitenancy-decisions.html#deployment-admission-probes-and-trust-record">Deployment admission</a></p>
 <h2 id="tenant-identity-migrations-and-import">Tenant identity, migrations and import<a class="headerlink" href="#tenant-identity-migrations-and-import" title="Permanent link">&para;</a></h2>
 <p>Keep permanent or disposable public aliases, durable DNS-friendly internal names and stable
 tenant IDs distinct. Deployment-owned mapping binds internal name to ID; alias
@@ -6087,7 +6170,7 @@ an intentional PG-only difference. No threshold is invented by a passing lab.</p
 <tr>
 <td>M7: production readiness</td>
 <td>M6a–M6d</td>
-<td>Measured, not declared (<a href="multitenancy-decisions.html#m7-envelope-measured-not-declared">decision</a>): benchmark the one-host reference at stepped tenant counts with a hot tenant and publish the numbers; contrast against N single-tenant processes and the per-site model at equal synthetic load; prove each component scales horizontally or vertically as intended with a binding inventory (any binding is a <code>file:line</code> finding); evaluator partitioning by member count and ordinal with a pool-membership table (<a href="multitenancy-decisions.html#evaluator-static-partition">decision</a>). <a href="realtime-sharding-plan.html">Realtime tenant sharding and controlled recovery</a>, including checkpoint and complete participant coverage; larger single-tenant connection fanout remains separately bounded. Android emulator lab; selectable endpoints and fixed-roster API scaling; Kubernetes binding equivalence. Limits follow the measurements. Required before a production cohort, not before the dormant alpha release.</td>
+<td>Measure the declared workload, interference, clinical deadlines, current authority, datastore health and recovery on a named deployment. Evaluate API replicas, static evaluator/realtime slices and the dedicated primary at actual load. Include applicable Android/client, binding and operational trust evidence. Preserve the original discovery and acceptance verdicts. Promote only after the deployment satisfies its <a href="production-critical-path.html">production criteria</a>. <a href="multitenancy-decisions.html#capacity-test-tiers">Test tiers</a> · <a href="multitenancy-decisions.html#four-product-failures">Product outcomes</a></td>
 </tr>
 </tbody>
 </table>
@@ -6119,7 +6202,7 @@ implementation and destroy/after-window refusal evidence remain separate.</p>
 comprehensive verification. These synthetic native records retain their declared
 executed heads; runnable RECORDED-EVIDENCE gates replay archived physical
 observations, not a fresh current-HEAD campaign. The later accepted ed2 reference is published on draft
-PR #8898; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication and alignment CI record</a>
+PR #8898; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication and alignment CI record</a>
 is distinct from dev merge, release and production/default admission.</p>
 <table>
 <thead>
@@ -6154,8 +6237,7 @@ is distinct from dev merge, release and production/default admission.</p>
 <p>| <a href="../../../reports/tenancy/m6a-join-2026-11-09/index.html">M6a joined candidate</a> | Owner/OIDC, the disposable-harness OIDC matrix and the internal service contracts joined to #8898. Real identity-provider interoperability is synthetic only. |
 | <a href="../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">M6b joined candidate</a> | Listener composition, key retention, operator-assisted ownership and single-site OIDC provisioning on one frozen head. Ownership in a serving role, real role processes over Compose and the production key custodian remain open. |
 | <a href="../../../reports/tenancy/vault-agent-2026-11-09/index.html">Vault Agent sidecar</a>, <a href="../../../reports/tenancy/connector-sync-2026-11-10/index.html">connector sync</a> | M6c Vault connectivity and the M6d outbound connector lab. Identity-provider profile, live trust probes and the remaining connector scope are open queue items. |</p>
-<p>Publication state, CI and the open boundaries of each candidate are in the
-<a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>; the
+<p>The <a href="execution-log.html">execution log</a> records subsequent candidate evidence. The
 <a href="multitenant-delivery-dashboard.html">dashboard</a> lists the M6a–M6d and M7 items with
 their claimed state. Measured operating budgets are M7 work. The
 <a href="m5-m6-decision-list.html">current decision index</a> separates human choices from

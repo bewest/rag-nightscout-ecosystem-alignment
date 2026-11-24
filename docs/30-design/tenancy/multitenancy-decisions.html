@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -4073,6 +4081,34 @@
   
   
     <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -4081,6 +4117,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -6690,22 +6810,13 @@
 
 
 <h1 id="multitenancy-decisions-and-architectural-contracts">Multitenancy decisions and architectural contracts<a class="headerlink" href="#multitenancy-decisions-and-architectural-contracts" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-22 at <code>c498bc618</code>.</em></p>
+<p><em>Living document, last changed 2026-11-24 at <code>7b8bfd465</code>.</em></p>
 <p><em>Contributor-facing living decision reference. Consolidated 2026-11-06 from the
 maintainer's D1–D23 decisions and their later amendments. This is a read-derived
 reorganization, not new implementation acceptance or a new decision. The
 <a href="../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">retained execution journal</a>
 preserves the original rationale, prototypes, task definitions and measurements.</em></p>
-<p>This document owns the D1–D23 architectural decisions. The <a href="owner-authority.html">owner-authority
-contract</a> owns the later D17/D22 management and verification
-amendment; the <a href="durable-event-delivery-contract-2026-11-06.html">durable event contract</a>
-owns B7's consumer/recovery rules. Later <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">release decisions</a>
-own promotion-bar, compatibility and lifecycle decisions. Their amendments take
-precedence over earlier journal text. The <a href="multitenant-delivery-dashboard.html">dashboard</a>
-owns milestone claims, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/queue/work-queue.yaml">queue</a> owns item state
-and gates, and <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
-owns integration/publication status. Read the <a href="index.html">tenancy guide</a> for the
-current execution plan; archived “next” instructions are historical.</p>
+<p>This document owns the D1–D23 decisions and <a href="#programme-decisions-after-d23">subsequent programme decisions</a>. The <a href="decisions-in-force.html">decisions in force</a> index points to amendments and retired mechanisms. <a href="owner-authority.html">Owner authority</a> explains management and verification, and the <a href="evaluator-realtime-communication.html">communication guide</a> explains the writer-driven path. The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/queue/work-queue.yaml">queue</a> owns item state and gates, and the <a href="execution-log.html">execution log</a> owns multitenant joins and measurements.</p>
 <h2 id="1-decisions">1. Decisions<a class="headerlink" href="#1-decisions" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -6737,7 +6848,7 @@ current execution plan; archived “next” instructions are historical.</p>
 </tr>
 <tr>
 <td><a id="d6"></a><strong>D6</strong> — feed</td>
-<td>Replication slot as the durable spine. The <a href="#event-driven-reset">event-driven reset</a> prioritizes a maintained pgstream adapter proof over the custom SQL-reader/NOTIFY transport. Clinical writes must remain independent of notification failure; never emit notifications from a write trigger. The proof assesses evaluator ownership of raw inputs and recoverable due work, with realtime consuming durable outputs and authority lifecycle. B7 recovery obligations remain. The <a href="../../../reports/tenancy/pgstream-flow-2026-11-13/index.html">local proof</a> records bounded replay evidence; production acknowledgement/recovery guarantees remain UNMEASURED.</td>
+<td><em>Transport superseded by <a href="#writer-driven-transport-direction">writer-driven transport</a>. The following text records the slot-era decision.</em> Replication slot as the durable spine. The <a href="#event-driven-reset">event-driven reset</a> prioritizes a maintained pgstream adapter proof over the custom SQL-reader/NOTIFY transport. Clinical writes must remain independent of notification failure; never emit notifications from a write trigger. The proof assesses evaluator ownership of raw inputs and recoverable due work, with realtime consuming durable outputs and authority lifecycle. B7 recovery obligations remain. The <a href="../../../reports/tenancy/pgstream-flow-2026-11-13/index.html">local proof</a> records bounded replay evidence; production acknowledgement/recovery guarantees remain UNMEASURED.</td>
 </tr>
 <tr>
 <td><a id="d7"></a><strong>D7</strong> — operator plane</td>
@@ -7086,34 +7197,18 @@ D18–D20 contracts. The following clauses remain architectural requirements.</p
   mapping. Shared slot candidates remain for controller-author confirmation.</li>
 </ul>
 <h2 id="5-runtime-isolation-and-clinical-acceptance">5. Runtime isolation and clinical acceptance<a class="headerlink" href="#5-runtime-isolation-and-clinical-acceptance" title="Permanent link">&para;</a></h2>
-<p>B7's <a href="durable-event-delivery-contract-2026-11-06.html">durable event contract</a>
-owns producer/consumer checkpoints, replay and crash recovery. The per-write
-logical stamp is the transaction's final clock floor; equal-stamp cohorts commit
-together. Bound tenant scope is carried in the event; <code>single</code>, settle, MongoDB
-and clock-off cases retain the contract's null-tenant/null-stamp rules. Provider
-choice, hard-delete recovery and multi-node failover retain separate decisions.</p>
+<p>The <a href="#writer-driven-transport-direction">writer-driven decision</a> governs multitenant evaluation. The write transaction marks pending work. An addressed hint wakes the owning evaluator, and a sweep recovers a missed wake. The write clock remains a public-history contract. The earlier <a href="durable-event-delivery-contract-2026-11-06.html">B7 durable event contract</a> documents the original checkpoint, replay and recovery criteria.</p>
 <p>D23 forwarding must preserve pinned client requests, stored outcomes, retries and
 acknowledgements. Authorize with the socket's credential, not a role credential;
 recheck current tenant authority. A failed forward yields no acknowledgement, preserving the client's no-ack retry; never synthesize success.
 Durable tenant-keyed alarm acknowledgement must survive process/restart changes.
 Typed role metadata records listener, data-storage authority, feed consumer,
 egress and forwarding; distinguish a reader's checkpoint bookkeeping from data
-write authority. <a href="durable-event-delivery-contract-2026-11-06.html#9-what-this-contract-does-not-decide">B7 leaves provider selection deferred</a>:
-a slot, polling or both may satisfy the durable contract. When a <code>LISTEN</code>/<code>NOTIFY</code>
-provider is selected, hold one <code>LISTEN</code> per held/served tenant on a direct
-connection rather than transaction pooling. The <a href="../remedial/rc-16.0.0-integration-record.html#r73-durable-runtime-operations-batch">R73 first reference</a>
-uses polling over consistent tenant snapshots; it establishes no <code>LISTEN</code>
-handshake or notification-transport latency result.
-Re-run the socket-writer inventory when client pins change. The retained
+write authority. The <a href="../remedial/rc-16.0.0-integration-record.html#r73-durable-runtime-operations-batch">R73 first reference</a> used polling over consistent tenant snapshots. The <a href="../../archive/tenancy/pgstream-communication-2026-11-16.html">November 16 pgstream reference</a> records the subsequent transport and its bounded qualification.</p>
+<p>Re-run the socket-writer inventory when client pins change. The retained
 <a href="../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#214-d23--realtime-is-a-reader-socket-writes-and-acks-are-forwarded-to-api-maintainer-2026-11-06-amended-the-same-day">D23 analysis</a>
 contains original corpus/rationale and entry-control design.</p>
-<p>The evaluator materializes a transient bounded slice rather than resident
-<code>ddata</code>, while retaining the actual alarm dependencies on treatments, profiles
-and device status. Device-status bounds must preserve relevant kinds and success
-conditions, not merely the newest few documents: retained <a href="../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#7b-the-per-tenant-evaluator-is-cheap-and-the-split-is-by-depth">clinical findings</a>
-explain how crowding can hide alarms. Current acquisition contracts, costs and
-runtime acceptance remain in their own records; old spike figures are not a
-capacity guarantee. No single-tenant computed profile is enabled by this design.</p>
+<p>Under the <a href="#stateful-evaluator-resident-window">resident-window decision</a>, the evaluator keeps its slice’s bounded clinical windows resident. Rebuild and incremental paths must produce the same clinical output. The window must preserve the treatments, profiles and device-status kinds the alarms depend on. The <a href="../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#7b-the-per-tenant-evaluator-is-cheap-and-the-split-is-by-depth">clinical findings</a> explain how crowding can hide a relevant record.</p>
 <p>Before multitenant alarms/live updates are enabled, require actual A-to-A and
 not-A-to-B producer delivery, durable ack/snooze, per-tenant exception containment,
 and health signals for silent evaluation failure. Snooze data-time versus
@@ -7947,7 +8042,7 @@ deployment has run.</p>
 <td>Preview release needs M6a to M6d. M7 is required before any production cohort, not before the dormant alpha. Closed items keep their gates and evidence; <code>MT-M6A-JOIN</code> owns the coherent join and final campaign on #8898.</td>
 </tr>
 <tr>
-<td><a id="m7-envelope-measured-not-declared"></a><strong>The M7 operating envelope is measured, not declared. Benchmark the one-host reference at stepped tenant counts and publish the numbers; contrast the cohort against the deployment shapes operators run today at equal synthetic load; prove that API, realtime, evaluator, PostgreSQL and the Vault Agent each scale horizontally or vertically as intended, with no hidden binding. Limits are set from the measurements afterwards.</strong></td>
+<td><a id="m7-envelope-measured-not-declared"></a><em>Measurement remains required. The <a href="../../archive/tenancy/multitenancy-decisions-superseded-2026-11-18.html#m7-capacity-gate">later capacity decision</a> retired the single-site contrast. See <a href="#capacity-test-tiers">test tiers</a> for the current ladder.</em> <strong>The M7 operating envelope is measured, not declared. Benchmark the one-host reference at stepped tenant counts and publish the numbers; contrast the cohort against the deployment shapes operators run today at equal synthetic load; prove that API, realtime, evaluator, PostgreSQL and the Vault Agent each scale horizontally or vertically as intended, with no hidden binding. Limits are set from the measurements afterwards.</strong></td>
 <td>maintainer, 2026-11-09 ("we just need to benchmark what the numbers are")</td>
 <td>M7 (<code>MT-BENCH-BASELINE</code>, <code>MT-BENCH-CONTRAST</code>, <code>MT-SCALE-UNBOUND</code>)</td>
 <td>Supersedes the "operator proposes workload first" ordering in the decision index and the production critical path. Workloads stay synthetic and pinned (cgmsim, oref0 replay, browser polling, reconnect floods); established load tooling; an independent stored-count oracle; the disposable-harness pattern. Any component whose scaling is capped by a shared singleton, lock, cache or file is a <code>file:line</code> finding, handled as a defect or design change, never a waiver. Prior provider tenant counts or incident figures are not imported.</td>
@@ -7985,7 +8080,7 @@ deployment has run.</p>
 <td><a id="internal-service-contracts"></a><strong>Internal APIs use shared transport with separate service contracts, request/response schemas, named clients and documentation. Each listener owns an explicit operation set; a component with a public contract opens a second listener/port for its private contract. Unix sockets and explicitly configured internal HTTP are supported. HTTP access policy belongs to the deployment; no new bearer authentication convention is introduced.</strong></td>
 <td>maintainer, 2026-11-09, internal IPC/API refactor discussion</td>
 <td>Realtime authority/writes, alarm delivery, lifecycle participant coordination; public/private listener separation</td>
-<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/c70e6ce29bfd6a945466456929f755fc0fef2f82/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
+<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/bb95d169b17aee9cc72fea106f1cf17799da9c40/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
 </tr>
 </tbody>
 </table>
@@ -8605,7 +8700,7 @@ deployment has run.</p>
 <td>Codex proof <code>reports/tenancy/pgstream-flow-2026-11-13/</code> ran pgstream v1.6.0 with wal2json 2.7 on PostgreSQL 16.16 and <code>output_plugin_libraries=wal2json</code>. Documented and source-read on the web, cited 2026-11-13 (alignment <code>claude/change-delivery-options-20261113</code> <code>2f62f694</code>, not run): wal2json only; init needs a superuser for event triggers; default (non-strict) webhook delivery drops a 4xx and still checkpoints (<code>webhook_notifier.go:79-80</code>, <code>:217-220</code>); serial webhooks stop after 3 retries; <code>/health</code> always 200; single process only. Multitenant only.</td>
 </tr>
 <tr>
-<td><a id="evaluator-platform-restart"></a><strong>Separate pgstream restart custody from evaluator process lifetime. Assess pgstream as a separately restarted service that delivers to the evaluator receiver; a pgstream restart does not by itself require evaluator exit.</strong></td>
+<td><a id="evaluator-platform-restart"></a><em>Superseded with pgstream retirement by <a href="#writer-driven-transport-direction">writer-driven transport</a>.</em> <strong>Separate pgstream restart custody from evaluator process lifetime. Assess pgstream as a separately restarted service that delivers to the evaluator receiver; a pgstream restart does not by itself require evaluator exit.</strong></td>
 <td>maintainer, 2026-11-15 clarification; recovery lane owns topology and protocol assessment</td>
 <td><a href="#pgstream-operating-constraints">pgstream operating constraints</a>, multitenant recovery</td>
 <td>Platform-managed pgstream and the evaluator private receiver are implemented on local branches. Separately attributed restart, durable catch-up, missing-slot refusal and schema/receipt recovery evidence is linked from <a href="execution-log.html">the execution log</a>; final candidate and capacity acceptance remain separate. Existing trust conventions, one intake owner, current authority, ownership/restore fences, due work and per-tenant isolation remain mandatory. Overload alone is not a confirmed stall. Current custody: <code>externals/work/HANDOFF-switch-over-finish-2026-11-15.md</code>.</td>
@@ -8620,6 +8715,7 @@ deployment has run.</p>
 </table>
 <p><a id="stream-fed-clinical-materializer"></a></p>
 <h4 id="stream-fed-clinical-materializer-2026-11-16">Stream-fed clinical materializer (2026-11-16)<a class="headerlink" href="#stream-fed-clinical-materializer-2026-11-16" title="Permanent link">&para;</a></h4>
+<p><em>The <a href="#writer-driven-transport-direction">writer-driven transport decision</a> superseded stream-fed intake and the raw journal. These rows preserve the earlier implementation and measurements.</em></p>
 <table>
 <thead>
 <tr>
@@ -8652,7 +8748,7 @@ deployment has run.</p>
 </thead>
 <tbody>
 <tr>
-<td><a id="stream-native-coverage-direction"></a>2026-11-16, maintainer direction relayed through coordinated source/records owners</td>
+<td><a id="stream-native-coverage-direction"></a><em>The connector-framing investigation applied to pgstream, retired by <a href="#writer-driven-transport-direction">writer-driven transport</a>. Public history keeps the <a href="#multitenant-requires-write-clock">tenant write clock</a>.</em> 2026-11-16, maintainer direction relayed through coordinated source/records owners</td>
 <td>Evaluate PostgreSQL committed-stream ownership of internal transaction ordering/coverage instead of treating the application clock-table seal as permanent architecture. Evaluator owns durable accepted-versus-completed work, bounded clinical state and due obligations; realtime consumes completed output under current authority. Clinical time, public legacy history, insertion ordering and internal stream positions remain separate. Preserve clinical correctness, isolation, authorization, restore, durable acknowledgement and supported clients.</td>
 <td>Qualified c31 still depends on clock-event sealing and observed clock floors (<code>clinical-stream-sql.js:30–41</code>); its qualification remains valid. A connector-framed replacement is <strong>proposed, unimplemented and unqualified</strong> pending actual pinned transaction framing, complete commits, rollback, replay/ACK, same-LSN rows, snapshot overlap and source/restore-generation controls. The <a href="evaluator-realtime-communication.html#transaction-coverage-and-mechanism-retirement">communication contract</a> owns this boundary. No new CDC engine, general event log, per-tenant slots or opaque cursors are adopted.</td>
 </tr>
@@ -8718,7 +8814,7 @@ sets the limit (reproduced). The Codex coordinator brief that dispatches this wo
 <td>Basis: about 6 overhead statements per tenant transaction (<code>lib/tenant-lifecycle/operation-window.js:242-276</code>, read-derived). Origin read from git: <code>6a245c09f</code> (2026-11-07), polling-era cross-process restore exclusion. Required controls (correction 2026-11-17, from Codex review): a controlled race in which restore starts after an effect's generation check and before its COMMIT, showing the effect either commits before restore proceeds or is refused, with a break-it control that removes the transaction lock and goes red; restore during open connections never mixes generations in a read or write; a suspended tenant refuses effects; a stale evaluator completion is refused. Writes and restore (maintainer decision 2026-11-17): neither waits for the other. A write may complete before or after a restore, never across it: it lands wholly before the data replacement (and restore then replaces it) or wholly after it, on the restored data. While restore runs, the tenant is suspended and every write is refused with a retryable status; restore is short and uploaders retry. A write whose transaction crosses the generation change is refused the same way. The server does not hold or queue writes. Effects outside the database are not drained: an HTTP response for a write committed before restore may be delivered after restore (the held-response native test is updated to that outcome). Alarms queued before restore are never dropped: an alarm describes the person's real glucose, which restore does not change, and a missed alarm is worse than a duplicate. The accountable boundary for an alarm is transport acceptance; alarms carry their origin generation for display and audit only. Ordinary clinical frames keep their existing generation check (<code>lib/pgstream/realtime-output.js:16</code>). Stop and report if a requirement needs cross-process drain, for example an external notification effect that cannot be made generation-checked.</td>
 </tr>
 <tr>
-<td><a id="legacy-topology-retirement"></a>2026-11-17, maintainer</td>
+<td><a id="legacy-topology-retirement"></a><em>The legacy topology removal stands. <a href="#writer-driven-transport-direction">writer-driven transport</a> subsequently replaced its native stream input.</em> 2026-11-17, maintainer</td>
 <td><strong>One supported evaluator topology: the native stream with the assigned-worker seam (<code>lib/pgstream/assigned-worker.js</code>, <code>lib/pool-membership/slice.js</code>). Every other pool, placement, lease and <code>*-candidate</code> topology retires, in Lane E as one deliverable.</strong> Now: the V2 live-member adapter (<code>pool-membership/pool-member.js</code> and its V2 branches in <code>pool-membership/{index,postgres,pool-candidate}.js</code> and <code>server/serve/evaluator-pool.js</code>), the orphaned <code>pgstream/pool-operator-grants.js</code>, and the legacy selectors outside Lane D's files (realtime <code>intakeProfile</code>, <code>tenant-operations/selected-platform.js</code>, legacy pool intake grants and receipts), with their mechanism tests. After Lane D merges: the restore, recommission and notification pool paths and the deploy <code>restore.js</code> intake binding.</td>
 <td>Basis: Lane E classification at <code>52d1709e2d46</code> (callers read-derived; controls reproduced). Multitenant internals carry no compatibility obligation. Kept: <code>server/serve/pool-config.js</code>, shared <code>pool-membership</code> primitives the connector uses, and <code>tenant-notifications/partition-candidate.js</code> while it has supported callers. Each successor outcome (restore, recommission, notification ACK, realtime source admission) must pass on the native path before its legacy selector is removed. The maintainer approved removing the V2 adapter and operator grants explicitly on 2026-11-17.</td>
 </tr>
@@ -8733,7 +8829,7 @@ sets the limit (reproduced). The Codex coordinator brief that dispatches this wo
 <td>Target: reads at or below C1's 7 statements per operation; measured with D's existing counter. Keep D's red controls for writes; add one showing a read crossing restore returns consistent pre-restore data. The read-only port must refuse a write inside PostgreSQL, and the joined-inside-a-write case needs its own control. The writable path remains as a counter control arm. Evidence: <code>HANDOFF-mt-efficient-streaming-D-2026-11-17.md</code> (local), rows for the four-operation counter and the combined READ COMMITTED read.</td>
 </tr>
 <tr>
-<td><a id="static-hash-ownership"></a>2026-11-17, maintainer</td>
+<td><a id="static-hash-ownership"></a><em>The static hash and edge routing remain in force. <a href="#writer-driven-transport-direction">writer-driven transport</a> replaced the producer-delivery mechanism.</em> 2026-11-17, maintainer</td>
 <td><strong>Horizontal shape is static hash ownership with matching proxy routing, for evaluator and realtime alike.</strong> Each process of a role owns the tenants with <code>slice(hash(tenant), K)</code> (<code>lib/pool-membership/slice.js</code>); changing K is a restart. Evaluator: the native producer sends each evaluator process only its slice instead of fanning the full stream to every process, and each process holds one owner lock for its slice for its lifetime instead of per-completion owner probes; D's generation checks fence effects. Realtime: the proxy routes each tenant's connections to its owning process with the same function (a small nginx njs function or a rendered map, with a conformance test against <code>slice.js</code>); dynamic realtime placement publication (<code>lib/realtime-placement/</code> publisher, versioned map moves) retires. API: N stateless replicas behind an nginx upstream. In Kubernetes terms: API is a Deployment behind a Service; evaluator and realtime are StatefulSets whose ordinal is the slice.</td>
 <td>PostgreSQL needs no new machinery: delivery receipts already carry one owner per tenant. Session stickiness alone is insufficient for realtime because delivery ownership is per tenant. Not urgent: round2-profile-run02 at C1 180 req/s measured event-loop utilization API 55.5%, evaluator 53.6%, realtime 20.0%, superseding the 0.95-core reading in <a href="#evaluator-scale-direction">evaluator-scale-direction</a>, which came from a point with earlier load history.</td>
 </tr>
@@ -8886,7 +8982,7 @@ sets the limit (reproduced). The Codex coordinator brief that dispatches this wo
 <td>Replaces the single shared application cohort StatefulSet and its shared socket volume. Source: Codex K1 lane (<code>HANDOFF-k1-components-2026-11-18.md</code>, local). Per-role replacement and restore behavior are measured after the first tiny baseline. Unix-socket IPC between roles retires where per-role HTTP Services replace it.</td>
 </tr>
 <tr>
-<td><a id="vcpool-proof-role"></a><strong>vcpool checks the platform proof at start like the other serving roles.</strong> The proof role set gains <code>vcpool</code>; vcpool's own catalogue screen leaves its serving path. Owner and admin keep their screens because they are platform tooling and admin is the verifier.</td>
+<td><a id="vcpool-proof-role"></a><em>The <a href="#platform-verification-removal">platform-verification removal</a> retired this certificate for all serving roles.</em> <strong>vcpool checks the platform proof at start like the other serving roles.</strong> The proof role set gains <code>vcpool</code>; vcpool's own catalogue screen leaves its serving path. Owner and admin keep their screens because they are platform tooling and admin is the verifier.</td>
 <td>Maintainer, 2026-11-18 (adopted recommendation on census A-14)</td>
 <td>Applies <a href="#platform-application-boundary">platform-application-boundary</a> and <a href="#catalogue-verification-admin-owned">catalogue-verification-admin-owned</a>.</td>
 </tr>
@@ -8996,7 +9092,7 @@ sets the limit (reproduced). The Codex coordinator brief that dispatches this wo
 <td>Narrows <a href="#repeated-standard-point">repeated-standard-point</a> and applies <a href="#brittle-check-removal">brittle-check-removal</a>. Basis (read from the generous-resources campaign records): of about nine runs at 1,000 tenants or more, three reached a product verdict; the rest stopped on harness fit, reserve, executor-skew, observer-deadline or fixed-memory checks. At <code>af8eecee</code> the harness carried 1,538 distinct refusal codes, of which a 120-code sample found about 12% guarding a product property.</td>
 </tr>
 <tr>
-<td><a id="ack-path-tenant-independent"></a><strong>A webhook acknowledgement waits only on that transaction's durable receipt. Recovery of one tenant never blocks acknowledgement or work for another tenant; tenant admission happens after receipt, from the wake; the receiver does not share a connection pool with evaluation. A registry change invalidates only the tenants it addresses. Fixed now on architecture grounds, with restore-fencing controls; cold-start lock waits are measured alongside.</strong></td>
+<td><a id="ack-path-tenant-independent"></a><em>The webhook and receipt pool here belonged to pgstream, retired by <a href="#writer-driven-transport-direction">writer-driven transport</a>. Tenant-local recovery remains required.</em> <strong>A webhook acknowledgement waits only on that transaction's durable receipt. Recovery of one tenant never blocks acknowledgement or work for another tenant; tenant admission happens after receipt, from the wake; the receiver does not share a connection pool with evaluation. A registry change invalidates only the tenants it addresses. Fixed now on architecture grounds, with restore-fencing controls; cold-start lock waits are measured alongside.</strong></td>
 <td>Maintainer, 2026-11-19</td>
 <td>Applies <a href="#architecture-justified-removal">architecture-justified-removal</a>, <a href="#tenant-defect-tenant-scoped">tenant-defect-tenant-scoped</a> and <a href="#boot-independent-of-tenants">boot-independent-of-tenants</a>. Basis (read-derived at core <code>5d248eac</code>): one advisory lock key per consumer is taken exclusively by per-tenant snapshot recovery (<code>lib/pgstream/snapshot-recovery.js:95</code>) and in shared mode by every acknowledgement (<code>lib/storage/clinical-stream-sql.js:40</code>); serial demand admission runs inside the response (<code>lib/server/serve/evaluator-preview.js:214</code>). Leading, unconfirmed hypothesis for the intermittent replication sender timeout.</td>
 </tr>
@@ -9051,7 +9147,7 @@ sets the limit (reproduced). The Codex coordinator brief that dispatches this wo
 <td>Multitenant. Rejected: a Job that writes Secrets through the Kubernetes API (keeps the mixed concerns and gives a Job broad write access); Vault dynamic database credentials now (more moving parts than reproducible runs need; allowed later). Retires <code>bindings/kubernetes/scripts/secrets.sh publish</code>, the provision Job's <code>done</code> container and its <code>/state/.ready</code> and <code>/state/.exported</code> markers (read-derived at deploy <code>0d4573c</code>). Within <a href="#boot-independent-of-tenants">boot-independent-of-tenants</a>, admin's elevated database credentials still reach no orchestration Job.</td>
 </tr>
 <tr>
-<td><a id="stream-source-identity-in-data"></a><strong>The deployment no longer pins the database's stream identity (<code>nativeSelection</code>/<code>nativeSource</code> in role documents, checked by <code>lib/tenant-lifecycle/native-selection.js</code>). The identity the saved stream state already records per tenant in PostgreSQL (system identifier, timeline, database, slot) stays the only one. A replaced database (restore, point-in-time recovery, failover) is handled by the existing recovery: a source mismatch resets and re-bootstraps that tenant, a missing slot goes through snapshot recovery, and a role that exits is restarted by the platform's restart policy. No new code and no refusal that needs a config change.</strong></td>
+<td><a id="stream-source-identity-in-data"></a><em>Historical pgstream identity contract. <a href="#writer-driven-transport-direction">writer-driven transport</a> retired the slot and receiver.</em> <strong>The deployment no longer pins the database's stream identity (<code>nativeSelection</code>/<code>nativeSource</code> in role documents, checked by <code>lib/tenant-lifecycle/native-selection.js</code>). The identity the saved stream state already records per tenant in PostgreSQL (system identifier, timeline, database, slot) stays the only one. A replaced database (restore, point-in-time recovery, failover) is handled by the existing recovery: a source mismatch resets and re-bootstraps that tenant, a missing slot goes through snapshot recovery, and a role that exits is restarted by the platform's restart policy. No new code and no refusal that needs a config change.</strong></td>
 <td>Maintainer, 2026-11-19 ("it's ok if an entire DB restore invalidates a database and causes evaluator to crash and restart, and then it recovers automatically … isn't this a separation of concerns, orchestration issue? this is why we have a restart policy")</td>
 <td>Multitenant. Basis (read-derived at core <code>d83c5cc4d</code>): data-level identity <code>lib/storage/clinical-stream-state.js:54,132</code>; reset on source mismatch <code>lib/storage/postgres-durable-replay.js:339-346</code>; absent slot <code>lib/pgstream/snapshot-recovery.js:80</code>; deployment pin <code>native-selection.js:33-37</code>, written by deploy <code>registry-bootstrap.js:29</code> from the live database (<code>bootstrap.js:134</code>), which is why role documents were copied out of a Pod (lane P mismatch 1, <code>HANDOFF-platform-p-2026-11-19.md</code>, local). Settles recommission's use of the pin the same way. Lane C deletes it.</td>
 </tr>
@@ -9134,6 +9230,46 @@ sets the limit (reproduced). The Codex coordinator brief that dispatches this wo
 <td><a id="per-tenant-lock-bounded-hold"></a><strong>Cut the time a per-tenant lock is held to the minimum the protected step needs. Today the hold is excessive: the write clock is held for the whole batch write. The means: a per-tenant lock is held across a fixed, small number of statements that does not grow with batch size, and never across reads of other pools or waits outside the database. This covers the tenant write clock, the outbox transaction and the evaluator's checkpoint lock. Batch writes do their lookups first and take the write clock last. Under it they reserve every stamp in one statement, check the rows committed since the transaction began, and insert the whole batch in one statement. <em>Amended 2026-11-22 from lane INC-G's evidence. Inserts stay under the clock and are not done before it: each insert holds the per-tenant <code>tenant_insertion_ordinal</code> row to COMMIT (a BEFORE INSERT trigger), and inserting first would move the long hold onto that row and reverse the clock-then-ordinal lock order. Duplicate checks for treatments without an identifier stay under the clock: they have no unique key without a schema change. If the check finds an overlap, the batch falls back to the per-document path.</em> A gate measures the hold time, and the statements inside each locked section, against batch size and load. Its negative control fails when the hold grows with the batch. The clock contract of <a href="#multitenant-requires-write-clock">multitenant-requires-write-clock</a> is unchanged: a v3 <code>srvModified</code> cursor never skips a write that commits late. A lock-free scheme is not adopted: arms (b) and (c) of <a href="#write-clock-history-arms">write-clock-history-arms</a> stay rejected unless a new arm passes the same no-missed-write controls.</strong></td>
 <td>Maintainer, 2026-11-22 ("Agree with the per-tenant lock rule")</td>
 <td>Multitenant (PostgreSQL); single tenant keeps its in-process clock. Basis: <br>• A 288-treatment v1 batch holds the clock about 0.8 s idle, and 6 of 8 concurrent same-tenant batches answered 503 (measured, INC-D, local <code>HANDOFF-inc-d-20261122.md</code>). <br>• The clock <code>SELECT … FOR UPDATE</code> (<code>lib/storage/postgres-write-clock.js:111</code> at core <code>5012a724a</code>) is held across all of <code>step.write</code> (<code>lib/storage/postgres-intent-common.js:64</code>): one lookup and one insert per document (read-derived). <br>• At 2,000 tenants and K=2, one <code>POST /api/v1/devicestatus</code> answered 503 after 1,018 ms and failed the run's HTTP gate. Attribution to a clock wait is read-derived (local <code>HANDOFF-inc8898-wave2a-20261122.md</code>). <br>• Under load the outbox transaction is held across reads of other pools (measured, execution log 2026-11-20). <br>• Entries already meet the rule with one set-based upsert (<code>lib/storage/postgres-entries-write.js</code>). <br>Hold time is statements × (round trip + event-loop delay), so it grows with batch size and with process load. BF-241 raised the device-status body limit to 50 MB. <br>• <strong>INC-G, measured locally</strong> (core <code>02739a65f</code>, joined to the round core as <code>0ea1d1ee4</code>; switch <code>NS_CLOCK_LATE_STAMP</code>, off by default; v1 and in-process creates of treatments and device statuses only). Clock hold off → on: 1 document 8–26 → 4–5 ms; 50 documents 153–186 → 15–17 ms; 288 documents 995–1,034 → 65–88 ms; 1,000 documents 4,417–4,571 → 255–267 ms. With it on, 4 statements are held whatever the batch size. 8 concurrent 288-batches to one tenant: 6–7 of 8 <code>STORAGE_TIMEOUT</code> → 1–2 of 8. The remaining hold is per-row trigger cost (about 0.25 ms per row, read-derived; cutting it needs a migration). The no-missed-write held-writer control and the duplicate-identity control each went red, then green. Local handoff <code>HANDOFF-inc-g-clock-20261122.md</code>. A lock-free in-flight stamp registry was assessed by reading as arm (b) again: not worth it against a 4-statement hold. Not yet measured on a cluster.</td>
+</tr>
+<tr>
+<td><a id="multitenant-write-settings-at-defaults"></a><strong>The multitenant api runs every <code>WRITE_*</code> setting at its 16.0.0 default (<code>WRITE_RESEND=replace</code>, <code>WRITE_DELETED_RESEND=stay</code>, <code>WRITE_IDENTIFIER=lenient</code>, <code>WRITE_DELETED_EDIT=ignore</code>, <code>WRITE_IDENTIFIER_INDEX=try</code>). A tenant behaves like a single-tenant site that has not opted into a way back. No operator-wide or per-tenant wiring is built now. If a measured need appears, per-tenant values go through <a href="#d22">d22</a>'s policy without changing the default behaviour. The parity differential against <code>official/dev</code> compares non-default arms with <code>official/dev</code> at defaults, and records that difference.</strong></td>
+<td>Maintainer, 2026-11-22 ("whichever is simpler and forward compatible")</td>
+<td>Multitenant. Basis (measured, lane INC-P, local <code>HANDOFF-inc-p-resend-parity-20261122.md</code>): <code>lib/server/tenant-app/environment.js</code> builds the tenant environment without <code>env.write</code>. Under <code>WRITE_DELETED_RESEND=revive</code>, <code>official/dev</code> revives a deleted Loop re-send and the candidate leaves it deleted. The write step revives correctly when the setting reaches it. The settings are 16.0.0's opt-in ways back for single-tenant operators (<code>releases/cgm-remote-monitor-16.0.0/decisions.md</code>, setting names and compatibility C).</td>
+</tr>
+<tr>
+<td><a id="one-large-postgresql-primary"></a><strong>The multitenant deployment uses one PostgreSQL primary for now, on a node of its own that no evaluator, realtime or api pod shares, and grows vertically (CPU, memory for the working set, WAL and disk). Cells (several independent deployments, each with its own database) stay a later fleet option and are not built or tested now. Capacity runs place PostgreSQL alone on its node, start load only after autovacuum on the large tables has finished and the restored volume is warm, and size the claim to the tier. Api connections are not added until PostgreSQL read latency is within its target.</strong></td>
+<td>Maintainer, 2026-11-22 ("one large postgresql for now")</td>
+<td>Multitenant. Basis: <br>• At 10,000 tenants (K=20, 6 api × pool 8) PostgreSQL I/O and pool checkout limited throughput, not the evaluator or the write clock (measured, execution log 2026-11-22 round close). <br>• The four evaluator slices on the PostgreSQL node had p50 lag 50–62 s against 0.9–2.4 s elsewhere (measured; the CPU-contention cause is read-derived). <br>• The 16.4% against 2.4% api 5xx difference between two same-sized 10k runs coincides with autovacuum of a 13 GiB relation running through the load and 2.7–7× slower disk reads (measured; the causal chain is read-derived; local <code>HANDOFF-pg-sizing-20261123.md</code>). <br>Proposed sizing tiers and the dedicated-node placement are on deploy <code>claude/pg-sizing-20261123</code> <code>6d93465</code>, not yet measured on a cluster.</td>
+</tr>
+<tr>
+<td><a id="no-realtime-fast-path"></a><strong>Realtime does not send stored rows to browsers ahead of the evaluator. The browser frame stays derived from the evaluator's output, alarms arrive with or before the reading they concern, and hint fields are never applied as data. Instead realtime sends frames as deltas against the previous frame for that tenant, as a single-tenant site does, computed from the evaluator's output.</strong></td>
+<td>Maintainer, 2026-11-23 ("record no fast path and launch the delta-frame lane")</td>
+<td>Multitenant. Basis (lane C, local <code>HANDOFF-browser-path-20261123.md</code>): <br>• Measured write → browser frame: 15.0.9 and <code>official/dev</code> p50 about 30 ms, worst 1.05 s; multitenant <code>2dee799c8</code> at 8 tenants p50 about 190 ms, worst 290 ms, of which evaluator about 70 ms and realtime read-and-send about 118 ms; single-tenant frames are deltas (p50 308 bytes), multitenant frames are full (p50 about 138 KB). <br>• Read-derived: a fast path would miss v1 writes (realtime receives rows only from API v3), could show a reading that the next full frame removes, needs dedup of merged hints, and would let alarms trail the reading. Keeps the hint rule in <code>contract.js</code> and <a href="evaluator-realtime-communication.html">evaluator-realtime-communication</a> unchanged.</td>
+</tr>
+<tr>
+<td><a id="storage-machinery-removal"></a><strong>Remove storage machinery the writer-driven design and the objectives do not justify. Adopted now: the <code>storage_bytes</code> column and its <code>clinical_storage_size</code> AFTER INSERT trigger on every clinical table go. Under <a href="#architecture-justified-removal">architecture-justified-removal</a>, and in place per <a href="#prerelease-schema-in-place">prerelease-schema-in-place</a>, the same removal applies to: the per-tenant insertion counter table and its BEFORE trigger, replaced by one bigint sequence allocated under the tenant write clock, which keeps <a href="#view-reads-total-order">view-reads-total-order</a>; the full output frame and window rows stored in the evaluator checkpoint <code>projection</code>, replaced by what its readers use; and the pgstream-era checkpoint columns and indexes the writer-driven sweep does not read.</strong> <strong>Status 2026-11-23 (lane M, core <code>claude/storage-removal-20261123</code> <code>ff9fc2a69</code>, local <code>HANDOFF-storage-removal-20261123.md</code>):</strong> the trigger and the redundant indexes are removed (migrations 0100 and 0101), with bytes per tenant-day measured on a 100-tenant 2-day seed at 1.865 → 1.546 MB (−17.1 %). Two items stopped because they protect a property: (1) the per-tenant counter: tenant restore carries the counter floor and refuses to regenerate ordinals (<code>lib/tenant-lifecycle/index.js:254-259</code>), and a tenant-bound restore cannot move a global sequence, so a single sequence needs a separate decision on restore. <strong>The maintainer kept the counter (2026-11-23, option c, "keep the counter"): the saving is small (about 0.4 MB per 100 tenant-days plus one counter update per insert, measured), and changing restore ordinal semantics needs its own test;</strong> (2) the stored output frame: realtime rebuilds cold cells from it and has no clinical grants (<code>lib/server/realtime/runtime.js:58</code>), so it stays. The pgstream-era checkpoint leftovers (one index and one column unused) move to the removal of the pool-era modules. <strong>Amended 2026-11-23 (maintainer, "drop the redundant indexes"): the redundant indexes go as well: the exact duplicates of the <code>*_tenant_ordinal_unique</code> indexes (<code>devicestatus_tenant_insertion</code>, <code>treatments_tenant_insertion</code>) and the indexes that are prefixes of a longer index (<code>devicestatus_tenant_created_at</code>, <code>entries_tenant_date</code>), each with a query-plan check that the remaining index serves the same queries. Measured by lane S (local <code>HANDOFF-pg-bytes-20261123.md</code>): about 160 MB per 100 tenants at 14 days.</strong> Not covered here: dropping other MongoDB-parity indexes (for example <code>entries_tenant_mbg</code>, and the <code>sysTime</code>/<code>dateString</code> indexes, which need a query change) waits for per-index <code>idx_scan</code> from a capacity run; a devicestatus prediction retention policy is a product decision taken the same way for single and multitenant; compressed cold chunks are new machinery and need their own proposal.</td>
+<td>Maintainer, 2026-11-23 ("adopt removing storage_bytes and other complicated machinery unjustified by the design and objectives")</td>
+<td>Multitenant PostgreSQL only; MongoDB single tenant unchanged (<a href="#d4">d4</a>). Basis (lane R, local <code>HANDOFF-storage-alternatives-20261123.md</code>, 100-tenant 2-day seed, PostgreSQL 16.15): <br>• Measured: updates equal inserts on every clinical table (57,600 entries, 76,504 devicestatus, 36,361 treatments); 18,560 devicestatus updates were not HOT and touched all 9 of its indexes. The column was built for the pgstream materializer's batch size; pgstream retired 2026-11-21 (<a href="#writer-driven-transport-direction">writer-driven-transport-direction</a>). Read-derived: <code>lib/storage/postgres-durable-replay.js:107</code> selects it and never uses it; the byte bound uses <code>octet_length(doc_text)</code>. <br>• Measured: one counter-row update per insert; the evaluator checkpoint <code>projection</code> is about 60 KB stored (488 KB uncompressed) per tenant and is rewritten every evaluation, while compact readers strip <code>frame</code> and <code>rows</code>. <br>• Measured: the current schema stores 2.05 MB per tenant-day on the product path; a lean layout without the trigger and counter, with 4–5 indexes per table and lz4, stores 1.23 MB. Correctness controls: the v1/v3 write and history suites, the re-send differential against <code>official/dev</code>, and a break-it control for insertion order and v3 history no-missed-write.</td>
+</tr>
+<tr>
+<td><a id="tied-sort-key-permutation"></a><strong>Within records that share a requested sort key, multitenant PostgreSQL need not reproduce single-site MongoDB's order; it orders ties by the insertion ordinal (<a href="#view-reads-total-order">view-reads-total-order</a>). A storage layout passes ordering parity when the client receives the same records with the same values and the same client-visible winners. A changed duplicate winner or a missing record is a defect to fix, never an accepted difference.</strong></td>
+<td>Maintainer, 2026-11-24 ("yes to both")</td>
+<td>Both modes' clients; multitenant ordering. Basis (Codex lane U5, local <code>HANDOFF-stage1-open-gates-20261124.md</code>, reproduced over HTTP on synthetic data): single-site MongoDB returned a different tenth treatment on the same v1 request before and after its cache warmed, so it has no stable tie order to copy; both PostgreSQL layouts matched the warm page field for field. LoopFollow keeps the first of duplicate treatments (<code>NightscoutTreatmentDeduplicationTests.swift</code>), so a reversed duplicate pair changes the surviving note (reproduced with its function). The v3 history continuation gap is tracked separately as BF-248.</td>
+</tr>
+<tr>
+<td><a id="predictions-max-size-single-tenant-parity"></a><strong>Multitenant applies <code>PREDICTIONS_MAX_SIZE</code> exactly as single tenant does: one deployment-wide value read with single tenant's parse rules (unset or invalid → 288, an integer ≥ 0 → that value), applied to device-status writes through API v1 to the OpenAPS <code>predBGs</code> curves, as <code>lib/server/devicestatus.js</code> does on a single site. Device-status retention stays "keep everything" in both modes; no age-based trimming is built.</strong></td>
+<td>Maintainer, 2026-11-24 ("match single tenant PREDICTIONS_MAX_SIZE"; retention: "match single tenant choices, otherwise A")</td>
+<td>Basis (lane Q, local <code>HANDOFF-predictions-share-20261124.md</code>, synthetic data, PostgreSQL 16.15): the tenant environment (<code>lib/server/tenant-app/environment.js:137</code>) carried no cap, so multitenant stored 400-point curves where single tenant stored 288 (measured by differential against <code>official/dev</code> <code>79144cbd0</code>); fix on core <code>claude/predictions-max-size-parity-20261124</code>. Prediction curves are 25–35 % of raw JSON but −31 % to +19 % of stored device-status bytes, and caps of 288 or 48 save nothing because AAPS and Trio send at most 48 points and Loop's curve is not covered (measured; uploader limits read-derived with file:line in the handoff).</td>
+</tr>
+<tr>
+<td><a id="devicestatus-hour-chunks"></a><strong>Build stage 2 of the <a href="storage-layout-proposal-2026-11-23.html">storage layout proposal</a>: multitenant device status is stored as one row per (tenant, hour) holding that hour's documents as one compressed JSON text value, with a slim identity index for <code>_id</code> and <code>identifier</code>. It is adopted into a candidate only after the proposal's gates pass on it: the contract differential against <code>official/dev</code>, read latency and evaluator CPU per cycle at 1k and 10k, write-path lock hold and chunk-rewrite cost, and per-tenant export and restore.</strong>  <strong>Parked 2026-11-24 under the pass rule set before round 2</strong> (lane D2, core <code>claude/devicestatus-chunks-20261123</code> <code>1aa2e9d06</code>, local <code>HANDOFF-devicestatus-chunks-20261123.md</code>; 1,000 tenants, measured): the contract held, but the evaluator window read p50/p95 went from 22.1/82.3 ms on the current layout to 34.2/113.3 ms (round 1) and 83.2/276.3 ms (round 2, <code>json</code> access re-reads the text), and a 288-document batch held under the write clock went from 44.7 ms to 637.5 ms (quadratic duplicate check as built). Steady-state devicestatus bytes per tenant-day fell 82 % (0.885 → 0.157 MB, round 1). v1 and v3 reads were 2–4× faster. Revisit only with a per-document header beside the text so the window filters without reading documents.**</td>
+<td>Maintainer, 2026-11-23 ("start stage 2 of the storage proposal")</td>
+<td>Multitenant PostgreSQL only; MongoDB single tenant unchanged (<a href="#d4">d4</a>); schema changes in place (<a href="#prerelease-schema-in-place">prerelease-schema-in-place</a>). Basis (lane S, local <code>HANDOFF-pg-bytes-20261123.md</code>, measured on scratch copies of 100 tenants × 14 days): 187 MB as hour chunks against 825 MB for the body-only layout; device status is about 57 % of current clinical bytes. Stage 1 (typed entries and treatments) is not decided.</td>
+</tr>
+<tr>
+<td><a id="connector-secret-entry-admin"></a><strong>Operators enter a tenant connector secret through a write-only resource on the admin role's operator API (for example <code>PUT /v1/tenants/{id}/secrets/{ref}</code>). The value goes in and is never returned or logged; the call writes the secret record and one audit row in one step. No other caller writes secret records or audit rows; deployment tooling (the <code>connector-entry</code> Job) calls this resource.</strong></td>
+<td>Maintainer, 2026-11-23 ("(b) the admin endpoint")</td>
+<td>Multitenant only; a single site keeps connector settings in its environment. Applies <a href="#operator-rest-api">operator-rest-api</a>, <a href="#provisioning-split">provisioning-split</a> and <a href="#provisioning-secrets-in">provisioning-secrets-in</a>. Basis (lane V, local <code>HANDOFF-vcpool-binding-20261123.md</code>, reproduced in a Compose lab at core <code>2dee799c8</code>): core had no resource that enters a secret value, and <code>connector-sources</code> accepts only existing references. The interim Job wrote secret records and audit rows directly as the provisioner, a second writer outside the admin API.</td>
 </tr>
 </tbody>
 </table>

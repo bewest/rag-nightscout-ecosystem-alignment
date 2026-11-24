@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3614,6 +3622,34 @@
   
   
     <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -3622,6 +3658,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -5772,7 +5892,7 @@
 
 
 <h1 id="tenant-owner-authority-and-token-verification">Tenant owner authority and token verification<a class="headerlink" href="#tenant-owner-authority-and-token-verification" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-20 at <code>b350b5111</code>.</em></p>
+<p><em>Living document, last changed 2026-11-24 at <code>7b8bfd465</code>.</em></p>
 <p><em>Contributor-facing living contract. Adopted by the maintainer in the owner-authority
 chat, 2026-11-05; current with the release decisions of 2026-11-10. Supplement to execution-plan D17/D22; this is the home of the owner
 authority and local-verification amendment. Implementation acceptance is separate.
@@ -5784,7 +5904,7 @@ role assignments, sessions, credential status/generations, operator ceilings and
 accepted signing-key generations. It already carries current data permissions;
 local signature verification removes a cryptographic service dependency, rather
 than moving an existing permission database out of Vault.</p>
-<p>The secrets component protects recoverable credentials and private signing keys.
+<p>Vault Transit protects recoverable tenant secrets. Roles derive token-signing keys from the deployment signing secret.
 For a new asymmetric token, its private key creates the signature; a public key
 checks the signature without permitting token creation. A JWT is the signed
 credential presented by a client, not its signing key. Existing NS-style HS256
@@ -5976,12 +6096,7 @@ is not revocation. Removing a grant or revoking a credential/session takes effec
 on the next protected operation across workers, including protected stream delivery.
 Already-authorized in-flight work may finish. No stale permission window is adopted.</p>
 <h2 id="vault-verification-amendment">Vault verification amendment<a class="headerlink" href="#vault-verification-amendment" title="Permanent link">&para;</a></h2>
-<p>For new-format tokens, private signing keys remain in the secrets component;
-serving workers verify asymmetrically signed tokens locally with provisioned public
-keys. This supersedes D22's requirement to send every verification to the secrets
-component. It does not export private/HMAC keys or weaken current authorization.
-Prototype algorithm: Ed25519; production JOSE/library/provider interoperability is
-an acceptance requirement before selecting/enabling the production format.</p>
+<p>Roles derive tenant- and purpose-specific signing keys in process. Signing and local verification use the <a href="multitenancy-decisions.html#deployment-signing-secret">deployment signing secret contract</a>. PostgreSQL holds the accepted version and current authority. The original verification prototype used Ed25519. The <a href="execution-log.html#update--second-join-signing-follow-ups-and-harness-cleanup-on-local-branches-2026-11-20">signing-key join</a> records the later no-Vault issuance and rotation controls.</p>
 <p>Verification pins algorithm, issuer, audience, tenant, purpose and key binding;
 validates issued/not-before/expiry/lifetime; and rejects unknown keys. Key discovery
 never follows a request-supplied URL/JWK. Cache public keys, not stale grants.
@@ -5996,10 +6111,7 @@ grant changes transactionally. RLS and trusted tenant binding remain mandatory.<
 pre-verification throttling. A logical snapshot may still require transaction and
 tenant-binding round trips; one snapshot is not a claim of one wire request.</p>
 <h2 id="dependency-failures-and-acceptance">Dependency failures and acceptance<a class="headerlink" href="#dependency-failures-and-acceptance" title="Permanent link">&para;</a></h2>
-<p>With a trusted cached public key and available current PostgreSQL authority, existing
-new-format tokens continue ordinary data operations during a Vault outage. New
-issuance, reveal and secret consumption that requires Vault refuse. Unknown keys
-refuse rather than fall back. PostgreSQL authority outages refuse protected reads
+<p>With signing material available to the role and current PostgreSQL authority, token issuance and verification can continue during a Vault outage. Operations that need the tenant data key, including reveal and connector-secret decryption, refuse while Transit is unavailable. Unknown signing keys refuse. PostgreSQL authority outages refuse protected reads
 and writes even when the token signature verifies. The <a href="multitenancy-decisions.html#oidc-provider-outage-existing-access">OIDC provider-outage decision</a>
 allows existing human access only within its adopted lifetime and current
 Nightscout authority during an identity-provider outage. Provider-dependent

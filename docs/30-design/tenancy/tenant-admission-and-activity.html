@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3592,6 +3600,34 @@
   
   
     <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -3600,6 +3636,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -5728,22 +5848,8 @@
 
 
 <h1 id="tenant-admission-activity-and-recovery">Tenant admission, activity and recovery<a class="headerlink" href="#tenant-admission-activity-and-recovery" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
-<p><em>Contributor-facing living guide, current with the release decisions of 2026-11-10.
-</em><em>Activity policy adopted 2026-11-10:</em><em> pause and suspend are the operator
-activity policy (<a href="multitenancy-decisions.html#activity-is-pause-suspend">decision</a>), with the rows listed
-under <a href="#adopted-activity-policy">adopted activity policy</a>. Implementation is
-<code>MT-ACTIVITY-ELIGIBILITY</code> (fixed on its lane, not joined to #8898; the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/queue/work-queue.yaml">queue</a> owns its state and the
-<a href="../../../reports/tenancy/activity-eligibility-2026-11-10/index.html">lane record</a>
-its measurements). The REST component direction below is recorded in the
-<a href="multitenancy-decisions.html#rest-api-component-and-replica-placement-2026-11-08">release decisions</a>.
-Mechanism assessment in the first three sections is </em><em>read-derived</em><em> from application
-<code>ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364</code>; later acceptance stays attributed to
-its actual heads in the <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">operation-window acceptance family</a>.
-The <a href="multitenancy-decisions.html#suspension-and-lifecycle">tenancy decisions</a>
-own the pause/suspend meanings and <a href="owner-authority.html">owner authority</a> the
-owner and root boundaries.</em></p>
+<p><em>Living document, last changed 2026-11-24 at <code>7b8bfd465</code>.</em></p>
+<p>This guide explains operator activity and the restore boundaries of the November 10 reference. The <a href="multitenancy-decisions.html#activity-is-pause-suspend">activity policy</a> governs pause and suspend. The <a href="multitenancy-decisions.html#restore-suspend-drain-replace">generation-fenced restore decision</a> supersedes the old cross-process cohort census and invalidation step. The first three sections describe the earlier implementation at <code>ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364</code>. <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">Historical restore measurements</a> · <a href="../../../reports/tenancy/activity-eligibility-2026-11-10/index.html">Activity evidence</a></p>
 <h2 id="one-logical-api-does-not-require-one-listener-or-process">One logical API does not require one listener or process<a class="headerlink" href="#one-logical-api-does-not-require-one-listener-or-process" title="Permanent link">&para;</a></h2>
 <p><strong>Architecture direction: REST APIs (v1/v2/v3) are one stateless request-serving
 component.</strong> Version-specific routers/adapters live inside that component; API
@@ -5980,8 +6086,7 @@ running work under an explicit race contract, and releases retained
 tenant-specific resources when safe. A small amount of shared eligibility and
 recovery observation remains; "no unnecessary background work" is not a measured
 promise of zero shared overhead. Operators keep separately authenticated
-inspection and recovery controls. Connector workers do not yet exist as a
-multitenant runtime (<code>roles.js:81</code>); they adopt the same eligibility when built.</p>
+inspection and recovery controls. Pooled connector workers follow the tenant activity policy. The <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">candidate 5 discovery record</a> gives the measured live and backfill scope.</p>
 <h2 id="focused-future-acceptance">Focused future acceptance<a class="headerlink" href="#focused-future-acceptance" title="Permanent link">&para;</a></h2>
 <p>The criteria below are the acceptance bar for the adopted policy. The
 <a href="../../../reports/tenancy/activity-eligibility-2026-11-10/index.html">activity-eligibility lane record</a>

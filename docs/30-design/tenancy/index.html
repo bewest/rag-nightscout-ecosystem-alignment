@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3490,6 +3498,34 @@
   
   
     <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -3498,6 +3534,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -5648,28 +5768,10 @@
 
 
 <h1 id="tenancy-what-to-read-and-maintain">Tenancy: what to read and maintain<a class="headerlink" href="#tenancy-what-to-read-and-maintain" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-20 at <code>b0f3d08e6</code>.</em></p>
-<p><em>Contributor-facing living reading guide, current with the release decisions of
-2026-11-16. Each document below owns one kind of fact; it links to the others
-rather than restating them. <a href="multitenancy-decisions.html">Multitenancy decisions</a>
-own adopted policy (D1–D23 and the later programme rows), the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/queue/work-queue.yaml">queue</a> owns claimed item
-state and the <a href="execution-log.html">execution log</a>
-owns joins, acceptance, measurement and ownership. Release directories carry only what a
-release ships; 16.0.0 ships no multitenant role. Retired journals, answered packets and
-superseded analyses are in the <a href="../../archive/tenancy/index.html">tenancy archive</a>;
-a date in a filename does not establish currency.</em></p>
-<p>For a first reading, start with <a href="runtime-topology.html">runtime topology</a> for roles
-and placement, then <a href="evaluator-realtime-communication.html">evaluator/realtime communication</a>
-for the current stream, bounded clinical state and separate raw storage delivery.
-Use <a href="deployment-bindings-and-public-names.html">deployment bindings</a> for configuration
-and trust, then <a href="production-critical-path.html">production sequencing</a> for evidence
-and admission. The <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">selected runtime record</a>
-owns functional qualification; the same report owns separately attributed
-operating measurements. Neither a design diagram nor an old run grants capacity. The release record is a journal of executed work, not
-the architecture explanation.</p>
-<p>For a diagram-first review, open the <a href="../../../site/pages/multitenant-database-design.html">multitenant database and component ownership
-page</a>, rendered from the SQL
-guide below.</p>
+<p><em>Living document, last changed 2026-11-24 at <code>40f346647</code>.</em></p>
+<p>The multitenant candidate uses writer-driven notifications, resident evaluator windows and tenant-routed realtime. The single-site server keeps its MongoDB path. Start with the <a href="runtime-topology.html">runtime topology</a>, then follow a <a href="evaluator-realtime-communication.html">clinical write through evaluation and browser delivery</a>. The <a href="decisions-in-force.html">decisions in force</a> index links to the maintainer's adopted contracts.</p>
+<p>For <strong>candidate 5</strong>, the <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">dated execution record</a> identifies the qualified core and deploy revisions, the local connector measurements, the paid experiment and their admission limits. The <a href="production-critical-path.html">production guide</a> explains how these results are used. The <a href="multitenant-delivery-dashboard.html">milestone dashboard</a> preserves the recorded promotion decisions. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/queue/work-queue.yaml">queue</a> owns individual work items. The <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">16.0.0 release record</a> covers a release with no multitenant role.</p>
+<p>For storage, read the <a href="sql-and-migration-architecture.html">SQL guide</a> for tenant isolation, history and restore. The <a href="../../../site/pages/multitenant-database-design.html">database diagrams</a> render its component and storage contracts. The <a href="storage-layout-proposal-2026-11-23.html">layout study</a> compares measured alternatives. The <a href="diagrams/index.html">diagram collection</a> and <a href="../../archive/tenancy/index.html">tenancy archive</a> identify the source and date of earlier designs.</p>
 <h2 id="state-sequencing-and-decisions">State, sequencing and decisions<a class="headerlink" href="#state-sequencing-and-decisions" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5689,15 +5791,15 @@ guide below.</p>
 </tr>
 <tr>
 <td><a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">Completion schedule</a></td>
-<td>Batch sequence, lane ownership and <a href="multitenant-integration-batching-plan-2026-11-06.html#completion-focused-coordination">completion-focused coordination</a>.</td>
+<td>November batch sequence and <a href="multitenant-integration-batching-plan-2026-11-06.html#completion-focused-coordination">completion-focused coordination</a>.</td>
 </tr>
 <tr>
 <td><a href="m5-m6-decision-list.html">M5/M6 decision index</a></td>
-<td>Every settled policy topic with its decision row; no human-policy topic is open.</td>
+<td>Settled M5/M6 policy questions from the November 10 review.</td>
 </tr>
 <tr>
 <td><a href="production-critical-path.html">Production critical path</a></td>
-<td>Production closure criteria, diagnostic/acceptance sequencing and conditional topology/HA decisions; current blockers remain in the queue/release records.</td>
+<td>Production closure criteria, diagnostic/acceptance sequencing and conditional topology/HA decisions; current measurements are in the execution log.</td>
 </tr>
 </tbody>
 </table>
@@ -5759,23 +5861,27 @@ guide below.</p>
 </tr>
 <tr>
 <td><a href="selectable-endpoints-and-api-scaling-plan.html">Private API composition and scaling plan</a></td>
-<td>The adopted <code>serve.internal</code> listener, graceful shutdown, fixed-roster API replicas and their acceptance matrix.</td>
+<td>Private listener and graceful shutdown decisions, with the November 10 transport and fixed-roster acceptance plan.</td>
 </tr>
 <tr>
 <td><a href="realtime-sharding-plan.html">Realtime sharding plan</a></td>
-<td>Implemented fixed-roster tenant placement and controlled moves, their source-scoped qualification, and remaining topology/capacity boundaries.</td>
+<td>Static hash ownership, reconnect behavior and the retained fixed-roster move evidence.</td>
 </tr>
 <tr>
 <td><a href="evaluator-realtime-communication.html">Evaluator/realtime communication</a></td>
-<td>Stream acceptance, clinical completion and delivery contracts; the <a href="evaluator-realtime-communication.html#single-evaluator-efficiency-plan">single-evaluator efficiency plan</a> owns current priorities, measured comparisons and integration boundaries.</td>
+<td>Writer-owned pending work, evaluator completion, raw storage events, browser frames and notification handoff.</td>
 </tr>
 <tr>
 <td><a href="evaluator-scaling-options-2026-11-19.html">Evaluator scaling options</a></td>
-<td>Proposed: collected options for raising the evaluator ceiling (in-process efficiency, worker threads, K&gt;1 slicing, intake split, stream router, Debezium/broker, publications), the 2026-11-19 evidence and the measurements that decide.</td>
+<td>November scaling experiments and the decisions that selected more slices and cheaper cycles.</td>
+</tr>
+<tr>
+<td><a href="storage-layout-proposal-2026-11-23.html">Storage layout proposal</a></td>
+<td>Typed entries and treatments remain on an experiment branch. The tenant-hour device-status layout is parked. Candidate 5 uses JSONB.</td>
 </tr>
 <tr>
 <td><a href="writer-driven-refactor-ledger-2026-11-20.html">Writer-driven refactor ledger</a></td>
-<td>Living list for the writer-driven transport: what goes into the S4 candidate, what retires at adoption, and refactors deferred until a measurement needs them.</td>
+<td>S4 join contents, pgstream retirement inventory and deferred refactors.</td>
 </tr>
 <tr>
 <td><a href="sql-and-migration-architecture.html">SQL and migration architecture</a></td>
@@ -5783,7 +5889,7 @@ guide below.</p>
 </tr>
 <tr>
 <td><a href="counter-and-restore-options.html">Counter and restore options</a></td>
-<td>Clinical time, public history, implemented insertion order and internal stream progress; current recovery obligations and retained alternatives.</td>
+<td>Clinical time, public history, implemented insertion order and evaluator pending work; current recovery obligations and retained alternatives.</td>
 </tr>
 <tr>
 <td><a href="../../archive/tenancy/postgres-tenant-clock-proof-2026-11-06.html">Retained legacy history proof plan</a></td>
@@ -5805,6 +5911,10 @@ guide below.</p>
 <td>The Compose tree, edge, identity-provider profiles and Vault Agent overlay, <a href="multitenancy-decisions.html#deploy-tree-home-now">from the next #8898 batch on</a>; see the <a href="claimed-public-names-and-deploy-companion-2026-11-09.html#2-scope-split-core-sibling-repository-hoster-private">scope split</a>.</td>
 </tr>
 <tr>
+<td><a href="operations-runbook.html">Operations runbook</a></td>
+<td>Restart, node loss, whole-installation rollback, tenant restore and the limits of the synthetic recovery drill.</td>
+</tr>
+<tr>
 <td><a href="deployment-and-rig-testing.html">Deployment and rig testing</a></td>
 <td>Fault domains, the ed2 Compose runbook, client and rig setup, restore/restart scenarios.</td>
 </tr>
@@ -5816,8 +5926,7 @@ guide below.</p>
 </table>
 <h2 id="dispatch-era-plans-still-cited-by-release-records">Dispatch-era plans still cited by release records<a class="headerlink" href="#dispatch-era-plans-still-cited-by-release-records" title="Permanent link">&para;</a></h2>
 <p>These keep their route/domain design, seam plans and dated checkpoints; their
-heads and "next" statements describe the original dispatch. Current sequencing is
-in the completion schedule above.</p>
+heads and "next" statements describe the original dispatch. Current runs and lane ownership are in the <a href="execution-log.html">execution log</a>.</p>
 <table>
 <thead>
 <tr>
@@ -5873,7 +5982,7 @@ in the completion schedule above.</p>
 </table>
 <h2 id="keeping-this-path-useful">Keeping this path useful<a class="headerlink" href="#keeping-this-path-useful" title="Permanent link">&para;</a></h2>
 <p>Correct a rule in its decision or contract home and record acceptance in the
-release records and status sources. Do not append execution journals to the
+<a href="execution-log.html">execution log</a> and the applicable status source. Do not append execution journals to the
 roadmap or the decision reference. When a document here is superseded, follow
 <a href="../../00-overview/DOCUMENT-CONTROL.html#35-changing-a-document">document control</a>:
 move it to the archive with a retention note and an index row, and repoint every

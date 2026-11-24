@@ -13,10 +13,10 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/realtime-sharding-plan.html">
       
       
-        <link rel="prev" href="nightscout-storage-seam-interface-2026-09-14.html">
+        <link rel="prev" href="operations-runbook.html">
       
       
-        <link rel="next" href="tenant-config-schema-2026-10-27.html">
+        <link rel="next" href="reports-survey-2026-11-24.html">
       
       
         
@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3487,6 +3495,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -3550,50 +3586,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#implemented-boundary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Implemented boundary
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#logical-roles-and-process-placement" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Logical roles and process placement
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#placement-routing-and-durable-state" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Placement, routing and durable state
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#controlled-moves-and-failure-recovery" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Controlled moves and failure recovery
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#client-and-alarm-semantics" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3619,6 +3611,90 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -5667,50 +5743,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#implemented-boundary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Implemented boundary
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#logical-roles-and-process-placement" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Logical roles and process placement
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#placement-routing-and-durable-state" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Placement, routing and durable state
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#controlled-moves-and-failure-recovery" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Controlled moves and failure recovery
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#client-and-alarm-semantics" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5750,189 +5782,19 @@
 
 
 <h1 id="realtime-sharding-composition-and-recovery">Realtime sharding, composition and recovery<a class="headerlink" href="#realtime-sharding-composition-and-recovery" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-15 at <code>268046679</code>.</em></p>
-<p><em>Contributor-facing living guide, updated 2026-11-15. </em><em>Read-derived</em><em> current
-source: application <code>8ddcc01208c11c18145c44c1076ae4c91f79ffa2</code>, deployment
-<code>23e73da7ad8d57bb0a360c29b3ef2320ed229238</code>. Fixed-roster realtime sharding and
-controlled moves are implemented on local branches. Historical native evidence
-keeps its exact source below; it does not qualify this later candidate or prove
-horizontal capacity. Queue home: <code>MT-REALTIME-SHARDING</code>. The
-<a href="runtime-topology.html">runtime topology</a> owns current composition; the
-<a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a> own
-joined qualification and publication state.</em></p>
-<h2 id="implemented-boundary">Implemented boundary<a class="headerlink" href="#implemented-boundary" title="Permanent link">&para;</a></h2>
-<p>Each tenant has one admitted realtime owner for connections, projection work and
-notification handoff. Stable logical shards group tenants. A separate versioned
-map places those shards on workers. Changing worker count does not change the
-logical shard count. Evaluator assignment remains independent.</p>
-<p>The ordinary deployment uses one realtime process when placement is unselected.
-The optional fixed-roster binding renders realtime workers, their private
-addresses, backend assignment, admitted routes, edge routing and lifecycle
-participants together. Selecting more workers supplies this composition; capacity
-and a particular platform binding still require measurement.</p>
-<pre class="mermaid"><code>flowchart LR
-  API[DATA API] --&gt; PG[(PostgreSQL)]
-  PG --&gt; Stream[Maintained pgstream]
-  Stream --&gt; EV[Evaluator]
-  EV --&gt; Output[(Committed completed output)]
-  Output --&gt; RT[Assigned realtime owner]
-  Client[Client] --&gt; Edge[Consumer edge]
-  Edge --&gt; RT
-  RT --&gt; Client
-  Backend[Backend placement] --&gt; RT
-  Routes[Admitted route view] --&gt; Edge
-  Routes --&gt; Alarm[Evaluator alarm adapter]
-  Alarm --&gt; RT</code></pre>
-<p>Realtime now consumes committed evaluator output and builds its client projection
-and frames. The old description of two independent clinical acquisition paths is
-superseded by the <a href="evaluator-realtime-communication.html">maintained communication contract</a>.
-A completed acquisition, committed output, client frame and notification handoff
-remain different outcomes.</p>
-<table>
-<thead>
-<tr>
-<th>Component</th>
-<th>Responsibility and source home</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Placement reader</td>
-<td>Validates fixed workers, logical shards, assignment tokens and monotonic map changes. <code>lib/realtime-placement/index.js</code>.</td>
-</tr>
-<tr>
-<td>Owner resource</td>
-<td>Holds an actual datastore resource for the stable consumer and selected worker/assignment contract. Loss revokes work. <code>lib/realtime-placement/owner.js</code>.</td>
-</tr>
-<tr>
-<td>Realtime runtime</td>
-<td>Selects assigned registry tenants, stages warm state privately and checks current ownership, activity and settings before activation and effects. <code>lib/server/serve/preview-realtime.js</code> and <code>lib/server/realtime/runtime.js</code>.</td>
-</tr>
-<tr>
-<td>Publisher and maintenance</td>
-<td>Serializes controlled publication against a pinned maintenance cohort, excludes old owners and preserves uncertain outcomes. <code>lib/realtime-placement/publish.js</code>, <code>publication-lock.js</code> and the operation cohort.</td>
-</tr>
-<tr>
-<td>Deployment binding</td>
-<td>Expands the actual worker roster, operation configurations and consumer edge from one selection. Deployment <code>bindings/compose/multitenant/realtime-workers.js</code>.</td>
-</tr>
-</tbody>
-</table>
-<p>The exact fields, owner-key versions, private contract versions and publisher
-callbacks live in core <code>lib/realtime-placement/README.md</code>. Consumers must use the
-matching core/deployment contract rather than copy a map or transport schema.</p>
-<h2 id="logical-roles-and-process-placement">Logical roles and process placement<a class="headerlink" href="#logical-roles-and-process-placement" title="Permanent link">&para;</a></h2>
-<p>REST v1/v2/v3 are one logical request-serving component. Each real replica still
-owns pools and in-flight operations and participates in maintenance. Realtime
-owns live connections and process-local projection state; its durable checkpoints
-remain in PostgreSQL. A replacement reconstructs current state and clients
-establish new sessions. Evaluator receipts, completed output and current ownership
-also survive independently of its process-local working state.</p>
-<p>These responsibilities do not select a Kubernetes workload kind. A platform
-binding must map every declared worker to actual process identity, private
-addresses and consumer routes, prove old-owner exclusion and wait for target
-readiness. An ordinal or assignment UUID alone proves none of those conditions.
-The existing evidence below covers its declared native/Compose bindings; it does
-not establish a Kubernetes or multi-host deployment.</p>
-<p>Co-location remains a deployment choice. Separate role contexts and ownership
-must survive shared processes or Pods, and clinical scheduling must retain its
-budget under viewer load. Starting identical realtime configurations behind a
-load balancer does not create admitted ownership or complete notification routing.</p>
-<h2 id="placement-routing-and-durable-state">Placement, routing and durable state<a class="headerlink" href="#placement-routing-and-durable-state" title="Permanent link">&para;</a></h2>
-<p>The backend placement view describes intended ownership. A separate admitted
-route view serves the edge and evaluator alarm adapter. Backend/cohort readers
-use the authoritative assignment; publishing a consumer route does not change
-maintenance coverage or make a cold owner ready.</p>
-<p>A tenant is selected by canonical tenant identity. Fixed worker destinations are
-validated private instance addresses, not client-selected URLs. Polling,
-WebSocket upgrades and main/storage/alarm namespaces retain process affinity for
-a live connection. Backend admission checks current assignment and authority;
-the route map grants no client permissions.</p>
-<p>A realtime owner retains the stable durable consumer identity across restarts
-and moves. The actual held owner resource, assignment contract and fresh process
-observation are distinct from a reusable worker name. Supported owner-key versions
-have explicit compatibility rules; a binding must select the same version in its
-runtime, routes and cohort.</p>
-<p>Registry admission and placement changes can stage new assigned tenants. Cold or
-failed preparation stays outside healthy scheduling until current activity,
-settings, membership and ownership checks pass. Empty and all-deferred workers
-remain inspectable. Paused or suspended tenants do not gain fabricated clinical
-progress merely because their worker is live.</p>
-<h2 id="controlled-moves-and-failure-recovery">Controlled moves and failure recovery<a class="headerlink" href="#controlled-moves-and-failure-recovery" title="Permanent link">&para;</a></h2>
-<p>The implemented publisher supports controlled fixed-roster moves and consumes
-independently confirmed old-owner exclusion during recovery. Its sequence is:</p>
-<ol>
-<li>Hold the publication fence and validate the actual prior map, complete registry
-   revision and affected tenant operation windows. A pinned restore excludes a
-   conflicting move.</li>
-<li>Stop and drain affected old owners through the trusted platform callback.
-   Verify exact old-process termination or effective fencing. Route removal,
-   connection loss and lease age alone do not establish exclusion.</li>
-<li>Publish the next backend generation, start the declared replacement and warm
-   its actual assigned state while retaining the fence.</li>
-<li>Wait for eligible target readiness, then publish matching consumer/alarm
-   routes and commit. Clients reconnect, reauthorize and recover current state.</li>
-</ol>
-<p>Unchanged shards can continue while a target warms. A cold target refuses
-connections and alarm effects. A failed or partly published move retains
-uncertainty; recovery uses a fresh admitted generation. It does not restore an
-old map, stopped incarnation or checkpoint to simulate rollback success.</p>
-<p>If the old owner may still be alive, the affected shard remains unavailable.
-Automatic takeover under an ambiguous partition needs a separate effective-fence
-contract and adversarial proof. Process termination cannot recall bytes already
-sent to a socket.</p>
-<p>The source cohort supports realtime tenant subsets alongside full API coverage.
-It includes real idle and draining workers, pins the placement revision and checks
-actual datastore/backend identity. Missing owners or unknown clinical backends
-refuse; a sampled endpoint or self-reported subset does not prove completeness.
-Current pause, suspension, deletion and authority checks still apply during moves.</p>
+<p><em>Living document, last changed 2026-11-24 at <code>7b8bfd465</code>.</em></p>
+<p>The edge and realtime use the same tenant-to-slice function. Each tenant's connections and delivery work go to its owning process. Evaluator and realtime can have different slice counts. The deployment assigns ordinals and changes K by planned restart. The November fixed-roster publisher and versioned move map retired when static hash ownership was adopted. <a href="multitenancy-decisions.html#static-hash-ownership">Ownership decision</a> · <a href="multitenancy-decisions.html#statefulset-ordinal-scaling">Ordinal binding</a></p>
 <h2 id="client-and-alarm-semantics">Client and alarm semantics<a class="headerlink" href="#client-and-alarm-semantics" title="Permanent link">&para;</a></h2>
-<p>A main-namespace full frame recovers current state. Storage subscriptions also
-need their supported collection/history reload ordering; an acknowledgement is
-not itself that reload. Reconnection does not replay every alarm a device missed.
-Alarm handoff acceptance is distinct from confirmation that a device received it.</p>
-<p>A move preserves durable notification request/attempt identity. A late old-owner
-response belongs to its original attempt. A lost response remains ambiguous;
-changing the address does not justify an immediate transparent retry or synthetic
-success. Accepted handoffs are not made pending again solely because an owner
-moved. Durable per-device replay would be a separate protocol and state capability.</p>
+<p>Realtime loads the tenant on connection and reconciles current output under the client's authority. A replacement process receives fresh connections. It reconstructs current state from the stored evaluator result. Connected viewers receive subsequent deltas. Reconnect does not replay old alarm notifications. An eligible alarm repeats on its heartbeat clock. <a href="multitenancy-decisions.html#realtime-connection-driven">Connection-driven realtime</a> · <a href="multitenancy-decisions.html#realtime-move-alarm-parity">Alarm parity on reconnect</a> · <a href="evaluator-realtime-communication.html">Communication contract</a></p>
 <h2 id="evidence-and-remaining-qualification">Evidence and remaining qualification<a class="headerlink" href="#evidence-and-remaining-qualification" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Evidence</th>
-<th>What it establishes</th>
-<th>Limit</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="../../../reports/tenancy/realtime-sharding-2026-11-12/index.html">Focused sharding source/native record</a></td>
-<td>Original fixed-roster implementation, actual owner-resource exclusion, two-view client/alarm movement, checkpoint continuity, idle/suspended admission, census and meaningful broken/restored controls.</td>
-<td>Exact recorded core and fixture sources; its test edge and idle synthetic peers do not qualify a later shipping composition.</td>
-</tr>
-<tr>
-<td><a href="../../../reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/index.html">Paired native qualification</a></td>
-<td>Controlled old-boot stop, held cold target, route publication, unaffected B progress, current client state and census on core <code>ff5156b984424f1ef34bcef22d5bfa0071354cfa</code> / deploy <code>cf5bda3f2d189bac5d60269df5644759c40db9e1</code>.</td>
-<td>Historical bounded shipping pair; no later-source, horizontal-capacity, pilot or release claim.</td>
-</tr>
-<tr>
-<td><a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">Queue and release records</a></td>
-<td>Claimed work state, exact joined candidates and their measured qualification.</td>
-<td>A prior pass is not a new-source or new-topology measurement.</td>
-</tr>
-</tbody>
-</table>
-<p>Horizontal capacity, reconnect pressure, a hot tenant, selected co-location and
-multi-host failure behavior retain separate workload/resource oracles. Compare
-fixed worker configurations with the same logical shard count and routing mode;
-state whether aggregate quota grows with worker count. More workers distribute
-tenants. One tenant remains bounded by its owner unless a separately qualified
-connection-fanout capability is selected.</p>
-<p><code>MT-SCALE-UNBOUND</code> consumes the correctness capability for scaling measurements.
-It does not replace current-authority, checkpoint, ownership, maintenance,
-uncertainty or supported-client gates. Final acceptance applies to the exact
-joined application/deployment/image and its declared profile.</p>
+<p>The <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">candidate 5 discovery record</a> distinguishes write-to-viewer latency, connector delivery and the run's capacity verdict. The <a href="../../archive/tenancy/realtime-placement-2026-11-15.html">November 15 placement reference</a> retains the tested stop, warm, publish and reconnect sequence on its named sources. Use the <a href="production-critical-path.html">production guide</a> for the evidence required to admit a deployment.</p>
+<p>Sections in the captured guide:</p>
+<ul>
+<li><a id="implemented-boundary"></a><a href="../../archive/tenancy/realtime-placement-2026-11-15.html#implemented-boundary">Implemented boundary</a></li>
+<li><a id="logical-roles-and-process-placement"></a><a href="../../archive/tenancy/realtime-placement-2026-11-15.html#logical-roles-and-process-placement">Logical roles and process placement</a></li>
+<li><a id="placement-routing-and-durable-state"></a><a href="../../archive/tenancy/realtime-placement-2026-11-15.html#placement-routing-and-durable-state">Placement, routing and durable state</a></li>
+<li><a id="controlled-moves-and-failure-recovery"></a><a href="../../archive/tenancy/realtime-placement-2026-11-15.html#controlled-moves-and-failure-recovery">Controlled moves and failure recovery</a></li>
+</ul>
 
 
 
@@ -5995,8 +5857,6 @@ joined application/deployment/image and its declared profile.</p>
       <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
-  
-  <script src="https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js"></script>
   
 
   </body>

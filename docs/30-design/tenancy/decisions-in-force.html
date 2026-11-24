@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3708,6 +3716,34 @@
   
   
     <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -3716,6 +3752,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -5960,10 +6080,8 @@
 
 
 <h1 id="multitenant-decisions-in-force">Multitenant decisions in force<a class="headerlink" href="#multitenant-decisions-in-force" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-22 at <code>ccd5dc0f1</code>.</em></p>
-<p><em>Generated-by-review index, dated 2026-11-18, of the 214 anchored rows in <a href="multitenancy-decisions.html">multitenancy-decisions.md</a> at alignment source commit <code>a0a8c3956d</code>; unanchored table rows are not indexed.</em>
-<em>Each row is classed as in force, superseded or unclear from its text, citing the later row behind the judgement; the classification is read-derived.</em>
-<em>Each row's text in multitenancy-decisions.md remains the authority. This page restates no detail: follow the link before acting on a row.</em></p>
+<p><em>Living document, last changed 2026-11-24 at <code>7b8bfd465</code>.</em></p>
+<p>The original November 18 review indexed the anchored rows at <code>a0a8c3956d</code>. Subsequent programme decisions and amendments extend that index. This is a <strong>read-derived</strong> guide. Each linked <a href="multitenancy-decisions.html">decision row</a> owns its policy and evidence. The <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">execution log</a> identifies the candidate and what has been measured.</p>
 <h2 id="in-force">In force<a class="headerlink" href="#in-force" title="Permanent link">&para;</a></h2>
 <p>Rows marked <strong>deferred</strong> or <strong>proposed</strong> record a direction that is not yet adopted behavior.</p>
 <h3 id="data-model-storage-and-isolation">Data model, storage and isolation<a class="headerlink" href="#data-model-storage-and-isolation" title="Permanent link">&para;</a></h3>
@@ -5981,7 +6099,6 @@
 <li><a href="multitenancy-decisions.html#view-reads-total-order">view-reads-total-order</a> — Sort-key ties break on the per-tenant insertion ordinal, in SQL and in process.</li>
 <li><a href="multitenancy-decisions.html#write-clock-history-arms">write-clock-history-arms</a> — The write clock serves only v3 history no-missed-write (arms settled by <a href="multitenancy-decisions.html#multitenant-requires-write-clock">multitenant-requires-write-clock</a>).</li>
 <li><a href="multitenancy-decisions.html#multitenant-requires-write-clock">multitenant-requires-write-clock</a> — Arm (a) per-tenant clock row is kept; multitenant requires <code>writeClock</code>; floor checks move to <code>admin</code> (narrowed by <a href="multitenancy-decisions.html#platform-verification-removal">platform-verification-removal</a>: floors are operation postconditions).</li>
-<li><a href="multitenancy-decisions.html#stream-native-coverage-direction">stream-native-coverage-direction</a> — Evaluate committed-stream transaction coverage instead of the clock seal; replacement is proposed, unqualified.</li>
 </ul>
 <h3 id="roles-listeners-and-horizontal-shape">Roles, listeners and horizontal shape<a class="headerlink" href="#roles-listeners-and-horizontal-shape" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5996,7 +6113,7 @@
 <li><a href="multitenancy-decisions.html#internal-listener-ory-pattern">internal-listener-ory-pattern</a> — One private <code>serve.internal</code> listener per role, Ory-style (narrowed by <a href="multitenancy-decisions.html#k1-per-role-deployments">k1-per-role-deployments</a>).</li>
 <li><a href="multitenancy-decisions.html#internal-listener-graceful-shutdown">internal-listener-graceful-shutdown</a> — On SIGTERM the internal listener drains in-flight calls up to a deadline.</li>
 <li><a href="multitenancy-decisions.html#static-hash-ownership">static-hash-ownership</a> — Evaluator and realtime processes own <code>slice(hash(tenant), K)</code>; proxy routes match; changing K is a restart.</li>
-<li><a href="multitenancy-decisions.html#legacy-topology-retirement">legacy-topology-retirement</a> — One evaluator topology: native stream plus assigned-worker seam; other pool and lease topologies retire.</li>
+<li><a href="multitenancy-decisions.html#legacy-topology-retirement">legacy-topology-retirement</a> — Legacy pools and leases retire. <a href="multitenancy-decisions.html#writer-driven-transport-direction">Writer-driven transport</a> replaces the native stream input.</li>
 <li><a href="multitenancy-decisions.html#pool-primitive-shared">pool-primitive-shared</a> — One pool-membership primitive, kinds kept separate (narrowed by <a href="multitenancy-decisions.html#legacy-topology-retirement">legacy-topology-retirement</a>: kept for connectors).</li>
 <li><a href="multitenancy-decisions.html#census-operational-list">census-operational-list</a> — Operational catalogues are listed explicitly and excluded from per-tenant restore, export and deletion.</li>
 <li><a href="multitenancy-decisions.html#pool-member-hygiene">pool-member-hygiene</a> — Pool members reclaim stale sockets and wait-and-alert instead of exiting.</li>
@@ -6008,7 +6125,6 @@
 <ul>
 <li><a href="multitenancy-decisions.html#platform-verification-removal">platform-verification-removal</a> — No configuration-digest certificate and no per-tenant verified floor; migration Job plus schema check; a range of single-concern health endpoints.</li>
 <li><a href="multitenancy-decisions.html#config-few-dozen-env">config-few-dozen-env</a> — A few dozen environment settings (about 74 is fine) plus minimal PostgreSQL bookkeeping; per-role JSON documents retire.</li>
-<li><a href="multitenancy-decisions.html#stream-source-identity-in-data">stream-source-identity-in-data</a> — No deployment pin of the database's stream identity; per-tenant stream state, existing recovery and the restart policy handle a replaced database.</li>
 <li><a href="multitenancy-decisions.html#predictable-fixes-then-test">predictable-fixes-then-test</a> — Predictable simplifications run affected tests only, no per-item break-it control; qualify the joined candidate once.</li>
 <li><a href="multitenancy-decisions.html#provisioning-secrets-in">provisioning-secrets-in</a> — Secrets flow into Jobs and roles, never out of a Pod; one apply converges.</li>
 <li><a href="multitenancy-decisions.html#prometheus-metrics-narrow">prometheus-metrics-narrow</a> — official Prometheus Node client (<code>@prometheus-io/client</code>), <code>/metrics</code> on an internal port, opt-in, multitenant roles only (not the classic server); no tenant-id labels; one Prometheus Pod plus <code>postgres_exporter</code> per lab run, TSDB snapshot retained; per-input events still decide verdicts; no OTel tracing now. Supersedes metrics-endpoint-deferred.</li>
@@ -6025,7 +6141,6 @@
 <li><a href="multitenancy-decisions.html#operable-architecture-first">operable-architecture-first</a> — Simplified, runnable, operable architecture first; performance work is lower priority meanwhile.</li>
 <li><a href="multitenancy-decisions.html#boot-independent-of-tenants">boot-independent-of-tenants</a> — Serving boot is independent of tenant count; expensive platform verification runs on <code>admin</code> (narrowed by <a href="multitenancy-decisions.html#platform-verification-removal">platform-verification-removal</a>: no verification record or proof).</li>
 <li><a href="multitenancy-decisions.html#catalogue-verification-admin-owned">catalogue-verification-admin-owned</a> — Admin verifies the catalogue once per deployment; serving keeps one cheap fail-closed check (narrowed by <a href="multitenancy-decisions.html#platform-verification-removal">platform-verification-removal</a>: migration Job plus schema-version check).</li>
-<li><a href="multitenancy-decisions.html#vcpool-proof-role">vcpool-proof-role</a> — <code>vcpool</code> checks the platform proof at start like the other serving roles.</li>
 <li><a href="multitenancy-decisions.html#stable-evaluator-runtime">stable-evaluator-runtime</a> — Evaluator runs on a stable schema; relevant DDL after startup stops it with a typed code.</li>
 <li><a href="multitenancy-decisions.html#migration-rehearsal-separate">migration-rehearsal-separate</a> — Migrations are rehearsed as scheduled maintenance, separate from performance and acceptance runs.</li>
 <li><a href="multitenancy-decisions.html#multitenant-upgrade-shape">multitenant-upgrade-shape</a> — Platform rolls processes; core supplies two-step migrations and checks (narrowed by <a href="multitenancy-decisions.html#stable-evaluator-runtime">stable-evaluator-runtime</a>).</li>
@@ -6146,15 +6261,13 @@
 <li><a href="multitenancy-decisions.html#restore-fence-generation">restore-fence-generation</a> — Tenant generation fencing replaces the operation window (narrowed by <a href="multitenancy-decisions.html#restore-fence-read-path">restore-fence-read-path</a> and <a href="multitenancy-decisions.html#catalogue-verification-admin-owned">catalogue-verification-admin-owned</a>).</li>
 <li><a href="multitenancy-decisions.html#restore-fence-read-path">restore-fence-read-path</a> — Read-only port skips the final generation compare; writes keep lock then generation read.</li>
 <li><a href="multitenancy-decisions.html#restore-suspend-drain-replace">restore-suspend-drain-replace</a> — Restore is suspend, drain in-flight transactions, replace, activate.</li>
-<li><a href="multitenancy-decisions.html#restore-census-and-ownership-phase">restore-census-and-ownership-phase</a> — Ownership operations refuse unless the tenant is active (census part: see Unclear).</li>
+<li><a href="multitenancy-decisions.html#restore-census-and-ownership-phase">restore-census-and-ownership-phase</a> — Ownership operations respect tenant activity. The later <a href="multitenancy-decisions.html#unclear-rows-resolved">unclear-rows resolution</a> retired the pre-restore writer census.</li>
 <li><a href="multitenancy-decisions.html#restore-resume-and-precheck">restore-resume-and-precheck</a> — Interrupted restore reopens by audited <code>resume</code> (narrowed by <a href="multitenancy-decisions.html#restore-suspend-drain-replace">restore-suspend-drain-replace</a>: operation-record precheck).</li>
 </ul>
 <h3 id="event-feed-evaluator-and-realtime">Event feed, evaluator and realtime<a class="headerlink" href="#event-feed-evaluator-and-realtime" title="Permanent link">&para;</a></h3>
 <ul>
-<li><a href="multitenancy-decisions.html#d6">d6</a> — Replication slot is the durable spine; clinical writes never depend on notifications (narrowed by <a href="multitenancy-decisions.html#event-driven-reset">event-driven-reset</a>).</li>
-<li><a href="multitenancy-decisions.html#evaluator-platform-restart">evaluator-platform-restart</a> — pgstream restarts separately from the evaluator process.</li>
-<li><a href="multitenancy-decisions.html#stream-fed-clinical-materializer">stream-fed-clinical-materializer</a> — Committed clinical rows stream into the evaluator; snapshots only for bootstrap, recovery and gaps.</li>
-<li><a href="multitenancy-decisions.html#single-host-streaming-first">single-host-streaming-first</a> — Qualify a simple single-host baseline first (narrowed by <a href="multitenancy-decisions.html#cluster-fan-out-testing">cluster-fan-out-testing</a>).</li>
+<li><a href="multitenancy-decisions.html#d6">d6</a> — Clinical writes remain independent of notification delivery. <a href="multitenancy-decisions.html#writer-driven-transport-direction">Writer-driven transport</a> supersedes the replication slot.</li>
+<li><a href="multitenancy-decisions.html#single-host-streaming-first">single-host-streaming-first</a> — The November 16 UDS baseline and pgstream qualification retain their source scope. See the <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">current campaign</a>.</li>
 <li><a href="multitenancy-decisions.html#single-evaluator-efficiency-priority">single-evaluator-efficiency-priority</a> — One evaluator's efficiency first (narrowed by <a href="multitenancy-decisions.html#operable-architecture-first">operable-architecture-first</a>: lower priority).</li>
 <li><a href="multitenancy-decisions.html#trusted-worker-performance-boundary">trusted-worker-performance-boundary</a> — Trusted evaluator and feed workers skip per-tenant impersonation and repeated integrity screens.</li>
 <li><a href="multitenancy-decisions.html#tenant-version-batch-read">tenant-version-batch-read</a> — One batched version read per pass (narrowed by <a href="multitenancy-decisions.html#trusted-worker-performance-boundary">trusted-worker-performance-boundary</a>).</li>
@@ -6191,9 +6304,17 @@
 <li><a href="multitenancy-decisions.html#evaluator-k-bound">evaluator-k-bound</a> — Evaluator K is 1..32 and realtime K is 1..8, and the two may differ on Compose. PostgreSQL gets 1 GiB <code>/dev/shm</code>. Joins the #8898 line; the 10k K=20 result tests the join.</li>
 <li><a href="multitenancy-decisions.html#evaluator-capacity-headroom">evaluator-capacity-headroom</a> — K comes from planned tenants per slice: 0.8 × the measured density that meets p95 ≤ 30 s and recovers from a restart within 120 s. Each join re-measures it, and K shrinks at a release.</li>
 <li><a href="multitenancy-decisions.html#per-tenant-lock-bounded-hold">per-tenant-lock-bounded-hold</a> — Cut per-tenant lock hold time (write clock, outbox, checkpoint) to the minimum: a fixed number of statements independent of batch size, never across other pools or waits outside the database; the clock contract is unchanged and lock-free stays unadopted.</li>
+<li><a href="multitenancy-decisions.html#multitenant-write-settings-at-defaults">multitenant-write-settings-at-defaults</a> — The multitenant api runs <code>WRITE_*</code> at the 16.0.0 defaults; per-tenant values only through D22 if a need is measured.</li>
+<li><a href="multitenancy-decisions.html#one-large-postgresql-primary">one-large-postgresql-primary</a> — One PostgreSQL primary on its own node, grown vertically; cells are a later fleet option; load starts after autovacuum and warm-up.</li>
+<li><a href="multitenancy-decisions.html#no-realtime-fast-path">no-realtime-fast-path</a> — No rows to browsers ahead of the evaluator; realtime sends delta frames computed from evaluator output.</li>
+<li><a href="multitenancy-decisions.html#storage-machinery-removal">storage-machinery-removal</a> — Remove <code>storage_bytes</code> and its trigger and the duplicate and prefix indexes (done on branch, −17.1 %); the per-tenant counter and the stored output frame stay; pgstream-era checkpoint leftovers go with the pool-era modules; other index cuts wait for <code>idx_scan</code>.</li>
+<li><a href="multitenancy-decisions.html#tied-sort-key-permutation">tied-sort-key-permutation</a> — Ties order by insertion ordinal; parity means same records, values and client-visible winners, not MongoDB's cache-dependent order.</li>
+<li><a href="multitenancy-decisions.html#predictions-max-size-single-tenant-parity">predictions-max-size-single-tenant-parity</a> — <code>PREDICTIONS_MAX_SIZE</code> read and applied exactly as on a single site; device-status retention keeps everything.</li>
+<li><a href="multitenancy-decisions.html#devicestatus-hour-chunks">devicestatus-hour-chunks</a> — <strong>Parked 2026-11-24</strong>: chunks passed the contract and cut devicestatus bytes 82 %, but failed the window-read and write-hold gates.</li>
+<li><a href="multitenancy-decisions.html#connector-secret-entry-admin">connector-secret-entry-admin</a> — Connector secrets enter through a write-only admin resource that writes record and audit row; no other writer.</li>
 <li><a href="multitenancy-decisions.html#preload-is-a-signal">preload-is-a-signal</a> — Whole-roster preload convergence is a signal; traffic starts when roles are ready.</li>
-<li><a href="multitenancy-decisions.html#m7-envelope-measured-not-declared">m7-envelope-measured-not-declared</a> — Operating limits come from measurement (narrowed by <a href="multitenancy-decisions.html#operable-architecture-first">operable-architecture-first</a>).</li>
-<li><a href="multitenancy-decisions.html#local-10k-release">local-10k-release</a> — Run the local 10,000-tenant realistic-mix point now on the a72 reference.</li>
+<li><a href="multitenancy-decisions.html#m7-envelope-measured-not-declared">m7-envelope-measured-not-declared</a> — Measure the operating envelope on the selected profile under the <a href="multitenancy-decisions.html#capacity-test-tiers">current test tiers</a>.</li>
+<li><a href="multitenancy-decisions.html#local-10k-release">local-10k-release</a> — Dated authorization for the a72 discovery point. See the <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">current campaign</a> for subsequent experiments.</li>
 <li><a href="multitenancy-decisions.html#latency-lane-held">latency-lane-held</a> — The latency-observer lane does not start this cycle (narrowed by <a href="multitenancy-decisions.html#cluster-fan-out-testing">cluster-fan-out-testing</a>).</li>
 <li><a href="multitenancy-decisions.html#cluster-fan-out-testing">cluster-fan-out-testing</a> — The existing cluster runs concurrent scenarios per namespace; largest points on the workstation; droplets stop.</li>
 <li><a href="multitenancy-decisions.html#reserved-k8s-worker">reserved-k8s-worker</a> — A worker may be reserved by taint, never evicting (narrowed by <a href="multitenancy-decisions.html#cluster-fan-out-testing">cluster-fan-out-testing</a>: clean-number points only).</li>
@@ -6208,13 +6329,13 @@
 <li><a href="multitenancy-decisions.html#disposable-native-harness">disposable-native-harness</a> — Native acceptance uses a disposable harness (narrowed by <a href="multitenancy-decisions.html#simple-run-cleanup">simple-run-cleanup</a>).</li>
 <li><a href="multitenancy-decisions.html#simple-run-cleanup">simple-run-cleanup</a> — Cleanup is one owned delete plus one absence check.</li>
 <li><a href="multitenancy-decisions.html#m6-split-and-queue-collapse">m6-split-and-queue-collapse</a> — Milestones M6a–M6d for the preview; M7 before any production cohort.</li>
-<li><a href="multitenancy-decisions.html#restore-candidate-frozen">restore-candidate-frozen</a> — The next frozen candidate is the restore branch joined with the K1 deploy profile and helper.</li>
+<li><a href="multitenancy-decisions.html#restore-candidate-frozen">restore-candidate-frozen</a> — Historical freeze of the restore branch, K1 deploy profile and helper. Later candidates have their own <a href="execution-log.html">execution records</a>.</li>
 <li><a href="multitenancy-decisions.html#8898-continue-adding">8898-continue-adding</a> — #8898 stays draft and keeps receiving batches; merge before 16.0.0 is undecided.</li>
 <li><a href="multitenancy-decisions.html#three-lane-coordination">three-lane-coordination</a> — One coordinator and three lanes: source, gate/instrument, operations; optional capabilities paused.</li>
 <li><a href="multitenancy-decisions.html#fresh-context-phase-ownership">fresh-context-phase-ownership</a> — Fresh chats at phase boundaries; explicit custody transfer (refined by <a href="multitenancy-decisions.html#three-lane-coordination">three-lane-coordination</a>).</li>
 </ul>
 <h2 id="superseded-or-retired">Superseded or retired<a class="headerlink" href="#superseded-or-retired" title="Permanent link">&para;</a></h2>
-<p>The text of every row below was archived unchanged on 2026-11-18 in <a href="../../archive/tenancy/multitenancy-decisions-superseded-2026-11-18.html">the superseded-decisions archive</a>; each link resolves to a one-line stub in multitenancy-decisions.md that points there.</p>
+<p>The <a href="../../archive/tenancy/multitenancy-decisions-superseded-2026-11-18.html">November 18 archive</a> holds rows retired in the original review. Later amendments are recorded on their decision rows.</p>
 <table>
 <thead>
 <tr>
@@ -6224,6 +6345,36 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><a href="multitenancy-decisions.html#stream-native-coverage-direction">stream-native-coverage-direction</a></td>
+<td><a href="multitenancy-decisions.html#writer-driven-transport-direction">writer-driven-transport-direction</a></td>
+<td>Mechanism scoped to the retired pgstream transport</td>
+</tr>
+<tr>
+<td><a href="multitenancy-decisions.html#evaluator-platform-restart">evaluator-platform-restart</a></td>
+<td><a href="multitenancy-decisions.html#writer-driven-transport-direction">writer-driven-transport-direction</a></td>
+<td>Mechanism scoped to the retired pgstream transport</td>
+</tr>
+<tr>
+<td><a href="multitenancy-decisions.html#stream-fed-clinical-materializer">stream-fed-clinical-materializer</a></td>
+<td><a href="multitenancy-decisions.html#writer-driven-transport-direction">writer-driven-transport-direction</a></td>
+<td>Mechanism scoped to the retired pgstream transport</td>
+</tr>
+<tr>
+<td><a href="multitenancy-decisions.html#stream-source-identity-in-data">stream-source-identity-in-data</a></td>
+<td><a href="multitenancy-decisions.html#writer-driven-transport-direction">writer-driven-transport-direction</a></td>
+<td>Mechanism scoped to the retired pgstream transport</td>
+</tr>
+<tr>
+<td><a href="multitenancy-decisions.html#ack-path-tenant-independent">ack-path-tenant-independent</a></td>
+<td><a href="multitenancy-decisions.html#writer-driven-transport-direction">writer-driven-transport-direction</a></td>
+<td>Mechanism scoped to the retired pgstream transport</td>
+</tr>
+<tr>
+<td><a href="multitenancy-decisions.html#vcpool-proof-role">vcpool-proof-role</a></td>
+<td><a href="multitenancy-decisions.html#platform-verification-removal">platform-verification-removal</a></td>
+<td>Startup certificate retired for serving roles</td>
+</tr>
 <tr>
 <td><a href="multitenancy-decisions.html#event-driven-reset">event-driven-reset</a></td>
 <td><a href="multitenancy-decisions.html#writer-driven-transport-direction">writer-driven-transport-direction</a></td>

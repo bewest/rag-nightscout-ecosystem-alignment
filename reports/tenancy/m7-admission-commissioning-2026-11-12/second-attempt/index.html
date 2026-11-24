@@ -2066,10 +2066,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -2572,6 +2568,8 @@
       
         
       
+        
+      
     
     
     
@@ -2725,6 +2723,34 @@
     
   
     Batch A PgBouncer foundation continuation — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../capacity-driver-config-2026-11-17.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configurable load-driver measurement — 2026-11-17
   
 
     
@@ -7424,7 +7450,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_93" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_94" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -7446,14 +7472,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_7_18_93" id="__nav_7_18_93_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_7_18_94" id="__nav_7_18_94_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_93_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_93">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_94_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_94">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -7609,7 +7635,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_93_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_94_4" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -7632,8 +7658,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_7_18_93_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_93_4">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_7_18_94_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_94_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -12352,7 +12378,7 @@
 
 <h1 id="second-admission-commissioning-attempt">Second admission commissioning attempt<a class="headerlink" href="#second-admission-commissioning-attempt" title="Permanent link">&para;</a></h1>
 <p><em>Living document, last changed 2026-11-13 at <code>d634793ac</code>.</em></p>
-<p><strong>Reproduced: bootstrap and private plan-view validation passed; the first API exited during health checking.</strong> Exact source, image, runner and plan are in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c70e6ce29bfd6a945466456929f755fc0fef2f82/reports/tenancy/m7-admission-commissioning-2026-11-12/second-attempt/summary.json">the selected summary</a>. The <a href="../first-attempt/index.html">first attempt</a> retains its separate bootstrap failure.</p>
+<p><strong>Reproduced: bootstrap and private plan-view validation passed; the first API exited during health checking.</strong> Exact source, image, runner and plan are in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb95d169b17aee9cc72fea106f1cf17799da9c40/reports/tenancy/m7-admission-commissioning-2026-11-12/second-attempt/summary.json">the selected summary</a>. The <a href="../first-attempt/index.html">first attempt</a> retains its separate bootstrap failure.</p>
 <p>The repaired mount path was exercised successfully, followed by controller bind and admin startup. API2, tagged capture and controlled restart were not reached. PostgreSQL recorded one preauthentication timeout; the API’s sanitized startup message does not establish which constructor or typed error caused it.</p>
 <p>An independent whole-project census matched the exact retained PostgreSQL, Vault, admin and API identities and confirmed all four stopped. Admin’s generation is retired; API’s generation remains issued with its credits held. Stopped containers do not grant API retirement. Original run/state remain unchanged and raw captures stay outside Git.</p>
 <p>A separate actual-driver recording reproduced a concrete core074 bug: spreading pg-pool options loses its non-enumerable password on the API’s separate-field operation-pool path. The selected client then refuses a synthetic SCRAM challenge; URL and unselected controls succeed. Descriptor-preserving source repair <code>d0036890d0623ae79f14bfa71e7226c0fa122a29</code> passes that recording discriminator without network activity. This is source/driver evidence, not attribution of the original hidden startup error or new runtime acceptance. The next candidate requires a coherent source/deployment/image/profile/instrument freeze and fresh state.</p>

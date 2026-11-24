@@ -2589,6 +2589,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2657,7 +2665,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and private APIs
+    Multitenant runtime topology
   
 
     
@@ -3697,6 +3705,34 @@
   
   
     <li class="md-nav__item">
+      <a href="operations-runbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant operations runbook, warm-up plan and migration-rule transition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
@@ -3705,6 +3741,90 @@
     
   
     Realtime sharding, composition and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reports-survey-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-layout-proposal-2026-11-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage layout: proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-tiering-proposal-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant clinical storage by age: brief and proposal
   
 
     
@@ -5950,18 +6070,7 @@ transactional tenant clock, and names the entry bar before any distributed
 evaluator or realtime wiring. It promotes no milestone, selects no provider,
 admits nothing to a release candidate, and infers no consistency stronger than
 what the cited records reproduced.</em></p>
-<p><strong>Current direction, 2026-11-16:</strong> the <a href="multitenancy-decisions.html#stream-fed-clinical-materializer">stream-fed clinical materializer decision</a>
-supersedes routine D6 polling and snapshot rediscovery for the maintained default
-evaluator. The <a href="evaluator-realtime-communication.html#stream-fed-clinical-materializer--adopted-target-2026-11-16">current architecture</a>
-owns row intake, recoverable acceptance, cohorts, scheduling and output delivery.
-The historical provider/backstop/snapshot sections below retain their original
-source and evidence; they do not authorize restoring those paths as defaults.
-Consistent snapshots remain bootstrap/recovery/history tools. Clinical, identity,
-isolation, authority and restore obligations remain required. The
-<a href="evaluator-realtime-communication.html#transaction-coverage-and-mechanism-retirement">transaction-coverage direction</a>
-distinguishes current clock-event sealing from a proposed connector-framed
-replacement. Historical clock-specific assertions do not require retaining that
-internal mechanism after a qualified semantic replacement exists.</p>
+<p><strong>Transport scope.</strong> This November 6 B7 contract preserves the original consumer requirements, experiments and named sources. The <a href="multitenancy-decisions.html#writer-driven-transport-direction">writer-driven decision</a> governs tenant work discovery on candidate 5. The <a href="evaluator-realtime-communication.html">current communication guide</a> traces a write through clinical and viewer delivery. The intervening <a href="../../archive/tenancy/pgstream-communication-2026-11-16.html">November 16 pgstream guide</a> retains the receipt, cohort, snapshot and clock-sealing evidence.</p>
 <table>
 <thead>
 <tr>
