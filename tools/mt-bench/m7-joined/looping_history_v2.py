@@ -59,7 +59,9 @@ DEFAULTS = dict(seed=20261121, cgmOnlyPercent=20, cgmOnlyWithoutProfilePercent=5
 #                            [0, phaseSpreadMs) from sha256(seed:ordinal:phase). Tenants stop sharing due instants.
 #   historyDays   3..60      every non-deep tenant carries this many days instead of 2 (deepHistoryDays still
 #                            governs the deep role)
-OPTIONAL_KEYS = ('phaseSpreadMs', 'historyDays')
+#   unseededTailTenants     keep this many host-ordered trailing tenants free of fixture history
+#                         for connector catch-up. Their identities remain in the full provisioned roster.
+OPTIONAL_KEYS = ('phaseSpreadMs', 'historyDays', 'unseededTailTenants')
 MAX_HISTORY_DAYS = 60
 PRESETS = {   # name -> option changes over DEFAULTS; each is its own fixture key
     'spread-v1': dict(phaseSpreadMs=299_000),
@@ -103,7 +105,8 @@ def validate(spec):
     require(isinstance(spec, dict) and spec.get('mode') == MODE and set(KEYS) <= set(spec) <= set(KEYS) | set(OPTIONAL_KEYS),
             'UNSUPPORTED')
     ints = all(type(spec[k]) is int for k in KEYS[1:] + tuple(k for k in OPTIONAL_KEYS if k in spec))
-    require(ints and 1 <= spec.get('phaseSpreadMs', 1) < STEP_MS and 3 <= spec.get('historyDays', 3) <= MAX_HISTORY_DAYS,
+    require(ints and 1 <= spec.get('phaseSpreadMs', 1) < STEP_MS and 3 <= spec.get('historyDays', 3) <= MAX_HISTORY_DAYS
+            and spec.get('unseededTailTenants', 1) >= 1,
             'LOOPING_OPTIONS')
     require(ints and 0 <= spec['seed'] < 2**63 and 0 <= spec['cgmOnlyPercent'] <= 100
             and 0 <= spec['cgmOnlyWithoutProfilePercent'] <= 100
@@ -541,7 +544,14 @@ def describe(spec, tenants=10_000):
                                          windowRows=window_rows(t), identityLessTreatmentShare=round(identity_share(t), 4))
     cgm = (tenants * spec['cgmOnlyPercent'] + 50) // 100
     bare = (cgm * spec['cgmOnlyWithoutProfilePercent'] + 50) // 100
-    weights = {f'looping/{k}': (tenants - cgm) / len(KINDS) for k in KINDS}
+    unseeded = spec.get('unseededTailTenants', 0)
+    require(unseeded < tenants, 'UNSEEDED_TAIL_SIZE')
+    if unseeded:
+        assigned = seed_roles(spec, tenants)[:-unseeded]
+        bare = assigned.count('cgm-only-no-profile')
+        cgm = assigned.count('cgm-only') + bare
+    looping = tenants - unseeded - cgm
+    weights = {f'looping/{k}': looping / len(KINDS) for k in KINDS}
     weights.update({'cgm-only/cgm': cgm - bare, 'cgm-only-no-profile/cgm': bare})
     total = collections.Counter()
     for key, w in weights.items():
@@ -549,8 +559,8 @@ def describe(spec, tenants=10_000):
             total[c + 'Rows'] += v * w
         for c, v in shapes[key]['jsonBytes'].items():
             total[c + 'JsonBytes'] += v * w
-    return dict(spec=spec, tenants=tenants, roleCounts={'looping': tenants - cgm, 'cgm-only': cgm - bare,
-                'cgm-only-no-profile': bare}, perTenant=shapes,
+    return dict(spec=spec, tenants=tenants, roleCounts={'looping': looping, 'cgm-only': cgm - bare,
+                'cgm-only-no-profile': bare, **({'unseeded': unseeded} if unseeded else {})}, perTenant=shapes,
                 population={k: round(v) for k, v in sorted(total.items())},
                 populationJsonBytes=round(sum(v for k, v in total.items() if k.endswith('JsonBytes'))),
                 basis='read-derived from the generator; JSON bytes as sent, not stored bytes; looping kinds at equal '
@@ -575,6 +585,7 @@ if __name__ == '__main__':
     p.add_argument('--preset', choices=sorted(PRESETS))
     p.add_argument('--phaseSpreadMs', type=int)
     p.add_argument('--historyDays', type=int)
+    p.add_argument('--unseededTailTenants', type=int)
     p.add_argument('--anchor', type=int, default=1_800_000_000_000 // STEP_MS * STEP_MS)
     p.add_argument('--tenants', type=int, default=10_000)
     for key, value in DEFAULTS.items():

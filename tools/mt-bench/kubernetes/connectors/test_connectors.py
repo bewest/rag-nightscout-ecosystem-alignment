@@ -129,6 +129,8 @@ class Stage(unittest.TestCase):
         calls = []
         def call(argv, data=None, read=True, timeout=None):
             calls.append((argv, data))
+            if argv[:3] == ['get', 'pods', '-l']:
+                return b'score-pod:0'
             if argv[:2] == ['get', 'deployment']:
                 return b'1'
             if argv[:2] == ['get', 'job']:
@@ -253,6 +255,8 @@ class ReaderEntry(unittest.TestCase):
             calls = []
             def call(argv, data=None, read=True, timeout=None):
                 calls.append(argv)
+                if argv[:3] == ['get', 'pods', '-l']:
+                    return b'score-pod:0'
                 return b'1' if argv[:2] == ['get', 'deployment'] else b''
             out = Path(d) / 'load'; out.mkdir()
             record = stage.start(call, c, self.rows(), out)
@@ -274,8 +278,11 @@ class ReaderEntry(unittest.TestCase):
         def call(argv, data=None, read=True):
             if not read:
                 mutations.append(argv)
+            if argv[:3] == ['get', 'pods', '-l']:
+                return b'score-pod:0'
             if argv[:2] == ['logs', 'deployment/connector-score']:
-                self.assertIn('--since-time=1970-01-01T06:15:00.000+00:00', argv)
+                self.assertFalse(any(s.startswith('--since-time') for s in argv))
+                return b'{"t":"start","at":20099000,"tenants":2}\n{"t":"sweep","at":23699000,"reads":6}\n'
             if argv[:2] == ['create', 'secret']:
                 if argv[3] in secrets:
                     raise RuntimeError('AlreadyExists: ' + argv[3])
@@ -307,6 +314,13 @@ class ReaderEntry(unittest.TestCase):
             self.assertEqual(scored['backfill']['scored'], 0)
             self.assertGreater(scored['live']['scored'], 0)
             self.assertEqual(scored['misses'], scored['live']['scored'])
+            def rolled_log(argv, **kw):
+                if argv[:2] == ['logs', 'deployment/connector-score']:
+                    return b'{"t":"sweep","at":23699000,"reads":6}\n'
+                return call(argv, **kw)
+            partial = stage.collect(rolled_log, c, second, until=23700000)
+            self.assertEqual(partial['verdict'], 'UNMEASURED')
+            self.assertEqual(partial['code'], 'K8S_CONNECTOR_SCORE_LOG_INCOMPLETE')
 
     def test_a_failed_entry_in_the_reader_keeps_its_output_and_evidence(self):
         import subprocess

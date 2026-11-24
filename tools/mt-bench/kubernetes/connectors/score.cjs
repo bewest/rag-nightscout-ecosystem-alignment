@@ -8,8 +8,8 @@
 // poll: every SCORE_EVERY_MS (default 10 s) reads each connector tenant's entries, treatments and
 // devicestatus since the upstream history start through the tenant's own API (the tenant chosen by
 // Host, the roster's DATA subject token as API-SECRET sha1), and prints one `seen` line per new
-// stored document (its record time, the server's srvCreated and the reader's first sight) and one
-// `pass` line per read with the stored copies counted per record time (duplicates show there).
+// stored document (its record time, the server's srvCreated and the reader's first sight), a
+// `pass` line for read errors or duplicates, and a heartbeat after every complete sweep.
 //
 // summarize: the expected set is the synthetic generator's (upstream.cjs), so a stopped upstream
 // still has expectations. A record is scored when its availability (its timestamp) falls in
@@ -64,9 +64,12 @@ async function poll (env = process.env, out = line => process.stdout.write(JSON.
           if (!seen.has(id)) { seen.add(id); out({ t: 'seen', site: tenant.site, kind, key, srvCreated: doc.srvCreated ?? null, seenAt: at, id: doc._id ?? null }); }
         }
         const dup = Object.entries(copies).filter(([, n]) => n > 1).map(([key, n]) => [Number(key), n]);
-        out({ t: 'pass', site: tenant.site, kind, at, status: 200, stored: r.body.length, duplicates: dup });
+        if (dup.length) out({ t: 'pass', site: tenant.site, kind, at, status: 200, stored: r.body.length, duplicates: dup });
       }
     }
+    // Successful reads without duplicates need only one heartbeat for the full sweep. At 100
+    // sites, a separate line for each one rotates away first sightings before a one-hour run ends.
+    out({ t: 'sweep', at: Date.now(), reads: input.tenants.length * KIND_NAMES.length });
     await new Promise(resolve => setTimeout(resolve, every));
   }
 }

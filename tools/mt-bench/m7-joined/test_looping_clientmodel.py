@@ -581,6 +581,30 @@ class HistoryV2(unittest.TestCase):
                 self.fixture(verify_only=True)
             self.store = copy.deepcopy(healthy)
 
+    def test_history_free_connector_tail_is_selected_in_full_roster_host_order(self):
+        self.spec['unseededTailTenants'] = 3
+        receipt = self.fixture(tenants=self.tenants[::-1])
+        ordered = sorted(self.tenants, key=lambda row: row['host'])
+        self.assertEqual(set(self.store), {t['id'] for t in ordered[:-3]})
+        self.assertEqual(receipt['roles']['unseeded']['tenants'], 3)
+        self.assertEqual(receipt['roles']['unseeded']['entries']['rows'], 0)
+        expected = V.tenant_factory(self.spec, len(ordered))
+        self.assertEqual([r['entriesMd5'] for r in receipt['tenants'][:-3]],
+                         [expected(i).expected()['entriesMd5'] for i in range(len(ordered) - 3)])
+        restored = self.fixture(verify_only=True)
+        self.assertEqual(receipt['logicalSha256'], restored['logicalSha256'])
+        def dirty_primer(query):
+            if 'AS connector_history' in query:
+                self.assertIn(ordered[-1]['id'], query)
+                self.assertNotIn(ordered[0]['id'], query)
+                return ordered[-1]['id']
+            return self.sql(query)
+        with self.assertRaisesRegex(ValueError, 'UNSEEDED_TENANT_HAS_HISTORY'):
+            self.fixture(sql=dirty_primer)
+        self.store[ordered[-1]['id']] = self.store[ordered[0]['id']]
+        with self.assertRaisesRegex(ValueError, 'UNSEEDED_TENANT_HAS_HISTORY'):
+            self.fixture(verify_only=True)
+
     def test_window_rows(self):
         d = V.describe(self.spec, 10_000)
         w = {k: v['windowRows'] for k, v in d['perTenant'].items()}

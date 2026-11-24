@@ -93,6 +93,8 @@ def validate(p, *, require_pins=True):
         history.validate(p['history'])
     except ValueError as error:
         raise ValueError('K8S_LOAD_HISTORY_UNSUPPORTED') from error
+    if 'unseededTailTenants' in p['history']:
+        need(p['history']['unseededTailTenants'] < p['population']['provisionedTenants'], 'UNSEEDED_TAIL_SIZE')
     burst = p['phases'].get('reconnectBurstClients', 0)
     viewer_setup = workload_runtime.viewer_plan.setup(w)
     need(p['phases']['restart'] is False and type(burst) is int and

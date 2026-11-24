@@ -20,7 +20,6 @@ connector-entry.js, its input on stdin, the roster at /results. The plan (site t
 group's DATA credentials) is kept privately; start() then reads it (c.connectors.planFile) and creates
 only the upstream and scorer, never the entry Secret or Job.
 """
-from datetime import datetime, timezone
 import json
 from pathlib import Path
 import subprocess
@@ -198,6 +197,14 @@ def _start(call, c, tenants, out, now=None):
     return _record(call, c, p, out, node)
 
 
+def scorer_generation(call):
+    status = call(['get', 'pods', '-l', 'nightscout.org/operator-task=connector-score', '-o',
+                   'jsonpath={range .items[*]}{.metadata.uid}:{.status.containerStatuses[0].restartCount}{"\\n"}{end}'], read=True)
+    rows = status.decode().strip().splitlines()
+    connectors.need(len(rows) == 1 and ':' in rows[0] and rows[0].rsplit(':', 1)[1].isdigit(), 'SCORER_IDENTITY')
+    return rows[0]
+
+
 def _record(call, c, p, out, node):
     # Scored from here: the upstream serves and the scorer is ready.
     ready(call, 'connector-score')
@@ -205,7 +212,8 @@ def _record(call, c, p, out, node):
     entered = c['connectors'].get('previousEntryMs', window_start)
     record = {'version': 1, 'tenants': len(p['tenants']), 'timing': connectors.timing_of(c), 'entryNode': node, 'entry': 'fixture-reader' if c['connectors'].get('planFile') else 'job',
               'share': c['connectors']['share'], 'historyStartMs': p['historyStartMs'],
-              'enteredAt': entered, 'scoreFromMs': window_start, 'scriptsSha256': connectors.scripts_digest()}
+              'enteredAt': entered, 'scoreFromMs': window_start, 'scorerGeneration': scorer_generation(call),
+              'scriptsSha256': connectors.scripts_digest()}
     (out / 'connectors.json').write_text(json.dumps(record, indent=2) + '\n')
     private = {'historyStartMs': p['historyStartMs'], 'timing': connectors.timing_of(c),
                'tenants': [{'site': r['site'], 'enteredAt': entered} for r in p['tenants']]}
@@ -218,18 +226,28 @@ def collect(call, c, out, until=None, miss_after_seconds=360):
     try:
         record = json.loads((out / 'connectors.json').read_text())
         start = record.get('scoreFromMs', record['enteredAt'])
-        args = ['logs', 'deployment/connector-score', '--limit-bytes=67108864']
-        if start != record['enteredAt']:
-            since = datetime.fromtimestamp(start / 1000, timezone.utc).isoformat(timespec='milliseconds')
-            args.append('--since-time=' + since)
-        raw = call(args, read=True)
+        # A truncated log can otherwise report every early first sighting as a product miss.
+        # Keep the complete run; summarize() applies the individual point's bounds.
+        raw = call(['logs', 'deployment/connector-score', '--tail=-1', '--limit-bytes=67108864'], read=True)
         log = out / 'connector-poll.private.jsonl'
         log.write_bytes(raw); log.chmod(0o600)
         until = until or int(time.time() * 1000)
+        lines = raw.splitlines()
+        header = json.loads(lines[0]) if lines and lines[0].startswith(b'{"t":"start"') else {}
+        sweeps = [json.loads(line) for line in lines if line.startswith(b'{"t":"sweep"')]
+        complete = [s for s in sweeps if start <= s.get('at', 0) <= until and s.get('reads') == 3 * record['tenants']]
+        if (header.get('tenants') != record['tenants'] or not complete
+                or scorer_generation(call) != record['scorerGeneration']):
+            score = {'verdict': 'UNMEASURED', 'code': 'K8S_CONNECTOR_SCORE_LOG_INCOMPLETE',
+                     'initialMarker': bool(header), 'completeSweeps': len(complete), 'logBytes': len(raw)}
+            (out / 'connector-score.json').write_text(json.dumps(score, indent=2) + '\n')
+            return score
         result = subprocess.run(['node', str(connectors.HERE / 'score.cjs'), 'summarize', str(out / 'connector-score-input.private.json'), str(log),
                                  '--from', str(start), '--until', str(until), '--miss-after-seconds', str(miss_after_seconds)],
                                 capture_output=True, text=True, timeout=120)
         score = json.loads(result.stdout)
+        score['observation'] = {'scorerGeneration': record['scorerGeneration'], 'initialMarker': True,
+                                'completeSweeps': len(complete), 'lastSweepAt': complete[-1]['at'], 'logBytes': len(raw)}
     except Exception as error:  # retained, never a pass
         score = {'verdict': 'UNMEASURED', 'code': 'K8S_CONNECTOR_SCORE_UNAVAILABLE', 'errorType': type(error).__name__}
         failure_evidence(call, out, error)

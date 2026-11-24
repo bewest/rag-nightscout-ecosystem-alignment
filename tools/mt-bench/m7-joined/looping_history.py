@@ -592,6 +592,10 @@ def seed_and_verify(g, spec, tenants, base, sql, until, window_seconds, *, verif
     roster = sorted(tenants, key=lambda row: row['host'])
     role = g.seed_roles(spec, len(roster))
     make = g.tenant_factory(spec, len(roster))
+    seeded = len(roster) - spec.get('unseededTailTenants', 0)
+    require(seeded > 0, 'UNSEEDED_TAIL_SIZE')
+    seeded_ids = {row['id'] for row in roster[:seeded]}
+    empty_ids = {row['id'] for row in roster[seeded:]}
     tables = h._tables(sql)
 
     def inspect():
@@ -599,6 +603,7 @@ def seed_and_verify(g, spec, tenants, base, sql, until, window_seconds, *, verif
         horizon = max(window_seconds*1000, math.ceil(until*1000)-at if until is not None else 0)
         require(anchor <= at and at + horizon - anchor <= h.MAX_STALE_4W_MS, 'OUTSIDE_CLINICAL_WINDOW')
         measured = g.census(sql, tables, at, horizon)
+        require(not empty_ids.intersection(measured), 'UNSEEDED_TENANT_HAS_HISTORY')
         require(measured.keys() <= {t['id'] for t in roster}, 'FOREIGN_TENANT')
         return at, measured
 
@@ -617,7 +622,7 @@ def seed_and_verify(g, spec, tenants, base, sql, until, window_seconds, *, verif
 
     index = {t['id']: i for i, t in enumerate(roster)}
     require(all(complete(index[t], v) for t, v in measured.items()), 'READBACK_MISMATCH')
-    missing = [(i, tenant) for i, tenant in enumerate(roster) if tenant['id'] not in measured]
+    missing = [(i, tenant) for i, tenant in enumerate(roster[:seeded]) if tenant['id'] not in measured]
     if missing:
         require(not verify_only, 'RESTORED_ROWS_MISSING')
         ids = ','.join("'" + t['id'] + "'" for _, t in missing)
@@ -650,25 +655,35 @@ def seed_and_verify(g, spec, tenants, base, sql, until, window_seconds, *, verif
             with ThreadPoolExecutor(max_workers=workers) as pool:
                 list(pool.map(seed, missing))
         at, measured = inspect()
-    require(measured.keys() == {t['id'] for t in roster}, 'ROWS_MISSING')
+    require(measured.keys() == seeded_ids, 'ROWS_MISSING')
+    if empty_ids and not verify_only:
+        # A current SGV from any source advances a connector's cursor. Catch an unrelated primer
+        # upload too: the history census above intentionally counts only this generator's marker.
+        from uuid import UUID
+        ids = ','.join("'" + str(UUID(value)) + "'" for value in sorted(empty_ids))
+        queries = [f"SELECT tenant_id FROM {tables[name]} WHERE tenant_id IN ({ids})"
+                   for name in ('entries', 'devicestatus', 'treatments')]
+        occupied = sql("SELECT DISTINCT tenant_id FROM (" + " UNION ALL ".join(queries) + ") AS connector_history LIMIT 1;")
+        require(not occupied.strip(), 'UNSEEDED_TENANT_HAS_HISTORY')
     for tenant, value in measured.items():
         require(complete(index[tenant], value), 'READBACK_MISMATCH')
     logical = hashlib.sha256()
     per_tenant = []
     for i, tenant in enumerate(roster):
-        value = measured[tenant['id']]
+        value = measured.get(tenant['id'], {})
         logical.update((tenant['host'] + ':' + json.dumps({k: value.get(k, 0) for k in g.CHECKED}, sort_keys=True) + '\n').encode())
-        per_tenant.append(dict(ordinal=i, role=role[i], **value))
+        per_tenant.append(dict(ordinal=i, role=role[i] if i < seeded else 'unseeded', **value))
     total = lambda k, rows=per_tenant: sum(r.get(k, 0) for r in rows)
     by_role = {}
-    for r in sorted(set(role)):
+    for r in sorted({p['role'] for p in per_tenant}):
         rows = [p for p in per_tenant if p['role'] == r]
         by_role[r] = dict(tenants=len(rows), **{c: dict(rows=total(c, rows), storedDocBytes=total(c + 'Bytes', rows))
                                                  for c in ('entries', 'devicestatus', 'treatments', 'profile')})
     return dict(version=1, history=spec, observedUnixMs=at, anchorAgeMs=at-anchor,
                 eligibilityThroughUnixMs=max(at+window_seconds*1000, math.ceil(until*1000) if until else 0),
                 measuredWindowSeconds=window_seconds, coldEntriesLookbackMs=h.LOOKBACK_MS,
-                rowsPerTenant={r: g.rows_per_tenant(spec, r) for r in sorted(set(role))},
+                rowsPerTenant={r: ({c: 0 for c in ('entries', 'devicestatus', 'treatments', 'profile')}
+                                   if r == 'unseeded' else g.rows_per_tenant(spec, r)) for r in by_role},
                 seededBatches=len(missing), logicalSha256=logical.hexdigest(),
                 rows=total('entries'), activeRows=total('activeRows'), storedDocBytes=total('entriesBytes'),
                 collections={k: dict(rows=total(k), storedDocBytes=total(k + 'Bytes'))
