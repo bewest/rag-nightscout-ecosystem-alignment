@@ -1,26 +1,16 @@
 # Programme status — cgm-remote-monitor
 
-*What this is: a record (contributor-facing; technical throughout). Read after the
-[mission](mission.md); leads to the [roadmap](ROADMAP.md). Prepared for the Nightscout project;
-proposed for Nightscout Foundation stewardship.
-Prose revised 2026-10-08 against cgm-remote-monitor `official/dev` `fade2299` and
-`official/master` `92d08342` (tag `15.0.8`); the remedial horizon and the register paragraph
-2026-10-21, against `official/master` `c6a0d8ed` (tag `v15.0.9`); the multitenant paragraph
-2026-11-16 against the selected stream integration records. The tables are generated from
-`queue/work-queue.yaml`; see [How to check any of this yourself](#how-to-check-any-of-this-yourself).*
-
-This page answers "where is the work, and what is it waiting for" across the three
-horizons the project runs in parallel. The detail lives in the queue, the backfix
-register and the design documents; this page says which of those to open.
-
-The counts below are generated and `make views-check` fails when they drift. The
-prose is hand-written and dated. Tables describe recorded queue claims; measurements in linked release records
-may close a narrower capability while its parent item remains open. A generated
-state is not evidence that a gate ran or that a milestone was promoted.
-
----
+*Contributor guide, updated 2026-11-24. The release contents identify the single-tenant candidate on
+`official/dev`. The tenancy execution log records the separate multitenant candidates. Tables on
+this page come from the [work queue](../../queue/README.md).*
 
 ## The three horizons
+
+| Work | Where it stands | Where to review it |
+|---|---|---|
+| Single-tenant release | 16.0.0 is the closing candidate on `official/dev`. The modernization train has merged. #8907 makes Modern the default theme and preserves saved choices. The releaser still needs evidence tied to the final build. | [16.0.0 contents](../../releases/cgm-remote-monitor-16.0.0/contents.md) · [testing notes](../../releases/cgm-remote-monitor-16.0.0/testing-notes.md) |
+| Remedial | `v15.0.9` is the shipping tag. Check the affected version and the fix location on each defect before describing operator exposure. | [Backfix register](../30-design/remedial/nightscout-backfix-register.md) · [15.0.9 contents](../../releases/cgm-remote-monitor-15.0.9/contents.md) |
+| Multitenant development | The candidate uses writer-driven clinical updates. The execution log records nominal load, connector delivery and recovery by source, deployment and workload. Multitenant roles are outside the 16.0.0 release. | [Decisions in force](../30-design/tenancy/decisions-in-force.md) · [execution log](../30-design/tenancy/execution-log.md) · [delivery dashboard](../30-design/tenancy/multitenant-delivery-dashboard.md) |
 
 <!-- BEGIN GENERATED: horizons -->
 
@@ -33,120 +23,15 @@ state is not evidence that a gate ran or that a milestone was promoted.
 
 <!-- END GENERATED: horizons -->
 
-**Remedial** — finding and fixing defects that already ship. 15.0.9 was released on 2026-10-21: #8598 merged as `master` `c6a0d8ed` (tree `c53c2c7f`, the same as
-`dev` `4bca2ac2`'s), GitHub release `v15.0.9` "Release 15.0.9 Cinnamon Muffin", Latest, and the
-`15.0.9` and `latest` Docker images published by the `master` CI run (39667944235, second attempt;
-the first failed in one cell's `npm install` on `ECONNRESET` before any test ran). It carries 549
-commits and 100 first-parent merges since 15.0.8, among them the fixes for two published-advisory
-defects that survive `AUTH_DEFAULT_ROLES=denied`, GHSA-gjhc (BF-79, #8744) and GHSA-8849 (BF-75/76,
-#8745), the boot notice for world-readable sites (#8746), and the two backported security fixes
-(BF-104, BF-105, #8751). Operators who have not upgraded from 15.0.8 still have all of them. Both
-approvals of #8598 were the maintainer's, at `e3adc91d`; they were not repeated at `4bca2ac2`. The
-release rests on the maintainers' readiness decision of 2026-10-21. Both tags exist, `v15.0.9` and
-`15.0.9`, on `c6a0d8ed`. `dev` is `04d435eb`, the 15.0.10 version bump on top of the release, and
-#8824 is the new `dev` → `master` staging PR. Known issues and what is left are in
-[ROADMAP §1](ROADMAP.md#1-1509-is-released-the-next-development-cycle).
+<a id="status-words-merged-is-not-released"></a>
 
-The [backfix register](../30-design/remedial/nightscout-backfix-register.md) holds the defect facts;
-`make queue-coverage` proves the queue names every entry that is not fixed.
+## Reading defect status and operator exposure
 
-**Modernization** — bringing dependencies and code up to date. The adopted release
-train is 15.0.9, then cut 1 (`chore/retire-jsdom`), then cut 2, then cuts 3+5 combined,
-then cut 4. The separate deprecation release was dropped (`RT-4`): the MiniMed warning in
-15.0.9 (#8757) names the replacement settings, and on 2026-09-23 the maintainer moved the
-legacy MiniMed and Dexcom bridge removal onto cut 1, keeping the hard stop at boot
-(BF-61, option A). mmconnect is reported not to work, and Dexcom `BRIDGE_*` settings have
-been served by `nightscout-connect` since 15.0.8, so BF-44/BF-45 are graded low. Nothing on
-the train has shipped. Measured 2026-10-03 against `official/dev` `74942ec6`:
-
-| cut | branch | behind `dev` | conflicting paths |
-|---|---|---:|---:|
-| 1 | `chore/retire-jsdom` | 362 | 12 |
-| 2 | `chore/build-runtime-separation` | 362 | 19 |
-| 3 | `chore/compose-mongodb6` | 362 | 22 |
-| 4 | `chore/mime-exposure-review` | 362 | 36 |
-| 5 | `chore/nightscout-modernization` | 238 | 27 |
-
-Reproduce with `git -C externals/cgm-remote-monitor-official rev-list --count
-official/chore/<branch>..official/dev` and `git merge-tree --write-tree --name-only
-official/dev official/chore/<branch>`; the trial merges are `RT-REBASE`'s and `RT-3`'s
-gates. The files newly conflicting on cuts 2–4 were touched by the merged Phase 0
-PRs, so every merge to `dev` raises the rebase cost of the train. Whether the train reaches `dev`
-by merge or by rebase is open (`RT-PROPAGATION`); so far every propagation has been a merge.
-
-**Multitenant** — adding tenant isolation alongside first-class single-tenant Nightscout.
-Use the [tenancy reading guide](../30-design/tenancy/README.md) to select a document.
-Current delivery progress, accepted evidence and remaining gates live in the
-[delivery dashboard](../30-design/tenancy/multitenant-delivery-dashboard.md) and
-[delivery roadmap](../30-design/tenancy/multitenant-delivery-roadmap.md).
-The [next-generation platform map](../../site/pages/nightscout-next-gen-platform.html)
-shows the dependencies and bounded acceptance stages. These records distinguish local
-branch acceptance, combined integration and milestone completion; `make queue-status`
-measures the queue's claims.
-
-The [selected stream integration record](../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16)
-owns the functionally qualified local runtime, stock-client/raw-event behavior,
-ordinary lost-slot recovery and the separately attributed populated upgrade and
-cold rollback. These are reproduced capabilities on named source/deployment pairs.
-The [communication guide](../30-design/tenancy/evaluator-realtime-communication.md)
-owns the current architecture: durable stream acceptance, bounded clinical state,
-completed output and independent raw storage delivery. Earlier R72/R73 and
-operation-window records retain their original source and scope.
-
-The current execution priority is [single-evaluator efficiency](../30-design/tenancy/evaluator-realtime-communication.md#single-evaluator-efficiency-plan),
-with horizontal execution preserved as a future seam. The incremental handover
-lane owns snapshot/stream correctness; the separate profiling continuation owns
-CPU, allocation, encoding, statistics and SQL attribution. The coalesced snapshot
-alternative remains unqualified. Neither this priority nor a primitive cost
-reduction establishes operating capacity.
-
-Remaining work has distinct boundaries. The existing operating report owns load,
-resource and recovery observations, including partial and failed points. The [follow-on source qualification](../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#stream-amplification-and-executable-retirement--2026-11-16)
-closes bounded stream amplification and executable retirement; matched operating
-comparison remains separate. A supported production profile also needs
-its workload limits, deployment trust and recovery objectives accepted together;
-optional HA, multihost and fleet placement retain separate scope. The
-[production path](../30-design/tenancy/production-critical-path.md) explains those
-criteria without making them prerequisites for independent experiments.
-
-The [delivery dashboard](../30-design/tenancy/multitenant-delivery-dashboard.md)
-owns milestone claims and the [multitenant execution log](../30-design/tenancy/execution-log.md)
-owns integration and publication. Local source qualification, alignment records
-integration, application dev merge and an operator release are different events.
-No milestone is promoted by this documentation reconciliation.
-Decisions D1–D23 and the later multitenant programme decisions live in the
-[tenancy decisions reference](../30-design/tenancy/multitenancy-decisions.md),
-with the adopted [owner-authority amendment](../30-design/tenancy/owner-authority.md)
-and the [durable event delivery contract](../30-design/tenancy/durable-event-delivery-contract-2026-11-06.md) (B7).
-Self-hosted single-tenant remains first-class permanently (D1, D4); multitenant is
-an additional deployment target. Release readiness follows the
-[release records](../../releases/cgm-remote-monitor-16.0.0/contents.md).
-
----
-
-## Status words: merged is not released
-
-**In the backfix register, neither `fixed` nor `merged` means an operator is safe.**
-`fixed` means repaired on a branch that has not been merged. `merged` means merged
-into `origin/dev` and not released. `released` means in a tagged release operators
-run. 15.0.9 (`RT-0`) was released on 2026-10-21 (tag `v15.0.9`, `master` `c6a0d8ed`), so every
-entry merged before then is `released 15.0.9`. Merging to `dev` publishes a Docker Hub
-image; that is not a release. If a defect marked `fixed` or `merged` exists in 15.0.9, anyone running 15.0.9 still has it; anyone still on 15.0.8 also has every `released 15.0.9` entry.
-
-The size of that, from the register's §1 (the section whose defects reach existing operators),
-measured 2026-10-07 with `node tools/queue/gates/register-exposure-legend.js`: **120 defects**
-(BF-12, invalid, BF-41, closed, and BF-71, closed as working as intended, excluded) — 27 `open`,
-89 `merged`, 1 `partly merged`, 3 `fixed` (BF-52; BF-09 and BF-156 on unmerged branches). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
-BF-142, as of 2026-09-26), so they never reached 15.0.8. The count moves when entries are filed or
-merged; re-run the gate before quoting it.
-
-The register's `open` count is therefore not "the number of defects still shipping":
-it omits the 83 repaired-but-unreleased ones (81 merged, 1 partly merged, 1 fixed). The status column tracks work done, not
-operator exposure, which is why the queue carries `ships_to_operators_today` as a
-separate field.
-
-These are the queue items covering that exposure — items, not defect ids, so several
-cover more than one `BF-`:
+The register uses **open** for an outstanding defect, **fixed** for a repair on a branch,
+**merged** for a repair integrated into application `dev`, and **released** for a repair in
+a tag operators install. The table groups queue items by recorded exposure. One item can
+cover several defect IDs. The affected versions and evidence are in the
+[register](../30-design/remedial/nightscout-backfix-register.md).
 
 <!-- BEGIN GENERATED: operator-exposure -->
 
@@ -272,11 +157,11 @@ cover more than one `BF-`:
 
 <!-- END GENERATED: operator-exposure -->
 
----
-
 ## Where the work stands
 
-Claimed state by parcel. Every cell is a **claim** about what the gates will say.
+Each cell counts manifest claims. Run the relevant item gate before acting on a claim.
+An item marked `in-flight-upstream` has been handed to upstream. An item marked
+`gate-not-met` has an outstanding measurement. A skipped gate supplies no passing result.
 
 <!-- BEGIN GENERATED: state-matrix -->
 
@@ -292,33 +177,13 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 <!-- END GENERATED: state-matrix -->
 
-Three states here are not what a casual reader expects:
+<a id="the-two-constraints-neither-of-them-engineering"></a>
 
-- **`gate-not-met`** is a *measured* state, not an opinion. Work exists and a
-  declared gate fails.
-- **`in-flight-upstream`** means handed to upstream reviewers and not ours to land.
-- **`merged-upstream`** means merged into `dev` and not released. It is deliberately
-  not called `done`: nothing merged has reached an operator.
+## Review and publication
 
-The queue also carries **explicit `no-gate:` markers** — a record that a property
-has no measurement built yet, with the reason. They are bookkeeping, not
-gaps in it; `make queue-validate` prints how many gate slots are in that state.
-
----
-
-## The two constraints, neither of them engineering
-
-**1. Publication is a manual human act, on purpose.** Agents prepare branches,
-commits and tags locally and stop. A human pushes, merges, tags and publishes. This
-is a standing rule. Pushing to cgm-remote-monitor's `dev` or `master` fires
-`main.yml`'s `docker-build` job and publishes a Docker Hub image, so **`dev` and
-`master` are publication events, not branches**. A release is three separate human
-decisions: merge the code, push the tag, publish the package.
-
-**2. Review routes to the maintainer.** The modernization commits have one author, so
-each cut needs a reviewer other than its author before it reaches `dev`.
-
-Where the queue says each item's review has to come from:
+The queue names the reviewer or reviewer group for each item. The maintainer owns
+upstream publication. Pushing application `dev` or `master` can publish a development
+or release image. The release record identifies the tag available to operators.
 
 <!-- BEGIN GENERATED: reviewer-load -->
 
@@ -335,67 +200,21 @@ Where the queue says each item's review has to come from:
 
 <!-- END GENERATED: reviewer-load -->
 
-The SECURITY and SAFETY rows name a *kind* of reviewer. For #8754 (login security fixes and
-`TRUST_PROXY`, merged as `4f705217`), the named reviewers were the maintainer and Andy. The other SECURITY
-and SAFETY rows still have no individual assigned. `BFQ-72` (BF-72, an
-unauthenticated request that can occupy the database for minutes, live on 15.0.8 and `dev`)
-has a disposition decided by the maintainer. It is held outside this public repository because the
-defect is live on the shipping release (the disclosure rule, [DOCUMENT-CONTROL §3.8](DOCUMENT-CONTROL.md#38-external-and-restricted-documents)).
-
-If you are considering reviewing, [REVIEWER-ONBOARDING.md](REVIEWER-ONBOARDING.md)
-is the read-this-first path, and `reports/reviewer-packets/` has one bounded packet
-per item awaiting review.
-
----
-
-## What would move the picture
-
-These are decisions, not tasks; no amount of engineering advances them. Each is
-expanded in [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md).
-
-| | decision | why it blocks a train |
-|---|---|---|
-| `BFQ-09` | BF-09: is a zero-valued temp basal a real value in the socket dedup? Measured; waits on the maintainer. | It ships to operators now. |
-| `A7A-7` | The clock question inside the alarm path. The maintainer owns it. | It gates alarms under `TENANCY_MODE=multi`. |
-
-`P0-TAG` (done: `nightscout-connect` 0.1.0 released and pinned by #8762) left this table on
-2026-09-24. `RT-D3` (answered: the drag check passed in automation and by hand, and 15.0.9 ships as numbered),
-`BFQ-47` (decided: the allow-list is intended; the admin-page fix is in #8754) and `BFQ-72` (disposition
-decided; held outside this public repository while the defect is live) left this table on 2026-09-23.
-
----
+For items awaiting a person, see [review and decision routing](NEEDS-A-HUMAN.md).
+For the gate and source evidence behind an individual review, start with
+[reviewer onboarding](REVIEWER-ONBOARDING.md).
 
 ## How to check any of this yourself
 
 ```bash
-make queue-status          # run every static + unit gate. The measurement.
-make queue-status PARCEL=phase0
-make queue-check           # CI: register coverage, then staleness of every generated view, then links
-make queue-vacuity         # ask every gate whether it can actually fail
-make views-check           # fail if the generated blocks on this page are stale
+make queue-status                 # run static and unit gates
+make queue-status ID=RT-16-RELEASE
+make queue-check                  # validate records, generated views and links
 ```
 
-`queue/QUEUE.md` is the full generated view of all items. `queue/README.md`
-explains the manifest's fields and why `state` is a claim rather than a
-measurement.
-
----
-
-## Where each claim on this page comes from
-
-| claim | authority |
-|---|---|
-| what "done" means for these documents | [`DEFINITION-OF-DONE.md`](DEFINITION-OF-DONE.md) |
-| the order of the work ahead | [`ROADMAP.md`](ROADMAP.md) |
-| how documents and records are controlled (proposal) | [`DOCUMENT-CONTROL.md`](DOCUMENT-CONTROL.md) |
-| item state, gates, review routing | `queue/work-queue.yaml` (source of truth) |
-| defect facts and `BF-` ids | [`../30-design/remedial/nightscout-backfix-register.md`](../30-design/remedial/nightscout-backfix-register.md) |
-| what 15.0.9 contains and leaves broken | [`../../releases/cgm-remote-monitor-15.0.9/contents.md`](../../releases/cgm-remote-monitor-15.0.9/contents.md) |
-| how 15.0.9 was released, and what is left | [`ROADMAP.md` §1](ROADMAP.md#1-1509-is-released-the-next-development-cycle) (generated) |
-| Phase 0 PR ordering and coupling | [`../30-design/remedial/phase0-pr-sequencing-2026-09-15.md`](../30-design/remedial/phase0-pr-sequencing-2026-09-15.md) |
-| the release train and its order | [`../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md) |
-| tenancy decisions D1–D22 | [`../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../30-design/tenancy/multitenancy-decisions.md) |
-| the governance / zero-reviews finding | [`../30-design/remedial/maintainer-release-brief-2026-09-15.md`](../30-design/remedial/maintainer-release-brief-2026-09-15.md) |
+The [roadmap](ROADMAP.md) gives the order of work. The
+[definition of done](DEFINITION-OF-DONE.md) and [document control](DOCUMENT-CONTROL.md)
+describe how evidence is retained.
 
 <!-- BEGIN GENERATED: provenance -->
 

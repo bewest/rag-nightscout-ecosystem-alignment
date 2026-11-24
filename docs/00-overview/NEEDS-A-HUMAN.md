@@ -1,32 +1,17 @@
-# Work waiting on a person: what to push, decide or review
+# Work waiting on a person
 
-*What this is: a record (contributor-facing). Read after the [roadmap](ROADMAP.md); leads to the
-[definition of done: when a change is ready for the apps that depend on it](DEFINITION-OF-DONE.md). The subset of the work queue where no further engineering
-advances anything — a person has to push, decide, or review. Prose revised
-2026-10-08 against cgm-remote-monitor `official/dev` `fade2299` (the `RT-0` section 2026-10-21,
-against `official/master` `c6a0d8ed`, tag `v15.0.9`) and nightscout-connect
-`official/main` `4dde1ec` (tag `v0.1.0`); the multitenant section 2026-11-10 against draft #8898 `b70ad83f`; tables generated.*
-
-This page lists only the items whose claimed state means **the next move belongs to
-a person**, grouped by the kind of person, so that "what is blocked on me" is one
-page.
-
-Four states qualify:
-
-| state | what it means |
-|---|---|
-| `ready-to-push` | every runnable gate passes; the next step is a human push |
-| `needs-decision` | waiting on a decision, not on work |
-| `in-flight-upstream` | handed to upstream; not ours to land |
-| `unsettled` | not yet established that this is a defect at all |
-
-`merged-upstream` and `released` items do not appear here. A `merged-upstream` item needs no
-person individually; what it needs is a release. 15.0.9 (`RT-0`) was released on 2026-10-21, and
-every item that was `merged-upstream` then is `released`.
-
----
+*Contributor and maintainer guide, updated 2026-11-24. The tables route work
+according to the [queue](../../queue/README.md). Verify the named upstream PR,
+source head and gates before acting.*
 
 ## Grouped by who it waits for
+
+| Claimed state | What the reviewer checks |
+|---|---|
+| `ready-to-push` | Check the branch and gates, then decide whether to publish. |
+| `needs-decision` | Read the alternatives and their operator effects. |
+| `in-flight-upstream` | Check the upstream disposition and any remaining part of the item. |
+| `unsettled` | Establish whether the observed behaviour is a defect. |
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
@@ -85,11 +70,13 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- END GENERATED: needs-a-human -->
 
----
+<a id="the-open-pull-requests"></a>
 
-## The open pull requests
+## Pull requests referenced by the queue
 
-One bounded review packet per item awaiting review lives in `reports/reviewer-packets/`.
+A PR here is the reference recorded on an item awaiting upstream action. A
+partial fix can merge while the item remains open. Use the
+[reviewer packets](../../reports/reviewer-packets/README.md) for each item's scope.
 
 <!-- BEGIN GENERATED: open-prs -->
 
@@ -101,126 +88,24 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 <!-- END GENERATED: open-prs -->
 
-Every PR decided for 15.0.9 is merged and was released with it on 2026-10-21; `RT-0` below records the release.
+## Release and multitenant decisions
 
-The connector half is released. On 2026-09-24 the maintainer merged `nightscout-connect` #70
-(`dev` → `main`, `4dde1ec`) and tagged `main` `v0.1.0`. npm's `latest` is `0.1.0`, with
-provenance. Its code is the same as `0.1.0-dev.3`'s (`977da8a`): the only difference is
-`docs/releasing.md` (#80), which now records that order. Connector `dev` declares `0.1.1`, and #81 is the
-next `dev` → `main` PR. cgm-remote-monitor `dev` pins exactly `0.1.0` (#8762); `master` still pins
-tag `v0.0.13`.
+For the closing single-tenant release, use the [16.0.0 decisions](../../releases/cgm-remote-monitor-16.0.0/decisions.md)
+and [testing notes](../../releases/cgm-remote-monitor-16.0.0/testing-notes.md). Record live
+alarm delivery, real-rig/cohort and rollback observations against the exact candidate.
+The maintainer coordinates private pre-tag work and staging.
 
----
-
-## The decisions, and what each costs while it waits
-
-Engineering cannot advance these. Each needs somebody to choose.
-
-### `RT-D3` — answered for 15.0.9
-
-The version is decided (15.0.9 ships as numbered), and the drag check
-passed on 2026-09-23 in automation and by hand: mouse in mg/dL and mmol/L, and touch, the same as
-15.0.8. The hand check found BF-103 (a split drag keeps the old time, so IOB and COB ignore the move),
-which is on 15.0.8 as well and is tracked as `BFQ-103`.
-
-### `RT-0` — 15.0.9 released (2026-10-21)
-
-15.0.9 was released on 2026-10-21: #8598 merged as `master` `c6a0d8ed` (tree `c53c2c7f`, the same as
-`dev` `4bca2ac2`'s), GitHub release `v15.0.9` "Release 15.0.9 Cinnamon Muffin", Latest, and the
-`15.0.9` and `latest` Docker images published by the `master` CI run (39667944235, second attempt;
-the first failed in one cell's `npm install` on `ECONNRESET` before any test ran). It carries 549
-commits and 100 first-parent merges since 15.0.8, among them the fixes for two published-advisory
-defects that survive `AUTH_DEFAULT_ROLES=denied`, GHSA-gjhc (BF-79, #8744) and GHSA-8849 (BF-75/76,
-#8745), the boot notice for world-readable sites (#8746), and the two backported security fixes
-(BF-104, BF-105, #8751). Operators who have not upgraded from 15.0.8 still have all of them. Both
-approvals of #8598 were the maintainer's, at `e3adc91d`; they were not repeated at `4bca2ac2`. The
-release rests on the maintainers' readiness decision of 2026-10-21. Both tags exist, `v15.0.9` and
-`15.0.9`, on `c6a0d8ed`. `dev` is `04d435eb`, the 15.0.10 version bump on top of the release, and
-#8824 is the new `dev` → `master` staging PR. Known issues and what is left are in
-[ROADMAP §1](ROADMAP.md#1-1509-is-released-the-next-development-cycle).
-
-### `P0-TAG` — done: `nightscout-connect` 0.1.0 is released
-
-The maintainer released it on 2026-09-24: #70 merged into `main`, `main` was tagged `v0.1.0`, and the
-publish was approved. Nightscout `dev` pins it exactly (#8762), and the combined run with that pin is
-green.
-
-#79's bounded profile fetch (`1d2ebc8`) and update-on-change (`de3cee1`) were lab-run on
-2026-09-23, on code identical to what shipped. The runs were 80 min, and 46 min against sinks
-running the 15.0.9 candidate
-([record](../60-research/remedial/connector-profile-sync.md)). That is
-shorter than the 4 h 23 min dev.2 soak, and no source outage was repeated.
-
-### `BFQ-47` — decided, and in review
-
-The maintainer decided on 2026-09-23 that the subject allow-list is intended. The remaining defect,
-the admin page clearing `notes` and `created_at` on every edit, is fixed by `7103f657`, which is part
-of #8754.
-
-### `BFQ-72`
-
-BF-72: an unauthenticated query can occupy the database for minutes. It is live on 15.0.8 and on
-`dev`. Mechanism only is recorded in this public repository. The maintainer has decided its
-disposition; the details are held outside this public repository while the defect is live on the
-shipping release, under the disclosure rule ([DOCUMENT-CONTROL §3.8](DOCUMENT-CONTROL.md#38-external-and-restricted-documents)).
-
-### `MT-M6B-JOIN`, `MT-ENDPOINT-TRANSPORT` — the multitenant preview on #8898
-
-Draft #8898 is `b70ad83f` (read from GitHub 2026-11-10, 20:54 UTC), open; 17 checks pass
-and 3 are skipped, CodeQL and the multitenant opt-in corpus among the passes. That head
-carries the M6a owner/OIDC and internal service API candidate and the M6b join; its
-frozen-head acceptance is the
-[M6b record](../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md).
-The preview is dormant and opt-in; taking it out of draft, review and merge are the
-maintainer's actions.
-
-On 2026-11-09 the maintainer split M6 into M6a–M6d and M7, moved the deployment tree to
-`nightscout-deploy`, chose a Vault Agent sidecar over a hand-written service-login
-adapter, and retired the agent-invented grant ceremony in favour of a disposable harness
-([decisions](../30-design/tenancy/multitenancy-decisions.md#plan-restructuring-and-process-simplification-2026-11-09)).
-
-Settled 2026-11-10 ([decisions](../30-design/tenancy/multitenancy-decisions.md#deploy-companion-internal-listener-activity-policy-and-8898-timing-2026-11-10)): the internal listener shape (Ory pattern, socket default, graceful shutdown), the operator activity policy (pause/suspend; owner may pause), the `nightscout-deploy` home (pushed to the nightscout organisation; it owns the Compose tree) and #8898 timing (draft until the next batch joins).
-
-What still needs a person:
-
-- **Taking #8898 out of draft** after the next batch's acceptance, and posting the early design-feedback comment if wanted.
-- **Nothing for the operating envelope.** On 2026-11-09 the maintainer made M7
-  measured, not declared: `MT-BENCH-BASELINE`, `MT-BENCH-CONTRAST` and `MT-SCALE-UNBOUND`
-  produce the numbers; limits follow.
-
-### `BFQ-09`, `A7A-7` — `unsettled`, which is not the same as open
-
-These are not yet established as defects. `unsettled` exists so that "we looked and could not settle
-it" does not silently become either "fixed" or "open". `BFQ-09` has been measured (zero-is-real fixes
-six dedup cases and changes no control) and waits on the maintainer. `A7A-7` carries a safety
-dimension, the clock question inside the alarm path, and the maintainer owns it. (`BFQ-52` was settled
-on 2026-09-23 and has a prepared fix, now blocked on `BFQ-92`.)
-
----
-
-## What is deliberately *not* on this page
-
-- **Engineering work.** `not-started` items need somebody to do them, not to decide
-  them. They are in `queue/QUEUE.md`; the count is in the horizons table on
-  [PROGRAMME-STATUS.md](PROGRAMME-STATUS.md).
-- **`blocked` items.** They wait on another *item*, not on a person. Unblocking them
-  follows from the rows above.
-- **`gate-not-met` items.** A gate is failing. That is work.
-
----
+For the multitenant preview, check the candidate and remaining evidence in the
+[execution log](../30-design/tenancy/execution-log.md) before requesting review
+or proposing publication. Adopted choices are indexed in the
+[decisions in force](../30-design/tenancy/decisions-in-force.md).
 
 ## Checking this page against the gates
 
-Everything above is a **claim** read from the manifest. The measurement is:
-
 ```bash
-make queue-status STATE=ready-to-push     # do the gates agree these are ready?
-make queue-status                          # all of it
-make views-check                           # are this page's tables current?
+make queue-status STATE=ready-to-push
+make views-check
 ```
-
-`make queue-status` prints `CLAIM DIVERGES` when an item claims `ready-to-push` and a
-gate disagrees. Run it before acting on any row here.
 
 <!-- BEGIN GENERATED: provenance -->
 

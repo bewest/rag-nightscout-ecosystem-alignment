@@ -1,181 +1,49 @@
-# Reviewer onboarding — read this first
+# Reviewing the cgm-remote-monitor programme
 
-*What this is: a guide (contributor-facing). Read after the [overview](README.md); leads to the
-[mission](mission.md). Written for somebody who has never seen this repository and
-is considering reviewing work in it. Prose revised 2026-10-03 against
-cgm-remote-monitor `official/dev` `1ad03e29` and `official/master` `92d08342` (tag
-`15.0.8`).*
+*Contributor guide, updated 2026-11-24. This workspace holds the queue, release
+records, source comparisons and test harnesses. The application lives in
+`externals/cgm-remote-monitor-official`.*
 
-Thank you for looking. What you would be taking on, so you can decide quickly:
+## Choose a review
 
-> The modernization work reached `chore/nightscout-modernization` through 100 child pull
-> requests from one author. Before any of it reaches `dev`, each cut needs a reviewer
-> other than its author. That is the review you would be doing; the gates and evidence
-> documents are there to keep each review bounded.
+| If you are reviewing | Start with | What to establish |
+|---|---|---|
+| The closing single-tenant 16.0.0 candidate | [Release contents](../../releases/cgm-remote-monitor-16.0.0/contents.md) and [testing notes](../../releases/cgm-remote-monitor-16.0.0/testing-notes.md) | Which commit and image were tested, which clients and upgrade paths were exercised, and which observations the releaser still needs. |
+| A defect or fix | [Backfix register](../30-design/remedial/nightscout-backfix-register.md) and [reviewer packets](../../reports/reviewer-packets/README.md) | Which versions exhibit the defect, how it was established, where the fix landed and whether it reached a shipping tag. |
+| Multitenant support | [Tenancy reading guide](../30-design/tenancy/README.md), [decisions in force](../30-design/tenancy/decisions-in-force.md) and [execution log](../30-design/tenancy/execution-log.md) | Which candidate implements the behaviour and which deployment, workload and failure conditions its evidence covers. This work has its own acceptance criteria. |
 
-## What you are looking at, and what it is not
+The [programme status](PROGRAMME-STATUS.md) connects all three. [Work waiting on a person](NEEDS-A-HUMAN.md)
+identifies the recorded reviewer or decision owner.
 
-Nightscout is open-source software that people run themselves to see their own or
-a family member's glucose data. The Nightscout Foundation stewards it; it does not
-manufacture devices or prescribe therapy. **Users build and run these tools
-themselves**, which means a defect here reaches somebody's kitchen table, not a
-support queue.
+## Read the evidence
 
-That shapes what review means here. In most codebases the bad outcome is a crash.
-Here the bad outcome is **a read that is silently wrong** — a number that renders
-plausibly and is not the number in the database, or an alarm that does not fire.
-A crash is loud. These are not. So a change that "passes the suite" is the failure
-mode to design against, not the evidence to relax on.
+1. Find the item in the [work queue](../../queue/QUEUE.md). Check its gates,
+   dependencies and review packet. Use the upstream `official/*` ref for source
+   comparisons and the recorded commit for a dated measurement.
+2. Check what the gate observes. **Reproduced** means the behaviour was exercised.
+   **Read-derived** means the claim came from inspecting source or records. Look
+   for a negative control that failed when the property was broken and passed
+   when restored. A skipped or uninstrumented check supplies no passing evidence.
+3. Compare the result with what the user actually sees. A plausible glucose
+   value from the wrong record or a missing alarm can survive a passing build.
+   Read changes to expected values alongside the implementation.
+4. Locate the result. **Fixed** means on a branch, **merged** means in application
+   `dev`, and **released** means in an operator-installable tag. A multitenant
+   experiment may qualify a particular path on a local candidate. The
+   [delivery dashboard](../30-design/tenancy/multitenant-delivery-dashboard.md)
+   gives the milestone criteria.
 
-**Two repositories, and they have different rules.** This repository
-(`rag-nightscout-ecosystem-alignment`) holds tooling, documentation, evidence and
-QC harnesses. The shipping application is `cgm-remote-monitor`, and it **stays
-pristine** — findings are written up here and referenced from there, never pasted
-into its code comments. Harnesses here `require()` the shipping module by path so
-the two cannot drift.
-
----
-
-## The reading path — about an hour
-
-Five documents, in this order. Each row says what that document is *authoritative
-for*, which matters because several documents discuss the same facts and only one
-of them owns each.
-
-| # | read | ~ | authoritative for |
-|---|---|---|---|
-| 1 | [PROGRAMME-STATUS.md](PROGRAMME-STATUS.md) | 5 min | the three horizons, and which constraint is actually binding |
-| 2 | [`queue/README.md`](../../queue/README.md) | 10 min | how work state is recorded, and why `state` is a claim rather than a fact |
-| 3 | [`../30-design/remedial/nightscout-backfix-register.md`](../30-design/remedial/nightscout-backfix-register.md) — §3 and §4 first, then skim §1 | 20 min | **defect facts and `BF-` ids**. Nothing else may contradict it |
-| 4 | [`../30-design/remedial/phase0-pr-sequencing-2026-09-15.md`](../30-design/remedial/phase0-pr-sequencing-2026-09-15.md) | 15 min | which branches are coupled, and what order they can land in |
-| 5 | the packet for whichever PR you take, in `reports/reviewer-packets/` | 10 min | that one change: what it does, what the evidence proves, what it does **not** prove |
-
-If you only read two, read **1** and **3**.
-
-Then, by horizon, when you need it:
-
-- **Modernization** — [`../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md)
-- **Multitenancy** — [tenancy reading guide](../30-design/tenancy/README.md) for current architecture and evidence homes; [tenancy decisions](../30-design/tenancy/multitenancy-decisions.md) for D1–D23
-- **Research and measurements** — `../60-research/{remedial,modernization,tenancy}/`, filed by horizon
-
----
-
-## Five conventions you need, or the documents will read wrong
-
-**1. A claim is not a measurement.** `queue/work-queue.yaml` carries `state:` for
-each item. That field is *only a claim about what the gates will say*.
-`make queue-status` runs them. The runner prints `CLAIM DIVERGES` when they
-disagree. `queue/QUEUE.md` is generated so that nobody can quietly edit a status
-into the human-readable view.
-
-**2. `no-gate:` is bookkeeping, not a gap in it.** Every queue item's gate is either
-a runnable command or an explicit `no-gate:` marker carrying a reason. There is no
-third option, and validation rejects a manifest where the gate list is empty —
-because a missing gate that renders as blank looks exactly like a passing one.
-
-**3. A check that has never failed is not yet evidence.** Before a gate counts, the
-thing it tests gets broken to confirm the gate notices. Two ways a gate goes
-vacuous: the corpus never exercises the property, or the code never distinguishes
-the branches. And a green ablation has two opposite meanings — the
-check may be vacuous, **or the break may not have broken anything**. Always confirm
-the break landed before concluding anything about the test.
-
-**4. Read-derived and reproduced are different grades of claim.** Register entries
-are marked as one or the other. Across Phase 0, every claim that failed when run
-was read-derived, and two prescribed fixes would have made things worse. Treat any
-"the fix is X" as a hypothesis until somebody runs it; if you are reviewing a fix,
-that is the thing to be suspicious of.
-
-**5. Neither `fixed` nor `merged` means released.** In the register, `fixed` means
-repaired on a branch that has not been merged; `merged` means merged into
-`origin/dev` and not released; `released` means in a tagged release operators run.
-Release state belongs to the [release contents](../../releases/cgm-remote-monitor-15.0.9/contents.md) and
-[PROGRAMME-STATUS](PROGRAMME-STATUS.md#status-words-merged-is-not-released).
-The 15.0.9 cycle has a tagged release; the local multitenant candidate's
-qualification does not make it merged into dev or released. Use each release's
-contents and the register for its own scope rather than a repository-wide claim.
-
----
-
-## Picking something to review
-
-Four entry points, easiest first:
-
-1. **An open pull request.** [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md) lists them with a
-   one-line description, and `reports/reviewer-packets/` has a bounded packet for
-   each item awaiting review. Every 15.0.9 pull request is merged into `dev`, and none is
-   released; the largest is #8758 (records keep their own `_id` across API v1, v3 and the
-   websocket, a change to core data paths), and a review of its evidence is still useful
-   after the fact. The connector's fixes are released as
-   `nightscout-connect` `0.1.0` (2026-09-24), which `dev` pins exactly (#8762).
-2. **A security or safety item.** #8754 (login security fixes and `TRUST_PROXY`) is
-   merged into `dev` but not released; a second pair of eyes on its evidence is still
-   welcome. Among safety items, `BFQ-92` (a page with no
-   glucose reading presents no server alarm, including device alarms) has no fix yet.
-3. **The release.** `RT-0`, 15.0.9, was released on 2026-10-21: release PR #8598 merged as
-   `master` `c6a0d8ed` (100 first-parent merges, `dev` `4bca2ac2`), tag `v15.0.9`. How it was
-   released and what is left are in [ROADMAP §1](ROADMAP.md#1-1509-is-released-the-next-development-cycle), its
-   contents are in [contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md), and how the
-   candidate was tested is in the
-   [15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md).
-4. **An `unsettled` item.** `BFQ-09`, `A7A-7` — it is not yet established
-   that these are defects at all. Settling one either way is a complete,
-   self-contained contribution.
-
----
-
-## What good review looks like here
-
-- **Check what the gate does not prove.** Every packet has a section for this. A
-  gate can pass for the wrong reason.
-- **Stop and report a mismatch; never reach for the nearest thing that works.**
-  Many real defects here surfaced that way — a dropped `RegExp` that widened a live
-  query, a synthesised `acknowledged`, a missing non-upserting replace, an inverted
-  `$exists`. In each case a workaround would have kept the suite green.
-- **Call out changed test expectations loudly.** If a change edits what a test
-  expects, that needs a stated reason, in the diff, where a reviewer will see it.
-- **Say when you are not sure.** "I could not tell whether this is right" is a
-  useful review outcome and is recorded as such.
-
-## Two rules that are not negotiable
-
-- **Never push, merge, tag or publish.** Prepare work locally and stop. Pushing to
-  `dev` or `master` builds and publishes a Docker image — those branches are
-  publication events, not branches. A human makes that call deliberately.
-- **Treat any user-submitted data as sensitive health data.** CGM traces, Nightscout
-  exports, crash and device logs. Do not reproduce names, emails or other
-  identifiers in issues, comments, commits or documentation.
-
----
-
-## Getting set up
+## Run a bounded check
 
 ```bash
-make bootstrap        # clone the external repositories into externals/ (git-ignored)
-make queue-status     # run every static + unit gate — this is the measurement
-make queue-check      # what CI runs
-make queue-vacuity    # ask every gate whether it could actually fail
-make views-check      # confirm the generated tables in docs/00-overview are current
+make queue-status ID=RT-16-RELEASE
+make queue-check
 ```
 
-If you are reviewing a branch, give yourself **your own git worktree and your own
-test database**. Worktrees share a MongoDB instance and concurrent runs destroy
-each other's data.
-
-`npm run test:unit` is **not** the whole
-suite and is **not** database-free. It resolves to 44 of 159 test files, and
-without MongoDB it fails six. CI runs all 159. If a packet tells you to run a
-specific test, run that one rather than assuming the local script covers it.
-
----
-
-## Questions, and who to ask
-
-Open an issue in this repository, or comment on the pull request you are reviewing.
-If something in these documents contradicts something else, say so: contradictions
-are tracked as defects in the `docs-truth` parcel, because readers act on the section
-they read. The standard these documents are held to is
-[DEFINITION-OF-DONE.md](DEFINITION-OF-DONE.md).
+Use a separate worktree and disposable test database when exercising application
+code. Check the packet's source head, test selection and expected failure
+before interpreting a pass. Keep user traces and identifiers out of public
+records. The maintainer owns pushes, tags and release publication.
 
 <!-- BEGIN GENERATED: provenance -->
 
