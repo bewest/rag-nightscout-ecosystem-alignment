@@ -202,9 +202,9 @@ similar layout: about 0.13 MB per tenant-day (measured, lane R).
 - **Reading.** A v1/v3 query reaching cold months decompresses the months it covers and filters with `mingo`,
   already the query oracle under [d8](multitenancy-decisions.md#d8). Results and order match the warm path;
   latency is seconds. Very large ranges may run as jobs.
-- **Edits promote.** Editing or deleting a cold document copies it back to the hot table with a new
-  `srvModified` and marks it superseded in the bundle's manifest. v3 history keeps working from the hot table
-  ([write-clock-history-arms](multitenancy-decisions.md#write-clock-history-arms)).
+- **No edits.** Cold data is older than the edit window (section 5.8), so bundles are written once and never
+  rewritten. Without an edit window, an edit would have to copy the document back to the hot table and mark it
+  superseded in the bundle's manifest; the edit window removes that machinery.
 - **Export and restore get cheaper:** a tenant export of old data is a copy of its bundles.
 
 ### 5.5 Summaries and detail retention
@@ -245,7 +245,8 @@ a candidate for longer detail retention than entries and device status (section 
 **Rules for summaries:**
 - **Built from detail, before any deletion.** Once detail is gone a new statistic or a fix cannot be recomputed;
   `schema_version` records what a row carries.
-- **Stale and rebuilt** when a backfill, an edit, a promoted cold document or a time-zone change touches the day.
+- **Stale and rebuilt** when a backfill, an edit or a time-zone change touches the day. Under the edit window
+  (section 5.8) a day older than the window changes only by an operator import, so its row is final.
 - **Same deduplication as the reports** (one reading per minute, values 39–600), so a summary and a detail read
   agree.
 - **Both modes.** The row is computed above the storage seam, so single-site MongoDB can build the same rows.
@@ -301,6 +302,49 @@ Each step is gated by a differential against step 1 on a synthetic corpus. Becau
 records with a shared library, storing summaries is a cache of that computation while detail exists, which this
 proposal reads as within [d18](multitenancy-decisions.md#d18); only after a detail-retention limit deletes detail do summaries
 become the only copy.
+
+### 5.8 Edit window: old data is append-only
+
+Most Nightscout data is written once. Recent records are edited: treatments corrected, soft-deleted
+(`isValid: false`) or replaced by a resend. Accepting that **no record older than a threshold, for example 14 or
+30 days, can be edited** (maintainer direction, 2026-11-24) removes most of the cost of storing old data.
+
+**The rule (proposed):**
+- A record is editable until **the later of its clinical time and the time the hub received it, plus the edit
+  window**. A history imported or backfilled yesterday can still be corrected for the window, even if its clinical
+  time is years old.
+- **Edits** are updates, replacements and deletions of an existing record, through v1, v3 or the socket.
+  Outside the window:
+  - a resend identical to the stored record succeeds and changes nothing, matching what a client sees today;
+  - a change is refused with a stable, documented error code;
+  - an operator correction path stays available (support, data repair, privacy erasure).
+- **Inserts** of new records with old clinical times (backfill, pump history catch-up) are not edits and remain
+  allowed. Within the window they land in their partition; older ones land in the default partition until the
+  tiering job folds them in.
+- **Whole-period removal** (single site's admin cleanup tools, a tenant's retention setting) is retention, not
+  editing (section 6).
+- The window is never longer than the warm boundary, so cold data is never edited. Proposed default 30 days;
+  the operator may set it within product limits, for example 14 to 30 days.
+
+**What it buys (read-derived):**
+- **Partitions older than the window are read-only.** They can be frozen once, rebuilt compactly, given a smaller
+  index set (no `srvModified` history index is needed for records that can no longer change) and vacuumed
+  never again.
+- **Cold bundles need no edit path,** no promotion and no superseded markers (section 5.4).
+- **Summary rows older than the window are final** except after an operator import (section 5.5).
+- **Append-only alternatives become viable** for old partitions: Citus columnar, and TimescaleDB compressed chunks
+  without rewrites (section 7.1).
+- **Cross-partition moves end at the window:** an edit that changes a record's clinical time can only happen
+  while the record is recent.
+
+**Compatibility risks (read-derived; gate before adoption):**
+- **Clients that change old records.** AndroidAPS keeps about 186 days of local history and Trio about 90, so a
+  user deleting or correcting an older treatment in the app would send an update that is now refused. How each
+  uploader reacts to a refused update (retries forever, drops it, surfaces an error) must be checked per client
+  before adoption: AndroidAPS, Loop, Trio, xDrip, nightscout-connect and the careportal.
+- **Single-site parity.** Single-site MongoDB allows any edit at any age. Following the rule that multitenant
+  behaves as single sites do, the window would be offered in both modes, with single site defaulting to no
+  window unless its operator sets one.
 
 ## 6. Retention policy framework
 
@@ -368,10 +412,10 @@ Baseline: today's layout at ~1.6 MB per tenant-day; MongoDB 0.24–0.38.
 |---|---|---|---|---|---|
 | **Native time partitioning** | About the same; plus ~0.15 MB per tenant-day if every document needs an identity-table row (852 documents × ~172 B) | Vacuum and index maintenance confined to the current partition; the 10k symptom of vacuum running through load should go. Cache gain is modest: at 10k tenants even a week of today's layout is ~110 GB, so the hot set fits in memory only after bytes per row fall | Pruned to the months asked for | Partition creation; identity table | Stage 2 identity bytes; 10k run evidence |
 | **Fewer indexes, BRIN on time for warm and cold partitions** | Indexes are ~50 % of every table today; a BRIN index on an append-ordered time column is a few pages per partition (vendor-documented) | More rows fit in cache; fewer index writes per insert | Time-range scans stay efficient; selective lookups on warm data slow | None | Layout §2 |
-| **Cold monthly bundles (ours)** | ~0.13–0.15 MB per tenant-day for cold data, a ~90 % cut | Unchanged | Seconds per range (decompress and filter) | Tiering job, manifest, edit promotion | Lane R scratch, layout §4 |
+| **Cold monthly bundles (ours)** | ~0.13–0.15 MB per tenant-day for cold data, a ~90 % cut | Unchanged | Seconds per range (decompress and filter) | Tiering job and manifest; no edit path under the edit window (5.8) | Lane R scratch, layout §4 |
 | **TimescaleDB compressed chunks** | Similar order to cold bundles (vendor claims ~90 % on time series; JSONB bodies compress less than numeric columns) | Unchanged on rowstore chunks | Faster than application-side bundles: decompression happens in SQL | Extension and licence; **no row-level security on compressed chunks, and continuous aggregates require no row-level security on the hypertable** ([vendor-documented](https://www.tigerdata.com/docs/use-timescale/latest/continuous-aggregates/create-a-continuous-aggregate)) | Would save writing the tiering job, but tenant isolation for old data and summaries moves out of the database |
 | **Citus, distributed** | Same per row; total spread over N workers, each with its own replicas | Throughput scales with workers for tenant-local queries; an extra coordinator hop per query | Unchanged | N + 1 database nodes; requalify triggers, write clock, restore | Vendor-documented |
-| **Citus columnar for old partitions** | Vendor claims 3–10× | Unchanged if kept to old partitions | Fast scans | Historically append-only: an edit to old data needs a rewrite path; a Citus dependency without distribution | [Vendor-documented](https://learn.microsoft.com/azure/cosmos-db/postgresql/concepts-columnar) |
+| **Citus columnar for old partitions** | Vendor claims 3–10× | Unchanged if kept to old partitions | Fast scans | Historically append-only, which the edit window (5.8) makes acceptable for old partitions; a Citus dependency without distribution | [Vendor-documented](https://learn.microsoft.com/azure/cosmos-db/postgresql/concepts-columnar) |
 | **Columnar or Parquet extensions** (pg_duckdb, pg_mooncake, ColdFront) | Object-storage prices for cold data (section 3) | Unchanged | Fast analytical scans; good fit for the statistics API over years | Young; vendor distributions; access control outside row-level security | Vendor-documented |
 | **Filesystem compression** (ZFS, btrfs) on a warm or cold tablespace | ~4.5× on disk | None (the cache holds uncompressed pages) | None | Node-level setup on Kubernetes | Lane R proxy |
 | **Per-row compression with a shared dictionary** (application-side zstd) | Small JSON documents could shrink several-fold (not tried) | Every read decompresses; queries need typed columns as in stage 1 | — | Dictionary versioning; stage-1-style query columns | Not tried; stage 1 showed the query-column cost |
@@ -395,7 +439,7 @@ stay strict.
 | **0 — first production boundary** | Accept today's volume. PostgreSQL on its own node with memory for the hot set. Size volumes for the admitted retention (90 days to 1 year). Keep everything. | The paid 5k/10k run on the qualified candidate |
 | **1 — index cut** | `idx_scan` from a realistic 1k run; drop unused indexes | End-schema comparison and API differential red then green; bytes and latency signals before and after |
 | **2 — time partitioning** | Compare the partition keys of section 5.2 on device status, then partition entries and treatments; identity table; warm index set; partition creation in `admin` | Key comparison on the same reads and writes; contract differential against `official/dev`; evaluator window, v1/v3, resend and lock hold at 1k and 10k; export and restore round trip |
-| **3 — cold bundles** | Tiering job, manifest, cold read path, edit promotion; bundles in PostgreSQL | As phase 2, plus cold reads equal warm reads; an interrupted tiering job leaves every document readable once |
+| **3 — cold bundles** | Edit window (5.8) with its client gate; tiering job, manifest, cold read path; bundles in PostgreSQL | As phase 2, plus cold reads equal warm reads; an interrupted tiering job leaves every document readable once |
 | **4 — statistics API, summaries and retention options** | The statistics API computing from detail (section 5.7; can start any time, both modes), then summary rows (section 5.5), retention settings (section 6) and bundles in object storage | Report statistics from summaries equal the same statistics from detail on a synthetic corpus, for the exact set in section 5.5; maintainer decisions in section 9 |
 
 Any 10k latency benefit from index changes or time partitioning remains a prediction. Measure it on the corresponding read and write paths.
@@ -422,6 +466,8 @@ Any 10k latency benefit from index changes or time partitioning remains a predic
 - Deletion by age: **may be deferred**, for example past the initial production release; first see every lever
   with its trade-offs and priority (section 10).
 - Statistics API placement and first clients: **unclear, needs more research; deferred and out of scope for now.**
+- Edit window: **acceptable that no data older than a threshold, perhaps 14 or 30 days, can be edited**, since most
+  data is append-only and it helps performance (section 5.8).
 
 ## 10. Levers, trade-offs and priorities
 
@@ -445,13 +491,14 @@ Every idea raised in this proposal and the [layout proposal](storage-layout-prop
 | Time partitioning, comparing the candidate keys first | Hot set stays cached, vacuum stays small, partitions detach instead of mass deletes; predicted latency gain at 10k | Identity table for uniqueness (~172 B per document); partition maintenance; queries without time ranges touch every attached partition | 5.1, 5.2 |
 | Warm index set | Fewer bytes in older partitions | Slower unindexed filters on warm data | 5.1 |
 | Statistics API, computing from detail | One implementation of every statistic, far fewer report requests, both modes | New API surface to define and maintain; placement deferred | 5.7 |
+| Edit window (no edits older than 14–30 days) | Old partitions read-only: frozen, smaller indexes, no vacuum; final summaries; append-only storage options become viable | Clients that edit old records get refusals; must check each uploader's reaction; single-site parity | 5.8 |
 | Retention settings framework (hot and warm boundaries, tenant within operator limits) | Operators bound cost; tenants choose latency for their history | Settings, validation and documentation in both modes | 6 |
 
 ### Later: when multi-year history dominates cost
 
 | Lever | Gain | Trade-off | Section |
 |---|---|---|---|
-| Cold monthly bundles in PostgreSQL | Ten-year detail ~0.15 MB per tenant-day instead of ~1.6 | Reads over 90 days take seconds; tiering job, manifest, edit promotion, restore of an interrupted tiering | 5.4 |
+| Cold monthly bundles in PostgreSQL | Ten-year detail ~0.15 MB per tenant-day instead of ~1.6 | Reads over 90 days take seconds; tiering job, manifest, restore of an interrupted tiering | 5.4 |
 | Per-day summary rows | Long-range reports without detail; about 1–2 KB per tenant-day | Rebuilds on backfill, edits and time-zone changes; schema versioning | 5.5 |
 | Statistics API reading summaries, then cached responses | Report latency independent of range length | Differential gate against computing from detail | 5.7 |
 | Filesystem compression for warm or cold tablespaces | ~4.5× on disk with no schema change (measured proxy) | Node-level setup on Kubernetes; disk only | 7 |
