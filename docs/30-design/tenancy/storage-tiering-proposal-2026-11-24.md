@@ -101,7 +101,7 @@ Two caveats:
 
 ## 4. Use cases set the tiers
 
-Nightscout data is read in three distinct ways. Today all three share one layout and one latency expectation.
+The [nominal write-age decision](multitenancy-decisions.md#nominal-clinical-write-age) distinguishes ongoing writes from bulk historical recovery. A tenant’s existing history can be much older than its next upload. Read use cases determine the proposed tier boundaries.
 
 | Use | Age read | Who | Latency need |
 |---|---|---|---|
@@ -136,8 +136,7 @@ more component).
 Predicted gains (read-derived from the 10k evidence; none measured yet):
 - **The working set stays in memory.** Reads of the last few days touch only the newest partition and its indexes.
   The failed 10k run coincided with a buffer hit rate of 0.952 and autovacuum running across a 13 GiB relation.
-- **Vacuum stays small.** Only the current partition takes writes. Older partitions are frozen once and then left
-  alone.
+- **Vacuum work may concentrate in recent partitions.** Near a month boundary, recent uploads can touch two partitions. Bulk imports and historical corrections can also write older months. Measure vacuum on each workload.
 - **Fewer indexes on older partitions.** PostgreSQL allows an index on some partitions only. Warm partitions can
   drop indexes that only live traffic uses. Indexes are about half of every table today (measured).
 - **Moving data to cold, or deleting it, becomes detaching a partition**, not deleting billions of rows.
@@ -169,8 +168,8 @@ are all defined on clinical time.
 | What it is | The collection's own time field, as stored | When the hub received the record | A `clinical_ms` column computed at write from the collection's time field, parsed to UTC; `srvCreated` when missing or unparseable |
 | Architecture: tiers and retention | Matches the policy, but `created_at` is text with mixed spellings and offsets, so ranges do not partition cleanly | Ages data by arrival. **An imported five-year history, the expected path for migrating existing sites, would all sit in the newest partition**, and a policy written in clinical age could not drop partitions | Matches the policy; one numeric range per partition; imports land in the right months |
 | Performance: evaluator, lists, reports | Prunes on `date`; `created_at` text filters prune unreliably | **No pruning** for the main read paths: they filter by clinical time, which the database cannot relate to arrival | Prunes. `ORDER BY date DESC LIMIT n` reads the newest partition first. A text `created_at` range maps to a safe numeric bound widened by the largest UTC offset (±14 h) |
-| Performance: writes | Late uploads write into older partitions | Every write goes to the newest partition | Late uploads write into older partitions; uploads are overwhelmingly recent |
-| Performance: v3 history | Scans `srvModified` on every attached partition | Prunes | Scans every attached partition. Tiering keeps that to a few (hot and warm); cold edits are promoted (5.4) |
+| Performance: writes | Ordinary uploads concentrate in recent months. Bulk recovery can touch older months | New inserts land by receipt time | Ordinary uploads concentrate in recent months. Bulk history lands in clinical months |
+| Performance: v3 history | Scans `srvModified` on every attached partition | The `srvModified` predicate alone cannot prune creation months. An old document can be edited today | Scans every attached partition. Tiering keeps that to a few (hot and warm); cold edits are promoted (5.4) |
 | Compatibility | Visible behaviour unchanged; a stored-value edit moving a row between partitions is a delete and insert inside PostgreSQL | Unchanged | Unchanged; the column is internal and never returned. Odd values (string `date`, missing `created_at`) fall back to receipt time and stay readable |
 
 **Leading option: normalized clinical time,** monthly ranges. It compares best on the three criteria above but
@@ -181,8 +180,7 @@ needs a measured comparison before adoption (phase 2). It would come with:
   partitions (about 172 bytes per document, measured in stage 2);
 - the insertion ordinal kept unique by its allocator; per-partition indexes need not be unique.
 
-Server receipt time is simpler and best for history, but it breaks the tiering policy for imported history and
-loses pruning on the paths that matter most.
+Receipt time simplifies placement of new inserts. Imported old records then arrive in a recent partition. Compare the actual clinical-time and history query plans before choosing a key.
 
 ### 5.3 Index cut, first and independently
 
@@ -374,7 +372,7 @@ stay strict.
 | **3 — cold bundles** | Tiering job, manifest, cold read path, edit promotion; bundles in PostgreSQL | As phase 2, plus cold reads equal warm reads; an interrupted tiering job leaves every document readable once |
 | **4 — statistics API, summaries and retention options** | The statistics API computing from detail (section 5.7; can start any time, both modes), then summary rows (section 5.5), retention settings (section 6) and bundles in object storage | Report statistics from summaries equal the same statistics from detail on a synthetic corpus, for the exact set in section 5.5; maintainer decisions in section 9 |
 
-Phases 1 and 2 also improve latency at 10k independently of cost.
+Any 10k latency benefit from index changes or time partitioning remains a prediction. Measure it on the corresponding read and write paths.
 
 ## 9. Maintainer direction and open questions
 
