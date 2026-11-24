@@ -6894,10 +6894,30 @@ needs a measured comparison before adoption (phase 2). It would come with:
 - the insertion ordinal kept unique by its allocator; per-partition indexes need not be unique.</p>
 <p>Receipt time simplifies placement of new inserts. Imported old records then arrive in a recent partition. Compare the actual clinical-time and history query plans before choosing a key.</p>
 <h3 id="53-index-cut-first-and-independently">5.3 Index cut, first and independently<a class="headerlink" href="#53-index-cut-first-and-independently" title="Permanent link">&para;</a></h3>
-<p>Before partitioning, read <code>pg_stat_user_indexes.idx_scan</code> from a 1k run with the realistic mix and drop indexes
-never used, behind the existing end-schema comparison and API differential. Entries carries 15 indexes and 11
-generated columns copied from MongoDB's list; generated columns alone cost 120–136 bytes per row (measured).
-Lowest risk, no layout change, and it benefits every tier.</p>
+<p><strong>Reproduced on Candidate 5.</strong> The four duplicate or prefix indexes in migration 0101 already account
+for 19.72 MB on the 100-tenant, two-day live-loaded fixture. Removing those indexes together with the size
+trigger and column reduced clinical bytes by 17.1%. <a href="multitenancy-decisions.html#storage-machinery-removal">Adopted removal</a></p>
+<p>Across ordinary-load snapshots from the mixed local 1k and direct paid 3k runs, 16 of 30 identifiable entries,
+treatments and device-status indexes had zero additional scans in both windows. Their final paid footprint
+was 7.738 decimal GB. That group includes primary and unique indexes, identity-array lookups, history
+and a selective ISO-date read. The snapshots identify indexes by table and name. Future captures can
+also record schema, index OID and the database statistics reset time. Retained evidence ID
+<code>storage-tiering-review-20261124/index-coverage.json</code>.</p>
+<p><strong>Reproduced on the frozen successor reader</strong> (<code>2643ca01b</code>, PostgreSQL 16.15, forced tenant row-level security).
+The trial covered <code>entries_tenant_sgv</code> and <code>entries_tenant_mbg</code>, 673,030,144 bytes together on
+the paid fixture. On a synthetic 90-day tenant, removing both in a transaction preserved the ordered results
+of all eight reader queries, including glucose equality and range filters and an array-valued meter reading.
+Warm buffer counts matched for every query. Separately removing the shorter <code>entries_tenant_type</code>
+preserved all five reads at two days and at 90 days. The rare type page went from six shared-buffer accesses
+to eight using the longer composite index. Retained plans, results and rollback controls are in
+<code>storage-tiering-review-20261124/index-trial</code>.</p>
+<p><strong>Reproduced write cost.</strong> Four fresh copies of the two-day fixture each received the same 7,200 synthetic
+entries across 100 tenants in a database transaction after a checkpoint. With the numeric indexes removed,
+mean WAL fell 8.42% (67.40 to 61.72 MB) and incremental entries index growth fell 25.2% (9.17 to 6.86 MB).
+Heap growth and inserted document digests agreed across all four copies. The <a href="execution-log.html#bounded-rest-reads-addressed-realtime-delivery-and-entries-index-removal-2026-11-24">joined application and storage
+qualification</a>
+covers migration of populated and fresh catalogues and repeats the write comparison with the new follower
+index in place. End-to-end write latency and nominal throughput require a mixed product workload on that head.</p>
 <h3 id="54-cold-compressed-monthly-bundles">5.4 Cold: compressed monthly bundles<a class="headerlink" href="#54-cold-compressed-monthly-bundles" title="Permanent link">&para;</a></h3>
 <p>When a month passes the cold boundary, a job writes each tenant's documents for that collection and month as one
 compressed bundle (zstd-compressed NDJSON or similar), with a small manifest of time range, counts and
@@ -6966,7 +6986,7 @@ a candidate for longer detail retention than entries and device status (section 
 - <strong>Built from detail, before any deletion.</strong> Once detail is gone a new statistic or a fix cannot be recomputed;
   <code>schema_version</code> records what a row carries.
 - <strong>Stale and rebuilt</strong> when a backfill, an edit or a time-zone change touches the day. Under the edit window
-  (section 5.8) a day older than the window changes only by an operator import, so its row is final.
+  (section 5.8) a late import and any corrections during its receipt-based edit window both invalidate the affected day.
 - <strong>Same deduplication as the reports</strong> (one reading per minute, values 39–600), so a summary and a detail read
   agree.
 - <strong>Both modes.</strong> The row is computed above the storage seam, so single-site MongoDB can build the same rows.</p>
@@ -7051,8 +7071,8 @@ become the only copy.</p>
   - a change is refused with a stable, documented error code;
   - an operator correction path stays available (support, data repair, privacy erasure).
 - <strong>Inserts</strong> of new records with old clinical times (backfill, pump history catch-up) are not edits and remain
-  allowed. Within the window they land in their partition; older ones land in the default partition until the
-  tiering job folds them in.
+  allowed. Within the window they land in their partition. Older ones land in the writable default partition.
+  The tiering job can fold a late arrival into sealed history once its receipt-based edit window expires.
 - <strong>Whole-period removal</strong> (single site's admin cleanup tools, a tenant's retention setting) is retention, not
   editing (section 6).
 - <strong>Default 30 days; the operator may lower it to 14 or raise it to 90</strong> (maintainer direction, 2026-11-24).
@@ -7061,15 +7081,19 @@ become the only copy.</p>
   summary rows become final later.</p>
 <p><strong>What it buys (read-derived):</strong>
 - <strong>Partitions older than the window are read-only.</strong> They can be frozen once, rebuilt compactly, given a smaller
-  index set (no <code>srvModified</code> history index is needed for records that can no longer change) and vacuumed
-  never again.
+  index set, and vacuumed before sealing. A v3 history cursor can still request changes made before sealing.
+  Check history pagination across sealed and writable rows before retiring its <code>srvModified</code> index.
 - <strong>Cold bundles need no edit path,</strong> no promotion and no superseded markers (section 5.4).
-- <strong>Summary rows older than the window are final</strong> except after an operator import (section 5.5).
+- <strong>Summary rows for sealed days are final</strong> until an operator import or correction affects that day (section 5.5).
 - <strong>Append-only alternatives become viable</strong> for old partitions: Citus columnar, and TimescaleDB compressed chunks
   without rewrites (section 7.1).
 - <strong>Cross-partition moves end at the window:</strong> an edit that changes a record's clinical time can only happen
   while the record is recent.</p>
 <p><strong>Compatibility risks (read-derived; gate before adoption):</strong>
+- <strong>Late bulk restore.</strong> Import a year-old record today, correct it during its receipt-based window, then read
+  it through clinical-time and v3 modification-history queries. Check the corrected daily summary, both sides of
+  the edit cutoff, and one logical record after sealing and restoring. Normal AID and vcpool qualification uses
+  the <a href="multitenancy-decisions.html#nominal-clinical-write-age">recent-write workload</a>.
 - <strong>Clients that change old records.</strong> AndroidAPS keeps about 186 days of local history and Trio about 90, so a
   user deleting or correcting an older treatment in the app would send an update that is now refused. How each
   uploader reacts to a refused update (retries forever, drops it, surfaces an error) must be checked per client
@@ -7330,8 +7354,8 @@ stay strict.</p>
 </tr>
 <tr>
 <td><strong>1 — index cut</strong></td>
-<td><code>idx_scan</code> from a realistic 1k run; drop unused indexes</td>
-<td>End-schema comparison and API differential red then green; bytes and latency signals before and after</td>
+<td>Test the numeric entries pair identified in section 5.3</td>
+<td>Fresh and upgraded schema, API differential, deep and rare query plans, restore and matched write costs</td>
 </tr>
 <tr>
 <td><strong>2 — time partitioning</strong></td>
@@ -7403,9 +7427,9 @@ stay strict.</p>
 <td>3</td>
 </tr>
 <tr>
-<td>Index cut from <code>idx_scan</code> on a realistic 1k run</td>
-<td>Bytes, WAL, vacuum and cache in every tier; no layout change</td>
-<td>A dropped index a rare query needed; the API differential guards it</td>
+<td>Numeric entries index candidates from the 1k and 3k samples</td>
+<td>Fewer index bytes and writes per insert</td>
+<td>Rare reads can keep returning correct results while taking longer. Check their plans and buffer counts.</td>
 <td>5.3</td>
 </tr>
 <tr>

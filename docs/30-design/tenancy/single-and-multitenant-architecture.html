@@ -6080,7 +6080,7 @@
 <h1 id="single-and-multitenant-nightscout-architecture-and-compatibility">Single and multitenant Nightscout: architecture and compatibility<a class="headerlink" href="#single-and-multitenant-nightscout-architecture-and-compatibility" title="Permanent link">&para;</a></h1>
 <p><em>Living document, last changed 2026-11-24 at <code>7b8bfd465</code>.</em></p>
 <p>Single-tenant Nightscout retains the single-site server and MongoDB. The multitenant branch places tenant-bound clinical writes behind the API on PostgreSQL, with evaluator and realtime slices. Read the <a href="runtime-topology.html">runtime guide</a> for role ownership and the <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">candidate record</a> for qualification.</p>
-<p>The comparisons below are <strong>read-derived</strong> at the named sources. The ed2 Compose and restore reference has its own <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bf66924938e9f928cf6f429f2e0e57d267d2f9a7/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication receipt</a>. The shared-code survey describes <code>83582e87</code>. Use the measured records linked in each section for the boundaries of the earlier proofs.</p>
+<p>The comparisons below are <strong>read-derived</strong> at the named sources. The ed2 Compose and restore reference has its own <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2b79be1abbe8fd39aaec1c0553e97556a69b69bd/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication receipt</a>. The shared-code survey describes <code>83582e87</code>. Use the measured records linked in each section for the boundaries of the earlier proofs.</p>
 <h2 id="what-the-earlier-proofs-can-inform">What the earlier proofs can inform<a class="headerlink" href="#what-the-earlier-proofs-can-inform" title="Permanent link">&para;</a></h2>
 <p>The useful result is an executable one-host multitenant reference with separate
 services and tenant-local restore. It gives current architecture decisions a
@@ -6098,7 +6098,7 @@ need their own evidence; an accepted component is not a completed platform track
 <tbody>
 <tr>
 <td>Separate API/realtime/evaluator/admin and packaged UI</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bf66924938e9f928cf6f429f2e0e57d267d2f9a7/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose acceptance</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2b79be1abbe8fd39aaec1c0553e97556a69b69bd/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose acceptance</a></td>
 <td>One-host role composition, existing client/browser routes and private control channels work together.</td>
 <td>Multi-host discovery, replicas/failover, production ingress/service identity and operating limits.</td>
 </tr>
@@ -6116,7 +6116,7 @@ need their own evidence; an accepted component is not a completed platform track
 </tr>
 <tr>
 <td>Existing client compatibility</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bf66924938e9f928cf6f429f2e0e57d267d2f9a7/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 actual pinned clients</a>; <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/index.html">39f4 enabled corpus</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2b79be1abbe8fd39aaec1c0553e97556a69b69bd/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 actual pinned clients</a>; <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/index.html">39f4 enabled corpus</a></td>
 <td>Use the admitted API/history/credential shapes and the named clients' stored outcomes.</td>
 <td>Wider/mobile clients, other query shapes and all-client acceptance.</td>
 </tr>
@@ -6550,8 +6550,8 @@ write seam or a fresh historical comparison of the multitenant preview.</p>
   end
   %% Layout-only link, not a comparison between the experiments
   Historical ~~~ Preview</code></pre>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bf66924938e9f928cf6f429f2e0e57d267d2f9a7/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bf66924938e9f928cf6f429f2e0e57d267d2f9a7/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2b79be1abbe8fd39aaec1c0553e97556a69b69bd/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2b79be1abbe8fd39aaec1c0553e97556a69b69bd/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
 record v15.0.9 <code>c6a0d8ed</code> versus dev <code>497d08c9</code>, twice per endpoint:
 <strong>4,916 synthetic write cells, 2,803 changed outputs, zero unexplained differences</strong>.
 The recorded classifications contain no Defect-verdict cells; this is not a proof
