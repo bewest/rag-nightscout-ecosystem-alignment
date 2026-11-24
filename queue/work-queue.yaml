@@ -27808,6 +27808,34 @@ items:
       MongoDB 8.0.34 container): test:affected 3133/3/0, npm test 6369/3/0, prcheck OK. When it merges, switch the gate's --ref to
       official/dev and the control's to v15.0.9 (exits 1 there, measured 2026-11-22).
 
+  - id: BFQ-248
+    title: "BF-248 - API v3 history continuation keeps records that share the page boundary's stamp"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: codex/v3-history-continuation-20261124
+    base: official/dev@79144cbd0
+    state: not-started
+    ships_to_operators_today: true
+    blast_radius: >
+      API v3 history reads in single-site and multitenant modes. Clients that continue paging
+      from the last returned modification stamp.
+    review: maintainer, plus one independent reviewer
+    operator_visible: >
+      A client syncing history receives every record, including records that share a
+      modification stamp split across a page limit.
+    semver: patch
+    semver_reason: Restores complete history continuation without removing any accepted request form.
+    register: [BF-248]
+    gates:
+      - no-gate: >
+          The reproducing differential (strict continuation omits a tied record on official/dev)
+          is to be written by the fix lane, Codex U8 in BRIEF-codex-unblock-20261124.md, red on 79144cbd0.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Reproduced on official/dev single-site MongoDB and both multitenant PostgreSQL layouts by
+      Codex lane U5. v15.0.9 and real client paging (AndroidAPS, Loop, Trio, xDrip) to be confirmed.
   - id: BFQ-247
     title: "BF-247 - preserve treatment history across parallel read orders"
     parcel: register-open
