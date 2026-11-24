@@ -196,7 +196,7 @@ also record schema, index OID and the database statistics reset time. Retained e
 `storage-tiering-review-20261124/index-coverage.json`.
 
 **Reproduced on the frozen successor reader** (`2643ca01b`, PostgreSQL 16.15, forced tenant row-level security).
-The next pair to evaluate is `entries_tenant_sgv` and `entries_tenant_mbg`, 673,030,144 bytes together on
+The trial covered `entries_tenant_sgv` and `entries_tenant_mbg`, 673,030,144 bytes together on
 the paid fixture. On a synthetic 90-day tenant, removing both in a transaction preserved the ordered results
 of all eight reader queries, including glucose equality and range filters and an array-valued meter reading.
 Warm buffer counts matched for every query. Separately removing the shorter `entries_tenant_type`
@@ -207,10 +207,10 @@ to eight using the longer composite index. Retained plans, results and rollback 
 **Reproduced write cost.** Four fresh copies of the two-day fixture each received the same 7,200 synthetic
 entries across 100 tenants in a database transaction after a checkpoint. With the numeric indexes removed,
 mean WAL fell 8.42% (67.40 to 61.72 MB) and incremental entries index growth fell 25.2% (9.17 to 6.86 MB).
-Heap growth and inserted document digests agreed across all four copies. The next storage change should
-exercise fresh and upgraded catalogues, resends, history, restore and the full API differential. End-to-end
-write latency and nominal throughput require a mixed product workload. The current Kubernetes campaign
-measures the frozen successor with its existing indexes.
+Heap growth and inserted document digests agreed across all four copies. The [joined application and storage
+qualification](execution-log.md#bounded-rest-reads-addressed-realtime-delivery-and-entries-index-removal-2026-11-24)
+covers migration of populated and fresh catalogues and repeats the write comparison with the new follower
+index in place. End-to-end write latency and nominal throughput require a mixed product workload on that head.
 
 ### 5.4 Cold: compressed monthly bundles
 
