@@ -50,6 +50,52 @@ class Coverage(unittest.TestCase):
         plan.update(observer='summary-v1', maxTraceRows=5_000_000)
         self.assertEqual(bound(), plan)
 
+    def test_trace_byte_limits_follow_offered_work_at_1800_seconds(self):
+        from datetime import datetime, timedelta, timezone
+        p = profiles.read(profiles.HERE / 'realistic-1000.json')
+        w = p['workload']
+        del w['workloadMix'], w['workloadScale']
+        w['offeredRps'] = 330
+        mib = 1024**2
+        plan = w['driverPlan'] = dict(version=1, observer='scheduling-v1',
+                                      maxTraceBytes=64 * mib, scenarios={k: {} for k in profiles.SHAPES})
+        now = datetime.now(timezone.utc)
+        config = {'tenants': 1000, 'pins': {'pair': {k: p['referencePins'][k] for k in ('core', 'deploy')},
+                  'bindingCommit': p['referencePins']['bindingCommit']},
+                  'deadlines': {'workUntil': (now + timedelta(hours=1)).isoformat(),
+                                'cleanupUntil': (now + timedelta(hours=2)).isoformat()}}
+
+        def bound():
+            return profiles.bind(p, config)['workload']['driverPlan']
+
+        for duration in (1799, 1800, 1801):
+            with self.subTest(duration=duration):
+                w['loadSeconds'] = duration
+                actual = bound()
+                self.assertEqual(actual['maxTraceBytes'], 114 * mib)
+                # More than twice the retained 10k decoded bytes, without coupling to the gzip limit.
+                self.assertGreater(actual['maxDecodedTraceBytes'], 2 * 673_458_548)
+                self.assertLess(actual['maxDecodedTraceBytes'], 16 * actual['maxTraceBytes'])
+        w['loadSeconds'] = 1800
+        self.assertEqual(plan['maxTraceBytes'], 64 * mib)
+        self.assertNotIn('maxDecodedTraceBytes', plan)
+        w['driverShards'] = 2
+        shard_plan = bound()
+        self.assertEqual(shard_plan['maxTraceBytes'], 64 * mib)
+        self.assertNotIn('maxDecodedTraceBytes', shard_plan)
+        del w['driverShards']
+        for scenario in plan['scenarios'].values():
+            scenario.update(startTimeSeconds=900, durationSeconds=900)
+        self.assertEqual(bound(), shard_plan)
+        for scenario in plan['scenarios'].values():
+            scenario.clear()
+        plan.update(maxTraceBytes=512 * mib, maxDecodedTraceBytes=2048 * mib)
+        actual = bound()
+        self.assertEqual(actual['maxTraceBytes'], plan['maxTraceBytes'])
+        self.assertEqual(actual['maxDecodedTraceBytes'], plan['maxDecodedTraceBytes'])
+        plan.update(observer='summary-v1')
+        self.assertEqual(bound(), plan)
+
     def test_source_repin_is_not_silently_accepted(self):
         p = profiles.read(profiles.HERE / 'small.json')
         from datetime import datetime, timedelta, timezone

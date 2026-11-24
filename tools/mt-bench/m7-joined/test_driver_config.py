@@ -85,6 +85,20 @@ class DriverConfiguration(unittest.TestCase):
         self.assertEqual(phases['scheduleEndMs'], 2018)
         self.assertEqual(bins['busy'], {'before': 0, 'during': 982, 'after': 18, 'minimumStartShortfall': 18})
 
+    def test_trace_compressed_decoded_and_row_limits_are_independent(self):
+        raw = b'metric_name,timestamp,metric_value,scenario\nignored,0,1,read\n'
+        with tempfile.TemporaryDirectory() as tmp:
+            trace = Path(tmp) / 'trace.csv.gz'
+            trace.write_bytes(gzip.compress(raw))
+            bounds = {'maxTraceBytes': trace.stat().st_size, 'maxDecodedTraceBytes': len(raw), 'maxTraceRows': 1}
+            self.assertEqual(d.trace_assess(trace, {}, {}, {}, bounds, None), {})
+            for field in bounds:
+                with self.subTest(field=field):
+                    with self.assertRaisesRegex(RuntimeError, 'M7_DRIVER_TRACE_BOUND'):
+                        d.trace_assess(trace, {}, {}, {}, bounds | {field: bounds[field] - 1}, None)
+        value = self.configuration() | {'maxTraceBytes': 65536, 'maxDecodedTraceBytes': len(raw)}
+        self.assertEqual(d.configuration(value, {'loadSeconds': 30})['maxDecodedTraceBytes'], len(raw))
+
     def test_large_population_low_rate_time_unit_is_not_a_case_filter(self):
         cfg={'version':1,'observer':'summary-v1','scenarios':{name:{} for name in d.SHAPES}}
         c={'loadSeconds':1800,'offeredRps':1,'hotFactor':1,'driverPlan':cfg}
@@ -102,7 +116,9 @@ class DriverConfiguration(unittest.TestCase):
             lambda x:x['scenarios']['r_sgv'].update(preAllocatedVUs=2),
             lambda x:x['scenarios']['r_sgv'].update(durationSeconds=31),
             lambda x:x['scenarios']['r_sgv'].update(executor='ramping-vus'),
-            lambda x:x.update(maxTraceBytes=0),lambda x:x.update(maxTraceRows=2**53)):
+            lambda x:x.update(maxTraceBytes=0),lambda x:x.update(maxTraceRows=2**53),
+            lambda x:x.update(maxDecodedTraceBytes=0),lambda x:x.update(maxDecodedTraceBytes=True),
+            lambda x:x.update(maxDecodedTraceBytes=2**53)):
             bad=copy.deepcopy(good);mutate(bad)
             with self.assertRaises(RuntimeError):d.configuration(bad,c)
             self.assertEqual(d.configuration(good,c)['scenarios']['r_sgv']['gracefulStopSeconds'],10)

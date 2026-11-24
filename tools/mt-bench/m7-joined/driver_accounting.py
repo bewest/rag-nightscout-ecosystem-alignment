@@ -22,6 +22,7 @@ SCRIPT = 'k6-vu-driver.js'
 COUNTERS = ('dropped_iterations', 'scenario_request_attempts', 'scenario_http_responses', 'scenario_transport_failures')
 MAX_TRACE_BYTES = 512 * 1024 * 1024
 MAX_TRACE_ROWS = 5000000
+LEGACY_DECODED_RATIO = 16
 VU_FIELDS = ('preAllocatedVUs', 'maxVUs')
 
 
@@ -53,9 +54,14 @@ def integer(value, low, high):
     return type(value) is int and low <= value <= high
 
 
+def decoded_trace_bytes(cfg):
+    # Old manifests and direct callers keep their original decoded allowance.
+    return cfg.get('maxDecodedTraceBytes', cfg['maxTraceBytes'] * LEGACY_DECODED_RATIO)
+
+
 def configuration(value, cadence):
     require(isinstance(value, dict) and set(value) <= {
-        'version', 'observer', 'scenarios', 'maxTraceBytes', 'maxTraceRows', 'writeRateScale'}
+        'version', 'observer', 'scenarios', 'maxTraceBytes', 'maxDecodedTraceBytes', 'maxTraceRows', 'writeRateScale'}
         and value.get('version') == 1 and type(value['version']) is int
         and value.get('observer') in ('summary-v1', 'scheduling-v1'), 'M7_DRIVER_CONFIGURATION')
     require(workload_inputs.seconds(cadence.get('loadSeconds')), 'M7_DRIVER_CONFIGURATION_WINDOW')
@@ -69,7 +75,8 @@ def configuration(value, cadence):
         require(set(rows) == set(SHAPES), 'M7_DRIVER_REALISTIC_SHAPES')
     result = dict(value, maxTraceBytes=value.get('maxTraceBytes', MAX_TRACE_BYTES),
                   maxTraceRows=value.get('maxTraceRows', MAX_TRACE_ROWS))
-    require(integer(result['maxTraceBytes'], 65536, workload_inputs.MAX_SAFE_INTEGER // 16)
+    require(integer(result['maxTraceBytes'], 65536, workload_inputs.MAX_SAFE_INTEGER // LEGACY_DECODED_RATIO)
+            and integer(decoded_trace_bytes(result), 1, workload_inputs.MAX_SAFE_INTEGER)
             and integer(result['maxTraceRows'], 1, workload_inputs.MAX_SAFE_INTEGER), 'M7_DRIVER_TRACE_BOUND')
     normalized = {}
     for name, row in rows.items():
@@ -316,16 +323,17 @@ def trace_assess(path, counts, starts, expected, cfg, origin):
     require(path.is_file() and 0 < path.stat().st_size <= cfg['maxTraceBytes'], 'M7_DRIVER_TRACE_BOUND')
     tallies = defaultdict(Counter); decoded = 0
     common = {name: {'before': 0, 'during': 0, 'after': 0} for name in counts}
-    with gzip.open(path, 'rt', newline='') as source:
+    max_decoded = decoded_trace_bytes(cfg)
+    with gzip.open(path, 'rb') as source:
         def bounded_lines():
             nonlocal decoded
             while True:
                 line = source.readline(65537)
                 if not line: break
                 require(len(line) <= 65536, 'M7_DRIVER_TRACE_BOUND')
-                decoded += len(line.encode())
-                require(decoded <= cfg['maxTraceBytes'] * 16, 'M7_DRIVER_TRACE_BOUND')
-                yield line
+                decoded += len(line)
+                require(decoded <= max_decoded, 'M7_DRIVER_TRACE_BOUND')
+                yield line.decode('utf-8')
         reader = csv.DictReader(bounded_lines())
         require({'metric_name', 'timestamp', 'metric_value', 'scenario'} <= set(reader.fieldnames or []),
                 'M7_DRIVER_TRACE_HEADER')

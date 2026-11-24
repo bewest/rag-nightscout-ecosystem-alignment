@@ -52,7 +52,7 @@ def stock_viewers(w, n, plan=None):
 
 def active_profile(base, count, point_id):
     """Prepare a looping load phase on the existing fixture, keeping the seed and topology reusable."""
-    from trace_bounds import apply as size_trace
+    from trace_bounds import bound_plan
 
     need(re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,29}[a-z0-9])?', point_id), 'WORKLOAD_POINT_ID')
     p = copy.deepcopy(base)
@@ -62,9 +62,8 @@ def active_profile(base, count, point_id):
     p['population']['ordinaryRosterTenants'] = workload_runtime.ordinary_count(provisioned, count, need)
     traffic['pointId'] = point_id
     traffic['logicalPollingClients'] = stock_viewers(traffic, count)
-    if 'driverPlan' in traffic:
-        _, rates = workload_runtime.rates(traffic, count, p['history'], provisioned=provisioned)
-        size_trace(p, sum(rates.values()), traffic['loadSeconds'])
+    if traffic.get('driverPlan', {}).get('observer') == 'scheduling-v1':
+        traffic['driverPlan'] = bound_plan(traffic, count, provisioned, p['history'])
     return validate(p, require_pins=False)
 
 
