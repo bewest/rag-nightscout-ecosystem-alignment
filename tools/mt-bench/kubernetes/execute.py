@@ -350,8 +350,54 @@ def sql_bookend(d, out, c, objects, client, name):
                                               'responseRetained':raw.is_file(), 'pins':c['pins']})
         return None
     value['pins'] = c['pins']
+    if (bounds := progress_sql.durable_lag(c['completion'])) is not None:
+        # The image's durable M1 buckets (lane m1-durable): the verdict refuses a bound it does not know.
+        value['durableLagBoundsMs'] = bounds
     k.write(out/(name+'.json'), value)
     return value
+
+
+GATE_RECORD = 'catchup-gate.json'
+
+
+def gate_before_access(d, c, objects, client):
+    """The catch-up gate as its own step, before the access witness (attach.py): the witness and everything after it
+    run on caught-up roles. Writes D/catchup-gate.json(l); the load stage reuses that record as its warm-up."""
+    value = c.get('workload', {}).get('catchupGate')
+    if value is None:
+        return {'verdict': 'NOT_SELECTED'}
+    return wait_for_catchup(d, d, c, objects, client, value, name='catchup-gate', reuse=False)
+
+
+def wait_for_catchup(d, out, c, objects, client, value, name='catchup', reuse=True):
+    """Viewer priming and load wait for the evaluator catch-up after restore (catchup_gate.py); the gate's
+    duration is warm-up, recorded apart. Not caught up by the deadline: the stage is UNMEASURED. When the attach
+    step already gated before the access witness (D/catchup-gate.json CAUGHT_UP), that record is the warm-up."""
+    prior = d / GATE_RECORD
+    if reuse and prior.is_file():
+        record = json.loads(prior.read_text())
+        if record.get('verdict') == 'CAUGHT_UP':
+            record = dict(record, gatedBefore='access')
+            k.write(out / (name + '.json'), record)
+            return record
+    import catchup_gate, clinical_sql
+    s = catchup_gate.settings(value)
+    sql = catchup_gate.query(c['completion'], s['overdueGraceSeconds'])
+    baseline = k.active_baseline(d)
+    def fetch():
+        pod, container = clinical_sql.observe(c, objects, client, baseline, continuity_verdict='UNMEASURED')
+        return k.postgres_read(client, pod, container, 'SET LOCAL statement_timeout=60000;\n' + sql, timeout=90)
+    progress = out / (name + '.jsonl')
+    def log(sample):
+        with progress.open('a') as f:
+            f.write(json.dumps(sample) + '\n')
+    try:
+        record = catchup_gate.wait(fetch, s, log=log)
+    except catchup_gate.NotCaughtUp as error:
+        k.write(out / (name + '.json'), error.record)
+        raise k.Refused('K8S_CATCHUP_NOT_REACHED', 'UNMEASURED') from None
+    k.write(out / (name + '.json'), record)
+    return record
 
 
 def capture_bookend(d, out, c, objects, client, name):
@@ -361,6 +407,52 @@ def capture_bookend(d, out, c, objects, client, name):
     if progress_sql.writer_driven(c):
         return sql_bookend(d, out, c, objects, client, name)
     return retained_progress(d, out, c, objects, client, name)
+
+
+class OfflineLatency:
+    """Stands where the live accepted-input observer stands; reads nothing during the run."""
+    def __init__(self, runid, mode='offline-v1'):
+        self.runid = runid
+        self.mode = mode
+
+    def start(self):
+        pass
+
+    def close(self):
+        pass
+
+    def finish(self, out, *, drain_end=None, storage=None):
+        offline_latency_oracle(out, self.runid, self.mode)
+
+
+def latency_observation(settings, c, *, load=True):
+    """Commission, recovery and correctness tiers always use the live witnesses."""
+    if not load or c.get('tier', 'discovery') != 'discovery':
+        return 'polling-sql-v1'
+    import progress_sql
+    offline = c.get('tier') == 'discovery' or progress_sql.durable_lag(c.get('completion')) is not None
+    return settings.get('latencyObservation', 'offline-v1' if offline else 'polling-sql-v1')
+
+
+def offline_latency_oracle(out, runid, mode='offline-v1'):
+    """M3 after the run: no database read. The clock offset between the k6 driver and the viewer
+    process is not measured here; the result says so (0 means same host or unmeasured)."""
+    oracle = Path(__file__).resolve().parents[1] / 'm7-joined' / 'latency_oracle.py'
+    k.write(out / 'latency-observation.json', {'version': 1, 'mode': mode, 'liveSqlObserver': False,
+            'witnessSql': 'off' if mode == 'offline-v1' else 'on',
+            'evaluatorCatchup': 'NOT_COLLECTED (polling observer retired for this profile)',
+            'm3': 'm3-latency.json', 'm1m2': 'role Prometheus metrics (metrics snapshot)'})
+    if not (out / 'viewer-frames.jsonl').is_file():
+        k.write(out / 'm3-latency.json', {'version': 1, 'verdict': 'UNMEASURED', 'code': 'K8S_M3_FRAME_LEDGER_MISSING'})
+        return
+    with (out / 'm3-latency.json').open('x') as stream:
+        result = subprocess.run([sys.executable, '-I', '-B', str(oracle), '--k6', str(out), '--frames', str(out / 'viewer-frames.jsonl'),
+                                 '--run', runid, '--rows', str(out / 'm3-latency-rows.jsonl')],
+                                stdout=stream, stderr=subprocess.PIPE, text=True, timeout=600)
+    if result.returncode != 0:
+        (out / 'm3-latency.json').unlink()
+        k.write(out / 'm3-latency.json', {'version': 1, 'verdict': 'UNMEASURED', 'code': 'K8S_M3_ORACLE_FAILED',
+                                          'returncode': result.returncode})
 
 
 def gate_mode(c):
@@ -412,6 +504,34 @@ def stop_evidence(d, out, c, objects, client, namespace_uid):
     return receipt
 
 
+ACCESS_STEPS = 'access-steps.jsonl'
+
+
+def access_steps(d):
+    """Summary of D/access-steps.jsonl: steps completed, the step started but not ended (where a kill found it)."""
+    rows = []
+    try:
+        for line in (d / ACCESS_STEPS).read_text().splitlines():
+            try:
+                rows.append(json.loads(line))
+            except ValueError:
+                pass
+    except OSError:
+        return {'completed': 0, 'open': None, 'file': None}
+    ended = [r for r in rows if r.get('phase') == 'end']
+    started = {}
+    for r in rows:
+        key = (r.get('step'), r.get('tenantIndex'))
+        if r.get('phase') == 'start':
+            started[key] = r
+        elif r.get('phase') == 'end':
+            started.pop(key, None)
+    last = list(started.values())[-1] if started else None
+    return {'completed': len(ended), 'file': ACCESS_STEPS,
+            'open': {'step': last['step'], 'tenantIndex': last.get('tenantIndex'), 'at': last.get('at')} if last else None,
+            'lastEnded': {k: ended[-1].get(k) for k in ('step', 'tenantIndex', 'outcome', 'ms')} if ended else None}
+
+
 def access(d, c, objects, client):
     k.need(not (d / 'access.json').exists() and not (d / 'access-failure.json').exists(),
            'ACCESS_OUTPUT_EXISTS')
@@ -424,9 +544,11 @@ def access(d, c, objects, client):
         phase = 'native-actor-readback'
         actor(c)
         phase = 'node-witness'
+        # Per-step timings land in D/access-steps.jsonl as the witness runs (access.cjs K8S_ACCESS_STEPS), so a kill
+        # at the 60 s bound still leaves what completed and the step it was in.
         raw = finite(c, [c['driver']['node'], k.HERE / 'access.cjs', c['tenantsFile'],
                         c['baseUrl'], c['driver']['dependencies']],
-                     env=environment(c, d), seconds=60)
+                     env={**environment(c, d), 'K8S_ACCESS_STEPS': str(d / ACCESS_STEPS)}, seconds=60)
         phase = 'witness-document'
         value = json.loads(raw)
         k.need(isinstance(value, dict), 'ACCESS_REPORT_INVALID', 'UNMEASURED')
@@ -442,7 +564,7 @@ def access(d, c, objects, client):
         return value
     except Exception as error:
         try:
-            k.write(d / 'access-failure.json', {'phase': phase, **k.failure_evidence(error)})
+            k.write(d / 'access-failure.json', {'phase': phase, **k.failure_evidence(error), 'steps': access_steps(d)})
         except OSError:
             pass
         raise
@@ -523,19 +645,37 @@ def execute(d, c, objects, client, load=False, recovery=False):
     out.mkdir(mode=0o700)
     k.write(out / 'before.json', before)
     k.write(out / 'driver.json', readback)
+    if load and settings.get('catchupGate') is not None:
+        wait_for_catchup(d, out, c, objects, client, settings["catchupGate"])
+    if load and c.get('connectors'):
+        # vcpool connector tenants (connectors/stage.py): entered before the probe, scored at the end.
+        sys.path.insert(0, str(k.HERE / 'connectors'))
+        import stage as connector_stage
+        connector_stage.start(client.call, c, tenants, out)
     capture_bookend(d, out, c, objects, client, 'progress-before')
     runid = stage_runid(c, name)
     (out / 'runid').write_text(runid)
     node = c['driver']['node']
     viewer_workload = k.viewer_plan.stage_cadence(settings, load)
-    argv = [node, str(d / 'probe.cjs'), '--base', c['baseUrl'], '--tenants', c['tenantsFile'], '--runid', runid,
+    probe_roster = c['tenantsFile']
+    if load and (workload_runtime.partial_looping(c) or c.get('connectors')):
+        # The probe roster excludes the vcpool connector group (and, for partial looping, every tenant
+        # outside the ordinary prefix); the delivery check reads the same roster.
+        probe_roster = str(out / 'probe-tenants.private.json')
+        rows = workload_runtime.viewer_roster(c, tenants, k.need)
+        k.write(probe_roster, workload_runtime.check_probe_roster(c, rows, tenants, k.need))
+    argv = [node, str(d / 'probe.cjs'), '--base', c['baseUrl'], '--tenants', probe_roster, '--runid', runid,
             '--per', '2', '--clients', str(settings['logicalPollingClients']), *k.viewer_plan.setup_args(viewer_workload), '--window', str(settings['loadSeconds']),
             '--probeEvery', str(settings['probeEveryMs'] if load else 1000), '--restart', '0', '--evalTimeout', '120',
             '--out', str(out / 'probe.json'), '--signal', str(out / '.window')]
     setup = settings.get('setupSeconds', 310)
     if not load:
         argv += ['--maxWrites', '2']
-    # Unchanged stock probe, with only SQL transport and external restart changed.
+    mode = latency_observation(settings, c, load=load)
+    offline_latency = mode != 'polling-sql-v1'
+    if offline_latency:
+        argv += ['--frameLedger', str(out / 'viewer-frames.jsonl'), '--viewerDrainUntil', str(out / '.restart'),
+                 '--witnessSql', 'off' if mode == 'offline-v1' else 'on']
     started = time.time()
     process = None
     load_started = load_ended = load_process_started = load_process_ended = None
@@ -550,7 +690,8 @@ def execute(d, c, objects, client, load=False, recovery=False):
         if cancel.wait(settings['loadSeconds'] / 2 if load else .5):
             return
         retained_progress(d, out, c, objects, client, 'progress-midpoint')
-    observer = catchup.observer(d, c, objects, client, runid, [row['id'] for row in tenants]) if load else None
+    observer = catchup.observer(d, c, objects, client, runid, [row['id'] for row in tenants]) if load and not offline_latency else \
+        OfflineLatency(runid, mode) if load else None
     log = (out / 'probe.log').open('xb')
     try:
         if observer is not None:
@@ -582,6 +723,12 @@ def execute(d, c, objects, client, load=False, recovery=False):
             ordinary = jwt_tenants.attach(ordinary, c['baseUrl'], settings.get('jwtSetupConcurrency', 1),
                                          deadline=min(time.time()+setup, work_until),
                                          covers_until=int(time.time()) + settings['loadSeconds'] + settings.get('drainSeconds', 0) + 600)
+            if settings.get('driverShape') in ('looping-v1', 'looping-v2'):
+                # The seed's own roles (looping_history.roles over the provisioned roster in host order; v2 the same).
+                import looping_driver
+                import populated_history
+                k.need(c.get('history', {}).get('mode') in populated_history.LOOPING_MODES, 'DRIVER_SHAPE_REQUIRES_LOOPING_FIXTURE')
+                ordinary = looping_driver.annotate(c['history'], tenants, ordinary)
             env['TENANTS_FILE'] = str(jwt_tenants.write(out / 'k6-tenants.private.json', ordinary))
             load_process_started = time.time()
             if 'driverPlan' in settings:
@@ -602,8 +749,9 @@ def execute(d, c, objects, client, load=False, recovery=False):
                           seconds=settings['loadSeconds'] + setup + 5, failures=midpoint_failure)
                 load_process_ended = time.time()
                 load_started, load_ended = ordinary_load_window(c, out / 'k6.log', load_process_started, load_process_ended)
-            (out / '.restart').touch()
-            drain_end = time.monotonic() + min(settings.get('drainSeconds', 120), k.deadline(c))
+            drain_seconds = min(settings.get('drainSeconds', 120), k.deadline(c))
+            drain_end = time.monotonic() + drain_seconds
+            k.write(out / '.restart', int(1000 * (time.time() + drain_seconds)))
         if load:
             # The operator's remaining drain clock can censor outstanding witnesses.
             requested = settings.get('drainSeconds', 120)
@@ -612,7 +760,10 @@ def execute(d, c, objects, client, load=False, recovery=False):
                     'maximumObservableSeconds': min(requested, k.deadline(c)),
                     'scope': 'remaining operator drain'})
             try:
-                wait_observed(process, max(0, drain_end - time.monotonic()), midpoint_failure)
+                # Offline viewers capture through the deadline itself. Allow them to flush the final
+                # probe receipt; frame acceptance stops at the original drain end.
+                flush = 5 if offline_latency else 0
+                wait_observed(process, min(k.deadline(c), max(0, drain_end - time.monotonic()) + flush), midpoint_failure)
             except subprocess.TimeoutExpired:
                 stop_process(process)
                 k.write(out/'probe-exit.json', {'verdict':'UNMEASURED', 'code':'K8S_PROBE_DRAIN_WINDOW_EXHAUSTED',
@@ -672,6 +823,9 @@ def execute(d, c, objects, client, load=False, recovery=False):
         log.close()
         if load:
             metrics_snapshot(out, c, objects, client)
+            if c.get('connectors') and (out / 'connectors.json').exists():
+                import stage as connector_stage
+                connector_stage.collect(client.call, c, out)
 
 
 # One exec: ask the run's Prometheus (lab metrics component) for a TSDB snapshot, head included,
@@ -754,10 +908,12 @@ def accepted_writes(out, c, values, metrics=None):
     # temporary view supplies this path without changing the runner's files.
     view = out / 'oracle-input'
     view.mkdir(mode=0o700, exist_ok=True)
-    k.write(view / 'tenants.private.json', [{'id':row['id']} for row in tenants])
+    k.write(view / 'tenants.private.json', [{'id':row['id']} for row in
+                                            workload_runtime.oracle_scope(c, tenants, values, out.name == 'load', k.need)])
     facade = SimpleNamespace(document=k.document, write=k.write, stored=lambda *_: values)
     counts, known = k.discovery_counts.observe(facade, view, out, runid, metrics,
                                                ordinary_ids=[row['id'] for row in ordinary],
+                                               probe_ordinary_only=out.name == 'load' and workload_runtime.partial_looping(c),
                                                probe_ledger=c.get('workload', {}).get('probeLedger'))
     k.need(known, 'ACCEPTED_WRITE_UNMEASURED', 'UNMEASURED')
     k.need(counts.get('uncertain') == 0 and counts.get('accepted') == counts.get('stored'),
@@ -855,18 +1011,19 @@ def assess_stage(d, out, c, objects, client):
 
     def clinical():
         k.need((out/'probe.json').is_file(), 'CLINICAL_UNMEASURED', 'UNMEASURED')
-        probe = k.document(out/'probe.json')
+        probe = k.probe_document(out/'probe.json')
         # Timings only; the single assessor (assessor.py) judges the clinical property.
         return {'clinicalTiming': (probe.get('completedOutput') or {}).get('clinicalTiming', 'UNMEASURED')}
 
     def delivery():
         k.need(all((out/name).is_file() for name in ('fanout.json', 'probe.json')),
                'CLIENT_FRAME_UNMEASURED', 'UNMEASURED')
-        probe = k.document(out/'probe.json')
+        probe = k.probe_document(out/'probe.json')
         k.need('window' in probe, 'CLIENT_FRAME_UNMEASURED', 'UNMEASURED')
         by_tenant = k.document(out/'fanout.json')['probeWrites']['byTenant']
         try:
-            frames = k.viewer_plan.check({'tenants': len(tenants), 'cadence': c['workload']}, tenants, probe, by_tenant)
+            viewers = workload_runtime.viewer_roster(c, tenants, k.need) if out.name == 'load' else tenants
+            frames = k.viewer_plan.check({'tenants': len(viewers), 'cadence': c['workload']}, viewers, probe, by_tenant)
         except RuntimeError as error:
             raise k.Refused(str(error), 'FAIL') from error
         k.need(frames['verdict'] == 'PASS' or c['workload']['logicalPollingClients'] == 0 and
@@ -940,7 +1097,7 @@ def restart(d, c, objects, client, role):
     pod, container = k.selected_pod(c, before, role)
     # The main source-owned Node role must be PID1. Refuse a changed entrypoint;
     # never select a process by substring or kill the whole cohort Pod.
-    script = "const fs=require('fs');const a=fs.readFileSync('/proc/1/cmdline','utf8').split('\\0').filter(Boolean);if(a.length!==3||!a[1].endsWith('deploy/multitenant/entrypoint.js')||a[2]!==process.argv[1])throw Error('K8S_ROLE_PID1_MISMATCH');process.kill(1,'SIGTERM');"
+    script = "const fs=require('fs');const a=fs.readFileSync('/proc/1/cmdline','utf8').split('\\0').filter(Boolean);if(a.length===4&&/^--max-old-space-size=[1-9][0-9]*$/.test(a[1]))a.splice(1,1);if(a.length!==3||!a[1].endsWith('deploy/multitenant/entrypoint.js')||a[2]!==process.argv[1])throw Error('K8S_ROLE_PID1_MISMATCH');process.kill(1,'SIGTERM');"
     record = {'role': role, 'pod': pod, 'container': container, 'before': before, 'startedAt': time.time(), 'status': 'ATTEMPTED',
               'independentTenantContinuity': 'UNMEASURED; use a separately owned fixture probe spanning this window', 'persistentRecovery': 'NOT_EXERCISED'}
     k.write(d / 'restart.json', record)
@@ -978,7 +1135,7 @@ def continuity(d, c, independent_directory):
     k.need(c['pins']['appImageId'] == other['pins']['appImageId'], 'CONTINUITY_IMAGE_CHANGED')
     window = k.document(peer / 'load/window.json')
     result = k.document(peer / 'load/result.json')
-    capture = k.document(peer / 'load/probe.json')
+    capture = k.probe_document(peer / 'load/probe.json')
     k.need(type(window.get('loadStartedAt')) in (int,float) and type(window.get('loadEndedAt')) in (int,float) and
            window['loadStartedAt'] < restart['startedAt'] < restart['endedAt'] < window['loadEndedAt'] and
            result.get('verdict') == 'OBSERVED', 'CONTINUITY_WINDOW_UNMEASURED', 'UNMEASURED')

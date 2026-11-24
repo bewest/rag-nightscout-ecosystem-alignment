@@ -92,9 +92,12 @@ def selected(c):
     if value is None:
         return None
     k.need(c.get('tier','discovery') == 'discovery' and isinstance(value,dict)
-           and set(value) - {'inputCodec','nodeName','tolerations','waiterResources'} == {'version','mode','image','shellContract','resources','exporterResources',
+           and set(value) - {'inputCodec','nodeName','nodeSelector','tolerations','waiterResources','writerPublication'} == {'version','mode','image','shellContract','resources','exporterResources',
                              'deadlineSeconds','imagePullSecrets'}
            and value.get('version') == 1 and value.get('mode') == 'job-v1', 'NATIVE_LOAD_SELECTION')
+    if 'writerPublication' in value:
+        import native_files
+        native_files.publication_selection(value['writerPublication'])
     import native_input
     k.need(value.get('inputCodec', 'raw-v1') in native_input.CODECS, 'NATIVE_LOAD_INPUT_CODEC')
     k.need(('nodeName' not in value or isinstance(value['nodeName'],str) and k.NAME.fullmatch(value['nodeName']))
@@ -102,6 +105,12 @@ def selected(c):
            and isinstance(value['imagePullSecrets'],list)
            and all(isinstance(row,dict) and set(row)=={'name'} and k.NAME.fullmatch(row['name'])
                    for row in value['imagePullSecrets']), 'NATIVE_LOAD_PLACEMENT')
+    if 'nodeSelector' in value:
+        # The pool selector of a multi-node layout only; a hostname pin is nodeName.
+        k.need('nodeName' not in value and isinstance(value['nodeSelector'],dict)
+               and list(value['nodeSelector']) == ['doks.digitalocean.com/node-pool']
+               and isinstance(value['nodeSelector']['doks.digitalocean.com/node-pool'],str)
+               and k.NAME.fullmatch(value['nodeSelector']['doks.digitalocean.com/node-pool']), 'NATIVE_LOAD_PLACEMENT')
     if 'tolerations' in value:
         tolerations = value['tolerations']
         k.need(isinstance(tolerations,list) and len(tolerations) == 1
@@ -135,7 +144,8 @@ def base_job(c):
                         'restartPolicy':'Never','automountServiceAccountToken':False,'enableServiceLinks':False,
                         'terminationGracePeriodSeconds':5,
                         'serviceAccountName':ACCOUNT,'imagePullSecrets':copy.deepcopy(s['imagePullSecrets']),
-                        **({'nodeSelector':{'kubernetes.io/hostname':s['nodeName']}} if 'nodeName' in s else {}),
+                        **({'nodeSelector':{'kubernetes.io/hostname':s['nodeName']}} if 'nodeName' in s else
+                           {'nodeSelector':dict(s['nodeSelector'])} if 'nodeSelector' in s else {}),
                         **({'tolerations':s['tolerations']} if 'tolerations' in s else {}),
                         'securityContext':{'fsGroup':1000,'seccompProfile':{'type':'RuntimeDefault'}},
                         'initContainers':[waiter], 'containers':[{'name':'k6','image':s['image'],
@@ -199,6 +209,12 @@ def validate(c, inventory, objects):
             for name in totals:totals[name]+=amount[name]
     k.need(len(quotas)==1,'NATIVE_LOAD_QUOTA_REQUIRED')
     hard=quotas[0]['spec']['hard']
+    if s.get('writerPublication'):
+        requested = k.resource_budget.quantity(s['writerPublication']['storage'], False, k.need)
+        k.need(('persistentvolumeclaims' not in hard or int(hard['persistentvolumeclaims']) >= 1)
+               and ('requests.storage' not in hard
+                    or k.resource_budget.quantity(hard['requests.storage'], False, k.need) >= requested),
+               'WRITER_PUBLICATION_QUOTA')
     k.need(k.resource_budget.quantity(hard.get('requests.cpu',0),True,k.need)>=totals['millicpus']
            and k.resource_budget.quantity(hard.get('requests.memory',0),False,k.need)>=totals['memoryBytes']
            and int(hard.get('pods',0))>=count,'NATIVE_LOAD_UNACCOUNTED_QUOTA')
@@ -236,12 +252,13 @@ def test_pod(c, parent, pod, controller_uid=None):
 class Kube:
     """Use the existing pinned/guarded adapter client, including binary exec."""
     def __init__(self,c,client):self.c,self.client,self.namespace_uid=c,client,None
-    def call(self,args,*,data=None,timeout=20,namespace=None,cleanup=False):
+    def call(self,args,*,data=None,timeout=20,namespace=None,cleanup=False,output_limit=None):
         k.need(namespace in (None,self.c['namespace']),'NATIVE_LOAD_NAMESPACE_CHANGED')
         raw=data.encode() if isinstance(data,str) else data
-        maximum=max(32*1024**2,self.c['workload']['driverPlan'].get('maxTraceBytes',64*1024**2))
+        if output_limit is None:
+            output_limit=max(32*1024**2,self.c['workload']['driverPlan'].get('maxTraceBytes',64*1024**2))
         return self.client.call(args,data=raw,read=args[0] in ('get','logs','top'),cleanup=cleanup,
-                                output_limit=maximum,timeout=timeout)
+                                output_limit=output_limit,timeout=timeout)
     def json(self,args,**kw):
         value=json.loads(self.call([*args,'-o','json'],**kw))
         if args[:2] == ['get','namespace']:
@@ -306,6 +323,32 @@ def run(d,out,c,objects,client,tenants,*,runid,setup,failures):
         input_codec=s.get('inputCodec','raw-v1'))
 
 
+def preparation_config(manifest, template, selection):
+    import application_topology
+    import experiment
+    import frozen
+    delivery=frozen.candidate(manifest);source=frozen.source(manifest)
+    preparing=copy.deepcopy(template)
+    preparing['pins']={'appImage':delivery['app'],'appImageId':delivery['appImageId'],
+                   'pair':{'core':source['coreCommit'],'deploy':source['deployCommit']},
+                   'bindingCommit':manifest['bindingCommit'],'instrument':k.instrument()['sha256']}
+    c=experiment.profile.bind(experiment.workload(manifest),preparing)
+    c.update(tier=manifest.get('tier','discovery'),nativeLoad=selection,
+             applicationTopology=application_topology.selection(manifest,k.need))
+    return c
+
+
+def point_render(case, manifest, template):
+    """Keep the shared application declaration, rebinding only its suspended native test Job."""
+    result = k.document(Path(case) / 'render.json')
+    c = preparation_config(manifest, template, manifest[FIELD])
+    job, = (row for row in declarations(c) if k.key(row) == JOB)
+    actors = result['nativeLoadResources']
+    index, = (index for index, row in enumerate(actors) if k.key(row) == JOB)
+    actors[index] = job
+    return result
+
+
 def prepare_case(case, selection):
     """Offline opt-in for a fresh, uncaptured existing prepared case.
 
@@ -327,14 +370,8 @@ def prepare_case(case, selection):
     manifest=k.document(case/'intent.json');template=frozen.read_ref(control['runTemplate'])
     inventory=k.document(case/'inventory.json');render=k.document(case/'render.json')
     k.need(not any(value.get(FIELD) for value in (manifest,template,inventory)), 'NATIVE_LOAD_ALREADY_DECLARED')
-    delivery=frozen.candidate(manifest);source=frozen.source(manifest)
-    preparing=copy.deepcopy(template)
-    preparing['pins']={'appImage':delivery['app'],'appImageId':delivery['appImageId'],
-                   'pair':{'core':source['coreCommit'],'deploy':source['deployCommit']},
-                   'bindingCommit':manifest['bindingCommit'],'instrument':k.instrument()['sha256']}
-    c=experiment.profile.bind(experiment.workload(manifest),preparing)
-    c.update(tier=manifest.get('tier','discovery'),nativeLoad=selection,
-             applicationTopology=application_topology.selection(manifest,k.need))
+    source=frozen.source(manifest)
+    c=preparation_config(manifest,template,selection)
     # Freeze the private DATA channel on new cases. Existing packets retain
     # the codec and Job template their original instrument declared.
     import native_input

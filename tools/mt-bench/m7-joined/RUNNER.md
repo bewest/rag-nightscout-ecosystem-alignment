@@ -989,11 +989,12 @@ or cleanup extension to an entered run. Acceptance presets keep their ranges.
 Primer concurrency remains the selected deployment source's explicit 1–32
 contract; extending it requires updating and qualifying that source path.
 
-Configured driver `maxTraceBytes` and `maxTraceRows` replace reference budgets;
-capture byte and row bounds still stop observation and retain partial results.
-The decompressed capture allowance remains sixteen times the authored compressed
-byte budget and must fit an exact integer. Historical fixed diagnostic modes
-retain their original selections.
+Configured drivers can set per-file `maxTraceBytes`, `maxDecodedTraceBytes`
+and `maxTraceRows`. When `maxDecodedTraceBytes` is omitted, the reader allows
+sixteen times `maxTraceBytes`. The Kubernetes workload binder raises scheduling
+trace budgets from the busiest shard's offered iterations and keeps larger
+profile values. Capture stops at the finite byte and row budgets. Historical
+fixed diagnostic modes keep their original selections.
 
 A selected source that declares `PREVIEW_MAX_TENANTS=10000` still refuses a
 12,001-tenant execution. Extending that source path requires changing its tenant

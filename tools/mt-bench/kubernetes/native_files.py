@@ -1,15 +1,17 @@
 """One-shard configured driver: retain original bounded files through Pod exec.
 
-An exporter container holds only the test Pod's emptyDir, without an API token.
+An exporter holds the test Pod's emptyDir and can publish to a prebound retained volume.
 The owned Pod stays until export acknowledgment or its finite Job deadline.
 Raw CSV never traverses Kubernetes container logs (which may rotate).
 """
 import copy
 import json
 import math
+import os
 from pathlib import Path
 import re
 import subprocess
+import tempfile
 import time
 
 import kube_adapter as k
@@ -18,6 +20,52 @@ import workload_runtime
 
 FILES = {'k6.log': 64 * 1024**2, 'k6-native.log': 64 * 1024**2,
          'k6-summary.json': 4 * 1024**2, 'file-limits.txt': 16384}
+
+
+PUBLICATION_CLAIM = 'writer-publication'
+TRACE_FILE = 'k6-scheduling.csv.gz'
+TRACE_CHUNK_BYTES = 8 * 1024**2
+# Retained 1k writes used 295–312 bytes per accepted line with a 27-byte
+# marker. Allow the full 100-byte run marker and space for diagnostics.
+BYTES_PER_WRITE = 512
+EVENT_LOG_OVERHEAD = 64 * 1024
+
+
+def publication_selection(selection):
+    k.need(isinstance(selection, dict) and set(selection) == {'volumeName', 'storageClassName', 'storage'}
+           and isinstance(selection['volumeName'], str) and k.NAME.fullmatch(selection['volumeName'])
+           and isinstance(selection['storageClassName'], str)
+           and (not selection['storageClassName'] or k.NAME.fullmatch(selection['storageClassName']))
+           and isinstance(selection['storage'], str)
+           and k.resource_budget.quantity(selection['storage'], False, k.need) > 0,
+           'WRITER_PUBLICATION_SELECTION')
+    return selection
+
+
+def publication_claim(selection, namespace, run_id, pv):
+    """Bind one already reserved, retained PV. Never request dynamic provisioning."""
+    publication_selection(selection)
+    spec = (pv or {}).get('spec', {})
+    metadata = (pv or {}).get('metadata', {})
+    ref = spec.get('claimRef') or {}
+    k.need(metadata.get('name') == selection['volumeName'] and not metadata.get('deletionTimestamp')
+           and (pv or {}).get('status', {}).get('phase') == 'Available'
+           and spec.get('persistentVolumeReclaimPolicy') == 'Retain'
+           and spec.get('volumeMode', 'Filesystem') == 'Filesystem'
+           and spec.get('storageClassName', '') == selection['storageClassName']
+           and ref.get('name') == PUBLICATION_CLAIM and ref.get('namespace') == namespace and not ref.get('uid')
+           and k.resource_budget.quantity(spec.get('capacity', {}).get('storage', 0), False, k.need)
+               >= k.resource_budget.quantity(selection['storage'], False, k.need),
+           'WRITER_PUBLICATION_RETAINED_VOLUME_REQUIRED')
+    access = next((mode for mode in ('ReadWriteOnce', 'ReadWriteMany', 'ReadWriteOncePod')
+                   if mode in spec.get('accessModes', [])), None)
+    k.need(access, 'WRITER_PUBLICATION_WRITABLE_VOLUME_REQUIRED')
+    return {'apiVersion': 'v1', 'kind': 'PersistentVolumeClaim',
+            'metadata': {'namespace': namespace, 'name': PUBLICATION_CLAIM,
+                         'labels': {'nightscout.org/run-id': run_id}},
+            'spec': {**{key: selection[key] for key in ('volumeName', 'storageClassName')},
+                     'accessModes': [access], 'volumeMode': 'Filesystem',
+                     'resources': {'requests': {'storage': selection['storage']}}}}
 
 
 def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contract):
@@ -34,16 +82,29 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
            and shell_contract.get('classification') == 'reproduced'
            and k.HEX.fullmatch(shell_contract.get('evidenceSha256', '')),
            'NATIVE_LOAD_SHELL_CONTRACT_REQUIRED', 'UNMEASURED')
-    # The selected k6 image's Alpine ash uses 512-byte file-limit blocks.
-    # The runtime /proc read below independently proves the effective limit.
     maximum = cfg['maxTraceBytes']
-    limit = maximum // 512 * 512
-    k.need(limit > 0, 'NATIVE_LOAD_TRACE_BOUND')
+    trace_limit = maximum // 512 * 512
+    k.need(trace_limit > 0, 'NATIVE_LOAD_TRACE_BOUND')
+    scenarios = driver.expected_plans(manifest)[0]['scenarios']
+    writes = sum(row['plannedMaximum'] for name, row in scenarios.items() if name.startswith('w_'))
+    estimated_bytes = writes * BYTES_PER_WRITE + EVENT_LOG_OVERHEAD
+    mib = 1024**2
+    event_limit = max(min(FILES['k6.log'], trace_limit), ((estimated_bytes + mib - 1) // mib) * mib)
+    # The shell has one file-size limit for both outputs. The exporter checks
+    # each file independently; /proc proves the image's 512-byte block limit.
+    limit = max(trace_limit, event_limit)
     wrapper = (k.M7 / driver.SCRIPT).read_bytes()
     files = dict(FILES)
+    files['k6.log'] = event_limit
     if cfg['observer'] == 'scheduling-v1':
-        files['k6-scheduling.csv.gz'] = maximum
-    config = dict(runId=receipt['runId'], files=files, seconds=receipt['activeDeadlineSeconds'])
+        files[TRACE_FILE] = maximum
+    config = dict(runId=receipt['runId'], files=files, seconds=receipt['activeDeadlineSeconds'],
+                  rangeBytes=TRACE_CHUNK_BYTES)
+    publication = (c.get('nativeLoad') or {}).get('writerPublication')
+    if publication is not None:
+        receipt['writerPublication'] = publication_selection(publication)
+        config['writerPublication'] = True
+        secret['stringData']['native-publication.cjs'] = (k.HERE / 'native-publication.cjs').read_text()
     secret['stringData'] = {**secret['stringData'],
                             'workload.js': script.decode(), driver.SCRIPT: wrapper.decode(),
                             'native-artifacts.cjs': (k.HERE / 'native-artifacts.cjs').read_text(),
@@ -80,11 +141,16 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
                 'volumeMounts': [{'name': 'inputs', 'mountPath': '/inputs', 'readOnly': True},
                                  {'name': 'artifacts', 'mountPath': '/out'}]}
     pod = job['spec']['template']['spec']
+    if publication is not None:
+        pod['volumes'].append({'name': PUBLICATION_CLAIM, 'persistentVolumeClaim': {'claimName': PUBLICATION_CLAIM}})
+        exporter['volumeMounts'].append({'name': PUBLICATION_CLAIM, 'mountPath': '/publication'})
+        exporter['env'] = [{'name': 'NS_PUBLICATION_ROOT', 'value': '/publication'},
+                           {'name': 'NS_PUBLICATION_POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}}]
     pod['containers'].append(exporter)
     # This is disposable local Pod storage; requests/limits and the full new Pod
     # must still enter the operating owner's fit/quota admission.
     pod['volumes'].append({'name': 'artifacts', 'emptyDir': {'sizeLimit': str(sum(files.values()) + 4096)}})
-    receipt.update(captureMode='owned-exec-files', files=files, fileLimitBytes=limit,
+    receipt.update(captureMode='owned-exec-files', files=files, fileLimitBytes=limit, rangeBytes=TRACE_CHUNK_BYTES,
                    shellContract=shell_contract, jobSha256=k.hashed(job), driverManifest=manifest)
     return job, secret, receipt
 
@@ -153,6 +219,29 @@ def terminal_process(c, wanted, job, pod, final_job, final_pod):
     k.need(exporter.get('state', {}).get('terminated', {}).get('exitCode') == 0,
            'NATIVE_LOAD_EXPORTER_FAILED', 'UNMEASURED')
     return process
+
+
+def copy_artifact(kube, command, target, size, namespace, remaining, range_bytes):
+    """Transfer large artifacts in bounded ranges when the exporter supports them."""
+    import native_load as n
+    if range_bytes is None or (target.name != TRACE_FILE and size <= range_bytes):
+        data = kube.call(command + ['read', target.name], data=b'', namespace=namespace, timeout=min(120, remaining()))
+        if isinstance(data, str):
+            data = data.encode()
+        k.need(isinstance(data, bytes) and len(data) == size, 'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
+        n.private(target, data)
+        return
+    with tempfile.NamedTemporaryFile(dir=target.parent, prefix='.' + target.name + '.') as stream:
+        for offset in range(0, size, range_bytes):
+            length = min(range_bytes, size - offset)
+            data = kube.call(command + ['read-range', target.name, str(offset), str(length)],
+                             data=b'', namespace=namespace, timeout=min(120, remaining()),
+                             output_limit=length)
+            k.need(isinstance(data, bytes) and len(data) == length, 'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
+            stream.write(data)
+        stream.flush()
+        # Publish only a complete file, with the temporary file's private mode.
+        os.link(stream.name, target)
 
 
 def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private_data=None):
@@ -260,19 +349,14 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
     meta = json.loads(raw)
     k.need(meta.get('kind') == 'm7-native-artifacts-v1' and meta.get('runId') == receipt['runId']
            and set(meta.get('files', {})) == set(receipt['files']), 'NATIVE_LOAD_MANIFEST_BINDING')
+    # Older scheduling exporters already supported ranges. Legacy summary-only
+    # exporters must continue to use the single-read protocol.
+    range_bytes = TRACE_CHUNK_BYTES if TRACE_FILE in receipt['files'] or receipt.get('rangeBytes') == TRACE_CHUNK_BYTES else None
     for filename, maximum in receipt['files'].items():
         expected = meta['files'][filename]
         k.need(type(expected.get('bytes')) is int and 0 < expected['bytes'] <= maximum,
                'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
-        data = kube.call(command + ['read', filename], data=b'', namespace=ns, timeout=min(120, remaining()))
-        # fanout.Kube.call uses text when no data is supplied. Force its binary
-        # mode with bytes input, including for compressed scheduling CSV.
-        if isinstance(data, str):
-            k.need(filename != 'k6-scheduling.csv.gz', 'NATIVE_LOAD_BINARY_TRANSPORT_REQUIRED', 'UNMEASURED')
-            data = data.encode()
-        k.need(isinstance(data, bytes) and len(data) <= maximum, 'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
-        n.private(out / filename, data)
-        k.need(len(data) == expected['bytes'], 'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
+        copy_artifact(kube, command, out / filename, expected['bytes'], ns, remaining, range_bytes)
     limits = (out / 'file-limits.txt').read_text()
     match = re.search(r'^Max file size\s+([0-9]+)\s+([0-9]+)\s+bytes\s*$', limits, re.M)
     k.need(match and int(match[1]) == int(match[2]) == receipt['fileLimitBytes'], 'NATIVE_LOAD_FILE_LIMIT_UNPROVEN')

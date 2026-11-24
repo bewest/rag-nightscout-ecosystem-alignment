@@ -169,7 +169,7 @@ class NativeJoin(unittest.TestCase):
         self.assertEqual(labels['app.kubernetes.io/component'],'load')
         for target,port in [('admin',1342),('api',1337),('api',19001),('evaluator',19002),('evaluator',19913),
                             ('realtime',1339),('realtime',19003),('tenant-admin',19004),('postgres',5432),('vault',8200)]:
-            kind='StatefulSet' if target in ('postgres','vault') else 'Deployment'
+            kind='StatefulSet' if target in ('evaluator','realtime','postgres','vault') else 'Deployment'
             self.assertFalse(allowed(labels,kind+'/'+target,port),(target,port))
         self.assertEqual([obj for obj in policies if obj is not policy],original)
 
@@ -300,11 +300,16 @@ class NativeJoin(unittest.TestCase):
     def test_probe_timeout_stops_writer_and_finishes_ordinary_catchup(self):
         self.native_probe_writer_join(timeout=True)
 
-    def native_probe_writer_join(self, timeout):
+    def test_discovery_default_runs_native_load_without_either_sql_poller(self):
+        self.native_probe_writer_join(timeout=False, offline=True)
+
+    def native_probe_writer_join(self, timeout, offline=False):
         # Exercise the real controller flow with admitted synthetic boundaries;
         # clinical correctness itself is covered by the unchanged oracle suite.
         from test_native_load import TENANTS
         c,_,_,_=fixture();c['completion']={};c['baseUrl']='http://127.0.0.1:18080'
+        if not offline:
+            c['workload']['latencyObservation'] = 'polling-sql-v1'
         c['tenantsFile']='/synthetic/tenants.json'
         c['driver'].update(node='/synthetic/node',dependencies='/synthetic/deps',
                            k6='/synthetic/k6',k6Sha256='9'*64)
@@ -316,7 +321,12 @@ class NativeJoin(unittest.TestCase):
                                     'workload':{'adaptedSha256':k.digest(d/'workload.js')}})
             process = SimpleNamespace(returncode=None)
             process.poll = lambda: process.returncode
-            def spawn(*_,**kwargs):
+            def spawn(argv, **kwargs):
+                if offline:
+                    self.assertEqual(argv[argv.index('--witnessSql') + 1], 'off')
+                    self.assertIn('--viewerDrainUntil', argv)
+                else:
+                    self.assertNotIn('--witnessSql', argv)
                 self.assertNotIn('M7_CLINICAL_WARM_PATH', kwargs['env'])
                 events.append('probe-start');(out/'.window').touch()
                 return process
@@ -357,7 +367,15 @@ class NativeJoin(unittest.TestCase):
                   patch.object(n,'assess_join',side_effect=assess)):
                 result=execute.execute(d,c,{},None,load=True)
             self.assertEqual(result['verdict'],'OBSERVED');local.assert_not_called()
-            self.assertEqual(events,['start-acceptance','probe-start','native-load','probe-stopped' if timeout else 'probe-joined','capture-storage','drain-acceptance','terminal-progress','full-assessor','close-acceptance'])
+            expected = ['probe-start', 'native-load', 'probe-stopped' if timeout else 'probe-joined', 'capture-storage']
+            if not offline:
+                expected = ['start-acceptance', *expected, 'drain-acceptance']
+            expected.extend(['terminal-progress', 'full-assessor'])
+            if not offline:
+                expected.append('close-acceptance')
+            self.assertEqual(events, expected)
+            if offline:
+                self.assertFalse(k.document(out/'latency-observation.json')['liveSqlObserver'])
             if timeout:
                 self.assertEqual(k.document(out/'probe-exit.json')['code'],'K8S_PROBE_DRAIN_WINDOW_EXHAUSTED')
             self.assertFalse((out/'preload-convergence').exists())
@@ -373,7 +391,7 @@ class NativeJoin(unittest.TestCase):
         class Cube:
             def __init__(self):self.suspended=True;self.patches=[];self.rounds=0
             def call(self,args,**kw):
-                if args[0]=='create':return ''  # input Secret only; the Job already exists
+                if args[0]=='create':return 'owned-inputs'  # input Secret only; the Job already exists
                 if args[0]=='patch':
                     value=json.loads(args[-1]);self.patches.append(value)
                     self.suspended=value[-1]['value']
@@ -421,6 +439,24 @@ class NativeJoin(unittest.TestCase):
         self.assertEqual(spec['containers'][0]['resources'], selected['resources'])
         selected['tolerations'] = [{'key':'dedicated','value':'nightscout','operator':'Equal','effect':'NoSchedule'}]
         self.assertEqual(j.base_job(c)['spec']['template']['spec']['tolerations'],selected['tolerations'])
+
+    def test_pool_selector_places_the_load_job_on_the_pool_only(self):
+        c, inventory, render, client = fixture()
+        selected = c['nativeLoad']
+        selected.pop('nodeName')
+        selected['nodeSelector'] = {'doks.digitalocean.com/node-pool': 'plancurve-c16'}
+        spec = j.base_job(c)['spec']['template']['spec']
+        self.assertEqual(spec['nodeSelector'], {'doks.digitalocean.com/node-pool': 'plancurve-c16'})
+        self.assertNotIn('nodeName', spec)
+        for bad in ({'kubernetes.io/hostname': 'n1'}, {'doks.digitalocean.com/node-pool': 'Bad Pool'},
+                    {'doks.digitalocean.com/node-pool': 'a', 'x': 'y'}):
+            selected['nodeSelector'] = bad
+            with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_PLACEMENT'):
+                j.base_job(c)
+        selected['nodeSelector'] = {'doks.digitalocean.com/node-pool': 'plancurve-c16'}
+        selected['nodeName'] = 'n1'
+        with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_PLACEMENT'):
+            j.base_job(c)
 
 
 if __name__=='__main__':unittest.main()

@@ -188,11 +188,10 @@ class Adapter(unittest.TestCase):
             k.write(d/'observation.initial.json', baseline)
             def call(argv, **kw):
                 self.assertIn('BEGIN READ ONLY;', kw['data'].decode())
-                self.assertIn('synthetic-compose-demo', kw['data'].decode())
-                return b'1\t1\tnightscout_compose_test\t0\t0\n'
+                return b'0\t0\n' if 'synthetic-compose-demo' in kw['data'].decode() else b'1\t1\tnightscout_compose_test\n'
             self.client.call = call
             observed = k.observe_sql(d, self.c, self.objects, d/'independent', self.client)
-            self.assertEqual(observed['storedTenants'], 0)
+            self.assertEqual((observed['seedCensus'], observed['storedRows'], observed['storedTenants']), ('OBSERVED', 0, 0))
             self.assertEqual(observed['dataCredentials'], 'UNMEASURED')
             self.assertEqual(observed['setupJobs']['Job/primer']['condition'], 'Failed')
             self.assertEqual(k.document(d/'independent/after.json')['retiredJobs']['primer-old'], value)
@@ -314,7 +313,7 @@ class Adapter(unittest.TestCase):
             self.assertIn('rawRow:e.rawRow',source)
             native=subprocess.run(['node',str(HERE/'probe.test.cjs'),str(target)],capture_output=True,text=True,timeout=15)
             self.assertEqual(native.returncode,0,native.stderr)
-            for mode in ('sql-unavailable', 'restored', 'writer-driven'):
+            for mode in ('sql-unavailable', 'restored', 'writer-driven', 'capacity-off', 'capacity-on'):
                 result = subprocess.run(['node', str(HERE/'probe.test.cjs'), str(target), mode],
                                         capture_output=True, text=True, timeout=15)
                 self.assertEqual(result.returncode, 0, result.stderr)
@@ -447,6 +446,20 @@ class Adapter(unittest.TestCase):
             metrics['writes_uncertain'] = {'count':0}
             report('restored')
             self.assertEqual(execute.accepted_writes(out, config, values)['verdict'], 'GREEN')
+
+            # Looping subset: only the active host receives probe writes; both
+            # tenants still enter the independent database readback.
+            roster[0]['host'] = 'z.test'
+            roster[1]['host'] = 'a.test'
+            k.write(root / 'tenants.json', roster)
+            config['workload'] = {'driverShape': 'looping-v2'}
+            ledger['roster'] = [A]
+            k.write(out / 'probe-accounting.json', ledger)
+            values = {A: {'entries': 1, 'probe': 1}}
+            self.assertEqual(execute.accepted_writes(out, config, values)['verdict'], 'GREEN')
+            for field in ('entries', 'probe'):
+                with self.subTest(inactive_field=field), self.assertRaisesRegex(RuntimeError, 'M7_DISCOVERY_WRONG_DATA'):
+                    execute.accepted_writes(out, config, {**values, B: {field: 1}})
 
     def test_matrix_collision_headroom_and_restore(self):
         with tempfile.TemporaryDirectory() as name:

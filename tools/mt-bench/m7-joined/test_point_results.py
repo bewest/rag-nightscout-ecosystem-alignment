@@ -163,6 +163,40 @@ class StandardPoint(unittest.TestCase):
             self.assertEqual(result['measurements']['outcomeGate'], 'FAIL')
             self.assertEqual(result['measurements']['components'], gate['components'])
 
+    def test_points_require_independent_writers_same_restore_and_final_cleanup(self):
+        def run(case, same_job=False, different_db=False, missing_second=False, cleaned=True, verdict='PASS'):
+            runtime = case/'runtime'
+            runtime.mkdir(parents=True)
+            points.write(case/'lifecycle-input.json', {'loadPoints': ['half', 'full'],
+                         'fixture': {'mode': 'restore'}})
+            points.write(runtime/'custody.json', {'namespaceUid': 'ns'})
+            points.write(runtime/'absence.json', {'namespaceUid': 'ns', 'absent': cleaned})
+            for point in ('half', 'full'):
+                if point == 'full' and missing_second:
+                    break
+                directory = runtime/'points'/point
+                result = directory/'packet/experiment'
+                result.mkdir(parents=True)
+                points.write(result/'result.json', {'verdict': verdict})
+                points.write(directory/'phase-identity.json', {
+                    'namespaceUid': 'ns', 'postgresClaimUid': point if different_db else 'pg',
+                    'jobUid': 'job' if same_job else point, 'inputSecretUid': point, 'pointId': point,
+                    'marker': case.name + '-' + point + '-load'})
+            points.publish_native(case)
+            return points.read(case/'result.json')
+
+        with TemporaryDirectory() as temp:
+            good = run(Path(temp)/'ok')
+            self.assertEqual(good['stageVerdict'], 'PASS')
+            self.assertEqual([p['pointId'] for p in good['points']], ['half', 'full'])
+            observed = run(Path(temp)/'discovery', verdict='OBSERVED')
+            self.assertEqual(observed['stageVerdict'], 'OBSERVED')
+            self.assertEqual(observed['points'][0]['stageVerdict'], 'OBSERVED')
+            for failure in ('same_job', 'different_db', 'missing_second'):
+                bad = run(Path(temp)/failure, **{failure: True})
+                self.assertNotEqual(bad['stageVerdict'], 'PASS')
+            self.assertNotEqual(run(Path(temp)/'missing-cleanup', cleaned=False)['stageVerdict'], 'PASS')
+
     def test_native_failure_and_unconfirmed_host_unit(self):
         with TemporaryDirectory() as temp:
             root = Path(temp)/'point'

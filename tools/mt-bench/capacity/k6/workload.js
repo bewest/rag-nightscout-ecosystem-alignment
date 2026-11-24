@@ -45,8 +45,17 @@ const START = Number(__ENV.RUN_START);
 const writesOk = new Counter('writes_ok');
 const writesUncertain = new Counter('writes_uncertain');
 const writesRefused = new Counter('writes_refused');
+// Documents, not requests: a looping-v2 v1 treatments POST carries an array (the stored-row oracle counts rows).
+const writesOkDocuments = new Counter('writes_ok_documents');
+const writesUncertainDocuments = new Counter('writes_uncertain_documents');
 const responsesRefused = new Counter('responses_refused');
 const scenarioAttempts = new Counter('scenario_request_attempts'), scenarioResponses = new Counter('scenario_http_responses'), scenarioTransport = new Counter('scenario_transport_failures');
+// looping-v2 request shapes (bounded tag values; no tenant tag)
+const LOOPING_REQUEST_SHAPES = ['ds_loop', 'ds_loop_extra', 'ds_trio_suggested', 'ds_trio_enacted', 'ds_aaps', 'ds_cgm_battery',
+  'tx_loop_v1', 'tx_trio_v1', 'tx_aaps_v3', 'profile_loop_v1'];
+const LOOPING_IDENTITIES = ['syncIdentifier', 'id', 'uuid', 'NSCLIENT_ID', 'identifier', '_id'];
+const loopingRequests = new Counter('m7_looping_requests'), loopingDocuments = new Counter('m7_looping_documents'),
+  loopingIdentityless = new Counter('m7_looping_identityless');
 const httpAttempts = new Counter('m7_http_attempts'), httpCompleted = new Counter('m7_http_completed'), httpWriteOutcome = new Counter('m7_http_write_outcome');
 
 if (!Number.isSafeInteger(HOT) || HOT < 1 || !TENANTS.length ||
@@ -82,8 +91,52 @@ if (mix !== undefined &&
      Object.keys(realisticCadenceMs).some(name => !shapes[name]))) {
   throw Error('M7_REALISTIC_MIX_CONFIGURATION');
 }
+// Driver shape looping-v1 (m7-joined/looping_driver.py, lane mt-plannable-scale-20261121 E3): writes
+// shaped like the E1 looping fixture. Each tenant row carries loopKind from the seed's own role hash
+// (null: CGM-only, SGV only); devicestatus bodies are the generator's documents; treatments post once
+// per looping tenant every M7_LOOPING_TREATMENT_CYCLE_MS.
+// Driver shape looping-v2 (the AID client model, m7-joined/looping_driver.py): per-controller devicestatus
+// (Loop 1.35, Trio 2, AAPS 1 per cycle) and a battery status for CGM-only tenants, walked as a 20-cycle wheel
+// of one request per iteration; treatments once per looping tenant per 400 s on the controllers' routes
+// (Loop/Trio v1 arrays with syncIdentifier/id, AAPS v3 single documents); a Loop profile in 1 of 648 rounds.
+const shape = __ENV.M7_DRIVER_SHAPE;
+const looping = shape === 'looping-v1' || shape === 'looping-v2';
+const v2 = shape === 'looping-v2';
+if (shape !== undefined && (!looping || mix !== 'realistic-v1')) throw Error('M7_DRIVER_SHAPE_CONFIGURATION');
+const LOOP = looping ? JSON.parse(__ENV.M7_LOOPING_TEMPLATES) : null;
+const RULES = v2 ? JSON.parse(__ENV.M7_LOOPING_V2_RULES) : null;
+const V2_KINDS = ['loop', 'aaps', 'trio'];
+const LOOPERS = [];
+if (looping) for (let i = 0; i < TENANTS.length; i++) {
+  const kind = TENANTS[i].loopKind;
+  if (kind === null) continue;
+  if (typeof kind !== 'string' || !(v2 ? V2_KINDS.includes(kind) : Object.hasOwn(LOOP.documents, kind))) throw Error('M7_DRIVER_SHAPE_CONFIGURATION');
+  LOOPERS.push(i);
+}
+const LOOP_TX_MS = looping ? Number(__ENV.M7_LOOPING_TREATMENT_CYCLE_MS) : null;
+if (looping && (!LOOPERS.length || !Number.isSafeInteger(LOOP_TX_MS) || LOOP_TX_MS < 60000)) throw Error('M7_DRIVER_SHAPE_CONFIGURATION');
+if (v2 && !(Number.isSafeInteger(RULES.dsPeriod) && RULES.dsPeriod >= 1 && RULES.loopExtra[1] === RULES.dsPeriod)) throw Error('M7_DRIVER_SHAPE_CONFIGURATION');
+// looping-v2 devicestatus wheel: DS_PERIOD cycles, cycle-major, each tenant's posts adjacent in tenant order.
+// An entry is tenant * 4 + post (Loop: 0 and, in 7 of 20 cycles, 1; Trio: 0 suggested, 1 enacted).
+const loopExtra = (i, c) => (c * RULES.loopExtra[0] + i) % RULES.loopExtra[1] < RULES.loopExtra[0];
+const DS_WHEEL = v2 ? new SharedArray('looping-v2-devicestatus-wheel', () => {
+  const out = [];
+  for (let c = 0; c < RULES.dsPeriod; c++) for (let i = 0; i < TENANTS.length; i++) {
+    const kind = TENANTS[i].loopKind;
+    const posts = kind === 'trio' ? 2 : kind === 'loop' && loopExtra(i, c) ? 2 : 1;
+    for (let j = 0; j < posts; j++) out.push(i * 4 + j);
+  }
+  return out;
+}) : null;
+const LOOP_SHAPES = new Set(['w_devicestatus', 'w_treatments_v3']);
+// Tenants a write shape addresses: every tenant, or the looping ones under looping-v1; under looping-v2
+// devicestatus iterates the wheel's slots (every tenant) and treatments the looping tenants.
+const population = name => (v2 && name === 'w_devicestatus' ? DS_WHEEL.length :
+  looping && LOOP_SHAPES.has(name) ? LOOPERS.length : weight);
 function cycleMs(name) {
   if (mix === undefined) return ARRIVAL_CYCLE_MS;
+  if (looping && name === 'w_treatments_v3') return Math.round(LOOP_TX_MS / workloadScale / writeScale);
+  if (v2 && name === 'w_devicestatus') return RULES.dsPeriod * Math.round(realisticCadenceMs[name] / workloadScale / writeScale);
   const interval = realisticCadenceMs[name] * shapes[name] / workloadScale;
   return Math.round(name.startsWith('w_') ? interval / writeScale : interval);
 }
@@ -104,7 +157,7 @@ export const DRIVER_HEADROOM = __ENV.DRIVER_HEADROOM === undefined ? 1.5 : Numbe
 if (!Number.isFinite(DRIVER_HEADROOM) || DRIVER_HEADROOM <= 0 || DRIVER_HEADROOM > 100) throw Error('M7_DRIVER_HEADROOM_RANGE');
 const scenarios = {};
 for (const [name, perCycle] of Object.entries(shapes)) {
-  const rate = perCycle * weight; // iterations per cycle
+  const rate = perCycle * population(name); // iterations per cycle
   scenarios[name] = {
     executor: 'constant-arrival-rate', exec: name, rate, timeUnit: cycleMs(name) + 'ms',
     duration: DURATION + 's', ...driverVUs(rate * 1000 / cycleMs(name), DRIVER_HEADROOM),
@@ -113,13 +166,17 @@ for (const [name, perCycle] of Object.entries(shapes)) {
 }
 // Zero-valued thresholds make every counter appear in the summary export, including zeros.
 // No per-tenant tag or threshold: per-tenant figures come from the stored rows.
-const thresholds = {writes_ok:['count>=0'],writes_uncertain:['count>=0'],writes_refused:['count>=0'],responses_refused:['count>=0'],
+const thresholds = {writes_ok:['count>=0'],writes_uncertain:['count>=0'],writes_ok_documents:['count>=0'],writes_uncertain_documents:['count>=0'],writes_refused:['count>=0'],responses_refused:['count>=0'],
   scenario_request_attempts:['count>=0'],scenario_http_responses:['count>=0'],scenario_transport_failures:['count>=0'],dropped_iterations:['count>=0']};
 // k6 reads options in its initial context; other VUs skip the threshold metadata.
 // Undefined __VU supports the standalone payload fixtures.
 if (typeof __VU === 'undefined' || __VU === 0) {
   httpAccountingThresholds(thresholds, Object.keys(shapes));
-  for (const k of ['entries', 'devicestatus', 'treatments']) thresholds[`writes_ok{kind:${k}}`] = ['count>=0'];
+  for (const k of ['entries', 'devicestatus', 'treatments', ...(v2 ? ['profile'] : [])]) {
+    thresholds[`writes_ok{kind:${k}}`] = ['count>=0']; thresholds[`writes_ok_documents{kind:${k}}`] = ['count>=0'];
+  }
+  if (v2) for (const name of LOOPING_REQUEST_SHAPES) for (const metric of ['m7_looping_requests', 'm7_looping_documents', 'm7_looping_identityless'])
+    thresholds[`${metric}{request_shape:${name}}`] = ['count>=0'];
   for (const name of Object.keys(shapes)) thresholds[`http_req_duration{shape:${name}}`] = ['max>=0'];
   for (const name of Object.keys(shapes)) thresholds[`http_req_failed{shape:${name}}`] = ['rate>=0'];
 }
@@ -132,6 +189,15 @@ export const options = {
 function pick () {
   if (exec.scenario.iterationInTest === 0) {
     console.log(JSON.stringify({ event: 'scenario-first-iteration', shape: exec.scenario.name, atMs: Date.now() }));
+  }
+  if (v2 && exec.scenario.name === 'w_devicestatus') {
+    const e = DS_WHEEL[exec.scenario.iterationInTest % DS_WHEEL.length];
+    const i = Math.floor(e / 4);
+    return { i, t: TENANTS[i], post: e % 4 };
+  }
+  if (looping && LOOP_SHAPES.has(exec.scenario.name)) {
+    const i = LOOPERS[exec.scenario.iterationInTest % LOOPERS.length];
+    return { i, t: TENANTS[i] };
   }
   const r = exec.scenario.iterationInTest % weight;
   const i = r < HOT ? 0 : r - HOT + 1;
@@ -149,8 +215,17 @@ function get (t, path, name, responseType) {
   if (response.status >= 400 && response.status < 500) responsesRefused.add(1);
   return response;
 }
-function write (t, kind, url, body, headers, okStatuses, name) {
-  const httpShape = ({entries:'w_sgv',devicestatus:'w_devicestatus',treatments:'w_treatments_v3'})[kind];
+function write (t, kind, url, body, headers, okStatuses, name, requestShape) {
+  const httpShape = ({entries:'w_sgv',devicestatus:'w_devicestatus',treatments:'w_treatments_v3',profile:'w_treatments_v3'})[kind];
+  if (requestShape !== undefined) {
+    const docs = Array.isArray(body) ? body : [body];
+    loopingRequests.add(1, {request_shape: requestShape});
+    loopingDocuments.add(docs.length, {request_shape: requestShape});
+    // v1 treatments only: an API v3 create carries no identifier by design (the server computes it).
+    const idless = requestShape === 'tx_loop_v1' || requestShape === 'tx_trio_v1' ?
+      docs.filter(d => !LOOPING_IDENTITIES.some(k => d[k] !== undefined && d[k] !== null && d[k] !== '')).length : 0;
+    loopingIdentityless.add(idless, {request_shape: requestShape});
+  }
   httpAttempts.add(1, {http_shape:httpShape});
   scenarioAttempts.add(1);
   // The row becomes visible between this request starting and HTTP acceptance; the
@@ -164,11 +239,19 @@ function write (t, kind, url, body, headers, okStatuses, name) {
   const tags = { kind };
   if (okStatuses.includes(res.status)) {
     const doc = Array.isArray(body) ? body[0] : body;
-    console.log(JSON.stringify({event:'m7-input-accepted', run:RUN_ID, tenant:t.id, domain:kind,
-      key:String(kind === 'devicestatus' ? doc.created_at : doc.date), requestToAcceptanceMs:Date.now()-inputStartedAt+1}));
+    // A profile is not an M3-observed domain (latency_oracle.DOMAINS); a v1 treatment without `date` is
+    // keyed by its created_at, as the frame ledger reads it (mills).
+    if (kind !== 'profile') console.log(JSON.stringify({event:'m7-input-accepted', run:RUN_ID, tenant:t.id, domain:kind,
+      key:String(kind === 'devicestatus' ? doc.created_at : doc.date !== undefined ? doc.date : Date.parse(doc.created_at)),
+      requestToAcceptanceMs:Date.now()-inputStartedAt+1,
+      // M3 (offline latency oracle): the driver's own clock at acceptance.
+      acceptedAtMs:Date.now()}));
     writesOk.add(1, tags);
+    writesOkDocuments.add(Array.isArray(body) ? body.length : 1, tags);
   }
-  else if (!(res.status >= 400 && res.status < 500)) writesUncertain.add(1, tags); // may have committed
+  else if (!(res.status >= 400 && res.status < 500)) { // may have committed
+    writesUncertain.add(1, tags); writesUncertainDocuments.add(Array.isArray(body) ? body.length : 1, tags);
+  }
   else writesRefused.add(1, tags);
   return res;
 }
@@ -185,7 +268,7 @@ export function teardown () {
 }
 
 // Current nominal arrival time, unique per scenario iteration.
-const stamp = () => START + Math.floor(exec.scenario.iterationInTest * cycleMs(exec.scenario.name) / weight);
+const stamp = () => START + Math.floor(exec.scenario.iterationInTest * cycleMs(exec.scenario.name) / population(exec.scenario.name));
 const iso = ms => new Date(ms).toISOString();
 
 export function w_sgv () {
@@ -195,7 +278,22 @@ export function w_sgv () {
     {}, [200], 'POST v1 entries');
 }
 export function w_devicestatus () {
-  const { t } = pick(); const ms = stamp(); const at = iso(ms);
+  const { t, post } = pick(); const ms = stamp(); const at = iso(ms);
+  if (v2) {
+    const kind = t.loopKind === null ? 'cgm' : t.loopKind;
+    const set = kind === 'loop' ? (post ? 'loop_extra' : 'loop') : kind === 'trio' ? (post ? 'trio_enacted' : 'trio_suggested') : kind;
+    const docs = LOOP.devicestatus[set];
+    const doc = JSON.parse(docs[Math.floor(exec.scenario.iterationInTest / TENANTS.length) % docs.length].split(LOOP.placeholder).join(at));
+    doc.device = RUN_ID;
+    return write(t, 'devicestatus', BASE + '/api/v1/devicestatus?token=' + t.token, [doc], {}, [200], 'POST v1 devicestatus',
+      kind === 'cgm' ? 'ds_cgm_battery' : 'ds_' + set);
+  }
+  if (looping) {
+    const docs = LOOP.documents[t.loopKind];
+    const doc = JSON.parse(docs[Math.floor(exec.scenario.iterationInTest / LOOPERS.length) % docs.length].split(LOOP.placeholder).join(at));
+    doc.device = RUN_ID;
+    return write(t, 'devicestatus', BASE + '/api/v1/devicestatus?token=' + t.token, [doc], {}, [200], 'POST v1 devicestatus');
+  }
   write(t, 'devicestatus', BASE + '/api/v1/devicestatus?token=' + t.token,
     [{ device: RUN_ID, created_at: at, uploader: { battery: 88 },
       loop: { name: 'Loop', version: '3.4', timestamp: at, iob: { timestamp: at, iob: 1.234 }, cob: { timestamp: at, cob: 12 },
@@ -203,8 +301,39 @@ export function w_devicestatus () {
         enacted: { rate: 0.75, duration: 30, timestamp: at, received: true } } }],
     {}, [200], 'POST v1 devicestatus');
 }
+// looping-v2 treatment slot k of tenant i (round = k / looping tenants): the controller's request.
+function loopingTreatment (t, i, round, ms) {
+  const at = iso(ms), R = RULES;
+  const id = n => RUN_ID + '.' + i + '.' + round + '.' + n;
+  const make = (name, n) => {
+    const doc = JSON.parse(LOOP.treatments[name].split(LOOP.placeholder).join(at).split(LOOP.idPlaceholder).join(id(n)));
+    doc.enteredBy = RUN_ID;
+    return doc;
+  };
+  if (t.loopKind === 'loop') {
+    if ((round + i * 37) % R.profileEvery === 0) {
+      const doc = JSON.parse(LOOP.profile.loop.split(LOOP.placeholder).join(at));
+      doc.mills = ms; doc.enteredBy = RUN_ID;
+      return write(t, 'profile', BASE + '/api/v1/profile?token=' + t.token, doc, {}, [200], 'POST v1 profile', 'profile_loop_v1');
+    }
+    const docs = [make((round * 13 + i) % R.loopIdless === 0 ? 'loop_site_change' : 'loop_temp_basal', 0)];
+    if ((round * 7 + i) % R.loopTwo === 0) docs.push(make('loop_bolus', 1));
+    return write(t, 'treatments', BASE + '/api/v1/treatments?token=' + t.token, docs, {}, [200], 'POST v1 treatments', 'tx_loop_v1');
+  }
+  if (t.loopKind === 'trio') {
+    const idless = ['trio_exercise', 'trio_temp_target', 'trio_note'][(round + i) % 3];
+    const docs = [make((round * 13 + i) % R.trioIdless === 0 ? idless : 'trio_temp_basal', 0)];
+    if ((round * 7 + i) % R.trioTwo === 0) docs.push(make('trio_smb', 1));
+    return write(t, 'treatments', BASE + '/api/v1/treatments?token=' + t.token, docs, {}, [200], 'POST v1 treatments', 'tx_trio_v1');
+  }
+  const doc = make((round + i) % R.aapsSmb[1] < R.aapsSmb[0] ? 'aaps_smb' : 'aaps_temp_basal', 0);
+  doc.date = ms; doc.pumpId = ms;
+  return write(t, 'treatments', BASE + '/api/v3/treatments', doc, { Authorization: 'Bearer ' + t.jwt }, [200, 201],
+    'POST v3 treatments', 'tx_aaps_v3');
+}
 export function w_treatments_v3 () {
-  const { t } = pick(); const ms = stamp();
+  const { i, t } = pick(); const ms = stamp();
+  if (v2) return loopingTreatment(t, i, Math.floor(exec.scenario.iterationInTest / LOOPERS.length), ms);
   write(t, 'treatments', BASE + '/api/v3/treatments',
     { eventType: 'Temp Basal', duration: 30, absolute: 0.8, rate: 0.8, date: ms, created_at: iso(ms), utcOffset: 0, app: 'bench', enteredBy: RUN_ID },
     { Authorization: 'Bearer ' + t.jwt }, [200, 201], 'POST v3 treatments');

@@ -81,6 +81,16 @@ class Startup(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'COHORT_READY_WINDOW'):
                 startup.cohort_ready_seconds({'cohortReadySeconds':value},7200)
 
+    def test_command_codes_ignore_an_echoed_environment_assignment(self):
+        source = Path(__file__).with_name('lifecycle.py')
+        node = [n for n in ast.parse(source.read_text()).body if isinstance(n, ast.FunctionDef) and n.name == 'command_codes']
+        scope = {}
+        exec(compile(ast.Module(body=node, type_ignores=[]), 'lifecycle.py', 'exec'), scope)
+        codes = scope['command_codes']
+        echoed = b'command terminated: env VAULT_MAX_RETRIES=0 vault read sys/health\nVAULT_SEALED\nK8S_TIMEOUT'
+        self.assertEqual(codes(echoed), [b'K8S_TIMEOUT', b'VAULT_SEALED'])
+        self.assertEqual(codes(b'VAULT_MAX_RETRIES=0'), [])
+
     def fixture(self, *, hard=False, changed_uid=False, output=b''):
         source = Path(__file__).with_name('lifecycle.py')
         nodes = [node for node in ast.parse(source.read_text()).body if isinstance(node, ast.FunctionDef)

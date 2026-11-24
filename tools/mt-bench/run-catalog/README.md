@@ -48,7 +48,8 @@ samples from every shard when each shard's timing sample count reconciles with
 its completed HTTP accounting. The histogram reports the 1 ms upper bound
 of the nearest-rank p95 and includes scenario completions during the configured
 drain. JWT setup is excluded. Pooled latency remains `UNMEASURED` when trace
-data is missing, cannot be reconciled, or exceeds the catalog's trace budget.
+data is missing, cannot be reconciled, or exceeds a shard's gzip, decoded byte
+or row budget. The catalog uses the retained driver plan where available.
 
 ```bash
 python3 -m unittest discover -s tools/mt-bench/run-catalog -v

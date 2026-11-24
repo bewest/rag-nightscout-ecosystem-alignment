@@ -71,6 +71,16 @@ def document(path, *, max_bytes=32 * 1024 * 1024):
     return json.loads(p.read_text())
 
 
+# probe.json is the harness's own child output on the driver's disk. Its frame rows grow with
+# viewers x load seconds (50.5 MB at 100 viewers x 1,800 s, reported 2026-11-22), so the 32 MB
+# bound for configuration-sized documents refused a complete load packet.
+PROBE_MAX_BYTES = 512 * 1024 * 1024
+
+
+def probe_document(path):
+    return document(path, max_bytes=PROBE_MAX_BYTES)
+
+
 def write(path, value):
     p = Path(path)
     raw = json.dumps(value, sort_keys=True, indent=2, allow_nan=False) + '\n'
@@ -282,7 +292,8 @@ class Client:
             else:
                 result = self.run(argv, input=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                   timeout=limit, check=False, env=env)
-        except (OSError, subprocess.TimeoutExpired):
+        except (OSError, subprocess.TimeoutExpired) as error:
+            _lost(args, limit, type(error).__name__, None, b'', data)
             raise Refused('K8S_OBSERVATION_LOST', 'UNMEASURED')
         def bounded_response():
             raw = result.stdout
@@ -300,6 +311,10 @@ class Client:
         deadline(c, cleanup)
         if result.returncode and re.search(rb'(?<![A-Z_])EVALUATOR_SCOPE_UNSAFE(?![A-Z_])', getattr(result, 'stderr', b'') or b''):
             raise Refused('EVALUATOR_SCOPE_UNSAFE', 'FAIL')
+        if result.returncode:
+            category = guarded_get_error(result.stdout) if read and args[:1] == ['get'] else None
+            _lost(args, limit, 'exit', result.returncode, getattr(result, 'stderr', b'') or b'', data,
+                  guarded_get_error=category)
         need(result.returncode == 0, 'OBSERVATION_LOST', 'UNMEASURED')
         return bounded_response() if raw is None else raw
 
@@ -311,6 +326,45 @@ class Client:
             raise Refused('K8S_OBSERVATION_LOST', 'UNMEASURED')
 
 
+
+def guarded_get_error(stdout):
+    """The read guard redirects kubectl stderr to stdout. Retain a category without logging the body."""
+    tail = (stdout or b'')[-4096:]
+    if isinstance(tail, bytes):
+        tail = tail.decode('utf-8', 'replace')
+    status = re.search(r'Error from server \((NotFound|Forbidden|Unauthorized|TooManyRequests|'
+                       r'ServiceUnavailable|InternalError|ServerTimeout|Timeout)\)', tail)
+    if status:
+        return status.group(1)
+    for message, category in (('i/o timeout', 'Timeout'), ('context deadline exceeded', 'Timeout'),
+                              ('connection reset by peer', 'ConnectionReset'), ('connection refused', 'ConnectionRefused'),
+                              ('unexpected eof', 'UnexpectedEOF')):
+        if message in tail.lower():
+            return category
+    return 'Unknown'
+
+
+def _lost(args, limit, reason, returncode, stderr, data=None, *, guarded_get_error=None):
+    """Say which observation was lost and why, on stderr (the stage log keeps it). Verb, resource and
+    flags only: no names, no input data, and stderr is cut to its last 300 bytes."""
+    shape = [a for a in args[:6] if not a.startswith('--token')]
+    tail = stderr[-300:].decode('utf-8', 'replace') if isinstance(stderr, bytes) else str(stderr)[-300:]
+    record = {'kubectl': shape, 'limitSeconds': round(limit, 1), 'reason': reason, 'returncode': returncode,
+              'stderrTail': tail, 'sqlHead': _sql_head(data)}
+    if guarded_get_error is not None:
+        record['guardedGetError'] = guarded_get_error
+    print(json.dumps({'observationLost': record}), file=sys.stderr, flush=True)
+
+
+def _sql_head(data):
+    """The first 160 characters of a harness-authored read-only query, whitespace folded; nothing else."""
+    if not isinstance(data, (bytes, str)):
+        return None
+    text = data.decode('utf-8', 'replace') if isinstance(data, bytes) else data
+    if not text.startswith('BEGIN READ ONLY;'):
+        return None
+    return ' '.join(text[len('BEGIN READ ONLY;'):].split())[:160]
+
 def meta(obj):
     m = obj['metadata']
     need(isinstance(m.get('uid'), str) and m['uid'] and isinstance(m.get('resourceVersion'), str), 'OBJECT_IDENTITY_UNMEASURED', 'UNMEASURED')
@@ -321,6 +375,24 @@ def owned(c, obj):
     m = obj['metadata']
     need(m.get('namespace') == c['namespace'], 'FOREIGN_NAMESPACE')
     need(m.get('labels', {}).get(c['ownerLabel']) == c['runId'], 'PEER_RESOURCE_REFUSED')
+
+
+# Lab actors: run-labelled Deployments the harness itself creates at load, admitted by label and by
+# controller name (as native_join admits the k6 Job). Today only the vcpool connector lab
+# (connectors/stage.py): the synthetic upstream and the scorer. Any other unrendered controller is refused.
+LAB_ACTOR_LABEL = 'nightscout.org/lab-actor'
+LAB_ACTORS = {'vcpool-connector': {'Deployment/nightscout-upstream', 'Deployment/connector-score'}}
+
+
+def lab_actor(c, client, ref, cleanup=False):
+    """The lab actor class of an unrendered controller, or a refusal (POD_CONTROLLER)."""
+    name = ref['kind'] + '/' + ref['name']
+    kinds = [actor for actor, names in LAB_ACTORS.items() if name in names]
+    need(len(kinds) == 1 and (kinds[0] != 'vcpool-connector' or c.get('connectors')), 'POD_CONTROLLER')
+    actual = client.get(ref['kind'], ref['name'], cleanup)
+    owned(c, actual)
+    need(actual['metadata']['uid'] == ref['uid'] and actual['metadata'].get('labels', {}).get(LAB_ACTOR_LABEL) == kinds[0], 'POD_CONTROLLER')
+    return kinds[0], actual
 
 
 def controller(obj):
@@ -438,6 +510,12 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             ref = controller(rs)
         name = ref['kind'] + '/' + ref['name']
         parent = result['objects'].get(name)
+        if parent is None and name not in by_key:
+            actor, owner = lab_actor(c, client, ref, cleanup)
+            result.setdefault('labActors', {})[pod['metadata']['name']] = {**meta(pod), 'class': actor, 'workload': name,
+                'controllerUid': owner['metadata']['uid'], 'nodeName': pod['spec'].get('nodeName'), 'phase': pod.get('status', {}).get('phase'),
+                'resources': {r['name']: r.get('resources', {}) for r in pod['spec'].get('containers', [])}}
+            continue
         need(parent is not None and parent['uid'] == ref['uid'], 'POD_CONTROLLER')
         expected = template(by_key[name])['spec']
         if name == native_join.JOB:
@@ -590,13 +668,19 @@ def active_baseline(d):
     return initial
 
 
-def sql(d, c, objects, query, client=None):
+def table_read_seconds(c):
+    """Limit for a read that scans every stored document: its own (K8S_HISTORY_READ_SECONDS,
+    default 900) inside the work deadline, not the 20 s observation default."""
+    return max(1, min(int(os.environ.get('K8S_HISTORY_READ_SECONDS', '900')), deadline(c)))
+
+
+def sql(d, c, objects, query, client=None, timeout=None):
     need(isinstance(query, str) and query.strip().startswith('SELECT ') and len(query.encode()) < 131072, 'SQL_READ_ONLY')
     client = client or Client(c)
     baseline = active_baseline(d)
     before = observe(c, objects, client, baseline)
     pod, container = selected_pod(c, before, 'postgres')
-    raw = postgres_read(client, pod, container, query)
+    raw = postgres_read(client, pod, container, query, **({'timeout': timeout} if timeout else {}))
     observe(c, objects, client, baseline)
     return raw
 
@@ -606,6 +690,27 @@ def postgres_read(client, pod, container, query, **options):
     fetch = ['-v', 'FETCH_COUNT=128'] if options.get('rows') else []
     raw = client.call(['exec', '-i', pod, '-c', container, '--', 'psql', '-X', *fetch, '-qAt', '-F', '\t', '-v', 'ON_ERROR_STOP=1', '-U', 'postgres', '-d', 'nightscout_compose_test'], data=data, read=False, **options)
     return raw.decode()
+
+
+SEED_CENSUS_SECONDS = 10
+
+
+def seed_census(client, pod, container):
+    """Stored source-primer seed rows and their tenants. No index covers doc->>'device', so the
+    count reads every stored entry and its cost grows with tenants x history. It runs apart from
+    the epoch read under a fixed server-side limit; past it the counts are UNMEASURED and the
+    observation is kept. The serving-evidence capture that follows still judges the Pod."""
+    query = ('SET LOCAL statement_timeout=%d;\n' % (SEED_CENSUS_SECONDS * 1000) +
+             "SELECT count(*), count(DISTINCT tenant_id) FROM nsdemo_entries.entries WHERE doc->>'device'='synthetic-compose-demo';")
+    try:
+        fields = postgres_read(client, pod, container, query, timeout=SEED_CENSUS_SECONDS + 5).strip().split('\t')
+    except Refused as error:
+        if str(error) != 'K8S_OBSERVATION_LOST':
+            raise
+        return {'seedCensus': 'UNMEASURED', 'seedCensusCode': 'K8S_SEED_CENSUS_BOUND', 'seedCensusLimitSeconds': SEED_CENSUS_SECONDS,
+                'storedRows': 'UNMEASURED', 'storedTenants': 'UNMEASURED'}
+    need(len(fields) == 2 and all(n.isdigit() for n in fields), 'SQL_OBSERVATION_UNMEASURED', 'UNMEASURED')
+    return {'seedCensus': 'OBSERVED', 'storedRows': int(fields[0]), 'storedTenants': int(fields[1])}
 
 
 def observe_sql(d, c, objects, output, client):
@@ -624,21 +729,18 @@ def observe_sql(d, c, objects, output, client):
         return pod, container, evidence
     pod, container, before = capture()
     write(output / 'before.json', before)
-    query = """SELECT s.system_identifier::text, c.timeline_id, current_database(),
-      count(e.tenant_id), count(DISTINCT e.tenant_id)
-      FROM pg_catalog.pg_control_system() s CROSS JOIN pg_catalog.pg_control_checkpoint() c
-      LEFT JOIN nsdemo_entries.entries e ON e.doc->>'device'='synthetic-compose-demo'
-      GROUP BY s.system_identifier,c.timeline_id;"""
+    query = """SELECT s.system_identifier::text, c.timeline_id, current_database()
+      FROM pg_catalog.pg_control_system() s CROSS JOIN pg_catalog.pg_control_checkpoint() c;"""
     fields = postgres_read(client, pod, container, query).strip().split('\t')
-    need(len(fields) == 5 and re.fullmatch('[0-9]{1,20}', fields[0]) and
-         fields[1].isdigit() and int(fields[1]) > 0 and fields[2] == 'nightscout_compose_test'
-         and all(n.isdigit() for n in fields[3:]), 'SQL_OBSERVATION_UNMEASURED', 'UNMEASURED')
+    need(len(fields) == 3 and re.fullmatch('[0-9]{1,20}', fields[0]) and
+         fields[1].isdigit() and int(fields[1]) > 0 and fields[2] == 'nightscout_compose_test',
+         'SQL_OBSERVATION_UNMEASURED', 'UNMEASURED')
+    seed = seed_census(client, pod, container)
     _, _, after = capture()
     write(output / 'after.json', after)
     epoch = {'system_id': fields[0], 'timeline': int(fields[1]), 'database': fields[2]}
-    row = {'verdict': 'OBSERVED', 'scope': 'stored source-primer seed rows in the fixture database',
-           'runSha256': digest(d / 'run.json'), 'source': c['pins']['pair'], 'nativeSource': epoch,
-           'storedRows': int(fields[3]), 'storedTenants': int(fields[4]),
+    row = {'verdict': 'OBSERVED', 'scope': 'database epoch and serving evidence; stored source-primer seed rows when seedCensus is OBSERVED',
+           'runSha256': digest(d / 'run.json'), 'source': c['pins']['pair'], 'nativeSource': epoch, **seed,
            'setupJobs': after['setupJobs'], 'dataCredentials': 'UNMEASURED', 'capacityAcceptance': 'NOT_GRANTED'}
     write(output / 'result.json', row)
     return row
@@ -650,7 +752,8 @@ def stored(d, c, objects, runid, client=None):
     selects += [('entries', 'probe', 'device', '-probe')]
     query = '\nUNION ALL\n'.join("SELECT tenant_id::text,'" + result + "',count(*) FROM nsdemo_" + domain + '.' + domain + " WHERE doc->>'" + field + "'='" + runid + suffix + "' GROUP BY 1" for domain, result, field, suffix in selects) + ';'
     values = {}
-    for line in sql(d, c, objects, query, client).splitlines():
+    # Four counts by run marker, each over every stored document of its table.
+    for line in sql(d, c, objects, query, client, timeout=table_read_seconds(c)).splitlines():
         tenant, kind, count = line.split('\t')
         need(kind not in values.setdefault(tenant, {}), 'SQL_DUPLICATE_GROUP')
         values[tenant][kind] = int(count)
@@ -732,7 +835,7 @@ def main():
     p = sub.add_parser('prepare')
     for arg in ('config', 'inventory', 'render', 'directory'):
         p.add_argument(arg)
-    for name in ('observe', 'sql', 'clinical-sql', 'commission', 'recovery', 'access', 'policy', 'load', 'cleanup-plan', 'assess'):
+    for name in ('observe', 'sql', 'clinical-sql', 'commission', 'recovery', 'catchup', 'access', 'policy', 'load', 'cleanup-plan', 'assess'):
         p = sub.add_parser(name)
         p.add_argument('directory')
     p = sub.add_parser('observe-sql')
@@ -803,7 +906,9 @@ def main():
         value = cleanup_plan(c, initial, current)
         write(d / 'cleanup-plan.json', value)
         return value
-    from execute import execute, access, assess, restart, continuity, policy
+    from execute import execute, access, assess, restart, continuity, policy, gate_before_access
+    if args.command == 'catchup':
+        return gate_before_access(d, c, objects, client)
     if args.command == 'continuity':
         return continuity(d, c, args.independent_directory)
     if args.command == 'access':

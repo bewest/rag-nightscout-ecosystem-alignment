@@ -7,6 +7,7 @@ import json
 import math
 import os
 from pathlib import Path
+import re
 import sys
 
 HERE = Path(__file__).resolve().parent
@@ -17,6 +18,8 @@ import workload_runtime
 import primer_options
 import population_ceiling
 import populated_history as history
+sys.path.insert(0, str(HERE.parent / 'connectors'))
+import connectors
 SHAPES = workload_runtime.SHAPES
 
 
@@ -36,6 +39,34 @@ def write(path, value):
         stream.write('\n')
 
 
+def stock_viewers(w, n, plan=None):
+    """Viewer sockets the profile opens: the declared logicalPollingClients, or, when viewerSetup.mix is present
+    (lane fixture-realism, viewer_plan.mix_counts), the sum of the per-tenant socket counts over the N tenants."""
+    plan = plan or workload_runtime.viewer_plan
+    mix = (w.get('viewerSetup') or {}).get('mix')
+    if mix is None:
+        return w['logicalPollingClients']
+    need(hasattr(plan, 'mix_counts'), 'VIEWER_MIX_UNSUPPORTED')   # needs claude/fixture-realism-20261123 joined
+    return sum(plan.mix_counts(mix, n))
+
+
+def active_profile(base, count, point_id):
+    """Prepare a looping load phase on the existing fixture, keeping the seed and topology reusable."""
+    from trace_bounds import bound_plan
+
+    need(re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,29}[a-z0-9])?', point_id), 'WORKLOAD_POINT_ID')
+    p = copy.deepcopy(base)
+    traffic = p['workload']
+    need(traffic.get('driverShape') in ('looping-v1', 'looping-v2'), 'DRIVER_SHAPE_REQUIRES_LOOPING_FIXTURE')
+    provisioned = p['population']['provisionedTenants']
+    p['population']['ordinaryRosterTenants'] = workload_runtime.ordinary_count(provisioned, count, need)
+    traffic['pointId'] = point_id
+    traffic['logicalPollingClients'] = stock_viewers(traffic, count)
+    if traffic.get('driverPlan', {}).get('observer') == 'scheduling-v1':
+        traffic['driverPlan'] = bound_plan(traffic, count, provisioned, p['history'])
+    return validate(p, require_pins=False)
+
+
 def validate(p, *, require_pins=True):
     need(p['version'] == 1 and p['kind'] == 'k8s-m7-workload-profile', 'PROFILE')
     if require_pins or 'referencePins' in p:
@@ -47,7 +78,14 @@ def validate(p, *, require_pins=True):
     w = p['workload']
     need(workload_runtime.workload_inputs.tenants(n) and n >= 2, 'TENANTS')
     ordinary = workload_runtime.ordinary_count(n, p['population']['ordinaryRosterTenants'], need)
+    # vcpool connector tenants (connectors.py): outside the ordinary roster, or refused.
+    try:
+        connectors.validate(p['population'])
+    except ValueError as error:
+        raise ValueError('K8S_LOAD_' + str(error)[len('K8S_CONNECTORS_'):]) from error
     workload_runtime.validate(w, need, ordinary)
+    if w.get('driverShape') in ('looping-v1', 'looping-v2'):
+        need(p['history'].get('mode') in history.LOOPING_MODES, 'DRIVER_SHAPE_REQUIRES_LOOPING_FIXTURE')
     need(workload_runtime.workload_inputs.tenants(p['population']['hotFactor']) and
          p['population']['hotFactor'] == w.get('hotFactor', 1),
          'ADAPTER_ROSTER_OR_HOT_FACTOR_UNSUPPORTED')
@@ -55,6 +93,8 @@ def validate(p, *, require_pins=True):
         history.validate(p['history'])
     except ValueError as error:
         raise ValueError('K8S_LOAD_HISTORY_UNSUPPORTED') from error
+    if 'unseededTailTenants' in p['history']:
+        need(p['history']['unseededTailTenants'] < p['population']['provisionedTenants'], 'UNSEEDED_TAIL_SIZE')
     burst = p['phases'].get('reconnectBurstClients', 0)
     viewer_setup = workload_runtime.viewer_plan.setup(w)
     need(p['phases']['restart'] is False and type(burst) is int and
@@ -77,12 +117,12 @@ def describe(p):
     validate(p)
     n = p['population']['ordinaryRosterTenants']
     w = p['workload']
-    cycles, rates = workload_runtime.rates(w, n)
+    cycles, rates = workload_runtime.rates(w, n, p['history'], provisioned=p['population']['provisionedTenants'])
     cycle_ms = cycles['w_sgv']
     inputs=workload_runtime.workload_inputs
     startup=inputs.startup_selection(p['phases'],need)
     return {'version': 1, 'profile': p['name'],
-            **({'history': dict(p['history'], rowsPerTenant=history.ROWS, stepMs=history.STEP_MS)}
+            **({'history': dict(p['history'], rowsPerTenant=history.ROWS if p['history']['mode'] == history.MODE else history.rows_per_tenant(p['history']), stepMs=history.STEP_MS)}
                if p['history'] != history.BASELINE else {}), 'basis': 'read-derived equations from generated M7 workload',
             **({primer_options.FIELD:p['phases'][primer_options.FIELD]} if primer_options.FIELD in p['phases'] else {}),
             **({population_ceiling.FIELD:population_ceiling.from_profile(p,need)} if 'maxTenants' in p['population'] else {}),
@@ -105,7 +145,9 @@ def describe(p):
             'nominalScenarioRequests': sum(rates.values()) * w['loadSeconds'],
             'ordinaryWritesPerSecond': sum(v for k, v in rates.items() if k.startswith('w_')),
             'ordinaryReadsPerSecond': sum(v for k, v in rates.items() if k.startswith('r_')),
-            'setupJwtExchanges': n, 'stockViewers': w['logicalPollingClients'],
+            'setupJwtExchanges': n, 'stockViewers': stock_viewers(w, n),
+            **({'connectorTenants': connectors.count(p['population']['provisionedTenants'], p['population']['connectorShare'])}
+               if p['population'].get('connectorShare') else {}),
             'viewerSetup': workload_runtime.viewer_plan.setup(w),
             'probeWritesPerSecondWhileOpen': 1000 / w['probeEveryMs'],
             'probeWrites': 'observed independently; initial write and drain can extend the nominal window',
@@ -160,7 +202,11 @@ def bind(p, config):
     ordinary = p['population']['ordinaryRosterTenants']
     need(config.get('ordinaryRosterTenants', ordinary) == ordinary, 'CONFIG_ORDINARY_ROSTER')
     result['ordinaryRosterTenants'] = ordinary
-    workload_runtime.validate(result['workload'], need, ordinary)
+    traffic = result['workload']
+    if traffic.get('driverPlan', {}).get('observer') == 'scheduling-v1':
+        from trace_bounds import bound_plan
+        traffic['driverPlan'] = bound_plan(traffic, ordinary, config['tenants'], p['history'])
+    workload_runtime.validate(traffic, need, ordinary)
     return result
 
 
@@ -172,8 +218,14 @@ def dry(p, target):
     import workload
     receipt = workload.generate(ROOT, target / 'workload.js')
     n = p['population']['ordinaryRosterTenants']
+    looping = p['workload'].get('driverShape') in ('looping-v1', 'looping-v2')
+    population = p['population']['provisionedTenants'] if looping else n
     roster = [{'id': f'00000000-0000-4000-8000-{i:012d}', 'host': f'load-{i}.test',
-               'token': 'synthetic-loopback-only'} for i in range(n)]
+               'token': 'synthetic-loopback-only'} for i in range(population)]
+    if looping:
+        import looping_driver
+        config = dict(tenants=population, ordinaryRosterTenants=n, workload=p['workload'])
+        roster = looping_driver.annotate(p['history'], roster, workload_runtime.ordinary_roster(config, roster, need))
     write(target / 'tenants.json', roster)
     env = {'DURATION': str(p['workload']['loadSeconds']), 'ACCEL': '1', 'HOT_FACTOR': str(p['workload'].get('hotFactor', 1)),
            'SHAPES': ','.join(SHAPES), 'RUN_ID': 'synthetic-profile-dry',
@@ -188,15 +240,20 @@ def dry(p, target):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=('describe', 'dry', 'bind', 'populate'))
+    parser.add_argument('action', choices=('describe', 'dry', 'bind', 'populate', 'active'))
     parser.add_argument('profile', type=Path)
     parser.add_argument('paths', nargs='*', type=Path)
     args = parser.parse_args()
     p = read(args.profile)
-    if args.action == 'populate':
-        if len(args.paths) != 2:
-            parser.error('populate requires ANCHOR_UNIX_MS OUTPUT_PROFILE')
-        p['history'] = dict(mode=history.MODE, anchorUnixMs=int(str(args.paths[0])))
+    if args.action == 'active':
+        if len(args.paths) != 3:
+            parser.error('active requires ACTIVE_TENANTS POINT_ID OUTPUT_PROFILE')
+        write(args.paths[2], active_profile(p, int(str(args.paths[0])), str(args.paths[1])))
+    elif args.action == 'populate':
+        if len(args.paths) not in (2, 3):
+            parser.error('populate requires ANCHOR_UNIX_MS OUTPUT_PROFILE [MODE]')
+        mode = str(args.paths[2]) if len(args.paths) == 3 else history.MODE
+        p['history'] = history.default_spec(mode, int(str(args.paths[0])))
         # Standard cases bind source pins from the candidate during their own preparation.
         write(args.paths[1], validate(p, require_pins=False))
     elif args.action == 'describe':

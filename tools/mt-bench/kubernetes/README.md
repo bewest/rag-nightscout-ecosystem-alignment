@@ -183,9 +183,12 @@ An initial read records the owned evaluator's progress and tenant scope before t
 The access witness checks both own-token exchanges, both cross-tenant refusals, and foreign frames on the selected socket connections. Missing socket observations yield `UNMEASURED`. A foreign frame, an accepted wrong credential or a cross-tenant read stops the run.
 
 For an independent database observation within the original work deadline, run
-`adapter.py observe-sql PACKET NEW_DIRECTORY`. It counts the source primer's
-stored seed rows and distinct tenants, checks the candidate database epoch and
-requires the original Ready PostgreSQL Pod. Setup Pod retirement requires the
+`adapter.py observe-sql PACKET NEW_DIRECTORY`. It checks the candidate database
+epoch, requires the original Ready PostgreSQL Pod, and counts the source
+primer's stored seed rows and distinct tenants. That count reads every stored
+entry, so it runs apart from the epoch read under a fixed 10 s server-side
+limit; past it `seedCensus`, `storedRows` and `storedTenants` are `UNMEASURED`
+and the rest of the observation is kept. Setup Pod retirement requires the
 original Job UID, recognized terminal condition and original Pod controller
 identity. Before/after captures retain serving Pod UIDs, Job failure and last
 observed exit codes. Missing exits stay UNMEASURED. Full workload admission
@@ -297,6 +300,22 @@ synthetic write marker to each stage. Keep the same source/rendered fixture and
 exact UIDs, obtain the finite point allocation, and capture a fresh initial
 observation. Never edit an entered packet or reuse a point marker with existing
 stored writes. Concurrent fixtures still require separate namespaces/state.
+
+The standard launcher accepts an ordered set of profiles on one restore. The first positional
+profile selects the first load. Add `--next-point PROFILE` for each later load. For example:
+
+```sh
+python3 experiment.py standard TEMPLATE BINDING active-5k.json OUTPUT --fixture reuse \
+  --fixture-seed "$SEED" --app-image "$APP_DIGEST" --next-point active-10k.json
+python3 experiment.py launch OUTPUT/lifecycle-bound.json
+```
+
+Each profile carries a distinct `workload.pointId` and the same provisioned population and
+history. Size the shared deployment for the largest phase. The first phase's writes and cached
+pages carry forward. Each `runtime/points/<pointId>/packet/experiment/result.json` scores only
+that point's traffic. The case's `result.json` lists the points in order, and `cleanup.json`
+records final absence. An incomplete collection stops the launcher and retains both the earlier
+packets and the partial attempt.
 
 The original dependency tree hash function rejects escaping links. Preparation
 does not copy or install packages. Runtime requires an existing finite cgroup v2
@@ -426,7 +445,12 @@ from correctness, and capacity acceptance stays `NOT_GRANTED` throughout.
 
 Focused controls, using synthetic API replies and loopback/fake process boundaries:
 
+The render checks in `test_plannable.py` read a deploy tree named by `NS_DEPLOY_BINDING` (an absolute
+path to a nightscout-deploy checkout or to a `git archive` of the ref under test). There is no default:
+unset, they refuse with `K8S_PLAN_DEPLOY_BINDING_REQUIRED`.
+
 ```bash
+export NS_DEPLOY_BINDING=/absolute/nightscout-deploy
 python3 -B -m unittest discover -s tools/mt-bench/kubernetes -p 'test_*.py' -v
 node tools/mt-bench/kubernetes/claims.test.cjs
 node tools/mt-bench/kubernetes/access.test.cjs
@@ -782,8 +806,8 @@ Its appended `handleSummary` exports k6's actual counters/trends in framed
 chunks; it changes no workload function and includes no JWT setup data.
 
 `native_join.py` adds an opt-in `nativeLoad` selection to the existing execution,
-census and fit path. The controller, probe, SQL, completed clinical output, frames and the accepted-input
-observer still run on the workstation. `assess_join()` verifies the
+census and fit path. The workstation runs the controller, viewer probe and SQL bookends. Correctness and recovery
+also run their selected live SQL witnesses. `assess_join()` verifies the
 capture/run/script bindings and calls the unchanged `execute.assess_stage()`;
 Job completion alone leaves the outcome gate UNMEASURED. The 120-second clinical
 contract and accepted-versus-stored accounting remain required. All-writer
@@ -807,6 +831,30 @@ credentials. It holds the Pod until an owned exec reader has verified each
 file's exact length/hash and acknowledged the manifest, or the finite Job and
 exporter deadlines expire. Raw CSV never depends on kubelet log retention.
 The exporter contributes its explicit requests/limits to Pod fit and quota.
+
+A capacity case can publish writer results from the exporter to a private, retained filesystem.
+Give `experiment.py standard` the option `--writer-publication /absolute/volume.json`,
+or set `nativeLoad.writerPublication` in the native Job selection. The object takes this form.
+
+```json
+{"volumeName":"capacity-example","storageClassName":"","storage":"64Mi"}
+```
+
+Reserve the existing filesystem PV with `persistentVolumeReclaimPolicy: Retain` and a
+`claimRef` naming `writer-publication` in this run's exact namespace. The claim reference
+starts without a UID. Match its storage class and writable capacity to the selection. The
+exporter runs as UID/GID 1000 and needs write access at the mounted root. The lifecycle
+verifies the reservation, creates a PVC explicitly bound to that volume and records its UID.
+Namespace cleanup releases the PV. The storage owner can retrieve the files from the backing
+filesystem or rebind the released PV to a reader. Reserve each volume for only one run.
+
+After k6 exits, the exporter commits `<stage-run-id>/<pod-uid>/writer/publication.json`
+with the byte lengths and SHA-256 digests of the numeric k6 summary and the accepted-write
+ledger. This happens before the controller reads or acknowledges any artifacts. A nonzero
+writer exit or an invalid input records a partial publication. An interrupted copy has no
+committed manifest until the atomic directory rename. A writer killed before emitting its
+exit code can leave no publication. Repeating the export with identical inputs is idempotent.
+The original scheduling CSV and raw diagnostics still use the finite exec/ack collection.
 
 For a **fresh, uncaptured prepared case**, run `python3 -B native_join.py
 /absolute/case /absolute/selection.json`, then the normal lifecycle capture and
@@ -851,7 +899,7 @@ Job backoff is zero, replacement waits for Failed, and test Pods have a finite
 termination grace. Runtime application Pod and container identities stay strict;
 only the exact declared test Job has a separate dynamic census.
 
-The accepted-input observer runs across probe and driver traffic. After both writers exit, the controller reconciles storage, checks remaining clinical work through drain, captures terminal progress and calls `assess_stage()`. `assess_join()` adds capture/run/script/hash checks. The init
+In polling mode the accepted-input observer covers probe and driver traffic. Discovery defaults to offline observation. After the writers exit, the controller reconciles storage, captures terminal progress and calls `assess_stage()`. `assess_join()` adds capture/run/script/hash checks. The init
 waiter alone gets `jobs/get` for `provision` and `primer` in its namespace. The
 exporter receives no Kubernetes API permission. The test Pod uses component
 `load`, so it does not match the application's
@@ -901,6 +949,79 @@ labelled cluster trust, host unit and port-forward observations. The load
 report retains scheduling drops, per-executor start times and attributable
 actor transitions alongside the independently judged product components.
 
+### Rescore a capacity run after cleanup
+
+Native discovery runs that record viewer frames publish a private packet to
+`runtime/packet/experiment/capacity-results/`. The sibling `capacity-publication.json`
+reports the export status. The native exporter selects numeric k6 metrics and ordinary accepted-write
+events. The controller supplies the viewer frame ledger, stored counts, and evaluator counters from
+the start and end of the run. They share a run ID and writer Pod UID. Keep the packet on retained
+storage. Once both parts are present, scoring requires only Python and the harness checkout.
+
+```sh
+python3 -B tools/mt-bench/kubernetes/capacity_results.py rescore "$PACKET"
+```
+
+For an older retained load directory, first run
+`python3 -B tools/mt-bench/kubernetes/capacity_results.py publish "$LOAD" "$PACKET"`.
+To score a recovered exporter volume, point `rescore` at its `RUN_ID/POD_UID/writer`
+directory for HTTP accounting alone, or pass `--writer "$WRITER"` alongside the controller
+packet for all three measures. Supply `--clock-bound-ms` and `--viewer-offset-ms` when reproducing
+a score with previously measured clock settings.
+
+The report separates HTTP accounting, all-input evaluator deadline coverage and observed viewer
+delivery. It preserves the original stage verdict and verifies file digests and producer identity.
+Incomplete writer evidence, missing SQL bookends and failed viewer capture leave the corresponding
+scores unmeasured. The compact packet supports durable evaluator counters. Older images that relied
+on Prometheus for that measure still need their raw case and retained TSDB. An interrupted
+controller can lose viewer and SQL evidence even when the exporter volume preserves the writer.
+API 503s by storage refusal code (`STORAGE_BUSY`, `STORAGE_TIMEOUT`, `STORAGE_UNAVAILABLE`, from core's
+`nightscout_storage_refusals_total{code, route_class, phase}`) are read from the retained TSDB over the
+load window: `coverage_verdict.py case LOAD_DIR` reports them as `storageRefusals`, and `capacity_results.py
+rescore --metrics-load LOAD_DIR` adds them beside the HTTP accounting. An image without the counter reads
+`NO-INSTRUMENT`, never zero. The figures are reported beside the verdicts and do not change them.
+[Capacity and comparison modes](workloads/README.md)
+
+### Cluster-resident campaigns
+
+`campaign.py` runs a whole campaign inside the cluster so that a workstation reboot, a network loss or
+an ended agent session does not lose a case. Apply the campaign once. The controller Job in
+`bench-control` then runs the ordered cases through the existing standard path (`standard_case`, then
+`experiment.py launch`). Each case gets lane A's `case_supervisor.py` and a heartbeat. The controller
+uploads each case's directory to a private S3-API bucket as it grows and seals it with a sha256
+manifest at the end. A restarted controller skips finished cases. It seals what an interrupted attempt
+uploaded, waits for that case's cleanup and reruns the case in a fresh namespace (`<campaign>-<case>-a<n>`).
+
+To run several load phases on one restore, use one standard case. Set `options.profile` (or
+`standard.profile`) to the first profile and `options.nextPoints` to an ordered array of the
+remaining profile objects. Give each profile a distinct `workload.pointId` and the same seeded
+population and history. Allow time for every phase in `caseDeadlineSeconds`. One attempt then
+owns the namespace through all phases. The seal retains each packet under
+`runtime/points/<pointId>/packet`, and `campaign.py rescore` names each collected packet by path.
+The standard controller takes its CPU and memory limits from the template’s driver and observer
+allocation. Smaller finite limits can be supplied in `controllerResources.limits`. An apply host
+without the template needs explicit CPU and memory limits. The controller checks them against its
+copy before load. The standard controller image runs `tini` as PID 1 to reap subprocesses after a timeout.
+
+```sh
+export NS_EVIDENCE_ACCESS_KEY=... NS_EVIDENCE_SECRET_KEY=...    # bucket-scoped key; never in the manifest
+python3 -B campaign.py apply MANIFEST --context CONTEXT         # store Secret, RBAC, admission policy, Job
+python3 -B campaign.py status MANIFEST                          # per-case status.json from the store
+python3 -B campaign.py collect MANIFEST --out DIR [--case C]     # fetch, verify against the seal, delete what verified
+python3 -B campaign.py rescore DIR                              # capacity_results.rescore on every fetched packet
+python3 -B campaign.py close MANIFEST --context CONTEXT         # controller objects, then the empty bucket
+python3 -B campaign.py census MANIFEST --context CONTEXT [--doctl-cluster NAME]   # exit 1 while anything bills
+```
+
+The controller identity has broad RBAC (lifecycle needs it). A ValidatingAdmissionPolicy confines its
+writes to namespaces whose `nightscout.org/run-id` starts with `<campaign>-`, the objects inside them,
+`bench-control`, and cluster-scoped objects with that label. Reads are not confined, so use a cluster
+dedicated to benches. Fixtures restore from `bench-control` (`catalog-import` copies a workstation
+catalog record there, with the seed Secrets in a Secret). A catalog miss refuses the case
+(`CAMPAIGN_FIXTURE_MISS`); seeding stays a separate step. `controller-image/build.sh` builds the image
+from committed sources and the template case's recorded inputs. The kind controls are in
+`test_campaign_kind.py`.
+
 The joined disposable binding uses `secrets.sh seed`, waits for the provision Job and role readiness,
 then runs the deployment's primer as an init container using the private admin and API Services.
 The reader mounts the same disposable results volume read-only and transfers the DATA roster for
@@ -926,9 +1047,12 @@ and primer. On a miss it first runs a seed case at `OUTPUT-seed` (live, no traff
 and primes on four labelled claims (`--storage-class`, `--snapshot-class`), stops every role,
 snapshots the claims through CSI, sets their contents to Retain under the `nightscout.org/fixture`
 label, writes the handles, the original Secrets and the key to a private catalog directory, and
-registers it; then it prepares the restore. `--fixture build` builds and registers the key's
-fixture ahead of time and prepares nothing else (a hit returns at once). A restore refuses another
-key, population, PostgreSQL image or evaluator K. Cleanup deletes the namespace and the run's
+registers it, then prepares the restore. `--fixture build` can build the seed ahead of time.
+A writer-driven case prefers an exact key. It can also reuse a seed from an ancestor core commit
+with the same tenant count, seed, history specification, transport and PostgreSQL image. A
+forward restore runs the provision Job's ordinary migrations and records the bootstrap result
+in `fixture-forward.json` before starting serving roles. Writer-driven fixtures can be used at
+different evaluator replica counts. Cleanup deletes the namespace and the run's
 labelled contents; `fixture_copy.py delete DIR CONTEXT` ends the fixture (the CSI driver deletes
 the provider snapshots) and retires its catalog entry. `python3 m7-joined/fixture_catalog.py list`
 shows the catalog. Snapshots and restored volumes are billed storage.

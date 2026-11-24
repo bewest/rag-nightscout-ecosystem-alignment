@@ -28,7 +28,8 @@ def check_discovery(value):
     require(all(SHA.fullmatch(value.get('pair',{}).get(k,'')) for k in ('core','deploy')),'M7_DISCOVERY_SOURCE')
     require(re.fullmatch(r'sha256:[a-f0-9]{64}',value.get('imageId','')),'M7_DISCOVERY_IDENTITY')
     if value['kind']=='m7-joined-discovery':
-        cells=value.get('cells');require(isinstance(cells,list) and 1<=len(cells)<=12,'M7_DISCOVERY_CELLS')
+        cells = value.get('cells')
+        require(isinstance(cells, list) and cells, 'M7_DISCOVERY_CELLS')
         roster=[]
         for row in cells:
             require(row.get('kind')=='m7-joined-discovery-cell','M7_DISCOVERY_CELL_KIND');check_discovery(row)

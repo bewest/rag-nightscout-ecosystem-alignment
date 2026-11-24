@@ -90,6 +90,42 @@ class NativeInput(unittest.TestCase):
             load.package(c, job, SCRIPT, [dict(r, managementToken='fixture') for r in selected],
                          input_codec=codec.PRIVATE, **options)
 
+    def test_looping_roles_survive_private_delivery_and_bind_the_roster_digest(self):
+        import looping_history
+        import looping_history_v2
+        import looping_driver
+        for shape, spec in (('looping-v1', looping_history.default_spec(1_763_683_200_000)),
+                            ('looping-v2', looping_history_v2.default_spec(1_763_683_200_000))):
+            with self.subTest(shape=shape):
+                self.check_looping_delivery(shape, spec)
+
+    def check_looping_delivery(self, shape, spec):
+        import looping_driver
+        c, job, options, rows = self.package(10)
+        c['history'] = spec
+        del c['workload']['offeredRps']
+        c['workload'].update(workloadMix='realistic-v1', driverShape=shape)
+        rows = looping_driver.annotate(c['history'], rows, rows)
+        _, _, receipt = load.package(c, job, SCRIPT, rows, input_codec=codec.PRIVATE, **options)
+        self.assertEqual(receipt['inputTransport']['driverShape'], shape)
+        with tempfile.TemporaryDirectory() as area:
+            root = Path(area)
+            seed = {row['id']: row['host'] for row in rows}
+            (root / 'seed.json').write_text(json.dumps(seed))
+            (root / 'meta.json').write_text(json.dumps(receipt['inputTransport']))
+            code = """const fs=require('fs'), seed=require('./seed.json'), ids=Object.keys(seed);
+            const demo={tenantIds:n=>ids.slice(0,n),tenantAlias:i=>seed[ids[i]]};
+            require(process.argv[1]).install(demo,require('./meta.json'),JSON.parse(fs.readFileSync(0)),'.');"""
+            pairs = [[row['id'], row['token'], None, row['loopKind']] for row in rows]
+            def install(values):
+                return subprocess.run(['node','-e',code,k.HERE/'native-fixture-data.cjs'], cwd=root,
+                                      input=json.dumps(values), text=True, capture_output=True)
+            bad = copy.deepcopy(pairs)
+            bad[0][3] = 'loop' if bad[0][3] is None else None
+            self.assertIn('ROSTER_CHANGED', install(bad).stderr)
+            self.assertEqual(install(pairs).returncode, 0)
+            self.assertEqual(json.loads((root/'tenants.json').read_text()), rows)
+
     def test_raw_compatibility_and_exact_10k_gzip_roundtrip(self):
         c, job, options, rows = self.package()
         with self.assertRaisesRegex(k.Refused, 'INPUT_SECRET_BOUND'):
@@ -265,7 +301,7 @@ import {options as driverOptions} from './k6-vu-driver.js';
 import {SharedArray} from 'k6/data';
 import crypto from 'k6/crypto';
 const text = open(__ENV.TENANTS_FILE), expected = JSON.parse(text);
-const rows = new SharedArray('baseline tenants', () => { throw Error('ORIGINAL_DECODER_MISSING'); });
+const rows = new SharedArray('tenants', () => { throw Error('ORIGINAL_DECODER_MISSING'); });
 if (rows.length !== 10000 || expected.length !== rows.length ||
     crypto.sha256(text, 'hex') !== __ENV.EXPECTED_ROSTER_SHA256 ||
     Object.keys(driverOptions.scenarios).length !== 7) throw Error('INPUT_DECODER_BINDING');

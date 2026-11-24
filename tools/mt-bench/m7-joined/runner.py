@@ -715,13 +715,16 @@ def prepare_history(output, d, config, until, *, verify_only=False, after=False)
         database = a.application_database(d)
         def read(query):
             return a.psql(d, 'BEGIN READ ONLY;\n'+query+'\nROLLBACK;', database,
-                          timeout=history.remaining(until, 120))
+                          timeout=history.remaining(until, history.readback_seconds()))
         if spec == history.BASELINE:
             history.require(not history.census(read, int(time.time()*1000), 0), 'SNAPSHOT_MISMATCH')
             return
+        verify = verify_only or 'fixture-snapshot' in config['prepare']
+        import history_loader  # S4_HISTORY_SEEDER=storage-loader: history through the storage write path
+        bulk = None if verify else history_loader.for_runner(os.environ, m['project'], output)
         receipt = history.run(spec, a.document(d/'tenants.private.json'), 'http://127.0.0.1:'+str(m['port']),
                               read, until, 0 if after else history.window(m['cadence']),
-                              verify_only=verify_only or 'fixture-snapshot' in config['prepare'])
+                              verify_only=verify, bulk=bulk)
         write(output/('populated-history-after.json' if after else 'populated-history.json'), receipt)
 
 

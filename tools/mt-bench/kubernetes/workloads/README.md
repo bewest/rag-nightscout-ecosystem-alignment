@@ -84,6 +84,20 @@ ordinary window and phase budget, retaining all actual observation limits.
 The adapter supports 1..86,400 seconds within the real deadline and the stock
 probe ledger's attempt bound; it does not extend an entered grant.
 
+For looping workloads, the same populated fixture profile can supply both traffic phases.
+
+```bash
+python3 -B tools/mt-bench/kubernetes/workloads/profile.py active seed-10000.json 5000 active-5k load-5k.json
+python3 -B tools/mt-bench/kubernetes/workloads/profile.py active seed-10000.json 10000 active-10k load-10k.json
+```
+
+Both profiles retain the provisioned population and fixture history. The partial phase selects tenants in
+seed host order and runs ordinary uploads, viewers and probe writes on that group. Driver rates use the
+client kinds assigned by the full seed. Stored-write and clinical checks cover the whole provisioned
+population. Full-roster runs keep their existing traffic order. Use distinct point IDs and output
+directories for the [sequential points on one deployment](../README.md). The `active` command only writes
+a workload profile. Two independent standard-case launches each restore their own database.
+
 The ordinary viewer opens at a configured rate and prefers WebSocket.
 `workload.viewerSetup` takes `opensPerSecond`, `stallSeconds`,
 `transport` (`websocket-first` or `polling`) and `scenario` (`ordinary` or
@@ -98,6 +112,23 @@ remain scoped to the independent probe writes; only assigned viewers require
 client observations. Zero viewers records client delivery NOT_EXERCISED.
 The bounded raw frame recorder refuses overflow; a longer or larger run does
 not silently turn lost frame evidence into a pass.
+
+In discovery load, `workload.latencyObservation: offline-v1` disables both the
+accepted-input SQL observer and the independent probe's writer baseline and
+per-witness SQL reads. The probe still sends its synthetic entries and records
+stock viewer frames through the configured drain. The after-run M3 join uses
+the ordinary driver's accepted writes and that frame ledger. Per-witness
+clinical completion is `NOT_COLLECTED`. Stage bookends and storage readback
+retain their own SQL receipts.
+
+For a matched control, change only `latencyObservation` to
+`offline-with-witness-sql-v1`. This enables the sparse probe SQL while using
+the same offered traffic, frame ledger and drain. `polling-sql-v1` enables both
+live observers. An explicit discovery tier defaults to offline observation on
+every image. Missing evaluator timing evidence leaves the deadline unmeasured.
+Legacy loads without a tier or observation setting default to offline on
+durable-M1 images and polling on older images. Smoke and acceptance tiers use
+polling, and commission and recovery stages always retain their clinical probe.
 
 Workload profiles carry no resource envelope. Kubernetes requests come from the
 render; the scheduler decides placement (decisions `generous-run-resources`,

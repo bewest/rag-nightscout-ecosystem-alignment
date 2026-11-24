@@ -194,17 +194,13 @@ def run(packet, grant_path, expected_digest, group=None):
             primer.require_roster(d, c, k.active_baseline(d))
         else:
             k.need(k.digest(c['tenantsFile']) == c['rosterSha256'], 'EXPERIMENT_ROSTER_CHANGED')
-        k.need(k.re.fullmatch(r'http://127\.0\.0\.1:[0-9]{1,5}', c['baseUrl'])
-               and 0 < execute.urlparse(c['baseUrl']).port <= 65535, 'LOOPBACK_FORWARD_REQUIRED')
+        import edge_base
+        k.need(edge_base.ok(c['baseUrl']), 'LOOPBACK_FORWARD_REQUIRED')
         k.write(attempt/'allocation.json', dict(sha256=expected_digest, accounting=usage,
                                                 namespaceUid=k.active_baseline(d)['namespace']['uid']))
         execute.authority(d, c)
         if c.get('history', profile.history.BASELINE) != profile.history.BASELINE:
-            receipt = profile.history.run(c['history'], execute.roster(c), c['baseUrl'],
-                        lambda query: k.sql(d, c, objects, query, client),
-                        k.timestamp(c['deadlines']['workUntil']), profile.history.window(c['workload']),
-                        verify_only=c.get('restoredHistory', False))
-            k.write(attempt/'populated-history.json', receipt)
+            k.write(attempt/'populated-history.json', history_receipt(d, c, objects, client))
         outcome['load'] = execute.execute(d, c, objects, client, load=True)
         outcome['verdict'] = outcome['load']['verdict']
     except Exception as exc:
@@ -228,10 +224,47 @@ def run(packet, grant_path, expected_digest, group=None):
                 k.write(attempt/'result.json', outcome)
             except Exception as exc:
                 k.write(attempt/'reduction-failure.json', failure(exc))
+            if c.get('nativeLoad') and execute.latency_observation(c.get('workload', {}), c) != 'polling-sql-v1':
+                import capacity_results
+                try:
+                    published = capacity_results.publish(d/'load', attempt/'capacity-results', c['driver']['node'])
+                except Exception as exc:
+                    # A failed export keeps the original product measurements and raw inputs for retry.
+                    published = {'verdict': 'UNMEASURED', 'reason': type(exc).__name__, 'detail': str(exc)[:300]}
+                k.write(attempt/'capacity-publication.json', published)
         # The outer lifecycle indexes its case after it verifies absence.
-        if d.name != 'packet' or d.parent.name != 'runtime':
+        if d.name != 'packet' or (d.parent.name != 'runtime' and not (d.parent.parent.name == 'points'
+                                         and d.parent.parent.parent.name == 'runtime')):
             auto_catalog(d, k.write)
     return outcome
+
+
+def history_receipt(d, c, objects, client, history=profile.history):
+    """The populated-history step before load.
+
+    A seeded case seeds the missing tenants and reads every one back: its scan of every stored document
+    gets its own limit inside the work deadline (K8S_HISTORY_READ_SECONDS), not the 20 s observation default.
+
+    A restored case (a keyed catalog restore) runs no census. Its identity is the catalog key and the
+    readback the import ran in place against the archive's logical digest before the Retain snapshot;
+    the receipt carries that digest (`restoredFixture`, from the fixture record) and checks only the
+    anchor's clinical window. The census it replaced scanned every stored row (about 17.6M at 10k
+    tenants), outlived 900 s on a freshly restored volume and failed w5-10k-k20 before load.
+    K8S_RESTORED_HISTORY_CENSUS=full is the operator's opt-in full readback (seeded-case limit)."""
+    until = k.timestamp(c['deadlines']['workUntil'])
+    window = history.window(c['workload'])
+    restored = bool(c.get('restoredHistory', False))
+    if restored and os.environ.get('K8S_RESTORED_HISTORY_CENSUS', '') != 'full':
+        receipt = history.restored(c['history'], until, window)
+        identity = c.get('restoredFixture') or {}
+        receipt.update(readback='NOT_RUN_ON_REUSE', restoredFixture=identity,
+                       logicalSha256=identity.get('historyLogicalSha256'),
+                       logicalSha256Source='import-time readback (fixture record)' if identity else 'UNRECORDED')
+        return receipt
+    return history.run(c['history'], execute.roster(c), c['baseUrl'],
+                       lambda query: k.sql(d, c, objects, query, client, timeout=max(1, min(
+                           int(os.environ.get('K8S_HISTORY_READ_SECONDS', '900')), until - k.time.time()))),
+                       until, window, verify_only=restored)
 
 
 def require_preflight(pre, config):
@@ -293,8 +326,15 @@ def main():
     standard.add_argument('--core', type=Path, help='Core checkout for the driver (defaults to the template checkout)')
     standard.add_argument('--reserved-worker-taint', metavar='KEY=VALUE', help='Tolerate the reserved worker for this run')
     standard.add_argument('--node-name', help='Pin every workload and the load Job to this node (nodeSelector kubernetes.io/hostname)')
+    standard.add_argument('--node-pool', help='Multi-node layout: keep every workload and the load Job on this provider pool '
+                                              '(nodeSelector doks.digitalocean.com/node-pool); exclusive with --node-name')
     standard.add_argument('--resources', type=Path, help='JSON per-container resources (requests/limits) for a one-change arm')
+    standard.add_argument('--writer-publication', type=Path,
+                          help='JSON selection for a dedicated Retain volume mounted by the native result exporter')
     standard.add_argument('--binding-input', type=Path, help='JSON object merged into the binding inputs last (for example roleEnv)')
+    standard.add_argument('--next-point', type=Path, action='append', default=[], metavar='PROFILE',
+                          help='run another profile on the same commissioned database before cleanup; '
+                               'each profile must declare a distinct workload.pointId')
     standard.add_argument('--fixture', choices=('reuse', 'build'),
                           help='find the CSI snapshot fixture by key (tenants, seed name, schema, images, transport, '
                                'history, evaluator K): reuse restores it into this case, building and registering it '
@@ -310,8 +350,9 @@ def main():
     if a.action == 'standard':
         import standard_case
         options = dict(app_image=a.app_image, postgres_image=a.postgres_image, namespace_prefix=a.namespace_prefix,
-                       core=a.core, taint=a.reserved_worker_taint, node_name=a.node_name,
-                       resources_file=a.resources, binding_extra=a.binding_input)
+                       core=a.core, taint=a.reserved_worker_taint, node_name=a.node_name, node_pool=a.node_pool,
+                       resources_file=a.resources, binding_extra=a.binding_input, writer_publication=a.writer_publication,
+                       next_points=a.next_point)
         if a.fixture:
             import fixture_catalog
             return standard_case.keyed(a.fixture, a.template_case, a.binding, a.profile, a.output, seed=a.fixture_seed,

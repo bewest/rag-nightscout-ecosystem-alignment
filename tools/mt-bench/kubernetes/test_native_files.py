@@ -92,12 +92,45 @@ class NativeFiles(unittest.TestCase):
             f.terminal_process(c, wanted, job, pod, job, None)
         self.assertTrue(f.terminal_process(c, wanted, job, pod, job, pod)['complete'])
 
+    def test_large_artifacts_are_copied_in_bounded_exact_ranges(self):
+        class Reader:
+            def __init__(self):
+                self.bad = False
+                self.calls = []
+
+            def call(self, args, **options):
+                self.options = options
+                mode, filename, offset, length = args
+                offset, length = int(offset), int(length)
+                self.calls.append((mode, filename, offset, length))
+                return b'x' * (length - 1 if self.bad and offset else length)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'k6.log'
+            reader = Reader()
+            chunk_bytes = 4096
+            size = 2 * chunk_bytes + 1
+            f.copy_artifact(reader, [], path, size, 'owned', lambda: 30, chunk_bytes)
+            self.assertEqual(path.stat().st_size, size)
+            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+            self.assertEqual([(offset, length) for _, _, offset, length in reader.calls],
+                             [(0, chunk_bytes), (chunk_bytes, chunk_bytes), (2 * chunk_bytes, 1)])
+            self.assertTrue(all(mode == 'read-range' for mode, _, _, _ in reader.calls))
+            self.assertEqual(reader.options['output_limit'], 1)
+            self.assertEqual(reader.options['timeout'], 30)
+            failure = Path(tmp) / f.TRACE_FILE
+            reader.bad = True
+            with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_ARTIFACT_BOUND'):
+                f.copy_artifact(reader, [], failure, size, 'owned', lambda: 30, chunk_bytes)
+            self.assertFalse(failure.exists())
+            self.assertEqual(list(Path(tmp).iterdir()), [path])
+
     def test_real_exporter_acknowledgement_bounds_and_deadline_controls(self):
         script = k.HERE/'native-artifacts.cjs'
         with tempfile.TemporaryDirectory() as scratch:
             root = Path(scratch); payload = b'synthetic-private-csv-bytes'
             (root/'sample.gz').write_bytes(payload); (root/'exit-code').write_text('0\n')
-            cfg = dict(seconds=5, runId='synthetic', files={'sample.gz':128})
+            cfg = dict(seconds=5, runId='synthetic', files={'sample.gz':128}, rangeBytes=len(payload)-1)
             (root/'config.json').write_text(json.dumps(cfg))
             env = dict(os.environ, NS_NATIVE_OUTPUT=str(root), NS_NATIVE_EXPORT_CONFIG=str(root/'config.json'))
             hold = subprocess.Popen(['node',script,'hold'],env=env,stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
@@ -107,6 +140,14 @@ class NativeFiles(unittest.TestCase):
                 def read(*args):
                     return subprocess.run(['node',script,*args],env=env,capture_output=True,timeout=3)
                 self.assertEqual(read('read','sample.gz').stdout,payload)
+                for offset, length in ((0, 1), (1, len(payload) - 1), (len(payload) - 1, 1)):
+                    self.assertEqual(read('read-range', 'sample.gz', str(offset), str(length)).stdout,
+                                     payload[offset:offset+length])
+                for offset, length in ((0, 0), (-1, 1), (len(payload), 1), (1, len(payload)), (0, len(payload))):
+                    invalid = read('read-range', 'sample.gz', str(offset), str(length))
+                    self.assertEqual(invalid.returncode, 78)
+                    self.assertEqual(invalid.stdout, b'')
+                    self.assertIn(b'ARTIFACT_BOUND', invalid.stderr)
                 (root/'sample.gz').write_bytes(payload+b'X')
                 failed = read('read','sample.gz')
                 self.assertEqual(failed.returncode,78); self.assertEqual(failed.stdout,b'')
@@ -157,6 +198,27 @@ class NativeFiles(unittest.TestCase):
         self.assertFalse(pod['automountServiceAccountToken'])
         self.assertNotIn('ttlSecondsAfterFinished', rendered['spec'])
         self.assertEqual(receipt['outcomeGate'], 'UNMEASURED')
+
+    def test_long_write_offer_has_independent_event_and_trace_budgets(self):
+        c, job, options = configured()
+        c['workload'].update(loadSeconds=2400, offeredRps=250)
+        c['workload']['driverPlan']['maxTraceBytes'] = 64 * 1024**2
+        # Each of the three write scenarios allows up to 54,546 accepted requests.
+        # The 40-minute stream needs 80 MiB with the writer's per-event allowance.
+        for observer in ('scheduling-v1', 'summary-v1'):
+            with self.subTest(observer=observer):
+                c['workload']['driverPlan']['observer'] = observer
+                rendered, secret, receipt = n.package(c, job, b'// source control\n', TENANTS, **options)
+                cfg = json.loads(secret['stringData']['export.json'])
+                self.assertEqual(receipt['files']['k6.log'], 80 * 1024**2)
+                self.assertEqual(cfg['files'], receipt['files'])
+                self.assertEqual(cfg['rangeBytes'], f.TRACE_CHUNK_BYTES)
+                self.assertEqual(receipt['fileLimitBytes'], 80 * 1024**2)
+                trace = cfg['files'].get(f.TRACE_FILE)
+                self.assertEqual(trace, 64 * 1024**2 if observer == 'scheduling-v1' else None)
+                pod = rendered['spec']['template']['spec']
+                volume = next(v for v in pod['volumes'] if v['name'] == 'artifacts')
+                self.assertEqual(int(volume['emptyDir']['sizeLimit']), sum(cfg['files'].values()) + 4096)
 
     def test_missing_shell_or_resource_measurement_refuses_before_actor_creation(self):
         c, job, options = configured()
@@ -217,6 +279,9 @@ class NativeFiles(unittest.TestCase):
                             for name, data in value['stringData'].items(): (inputs/name).write_text(data)
                             for name, data in value.get('data', {}).items():
                                 (inputs/name).write_bytes(base64.b64decode(data, validate=True))
+                            if args[-1] != 'jsonpath={.metadata.uid}':
+                                raise AssertionError('unexpected Secret create response shape')
+                            return 'owned-secret'
                         else:
                             for actor in value['spec']['template']['spec'].get('initContainers', []):
                                 if actor['name'] == 'unpack-roster':

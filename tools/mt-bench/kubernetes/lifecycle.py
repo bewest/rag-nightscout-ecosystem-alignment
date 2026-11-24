@@ -46,6 +46,11 @@ def unentered_failure(kind, error, trace):
     finally:
         sys.__excepthook__(kind, error, trace)
 sys.excepthook = unentered_failure
+def command_codes(output):
+    """Error codes named in a failed command's output. A name followed by `=` is an
+    environment assignment echoed with the command line (VAULT_MAX_RETRIES=0), not a code."""
+    import re
+    return sorted(set(re.findall(rb'\b(?:K8S_|M7_|PRIMER_|BOOTSTRAP_|PLATFORM_|VAULT_|EVALUATOR_)[A-Z0-9_]{2,90}\b(?!=)',output)))
 def command(argv,data=None,timeout=None,private=False,environment=None):
     rem=cleanup-time.time() if cleaning else work-time.time()
     if not cleaning and phase_cutoff is not None:
@@ -55,8 +60,7 @@ def command(argv,data=None,timeout=None,private=False,environment=None):
     q=subprocess.run([str(x) for x in argv],input=data,capture_output=True,
                      timeout=ProgressWindow.read_seconds(min(timeout,rem)),env=environment or env)
     if q.returncode:
-        import re
-        codes=sorted(set(re.findall(rb'\b(?:K8S_|M7_|PRIMER_|BOOTSTRAP_|PLATFORM_|VAULT_|EVALUATOR_)[A-Z0-9_]{2,90}\b',q.stderr+q.stdout)))
+        codes=command_codes(q.stderr+q.stdout)
         error = {'program':Path(str(argv[0])).name,'returncode':q.returncode,'codes':[x.decode() for x in codes]}
         if cfg.get('schedulerPlacement') and not private:
             error['stderr'] = q.stderr[-1500:].decode(errors='replace')
@@ -285,12 +289,23 @@ nsuid=trustuid=None;events=[];uids=[];current='create-namespace'
 native_scope = 'ns-' + rid + '-native.scope'
 def attach(*args):
     limits=cfg['nativeLimits']
+    argv = [sys.executable, '-B', str(Path(__file__).with_name('attach.py')), str(Path(sys.argv[1]).resolve()), *args]
+    if os.environ.get('NS_CAMPAIGN_ATTACH_SCOPE') == 'pod':
+        import controller_attach
+        if not (os.environ.get('KUBERNETES_SERVICE_HOST') and os.environ.get('NS_CAMPAIGN_POD')):
+            raise RuntimeError('K8S_CONTROLLER_POD_REQUIRED')
+        scope = controller_attach.allocation(read(Path(cfg['runTemplate']['path'])))
+        point = args[-1] if args else 'load'
+        put('controller-attach-' + point + '.json', {'pod': os.environ['NS_CAMPAIGN_POD'], 'allocation': scope})
+        controller_attach.run(argv, env, max(1, int(work-time.time())-6),
+                              lambda result: put('controller-exit-' + point + '.json', result))
+        return
     put('native-unit.json', {'unit': native_scope})
     command(['systemd-run','--user','--scope','--quiet','--unit='+native_scope,
              '-p','CPUQuota='+str(limits['millicpus']/10)+'%',
              '-p','MemoryMax='+str(limits['memoryBytes']),'-p','MemorySwapMax=0',
              '-p','RuntimeMaxSec='+str(max(1,int(work-time.time())-6)),
-             sys.executable,'-B',Path(__file__).with_name('attach.py'),str(Path(sys.argv[1]).resolve()),*args],
+             *argv],
             timeout=int(work-time.time())-3)
 
 def interrupted(signum, frame):raise RuntimeError('CONTROLLER_SIGNAL_'+str(signum))
@@ -301,6 +316,14 @@ try:
     node=create(objects('namespace')[0]);nsuid=node['metadata']['uid'];put('custody.json',{'namespace':ns,'namespaceUid':nsuid})
     owned();node=create(trust);trustuid=node['metadata']['uid'];put('custody.json',{'namespace':ns,'namespaceUid':nsuid,'trustName':tn,'trustUid':trustuid})
     install('foundation')
+    publication = (intent.get('nativeLoad') or {}).get('writerPublication')
+    if publication is not None:
+        from native_files import publication_claim
+        step('writer publication claim');owned()
+        volume = get('persistentvolume', publication['volumeName'], False)
+        made = create(publication_claim(publication, ns, rid, volume))
+        uids.append({'kind': made['kind'], 'name': made['metadata']['name'], 'uid': made['metadata']['uid']})
+        put('created.json', uids)
     # Legacy fixtures expect prewarmed images. Scheduler fixtures leave the
     # digest-pinned image pull policy to Kubernetes and the authored manifest.
     if not scheduler:
@@ -336,6 +359,9 @@ try:
     # roles can then start independently of synthetic tenant creation.
     step('provision')
     wait_job('provision', waits['provisionReadySeconds'])
+    if reuse and reuse.get('forward'):
+        bootstrap = k(['logs', 'job/provision', '-n', ns, '-c', 'bootstrap'], private=True)
+        put('fixture-forward.json', fixture_copy.migration_receipt(bootstrap, reuse['forward']))
     workload_ready('stores')
     install('private-admin')
     install('serving')
@@ -370,8 +396,14 @@ try:
              **fixture_copy.slices_record(read(d/'inventory.json'))},work))
         step('fixture captured')
         raise SystemExit(0)
-    step('attach released runtime')
-    attach()
+    if cfg.get('loadPoints'):
+        for point in cfg['loadPoints']:
+            step('load point ' + point)
+            owned()
+            attach('--point', point)
+    else:
+        step('attach released runtime')
+        attach()
 
 except Exception as exc:
     failure={'stage':current,'code':str(exc)[:500],'time':timestamp()}

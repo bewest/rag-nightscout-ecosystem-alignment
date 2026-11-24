@@ -271,6 +271,23 @@ class Discovery(unittest.TestCase):
         with patch.object(a,'stored',return_value={'foreign':{'entries':1}}):
             with self.assertRaisesRegex(RuntimeError,'TENANT_SCOPE'):d.count_observation(a,folder,out,'synthetic',{})
 
+    def test_checks_every_cell_in_a_large_discovery_matrix(self):
+        folder, manifest = self.setup()
+        cells = []
+        for tenants in range(1, 14):
+            cell = d.Record(a, folder, {**manifest, 'tenants': tenants}).value
+            cell['ownershipVerified'] = True
+            cells.append(cell)
+        aggregate = {**cells[0], 'kind': 'm7-joined-discovery', 'cells': cells}
+        self.assertTrue(d.check_discovery(aggregate))
+        with self.assertRaisesRegex(RuntimeError, 'M7_DISCOVERY_DUPLICATE_CELL'):
+            d.check_discovery({**aggregate, 'cells': [*cells, cells[-1]]})
+        with self.assertRaisesRegex(RuntimeError, 'M7_DISCOVERY_CELLS'):
+            d.check_discovery({**aggregate, 'cells': []})
+        cells[-1]['ownershipVerified'] = False
+        with self.assertRaisesRegex(RuntimeError, 'M7_DISCOVERY_OWNERSHIP'):
+            d.check_discovery(aggregate)
+
     def test_aggregate_requires_matching_identity_and_no_acceptance_label(self):
         result,_,_=self.run_recording(p.Refused('M7_EVALUATOR_PROGRESS_NOT_OBSERVED'));aggregate={**{k:result[k] for k in ('version','pair','hostIdentity','instrument','imageId','runPurpose','status','capacityAcceptance','profileSelection')},'kind':'m7-joined-discovery','cells':[result]};d.check_discovery(aggregate)
         broken=copy.deepcopy(aggregate);broken['cells'][0]['imageId']='sha256:'+'0'*64

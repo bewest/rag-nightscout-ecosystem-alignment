@@ -42,7 +42,9 @@ class TerminalEvidence(unittest.TestCase):
                     raise k.Refused('K8S_NAMESPACE_UID_CHANGED','FAIL')
                 return point
 
-            def read_postgres(*args):
+            def read_postgres(*args, timeout=None):
+                # The run-marker census reads whole tables: it carries the table read limit.
+                self.assertGreater(timeout, 20)
                 if not missing_response:
                     self.assertEqual((path/'progress-after.private.jsonl').read_bytes(),payload)
                 self.assertIn("='synthetic-run'",args[-1])

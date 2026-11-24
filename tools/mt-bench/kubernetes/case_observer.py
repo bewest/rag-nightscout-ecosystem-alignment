@@ -5,6 +5,8 @@
   case_observer.py observe CASE_DIR OUT_DIR    observe a case launched separately
   case_observer.py summarize CASE_DIR OUT_DIR  steady per-Pod usage, nodes and CPU models (stdout JSON)
 
+An ordered multi-point case reports these figures per point, from each packet's window and snapshot.
+
 Reads only; never creates, scales or deletes. Stops at verified absence or the cleanup deadline.
 
 OUT_DIR/samples.jsonl, one row per interval: stage, placement (Pod NODE PHASE), node top for every
@@ -16,7 +18,7 @@ Database and process figures (event-loop lag and utilization, evaluator phase ti
 pending-work age, statements per write by role, pg_stat_statements,
 pg_stat_io) come from the run's own Prometheus when the binding input sets
 `labMetrics.enabled`: the controller retains a TSDB snapshot before teardown
-(runtime/packet/load/metrics-tsdb.tar, execute.metrics_snapshot) and `summarize` evaluates PromQL on it at the
+(a point's packet/load/metrics-tsdb.tar, execute.metrics_snapshot) and `summarize` evaluates PromQL on it at the
 steady-window bookends with a local, network-less Prometheus of the same version. Without the
 component those figures are UNMEASURED; the observer no longer samples /proc, pg_stat_activity or
 pg_stat_statements by exec.
@@ -295,14 +297,29 @@ def distribution(values):
     return {'n': len(values), 'min': min(values), 'median': median(values), 'max': max(values)} if values else None
 
 
-def window(case):
-    """The steady window from the case result's k6 executor windows, else the traffic stage."""
-    result = read(case.d/'runtime'/'result.json') or read(case.d/'result.json') or read(case.d.parent.parent/'result.json') or {}
+def point_ids(case_dir):
+    """Read the launcher's ordered load points, including any that ended without a packet."""
+    return read(Path(case_dir)/'lifecycle-input.json', {}).get('loadPoints', [])
+
+
+def window(case, point=None):
+    """Select the executor bookends for this point, with its own controller window as a fallback."""
+    result = read(case.d/'runtime'/'result.json') or read(case.d/'result.json')
+    if not result and (point is None or case.d.parent.name == 'raw' and case.d.parent.parent.name == case.d.name):
+        result = read(case.d.parent.parent/'result.json')
+    result = result or {}
+    if point is not None:
+        result = next((row for row in result.get('points', []) if row['pointId'] == point), {})
     shards = (result.get('measurements') or {}).get('byShard') or []
     windows = shards[0].get('executorWindows', {}) if len(shards) == 1 else {}
     if windows:
         return ('k6 executor start to steady end',
                 min(v['executorStartMs'] for v in windows.values()), max(v['steadyEndMs'] for v in windows.values()))
+    if point is not None:
+        start, end = load_window(case, point)
+        if start is not None and end > start:
+            return 'controller load window', start, end
+        return 'UNMEASURED', None, None
     return ('stage ' + TRAFFIC, None, None)
 
 
@@ -328,6 +345,8 @@ QUERIES = {
     'statementsPerWriteByRole': 'sum by (role) (increase(nightscout_pg_statements_total[{w}s])) / scalar(' + WRITES + ')',
     'statementsByApplication': 'sum by (role, application_name) (increase(nightscout_pg_statements_total[{w}s]))',
     'statementClientMeanSeconds': 'sum by (role) (increase(nightscout_pg_statement_seconds_total[{w}s])) / sum by (role) (increase(nightscout_pg_statements_total[{w}s]))',
+    # api 503 storage refusals by code and where produced (core nightscout_storage_refusals_total).
+    'storageRefusalsByCodePhase': 'sum by (code, phase) (increase(nightscout_storage_refusals_total[{w}s]))',
     'httpP95Seconds': 'histogram_quantile(0.95, sum by (method, status_class, le) (rate(nightscout_http_request_seconds_bucket[{w}s])))',
     'activeBackendsByApplication': 'sum by (application_name, wait_event_type) (avg_over_time(ns_activity_backends{{backend_type="client backend",state="active"}}[{w}s]))',
     'statIoSecondsByBackend': 'sum by (backend_type) (increase(ns_stat_io_read_seconds[{w}s]) + increase(ns_stat_io_write_seconds[{w}s]) + increase(ns_stat_io_fsync_seconds[{w}s]))',
@@ -336,17 +355,21 @@ QUERIES = {
     'topStatementsCalls': 'topk(25, sum by (queryid) (increase(pg_stat_statements_calls_total[{w}s])))',
     'statementText': 'max by (queryid, query) (last_over_time(pg_stat_statements_query_id[{w}s]))',
 }
-def load_directory(case):
-    """The controller's load stage output: runtime/packet/load in a launched case (load/ in older layouts)."""
+def load_directory(case, point=None):
+    """Resolve the packet for one load phase in current and earlier layouts."""
+    if point is not None:
+        if not re.fullmatch(r'[a-z0-9](?:[-a-z0-9]{0,29}[a-z0-9])?', point):
+            raise ValueError('INVALID_WORKLOAD_POINT')
+        return case.d/'runtime'/'points'/point/'packet'/'load'
     for path in (case.d/'runtime'/'packet'/'load', case.d/'load'):
         if path.is_dir():
             return path
     return case.d/'runtime'/'packet'/'load'
 
 
-def load_window(case):
+def load_window(case, point=None):
     """Fallback bookends: the controller's load window (seconds), as ms."""
-    value = read(load_directory(case)/'window.json') or {}
+    value = read(load_directory(case, point)/'window.json') or {}
     if value.get('loadStartedAt') and value.get('loadEndedAt'):
         return value['loadStartedAt'] * 1000, value['loadEndedAt'] * 1000
     return None, None
@@ -386,23 +409,31 @@ class LocalPrometheus:
                  'value': None if row['value'][1] in ('NaN', '+Inf', '-Inf') else float(row['value'][1])}
                 for row in body['data']['result']]
 
+    def query_range(self, expr, start, end, step):
+        from urllib.parse import urlencode
+        body = json.loads(self.get('/api/v1/query_range?' + urlencode(
+            {'query': expr, 'start': '%.3f' % start, 'end': '%.3f' % end, 'step': '%ds' % step})))
+        return [{'labels': {k: v for k, v in row['metric'].items() if k not in ('instance', 'server')},
+                 'values': [(t, v) for t, v in row['values'] if v not in ('NaN', '+Inf', '-Inf')]}
+                for row in body['data']['result']]
+
     def close(self):
         import shutil
         self.run(['docker', 'rm', '-f', self.name], capture_output=True, timeout=60)
         shutil.rmtree(self.dir, ignore_errors=True)
 
 
-def prometheus_figures(case, start, end, local=LocalPrometheus):
+def prometheus_figures(case, start, end, local=LocalPrometheus, *, point=None, basis=None):
     """PromQL at the steady-window bookends over the retained snapshot; UNMEASURED when absent."""
-    load = load_directory(case)
+    load = load_directory(case, point)
     receipt = read(load/'metrics-snapshot.json')
     if receipt is None:
         return {'verdict': 'UNMEASURED', 'reason': 'no metrics-snapshot.json in the load stage (labMetrics off or no load stage)'}
     if receipt.get('verdict') != 'OBSERVED':
         return {'verdict': 'UNMEASURED', 'reason': receipt.get('code')}
-    basis = 'k6 executor start to steady end'
+    basis = basis or 'k6 executor start to steady end'
     if start is None:
-        start, end = load_window(case)
+        start, end = load_window(case, point)
         basis = 'controller load window'
     if start is None or end <= start:
         return {'verdict': 'UNMEASURED', 'reason': 'no steady window'}
@@ -423,8 +454,16 @@ def prometheus_figures(case, start, end, local=LocalPrometheus):
 
 
 def summarize(case, out):
+    points = point_ids(case.d)
+    if points:
+        return {'run': case.run, 'points': [dict(pointId=point, **summarize_point(case, out, point))
+                                           for point in points]}
+    return summarize_point(case, out)
+
+
+def summarize_point(case, out, point=None):
     out = Path(out)
-    label, start, end = window(case)
+    label, start, end = window(case, point)
     pods, roles, nodes, placement = {}, {}, {}, {}
     used = 0
     for line in (out/'samples.jsonl').read_text().splitlines():
@@ -432,7 +471,8 @@ def summarize(case, out):
         if 'podUsage' not in row:
             continue
         at = datetime.fromisoformat(row['at']).timestamp() * 1000
-        if start is not None and not (start <= at < end) or start is None and row.get('stage') != TRAFFIC:
+        in_window = (start <= at < end if start is not None else point is None and row.get('stage') == TRAFFIC)
+        if not in_window:
             continue
         used += 1
         for entry in row.get('placement', []):
@@ -478,7 +518,7 @@ def summarize(case, out):
                                      'workingSetMiB': distribution(cell['workingSetMiB'])}
                                  for c, cell in sorted(roles.items())},
         'podLogs': read(out/'podlogs'/'followers.json'),
-        'prometheus': prometheus_figures(case, start, end),
+        'prometheus': prometheus_figures(case, start, end, point=point, basis=label),
     }
 
 
