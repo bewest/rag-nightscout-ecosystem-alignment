@@ -169,7 +169,7 @@ class NativeJoin(unittest.TestCase):
         self.assertEqual(labels['app.kubernetes.io/component'],'load')
         for target,port in [('admin',1342),('api',1337),('api',19001),('evaluator',19002),('evaluator',19913),
                             ('realtime',1339),('realtime',19003),('tenant-admin',19004),('postgres',5432),('vault',8200)]:
-            kind='StatefulSet' if target in ('postgres','vault') else 'Deployment'
+            kind='StatefulSet' if target in ('evaluator','realtime','postgres','vault') else 'Deployment'
             self.assertFalse(allowed(labels,kind+'/'+target,port),(target,port))
         self.assertEqual([obj for obj in policies if obj is not policy],original)
 
