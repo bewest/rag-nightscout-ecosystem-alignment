@@ -4,8 +4,6 @@ VU sizing is computed by workload.js driverVUs (decision driver-sized-from-offer
 from the driver's own logged plan. Drops, late starts and issued/completed counts are figures by
 operation; there is no offered-work verdict."""
 from collections import Counter, defaultdict
-import csv
-import gzip
 import json
 import math
 from pathlib import Path
@@ -14,15 +12,14 @@ from urllib.parse import parse_qsl
 
 from contract import require
 import workload_inputs
+import trace_files
+from trace_files import MAX_TRACE_BYTES, MAX_TRACE_ROWS
 from http_accounting import assess as http_assess
 from statement_units import SHAPES
 from workload import MAX_TIME_UNIT_MS, REALISTIC_MIX, realistic_cycle_ms
 
 SCRIPT = 'k6-vu-driver.js'
 COUNTERS = ('dropped_iterations', 'scenario_request_attempts', 'scenario_http_responses', 'scenario_transport_failures')
-MAX_TRACE_BYTES = 512 * 1024 * 1024
-MAX_TRACE_ROWS = 5000000
-LEGACY_DECODED_RATIO = 16
 VU_FIELDS = ('preAllocatedVUs', 'maxVUs')
 
 
@@ -54,11 +51,6 @@ def integer(value, low, high):
     return type(value) is int and low <= value <= high
 
 
-def decoded_trace_bytes(cfg):
-    # Old manifests and direct callers keep their original decoded allowance.
-    return cfg.get('maxDecodedTraceBytes', cfg['maxTraceBytes'] * LEGACY_DECODED_RATIO)
-
-
 def configuration(value, cadence):
     require(isinstance(value, dict) and set(value) <= {
         'version', 'observer', 'scenarios', 'maxTraceBytes', 'maxDecodedTraceBytes', 'maxTraceRows', 'writeRateScale'}
@@ -75,9 +67,7 @@ def configuration(value, cadence):
         require(set(rows) == set(SHAPES), 'M7_DRIVER_REALISTIC_SHAPES')
     result = dict(value, maxTraceBytes=value.get('maxTraceBytes', MAX_TRACE_BYTES),
                   maxTraceRows=value.get('maxTraceRows', MAX_TRACE_ROWS))
-    require(integer(result['maxTraceBytes'], 65536, workload_inputs.MAX_SAFE_INTEGER // LEGACY_DECODED_RATIO)
-            and integer(decoded_trace_bytes(result), 1, workload_inputs.MAX_SAFE_INTEGER)
-            and integer(result['maxTraceRows'], 1, workload_inputs.MAX_SAFE_INTEGER), 'M7_DRIVER_TRACE_BOUND')
+    trace_files.validate(result, minimum_compressed=65536)
     normalized = {}
     for name, row in rows.items():
         # preAllocatedVUs/maxVUs are refused: workload.js driverVUs sizes every scenario.
@@ -320,25 +310,12 @@ def executor_windows(starts, scenarios, setup_end, end):
 
 
 def trace_assess(path, counts, starts, expected, cfg, origin):
-    require(path.is_file() and 0 < path.stat().st_size <= cfg['maxTraceBytes'], 'M7_DRIVER_TRACE_BOUND')
-    tallies = defaultdict(Counter); decoded = 0
+    tallies = defaultdict(Counter)
     common = {name: {'before': 0, 'during': 0, 'after': 0} for name in counts}
-    max_decoded = decoded_trace_bytes(cfg)
-    with gzip.open(path, 'rb') as source:
-        def bounded_lines():
-            nonlocal decoded
-            while True:
-                line = source.readline(65537)
-                if not line: break
-                require(len(line) <= 65536, 'M7_DRIVER_TRACE_BOUND')
-                decoded += len(line)
-                require(decoded <= max_decoded, 'M7_DRIVER_TRACE_BOUND')
-                yield line.decode('utf-8')
-        reader = csv.DictReader(bounded_lines())
-        require({'metric_name', 'timestamp', 'metric_value', 'scenario'} <= set(reader.fieldnames or []),
+    with trace_files.reader(path, cfg) as (columns, rows):
+        require({'metric_name', 'timestamp', 'metric_value', 'scenario'} <= set(columns or []),
                 'M7_DRIVER_TRACE_HEADER')
-        for i, row in enumerate(reader):
-            require(i < cfg['maxTraceRows'], 'M7_DRIVER_TRACE_BOUND')
+        for row in rows:
             require(not row.get('url') and not row.get('error'), 'M7_DRIVER_TRACE_SENSITIVE_TAG')
             name, metric = row['scenario'], row['metric_name']
             if metric not in (*COUNTERS, 'm7_driver_started', 'm7_driver_finished'):

@@ -14,6 +14,7 @@ class Bounds(unittest.TestCase):
     @unittest.skipUnless((PACKET / 'driver-plans.json').is_file(), 'retained r10k-w7-k20 packet not mounted')
     def test_retained_10k_trace_reconciles_under_the_planned_budgets(self):
         import driver_accounting as driver
+        import trace_files
 
         packet = json.loads((PACKET / 'driver-plans.json').read_text())
         manifest = packet['manifest']
@@ -23,7 +24,7 @@ class Bounds(unittest.TestCase):
         cfg = driver.configuration(derived, cadence)
         self.assertEqual(cfg['maxTraceRows'], 8_500_000)
         self.assertEqual(cfg['maxTraceBytes'], 64 * 1024**2)
-        self.assertEqual(driver.decoded_trace_bytes(cfg), 1024**3)
+        self.assertEqual(trace_files.decoded_trace_bytes(cfg), 1024**3)
         self.assertEqual(driver.reduce_shard(PACKET, packet['plans'][0], cfg)['totals']['issued'], 288_597)
 
 

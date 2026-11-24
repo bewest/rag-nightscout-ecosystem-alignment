@@ -450,7 +450,6 @@ def pooled_signal(evidence, driver, configured, directory):
         return None
     paths = []
     inputs = []
-    total_bytes = 0
     for index, shard in enumerate(shards):
         plan = get(shard, "plan")
         if get(plan, "observer") != "scheduling-v1" or get(plan, "shardIndex") != index:
@@ -468,18 +467,14 @@ def pooled_signal(evidence, driver, configured, directory):
                 break
         if not path:
             return None
-        try:
-            total_bytes += path.stat().st_size
-        except OSError:
-            return None
-        if total_bytes > latency.MAX_TRACE_BYTES:
-            evidence.note(name, "LATENCY_TRACE_BUDGET")
-            return None
         paths.append(name)
         inputs.append((path, expected))
     try:
-        upper, size = latency.pooled_histogram(inputs)
+        upper, size = latency.pooled_histogram(inputs, get(configured, "driverPlan"))
         return upper, size, paths
+    except latency.TraceBound:
+        evidence.note(directory, "LATENCY_TRACE_BUDGET")
+        return None
     except (OSError, ValueError, TypeError, EOFError, KeyError, csv.Error, zlib.error):
         evidence.note(directory, "LATENCY_SAMPLES_UNRECONCILED")
         return None

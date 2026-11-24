@@ -14,6 +14,7 @@ BYTE_STEP = 1024**2
 def bound_plan(traffic, ordinary, provisioned, history):
     """Raise per-file budgets as needed, keeping authored and runtime floors."""
     import driver_accounting as driver
+    import trace_files
 
     plan = traffic['driverPlan']
     cadence = dict(traffic, hotFactor=traffic.get('hotFactor', 1))
@@ -23,7 +24,7 @@ def bound_plan(traffic, ordinary, provisioned, history):
     iterations = max(sum(shape['offeredIterations'] for shape in shard['scenarios'].values()) for shard in shards)
     rows = plan.get('maxTraceRows', driver.MAX_TRACE_ROWS)
     compressed = plan.get('maxTraceBytes', driver.MAX_TRACE_BYTES)
-    decoded = driver.decoded_trace_bytes(dict(plan, maxTraceBytes=compressed))
+    decoded = trace_files.decoded_trace_bytes(dict(plan, maxTraceBytes=compressed))
     bounds = dict(plan)
     for name, old, unit, step in (
         ('maxTraceRows', rows, ROWS_PER_ITERATION, ROW_STEP),

@@ -99,6 +99,21 @@ class DriverConfiguration(unittest.TestCase):
         value = self.configuration() | {'maxTraceBytes': 65536, 'maxDecodedTraceBytes': len(raw)}
         self.assertEqual(d.configuration(value, {'loadSeconds': 30})['maxDecodedTraceBytes'], len(raw))
 
+    def test_trace_bounds_an_entire_multiline_record(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            trace = Path(tmp) / 'trace.csv.gz'
+            bounds = {'maxTraceBytes': 65536, 'maxDecodedTraceBytes': 200000, 'maxTraceRows': 1}
+            for part_size in (30000, 35000):
+                with gzip.open(trace, 'wt', newline='') as stream:
+                    writer = csv.writer(stream)
+                    writer.writerow(['metric_name', 'timestamp', 'metric_value', 'scenario', 'extra_tags'])
+                    writer.writerow(['ignored', 0, 1, 'read', 'x' * part_size + '\n' + 'y' * part_size])
+                if part_size == 30000:
+                    self.assertEqual(d.trace_assess(trace, {}, {}, {}, bounds, None), {})
+                else:
+                    with self.assertRaisesRegex(RuntimeError, 'M7_DRIVER_TRACE_BOUND'):
+                        d.trace_assess(trace, {}, {}, {}, bounds, None)
+
     def test_large_population_low_rate_time_unit_is_not_a_case_filter(self):
         cfg={'version':1,'observer':'summary-v1','scenarios':{name:{} for name in d.SHAPES}}
         c={'loadSeconds':1800,'offeredRps':1,'hotFactor':1,'driverPlan':cfg}
