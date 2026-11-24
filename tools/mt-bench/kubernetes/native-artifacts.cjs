@@ -64,11 +64,19 @@ async function main() {
     fs.writeFileSync(path.join(root, 'exported'), 'complete\n', {mode:0o600, flag:'wx'});
     return;
   }
-  if (mode !== 'read') throw Error('K8S_NATIVE_ARTIFACT_MODE');
+  if (mode !== 'read' && mode !== 'read-range') throw Error('K8S_NATIVE_ARTIFACT_MODE');
   const name = process.argv[3], expected = manifest.files[name];
   if (!expected) throw Error('K8S_NATIVE_ARTIFACT_NAME');
-  // Bounded chunks and backpressure; the whole CSV never enters Node memory.
-  for await (const chunk of fs.createReadStream(checked(name, expected), {highWaterMark:65536})) {
+  const options = {highWaterMark:65536};
+  if (mode === 'read-range') {
+    const [offset, length] = process.argv.slice(4, 6).map(Number);
+    if (!Number.isSafeInteger(offset) || !Number.isSafeInteger(length) || offset < 0 || length < 1 ||
+        !Number.isSafeInteger(config.rangeBytes) || length > config.rangeBytes || offset > expected.bytes - length)
+      throw Error('K8S_NATIVE_ARTIFACT_BOUND');
+    options.start = offset;
+    options.end = offset + length - 1;
+  }
+  for await (const chunk of fs.createReadStream(checked(name, expected), options)) {
     if (!process.stdout.write(chunk)) await once(process.stdout, 'drain');
   }
 }

@@ -7,9 +7,11 @@ Raw CSV never traverses Kubernetes container logs (which may rotate).
 import copy
 import json
 import math
+import os
 from pathlib import Path
 import re
 import subprocess
+import tempfile
 import time
 
 import kube_adapter as k
@@ -21,6 +23,8 @@ FILES = {'k6.log': 64 * 1024**2, 'k6-native.log': 64 * 1024**2,
 
 
 PUBLICATION_CLAIM = 'writer-publication'
+TRACE_FILE = 'k6-scheduling.csv.gz'
+TRACE_CHUNK_BYTES = 8 * 1024**2
 
 
 def publication_selection(selection):
@@ -82,8 +86,10 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
     wrapper = (k.M7 / driver.SCRIPT).read_bytes()
     files = dict(FILES)
     if cfg['observer'] == 'scheduling-v1':
-        files['k6-scheduling.csv.gz'] = maximum
+        files[TRACE_FILE] = maximum
     config = dict(runId=receipt['runId'], files=files, seconds=receipt['activeDeadlineSeconds'])
+    if TRACE_FILE in files:
+        config['rangeBytes'] = TRACE_CHUNK_BYTES
     publication = (c.get('nativeLoad') or {}).get('writerPublication')
     if publication is not None:
         receipt['writerPublication'] = publication_selection(publication)
@@ -205,6 +211,21 @@ def terminal_process(c, wanted, job, pod, final_job, final_pod):
     return process
 
 
+def copy_trace(kube, command, target, size, namespace, remaining):
+    """Keep the controller's memory flat as the per-file trace budget grows."""
+    with tempfile.NamedTemporaryFile(dir=target.parent, prefix='.' + target.name + '.') as stream:
+        for offset in range(0, size, TRACE_CHUNK_BYTES):
+            length = min(TRACE_CHUNK_BYTES, size - offset)
+            data = kube.call(command + ['read-range', target.name, str(offset), str(length)],
+                             data=b'', namespace=namespace, timeout=min(120, remaining()),
+                             output_limit=length)
+            k.need(isinstance(data, bytes) and len(data) == length, 'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
+            stream.write(data)
+        stream.flush()
+        # Publish only a complete file, with the temporary file's private mode.
+        os.link(stream.name, target)
+
+
 def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private_data=None):
     """Writer exit -> bounded exec read -> ack -> Job completion.
 
@@ -314,15 +335,14 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
         expected = meta['files'][filename]
         k.need(type(expected.get('bytes')) is int and 0 < expected['bytes'] <= maximum,
                'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
+        if filename == TRACE_FILE:
+            copy_trace(kube, command, out / filename, expected['bytes'], ns, remaining)
+            continue
         data = kube.call(command + ['read', filename], data=b'', namespace=ns, timeout=min(120, remaining()))
-        # fanout.Kube.call uses text when no data is supplied. Force its binary
-        # mode with bytes input, including for compressed scheduling CSV.
         if isinstance(data, str):
-            k.need(filename != 'k6-scheduling.csv.gz', 'NATIVE_LOAD_BINARY_TRANSPORT_REQUIRED', 'UNMEASURED')
             data = data.encode()
-        k.need(isinstance(data, bytes) and len(data) <= maximum, 'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
+        k.need(isinstance(data, bytes) and len(data) == expected['bytes'], 'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
         n.private(out / filename, data)
-        k.need(len(data) == expected['bytes'], 'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
     limits = (out / 'file-limits.txt').read_text()
     match = re.search(r'^Max file size\s+([0-9]+)\s+([0-9]+)\s+bytes\s*$', limits, re.M)
     k.need(match and int(match[1]) == int(match[2]) == receipt['fileLimitBytes'], 'NATIVE_LOAD_FILE_LIMIT_UNPROVEN')

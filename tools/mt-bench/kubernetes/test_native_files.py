@@ -92,12 +92,45 @@ class NativeFiles(unittest.TestCase):
             f.terminal_process(c, wanted, job, pod, job, None)
         self.assertTrue(f.terminal_process(c, wanted, job, pod, job, pod)['complete'])
 
+    def test_large_trace_is_copied_in_bounded_exact_ranges(self):
+        class Reader:
+            def __init__(self):
+                self.bad = False
+                self.calls = []
+
+            def call(self, args, **options):
+                self.options = options
+                mode, filename, offset, length = args
+                offset, length = int(offset), int(length)
+                self.calls.append((mode, filename, offset, length))
+                return b'x' * (length - 1 if self.bad and offset else length)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'trace.gz'
+            reader = Reader()
+            size = 2 * f.TRACE_CHUNK_BYTES + 1
+            f.copy_trace(reader, [], path, size, 'owned', lambda: 30)
+            self.assertEqual(path.stat().st_size, size)
+            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+            self.assertEqual([(offset, length) for _, _, offset, length in reader.calls],
+                             [(0, f.TRACE_CHUNK_BYTES), (f.TRACE_CHUNK_BYTES, f.TRACE_CHUNK_BYTES),
+                              (2 * f.TRACE_CHUNK_BYTES, 1)])
+            self.assertTrue(all(mode == 'read-range' for mode, _, _, _ in reader.calls))
+            self.assertEqual(reader.options['output_limit'], 1)
+            self.assertEqual(reader.options['timeout'], 30)
+            failure = Path(tmp) / 'partial.gz'
+            reader.bad = True
+            with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_ARTIFACT_BOUND'):
+                f.copy_trace(reader, [], failure, size, 'owned', lambda: 30)
+            self.assertFalse(failure.exists())
+            self.assertEqual(list(Path(tmp).iterdir()), [path])
+
     def test_real_exporter_acknowledgement_bounds_and_deadline_controls(self):
         script = k.HERE/'native-artifacts.cjs'
         with tempfile.TemporaryDirectory() as scratch:
             root = Path(scratch); payload = b'synthetic-private-csv-bytes'
             (root/'sample.gz').write_bytes(payload); (root/'exit-code').write_text('0\n')
-            cfg = dict(seconds=5, runId='synthetic', files={'sample.gz':128})
+            cfg = dict(seconds=5, runId='synthetic', files={'sample.gz':128}, rangeBytes=len(payload)-1)
             (root/'config.json').write_text(json.dumps(cfg))
             env = dict(os.environ, NS_NATIVE_OUTPUT=str(root), NS_NATIVE_EXPORT_CONFIG=str(root/'config.json'))
             hold = subprocess.Popen(['node',script,'hold'],env=env,stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
@@ -107,6 +140,14 @@ class NativeFiles(unittest.TestCase):
                 def read(*args):
                     return subprocess.run(['node',script,*args],env=env,capture_output=True,timeout=3)
                 self.assertEqual(read('read','sample.gz').stdout,payload)
+                for offset, length in ((0, 1), (1, len(payload) - 1), (len(payload) - 1, 1)):
+                    self.assertEqual(read('read-range', 'sample.gz', str(offset), str(length)).stdout,
+                                     payload[offset:offset+length])
+                for offset, length in ((0, 0), (-1, 1), (len(payload), 1), (1, len(payload)), (0, len(payload))):
+                    invalid = read('read-range', 'sample.gz', str(offset), str(length))
+                    self.assertEqual(invalid.returncode, 78)
+                    self.assertEqual(invalid.stdout, b'')
+                    self.assertIn(b'ARTIFACT_BOUND', invalid.stderr)
                 (root/'sample.gz').write_bytes(payload+b'X')
                 failed = read('read','sample.gz')
                 self.assertEqual(failed.returncode,78); self.assertEqual(failed.stdout,b'')

@@ -252,12 +252,13 @@ def test_pod(c, parent, pod, controller_uid=None):
 class Kube:
     """Use the existing pinned/guarded adapter client, including binary exec."""
     def __init__(self,c,client):self.c,self.client,self.namespace_uid=c,client,None
-    def call(self,args,*,data=None,timeout=20,namespace=None,cleanup=False):
+    def call(self,args,*,data=None,timeout=20,namespace=None,cleanup=False,output_limit=None):
         k.need(namespace in (None,self.c['namespace']),'NATIVE_LOAD_NAMESPACE_CHANGED')
         raw=data.encode() if isinstance(data,str) else data
-        maximum=max(32*1024**2,self.c['workload']['driverPlan'].get('maxTraceBytes',64*1024**2))
+        if output_limit is None:
+            output_limit=max(32*1024**2,self.c['workload']['driverPlan'].get('maxTraceBytes',64*1024**2))
         return self.client.call(args,data=raw,read=args[0] in ('get','logs','top'),cleanup=cleanup,
-                                output_limit=maximum,timeout=timeout)
+                                output_limit=output_limit,timeout=timeout)
     def json(self,args,**kw):
         value=json.loads(self.call([*args,'-o','json'],**kw))
         if args[:2] == ['get','namespace']:
