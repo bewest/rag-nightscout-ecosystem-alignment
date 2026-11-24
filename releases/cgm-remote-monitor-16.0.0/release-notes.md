@@ -1,15 +1,13 @@
 # Nightscout 16.0.0 - release notes (DRAFT)
 
-**Draft for maintainer review, 2026-11-03. Not a release announcement.**
-The version is decided: 16.0.0. The current release candidate is
-`official/dev` `4a482627bfdafb1fef8dcbe0ac6c484811cae563`. Informal testing is
-underway; private security integration and final release acceptance remain
-pending. No tag or v16 release is published.
+**Draft for maintainer review, 2026-11-24.** The single-tenant 16.0.0
+candidate is `79144cbd0` on `dev`. The published release is **v15.0.9**.
+Private security integration, final acceptance and staging review remain open.
+[Candidate and staging evidence](contents.md#closing-candidate-2026-11-24)
 
 Nightscout 16 modernizes both the backend and frontend: shared storage and write
 contracts, more consistent record identity and re-send handling, refreshed
-runtime dependencies and browser bundles, and an optional responsive modern
-theme. It also includes reporting, notification and interoperability fixes.
+runtime dependencies and browser bundles, and a responsive dashboard. It also includes reporting, notification and interoperability fixes.
 It is **not** an automated-insulin-delivery algorithm upgrade, and it does not
 require all connected apps to release together.
 
@@ -37,7 +35,7 @@ MongoDB 5.0 through 8.0 is the supported/tested range. Driver 7 can start on
 4.4, but 4.4 is unsupported and untested. MongoDB 3.6, 4.0 and 4.2 no longer
 serve data; the boot error page names the version and minimum.
 Compose changes its default from MongoDB 5.0.32 to 6.0.27: follow the upstream
-[runtime upgrade guide](https://github.com/nightscout/cgm-remote-monitor/blob/61eb37335954ae42c91345a0823bd67331025165/docs/runtime-upgrade.md),
+[runtime upgrade guide](https://github.com/nightscout/cgm-remote-monitor/blob/79144cbd006e1137bd776ffd56560debdf880e81/docs/runtime-upgrade.md),
 including database upgrade steps and backup/restore, rather than treating it
 as an ordinary image-only update.
 
@@ -99,9 +97,25 @@ validated clinical PGR thresholds"; PGR is a research metric and the numerical
 checks "do not constitute third-party clinical validation". It is a report
 figure, not a treatment recommendation; talk to the care team before acting on it.
 
-`THEME=modern` selects the optional responsive dashboard; existing themes remain.
-`SHOW_SECONDS` is optional. Runtime/database/library refreshes and page bundles
-modernize internals without making either option mandatory.
+### Dashboard and reports
+
+Modern is the default dashboard when the site has no configured theme and
+the browser has no saved choice. Existing server settings and saved browser
+choices still apply. Choose **Classic** in Settings for the previous default
+appearance, or set `THEME=default` for the site. Resetting browser preferences
+returns to the site's configured theme. `SHOW_SECONDS` remains optional.
+
+- Distribution and Daily Stats start with bar charts. Each report remembers
+  its own Bar or Pie choice and prints the selected style.
+- Hourly Stats shows **Hourly basal adjustments (U)** from historical profiles
+  and temporary basals. You can open it first. The report distinguishes
+  unavailable history from zero adjustment. Day to Day uses the same totals
+  with its basal chart hidden. Historical profile calculations in Day to Day
+  and Loopalyzer retain the original profile information for later reports and edits.
+- Calibrations matches meter readings to recent raw sensor signals, labels
+  missing data and explains how it selects readings for the chart. Day to Day
+  removes the overlapping black rings from connected readings in the OpenAPS
+  view and keeps the hover details. [Merged report changes](https://github.com/nightscout/cgm-remote-monitor/pull/8907)
 
 ## Notes for people running sites and writing apps
 
@@ -145,7 +159,7 @@ release-time disclosure remain pending. Live Pushover/APNs, cohort outcomes,
 upgrade/rollback and final-candidate quiet-period acceptance are not closed by
 24-48 hours of informal use alone.
 
-The full residual-defect list is in [contents.md](contents.md). Draft proposals
+The [backfix register](../../docs/30-design/remedial/nightscout-backfix-register.md) records outstanding defects. Draft proposals
 for controller registration, nonresident profiles, APNs background pushes and
 new reports are not promised by these notes.
 

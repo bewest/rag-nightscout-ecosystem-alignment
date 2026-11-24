@@ -1,14 +1,11 @@
 # How cgm-remote-monitor 16.0.0 was evaluated
 
-*Contributor- and maintainer-facing release evidence. This colophon evaluates the merged `dev` tree,
-not a tagged release candidate. The complete comparison is the
-[write-compatibility report](../../site/pages/cgm-remote-monitor-16.0.0-write-compatibility.html);
-release scope and decisions are in [contents](contents.md), [decisions](decisions.md), and
-[testing notes](testing-notes.md).*
+*November 1–2 evaluation of synthetic writes against `v15.0.9` and
+development commit `497d08c9`. The [closing candidate record](contents.md#closing-candidate-2026-11-24)
+gives the later development head, staging checks and outstanding acceptance.
+The [write-compatibility report](../../site/pages/cgm-remote-monitor-16.0.0-write-compatibility.html)
+gives the measured trees, runtime, repeats and test-data limits.*
 
-This is a measurement of synthetic writes against `v15.0.9` and the merged 16.0.0 development tree.
-It is not a claim that every deployed site or client has been exercised. The measured tree pins,
-runtime, repeated runs, and test-data limitations are recorded with the comparison.
 The merged-dev endpoint disables the unique identifier index only so the matrix can seed intentional
 duplicate-identifier states; default index startup and duplicate-key races are separate evidence.
 
@@ -45,40 +42,28 @@ but intentional re-send/deletion/unit changes are not identical to 15.0.9.
 New clients relying on v16-only features still need tested fallback on older
 servers. See the [claim-by-claim assessment](../../docs/10-domain/nightscout-v16-ecosystem-deep-dive.md#compatibility-confidence-what-the-record-supports).
 
-## Release readiness
+## Release readiness at the November 2 review
 
 <!-- chart: release-gates -->
 
-**Current integrated test totals, dev `61eb3733`:** hosted top-level `test-ci`
+**November 1 integrated test totals (read-derived from CI on `61eb3733`).** Top-level `test-ci`
 reports 6,323 passing / 3 pending. Adding the separate 319 client-core, 684
 browser and 334 Connect cases gives 7,660 passing / 3 pending across suites
 counted once, not distinct test identities. The full CI matrix has 31,208
 passing / 13 pending executions because suites repeat across environments;
 these counts are not additional compatibility-matrix cells.
 
-**Private security integration remains pending:** the previously recorded
-BF-72/BF-161 prepared fixes contain
-current dev and combined focused tests passed 402; full-suite acceptance is
-inconclusive. No private PR existed at that inspection. Advisory association was confirmed, but
+**November 2 security review (read-derived).** The prepared BF-72/BF-161 fixes contained
+`61eb3733`. The combined focused tests passed 402 cases. The full-suite result was inconclusive. No private PR existed at that inspection. Advisory association was confirmed, but
 the maintainer must route the prepared patches through the advisory's
 Compare & pull request workflow, then complete final integrated-tree checks.
 No private branch identifiers or payloads are published here.
 
-The release is **not ready to tag** until every blocking gate is cleared and a release candidate is
-named. The failure or completion state of each gate and its supporting evidence are summarized above;
-the release records remain the source of detailed procedures and test boundaries.
-
-The controller-registration milestone in draft [#8857](https://github.com/nightscout/cgm-remote-monitor/pull/8857)
-is still within the 16.0.0 entry bar and needs a current-base rebase and retest. The AAPS iOS push
-work in [#8810](https://github.com/nightscout/cgm-remote-monitor/pull/8810) may roll to 16.1.0 under
-the plan's review condition; draft [#8891](https://github.com/nightscout/cgm-remote-monitor/pull/8891)
-is a profile prototype, not a release-critical gate.
-The earlier unwritten-notes status is superseded: [release notes](release-notes.md) and
-[cohort guidance](testing-notes.md) are now usable drafts, not final sign-off.
-Master's absent 4.4 protection requirement has been removed; retained required
-lanes are green, with staging review/policy work ongoing.
-#8829 is nonblocking by maintainer decision: neither maintainer reproduced it,
-and working DIY and production/service environments are reported.
+At that review, placement remained open for controller registration (#8857),
+AAPS iOS background pushes (#8810) and the single-site profile prototype (#8891).
+The maintainer recorded #8829 as nonblocking. For the current candidate, see
+the [staging and acceptance findings](contents.md#closing-candidate-2026-11-24)
+and [cohort guide](testing-notes.md).
 
 ## Interpretation limits
 

@@ -1,7 +1,6 @@
 # Release assets
 
-*Contributor-facing. Status 2026-10-02: every file under this directory is a DRAFT. Nothing
-here has been tagged or published.*
+*Contributor-facing release records. The table distinguishes published releases, candidate drafts and superseded proposals.*
 
 This directory holds the **tag messages, release notes and contents records** for releases
 of `cgm-remote-monitor` and `nightscout-connect`, one directory per release.
@@ -9,7 +8,7 @@ of `cgm-remote-monitor` and `nightscout-connect`, one directory per release.
 | Directory | Describes | Status |
 |---|---|---|
 | [`cgm-remote-monitor-15.0.9/`](cgm-remote-monitor-15.0.9/) | `official/master..official/dev` at `4bca2ac2` (100 merged PRs); **released 2026-10-21** as tag `v15.0.9`, `master` `c6a0d8ed` | released; release-notes.md is the GitHub release body; connector pinned exactly to the released `0.1.0` (#8762); what remains is in [ROADMAP §1](../docs/00-overview/ROADMAP.md#1-1509-is-released-the-next-development-cycle); how it was made: [colophon](cgm-remote-monitor-15.0.9/colophon.md) |
-| [`cgm-remote-monitor-16.0.0/`](cgm-remote-monitor-16.0.0/) | `official/master..official/dev`, at `eed31dca` on 2026-10-27 (42 merged PRs, all five cuts among them); the next release (maintainer, 2026-10-21) | in development: contents, decisions and the [integration record](../docs/30-design/remedial/rc-16.0.0-integration-record.md) are living; the verification record's [selection](cgm-remote-monitor-16.0.0/verification-selection.txt) is set (captured at the tag); testing notes, tag message and release notes are written once a candidate is named |
+| [`cgm-remote-monitor-16.0.0/`](cgm-remote-monitor-16.0.0/) | Single-tenant closing candidate on `official/dev`. The [candidate record](cgm-remote-monitor-16.0.0/contents.md#closing-candidate-2026-11-24) gives its measured scope and staging state. | In preparation. The [release notes](cgm-remote-monitor-16.0.0/release-notes.md) and [cohort guide](cgm-remote-monitor-16.0.0/testing-notes.md) are drafts. Capture the [verification selection](cgm-remote-monitor-16.0.0/verification-selection.txt) at the tag. |
 | [`nightscout-connect-v0.0.14/`](nightscout-connect-v0.0.14/) | the retired local tag `v0.0.14` (`649a7de`) | **superseded**: no 0.0.14 will be published; the line is `0.1.0` (queue P0-TAG) |
 | [`_template/`](_template/) | copy to start a new release directory | — |
 
@@ -84,19 +83,17 @@ level, and how to turn it off). All drafts here must also meet
 [`docs/00-overview/DEFINITION-OF-DONE.md`](../docs/00-overview/DEFINITION-OF-DONE.md)
 criterion 10.
 
-## Version numbers here are proposals
+## Version decisions and earlier proposals
 
-15.0.9 is decided (`RT-D3` answered; `nightscout-connect` `0.1.0` released 2026-09-24, `P0-TAG`).
-Every other number in this directory is a **proposal**. The analysis behind them is
-[`docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`](../docs/60-research/modernization/gt4-semver-classification-2026-09-15.md)
-(classification) and the versioning policy above. **Both are drafts awaiting maintainer
-adoption.** The directory name is the planned number; each `contents.md` states the facts
-that bear on the number.
+The maintainer chose 16.0.0 on October 21. The [cycle decisions](cgm-remote-monitor-16.0.0/decisions.md#the-cycle)
+record that choice and the modernization cuts merged to `dev`. Both `cgm-remote-monitor` 15.0.9
+and `nightscout-connect` 0.1.0 have been released.
 
-### Reserved slots for releases whose numbers are not settled
+### Historical allocation before the 16.0.0 decision
 
-The modernization parcels have **no agreed numbers**. When each is cut, create its directory
-with the number the maintainer chooses. Until then these are named placeholders, not versions:
+The table preserves the September [classification](../docs/60-research/modernization/gt4-semver-classification-2026-09-15.md)
+and [versioning proposal](../docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md).
+The October cycle decision superseded these proposed parcel numbers and sequencing constraints.
 
 | Placeholder | Contents | Policy's proposed number (§8.3) — **not adopted** |
 |---|---|---|
@@ -112,12 +109,12 @@ maintainer reports that the legacy MiniMed path (mmconnect) has been broken for 
 that legacy Dexcom Share is intended to map to `nightscout-connect`; the ingestion-retirement
 risk grading has not been redone on that basis.
 
-Two constraints hold whatever numbering is chosen:
+The September proposal recorded two constraints:
 
 1. **Parcel 4 is contained in parcel 5.** Measured with `git merge-base --is-ancestor`
    across all consecutive pairs: the parcels are linear, each contained in the next, so
    "ship 5 but hold 4 back" is not achievable as a merge.
-2. **The runtime break and the ingestion break must not be in the same release.** An
+2. **The proposal called for separate runtime and ingestion releases.** An
    operator debugging a site that will not start should not simultaneously be debugging why
    their glucose data stopped.
 
@@ -156,10 +153,5 @@ They are set out in
 [`docs/30-design/remedial/maintainer-release-brief-2026-09-15.md`](../docs/30-design/remedial/maintainer-release-brief-2026-09-15.md)
 §2, with the commands a human runs. For `nightscout-connect`, **decision 2, not decision 3,
 delivers the fix**, because every `cgm-remote-monitor` pin is a GitHub tarball URL and none
-resolves from npm. For `cgm-remote-monitor`, a push to `dev` or `master` triggers a Docker
-image publish and is itself a publication event.
-
----
-
-*Drafts. Require maintainer review before anything is tagged, published or relied upon.
-Nightscout is not a medical device and nothing in this directory is medical advice.*
+resolves from npm. On the 16.0.0 candidate, a successful `dev` push publishes a development image. A release tag
+starts the release-image workflow. [Candidate workflow](https://github.com/nightscout/cgm-remote-monitor/blob/79144cbd006e1137bd776ffd56560debdf880e81/.github/workflows/main.yml)

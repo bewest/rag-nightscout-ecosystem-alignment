@@ -1,11 +1,11 @@
 # Nightscout 16.0.0 — testing notes for the release candidate
 
-**Working cohort guide, 2026-11-03.**
-The current 16.0.0 release candidate is `official/dev`
-`61eb37335954ae42c91345a0823bd67331025165`. Informal testing has already
-started: the maintainer reports multiple testers have run the code for over
-24-48 hours. No v16 tag or release is published. Record the exact commit/image
-each tester actually ran rather than assuming it is this one.
+**Working cohort guide, 2026-11-24.** The closing single-tenant candidate is
+`official/dev` at `79144cbd006e1137bd776ffd56560debdf880e81`. Record the
+exact build each tester ran. The November 2 maintainer report described
+24–48 hours or more of informal testing across earlier builds.
+[Candidate and acceptance status](contents.md#closing-candidate-2026-11-24)
+
 The measured automated runs remain in the
 [integration record](../../docs/30-design/remedial/rc-16.0.0-integration-record.md);
 release scope is in [contents.md](contents.md).
@@ -25,8 +25,9 @@ that did not arrive or stop as expected. Include app/server versions, display
 units, approximate observation interval and what happened, without personal
 records, credentials or screenshots containing health data.
 
-Check your usual phone and desktop views, including an optional modern theme
-only if you chose it. Keep independent device alerts enabled; do not rely on
+Check your usual phone and desktop views. A browser with no saved theme uses Modern
+when the site has no configured theme. Confirm that a saved choice such as Classic
+survives an upgrade. Keep independent device alerts enabled; do not rely on
 an experimental Nightscout build as your only alarm source. This is not dosing
 advice. Do not create test treatments on an active-care site.
 
