@@ -460,6 +460,7 @@ class StandardPhases(Base):
 
         def prepared(action, template, binding, profile, output, **options):
             self.assertEqual(json.loads(profile.read_bytes()), first)
+            self.assertEqual(options['controller_job'], (campaign.CONTROL_NS, campaign.controller_name(runner.m)))
             self.assertEqual([json.loads(p.read_bytes()) for p in options['next_points']], [second])
             self.assertEqual(action, 'reuse')
             output.mkdir()

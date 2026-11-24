@@ -21,6 +21,7 @@ import frozen
 import kube_adapter as k
 import lifecycle_config as lc
 import native_join
+import edge_access
 
 
 NAMESPACE_PREFIX = 'ns-synth-'
@@ -181,7 +182,7 @@ def _launch(bound):
 
 def prepare(template_case, binding, profile_path, output, *, app_image, postgres_image=None,
             namespace_prefix=NAMESPACE_PREFIX, core=None, taint=None, inspect=None, fixture=None, node_name=None, resources_file=None, binding_extra=None,
-            node_pool=None, writer_publication=None, next_points=()):
+            node_pool=None, writer_publication=None, next_points=(), controller_job=None):
     output = output.resolve()
     inputs = (template_case, binding)
     k.need(all(not output.is_relative_to(path.resolve()) for path in inputs),
@@ -193,7 +194,7 @@ def prepare(template_case, binding, profile_path, output, *, app_image, postgres
     try:
         return _materialize(template_case,binding,profile_path,output,core,taint,
                             app_image,postgres_image,namespace_prefix,inspect,fixture,node_name,resources_file,binding_extra,
-                            node_pool,writer_publication,next_points)
+                            node_pool,writer_publication,next_points,controller_job)
     except Exception as error:
         failed = output.with_name(output.name+'.failed-'+str(time.time_ns()))
         output.rename(failed)
@@ -211,7 +212,7 @@ def prepare(template_case, binding, profile_path, output, *, app_image, postgres
 
 def _materialize(template_case, binding, profile_path, output, core, taint,
                  app_image, postgres_image, namespace_prefix, inspect, fixture=None, node_name=None, resources_file=None, binding_extra=None,
-                 node_pool=None, writer_publication=None, next_points=()):
+                 node_pool=None, writer_publication=None, next_points=(), controller_job=None):
     template_case = template_case.resolve()
     binding = binding.resolve()
     output = output.resolve()
@@ -318,6 +319,10 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
              'INPUT='+str(output/'binding-inputs.json'),'-e','(import "ns/nightscout.libsonnet").new(std.extVar("INPUT"))'+suffix],timeout=30)
         k.write(output/(name+'.json'),json.loads(data))
     rendered = k.document(output/'render.json')
+    if controller_job is not None:
+        service, = [obj for obj in k.manifests(rendered) if k.key(obj) == 'Service/edge']
+        rendered['campaignControllerEdge'] = edge_access.controller_policy(service, *controller_job)
+        k.write(output/'render.json', rendered)
     inventory = k.document(output/'inventory.json')
     stages = {name:[] for name in lc.STAGES}
     workload_stages = {'postgres':'stores', 'vault':'stores', 'provision':'provision',

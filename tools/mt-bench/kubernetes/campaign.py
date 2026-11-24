@@ -592,7 +592,7 @@ class StandardRunner:
         options = dict(app_image=self.s['images']['app']['reference'], postgres_image=self.s['images']['postgres']['reference'],
                        namespace_prefix=self.s.get('namespacePrefix', 'ns-synth-'), core=Path(self.s['core']),
                        taint=o.get('taint'), node_name=o.get('nodeName'), node_pool=o.get('nodePool'),
-                       binding_extra=extra, inspect=self.inspect)
+                       binding_extra=extra, inspect=self.inspect, controller_job=(CONTROL_NS, controller_name(self.m)))
         next_profiles = o.get('nextPoints', [])
         need(isinstance(next_profiles, list), 'STANDARD_NEXT_POINTS')
         if next_profiles:

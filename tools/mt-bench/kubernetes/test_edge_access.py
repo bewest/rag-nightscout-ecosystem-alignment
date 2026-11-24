@@ -4,6 +4,19 @@ import edge_access
 
 
 class EdgeAccess(unittest.TestCase):
+    def test_only_the_campaign_job_in_its_control_namespace_is_the_edge_peer(self):
+        service = {'metadata': {'namespace': 'case-a', 'labels': {'nightscout.org/run-id': 'run-a'}},
+                   'spec': {'selector': {'app.kubernetes.io/component': 'edge'},
+                            'ports': [{'port': 8080, 'targetPort': 'http-edge', 'protocol': 'TCP'}]}}
+        policy = edge_access.controller_policy(service, 'bench-control', 'campaign-one')
+        self.assertEqual(policy['metadata']['namespace'], 'case-a')
+        self.assertEqual(policy['metadata']['labels'], {'nightscout.org/run-id': 'run-a'})
+        self.assertEqual(policy['spec']['podSelector']['matchLabels'],
+                         {'app.kubernetes.io/component': 'edge', 'nightscout.org/run-id': 'run-a'})
+        self.assertEqual(policy['spec']['ingress'], [{'ports': [{'port': 'http-edge', 'protocol': 'TCP'}],
+            'from': [{'namespaceSelector': {'matchLabels': {'kubernetes.io/metadata.name': 'bench-control'}},
+                      'podSelector': {'matchLabels': {'batch.kubernetes.io/job-name': 'campaign-one'}}}]}])
+
     def test_in_cluster_controller_uses_the_edge_service(self):
         # A controller Pod reaches the case's edge Service directly; one kubectl port-forward does not carry
         # thousands of viewer sockets (lanel-c2-02: 13,000 requested, 8,167 connected, M7_VIEWER_SETUP_STALLED).
