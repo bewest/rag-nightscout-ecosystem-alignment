@@ -201,7 +201,11 @@ def bind(p, config):
     ordinary = p['population']['ordinaryRosterTenants']
     need(config.get('ordinaryRosterTenants', ordinary) == ordinary, 'CONFIG_ORDINARY_ROSTER')
     result['ordinaryRosterTenants'] = ordinary
-    workload_runtime.validate(result['workload'], need, ordinary)
+    traffic = result['workload']
+    if traffic.get('driverPlan', {}).get('observer') == 'scheduling-v1':
+        from trace_bounds import bound_plan
+        traffic['driverPlan'] = bound_plan(traffic, ordinary, config['tenants'], p['history'])
+    workload_runtime.validate(traffic, need, ordinary)
     return result
 
 

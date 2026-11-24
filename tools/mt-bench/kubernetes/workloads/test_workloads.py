@@ -11,6 +11,45 @@ from workloads import reduce as reduction
 
 
 class Coverage(unittest.TestCase):
+    def test_bind_sizes_each_scheduling_trace_from_the_planned_work(self):
+        from datetime import datetime, timedelta, timezone
+        import driver_accounting
+        p = profiles.read(profiles.HERE / 'realistic-1000.json')
+        w = p['workload']
+        del w['workloadMix'], w['workloadScale']
+        w['offeredRps'] = 160
+        plan = w['driverPlan'] = dict(version=1, observer='scheduling-v1',
+                                      maxTraceRows=5_000_000, scenarios={k: {} for k in profiles.SHAPES})
+        now = datetime.now(timezone.utc)
+        config = {'tenants': 1000, 'pins': {'pair': {k: p['referencePins'][k] for k in ('core', 'deploy')},
+                  'bindingCommit': p['referencePins']['bindingCommit']},
+                  'deadlines': {'workUntil': (now + timedelta(hours=1)).isoformat(),
+                                'cleanupUntil': (now + timedelta(hours=2)).isoformat()}}
+
+        def bound():
+            return profiles.bind(p, config)['workload']['driverPlan']
+
+        # 160 requests/s over 1,800 seconds exceeds the 1k template's floor.
+        actual = bound()
+        self.assertEqual(actual['maxTraceRows'], 8_000_000)
+        self.assertEqual(driver_accounting.configuration(actual, w)['maxTraceBytes'],
+                         driver_accounting.MAX_TRACE_BYTES)
+        self.assertEqual(plan['maxTraceRows'], 5_000_000)
+        self.assertEqual(actual, bound())
+        # Each shard writes a separate file and each scenario can have a shorter window.
+        w['driverShards'] = 2
+        self.assertEqual(bound(), plan)
+        del w['driverShards']
+        for scenario in plan['scenarios'].values():
+            scenario['durationSeconds'] = 900
+        self.assertEqual(bound(), plan)
+        for scenario in plan['scenarios'].values():
+            del scenario['durationSeconds']
+        plan['maxTraceRows'] = 9_000_000
+        self.assertEqual(bound(), plan)
+        plan.update(observer='summary-v1', maxTraceRows=5_000_000)
+        self.assertEqual(bound(), plan)
+
     def test_source_repin_is_not_silently_accepted(self):
         p = profiles.read(profiles.HERE / 'small.json')
         from datetime import datetime, timedelta, timezone
