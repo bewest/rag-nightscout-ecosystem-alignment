@@ -1,6 +1,6 @@
 # Multitenant clinical storage layout: proposal
 
-*Contributor- and maintainer-facing. **Proposal, 2026-11-23, not adopted.** Measured against cgm-remote-monitor
+*Contributor- and maintainer-facing. **Proposal, 2026-11-23, not adopted. Stage 2 built and parked 2026-11-24** ([devicestatus-hour-chunks](multitenancy-decisions.md#devicestatus-hour-chunks)); corrections from that build are in section 9. Measured against cgm-remote-monitor
 `2dee799c8e` (the #8898 round core) on PostgreSQL 16.15 and MongoDB 8.0, with 100 synthetic tenants seeded through the
 product write path at 2 and 14 days of looping history. Figures are labelled measured or read-derived. Raw evidence
 stays local: `HANDOFF-pg-bytes-20261123.md` (lane S) and `HANDOFF-storage-alternatives-20261123.md` (lane R). Decisions
@@ -209,3 +209,19 @@ adopted.
 
 Each stage is one lane with the gates above. Stage 2 can proceed without stage 1, and it is the larger saving:
 device status is about 60 % of current bytes.
+
+## 9. Corrections from the stage 2 build (2026-11-24, measured by lane D2)
+
+- **Read cost moves to PostgreSQL.** Unpacking chunks made the evaluator window read 2–3.4× slower at 1,000 tenants
+  (p95 82.3 → 113.3 ms, and 276.3 ms when filtering stored `json` text, which re-reads each document per field access).
+  v1 and v3 reads became 2–4× faster.
+- **Writes rewrite the hour.** Per-document appends cost 2.2× WAL and leave dead chunk copies until vacuum, so a fresh
+  2-day load was 16 % larger than the current layout; the steady-state saving per added day was 82 %. A one-statement
+  batch append made WAL linear and smaller than the current layout.
+- **The identity index costs about 172 B per document**, not the ~25 MB per 100 tenants estimated in section 4.
+- **GIN on arrays cannot serve lookups under row-level security**: the array operators are not leakproof, so they are
+  never index conditions. The working design uses a btree on `(tenant_id, key)`.
+- **[d11](multitenancy-decisions.md#d11)** (body retained as JSONB) would need marking superseded for multitenant device
+  status if a chunk layout were ever adopted.
+- **Untried:** a small per-document header (`created_at`, `isValid`, `srvModified`, `_id`) beside the text, so the window
+  filters without reading documents. Any revisit starts there.
