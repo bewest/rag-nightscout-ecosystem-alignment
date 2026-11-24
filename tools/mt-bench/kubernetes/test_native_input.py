@@ -301,7 +301,7 @@ import {options as driverOptions} from './k6-vu-driver.js';
 import {SharedArray} from 'k6/data';
 import crypto from 'k6/crypto';
 const text = open(__ENV.TENANTS_FILE), expected = JSON.parse(text);
-const rows = new SharedArray('baseline tenants', () => { throw Error('ORIGINAL_DECODER_MISSING'); });
+const rows = new SharedArray('tenants', () => { throw Error('ORIGINAL_DECODER_MISSING'); });
 if (rows.length !== 10000 || expected.length !== rows.length ||
     crypto.sha256(text, 'hex') !== __ENV.EXPECTED_ROSTER_SHA256 ||
     Object.keys(driverOptions.scenarios).length !== 7) throw Error('INPUT_DECODER_BINDING');
