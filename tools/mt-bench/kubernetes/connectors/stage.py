@@ -20,6 +20,7 @@ connector-entry.js, its input on stdin, the roster at /results. The plan (site t
 group's DATA credentials) is kept privately; start() then reads it (c.connectors.planFile) and creates
 only the upstream and scorer, never the entry Secret or Job.
 """
+from datetime import datetime, timezone
 import json
 from pathlib import Path
 import subprocess
@@ -166,6 +167,10 @@ def _start(call, c, tenants, out, now=None):
     if entered_in_reader:
         p = json.loads(Path(c['connectors']['planFile']).read_text())
         connectors.need({r['id'] for r in p['tenants']} <= {r['id'] for r in tenants}, 'CONNECTOR_PLAN_ROSTER_CHANGED')
+        if 'previousEntryMs' in c['connectors']:
+            # The preceding point commissioned these actors in the same restored namespace.
+            ready(call, connectors.UPSTREAM)
+            return _record(call, c, p, out, None)
     else:
         p = plan(c, tenants, now)
     labels = {'nightscout.org/run-id': c['runId']}
@@ -196,10 +201,11 @@ def _start(call, c, tenants, out, now=None):
 def _record(call, c, p, out, node):
     # Scored from here: the upstream serves and the scorer is ready.
     ready(call, 'connector-score')
-    entered = int(time.time() * 1000)
+    window_start = int(time.time() * 1000)
+    entered = c['connectors'].get('previousEntryMs', window_start)
     record = {'version': 1, 'tenants': len(p['tenants']), 'timing': connectors.timing_of(c), 'entryNode': node, 'entry': 'fixture-reader' if c['connectors'].get('planFile') else 'job',
               'share': c['connectors']['share'], 'historyStartMs': p['historyStartMs'],
-              'enteredAt': entered, 'scriptsSha256': connectors.scripts_digest()}
+              'enteredAt': entered, 'scoreFromMs': window_start, 'scriptsSha256': connectors.scripts_digest()}
     (out / 'connectors.json').write_text(json.dumps(record, indent=2) + '\n')
     private = {'historyStartMs': p['historyStartMs'], 'timing': connectors.timing_of(c),
                'tenants': [{'site': r['site'], 'enteredAt': entered} for r in p['tenants']]}
@@ -210,13 +216,18 @@ def _record(call, c, p, out, node):
 
 def collect(call, c, out, until=None, miss_after_seconds=360):
     try:
-        raw = call(['logs', 'deployment/connector-score', '--limit-bytes=67108864'], read=True)
+        record = json.loads((out / 'connectors.json').read_text())
+        start = record.get('scoreFromMs', record['enteredAt'])
+        args = ['logs', 'deployment/connector-score', '--limit-bytes=67108864']
+        if start != record['enteredAt']:
+            since = datetime.fromtimestamp(start / 1000, timezone.utc).isoformat(timespec='milliseconds')
+            args.append('--since-time=' + since)
+        raw = call(args, read=True)
         log = out / 'connector-poll.private.jsonl'
         log.write_bytes(raw); log.chmod(0o600)
-        record = json.loads((out / 'connectors.json').read_text())
         until = until or int(time.time() * 1000)
         result = subprocess.run(['node', str(connectors.HERE / 'score.cjs'), 'summarize', str(out / 'connector-score-input.private.json'), str(log),
-                                 '--from', str(record['enteredAt']), '--until', str(until), '--miss-after-seconds', str(miss_after_seconds)],
+                                 '--from', str(start), '--until', str(until), '--miss-after-seconds', str(miss_after_seconds)],
                                 capture_output=True, text=True, timeout=120)
         score = json.loads(result.stdout)
     except Exception as error:  # retained, never a pass

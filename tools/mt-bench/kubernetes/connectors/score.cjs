@@ -81,6 +81,7 @@ const stats = v => ({ n: v.length, p50: pct(v, 50), p95: pct(v, 95), max: v.leng
 // input: { tenants: [{ site, enteredAt }], historyStartMs, timing }; lines: parsed poll lines. timing is the
 // upstream's (upstream.cjs TIMINGS); absent means the default.
 function summarize (input, lines, { from, until, missAfterMs = 360000 }) {
+  const enteredAtBySite = new Map(input.tenants.map(t => [t.site, t.enteredAt]));
   const firstSeen = new Map(), stored = new Map(), dupMax = new Map(), errors = {};
   for (const l of lines) {
     if (l.t === 'seen') {
@@ -90,6 +91,8 @@ function summarize (input, lines, { from, until, missAfterMs = 360000 }) {
     } else if (l.t === 'pass') {
       if (l.status !== 200) errors[l.error || ('http-' + l.status)] = (errors[l.error || ('http-' + l.status)] || 0) + 1;
       for (const [key, n] of l.duplicates || []) {
+        // A later point sees the same database, including duplicates already scored at entry.
+        if (Math.max(key, enteredAtBySite.get(l.site) ?? key) < from) continue;
         const k = l.site + ':' + l.kind + ':' + key;
         dupMax.set(k, Math.max(dupMax.get(k) || 0, n));
       }
@@ -103,7 +106,7 @@ function summarize (input, lines, { from, until, missAfterMs = 360000 }) {
         const t = upstream.keyOf(kind, rec), k = tenant.site + ':' + kind + ':' + t;
         const isBackfill = t < tenant.enteredAt;
         const available = isBackfill ? tenant.enteredAt : t;
-        if (!isBackfill && t < from) continue;
+        if (available < from) continue;
         const target = isBackfill ? backfill : live;
         if (isBackfill) backfillScored += 1; else scored += 1;
         const s = stored.get(k), v = firstSeen.get(k);

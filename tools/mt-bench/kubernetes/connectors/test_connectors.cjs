@@ -95,6 +95,33 @@ test('score: complete and on time passes; a missing record, a late record and a 
   assert.deepEqual([d.verdict, d.duplicates], ['FAIL', 1]);
 });
 
+test('a later point scores its own live misses and duplicates after one connector entry', () => {
+  const historyStartMs = 1795450000000, enteredAt = historyStartMs + HOUR;
+  const from = enteredAt + HOUR, until = from + 20 * 60000;
+  const input = { historyStartMs, tenants: [{ site: 's1', enteredAt }] };
+  const lines = [];
+  for (const kind of Object.keys(upstream.KINDS)) {
+    for (const record of upstream.records('s1', kind, { historyStartMs: from, untilMs: until })) {
+      const key = upstream.keyOf(kind, record);
+      lines.push({ t: 'seen', site: 's1', kind, key, srvCreated: key + 1000, seenAt: key + 2000 });
+    }
+  }
+  const pass = { t: 'pass', site: 's1', kind: 'entries', at: until, status: 200 };
+  const options = { from, until, missAfterMs: 360000 };
+  // The poller still sees old duplicated rows when it reads the shared database.
+  const observed = [...lines, { ...pass, duplicates: [[enteredAt - 1000, 2]] }];
+  const ok = score.summarize(input, observed, options);
+  assert.equal(ok.verdict, 'PASS');
+  assert.equal(ok.backfill.scored, 0);
+  assert.equal(ok.live.scored, ok.live.stored.n);
+  const current = lines.find(line => line.kind === 'entries' && line.key <= until - options.missAfterMs);
+  const missing = score.summarize(input, observed.filter(line => line !== current), options);
+  assert.equal(missing.misses, 1);
+  const duplicated = score.summarize(input, [...observed, { ...pass, duplicates: [[current.key, 2]] }], options);
+  assert.equal(duplicated.duplicates, 1);
+  assert.equal(duplicated.verdict, 'FAIL');
+});
+
 test('score: a stopped upstream still has expectations, so its records count as misses', () => {
   const historyStartMs = 1795450000000, enteredAt = historyStartMs + 2 * HOUR, until = enteredAt + 25 * 60000, stoppedAt = enteredAt + 5 * 60000;
   const input = { historyStartMs, tenants: [{ site: 's2', enteredAt }] };

@@ -58,6 +58,15 @@ def fixture_key(template_case, profile_path, *, app_image, postgres_image=None, 
         evaluator_slices=inputs.get('slices', {}).get('evaluator', 1))
 
 
+def connector_group(profile):
+    population = profile['population']
+    if not population.get('connectorShare'):
+        return None
+    looping = profile['workload'].get('driverShape') in ('looping-v1', 'looping-v2')
+    return {'share': population['connectorShare'], 'order': 'host' if looping else 'roster',
+            'timing': population.get('connectorTiming', 'aid-v1')}
+
+
 def point_profiles(first, following):
     """Select workloads that can run against the same commissioned database and roles."""
     profiles = [first, *(k.document(path) for path in following)]
@@ -72,6 +81,7 @@ def point_profiles(first, following):
         seen.add(point)
         k.need(profile['population']['provisionedTenants'] == first['population']['provisionedTenants']
                and profile['history'] == first['history'], 'WORKLOAD_POINT_FIXTURE_CHANGED')
+        k.need(connector_group(profile) == connector_group(first), 'WORKLOAD_POINT_CONNECTORS_CHANGED')
         # The data primer and serving roles start once, before all traffic points.
         for field in ('primerOptions', 'producerStartup', 'startupWindows', 'cohortReadySeconds'):
             k.need(profile['phases'].get(field) == first['phases'].get(field), 'WORKLOAD_POINT_STARTUP_CHANGED')
@@ -291,8 +301,8 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
                           placement=placement, placementByWorkload={}, provisionDeadlineSeconds=outer,
                           sourceCommit=source['coreCommit'], imageDeployCommit=source['deployCommit'],
                           bindingIdentity=intent['bindingCommit'],resourceAccounting='requests-v1')
-    connector_share = profile['population'].get('connectorShare')
-    if connector_share:
+    connectors = connector_group(profile)
+    if connectors:
         # vcpool connector tenants (connectors/connectors.py): the binding renders the role and the
         # connector-entry Job; execute.py enters and scores them around the load window.
         binding_inputs['vcpool'] = {'enabled': True, 'allowHosts': ['nightscout-upstream'], 'allowInsecureHttp': True}
@@ -356,14 +366,9 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
     k.write(output/'environment.json',env)
     now = datetime.now(timezone.utc)
     run['driver']['coreRepository'] = str(core)
-    if connector_share:
-        # A looping driver takes its ordinary prefix in host order (workload_runtime.ordinary_roster); the
-        # connector group is then the host-order tail, so the two stay disjoint by tenant id.
-        looping = profile['workload'].get('driverShape') in ('looping-v1', 'looping-v2')
-        run['connectors'] = {'share': connector_share, 'ordinaryRosterTenants': profile['population']['ordinaryRosterTenants'],
-                             'image': candidate['app'], 'order': 'host' if looping else 'roster',
-                             # Upstream timing (connectors/upstream.cjs TIMINGS): aid-v1 unless the profile names a variant.
-                             'timing': profile['population'].get('connectorTiming', 'aid-v1')}
+    if connectors:
+        run['connectors'] = dict(connectors, image=candidate['app'],
+                                 ordinaryRosterTenants=profile['population']['ordinaryRosterTenants'])
     run.update(runId=run_id,namespace=namespace,tenants=tenants,workload=traffic,resourceAccounting='requests-v1',
                tenantsFile=str(output/'runtime/fixture/data-roster.private.json'), deadlines={kind:(now+timedelta(seconds=env[seconds])).isoformat().replace('+00:00','Z')
                for kind,seconds in [('workUntil','workDeadlineSeconds'),('cleanupUntil','cleanupDeadlineSeconds')]})

@@ -101,6 +101,27 @@ class LoopingGroup(unittest.TestCase):
             workload_profile.validate(self.profile(ordinaryRosterTenants=950, connectorShare=0.1), require_pins=False)
 
 
+    def test_points_share_one_connector_group_while_the_ordinary_prefix_can_grow(self):
+        import tempfile
+        import standard_case
+
+        first = self.profile(ordinaryRosterTenants=400, connectorShare=0.1)
+        first['workload']['pointId'] = 'first'
+        second = self.profile(ordinaryRosterTenants=900, connectorShare=0.1)
+        second['workload']['pointId'] = 'second'
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'second.json'
+            path.write_text(json.dumps(second))
+            self.assertEqual(standard_case.point_profiles(first, [path]), [first, second])
+            for change in ({'connectorShare': 0}, {'connectorShare': 0.05}, {'connectorTiming': 'stress-20-40'}):
+                with self.subTest(change=change):
+                    changed = copy.deepcopy(second)
+                    changed['population'].update(change)
+                    path.write_text(json.dumps(changed))
+                    with self.assertRaisesRegex(standard_case.k.Refused, 'WORKLOAD_POINT_CONNECTORS_CHANGED'):
+                        standard_case.point_profiles(first, [path])
+
+
 class Stage(unittest.TestCase):
     def test_start_creates_labelled_secrets_objects_and_runs_the_entry_job(self):
         import tempfile
@@ -242,6 +263,50 @@ class ReaderEntry(unittest.TestCase):
             # The upstream serves the sites entered in the reader.
             plan = json.loads(path.read_text())
             self.assertEqual(sorted(plan['secrets']['ns-upstream-sites']), ['s0', 's1'])
+
+    def test_second_point_reuses_running_connectors_and_scores_from_its_own_start(self):
+        import tempfile
+        from unittest.mock import patch
+        import stage
+
+        secrets = set()
+        mutations = []
+        def call(argv, data=None, read=True):
+            if not read:
+                mutations.append(argv)
+            if argv[:2] == ['logs', 'deployment/connector-score']:
+                self.assertIn('--since-time=1970-01-01T06:15:00.000+00:00', argv)
+            if argv[:2] == ['create', 'secret']:
+                if argv[3] in secrets:
+                    raise RuntimeError('AlreadyExists: ' + argv[3])
+                secrets.add(argv[3])
+            return b'1' if argv[:2] == ['get', 'deployment'] else b''
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            c = copy.deepcopy(self.c)
+            path = root / 'plan.json'
+            path.write_text(json.dumps(stage.plan(c, self.rows(), now=20000)))
+            c['connectors']['planFile'] = str(path)
+            first, second = root/'first', root/'second'
+            first.mkdir()
+            second.mkdir()
+            with patch.object(stage.time, 'time', return_value=20100):
+                initial = stage.start(call, c, self.rows(), first)
+            first_mutations = list(mutations)
+            c['connectors']['previousEntryMs'] = initial['enteredAt']
+            with patch.object(stage.time, 'time', return_value=22500):
+                continued = stage.start(call, c, self.rows(), second)
+            self.assertEqual(mutations, first_mutations)
+            self.assertEqual(continued['enteredAt'], initial['enteredAt'])
+            self.assertEqual(continued['scoreFromMs'], 22500000)
+            self.assertEqual(continued['historyStartMs'], initial['historyStartMs'])
+            # With no observations the independent point must miss its eligible live records.
+            scored = stage.collect(call, c, second, until=continued['scoreFromMs'] + 1200000)
+            self.assertEqual(scored['window']['from'], continued['scoreFromMs'])
+            self.assertEqual(scored['backfill']['scored'], 0)
+            self.assertGreater(scored['live']['scored'], 0)
+            self.assertEqual(scored['misses'], scored['live']['scored'])
 
     def test_a_failed_entry_in_the_reader_keeps_its_output_and_evidence(self):
         import subprocess

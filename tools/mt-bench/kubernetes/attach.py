@@ -110,6 +110,10 @@ try:
         tenants, reuse = fixture.read_roster(kub, primer, inventory, private, cfg['tenants'], until, location, held, inside)
     if inside is not None and plan_file.is_file():
         cfg['connectors']['planFile'] = str(plan_file)
+    if prior and cfg.get('connectors'):
+        k.need(plan_file.is_file(), 'POINT_CONNECTOR_PLAN_MISSING')
+        activation = read(runtime/'points'/previous/'packet'/'load'/'connectors.json')
+        cfg['connectors']['previousEntryMs'] = activation['enteredAt']
     from populated_history import BASELINE, run as prepare_history
     if len(sys.argv) == 3 and sys.argv[2] == '--seed-history':
         pg = read(live/'latest-postgres.json')
