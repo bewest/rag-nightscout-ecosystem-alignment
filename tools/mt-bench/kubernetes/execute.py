@@ -504,6 +504,34 @@ def stop_evidence(d, out, c, objects, client, namespace_uid):
     return receipt
 
 
+ACCESS_STEPS = 'access-steps.jsonl'
+
+
+def access_steps(d):
+    """Summary of D/access-steps.jsonl: steps completed, the step started but not ended (where a kill found it)."""
+    rows = []
+    try:
+        for line in (d / ACCESS_STEPS).read_text().splitlines():
+            try:
+                rows.append(json.loads(line))
+            except ValueError:
+                pass
+    except OSError:
+        return {'completed': 0, 'open': None, 'file': None}
+    ended = [r for r in rows if r.get('phase') == 'end']
+    started = {}
+    for r in rows:
+        key = (r.get('step'), r.get('tenantIndex'))
+        if r.get('phase') == 'start':
+            started[key] = r
+        elif r.get('phase') == 'end':
+            started.pop(key, None)
+    last = list(started.values())[-1] if started else None
+    return {'completed': len(ended), 'file': ACCESS_STEPS,
+            'open': {'step': last['step'], 'tenantIndex': last.get('tenantIndex'), 'at': last.get('at')} if last else None,
+            'lastEnded': {k: ended[-1].get(k) for k in ('step', 'tenantIndex', 'outcome', 'ms')} if ended else None}
+
+
 def access(d, c, objects, client):
     k.need(not (d / 'access.json').exists() and not (d / 'access-failure.json').exists(),
            'ACCESS_OUTPUT_EXISTS')
@@ -516,9 +544,11 @@ def access(d, c, objects, client):
         phase = 'native-actor-readback'
         actor(c)
         phase = 'node-witness'
+        # Per-step timings land in D/access-steps.jsonl as the witness runs (access.cjs K8S_ACCESS_STEPS), so a kill
+        # at the 60 s bound still leaves what completed and the step it was in.
         raw = finite(c, [c['driver']['node'], k.HERE / 'access.cjs', c['tenantsFile'],
                         c['baseUrl'], c['driver']['dependencies']],
-                     env=environment(c, d), seconds=60)
+                     env={**environment(c, d), 'K8S_ACCESS_STEPS': str(d / ACCESS_STEPS)}, seconds=60)
         phase = 'witness-document'
         value = json.loads(raw)
         k.need(isinstance(value, dict), 'ACCESS_REPORT_INVALID', 'UNMEASURED')
@@ -534,7 +564,7 @@ def access(d, c, objects, client):
         return value
     except Exception as error:
         try:
-            k.write(d / 'access-failure.json', {'phase': phase, **k.failure_evidence(error)})
+            k.write(d / 'access-failure.json', {'phase': phase, **k.failure_evidence(error), 'steps': access_steps(d)})
         except OSError:
             pass
         raise

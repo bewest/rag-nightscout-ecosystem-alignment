@@ -34,6 +34,18 @@ const assert=require('node:assert/strict'),http=require('node:http'),{EventEmitt
   assert.equal(scope(new URL('http://10.245.3.7:8080'),{NS_CAMPAIGN_ATTACH_SCOPE:'pod'}),true);
   assert.equal(scope(new URL('http://edge.ns.svc:8080'),{NS_CAMPAIGN_ATTACH_SCOPE:'pod'}),false);
   await assert.rejects(()=>run(tenants,new URL('http://10.245.3.7:8080'),io,{observeMs:20}),/K8S_ACCESS_SCOPE/);
+  // Per-step timings (round 2): every step records a start and an end with its outcome as it goes, so a kill at the
+  // 60 s bound still leaves what completed and where the witness was.
+  const steps=[];
+  await run(tenants,new URL('http://127.0.0.1:'+server.address().port),io,{observeMs:20,step:row=>steps.push(row)});
+  const names=steps.map(r=>r.step+':'+r.phase);
+  for(const n of ['exchange:start','exchange:end','cross-token-host:end','invalid-token:end','socket-connect:end','socket-observe:end'])assert.ok(names.includes(n),n);
+  assert.ok(steps.every(r=>Number.isSafeInteger(r.at)&&(r.phase==='start'||typeof r.outcome==='string'&&Number.isSafeInteger(r.ms))));
+  const hung=http.createServer(()=>{});await new Promise(r=>hung.listen(0,'127.0.0.1',r));
+  const partial=[];
+  await assert.rejects(()=>run(tenants,new URL('http://127.0.0.1:'+hung.address().port),io,{observeMs:20,step:row=>partial.push(row)}),/K8S_ACCESS_TIMEOUT/);
+  hung.closeAllConnections();await new Promise(r=>hung.close(r));
+  assert.deepEqual(partial.map(r=>r.step+':'+r.phase+':'+(r.outcome||'')),['exchange:start:','exchange:end:K8S_ACCESS_TIMEOUT']);
   console.log('RED_RESTORED HTTP cross-authority, foreign socket frame; lost or warming socket is UNMEASURED and continues; loopback HTTP and synthetic socket boundary');
  }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
 })().catch(e=>{console.error(e);process.exitCode=1;});
