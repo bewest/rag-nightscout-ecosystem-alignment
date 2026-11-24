@@ -27,7 +27,7 @@ async function main() {
         custody.artifactSource?.podUid !== podUid || custody.writerContinuity === 'UNMEASURED')
       throw Error('K8S_WRITER_PUBLICATION_CUSTODY');
     const result = await require('./native-publication.cjs').publish(source, runId, podUid, destination,
-      read(path.join(source, 'native-artifacts.json')));
+      read(path.join(source, 'native-artifacts.json')), custody.files?.['k6.log']);
     process.stdout.write(JSON.stringify(result) + '\n');
     if (result.status !== 'complete') process.exitCode = 78;
     return;
@@ -49,7 +49,7 @@ async function main() {
       const manifest = {kind:'m7-native-artifacts-v1', runId:config.runId, exitCode:Number(exit), files};
       if (config.writerPublication) {
         await require('./native-publication.cjs').publish(root, config.runId, process.env.NS_PUBLICATION_POD_UID,
-          process.env.NS_PUBLICATION_ROOT, manifest);
+          process.env.NS_PUBLICATION_ROOT, manifest, config.files['k6.log']);
       }
       fs.writeFileSync(manifestFile + '.tmp', JSON.stringify(manifest), {mode:0o600, flag:'wx'});
       fs.renameSync(manifestFile + '.tmp', manifestFile);

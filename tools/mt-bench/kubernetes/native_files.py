@@ -25,6 +25,10 @@ FILES = {'k6.log': 64 * 1024**2, 'k6-native.log': 64 * 1024**2,
 PUBLICATION_CLAIM = 'writer-publication'
 TRACE_FILE = 'k6-scheduling.csv.gz'
 TRACE_CHUNK_BYTES = 8 * 1024**2
+# Retained 1k writes used 295–312 bytes per accepted line with a 27-byte
+# marker. Allow the full 100-byte run marker and space for diagnostics.
+BYTES_PER_WRITE = 512
+EVENT_LOG_OVERHEAD = 64 * 1024
 
 
 def publication_selection(selection):
@@ -78,18 +82,24 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
            and shell_contract.get('classification') == 'reproduced'
            and k.HEX.fullmatch(shell_contract.get('evidenceSha256', '')),
            'NATIVE_LOAD_SHELL_CONTRACT_REQUIRED', 'UNMEASURED')
-    # The selected k6 image's Alpine ash uses 512-byte file-limit blocks.
-    # The runtime /proc read below independently proves the effective limit.
     maximum = cfg['maxTraceBytes']
-    limit = maximum // 512 * 512
-    k.need(limit > 0, 'NATIVE_LOAD_TRACE_BOUND')
+    trace_limit = maximum // 512 * 512
+    k.need(trace_limit > 0, 'NATIVE_LOAD_TRACE_BOUND')
+    scenarios = driver.expected_plans(manifest)[0]['scenarios']
+    writes = sum(row['plannedMaximum'] for name, row in scenarios.items() if name.startswith('w_'))
+    estimated_bytes = writes * BYTES_PER_WRITE + EVENT_LOG_OVERHEAD
+    mib = 1024**2
+    event_limit = max(min(FILES['k6.log'], trace_limit), ((estimated_bytes + mib - 1) // mib) * mib)
+    # The shell has one file-size limit for both outputs. The exporter checks
+    # each file independently; /proc proves the image's 512-byte block limit.
+    limit = max(trace_limit, event_limit)
     wrapper = (k.M7 / driver.SCRIPT).read_bytes()
     files = dict(FILES)
+    files['k6.log'] = event_limit
     if cfg['observer'] == 'scheduling-v1':
         files[TRACE_FILE] = maximum
-    config = dict(runId=receipt['runId'], files=files, seconds=receipt['activeDeadlineSeconds'])
-    if TRACE_FILE in files:
-        config['rangeBytes'] = TRACE_CHUNK_BYTES
+    config = dict(runId=receipt['runId'], files=files, seconds=receipt['activeDeadlineSeconds'],
+                  rangeBytes=TRACE_CHUNK_BYTES)
     publication = (c.get('nativeLoad') or {}).get('writerPublication')
     if publication is not None:
         receipt['writerPublication'] = publication_selection(publication)
@@ -140,7 +150,7 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
     # This is disposable local Pod storage; requests/limits and the full new Pod
     # must still enter the operating owner's fit/quota admission.
     pod['volumes'].append({'name': 'artifacts', 'emptyDir': {'sizeLimit': str(sum(files.values()) + 4096)}})
-    receipt.update(captureMode='owned-exec-files', files=files, fileLimitBytes=limit,
+    receipt.update(captureMode='owned-exec-files', files=files, fileLimitBytes=limit, rangeBytes=TRACE_CHUNK_BYTES,
                    shellContract=shell_contract, jobSha256=k.hashed(job), driverManifest=manifest)
     return job, secret, receipt
 
@@ -211,11 +221,19 @@ def terminal_process(c, wanted, job, pod, final_job, final_pod):
     return process
 
 
-def copy_trace(kube, command, target, size, namespace, remaining):
-    """Keep the controller's memory flat as the per-file trace budget grows."""
+def copy_artifact(kube, command, target, size, namespace, remaining, range_bytes):
+    """Transfer large artifacts in bounded ranges when the exporter supports them."""
+    import native_load as n
+    if range_bytes is None or (target.name != TRACE_FILE and size <= range_bytes):
+        data = kube.call(command + ['read', target.name], data=b'', namespace=namespace, timeout=min(120, remaining()))
+        if isinstance(data, str):
+            data = data.encode()
+        k.need(isinstance(data, bytes) and len(data) == size, 'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
+        n.private(target, data)
+        return
     with tempfile.NamedTemporaryFile(dir=target.parent, prefix='.' + target.name + '.') as stream:
-        for offset in range(0, size, TRACE_CHUNK_BYTES):
-            length = min(TRACE_CHUNK_BYTES, size - offset)
+        for offset in range(0, size, range_bytes):
+            length = min(range_bytes, size - offset)
             data = kube.call(command + ['read-range', target.name, str(offset), str(length)],
                              data=b'', namespace=namespace, timeout=min(120, remaining()),
                              output_limit=length)
@@ -331,18 +349,14 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
     meta = json.loads(raw)
     k.need(meta.get('kind') == 'm7-native-artifacts-v1' and meta.get('runId') == receipt['runId']
            and set(meta.get('files', {})) == set(receipt['files']), 'NATIVE_LOAD_MANIFEST_BINDING')
+    # Older scheduling exporters already supported ranges. Legacy summary-only
+    # exporters must continue to use the single-read protocol.
+    range_bytes = TRACE_CHUNK_BYTES if TRACE_FILE in receipt['files'] or receipt.get('rangeBytes') == TRACE_CHUNK_BYTES else None
     for filename, maximum in receipt['files'].items():
         expected = meta['files'][filename]
         k.need(type(expected.get('bytes')) is int and 0 < expected['bytes'] <= maximum,
                'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
-        if filename == TRACE_FILE:
-            copy_trace(kube, command, out / filename, expected['bytes'], ns, remaining)
-            continue
-        data = kube.call(command + ['read', filename], data=b'', namespace=ns, timeout=min(120, remaining()))
-        if isinstance(data, str):
-            data = data.encode()
-        k.need(isinstance(data, bytes) and len(data) == expected['bytes'], 'NATIVE_LOAD_ARTIFACT_BOUND', 'UNMEASURED')
-        n.private(out / filename, data)
+        copy_artifact(kube, command, out / filename, expected['bytes'], ns, remaining, range_bytes)
     limits = (out / 'file-limits.txt').read_text()
     match = re.search(r'^Max file size\s+([0-9]+)\s+([0-9]+)\s+bytes\s*$', limits, re.M)
     k.need(match and int(match[1]) == int(match[2]) == receipt['fileLimitBytes'], 'NATIVE_LOAD_FILE_LIMIT_UNPROVEN')

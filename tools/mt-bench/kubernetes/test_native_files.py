@@ -92,7 +92,7 @@ class NativeFiles(unittest.TestCase):
             f.terminal_process(c, wanted, job, pod, job, None)
         self.assertTrue(f.terminal_process(c, wanted, job, pod, job, pod)['complete'])
 
-    def test_large_trace_is_copied_in_bounded_exact_ranges(self):
+    def test_large_artifacts_are_copied_in_bounded_exact_ranges(self):
         class Reader:
             def __init__(self):
                 self.bad = False
@@ -106,22 +106,22 @@ class NativeFiles(unittest.TestCase):
                 return b'x' * (length - 1 if self.bad and offset else length)
 
         with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / 'trace.gz'
+            path = Path(tmp) / 'k6.log'
             reader = Reader()
-            size = 2 * f.TRACE_CHUNK_BYTES + 1
-            f.copy_trace(reader, [], path, size, 'owned', lambda: 30)
+            chunk_bytes = 4096
+            size = 2 * chunk_bytes + 1
+            f.copy_artifact(reader, [], path, size, 'owned', lambda: 30, chunk_bytes)
             self.assertEqual(path.stat().st_size, size)
             self.assertEqual(path.stat().st_mode & 0o777, 0o600)
             self.assertEqual([(offset, length) for _, _, offset, length in reader.calls],
-                             [(0, f.TRACE_CHUNK_BYTES), (f.TRACE_CHUNK_BYTES, f.TRACE_CHUNK_BYTES),
-                              (2 * f.TRACE_CHUNK_BYTES, 1)])
+                             [(0, chunk_bytes), (chunk_bytes, chunk_bytes), (2 * chunk_bytes, 1)])
             self.assertTrue(all(mode == 'read-range' for mode, _, _, _ in reader.calls))
             self.assertEqual(reader.options['output_limit'], 1)
             self.assertEqual(reader.options['timeout'], 30)
-            failure = Path(tmp) / 'partial.gz'
+            failure = Path(tmp) / f.TRACE_FILE
             reader.bad = True
             with self.assertRaisesRegex(k.Refused, 'NATIVE_LOAD_ARTIFACT_BOUND'):
-                f.copy_trace(reader, [], failure, size, 'owned', lambda: 30)
+                f.copy_artifact(reader, [], failure, size, 'owned', lambda: 30, chunk_bytes)
             self.assertFalse(failure.exists())
             self.assertEqual(list(Path(tmp).iterdir()), [path])
 
@@ -198,6 +198,27 @@ class NativeFiles(unittest.TestCase):
         self.assertFalse(pod['automountServiceAccountToken'])
         self.assertNotIn('ttlSecondsAfterFinished', rendered['spec'])
         self.assertEqual(receipt['outcomeGate'], 'UNMEASURED')
+
+    def test_long_write_offer_has_independent_event_and_trace_budgets(self):
+        c, job, options = configured()
+        c['workload'].update(loadSeconds=2400, offeredRps=250)
+        c['workload']['driverPlan']['maxTraceBytes'] = 64 * 1024**2
+        # Each of the three write scenarios allows up to 54,546 accepted requests.
+        # The 40-minute stream needs 80 MiB with the writer's per-event allowance.
+        for observer in ('scheduling-v1', 'summary-v1'):
+            with self.subTest(observer=observer):
+                c['workload']['driverPlan']['observer'] = observer
+                rendered, secret, receipt = n.package(c, job, b'// source control\n', TENANTS, **options)
+                cfg = json.loads(secret['stringData']['export.json'])
+                self.assertEqual(receipt['files']['k6.log'], 80 * 1024**2)
+                self.assertEqual(cfg['files'], receipt['files'])
+                self.assertEqual(cfg['rangeBytes'], f.TRACE_CHUNK_BYTES)
+                self.assertEqual(receipt['fileLimitBytes'], 80 * 1024**2)
+                trace = cfg['files'].get(f.TRACE_FILE)
+                self.assertEqual(trace, 64 * 1024**2 if observer == 'scheduling-v1' else None)
+                pod = rendered['spec']['template']['spec']
+                volume = next(v for v in pod['volumes'] if v['name'] == 'artifacts')
+                self.assertEqual(int(volume['emptyDir']['sizeLimit']), sum(cfg['files'].values()) + 4096)
 
     def test_missing_shell_or_resource_measurement_refuses_before_actor_creation(self):
         c, job, options = configured()

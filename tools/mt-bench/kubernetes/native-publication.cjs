@@ -8,7 +8,6 @@ const { pipeline } = require('node:stream/promises');
 
 const UUID = /^[a-f\d]{8}(?:-[a-f\d]{4}){3}-[a-f\d]{12}$/i;
 const domains = ['entries', 'devicestatus', 'treatments'];
-const maxBytes = {'k6.log': 64 * 1024 ** 2, 'k6-summary.json': 4 * 1024 ** 2};
 const counters = /^(?:writes_(?:ok|refused|uncertain)(?:_documents)?(?:\{kind:(?:entries|devicestatus|treatments|profile)\})?|m7_looping_(?:documents|requests)\{request_shape:(?:ds_(?:loop|loop_extra|trio_enacted|trio_suggested|aaps|cgm_battery)|tx_(?:loop_v1|trio_v1|aaps_v3)|profile_loop_v1)\})$/;
 
 function need(condition, code) {
@@ -23,10 +22,10 @@ function directory(parent, name) {
   return target;
 }
 
-function checkedInput(root, name, bytes) {
+function checkedInput(root, name, bytes, maximum) {
   const target = path.join(root, name);
   const stat = fs.lstatSync(target);
-  need(stat.isFile() && stat.size === bytes && bytes > 0 && bytes <= maxBytes[name], 'INPUT');
+  need(Number.isSafeInteger(maximum) && stat.isFile() && stat.size === bytes && bytes > 0 && bytes <= maximum, 'INPUT');
   return target;
 }
 
@@ -101,7 +100,7 @@ async function describe(file) {
   return {bytes, sha256: digest.digest('hex')};
 }
 
-async function publish(root, runId, podUid, destination, meta) {
+async function publish(root, runId, podUid, destination, meta, eventLimit = 64 * 1024 ** 2) {
   need(/^[a-z0-9-]{1,100}$/.test(runId) && UUID.test(podUid) && meta?.runId === runId &&
        meta.kind === 'm7-native-artifacts-v1' && Number.isInteger(meta.exitCode) &&
        meta.exitCode >= 0 && meta.exitCode <= 255 && path.isAbsolute(destination), 'IDENTITY');
@@ -109,6 +108,7 @@ async function publish(root, runId, podUid, destination, meta) {
   const stage = fs.mkdtempSync(path.join(attempt, '.publishing-'));
   const target = path.join(attempt, 'writer');
   const files = {};
+  const maxBytes = {'k6.log': eventLimit, 'k6-summary.json': 4 * 1024 ** 2};
   const problems = {};
   const accepted = Object.fromEntries(domains.map(domain => [domain, 0]));
   let metrics;
@@ -116,7 +116,7 @@ async function publish(root, runId, podUid, destination, meta) {
     for (const name of Object.keys(maxBytes)) {
       const dest = path.join(stage, name);
       try {
-        const input = checkedInput(root, name, meta.files?.[name]?.bytes);
+        const input = checkedInput(root, name, meta.files?.[name]?.bytes, maxBytes[name]);
         if (name === 'k6.log') {
           await pipeline(acceptedLines(input, runId, accepted), fs.createWriteStream(dest, {mode: 0o600, flags: 'wx'}));
         } else metrics = writeSummary(input, dest);
