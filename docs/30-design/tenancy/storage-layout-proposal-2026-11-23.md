@@ -347,3 +347,41 @@ transfer even when a heap visit is required. A covering index can also avoid hea
 covers the query and the visibility map permits it. The update rate and measured 72% index footprint
 make actual plans preferable to assuming a new covering index pays for its storage.
 [PostgreSQL 16 index-only scans](https://www.postgresql.org/docs/16/indexes-index-only-scans.html)
+
+### What depends on insertion order
+
+**Read-derived.** A fresh design can use a document's typed identity to settle ties after the
+requested sort keys. That would change the evaluator contract. The SQL and in-process paths
+currently use insertion order, and earlier work observed different evaluator output on tied
+documents. Compare output from both paths on equal-time entries carrying different values and
+reversed ID order before making that choice. [Evaluator order decision](multitenancy-decisions.md#view-reads-total-order)
+
+The public v3 history URL resumes strictly after a timestamp. Its header alternative rounds to
+seconds and includes the boundary. Neither accepts the last ID of a page. When timestamps can
+tie, continuing inside a group requires carrying the full key across requests. An opaque cursor
+can encode the modification stamp, ID kind and stored ID for one collection. The tenant write
+clock separately orders committed writes so a later commit cannot appear behind a client's
+watermark. The four limited-page probes above checked tie choices within a page.
+See core `lib/api3/generic/history/operation.js` and `lib/storage/postgres-write-clock.js`.
+
+**Reproduced in the v1 resend parity corpus.** A resend without a unique identity can match two
+entries on the same `sysTime` and `type`. The earlier stored entry receives the update even when
+it carries the higher ID. The response can identify the last match. Treatment fallback first
+uses the existing identifier and date priority, then arrival order for the remaining ties.
+These cases can arise on fresh installations. See core
+`tests/v1-resend-official-parity.integration.test.js` and `lib/storage/treatment-key-order.js`.
+
+**Read-derived from measured relation sizes.** On the 93,961-document typed fixture, the two
+unique ordinal indexes occupy 6,103,040 B. The counter relations including their own indexes
+occupy 516,096 B. Together they account for 6.65% of the 99,475,456 B for these two collections.
+Net savings across the database require a comparative load with the replacement access paths.
+The retained inputs are `lab/index-sizes.json` and `lab/frozen-size.json`.
+
+**Design option.** Preserve the legacy selection and reply behavior only for ambiguous groups,
+or explicitly choose a new winner for future v1 writes. Test a second resend, deletion of the
+current winner and a restore before repricing a design without the per-row ordinal. Across hot
+and cold data, the public sort and limit still select one ordered result, and sync must traverse
+edits and deletions. Late uploads and lookups by ID or identifier can still require a per-document
+location. Compare the same fixture in a single table and split across tiers, with an equal-key
+pair on opposite sides. The [counter and restore decision](multitenancy-decisions.md#storage-machinery-removal)
+remains in force.
