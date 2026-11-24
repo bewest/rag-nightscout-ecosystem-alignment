@@ -108,12 +108,16 @@ test('a later point scores its own live misses and duplicates after one connecto
   }
   const pass = { t: 'pass', site: 's1', kind: 'entries', at: until, status: 200 };
   const options = { from, until, missAfterMs: 360000 };
-  // The poller still sees old duplicated rows when it reads the shared database.
-  const observed = [...lines, { ...pass, duplicates: [[enteredAt - 1000, 2]] }];
+  // An earlier observation stays in its own point. The same duplicate observed again is a current failure.
+  const oldDuplicate = { ...pass, at: from - 1, duplicates: [[enteredAt - 1000, 2]] };
+  const observed = [...lines, oldDuplicate];
   const ok = score.summarize(input, observed, options);
   assert.equal(ok.verdict, 'PASS');
   assert.equal(ok.backfill.scored, 0);
   assert.equal(ok.live.scored, ok.live.stored.n);
+  const stillDuplicated = score.summarize(input, [...observed, { ...oldDuplicate, at: until }], options);
+  assert.equal(stillDuplicated.duplicates, 1);
+  assert.equal(stillDuplicated.verdict, 'FAIL');
   const current = lines.find(line => line.kind === 'entries' && line.key <= until - options.missAfterMs);
   const missing = score.summarize(input, observed.filter(line => line !== current), options);
   assert.equal(missing.misses, 1);
