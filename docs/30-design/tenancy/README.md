@@ -1,28 +1,10 @@
 # Tenancy: what to read and maintain
 
-*Contributor-facing living reading guide, current with the release decisions of
-2026-11-16. Each document below owns one kind of fact; it links to the others
-rather than restating them. [Multitenancy decisions](multitenancy-decisions.md)
-own adopted policy (D1–D23 and the later programme rows), the [queue](../../../queue/work-queue.yaml) owns claimed item
-state and the [execution log](execution-log.md)
-owns joins, acceptance, measurement and ownership. Release directories carry only what a
-release ships; 16.0.0 ships no multitenant role. Retired journals, answered packets and
-superseded analyses are in the [tenancy archive](../../archive/tenancy/README.md);
-a date in a filename does not establish currency.*
+The multitenant candidate uses writer-driven notifications, resident evaluator windows and tenant-routed realtime. The single-site server keeps its MongoDB path. Start with the [runtime topology](runtime-topology.md), then follow a [clinical write through evaluation and browser delivery](evaluator-realtime-communication.md). The [decisions in force](decisions-in-force.md) index links to the maintainer's adopted contracts.
 
-For a first reading, start with [runtime topology](runtime-topology.md) for roles
-and placement, then [evaluator/realtime communication](evaluator-realtime-communication.md)
-for the current stream, bounded clinical state and separate raw storage delivery.
-Use [deployment bindings](deployment-bindings-and-public-names.md) for configuration
-and trust, then [production sequencing](production-critical-path.md) for evidence
-and admission. The [selected runtime record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16)
-owns functional qualification; the same report owns separately attributed
-operating measurements. Neither a design diagram nor an old run grants capacity. The release record is a journal of executed work, not
-the architecture explanation.
+For **candidate 5**, the [dated execution record](execution-log.md#candidate-5-qualification-and-nominal-discovery) identifies the qualified core and deploy revisions, the local connector measurements, the paid experiment and their admission limits. The [production guide](production-critical-path.md) explains how these results are used. The [milestone dashboard](multitenant-delivery-dashboard.md) preserves the recorded promotion decisions. The [queue](../../../queue/work-queue.yaml) owns individual work items. The [16.0.0 release record](../../../releases/cgm-remote-monitor-16.0.0/contents.md) covers a release with no multitenant role.
 
-For a diagram-first review, open the [multitenant database and component ownership
-page](../../../site/pages/multitenant-database-design.html), rendered from the SQL
-guide below.
+For storage, read the [SQL guide](sql-and-migration-architecture.md) for tenant isolation, history and restore. The [database diagrams](../../../site/pages/multitenant-database-design.html) render its component and storage contracts. The [layout study](storage-layout-proposal-2026-11-23.md) compares measured alternatives. The [diagram collection](diagrams/README.md) and [tenancy archive](../../archive/tenancy/README.md) identify the source and date of earlier designs.
 
 ## State, sequencing and decisions
 
@@ -30,9 +12,9 @@ guide below.
 |---|---|
 | [Delivery dashboard](multitenant-delivery-dashboard.md) | Generated milestone claims and the acceptance ledger. Edit the queue and `multitenant-delivery-status.json`, then `make queue`. |
 | [Delivery roadmap](multitenant-delivery-roadmap.md#milestones-and-continuous-integration) | Delivery boundaries and the M0–M5, M6a–M6d and M7 promotion criteria. |
-| [Completion schedule](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06) | Batch sequence, lane ownership and [completion-focused coordination](multitenant-integration-batching-plan-2026-11-06.md#completion-focused-coordination). |
-| [M5/M6 decision index](m5-m6-decision-list.md) | Every settled policy topic with its decision row; no human-policy topic is open. |
-| [Production critical path](production-critical-path.md) | Production closure criteria, diagnostic/acceptance sequencing and conditional topology/HA decisions; current blockers remain in the queue/release records. |
+| [Completion schedule](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06) | November batch sequence and [completion-focused coordination](multitenant-integration-batching-plan-2026-11-06.md#completion-focused-coordination). |
+| [M5/M6 decision index](m5-m6-decision-list.md) | Settled M5/M6 policy questions from the November 10 review. |
+| [Production critical path](production-critical-path.md) | Production closure criteria, diagnostic/acceptance sequencing and conditional topology/HA decisions; current measurements are in the execution log. |
 
 ## Decisions and contracts
 
@@ -52,14 +34,14 @@ guide below.
 |---|---|
 | [Single and multitenant architecture](single-and-multitenant-architecture.md) | Mode comparison, compatibility and the [source-pinned service and restore reference](single-and-multitenant-architecture.md#current-service-composition-and-restore-integration-2026-11-07). |
 | [Runtime topology](runtime-topology.md) | Reusable roles, scale envelopes, private APIs and the [logical REST/worker map](runtime-topology.md#logical-rest-cohesion-and-worker-placement). |
-| [Private API composition and scaling plan](selectable-endpoints-and-api-scaling-plan.md) | The adopted `serve.internal` listener, graceful shutdown, fixed-roster API replicas and their acceptance matrix. |
-| [Realtime sharding plan](realtime-sharding-plan.md) | Implemented fixed-roster tenant placement and controlled moves, their source-scoped qualification, and remaining topology/capacity boundaries. |
-| [Evaluator/realtime communication](evaluator-realtime-communication.md) | Stream acceptance, clinical completion and delivery contracts; the [single-evaluator efficiency plan](evaluator-realtime-communication.md#single-evaluator-efficiency-plan) owns current priorities, measured comparisons and integration boundaries. |
-| [Evaluator scaling options](evaluator-scaling-options-2026-11-19.md) | Proposed: collected options for raising the evaluator ceiling (in-process efficiency, worker threads, K>1 slicing, intake split, stream router, Debezium/broker, publications), the 2026-11-19 evidence and the measurements that decide. |
-| [Storage layout proposal](storage-layout-proposal-2026-11-23.md) | Proposed, not adopted: typed entries and treatments, device status by tenant-hour; measured 1.94 → 0.36 MB per tenant-day against MongoDB 0.38/0.24; gates per stage. |
-| [Writer-driven refactor ledger](writer-driven-refactor-ledger-2026-11-20.md) | Living list for the writer-driven transport: what goes into the S4 candidate, what retires at adoption, and refactors deferred until a measurement needs them. |
+| [Private API composition and scaling plan](selectable-endpoints-and-api-scaling-plan.md) | Private listener and graceful shutdown decisions, with the November 10 transport and fixed-roster acceptance plan. |
+| [Realtime sharding plan](realtime-sharding-plan.md) | Static hash ownership, reconnect behavior and the retained fixed-roster move evidence. |
+| [Evaluator/realtime communication](evaluator-realtime-communication.md) | Writer-owned pending work, evaluator completion, raw storage events, browser frames and notification handoff. |
+| [Evaluator scaling options](evaluator-scaling-options-2026-11-19.md) | November scaling experiments and the decisions that selected more slices and cheaper cycles. |
+| [Storage layout proposal](storage-layout-proposal-2026-11-23.md) | Typed entries and treatments remain on an experiment branch. The tenant-hour device-status layout is parked. Candidate 5 uses JSONB. |
+| [Writer-driven refactor ledger](writer-driven-refactor-ledger-2026-11-20.md) | S4 join contents, pgstream retirement inventory and deferred refactors. |
 | [SQL and migration architecture](sql-and-migration-architecture.md) | Table families, RLS and grants, tenant clock/order, migrations and restore inclusion. |
-| [Counter and restore options](counter-and-restore-options.md) | Clinical time, public history, implemented insertion order and internal stream progress; current recovery obligations and retained alternatives. |
+| [Counter and restore options](counter-and-restore-options.md) | Clinical time, public history, implemented insertion order and evaluator pending work; current recovery obligations and retained alternatives. |
 | [Retained legacy history proof plan](../../archive/tenancy/postgres-tenant-clock-proof-2026-11-06.md) | Original public-history no-missed-write controls and source-scoped experiment design; not current internal CDC sequencing or dispatch. |
 
 ## Deployment
@@ -73,8 +55,7 @@ guide below.
 ## Dispatch-era plans still cited by release records
 
 These keep their route/domain design, seam plans and dated checkpoints; their
-heads and "next" statements describe the original dispatch. Current sequencing is
-in the completion schedule above.
+heads and "next" statements describe the original dispatch. Current runs and lane ownership are in the [execution log](execution-log.md).
 
 | Document | Retained for |
 |---|---|
@@ -95,7 +76,7 @@ in the completion schedule above.
 ## Keeping this path useful
 
 Correct a rule in its decision or contract home and record acceptance in the
-release records and status sources. Do not append execution journals to the
+[execution log](execution-log.md) and the applicable status source. Do not append execution journals to the
 roadmap or the decision reference. When a document here is superseded, follow
 [document control](../../00-overview/DOCUMENT-CONTROL.md#35-changing-a-document):
 move it to the archive with a retention note and an index row, and repoint every

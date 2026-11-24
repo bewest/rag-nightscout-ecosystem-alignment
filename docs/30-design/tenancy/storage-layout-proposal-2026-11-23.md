@@ -1,6 +1,6 @@
 # Multitenant clinical storage layout: proposal
 
-*Contributor- and maintainer-facing. **Stage 1 has a measured candidate (section 10). Stage 2 built and parked 2026-11-24** ([devicestatus-hour-chunks](multitenancy-decisions.md#devicestatus-hour-chunks)); corrections from that build are in section 9. Measured against cgm-remote-monitor
+*Contributor- and maintainer-facing. **Candidate 5 keeps JSONB. Stage 1 is held on the typed-storage branch. Stage 2 was built and parked on 2026-11-24** ([devicestatus-hour-chunks](multitenancy-decisions.md#devicestatus-hour-chunks)); corrections from that build are in section 9. Measured against cgm-remote-monitor
 `2dee799c8e` (the #8898 round core) on PostgreSQL 16.15 and MongoDB 8.0, with 100 synthetic tenants seeded through the
 product write path at 2 and 14 days of looping history. Figures are labelled measured or read-derived. Raw evidence
 stays local: `HANDOFF-pg-bytes-20261123.md` (lane S) and `HANDOFF-storage-alternatives-20261123.md` (lane R). Decisions
@@ -30,7 +30,9 @@ days** in the 100-tenant census (reproduced, retained `pg-bytes-20261123/out/*02
 These records cover settings, credentials, policy and lifecycle events. The forecast includes their measured
 footprint. Removing a hypothetical clinical audit log supplies no further reduction.
 
-This proposal goes further, in two stages:
+The [candidate 5 join](execution-log.md#candidate-5-qualification-and-nominal-discovery) took the treatment tie-order correction independently of the typed layout. **Reproduced on the held typed branch:** default resends and deep ISO lookups regressed against JSONB. A sparse lookup prototype improved the tested queries. Its product qualification and a matched 1k evaluator CPU comparison remain open. Retained evidence `HANDOFF-stage1-open-gates-20261124.md`.
+
+The original two-stage proposal priced:
 
 1. **Typed columns for entries and treatments**, with the fields that are not typed kept in a small remainder document.
 2. **Device status stored as one compressed row per tenant per hour.**
@@ -364,7 +366,7 @@ adopted.
   - the identity index;
   - the evaluator window read.
 
-Each stage is one lane with the gates above. Stage 2 can proceed without stage 1, and it is the larger saving:
+The original proposal priced stage 2 independently of stage 1. The measured disposition follows in section 9:
 device status is about 60 % of current bytes.
 
 ## 9. Corrections from the stage 2 build (2026-11-24, measured by lane D2)

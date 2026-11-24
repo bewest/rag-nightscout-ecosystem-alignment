@@ -1,20 +1,6 @@
 # Tenant admission, activity and recovery
 
-*Contributor-facing living guide, current with the release decisions of 2026-11-10.
-**Activity policy adopted 2026-11-10:** pause and suspend are the operator
-activity policy ([decision](multitenancy-decisions.md#activity-is-pause-suspend)), with the rows listed
-under [adopted activity policy](#adopted-activity-policy). Implementation is
-`MT-ACTIVITY-ELIGIBILITY` (fixed on its lane, not joined to #8898; the
-[queue](../../../queue/work-queue.yaml) owns its state and the
-[lane record](../../../reports/tenancy/activity-eligibility-2026-11-10/README.md)
-its measurements). The REST component direction below is recorded in the
-[release decisions](multitenancy-decisions.md#rest-api-component-and-replica-placement-2026-11-08).
-Mechanism assessment in the first three sections is **read-derived** from application
-`ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364`; later acceptance stays attributed to
-its actual heads in the [operation-window acceptance family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md).
-The [tenancy decisions](multitenancy-decisions.md#suspension-and-lifecycle)
-own the pause/suspend meanings and [owner authority](owner-authority.md) the
-owner and root boundaries.*
+This guide explains operator activity and the restore boundaries of the November 10 reference. The [activity policy](multitenancy-decisions.md#activity-is-pause-suspend) governs pause and suspend. The [generation-fenced restore decision](multitenancy-decisions.md#restore-suspend-drain-replace) supersedes the old cross-process cohort census and invalidation step. The first three sections describe the earlier implementation at `ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364`. [Historical restore measurements](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md) · [Activity evidence](../../../reports/tenancy/activity-eligibility-2026-11-10/README.md)
 
 ## One logical API does not require one listener or process
 
@@ -161,8 +147,7 @@ running work under an explicit race contract, and releases retained
 tenant-specific resources when safe. A small amount of shared eligibility and
 recovery observation remains; "no unnecessary background work" is not a measured
 promise of zero shared overhead. Operators keep separately authenticated
-inspection and recovery controls. Connector workers do not yet exist as a
-multitenant runtime (`roles.js:81`); they adopt the same eligibility when built.
+inspection and recovery controls. Pooled connector workers follow the tenant activity policy. The [candidate 5 discovery record](execution-log.md#candidate-5-qualification-and-nominal-discovery) gives the measured live and backfill scope.
 
 ## Focused future acceptance
 

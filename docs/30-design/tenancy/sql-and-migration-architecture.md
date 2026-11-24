@@ -1,5 +1,9 @@
 # SQL, migrations and tenant recovery architecture
 
+Candidate 5 stores clinical documents in shared PostgreSQL tables with tenant-bound access. A clinical write and its pending evaluator work commit together. The evaluator owns the completed clinical result. Realtime serves it to authorized viewers. Candidate 5 keeps JSONB clinical documents, the per-tenant insertion counter and the stored output frame. The adopted storage changes removed the row-size trigger and redundant indexes. [Writer-driven transport](multitenancy-decisions.md#writer-driven-transport-direction) · [Storage decision](multitenancy-decisions.md#storage-machinery-removal) · [Candidate evidence](execution-log.md#candidate-5-qualification-and-nominal-discovery)
+
+The SQL reference below records the November implementations on their named source revisions. The [current logical restore contract](multitenancy-decisions.md#tenant-copy-export) uses tenant COPY data, forward history correction and a generation fence. The platform owns [whole-deployment backup and rollback](multitenancy-decisions.md#platform-backup-and-test-fixtures).
+
 *Living contributor-facing architecture guide. Source reading verified 2026-11-07
 against cgm-remote-monitor `151de0248a1e4301c85b5c638185eec3ca8c38e6`
 (tree `3bb46431a19e604dc028768f0e72e6ad29616c26`). Mechanisms and diagrams below are
@@ -25,8 +29,7 @@ in the [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.m
 
 ## Clinical stream storage extension — selected branch, 2026-11-16
 
-The [adopted materializer contract](evaluator-realtime-communication.md#stream-fed-clinical-materializer--adopted-target-2026-11-16)
-uses the existing evaluator input consumer checkpoint for bounded accepted rows
+At the November 16 source, the [pgstream materializer](../../archive/tenancy/pgstream-communication-2026-11-16.md#stream-fed-clinical-materializer--adopted-target-2026-11-16) used the existing evaluator input consumer checkpoint for bounded accepted rows
 and unfinished XID cohorts. The completed consumer continues to own completed
 versions, result/frame/revision and due state. Transport acceptance and clinical
 completion are separate commits. No new durable inbox table is introduced.
@@ -50,7 +53,7 @@ Existing clinical-table
 restore/delete census includes these columns. Final qualification lives in the
 [selected integration record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16).
 
-The exact reviewed `0099_<domain>_storage_bytes` migration is common to standard
+In that source, the exact reviewed `0099_<domain>_storage_bytes` migration is common to standard
 and optional ordered variants. Its SQL does not depend on insertion ordinals, so
 it can commute with the existing empty-table ordering conversion. The migration
 inspector validates known names and exact checksums first, rejects duplicates,
@@ -58,10 +61,7 @@ and retains strict ordinary-prefix history and a required base migration. It
 computes pending work from applied names. No other operation gains this exception;
 historical SQL/checksums and the empty-table conversion requirement remain fixed.
 
-The public evaluator boot explicitly refuses optional selected multiworker intake
-until its separate grants and ownership path adopt clinical materialization. The
-maintained single-host default is the baseline; lower profile/schema/ownership
-controls remain useful without qualifying an obsolete serving path.
+That branch refused optional multiworker intake. The writer-driven join retired the stream receiver and slot. Candidate 5 uses [static evaluator slices](runtime-topology.md#logical-rest-cohesion-and-worker-placement).
 
 ## Scope and evidence
 
@@ -127,21 +127,13 @@ and admitted handler/storage contracts still bound actual coverage.
 
 ### Headless workload owners
 
-Realtime owns live connections; the evaluator is a headless worker and remains
-one current workload owner. Connector actors (`vcpool`) belong to background
-polling/egress work and submit clinical writes through the canonical API boundary;
-the [selected role registry](https://github.com/nightscout/cgm-remote-monitor/blob/5e112547b31252ec428747c821d3cd1b3684ce2b/lib/server/serve/roles.js)
-selects its explicit preview implementation. Fixed-roster evaluator assignment
-and realtime controlled placement have source-scoped implementation records;
-[runtime topology](runtime-topology.md) and release contents own their qualification.
-A replica count does not establish workload ownership or capacity. These worker
-contracts are separate from request-serving API replicas.
+Realtime owns live connections for its slice. The headless evaluator owns clinical work for its own slice. Connector actors submit clinical writes through the API. Tenant hash and ordinal determine assignment, and the platform binds routing to the same ownership rule. [Runtime topology](runtime-topology.md) · [Static hash ownership](multitenancy-decisions.md#static-hash-ownership)
 
 ### Private maintenance execution
 
 The lifecycle/restore controller executes as a private operator CLI, job or
 worker; the [ed2 operator tool](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/restore.js#L97)
-composes it outside API serving. Each serving instance supplies generic
+composes it outside API serving. In that reference, each serving instance supplied generic
 operation-admission, lifetime and invalidation hooks; those hooks do not place a restore engine or maintenance
 credentials in every API replica. A future command/status REST surface could
 request or observe maintenance while the privileged worker executes it separately;
@@ -151,7 +143,7 @@ owns the broader component explanation.
 
 ### Maintenance safety is distinct from desired activity
 
-The existing claim/generation-bound maintenance window determines whether an
+The November reference’s claim/generation-bound maintenance window determined whether an
 operation can run safely during recovery. Operator-controlled resource/activity
 policy asks which serving, ingestion, evaluation or connector work should run at
 all. That policy is decided as two durable flags, pause and suspend
@@ -176,10 +168,10 @@ The following ownership map does not introduce a generic SQL-over-HTTP service.
 |---|---|---|
 | Clinical documents, public write outcomes and history stamps | API executes canonical writes, including a writer's current authority. Socket/connector/other component commands enter the same application write boundary. Document, clock and insertion changes retain their transaction coupling. | API clinical writes and D23 socket forwarding exist. Additional internal command producers must use the admitted path; their implementation/acceptance remains separately scoped. |
 | Alarm acknowledgement / snooze | Realtime forwards the original client authorization and event to API; API persists suppression through its acknowledgement admission. Evaluator reads current suppression. | Existing [private authorization and mutation protocol](evaluator-realtime-communication.md#browser-authorization-and-mutations); realtime must not edit suppression rows as a substitute. |
-| Accepted input, clinical completion and raw delivery recovery | Evaluator owns durable accepted clinical state and atomically completed result/checkpoint/next due. Realtime consumes completed output and the independent raw storage tail, with its own delivery receipts and live cursors. | The [current stream contract](evaluator-realtime-communication.md) replaces independent warm snapshot acquisition. Cold/GAP/missing-history recovery may read consistent source state. Admitted component-owned storage remains direct; cross-component commands use their owned APIs. |
+| Clinical writes, completion and socket delivery | API writes the pending mark with the clinical change, then signals the evaluator. Realtime reads completed output and receives eligible storage events directly from the API. | [Writer-driven contract](evaluator-realtime-communication.md). A sweep recovers missed clinical hints. |
 | Notification intent, attempts and handoff | Evaluator's notification component owns durable producer/request/attempt state; realtime owns connected-browser fanout. Deliver an application handoff with stable request identity and durable retry outcome. | Existing [notification handoff](evaluator-realtime-communication.md#notification-intents-retries-and-alarm-handoff). Other components should not insert producer requests or edit attempt rows to impersonate its protocol. |
 | Credentials, owner configuration and current policy | Management/authority components own mutation checks, audit and invalidation. Consumers use their admitted authority/settings interfaces; data-plane requests retain their own current authorization. | Separate management audience and component interfaces exist. Cross-process consumers should invoke owned commands rather than edit these tables; this is not a claim that every authority operation has a new network endpoint. |
-| Maintenance exclusion, restore, deletion and activation | Private operator lifecycle controller coordinates each actual participant through its control API and owns controlled maintenance transactions. Explicit migration/provisioning tools own their separate catalogues and grants. | Existing fixed-cohort restore protocol. A table update or clinical API write alone cannot drain in-flight responses, clear another process's cache or authorize a deletion ceremony. |
+| Maintenance exclusion, restore, deletion and activation | Private operator lifecycle controller coordinates each actual participant through its control API and owns controlled maintenance transactions. Explicit migration/provisioning tools own their separate catalogues and grants. | The fixed-cohort protocol is the earlier reference. Current restore suspends the tenant, drains transactions, replaces data under the generation fence, then activates it. [Restore decision](multitenancy-decisions.md#restore-suspend-drain-replace) |
 
 ### Application command paths
 
@@ -196,20 +188,17 @@ flowchart LR
 
 ### Stream state and delivery ownership
 
-**Read-derived selected stream diagram.** The input and completed checkpoints
-have different commit boundaries. Raw storage events remain independent of the
-clinical window. The [communication contract](evaluator-realtime-communication.md)
-owns recovery, authority and compatibility; this view introduces no new table.
+**Read-derived writer-driven path.** The API marks pending work in the same transaction as the source change. The evaluator sweeps pending work and uses hints to start sooner. Browser frames use completed clinical output. Raw storage events have their own authorization and do not await an evaluator cycle. [Communication guide](evaluator-realtime-communication.md)
 
 ```mermaid
 flowchart TB
-  PG["Committed source + WAL"] --> PS["Platform pgstream service"]
-  PS --> Input["Durable input checkpoint<br/>clinical state + raw tail + observed work"]
-  Input --> Eval["Bounded clinical evaluator + due work"]
-  Eval --> Done["Atomic completed output<br/>covered versions + result + next due"]
-  Done --> RT["Realtime: completed frames and delivery receipts"]
-  Input -->|"independent raw storage mutations"| RT
-  RT --> Clients["Currently authorized clients"]
+  API["Tenant-authorized API write"] --> PG["PostgreSQL clinical rows and pending mark"]
+  API -.->|"post-commit hint"| Eval["Owning evaluator slice"]
+  PG -->|"read pending work and current rows"| Eval
+  Eval --> Done["Completed result and next due time"]
+  Done --> RT["Owning realtime slice"]
+  API -.->|"eligible storage events"| RT
+  RT --> Clients["Authorized sockets"]
 ```
 
 ### Component storage ownership
@@ -217,21 +206,20 @@ flowchart TB
 **Read-derived ownership matrix.** Each row is an admitted component's storage
 responsibility, not a mandatory process or a separate physical database. The two
 REST/API rows are responsibilities within one logical component, retaining their
-separate authority/listener contracts. The selected stream evaluator and realtime have distinct input/completion/delivery responsibilities,
-read-derived at core `5e112547b31252ec428747c821d3cd1b3684ce2b`. Privilege checks
+separate authority/listener contracts. The evaluator and realtime rows follow the [writer-driven decision](multitenancy-decisions.md#writer-driven-transport-direction). Privilege checks
 remain specific to the selected catalogue and operation.
 
 | Component | Admitted reads | Owned persistence / controlled writes |
 |---|---|---|
 | Logical REST/API — v1/v2/v3 data adapters | Clinical records; current authority and configuration | Canonical clinical documents, insertion counters and history clock in one transaction; admitted alarm suppression |
-| Realtime | Completed evaluator output; bounded raw mutation tail; current configuration and admitted authority | Delivery receipts and live cursor/connection state, without a second raw clinical projection |
-| Evaluator / notification component | Accepted streamed clinical state; consistent source recovery when required; current configuration and suppression | Input/observed work and completed result/checkpoint/next due; independent raw tail; notification producer state, requests and attempts |
+| Realtime | Completed evaluator output, current configuration and authority | Authorized frame and storage-event delivery, including live connection state |
+| Evaluator / notification component | Pending work, bounded clinical rows, settings and suppression | Completed result, next due time, notification requests and attempts |
 | Logical REST/API — owner/authority modules | Current authority, policy, owner configuration and secret references | Admitted credential, session, policy, owner-settings and secret mutations with audit |
-| Private operator lifecycle worker | Current authority, durable operations and pinned participant identities | Lifecycle windows, claims and audit; controlled clinical restore and forward history |
+| Private operator lifecycle worker | Current authority, tenant activity and restore generation | Suspension, controlled clinical replacement, audit and forward history correction |
 
 ### Lifecycle control boundary
 
-**Read-derived control diagram.** The participant group means every declared
+**Read-derived November 7 control diagram.** The participant group in this historical reference means every declared
 instance, including replicas. A load-balanced endpoint reaching just one instance
 cannot replace this control boundary. Controller orchestration belongs to the
 private operator worker; the receiving instances host participation hooks, not

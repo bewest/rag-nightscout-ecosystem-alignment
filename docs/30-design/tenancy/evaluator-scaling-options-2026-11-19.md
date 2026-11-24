@@ -1,12 +1,6 @@
 # Evaluator scaling options
 
-*Contributor-facing collection of proposals, 2026-11-19. Status: **proposed**, not a decision.
-Options can be added here as they come up. Measurements will be added to the results section as
-they arrive. It relates to
-[evaluator-scale-direction](multitenancy-decisions.md#evaluator-scale-direction) (profile first,
-then K processes), [private-stream-router](multitenancy-decisions.md#private-stream-router)
-(deferred routing for K>1) and
-[ack-path-tenant-independent](multitenancy-decisions.md#ack-path-tenant-independent).*
+The alternatives and results below follow the November 19 investigation. The adopted strategy adds evaluator slices and reduces work per cycle with identical clinical output. Worker threads and incremental plugin implementations were rejected. The writer-driven join retired the stream-router and broker proposals for this path. [Evaluator scaling decision](multitenancy-decisions.md#evaluator-scaling-strategy) · [Transport decision](multitenancy-decisions.md#writer-driven-transport-direction) · [Current capacity study](production-critical-path.md#immediate-m7-priority)
 
 ## Question
 

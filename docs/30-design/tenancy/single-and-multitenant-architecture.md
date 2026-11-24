@@ -1,23 +1,8 @@
 # Single and multitenant Nightscout: architecture and compatibility
 
-*Contributor-facing living explanation, groomed 2026-11-08; header 2026-11-10. The
-restore/Compose reference this page explains is cgm-remote-monitor
-`ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364`, recorded in the
-[publication measurement](../../../reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json).
-Draft PR #8898 has since moved on (M6a and M6b joins); its current head and
-verification are in the [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md),
-and private service composition is in the [runtime topology guide](runtime-topology.md).
-PR #8898 remains open/draft, not merged or released. Architecture interpretation
-is **read-derived**; linked runtime results are **recorded reproductions**, not
-new executions for this document. The retained shared-code/module survey is
-explicitly pinned to `83582e87`; it does not describe every file in the current
-candidate. Current delivery and milestone claims live in the
-[delivery dashboard](multitenant-delivery-dashboard.md).*
+Single-tenant Nightscout retains the single-site server and MongoDB. The multitenant branch places tenant-bound clinical writes behind the API on PostgreSQL, with evaluator and realtime slices. Read the [runtime guide](runtime-topology.md) for role ownership and the [candidate record](execution-log.md#candidate-5-qualification-and-nominal-discovery) for qualification.
 
-For the current multitenant implementation, read the [communication guide](evaluator-realtime-communication.md)
-and its linked selected-runtime qualification. The sections below retain the
-source-pinned single/multitenant comparison and earlier restore/Compose proof
-boundaries; they do not describe the selected stream's normal data path.
+The comparisons below are **read-derived** at the named sources. The ed2 Compose and restore reference has its own [publication receipt](../../../reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json). The shared-code survey describes `83582e87`. Use the measured records linked in each section for the boundaries of the earlier proofs.
 
 ## What the earlier proofs can inform
 

@@ -1,13 +1,8 @@
 # Deployment bindings, public names and load behavior
 
-*Living contributor-facing deployment contract and decision-preparation guide,
-reconciled 2026-11-12 against release decisions at alignment
-`8ae6f4a3729548de0c88cc0ee5b3c0aede9aba61`. Mechanisms below are **read-derived**;
-this edit runs no cluster or provider. [Release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md)
-and named reports own implementation, qualification and publication; the
-[queue](../../../queue/work-queue.yaml) owns claimed state. Resource profiles,
-sharing schedules and fleet arrangements are proposals unless adopted in their
-canonical decision home.*
+The current Kubernetes binding uses separate API, evaluator and realtime workloads. API replicas serve equivalent requests. Evaluator and realtime StatefulSet ordinals own tenant hash slices. Tanka renders the placement and a migration Job prepares the schema. The dedicated primary grows vertically. [Ordinal binding](multitenancy-decisions.md#statefulset-ordinal-scaling) · [Primary placement](multitenancy-decisions.md#one-large-postgresql-primary) · [Candidate measurements](execution-log.md#candidate-5-qualification-and-nominal-discovery)
+
+The one-Pod cohort, direct participant inventory and UDS layout below describe the November 12 reference and its portability questions. Its acceptance remains pinned to that topology. The public-name, tenant identity and trust requirements apply to each selected binding.
 
 A deployment binding translates application contracts into processes, addresses,
 credentials, placement and lifecycle actions. It reuses the same roles across
@@ -49,7 +44,7 @@ it supplies neither tenant authority nor permission to see data.
 
 ## What a Kubernetes binding must preserve
 
-The colocated reference uses a fixed participant roster and private Unix control
+The November 12 colocated reference used a fixed participant roster and private Unix control
 sockets. A normal TCP Service does not transport a filesystem socket. A colocated
 binding can place role containers in one Pod with a private shared socket volume.
 Independent role placement instead requires the selected private network binding
@@ -63,7 +58,7 @@ remain the database and admitted secret/artifact stores.
 | Responsibility | Candidate ordinary-resource binding | Acceptance that makes it equivalent |
 |---|---|---|
 | Public reachability | A Service/public-address adapter leads to the selected nginx/edge. No particular Ingress API is required. | Actual TLS, Host, forwarded-client identity, socket upgrades and trusted-peer behavior; unknown/conflicting names refuse. Public DATA ingress cannot bypass separately authenticated owner controls or reach private operator/database controls. |
-| Fixed application cohort | Separate containers/processes with the same explicit roster and private IPC; one-Pod placement is an initial candidate. | Effective UID/socket permissions, actual participants and incarnations, drains/invalidation acknowledgements, A restore and B continuity; individual container restart and whole-Pod replacement retain uncertainty/refusal semantics. |
+| November 12 fixed application cohort | Separate containers/processes with the same explicit roster and private IPC; one-Pod placement is an initial candidate. | Effective UID/socket permissions, actual participants and incarnations, drains/invalidation acknowledgements, A restore and B continuity; individual container restart and whole-Pod replacement retain uncertainty/refusal semantics. |
 | Non-secret configuration | Versioned ConfigMaps and image/config identity, rendered from deployment inputs. | Effective role/catalogue/tenant binding matches the declared generation; drift and partial rollout refuse where required. Image/config identity is evidence of intended inputs, not producer exclusion. |
 | Credential delivery | Narrow per-role Secret mounts or an admitted secret-delivery adapter; Vault retains the adopted cryptographic role. | Each workload can use only its declared credentials; service login/renewal/rotation and failure behavior pass. Kubernetes Secret storage/RBAC and workload creation authority enter the deployment trust record. Secret objects alone do not satisfy Vault custody or renewal. |
 | Explicit provisioning/migrations | Operator-executed command or controlled Job, separate from ordinary serving startup. | Idempotency/partial-failure recovery, effective grants/RLS, supported catalogue and read-only startup checks; retries or a Job completion flag cannot erase uncertain results. |

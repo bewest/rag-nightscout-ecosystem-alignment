@@ -14,7 +14,7 @@ accepted signing-key generations. It already carries current data permissions;
 local signature verification removes a cryptographic service dependency, rather
 than moving an existing permission database out of Vault.
 
-The secrets component protects recoverable credentials and private signing keys.
+Vault Transit protects recoverable tenant secrets. Roles derive token-signing keys from the deployment signing secret.
 For a new asymmetric token, its private key creates the signature; a public key
 checks the signature without permitting token creation. A JWT is the signed
 credential presented by a client, not its signing key. Existing NS-style HS256
@@ -184,12 +184,7 @@ Already-authorized in-flight work may finish. No stale permission window is adop
 
 ## Vault verification amendment
 
-For new-format tokens, private signing keys remain in the secrets component;
-serving workers verify asymmetrically signed tokens locally with provisioned public
-keys. This supersedes D22's requirement to send every verification to the secrets
-component. It does not export private/HMAC keys or weaken current authorization.
-Prototype algorithm: Ed25519; production JOSE/library/provider interoperability is
-an acceptance requirement before selecting/enabling the production format.
+Roles derive tenant- and purpose-specific signing keys in process. Signing and local verification use the [deployment signing secret contract](multitenancy-decisions.md#deployment-signing-secret). PostgreSQL holds the accepted version and current authority. The original verification prototype used Ed25519. The [signing-key join](execution-log.md#update--second-join-signing-follow-ups-and-harness-cleanup-on-local-branches-2026-11-20) records the later no-Vault issuance and rotation controls.
 
 Verification pins algorithm, issuer, audience, tenant, purpose and key binding;
 validates issued/not-before/expiry/lifetime; and rejects unknown keys. Key discovery
@@ -209,10 +204,7 @@ tenant-binding round trips; one snapshot is not a claim of one wire request.
 
 ## Dependency failures and acceptance
 
-With a trusted cached public key and available current PostgreSQL authority, existing
-new-format tokens continue ordinary data operations during a Vault outage. New
-issuance, reveal and secret consumption that requires Vault refuse. Unknown keys
-refuse rather than fall back. PostgreSQL authority outages refuse protected reads
+With signing material available to the role and current PostgreSQL authority, token issuance and verification can continue during a Vault outage. Operations that need the tenant data key, including reveal and connector-secret decryption, refuse while Transit is unavailable. Unknown signing keys refuse. PostgreSQL authority outages refuse protected reads
 and writes even when the token signature verifies. The [OIDC provider-outage decision](multitenancy-decisions.md#oidc-provider-outage-existing-access)
 allows existing human access only within its adopted lifetime and current
 Nightscout authority during an identity-provider outage. Provider-dependent
