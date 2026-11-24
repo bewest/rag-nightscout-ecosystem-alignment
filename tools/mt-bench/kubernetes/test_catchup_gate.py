@@ -71,6 +71,10 @@ class CatchupGate(unittest.TestCase):
         text = Path(g.__file__).with_name('execute.py').read_text()
         self.assertIn('catchup_gate.wait(', text)
         self.assertLess(text.index('catchup_gate.wait('), text.index("str(d / 'probe.cjs')"))
+        # The gate's stage function must not shadow the `catchup` module (execute.py imports it for catchup.observer).
+        import execute
+        self.assertTrue(hasattr(execute.catchup, 'observer'))
+        self.assertNotIn('\ndef catchup(', text)
 
 
 if __name__ == '__main__':

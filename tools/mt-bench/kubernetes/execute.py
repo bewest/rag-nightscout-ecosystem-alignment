@@ -357,7 +357,7 @@ def sql_bookend(d, out, c, objects, client, name):
     return value
 
 
-def catchup(d, out, c, objects, client, value):
+def wait_for_catchup(d, out, c, objects, client, value):
     """Viewer priming and load wait for the evaluator catch-up after restore (catchup_gate.py); the gate's
     duration is warm-up, recorded apart. Not caught up by the deadline: the stage is UNMEASURED."""
     import catchup_gate, clinical_sql
@@ -596,7 +596,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
     k.write(out / 'before.json', before)
     k.write(out / 'driver.json', readback)
     if load and settings.get('catchupGate') is not None:
-        catchup(d, out, c, objects, client, settings['catchupGate'])
+        wait_for_catchup(d, out, c, objects, client, settings["catchupGate"])
     if load and c.get('connectors'):
         # vcpool connector tenants (connectors/stage.py): entered before the probe, scored at the end.
         sys.path.insert(0, str(k.HERE / 'connectors'))
