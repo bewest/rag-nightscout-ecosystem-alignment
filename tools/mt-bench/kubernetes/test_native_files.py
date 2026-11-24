@@ -258,6 +258,9 @@ class NativeFiles(unittest.TestCase):
                             for name, data in value['stringData'].items(): (inputs/name).write_text(data)
                             for name, data in value.get('data', {}).items():
                                 (inputs/name).write_bytes(base64.b64decode(data, validate=True))
+                            if args[-1] != 'jsonpath={.metadata.uid}':
+                                raise AssertionError('unexpected Secret create response shape')
+                            return 'owned-secret'
                         else:
                             for actor in value['spec']['template']['spec'].get('initContainers', []):
                                 if actor['name'] == 'unpack-roster':
