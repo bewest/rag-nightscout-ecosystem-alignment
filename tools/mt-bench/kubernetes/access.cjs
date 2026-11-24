@@ -42,11 +42,18 @@ async function warmWitnesses(tenants,open,until,connectMs){
   }
   return observations;
 }
+// Loopback (the workstation's port-forward), or the edge Service's IPv4 ClusterIP when the controller runs in the
+// cluster (edge_access.py; NS_CAMPAIGN_ATTACH_SCOPE=pod is set only in the controller Pod).
+function scope(base,env=process.env){
+  if(/^(127\.0\.0\.1|localhost)$/.test(base.hostname))return true;
+  return env.NS_CAMPAIGN_ATTACH_SCOPE==='pod'&&/^(25[0-5]|2[0-4]\d|1?\d?\d)(\.(25[0-5]|2[0-4]\d|1?\d?\d)){3}$/.test(base.hostname);
+}
 async function run(tenants,base,io,{connectMs=5000,observeMs=5000,warmupMs=0}={}){
-  if(tenants.length!==2||!base.hostname.match(/^(127\.0\.0\.1|localhost)$/))throw Error('K8S_ACCESS_SCOPE');
+  if(tenants.length!==2||!scope(base))throw Error('K8S_ACCESS_SCOPE');
   const records=[],sockets=[],startedAt=Date.now();
   if(!Number.isSafeInteger(warmupMs)||warmupMs<0||!Number.isSafeInteger(startedAt+warmupMs))throw Error('K8S_SOCKET_PREWARM_BUDGET');
-  const lookup=(host,opts,cb)=>opts?.all?cb(null,[{address:'127.0.0.1',family:4}]):cb(null,'127.0.0.1',4);
+  const address=base.hostname==='localhost'?'127.0.0.1':base.hostname;
+  const lookup=(host,opts,cb)=>opts?.all?cb(null,[{address,family:4}]):cb(null,address,4);
   const agent=new http.Agent({lookup});
   const open=(host,timeout)=>io('http://'+host+':'+base.port,{transports:['polling'],agent,reconnection:false,timeout});
   const get=(host,token,exchange=false)=>new Promise((resolve,reject)=>{
@@ -120,7 +127,7 @@ async function main() {
     {warmupMs:process.argv[5]===undefined?0:Number(process.argv[5])*1000});
   console.log(JSON.stringify({ ...result, tenantRosterSize: tenants.length, witnessTenants: selected.map(row => row.id) }));
 }
-module.exports = { run, witnesses };
+module.exports = { run, scope, witnesses };
 if (require.main === module) main().catch(e => {
   if (e.socketEvidence) console.log(JSON.stringify({socketEvidence:e.socketEvidence}));
   console.error(/^K8S_[A-Z_]+$/.test(e.message) ? e.message : 'K8S_ACCESS_UNMEASURED');

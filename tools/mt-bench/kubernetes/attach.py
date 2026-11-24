@@ -52,7 +52,8 @@ assert edge_id()==edgeuid
 forward_log=live/'forward.log';packet=live/'packet'; apiport=control.get('edgePort',8080)
 forward=None
 import edge_access
-direct=edge_access.base_url(cfg['context'],ns,int(subprocess.check_output(kub+['get','service','edge','-o','jsonpath={.spec.ports[0].port}'],timeout=12).decode()))
+service=subprocess.check_output(kub+['get','service','edge','-o','jsonpath={.spec.clusterIP} {.spec.ports[0].port}'],timeout=12).decode().split()
+direct=edge_access.base_url(cfg['context'],ns,int(service[1]),service[0])
 try:
     if direct:
         # In-cluster controller: the edge Service, no port-forward (edge_access.py).
