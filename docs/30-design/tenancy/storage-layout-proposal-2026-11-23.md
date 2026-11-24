@@ -15,18 +15,29 @@ the data and not the multitenant machinery:
 - The synthetic documents match the maintainer's real-world range of 0.25–0.6 MB per tenant-day.
 - Non-clinical tables are about 230 KB per tenant and do not grow with days.
 
-[storage-machinery-removal](multitenancy-decisions.md#storage-machinery-removal) already removes the retired machinery
-(the `storage_bytes` trigger, the per-tenant counter, the stored output frame, and the duplicate and prefix indexes).
-Predicted from the measurements, that brings the layout to about 1.3 MB per tenant-day.
+Candidate 2 (`1aaa5af33`) includes the removal of the `storage_bytes` trigger and four redundant indexes.
+On the matched two-day schema replay, clinical storage fell from 1.865 to 1.546 MB per tenant-day (reproduced).
+The per-tenant counter preserves restore ordering. The stored evaluator frame serves cold realtime readers.
+The maintainer kept both. [Storage decision and measurements](multitenancy-decisions.md#storage-machinery-removal)
+
+**Clinical audit and change history.** At candidate 2, ordinary inserts and edits write the clinical document.
+V3 history filters the collection by `srvModified` (`lib/api3/generic/history/operation.js`). A soft delete
+marks the stored document for synchronization. The former size trigger updated the same row a second time.
+The remaining ordinal trigger maintains one counter per tenant in each ordered collection. Neither path
+creates database roles or appends an audit copy of each document (read-derived at `1aaa5af33`).
+Five operational audit tables plus owner settings history occupied **557,056 bytes at both two and fourteen
+days** in the 100-tenant census (reproduced, retained `pg-bytes-20261123/out/*02-seeded.sizes.tsv`).
+These records cover settings, credentials, policy and lifecycle events. The forecast includes their measured
+footprint. Removing a hypothetical clinical audit log supplies no further reduction.
 
 This proposal goes further, in two stages:
 
 1. **Typed columns for entries and treatments**, with the fields that are not typed kept in a small remainder document.
 2. **Device status stored as one compressed row per tenant per hour.**
 
-Together, on the same documents, they measured **about 0.36 MB per tenant-day**, which is where MongoDB is. Each stage
-is a separate decision with its own gates (section 6). Neither changes what the API returns or what single-tenant
-sites do.
+The scratch layouts together imply **about 0.36 MB per tenant-day**, including an estimated identity-index allowance.
+The API contract applies to both designs. Each has separate gates in section 6.
+[Device-status implementation decision](multitenancy-decisions.md#devicestatus-hour-chunks)
 
 ## 2. The problem, measured
 
@@ -40,8 +51,8 @@ sites do.
 
 ### Why the rows are large (measured unless marked)
 
-- **The size trigger writes every row twice.** An AFTER INSERT trigger updates each row just inserted. Removing it
-  saves 27 % (decided).
+- **The original size trigger wrote each row twice.** A scratch comparison suggested 27% savings. The later matched
+  replay measured 11.9% for removing the trigger and 17.1% with the four index removals.
 - **Indexes are about half of every table.** Entries carries 15 indexes and 11 generated columns, copied from
   single-site MongoDB's index list. Generated columns alone cost 120–136 B per row.
 - **Rows under about 2 KB are never compressed.** PostgreSQL compresses a value only when the whole row passes about
@@ -93,12 +104,20 @@ holding exactly the fields not represented by a column.
 | entries | `_id` (12-byte ObjectId, or text where `id_kind` is a string), `date bigint`, `type`, `sgv int2`, `mbg int2`, `direction`, `device`, `identifier`, `srvCreated`, `srvModified`, `utcOffset`, `insertion_ordinal` | every other field, plus `sysTime`/`dateString` when they differ from what `date` derives |
 | treatments | `_id`, `created_at` (text `COLLATE "C"`, as now), `eventType`, `insulin`, `carbs`, `duration`, `rate`, `absolute`, `enteredBy`, `identifier`, `srvCreated`, `srvModified`, `insertion_ordinal` | every other field |
 
-- **Indexes:** the decided set only (tenant ordinal unique, the window and history keys, identifier).
+- **Indexes:** the sizing experiment used keys for tenant ordinal, window reads, history and identifier. Additional index
+  removals require evidence of use and query plans. [Index decision](multitenancy-decisions.md#storage-machinery-removal)
 - **Measured on scratch copies of the 14-day rows:**
   - entries 146 MB against 721 MB;
   - treatments 139 MB against 464 MB.
-- **Lossless:** `sysTime` and `dateString` are dropped only where they equal what `date` derives; otherwise they stay
-  in `rest`.
+- **Value and query fidelity.** In the synthetic HTTP corpus at `official/dev` `79144cbd0`, two fresh MongoDB sites
+  produced equivalent results across 27 observations (reproduced). A v1 numeric date-range query returned seven
+  entries. V3 history returned all eight, including a string-valued date. V1 rendered a string-valued insulin field
+  as a number while v3 history preserved its original string. The comparison also caught float32 rounding, a lost
+  null, and a lost nested field. Retained evidence: `stage1-storage-oracle-20261123`, `reference-responses.json`
+  and `controls.log`.
+- Keep an original value in `rest` whenever promoting it to a column would discard a distinction visible on these
+  paths, including missing versus null. Numeric filter pushdown must preserve membership. Preserve `sysTime` and
+  `dateString` when they differ from the strings that `date` derives. Measure the lossless implementation's footprint.
 
 ### Stage 2 — device status by tenant-hour
 
@@ -113,21 +132,133 @@ index maps `_id` and `identifier` to the chunk.
 - **Updates and deletes:** a device-status update or delete rewrites its chunk. Read-derived: uploaders rarely update
   device status; this needs a count from a real-shaped corpus.
 
+The first adapter on core `a5402ca99` points to the complexity cost (read-derived). It presents a document view over
+the chunks, maintains identity and time bounds, rewrites chunks in triggers, and prunes the chunks read for a query.
+The scratch byte measurement preceded these structures. A fresh-install design should select one representation per
+collection after measuring the real reader, writer and restore paths. Historical lab fixtures alone do not justify
+maintaining two storage implementations.
+
+**Arrival-order replay at two history depths.** With 100 tenants over two days and 76,504 device-status inserts, the implemented
+chunks consumed **224.1 MB** after ordinary vacuum versus **174.8 MB** for the cleaned document layout
+(reproduced). The chunk table had 4,900 inserts and 71,604 updates. Its identity table stored 76,504
+key-to-location rows in 16.2 MB. These rows support lookup and uniqueness, and contain no copy of the document
+body. After a diagnostic full table rewrite, the two relations occupied 31.6 MB and 12.4 MB respectively.
+At fourteen days and 535,444 inserts, ordinary-vacuum sizes reached **726.1 MB with chunks versus 1,230.0 MB
+with the cleaned row layout**, a **41.0% saving** (reproduced). The identity table accounted for 115.2 MB.
+Each replay used one transaction per document as the serving role. The short seed and the deeper seed give
+different rates of space reuse. An alternative worth comparing writes each open-hour document once and
+seals the hour into a compressed chunk once, preserving immediate reads and late changes. Retained evidence:
+`devicestatus-chunks-20261123/bytes/d2s2{b,c}.json`, `d2s14{b,c}.json` and `full-2d.txt`.
+
 ### Stages 1 and 2 together
 
-**About 497 MB for 100 tenants over 14 days, 0.36 MB per tenant-day** (measured on scratch copies, including the
-identity index). MongoDB on the same documents: snappy 0.45, zstd 0.30 MB per tenant-day, including per-database
+**About 497 MB for 100 tenants over 14 days, 0.36 MB per tenant-day** (read-derived total of three measured scratch
+relations plus an estimated 25 MB for identity lookup). MongoDB on the same documents: snappy 0.45, zstd 0.30 MB per tenant-day, including per-database
 overhead.
 
-### Predicted database size per tier (decimal GB, before WAL and headroom)
+### Predicted database and primary volume sizes
 
-| tenants | current, 30 d | after the decided removals, 30 d | after this proposal, 30 d |
-|---|---|---|---|
-| 1k | 58.6 | 39.1 | 12.1 |
-| 5k | 292.9 | 196 | 60.7 |
-| 10k | 585.8 | 391 | 121 |
+> **Status note (reconciled 2026-11-24):** stage 2 is parked ([devicestatus-hour-chunks](multitenancy-decisions.md#devicestatus-hour-chunks)), so the columns and scenarios that include device-status chunks are priced options, not the current plan. The current plan is the "Candidate 2 cleanup" column (candidate 3 carries the same storage). Stage 1 is measured in section 10 and not adopted; device-status retention stays "keep everything" to match single tenant, with `PREDICTIONS_MAX_SIZE` parity measured separately (lane Q).
 
-The current column is measured, the other two predicted, with a 10 % allowance for incremental growth.
+Read-derived forecasts for 30 retained days per tenant at the synthetic uploader mix and cadence. The last two
+columns are compact-layout targets based on scratch tables. The implemented chunk writer gives higher estimates
+in the arrival-order forecast below. Values are decimal GB of PostgreSQL data and indexes before WAL, free space,
+backup copies and temporary restore space.
+
+| Tenants | Original layout | Candidate 2 cleanup | Cleanup plus device-status chunks | Chunks plus typed entries and treatments |
+|---:|---:|---:|---:|---:|
+| 1,000 | 59 | 49 | 27 | 12 |
+| 5,000 | 293 | 243 | 134 | 61 |
+| 10,000 | 586 | 486 | 268 | 121 |
+
+The model is `database MB = 12.3 + 0.44 × provisioned tenants + daily MB × retained tenant-days`. A retained
+tenant-day represents one day's history at the fixture's write rate. An inactive site's retained history still counts.
+
+- **Original, 1.938 MB/day.** The slope came from 100 tenants at two and 14 days. The model predicted 44.05 GB for
+  the original 10k short-history restore, which measured 44.24 GB. This validates that layout and workload.
+- **Candidate 2, about 1.61 MB/day.** Apply the matched two-day clinical byte ratio (309,108,736 / 373,006,336)
+  to the original slope. The earlier 391 GB forecast at 10k used a more optimistic scratch estimate of cleanup savings.
+  A second history depth through the candidate's API would measure the new slope directly.
+- **Device-status stage alone, about 0.88 MB/day.** The original entries and treatments slopes were 0.510 and
+  0.330 MB/day. Scale each by its two-day cleaned-to-original table-size ratio (about 0.864 and 0.820).
+  Add 0.166 MB/day for device status, from 187 MB of scratch chunks plus the estimated 25 MB identity index across
+  1,400 tenant-days and a 10% incremental-growth allowance. The implemented chunk metadata, indexes and live rewrites
+  still need a product-path measurement.
+- **Both stages, about 0.39 MB/day.** Apply the same 10% allowance to the combined scratch estimate.
+  At 10k tenants this gives **59 GB at 14 days, 121 GB at 30 days, 355 GB at 90 days and 1.43 TB at 365 days**.
+  Longer horizons extrapolate the same mix, write rate and compression. Retention remains a separate product decision.
+
+For a **10k, 30-day primary**, the proposed 200 GiB volume is plausible only under the combined layout forecast.
+121 GB is about 113 GiB. Allowing 32 GiB for WAL and keeping 25% of the volume free gives about 193 GiB. The reserve
+is an illustrative planning assumption. Peak WAL can exceed its target. With those same assumptions the chunk-only
+forecast needs about 375 GiB and candidate 2 about 646 GiB. Size backup storage and simultaneous restores separately
+from the serving primary. The dedicated-node measurements still determine latency and throughput.
+
+For **1,600 tenants each keeping three years**, 1,095 days per tenant gives 1,752,000 retained tenant-days.
+The read-derived database estimates are **3.40 TB** on the original layout, **2.81 TB** on candidate 2,
+**1.54 TB** with device-status chunks and **684 GB** with both stages. Under the same WAL and free-space
+assumptions the combined layout needs about **892 GiB of primary volume**, which fits a **1 TiB** primary.
+Every 0.10 MB change in the measured daily footprint changes the three-year database estimate by 175 GB.
+
+**Working full-history forecast using the implemented chunk writer: 1.13–1.30 TB of database data** for those
+1,600 tenants, assuming the typed entries and treatments achieve their projected 0.224 MB/day. The lower scenario
+starts at the measured fourteen-day footprint and extends it at the two-to-fourteen-day incremental rate
+(`(726,097,920 − 224,116,736) / 1,200` = 0.418 MB per additional tenant-day). The other scenario carries the
+fourteen-day average of 0.519 MB/day through all three years. These are two extrapolations from the same
+synthetic replay. With the WAL and free-space allowances above they imply **1.41–1.62 TiB** of primary volume.
+For 10,000 tenants at 30 days the same methods give **211–227 GB** of database data and **305–325 GiB** of
+primary volume. A longer steady workload and uploader mixes measure drift in either direction. The earlier
+684 GB and 121 GB figures describe the compact targets for the two installations.
+
+If the typed entries and treatments qualify first, the cleaned device-status table can continue to serve
+the full history. In the arrival-order replay it grew from 174,817,280 to 1,229,971,456 bytes across 1,200
+additional tenant-days, or 0.879 MB per tenant-day (reproduced, `devicestatus-chunks-20261123/bytes/d2s14b.json`).
+Adding the projected 0.224 MB/day for typed entries and treatments gives a **1.93 TB** three-year fallback
+for 1,600 tenants. This estimate assumes the typed footprint and preserves the same retention.
+
+### Where a three-year installation could save more
+
+At the fixture cadence of about 852 documents per tenant-day, this installation would retain about
+1.49 billion entries, treatments and device-status documents. The 684 GB forecast averages roughly 460 bytes
+per document, including indexes. On the same documents the measured single-site MongoDB growth rates of 0.38
+and 0.24 MB per tenant-day imply about 666 GB with Snappy and 420 GB with zstd in three years of incremental
+data and indexes. These are comparisons at this uploader mix. WiredTiger compresses records together in blocks
+and shares key prefixes within indexes. [MongoDB 8.0 storage engine](https://www.mongodb.com/docs/v8.0/core/wiredtiger/)
+
+**Keep every document.** Qualify a single representation for each collection first. The scratch typed entries
+and treatments had 89.3 MB and 60.9 MB of indexes respectively. Those indexes alone were about 30% of the
+combined 497 MB layout. Their query plans, use during representative API traffic, and identity and ordering
+obligations determine which can be combined. The 684 GB forecast already assumes the smaller index set.
+
+For deeper savings, TimescaleDB keeps recent data in rows and converts older time chunks to compressed columnar
+storage. An equivalent storage experiment here keeps 30 days in the combined layout and groups older complete
+documents by tenant, collection and day. Lane R measured 26.8 MB of cold chunk tables over 200 tenant-days.
+At 1,600 tenants this gives 248 GB for hot data, cold bodies and fixed costs, **before** the cold lookup and
+history structures. A historical correction, an identity-based resend, an export spanning the boundary and a
+restore interrupted during compaction all need to return the same documents in the same order. Retained
+evidence: `HANDOFF-storage-alternatives-20261123.md`. [TimescaleDB chunks and columnstore](https://www.tigerdata.com/docs/reference/timescaledb/hypertables)
+
+A prepaid PostgreSQL 16.15 scratch run priced one possible cold lookup table. Its unique key covered tenant,
+collection, identity kind and lookup value. Its row stored the destination day. Compactly encoding canonical
+ObjectId and UUID strings while preserving arbitrary UTF-8 keys reduced incremental table-plus-index bytes
+by **17% at one lookup row per document**. All lookup tuples decoded to their original values; a variant
+that lowercased opaque keys lost information. Two depths provided the incremental rates, with 327,168
+synthetic documents at the larger depth. At one lookup row per cold document, the three-year estimate for
+hot data, cold bodies and this table becomes **477 GB with packed keys or 524 GB with text**. At one lookup
+per ten documents the corresponding projections are **271 GB or 277 GB**. These examples use the compact
+target for the 30 hot days. Pricing that month with the implemented chunk writer adds 14–17 GB to each
+example, bringing the one-packed-key case to **491–494 GB**. Both lookup frequencies are illustrative.
+Some documents carry two lookup keys. Measure the actual
+frequency, order/history metadata, changes to old records, and live WAL before sizing volumes for this design.
+Retained evidence: `deep-history-locator-20261123/sizes.csv` and `locator.sql`.
+
+**Choose a shorter device-status history.** Keeping entries and treatments for three years but device status
+for 30, 90 or 365 days projects **416–419, 456–468 or 640–697 GB** respectively with the implemented
+chunk writer and proposed typed layout. The more compact scratch target projects 402, 418 or 491 GB.
+Older device-status uploads, including predictions and
+uploader state, disappear from historical API reads and exports. Nightscout already exposes an optional
+collection-specific retention setting in single-site mode. A default or an operator option for the multitenant
+service is a product decision. [Nightscout configuration](https://github.com/nightscout/cgm-remote-monitor#readme)
 
 ### Not proposed
 
@@ -137,9 +268,9 @@ The current column is measured, the other two predicted, with a 10 % allowance f
   still see uncompressed pages, so it does not address the 10k symptoms. An operator may still choose it.
 - **lz4 or `toast_tuple_target` alone.** No effect below the threshold (measured).
 - **Per-tenant-day cold chunks for every collection** (lane R's candidate B, 0.13 MB per tenant-day for the cold
-  part). It needs a compaction job, a read union and history rules for moving rows between hot and cold. Stage 2 gets
-  most of that gain for the collection that dominates the bytes, with no background job. Revisit only if multi-year
-  history makes entries and treatments dominant after stage 1.
+  part). It needs compaction, reads across both representations and history rules for moving rows.
+  For multi-year installations, the scenarios above price the potential benefit. The measured open-chunk rewrite
+  cost and the number of keys each uploader needs are inputs to that choice.
 
 ## 5. What must not change
 
@@ -162,6 +293,32 @@ The current column is measured, the other two predicted, with a 10 % allowance f
 - **Single-tenant MongoDB** is unchanged ([d4](multitenancy-decisions.md#d4)).
 - **Schema changes in place** until an operator release
   ([prerelease-schema-in-place](multitenancy-decisions.md#prerelease-schema-in-place)).
+
+### Fresh installs and existing lab fixtures
+
+Read-derived at core `1aaa5af33`: nine candidate catalogue files across six clinical domains still carry both
+`0099_*_storage_bytes` (ten statements to install and populate the statistic) and `0100_*_storage_bytes_removed`
+(three statements to remove it). Standard and socket-order catalogues are alternatives. Some initial migrations
+also build indexes that `0101` drops. The volume model assigns no daily savings to removing obsolete bootstrap steps.
+
+**Reproduced on PostgreSQL 16.15** using the frozen migration runner, with a disposable database for each layout.
+Omitting the `0099` and `0100` pair in each of the six selected catalogues reduced the number of applied migrations
+from 41 to 29 and removed 78 SQL statements from the fresh bootstrap. Both sets passed migration checks.
+Schema-only dumps including policies, grants and indexes matched, as did the synthetic row returned after a write
+in each domain. An added index made the comparison fail and the
+original result returned after the control was removed. The old path left one dropped column slot per clinical
+table. The shorter path left zero. An entries database carrying the old ledger correctly returned `MIG_UNKNOWN`
+when checked with the shorter catalogue. Retained evidence: `fresh-clinical-schema-20261123`. The comparison
+covers the six clinical schemas. Whole-role startup, fixture conversion and production changes remain separate.
+
+The local core branch `codex/clinical-bootstrap-cleanup-20261123` removes the paired steps and their retired
+validation logic in all nine catalogue variants (`0ca92678f`, fixture pins `d946bd5ee`). The 62 focused
+tests passed. Whole-role startup, restore and the full suite on the joined candidate remain open. Other
+index-creation and removal pairs require their own end-schema comparison, including privileges,
+tenant restore ordinals and API-visible values. Re-seed disposable fixtures from their recipes. For an expensive
+fixture, a one-time conversion on a copy can be worthwhile if counts, document digests, ordinals and a post-restore
+write agree. Preserve the source snapshot for runs pinned to its original schema. The first operator release
+starts the forward-upgrade contract. [Pre-release schema policy](multitenancy-decisions.md#prerelease-schema-in-place)
 
 ## 6. Gates before adoption, per stage
 
