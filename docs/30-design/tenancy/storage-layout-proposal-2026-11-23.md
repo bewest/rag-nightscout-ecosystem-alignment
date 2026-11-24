@@ -274,6 +274,19 @@ service is a product decision. [Nightscout configuration](https://github.com/nig
   For multi-year installations, the scenarios above price the potential benefit. The measured open-chunk rewrite
   cost and the number of keys each uploader needs are inputs to that choice.
 
+### Beyond the row layout: extensions and storage by age
+
+This proposal changes how one row is stored. The alternatives that change the database or store data by age
+are evaluated in the [storage tiering proposal](storage-tiering-proposal-2026-11-24.md):
+- native time partitioning and its partition key (section 5.1–5.2);
+- cold monthly bundles, which revisit candidate B above for data older than a tenant-chosen boundary (5.4);
+- TimescaleDB, Citus, columnar and Parquet extensions, filesystem compression, BRIN indexes, dictionary
+  compression and reports on a standby, each with predicted impact on bytes, the clinical path, long-range
+  reads and operations (section 7).
+
+TimescaleDB is not proposed there because row-level security is not supported on its compressed chunks or under
+its continuous aggregates (vendor-documented), which conflicts with [d3](multitenancy-decisions.md#d3).
+
 ## 5. What must not change
 
 - **The API contract.** v1 and v3 return each stored document with its unknown fields, and the same value a single

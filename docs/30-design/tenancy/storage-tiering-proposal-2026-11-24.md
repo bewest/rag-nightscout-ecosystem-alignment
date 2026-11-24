@@ -358,6 +358,32 @@ Three layers, each narrowing the one above:
 | **Filesystem compression for cold partitions** | A tablespace on a compressed filesystem | No schema change; ~4.5× (measured proxy) | Node-level setup on Kubernetes; disk only | Possible stopgap for warm partitions |
 | **MongoDB for multitenant** | Single-site's store | Compresses well | No database-enforced tenant isolation | Excluded by [d3](multitenancy-decisions.md#d3) |
 
+### 7.1 Predicted impact of each alternative
+
+None of these is measured here. Figures are read-derived from our own measurements, which are cited, or are
+vendor claims, labelled as such. "Clinical path" means the evaluator window, realtime and recent v1/v3 reads.
+Baseline: today's layout at ~1.6 MB per tenant-day; MongoDB 0.24–0.38.
+
+| Alternative | Bytes | Clinical path | Long-range reads | Operations | Basis |
+|---|---|---|---|---|---|
+| **Native time partitioning** | About the same; plus ~0.15 MB per tenant-day if every document needs an identity-table row (852 documents × ~172 B) | Vacuum and index maintenance confined to the current partition; the 10k symptom of vacuum running through load should go. Cache gain is modest: at 10k tenants even a week of today's layout is ~110 GB, so the hot set fits in memory only after bytes per row fall | Pruned to the months asked for | Partition creation; identity table | Stage 2 identity bytes; 10k run evidence |
+| **Fewer indexes, BRIN on time for warm and cold partitions** | Indexes are ~50 % of every table today; a BRIN index on an append-ordered time column is a few pages per partition (vendor-documented) | More rows fit in cache; fewer index writes per insert | Time-range scans stay efficient; selective lookups on warm data slow | None | Layout §2 |
+| **Cold monthly bundles (ours)** | ~0.13–0.15 MB per tenant-day for cold data, a ~90 % cut | Unchanged | Seconds per range (decompress and filter) | Tiering job, manifest, edit promotion | Lane R scratch, layout §4 |
+| **TimescaleDB compressed chunks** | Similar order to cold bundles (vendor claims ~90 % on time series; JSONB bodies compress less than numeric columns) | Unchanged on rowstore chunks | Faster than application-side bundles: decompression happens in SQL | Extension and licence; **no row-level security on compressed chunks, and continuous aggregates require no row-level security on the hypertable** ([vendor-documented](https://www.tigerdata.com/docs/use-timescale/latest/continuous-aggregates/create-a-continuous-aggregate)) | Would save writing the tiering job, but tenant isolation for old data and summaries moves out of the database |
+| **Citus, distributed** | Same per row; total spread over N workers, each with its own replicas | Throughput scales with workers for tenant-local queries; an extra coordinator hop per query | Unchanged | N + 1 database nodes; requalify triggers, write clock, restore | Vendor-documented |
+| **Citus columnar for old partitions** | Vendor claims 3–10× | Unchanged if kept to old partitions | Fast scans | Historically append-only: an edit to old data needs a rewrite path; a Citus dependency without distribution | [Vendor-documented](https://learn.microsoft.com/azure/cosmos-db/postgresql/concepts-columnar) |
+| **Columnar or Parquet extensions** (pg_duckdb, pg_mooncake, ColdFront) | Object-storage prices for cold data (section 3) | Unchanged | Fast analytical scans; good fit for the statistics API over years | Young; vendor distributions; access control outside row-level security | Vendor-documented |
+| **Filesystem compression** (ZFS, btrfs) on a warm or cold tablespace | ~4.5× on disk | None (the cache holds uncompressed pages) | None | Node-level setup on Kubernetes | Lane R proxy |
+| **Per-row compression with a shared dictionary** (application-side zstd) | Small JSON documents could shrink several-fold (not tried) | Every read decompresses; queries need typed columns as in stage 1 | — | Dictionary versioning; stage-1-style query columns | Not tried; stage 1 showed the query-column cost |
+| **Reports on a standby** | None | Report and statistics queries leave the primary | Unchanged | Routing to replicas already paid for in the three copies | Read-derived |
+
+**What this suggests.** The cheapest clinical-path gains come from removing bytes and maintenance from the
+recent data (index cut, partitioning). The large byte savings all come from compressing old data, by one of three
+routes: our bundles, TimescaleDB or a columnar extension. Only our bundles keep row-level security in force for
+every row. TimescaleDB is the strongest off-the-shelf alternative and would be worth revisiting if old data and
+summaries were served only through a narrow, audited database function rather than row-level security; that
+would be a change to [d3](multitenancy-decisions.md#d3).
+
 ## 8. Plan
 
 Each phase is one lane with its own gates; performance results are signals
