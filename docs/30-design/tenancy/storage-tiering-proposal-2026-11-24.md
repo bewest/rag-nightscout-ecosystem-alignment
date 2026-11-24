@@ -184,10 +184,33 @@ Receipt time simplifies placement of new inserts. Imported old records then arri
 
 ### 5.3 Index cut, first and independently
 
-Before partitioning, read `pg_stat_user_indexes.idx_scan` from a 1k run with the realistic mix and drop indexes
-never used, behind the existing end-schema comparison and API differential. Entries carries 15 indexes and 11
-generated columns copied from MongoDB's list; generated columns alone cost 120–136 bytes per row (measured).
-Lowest risk, no layout change, and it benefits every tier.
+**Reproduced on Candidate 5.** The four duplicate or prefix indexes in migration 0101 already account
+for 19.72 MB on the 100-tenant, two-day live-loaded fixture. Removing those indexes together with the size
+trigger and column reduced clinical bytes by 17.1%. [Adopted removal](multitenancy-decisions.md#storage-machinery-removal)
+
+Across ordinary-load snapshots from the mixed local 1k and direct paid 3k runs, 16 of 30 identifiable entries,
+treatments and device-status indexes had zero additional scans in both windows. Their final paid footprint
+was 7.738 decimal GB. That group includes primary and unique indexes, identity-array lookups, history
+and a selective ISO-date read. The snapshots identify indexes by table and name. Future captures can
+also record schema, index OID and the database statistics reset time. Retained evidence ID
+`storage-tiering-review-20261124/index-coverage.json`.
+
+**Reproduced on the frozen successor reader** (`2643ca01b`, PostgreSQL 16.15, forced tenant row-level security).
+The next pair to evaluate is `entries_tenant_sgv` and `entries_tenant_mbg`, 673,030,144 bytes together on
+the paid fixture. On a synthetic 90-day tenant, removing both in a transaction preserved the ordered results
+of all eight reader queries, including glucose equality and range filters and an array-valued meter reading.
+Warm buffer counts matched for every query. Separately removing the shorter `entries_tenant_type`
+preserved all five reads at two days and at 90 days. The rare type page went from six shared-buffer accesses
+to eight using the longer composite index. Retained plans, results and rollback controls are in
+`storage-tiering-review-20261124/index-trial`.
+
+**Reproduced write cost.** Four fresh copies of the two-day fixture each received the same 7,200 synthetic
+entries across 100 tenants in a database transaction after a checkpoint. With the numeric indexes removed,
+mean WAL fell 8.42% (67.40 to 61.72 MB) and incremental entries index growth fell 25.2% (9.17 to 6.86 MB).
+Heap growth and inserted document digests agreed across all four copies. The next storage change should
+exercise fresh and upgraded catalogues, resends, history, restore and the full API differential. End-to-end
+write latency and nominal throughput require a mixed product workload. The current Kubernetes campaign
+measures the frozen successor with its existing indexes.
 
 ### 5.4 Cold: compressed monthly bundles
 
@@ -246,7 +269,7 @@ a candidate for longer detail retention than entries and device status (section 
 - **Built from detail, before any deletion.** Once detail is gone a new statistic or a fix cannot be recomputed;
   `schema_version` records what a row carries.
 - **Stale and rebuilt** when a backfill, an edit or a time-zone change touches the day. Under the edit window
-  (section 5.8) a day older than the window changes only by an operator import, so its row is final.
+  (section 5.8) a late import and any corrections during its receipt-based edit window both invalidate the affected day.
 - **Same deduplication as the reports** (one reading per minute, values 39–600), so a summary and a detail read
   agree.
 - **Both modes.** The row is computed above the storage seam, so single-site MongoDB can build the same rows.
@@ -319,8 +342,8 @@ Most Nightscout data is written once. Recent records are edited: treatments corr
   - a change is refused with a stable, documented error code;
   - an operator correction path stays available (support, data repair, privacy erasure).
 - **Inserts** of new records with old clinical times (backfill, pump history catch-up) are not edits and remain
-  allowed. Within the window they land in their partition; older ones land in the default partition until the
-  tiering job folds them in.
+  allowed. Within the window they land in their partition. Older ones land in the writable default partition.
+  The tiering job can fold a late arrival into sealed history once its receipt-based edit window expires.
 - **Whole-period removal** (single site's admin cleanup tools, a tenant's retention setting) is retention, not
   editing (section 6).
 - **Default 30 days; the operator may lower it to 14 or raise it to 90** (maintainer direction, 2026-11-24).
@@ -330,16 +353,20 @@ Most Nightscout data is written once. Recent records are edited: treatments corr
 
 **What it buys (read-derived):**
 - **Partitions older than the window are read-only.** They can be frozen once, rebuilt compactly, given a smaller
-  index set (no `srvModified` history index is needed for records that can no longer change) and vacuumed
-  never again.
+  index set, and vacuumed before sealing. A v3 history cursor can still request changes made before sealing.
+  Check history pagination across sealed and writable rows before retiring its `srvModified` index.
 - **Cold bundles need no edit path,** no promotion and no superseded markers (section 5.4).
-- **Summary rows older than the window are final** except after an operator import (section 5.5).
+- **Summary rows for sealed days are final** until an operator import or correction affects that day (section 5.5).
 - **Append-only alternatives become viable** for old partitions: Citus columnar, and TimescaleDB compressed chunks
   without rewrites (section 7.1).
 - **Cross-partition moves end at the window:** an edit that changes a record's clinical time can only happen
   while the record is recent.
 
 **Compatibility risks (read-derived; gate before adoption):**
+- **Late bulk restore.** Import a year-old record today, correct it during its receipt-based window, then read
+  it through clinical-time and v3 modification-history queries. Check the corrected daily summary, both sides of
+  the edit cutoff, and one logical record after sealing and restoring. Normal AID and vcpool qualification uses
+  the [recent-write workload](multitenancy-decisions.md#nominal-clinical-write-age).
 - **Clients that change old records.** AndroidAPS keeps about 186 days of local history and Trio about 90, so a
   user deleting or correcting an older treatment in the app would send an update that is now refused. How each
   uploader reacts to a refused update (retries forever, drops it, surfaces an error) must be checked per client
@@ -439,7 +466,7 @@ stay strict.
 | Phase | Work | Gate |
 |---|---|---|
 | **0 — first production boundary** | Accept today's volume. PostgreSQL on its own node with memory for the hot set. Size volumes for the admitted retention (90 days to 1 year). Keep everything. | The paid 5k/10k run on the qualified candidate |
-| **1 — index cut** | `idx_scan` from a realistic 1k run; drop unused indexes | End-schema comparison and API differential red then green; bytes and latency signals before and after |
+| **1 — index cut** | Test the numeric entries pair identified in section 5.3 | Fresh and upgraded schema, API differential, deep and rare query plans, restore and matched write costs |
 | **2 — time partitioning** | Compare the partition keys of section 5.2 on device status, then partition entries and treatments; identity table; warm index set; partition creation in `admin` | Key comparison on the same reads and writes; contract differential against `official/dev`; evaluator window, v1/v3, resend and lock hold at 1k and 10k; export and restore round trip |
 | **3 — cold bundles** | Edit window (5.8) with its client gate; tiering job, manifest, cold read path; bundles in PostgreSQL | As phase 2, plus cold reads equal warm reads; an interrupted tiering job leaves every document readable once |
 | **4 — statistics API, summaries and retention options** | The statistics API computing from detail (section 5.7; can start any time, both modes), then summary rows (section 5.5), retention settings (section 6) and bundles in object storage | Report statistics from summaries equal the same statistics from detail on a synthetic corpus, for the exact set in section 5.5; maintainer decisions in section 9 |
@@ -483,7 +510,7 @@ Every idea raised in this proposal and the [layout proposal](storage-layout-prop
 |---|---|---|---|
 | PostgreSQL on its own node, memory sized to the hot set, larger `/dev/shm` | Addresses the 10k signature (buffer hit 0.952, vacuum during load, failed parallel `VACUUM`) | Operations only; a bigger node | 5.1, layout §2 |
 | Size volumes for the admitted retention **including imported history** | Migrated sites bring years of history on day one; today's layout at ~1.6 MB per tenant-day sets the volume | Larger volumes than a 30-day plan | 3 |
-| Index cut from `idx_scan` on a realistic 1k run | Bytes, WAL, vacuum and cache in every tier; no layout change | A dropped index a rare query needed; the API differential guards it | 5.3 |
+| Numeric entries index candidates from the 1k and 3k samples | Fewer index bytes and writes per insert | Rare reads can keep returning correct results while taking longer. Check their plans and buffer counts. | 5.3 |
 | Real-shaped corpus (per uploader) for bytes per tenant-day | Replaces the synthetic 1.61 MB/day with fleet-shaped figures; every cost row depends on it | Lab time only | 3, layout §6 |
 | Keep everything | No policy, no deletion machinery | Storage grows linearly with history | 6 |
 
