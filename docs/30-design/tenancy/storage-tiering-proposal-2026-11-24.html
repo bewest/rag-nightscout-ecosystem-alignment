@@ -3882,6 +3882,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#58-edit-window-old-data-is-append-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.8 Edit window: old data is append-only
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -6293,6 +6304,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#58-edit-window-old-data-is-append-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.8 Edit window: old data is append-only
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -6888,9 +6910,9 @@ similar layout: about 0.13 MB per tenant-day (measured, lane R).</p>
 <li><strong>Reading.</strong> A v1/v3 query reaching cold months decompresses the months it covers and filters with <code>mingo</code>,
   already the query oracle under <a href="multitenancy-decisions.html#d8">d8</a>. Results and order match the warm path;
   latency is seconds. Very large ranges may run as jobs.</li>
-<li><strong>Edits promote.</strong> Editing or deleting a cold document copies it back to the hot table with a new
-  <code>srvModified</code> and marks it superseded in the bundle's manifest. v3 history keeps working from the hot table
-  (<a href="multitenancy-decisions.html#write-clock-history-arms">write-clock-history-arms</a>).</li>
+<li><strong>No edits.</strong> Cold data is older than the edit window (section 5.8), so bundles are written once and never
+  rewritten. Without an edit window, an edit would have to copy the document back to the hot table and mark it
+  superseded in the bundle's manifest; the edit window removes that machinery.</li>
 <li><strong>Export and restore get cheaper:</strong> a tenant export of old data is a copy of its bundles.</li>
 </ul>
 <h3 id="55-summaries-and-detail-retention">5.5 Summaries and detail retention<a class="headerlink" href="#55-summaries-and-detail-retention" title="Permanent link">&para;</a></h3>
@@ -6943,7 +6965,8 @@ a candidate for longer detail retention than entries and device status (section 
 <p><strong>Rules for summaries:</strong>
 - <strong>Built from detail, before any deletion.</strong> Once detail is gone a new statistic or a fix cannot be recomputed;
   <code>schema_version</code> records what a row carries.
-- <strong>Stale and rebuilt</strong> when a backfill, an edit, a promoted cold document or a time-zone change touches the day.
+- <strong>Stale and rebuilt</strong> when a backfill, an edit or a time-zone change touches the day. Under the edit window
+  (section 5.8) a day older than the window changes only by an operator import, so its row is final.
 - <strong>Same deduplication as the reports</strong> (one reading per minute, values 39–600), so a summary and a detail read
   agree.
 - <strong>Both modes.</strong> The row is computed above the storage seam, so single-site MongoDB can build the same rows.</p>
@@ -7014,6 +7037,46 @@ without clients noticing, provided every step returns the same answer as computi
 records with a shared library, storing summaries is a cache of that computation while detail exists, which this
 proposal reads as within <a href="multitenancy-decisions.html#d18">d18</a>; only after a detail-retention limit deletes detail do summaries
 become the only copy.</p>
+<h3 id="58-edit-window-old-data-is-append-only">5.8 Edit window: old data is append-only<a class="headerlink" href="#58-edit-window-old-data-is-append-only" title="Permanent link">&para;</a></h3>
+<p>Most Nightscout data is written once. Recent records are edited: treatments corrected, soft-deleted
+(<code>isValid: false</code>) or replaced by a resend. Accepting that <strong>no record older than a threshold, for example 14 or
+30 days, can be edited</strong> (maintainer direction, 2026-11-24) removes most of the cost of storing old data.</p>
+<p><strong>The rule (proposed):</strong>
+- A record is editable until <strong>the later of its clinical time and the time the hub received it, plus the edit
+  window</strong>. A history imported or backfilled yesterday can still be corrected for the window, even if its clinical
+  time is years old.
+- <strong>Edits</strong> are updates, replacements and deletions of an existing record, through v1, v3 or the socket.
+  Outside the window:
+  - a resend identical to the stored record succeeds and changes nothing, matching what a client sees today;
+  - a change is refused with a stable, documented error code;
+  - an operator correction path stays available (support, data repair, privacy erasure).
+- <strong>Inserts</strong> of new records with old clinical times (backfill, pump history catch-up) are not edits and remain
+  allowed. Within the window they land in their partition; older ones land in the default partition until the
+  tiering job folds them in.
+- <strong>Whole-period removal</strong> (single site's admin cleanup tools, a tenant's retention setting) is retention, not
+  editing (section 6).
+- <strong>Default 30 days; the operator may lower it to 14 or raise it to 90</strong> (maintainer direction, 2026-11-24).
+  The window is never longer than the warm boundary, so cold data is never edited: a 90-day window needs a
+  warm boundary of at least 90 days. A longer window keeps more partitions writable, so fewer are frozen and
+  summary rows become final later.</p>
+<p><strong>What it buys (read-derived):</strong>
+- <strong>Partitions older than the window are read-only.</strong> They can be frozen once, rebuilt compactly, given a smaller
+  index set (no <code>srvModified</code> history index is needed for records that can no longer change) and vacuumed
+  never again.
+- <strong>Cold bundles need no edit path,</strong> no promotion and no superseded markers (section 5.4).
+- <strong>Summary rows older than the window are final</strong> except after an operator import (section 5.5).
+- <strong>Append-only alternatives become viable</strong> for old partitions: Citus columnar, and TimescaleDB compressed chunks
+  without rewrites (section 7.1).
+- <strong>Cross-partition moves end at the window:</strong> an edit that changes a record's clinical time can only happen
+  while the record is recent.</p>
+<p><strong>Compatibility risks (read-derived; gate before adoption):</strong>
+- <strong>Clients that change old records.</strong> AndroidAPS keeps about 186 days of local history and Trio about 90, so a
+  user deleting or correcting an older treatment in the app would send an update that is now refused. How each
+  uploader reacts to a refused update (retries forever, drops it, surfaces an error) must be checked per client
+  before adoption: AndroidAPS, Loop, Trio, xDrip, nightscout-connect and the careportal.
+- <strong>Single-site parity.</strong> Single-site MongoDB allows any edit at any age. Following the rule that multitenant
+  behaves as single sites do, the window would be offered in both modes, with single site defaulting to no
+  window unless its operator sets one.</p>
 <h2 id="6-retention-policy-framework">6. Retention policy framework<a class="headerlink" href="#6-retention-policy-framework" title="Permanent link">&para;</a></h2>
 <p>Retention today is one rule, "keep everything", and age-related settings are scattered: <code>PREDICTIONS_MAX_SIZE</code>,
 single site's devicestatus cleanup tool, <code>DBSIZE_MAX</code>, the deleted-tenant retention window. Tiering needs one
@@ -7180,7 +7243,7 @@ Baseline: today's layout at ~1.6 MB per tenant-day; MongoDB 0.24–0.38.</p>
 <td>~0.13–0.15 MB per tenant-day for cold data, a ~90 % cut</td>
 <td>Unchanged</td>
 <td>Seconds per range (decompress and filter)</td>
-<td>Tiering job, manifest, edit promotion</td>
+<td>Tiering job and manifest; no edit path under the edit window (5.8)</td>
 <td>Lane R scratch, layout §4</td>
 </tr>
 <tr>
@@ -7204,7 +7267,7 @@ Baseline: today's layout at ~1.6 MB per tenant-day; MongoDB 0.24–0.38.</p>
 <td>Vendor claims 3–10×</td>
 <td>Unchanged if kept to old partitions</td>
 <td>Fast scans</td>
-<td>Historically append-only: an edit to old data needs a rewrite path; a Citus dependency without distribution</td>
+<td>Historically append-only, which the edit window (5.8) makes acceptable for old partitions; a Citus dependency without distribution</td>
 <td><a href="https://learn.microsoft.com/azure/cosmos-db/postgresql/concepts-columnar">Vendor-documented</a></td>
 </tr>
 <tr>
@@ -7277,7 +7340,7 @@ stay strict.</p>
 </tr>
 <tr>
 <td><strong>3 — cold bundles</strong></td>
-<td>Tiering job, manifest, cold read path, edit promotion; bundles in PostgreSQL</td>
+<td>Edit window (5.8) with its client gate; tiering job, manifest, cold read path; bundles in PostgreSQL</td>
 <td>As phase 2, plus cold reads equal warm reads; an interrupted tiering job leaves every document readable once</td>
 </tr>
 <tr>
@@ -7309,6 +7372,9 @@ stay strict.</p>
 <li>Deletion by age: <strong>may be deferred</strong>, for example past the initial production release; first see every lever
   with its trade-offs and priority (section 10).</li>
 <li>Statistics API placement and first clients: <strong>unclear, needs more research; deferred and out of scope for now.</strong></li>
+<li>Edit window: <strong>acceptable that no data older than a threshold can be edited</strong>, since most data is
+  append-only and it helps performance. <strong>Default 30 days; the operator may lower it to 14 or raise it to 90</strong>
+  (section 5.8).</li>
 </ul>
 <h2 id="10-levers-trade-offs-and-priorities">10. Levers, trade-offs and priorities<a class="headerlink" href="#10-levers-trade-offs-and-priorities" title="Permanent link">&para;</a></h2>
 <p>Every idea raised in this proposal and the <a href="storage-layout-proposal-2026-11-23.html">layout proposal</a>, in one place.
@@ -7386,6 +7452,12 @@ stay strict.</p>
 <td>5.7</td>
 </tr>
 <tr>
+<td>Edit window (default 30 days; operator range 14–90)</td>
+<td>Old partitions read-only: frozen, smaller indexes, no vacuum; final summaries; append-only storage options become viable</td>
+<td>Clients that edit old records get refusals; must check each uploader's reaction; single-site parity</td>
+<td>5.8</td>
+</tr>
+<tr>
 <td>Retention settings framework (hot and warm boundaries, tenant within operator limits)</td>
 <td>Operators bound cost; tenants choose latency for their history</td>
 <td>Settings, validation and documentation in both modes</td>
@@ -7407,7 +7479,7 @@ stay strict.</p>
 <tr>
 <td>Cold monthly bundles in PostgreSQL</td>
 <td>Ten-year detail ~0.15 MB per tenant-day instead of ~1.6</td>
-<td>Reads over 90 days take seconds; tiering job, manifest, edit promotion, restore of an interrupted tiering</td>
+<td>Reads over 90 days take seconds; tiering job, manifest, restore of an interrupted tiering</td>
 <td>5.4</td>
 </tr>
 <tr>
