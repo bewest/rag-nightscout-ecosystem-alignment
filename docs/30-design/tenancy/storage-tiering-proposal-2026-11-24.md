@@ -323,8 +323,10 @@ Most Nightscout data is written once. Recent records are edited: treatments corr
   tiering job folds them in.
 - **Whole-period removal** (single site's admin cleanup tools, a tenant's retention setting) is retention, not
   editing (section 6).
-- The window is never longer than the warm boundary, so cold data is never edited. Proposed default 30 days;
-  the operator may set it within product limits, for example 14 to 30 days.
+- **Default 30 days; the operator may lower it to 14 or raise it to 90** (maintainer direction, 2026-11-24).
+  The window is never longer than the warm boundary, so cold data is never edited: a 90-day window needs a
+  warm boundary of at least 90 days. A longer window keeps more partitions writable, so fewer are frozen and
+  summary rows become final later.
 
 **What it buys (read-derived):**
 - **Partitions older than the window are read-only.** They can be frozen once, rebuilt compactly, given a smaller
@@ -466,8 +468,9 @@ Any 10k latency benefit from index changes or time partitioning remains a predic
 - Deletion by age: **may be deferred**, for example past the initial production release; first see every lever
   with its trade-offs and priority (section 10).
 - Statistics API placement and first clients: **unclear, needs more research; deferred and out of scope for now.**
-- Edit window: **acceptable that no data older than a threshold, perhaps 14 or 30 days, can be edited**, since most
-  data is append-only and it helps performance (section 5.8).
+- Edit window: **acceptable that no data older than a threshold can be edited**, since most data is
+  append-only and it helps performance. **Default 30 days; the operator may lower it to 14 or raise it to 90**
+  (section 5.8).
 
 ## 10. Levers, trade-offs and priorities
 
@@ -491,7 +494,7 @@ Every idea raised in this proposal and the [layout proposal](storage-layout-prop
 | Time partitioning, comparing the candidate keys first | Hot set stays cached, vacuum stays small, partitions detach instead of mass deletes; predicted latency gain at 10k | Identity table for uniqueness (~172 B per document); partition maintenance; queries without time ranges touch every attached partition | 5.1, 5.2 |
 | Warm index set | Fewer bytes in older partitions | Slower unindexed filters on warm data | 5.1 |
 | Statistics API, computing from detail | One implementation of every statistic, far fewer report requests, both modes | New API surface to define and maintain; placement deferred | 5.7 |
-| Edit window (no edits older than 14–30 days) | Old partitions read-only: frozen, smaller indexes, no vacuum; final summaries; append-only storage options become viable | Clients that edit old records get refusals; must check each uploader's reaction; single-site parity | 5.8 |
+| Edit window (default 30 days; operator range 14–90) | Old partitions read-only: frozen, smaller indexes, no vacuum; final summaries; append-only storage options become viable | Clients that edit old records get refusals; must check each uploader's reaction; single-site parity | 5.8 |
 | Retention settings framework (hot and warm boundaries, tenant within operator limits) | Operators bound cost; tenants choose latency for their history | Settings, validation and documentation in both modes | 6 |
 
 ### Later: when multi-year history dominates cost
