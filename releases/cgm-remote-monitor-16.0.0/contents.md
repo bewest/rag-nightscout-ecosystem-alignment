@@ -23,6 +23,8 @@ The [compatibility matrix](../../site/pages/cgm-remote-monitor-16.0.0-write-comp
 compares `v15.0.9` with `497d08c9`. Final acceptance requires results on the
 eventual integrated tree and a maintainer decision to stage and tag it.
 
+Local lane handoff: `/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-release-16-closing.md`.
+
 ### November 3 candidate history
 
 | Date | Candidate and process status | Evidence and remaining steps |
