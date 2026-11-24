@@ -229,7 +229,7 @@ device status is about 60 % of current bytes.
 ## 10. Typed entries and treatments on candidate 2
 
 **Implemented on a local branch.** The ordinary multitenant PostgreSQL deployment uses the ordered
-entries and treatments catalogues. Core `b8d770b04` appends a conversion to each. Each document has one
+entries and treatments catalogues. Core `b8d770b04` appends a conversion to each. The integrated follow-up head is `9e665dd04`. Each document has one
 typed row. The sparse JSONB remainder retains unknown fields, explicit nulls, arrays and atypical scalar
 representations. The public relation reconstructs the document for existing readers and writers.
 PostgreSQL `numeric` preserves decimal values and scale. UTC timestamp strings use two presence bits
@@ -275,8 +275,8 @@ The direct evaluator path recovers much of the reconstruction cost. Both medians
 the current layout. These single-tenant window samples on a shared prepaid worker measure SQL
 execution. Fleet p95 and evaluator CPU per cycle at 1,000 and 10,000 tenants remain open.
 
-**Batch resends, reproduced.** A v1 resend of 288 existing entries exceeded the initial candidate's
-10-second query timeout. The logical document was rebuilt for each alternative in an equality filter.
+**Batch resends, reproduced.** On the initial candidate, a v1 resend of 288 existing entries exceeded the
+clock-port fixture's 10-second statement timeout. The logical document was rebuilt for each alternative in an equality filter.
 Core `4bb4f3ec8` applies the index bounds first and evaluates the exact filter on each candidate row.
 In the follow-up, both domains inserted and resent all 288 documents and retained their original counts.
 Mixed scalars, arrays, explicit nulls, missing fields, and OR filters lacking a common bound also
@@ -285,11 +285,65 @@ a separate read cost under the serving role. The existing layout's index fetched
 matches. Both typed plans fetched all 576 tenant rows and discarded 573. Deep-history qualification
 needs a selective lookup for canonical and exceptional timestamp spellings.
 
-The combined source is core `64f2afa00`. Deployment companion `e81592dcc` transfers ownership
-of the invoker views as well as their backing tables during fresh and repeated bootstrap. The combined
-source repeated all 27 frozen PostgreSQL observations and the four pre/post-restore reads. Its upgrade
+**Writer cost, reproduced.** In the ordinary 288-treatment upload with late stamping enabled, both
+the current and frozen typed layouts held the tenant write clock across four statements. The quieter
+same-node rerun measured 47.7 ms on the current table and 422.9 ms on the typed implementation.
+The existing gate requires less than 200 ms. Core `9ea9a1115` uses the selected catalogue to
+pack late-stamped batches directly into the typed table with the same tenant RLS and insertion
+allocator. On the joined source, the same gate measured 83.8 ms at 288 and 283.7 ms at 1,000.
+All 14 tests in the stock late-stamp suite passed, including concurrent uploads and negative
+controls. The settings-off v1 write path still costs more: for 288-entry resends, median 1.13 s
+on the current layout versus 5.23 s with the read fix (one warmup and three measured runs per arm).
+
+The first combined read candidate is core `64f2afa00`. Deployment companion `e81592dcc` transfers ownership
+of the invoker views as well as their backing tables during fresh and repeated bootstrap. Both combined
+heads (`64f2afa00` and `9e665dd04`) repeated all 27 frozen PostgreSQL observations and the four pre/post-restore reads. Its upgrade
 starts from the existing nominal candidate. The size study uses that candidate's unchanged index
 contracts and the frozen typed migration checksums.
 
+Core `f17c54da9` also preserves a treatment's optional resend-index exemption across logical
+restore. The earlier implementation raised PostgreSQL error 23505 when restoring two valid
+historical rows sharing a resend key. The follow-up restores both documents, their identity
+kinds, relative order and the exemption flag. Existing fixtures without that column are supported.
+
+A wider synthetic top-ten probe found four treatment pages with different tie choices. All
+matching documents and values agreed. Three pages cut through an equal timestamp at the page
+boundary, and one reordered equal history stamps inside the page. An explicit second sort key
+of `_id` made the pages agree. The existing APIs request a single sort key, so compatibility of
+implicit tie behavior and page continuation remains an adoption decision. This probe is separate
+from the fixed 27-observation HTTP corpus.
+
 The retained run is `artifacts/typed-entries-treatments-20261123`. The local lane pickup is
 `artifacts/handoffs/HANDOFF-typed-entries-treatments-20261123.md`.
+
+### Scalar queries that can ship independently
+
+**Reproduced.** A 48-hour synthetic SGV query returned 576 rows in identical date/ordinal order with
+the same digest for ID kind, ID, date and SGV. Full JSONB fetched and projected in Node took 214,286
+PostgreSQL DataRow bytes. Selecting the four columns took 40,885 bytes on each layout, an 80.9%
+reduction. Median client times over five rotated warm reads were 8.48 ms for the current document
+query, 3.65 ms for the current generated columns and 6.22 ms for the new typed columns. The 24-hour
+result showed the same reduction in bytes. The database ran under RLS on a prepaid worker alongside
+another test job. These are database-to-Node results for canonical numeric SGVs.
+
+**Read-derived opportunities.** The ordinary reader selects `id_kind, doc` and applies projections in
+Node (`lib/storage/postgres-entries-read.js`). Its existence-only writer callers already declare an
+`_id` projection. They can use a narrow query with the same identity, scope and sort contracts.
+For the operator's provisioning and restore floor check, `lib/server/serve/postgres-domains.js`
+currently extracts the maximum numeric `srvModified` from the document across all selected domains.
+The ordered entries and treatments expose the numeric column. Checking the same bound on that
+column is a candidate for avoiding full-document work during commissioning, while preserving the
+single database snapshot and the fallback for other domains.
+The evaluator can also select modification stamps and identity first when it decides which rows a
+resident projection needs to reload. Its existing write clock and full-snapshot fallback still own
+ordering and recovery. A reporting or chart query that consumes only time and glucose can reuse the
+existing generated columns when its field semantics are explicit. Plugins, exports and full-document
+API routes retain lossless documents. Validate any scalar substitution against the current behavior
+on missing, null, differently typed and extension fields. The retained comparison is
+`lab/scalar-window-pilot.json`.
+
+Use the existing index set for the first measurements. On PostgreSQL, fetching a subset of columns reduces
+transfer even when a heap visit is required. A covering index can also avoid heap reads when its payload
+covers the query and the visibility map permits it. The update rate and measured 72% index footprint
+make actual plans preferable to assuming a new covering index pays for its storage.
+[PostgreSQL 16 index-only scans](https://www.postgresql.org/docs/16/indexes-index-only-scans.html)

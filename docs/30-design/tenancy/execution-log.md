@@ -832,4 +832,4 @@ Heads: core `986d7fec6` (`claude/s4-final-20261120`, = `c2fd9f73d` + KEYS5 `72ea
 
 | Capability / state | Next boundary and owner |
 |---|---|
-| Stage 1 PostgreSQL storage, local implementation | **Reproduced.** Core `64f2afa00` and deploy `e81592dcc` implement and exercise the ordered layouts. The [measured comparison](storage-layout-proposal-2026-11-23.md#10-typed-entries-and-treatments-on-candidate-2) gives the bytes, compatibility results, window costs and adoption boundary. Integration remains on candidate 2. Local pickup and retained runs are in `artifacts/handoffs/HANDOFF-typed-entries-treatments-20261123.md`. |
+| Stage 1 PostgreSQL storage, local implementation | **Reproduced.** Core `9e665dd04` and deploy `e81592dcc` implement and exercise the ordered layouts. The [measured comparison](storage-layout-proposal-2026-11-23.md#10-typed-entries-and-treatments-on-candidate-2) gives the bytes, compatibility results, window costs and adoption boundary. Integration remains on candidate 2. Local pickup and retained runs are in `artifacts/handoffs/HANDOFF-typed-entries-treatments-20261123.md`. |
