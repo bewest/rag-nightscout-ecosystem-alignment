@@ -1,6 +1,6 @@
 # Multitenant clinical storage layout: proposal
 
-*Contributor- and maintainer-facing. **Proposal, 2026-11-23, not adopted. Stage 2 built and parked 2026-11-24** ([devicestatus-hour-chunks](multitenancy-decisions.md#devicestatus-hour-chunks)); corrections from that build are in section 9. Measured against cgm-remote-monitor
+*Contributor- and maintainer-facing. **Stage 1 has a measured candidate (section 10). Stage 2 built and parked 2026-11-24** ([devicestatus-hour-chunks](multitenancy-decisions.md#devicestatus-hour-chunks)); corrections from that build are in section 9. Measured against cgm-remote-monitor
 `2dee799c8e` (the #8898 round core) on PostgreSQL 16.15 and MongoDB 8.0, with 100 synthetic tenants seeded through the
 product write path at 2 and 14 days of looping history. Figures are labelled measured or read-derived. Raw evidence
 stays local: `HANDOFF-pg-bytes-20261123.md` (lane S) and `HANDOFF-storage-alternatives-20261123.md` (lane R). Decisions
@@ -225,3 +225,71 @@ device status is about 60 % of current bytes.
   status if a chunk layout were ever adopted.
 - **Untried:** a small per-document header (`created_at`, `isValid`, `srvModified`, `_id`) beside the text, so the window
   filters without reading documents. Any revisit starts there.
+
+## 10. Typed entries and treatments on candidate 2
+
+**Implemented on a local branch.** The ordinary multitenant PostgreSQL deployment uses the ordered
+entries and treatments catalogues. Core `b8d770b04` appends a conversion to each. Each document has one
+typed row. The sparse JSONB remainder retains unknown fields, explicit nulls, arrays and atypical scalar
+representations. The public relation reconstructs the document for existing readers and writers.
+PostgreSQL `numeric` preserves decimal values and scale. UTC timestamp strings use two presence bits
+only when their original spellings can be reconstructed exactly. The frozen candidate keeps the existing
+tenant-prefixed indexes, identifier rules and tenant ordinal counter. Unordered treatments remains an
+upgrade predecessor. An operator upgrading a populated ordered source replays the ordinary grants
+before restarting the roles.
+
+**Reproduced on PostgreSQL 16.15.** On the HTTP corpus, the candidate matched frozen candidate 2 on
+27 of 27 observations. Both matched the single-site MongoDB reference on 25 of 27. The two existing
+differences are v1 filters on nested custom fields, one in each domain. The fenced lifecycle round trip
+restored eight entries and seven treatments with both insertion counters, preserved the live write clock
+and matched all four pre-restore v1/v3 reads. Source and restored fixtures are synthetic.
+
+**Storage, reproduced.** The two-day fixture covers 100 synthetic tenants (28 Loop, 29 AndroidAPS, 23 Trio, and 20 CGM-only). PostgreSQL total
+relation sizes include the table, its indexes and the tenant insertion counter. Every document and
+the ordered per-tenant identity streams matched on both arms. MB here means 1,000,000 bytes.
+
+| Domain | Documents | Current MB | Typed MB | Reduction |
+|---|---:|---:|---:|---:|
+| Entries | 57,600 | 78.36 | 56.61 | 27.8% |
+| Treatments | 36,361 | 53.75 | 42.86 | 20.3% |
+| Combined | 93,961 | 132.11 | 99.48 | 24.7% |
+
+Indexes occupied 72.07 MB before and 72.07 MB after conversion. They account for roughly 72% of
+the typed footprint. The 14-day scratch figures in section 4 used a smaller index set. They are unsuitable
+as a prediction for this implementation. **Read-derived scenario:** extending the observed difference of
+0.163 MB per tenant-day to 1,600 tenants over 1,095 days gives about 286 GB saved across these two domains.
+Long-term planning still needs a multi-horizon growth measurement on representative uploader mixes; the
+short fixture also includes fixed overhead.
+
+**Evaluator window, reproduced.** Seven interleaved warmed PostgreSQL runs used the same tenant,
+row-level security, indexed windows and work ceiling. Each arm returned identical row digests.
+The experimental evaluator selects through the typed columns and reconstructs each selected document
+once (core `16be428ee`). All three arms recorded zero physical reads in the measured plans.
+
+| Window | Documents | Current median | Initial typed median | Typed evaluator follow-up median |
+|---|---:|---:|---:|---:|
+| Entries | 576 | 10.032 ms | 465.780 ms | 21.950 ms |
+| Treatments | 467 | 9.639 ms | 90.226 ms | 17.620 ms |
+
+The direct evaluator path recovers much of the reconstruction cost. Both medians still exceed
+the current layout. These single-tenant window samples on a shared prepaid worker measure SQL
+execution. Fleet p95 and evaluator CPU per cycle at 1,000 and 10,000 tenants remain open.
+
+**Batch resends, reproduced.** A v1 resend of 288 existing entries exceeded the initial candidate's
+10-second query timeout. The logical document was rebuilt for each alternative in an equality filter.
+Core `4bb4f3ec8` applies the index bounds first and evaluates the exact filter on each candidate row.
+In the follow-up, both domains inserted and resent all 288 documents and retained their original counts.
+Mixed scalars, arrays, explicit nulls, missing fields, and OR filters lacking a common bound also
+returned the expected rows on both physical layouts. A selective `dateString` lookup exposed
+a separate read cost under the serving role. The existing layout's index fetched three rows for three
+matches. Both typed plans fetched all 576 tenant rows and discarded 573. Deep-history qualification
+needs a selective lookup for canonical and exceptional timestamp spellings.
+
+The combined source is core `64f2afa00`. Deployment companion `e81592dcc` transfers ownership
+of the invoker views as well as their backing tables during fresh and repeated bootstrap. The combined
+source repeated all 27 frozen PostgreSQL observations and the four pre/post-restore reads. Its upgrade
+starts from the existing nominal candidate. The size study uses that candidate's unchanged index
+contracts and the frozen typed migration checksums.
+
+The retained run is `artifacts/typed-entries-treatments-20261123`. The local lane pickup is
+`artifacts/handoffs/HANDOFF-typed-entries-treatments-20261123.md`.
