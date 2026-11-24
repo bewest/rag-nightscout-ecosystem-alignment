@@ -19141,7 +19141,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/16.0.0-split-identity
     base: official/dev@cf3d4b8f
-    state: in-flight-upstream
+    state: in-progress
     pr: [8878]
     ships_to_operators_today: true
     blast_radius: >
@@ -19174,6 +19174,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/platform/wc-step-design-note-2026-10-27.md
     notes: >
+      2026-11-24, read-derived: #8878 is in official/dev. The register retains the
+      re-upload double count as open. The PR covered only the identity-copy repair.
       2026-10-30: the first part (the split stops copying identity fields) merged
       to dev as d51c7a60 (#8878); the re-upload double count stays open.
       Filed 2026-10-29 by the records accuracy pass from the chart-drag
@@ -19355,9 +19357,9 @@ items:
     repo: cgm-remote-monitor
     branch: bf/16.0.0-bf225-socket-duplicate
     base: official/dev@604de1cb
-    state: in-flight-upstream
-    pr: [8888]
-    ships_to_operators_today: true
+    state: merged-upstream
+    pr: [8888, 8890]
+    ships_to_operators_today: false
     blast_radius: >
       lib/server/websocket.js processSingleDbAdd, the socket similar match
       changed by #8877 (cf3d4b8f): a stored treatment's identifier now keeps a
@@ -19376,12 +19378,15 @@ items:
         kind: static
         describe: >
           official/dev contains BF-225 fix B b6e3d739 (merged 2026-11-01 as
-          5376e6a7, #8888); fix C (2079501a) ships in the compatibility follow-up
-          PR, which gets its own gate when opened
+          5376e6a7, #8888).
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2079501a official/dev
+        kind: static
+        describe: official/dev contains the UUID handling repair merged in 5921d5fd (#8890).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-11-24, read-derived: both repairs are ancestors of official/dev 79144cbd0.
       2026-11-01 01:29Z: fix B merged to dev as 5376e6a7 (PR #8888, head 3bb6627f = b6e3d739 + dev merge). Fix C remains, in the compatibility follow-up PR; state stays open until it merges.
       2026-10-31 night: fix B opened by the maintainer as PR #8888 (dev <- bf/16.0.0-bf225-socket-duplicate, head b6e3d739); fix C on feat/id-compat-restore-ab.
       2026-10-31 night (session -4e): fix built, PR pending. B: bf/16.0.0-bf225-socket-duplicate b6e3d739, one commit on dev 604de1cb (0 behind), push commands with the maintainer: matrix exactly the 1 predicted cell (treatments x v3 x ws to one record, equal to v15.0.9 on stored state); break-it red on the new test only; revert gives the dev pin; tiers 5591/0/3 on Node 22.23.4 and 24.22.1; lint 0 errors; a different device or no numeric date still gives a second record (tests); BF-209 test unchanged and green. C: feat/id-first-s6c-uuid-socket 2079501a on #8879 2d79d30b: 4 predicted cells (idf-uuidid-same and -time, v1/in-process then socket) to one record, replaced under compatibility B; --uuid-off 0 cells; tiers 5966/0/3; ships in the compatibility follow-up PR (order C, then B, then A). B and C composed: 5 cells as predicted, all three BF-225 cells one record.
@@ -24882,23 +24887,24 @@ items:
     branch: feat/nightscout-entrypoint
     base: official/dev@8dbb60c2
     worktree: externals/work/crm-platentry
-    state: in-flight-upstream
-    pr: [8862]
+    state: merged-upstream
+    pr: [8865]
     blast_radius: >
       New bin/nightscout.js and a package.json "bin" entry; Dockerfile
-      ENTRYPOINT/CMD/HEALTHCHECK. lib/server/server.js stays the
+      CMD selects single, with an opt-in healthcheck command. lib/server/server.js stays the
       implementation of `single`, so Procfile, npm start, server.js,
       web.config (iisnode) and start.sh are untouched.
     review: maintainer
     operator_visible: >
-      Nothing changes for a site started the old way. Docker images gain a
-      health check, and `nightscout diagnose data` / `nightscout version`
-      can be run inside the container.
+      Existing start commands still work. The image provides a healthcheck
+      command and the Nightscout diagnostic and version commands.
     semver: minor
     semver_reason: >
-      Adds a command and an image health check; no existing behaviour
-      changes.
+      Adds operator commands and preserves the existing single-site start paths.
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1b2801f7 official/dev
+        kind: static
+        describe: The application dev branch contains the CLI join from PR 8865.
       - no-gate: >
           Measured by the lab, not re-runnable from this repository alone
           (needs MongoDB and a crm tree). On feat/nightscout-entrypoint
@@ -24915,6 +24921,8 @@ items:
       - docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - docs/archive/tenancy/nightscout-deployable-components-2026-09-14.md
     notes: >
+      2026-11-24, read-derived: #8865 incorporated the #8862 work and merged as
+      991b0654. The image runs nightscout single and leaves the healthcheck opt-in.
       2026-10-26, later: draft #8862 opened at 4c7d678d; b63d9b7f removed the
       image HEALTHCHECK after the maintainer asked whether it would hide the
       boot-error page. It would: a site that boots with errors serves that
@@ -27819,7 +27827,7 @@ items:
     repo: cgm-remote-monitor
     branch: codex/v3-history-continuation-20261124
     base: official/dev@79144cbd0
-    state: not-started
+    state: gate-not-met
     ships_to_operators_today: true
     blast_radius: >
       API v3 history reads in single-site and multitenant modes. Clients that continue paging
@@ -27832,15 +27840,20 @@ items:
     semver_reason: Restores complete history continuation without removing any accepted request form.
     register: [BF-248]
     gates:
-      - no-gate: >
-          The reproducing differential (strict continuation omits a tied record on official/dev)
-          is to be written by the fix lane, Codex U8 in BRIEF-codex-unblock-20261124.md, red on 79144cbd0.
+      - run: node tools/queue/gates/v3-history-continuation.js --ref official/dev
+        kind: unit
+        describe: >
+          The URL history reader delivers every stored identity and finishes when a client
+          continues from either the returned ETag or the last record's modification stamp.
+          The gate runs the selected ref's Mongo read adapter with an in-memory query engine.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
-      Reproduced on official/dev single-site MongoDB and both multitenant PostgreSQL layouts by
-      Codex lane U5. v15.0.9 and real client paging (AndroidAPS, Loop, Trio, xDrip) to be confirmed.
+      Reproduced on v15.0.9 c6a0d8ed and official/dev 79144cbd0 in the unit gate and
+      on native MongoDB 8.0.34 (U8). U5 reproduced the same omission on both multitenant
+      PostgreSQL layouts. Read-derived on AndroidAPS, incremental treatment sync saves the
+      numeric ETag for its next URL. The history contract decision is open.
   - id: BFQ-247
     title: "BF-247 - preserve treatment history across parallel read orders"
     parcel: register-open

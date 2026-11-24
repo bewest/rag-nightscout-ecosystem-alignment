@@ -16,10 +16,10 @@ this page come from the [work queue](../../queue/README.md).*
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 213 | 43 | 10 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 213 | 42 | 8 |
 | **Modernization** | `release-train` | 55 | 8 | 2 |
-| **Multitenant** | `tenancy`, `platform` | 150 | 30 | 26 |
-| | **total** | **420** | **81** | **38** |
+| **Multitenant** | `tenancy`, `platform` | 150 | 30 | 25 |
+| | **total** | **420** | **80** | **35** |
 
 <!-- END GENERATED: horizons -->
 
@@ -112,7 +112,7 @@ cover several defect IDs. The affected versions and evidence are in the
 | `BFQ-209` | `merged-upstream` | BF-209 - two identical treatments sent over the socket within 2 s are stored as one, even  |
 | `BFQ-210` | `closed` | BF-210 - a socket treatment without an amount is matched to a stored one that has one (clo |
 | `BFQ-211` | `merged-upstream` | BF-211 - a delete by query in one collection empties all three in-memory caches |
-| `BFQ-212` | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can  |
+| `BFQ-212` | `in-progress` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can  |
 | `BFQ-213` | `merged-upstream` | BF-213 - the URGENT pump reservoir alarm is refused when the level comes from reservoir_le |
 | `BFQ-214` | `merged-upstream` | BF-214 - a device-status delete by query leaves its cache empty until the next heartbeat |
 | `BFQ-217` | `merged-upstream` | BF-217 - an override with no reservoir value throws in the pump plugin |
@@ -122,7 +122,6 @@ cover several defect IDs. The affected versions and evidence are in the
 | `BFQ-222` | `merged-upstream` | BF-222 - API v3 autoPrune can leave pruned records in the server's cache |
 | `BFQ-223` | `merged-upstream` | BF-223 - a saved API secret the site refuses blocks a valid ?token= link |
 | `BFQ-224` | `merged-upstream` | BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answ |
-| `BFQ-225` | `in-flight-upstream` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3-then-sock |
 | `BFQ-226` | `merged-upstream` | BF-226 - an API v3 autoPrune of more than one record empties the type's cache with no relo |
 | `BFQ-227` | `merged-upstream` | BF-227 - a late or repeated Pushover receipt callback answers 500 |
 | `BFQ-241` | `ready-to-push` | BF-241 - one upload limit, UPLOAD_BODY_LIMIT, for entries, treatments and device status |
@@ -132,7 +131,7 @@ cover several defect IDs. The affected versions and evidence are in the
 | `BFQ-245` | `blocked` | BF-245 - profile and food uploads capped at 1 MB; bring them under UPLOAD_BODY_LIMIT |
 | `BFQ-246` | `ready-to-push` | BF-246 - linear mergeProcessSort in the shared dataloader (16.0.0) |
 | `BFQ-247` | `in-progress` | BF-247 - preserve treatment history across parallel read orders |
-| `BFQ-248` | `not-started` | BF-248 - API v3 history continuation keeps records that share the page boundary's stamp |
+| `BFQ-248` | `gate-not-met` | BF-248 - API v3 history continuation keeps records that share the page boundary's stamp |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `merged-upstream` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `released` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -169,11 +168,11 @@ An item marked `in-flight-upstream` has been handed to upstream. An item marked
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  |  |  |  |  | 18 |  | 1 |  |  |  | **22** |
 | `release-train` | 8 | 2 | 1 |  |  |  | 22 | 15 | 2 | 1 |  |  | 4 | **55** |
-| `register-open` | 33 | 4 | 1 | 3 | 6 | 2 | 55 | 58 | 5 |  |  | 5 |  | **172** |
+| `register-open` | 32 | 5 | 2 | 3 | 6 |  | 56 | 58 | 5 |  |  | 5 |  | **172** |
 | `tenancy` | 22 | 23 |  |  | 6 | 23 | 6 |  |  | 10 | 1 | 15 | 6 | **112** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
-| `platform` | 8 | 2 |  |  |  | 2 | 1 |  |  | 25 |  |  |  | **38** |
+| `platform` | 8 | 2 |  |  |  | 1 | 2 |  |  | 25 |  |  |  | **38** |
 
 <!-- END GENERATED: state-matrix -->
 

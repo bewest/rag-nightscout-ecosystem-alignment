@@ -32,22 +32,22 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 420 |
-| runnable gates | 459 |
-| explicit `no-gate:` markers | 416 |
+| runnable gates | 462 |
+| explicit `no-gate:` markers | 415 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 416 of the 875 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 415 of the 877 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 81 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-ANDROID-LAB, PERF-IMAGE-DIGEST-CACHE, BFQ-242, BFQ-243, BFQ-244, BFQ-248 |
-| `in-progress` | 31 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-BENCH-BASELINE, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-TENANT-LIVE-ADD, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST, MT-D6-SLOT-READER, BFQ-247 |
-| `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
+| `not-started` | 80 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-ANDROID-LAB, PERF-IMAGE-DIGEST-CACHE, BFQ-242, BFQ-243, BFQ-244 |
+| `in-progress` | 32 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, BFQ-212, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-BENCH-BASELINE, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-TENANT-LIVE-ADD, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST, MT-D6-SLOT-READER, BFQ-247 |
+| `gate-not-met` | 4 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR, BFQ-248 |
 | `ready-to-push` | 3 | WS-LAB, BFQ-241, BFQ-246 |
 | `blocked` | 12 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164, BFQ-245 |
-| `in-flight-upstream` | 27 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, MT-OIDC-NATIVE, MT-M6A-JOIN, MT-M6B-JOIN, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-ADMIN-ROLE-OWNERSHIP, MT-ROOT-ADMIN-PARITY, MT-INTERNAL-LISTENER, MT-ACTIVITY-ELIGIBILITY, MT-EXPORT-EXPIRY, MT-ADMIN-LIFECYCLE-FIT, MT-CONSUMER-STALE-RESELECT, MT-TENANT-EXTENDED-SETTINGS, MT-BATCH-JOIN-1110, MT-OWNER-LAST-GUARD, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE, MT-PERF-DB, MT-PERF-REALTIME, MT-PERF-EVALUATOR, MT-EVAL-COST |
-| `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
+| `in-flight-upstream` | 24 | LOOP-UPSTREAM-CARB-EDIT, MT-OIDC-NATIVE, MT-M6A-JOIN, MT-M6B-JOIN, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-ADMIN-ROLE-OWNERSHIP, MT-ROOT-ADMIN-PARITY, MT-INTERNAL-LISTENER, MT-ACTIVITY-ELIGIBILITY, MT-EXPORT-EXPIRY, MT-ADMIN-LIFECYCLE-FIT, MT-CONSUMER-STALE-RESELECT, MT-TENANT-EXTENDED-SETTINGS, MT-BATCH-JOIN-1110, MT-OWNER-LAST-GUARD, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE, MT-PERF-DB, MT-PERF-REALTIME, MT-PERF-EVALUATOR, MT-EVAL-COST |
+| `merged-upstream` | 86 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-225, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-ENTRY, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
 | `released` | 93 | P0-A, P0-B, P0-C, P0-J, P0-C-REMEDIATE, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 7 | BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 48 | TEN-LAB, P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS, QC-MATRIX-WIRE-ATTRIBUTION, M4-CLIENT-LAB, MT-DOC-DEPLOY, MT-DOC-REALTIME, MT-DOC-SQL, MT-CONNECTOR-SYNC |
@@ -152,7 +152,6 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-217** BF-217 - an override with no reservoir value throws in the pump plugin
 - **BFQ-223** BF-223 - a saved API secret the site refuses blocks a valid ?token= link
 - **BFQ-224** BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500
-- **BFQ-225** BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3-then-socket documented; UUID _id cases not)
 - **BFQ-226** BF-226 - an API v3 autoPrune of more than one record empties the type's cache with no reload
 - **BFQ-219** BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 - **BFQ-220** BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored
@@ -2991,13 +2990,13 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-209` | BF-209 - two identical treatments sent over the socket within 2 s are stored as one, even from different clients | `merged-upstream` | `bf/16.0.0-socket-similar-match` | patch | 1 run |
 | `BFQ-210` | BF-210 - a socket treatment without an amount is matched to a stored one that has one (closed: not a defect) | `closed` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-211` | BF-211 - a delete by query in one collection empties all three in-memory caches | `merged-upstream` | `bf/16.0.0-socket-similar-match` | patch | 1 run |
-| `BFQ-212` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can overwrite one's amount, and a re-upload can show the moved insulin twice | `in-flight-upstream` | `bf/16.0.0-split-identity` | patch | 0 run + 1 no-gate |
+| `BFQ-212` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can overwrite one's amount, and a re-upload can show the moved insulin twice | `in-progress` | `bf/16.0.0-split-identity` | patch | 0 run + 1 no-gate |
 | `BFQ-213` | BF-213 - the URGENT pump reservoir alarm is refused when the level comes from reservoir_level_override | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
 | `BFQ-214` | BF-214 - a device-status delete by query leaves its cache empty until the next heartbeat | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
 | `BFQ-217` | BF-217 - an override with no reservoir value throws in the pump plugin | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
 | `BFQ-223` | BF-223 - a saved API secret the site refuses blocks a valid ?token= link | `merged-upstream` | `bf/16.0.0-stale-secret-hash` | patch | 1 run |
 | `BFQ-224` | BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500 | `merged-upstream` | `bf/16.0.0-small-backfixes` | patch | 1 run |
-| `BFQ-225` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3-then-socket documented; UUID _id cases not) | `in-flight-upstream` | `bf/16.0.0-bf225-socket-duplicate` | patch | 1 run |
+| `BFQ-225` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3-then-socket documented; UUID _id cases not) | `merged-upstream` | `bf/16.0.0-bf225-socket-duplicate` | patch | 2 run |
 | `BFQ-226` | BF-226 - an API v3 autoPrune of more than one record empties the type's cache with no reload | `merged-upstream` | `-` | patch | 1 run |
 | `BFQ-219` | BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-220` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
@@ -3032,7 +3031,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-244` | BF-244 - API v3 answers 500 for oversized or malformed request bodies | `not-started` | `none` | patch | 1 run |
 | `BFQ-245` | BF-245 - profile and food uploads capped at 1 MB; bring them under UPLOAD_BODY_LIMIT | `blocked` | `none` | minor | 1 run |
 | `BFQ-246` | BF-246 - linear mergeProcessSort in the shared dataloader (16.0.0) | `ready-to-push` | `claude/bf-246-dataloader-merge-linear` | patch | 1 run |
-| `BFQ-248` | BF-248 - API v3 history continuation keeps records that share the page boundary's stamp | `not-started` | `codex/v3-history-continuation-20261124` | patch | 0 run + 1 no-gate |
+| `BFQ-248` | BF-248 - API v3 history continuation keeps records that share the page boundary's stamp | `gate-not-met` | `codex/v3-history-continuation-20261124` | patch | 1 run |
 | `BFQ-247` | BF-247 - preserve treatment history across parallel read orders | `in-progress` | `codex/shared-loader-order-20261123` | patch | 1 run |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
@@ -7268,7 +7267,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-split-identity` |
 | base | `official/dev@cf3d4b8f` |
@@ -7293,7 +7292,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/platform/wc-step-design-note-2026-10-27.md`
 
-**Notes.** 2026-10-30: the first part (the split stops copying identity fields) merged to dev as d51c7a60 (#8878); the re-upload double count stays open. Filed 2026-10-29 by the records accuracy pass from the chart-drag split probe on dev e1f7ac41; the overwrite of a shared-identifier record measured the same day by session -4f (QC-MATRIX-IDF). Not run on v15.0.9; splitRecord there is the same code (read).
+**Notes.** 2026-11-24, read-derived: #8878 is in official/dev. The register retains the re-upload double count as open. The PR covered only the identity-copy repair. 2026-10-30: the first part (the split stops copying identity fields) merged to dev as d51c7a60 (#8878); the re-upload double count stays open. Filed 2026-10-29 by the records accuracy pass from the chart-drag split probe on dev e1f7ac41; the overwrite of a shared-identifier record measured the same day by session -4f (QC-MATRIX-IDF). Not run on v15.0.9; splitRecord there is the same code (read).
 
 ### `BFQ-213` &mdash; BF-213 - the URGENT pump reservoir alarm is refused when the level comes from reservoir_level_override
 
@@ -7454,14 +7453,14 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-bf225-socket-duplicate` |
 | base | `official/dev@604de1cb` |
 | worktree | `-` |
 | semver | `patch` |
 | review | maintainer |
-| ships to operators today | **yes** |
+| ships to operators today | no (pre-release) |
 | register | `BF-225` |
 
 **Blast radius.** lib/server/websocket.js processSingleDbAdd, the socket similar match changed by #8877 (cf3d4b8f): a stored treatment's identifier now keeps a re-send without one from matching it.
@@ -7473,13 +7472,15 @@ distinction is the only thing that makes the register mean anything - widening
 **Gates.**
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b6e3d739 official/dev`
-  - official/dev contains BF-225 fix B b6e3d739 (merged 2026-11-01 as 5376e6a7, #8888); fix C (2079501a) ships in the compatibility follow-up PR, which gets its own gate when opened
+  - official/dev contains BF-225 fix B b6e3d739 (merged 2026-11-01 as 5376e6a7, #8888).
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2079501a official/dev`
+  - official/dev contains the UUID handling repair merged in 5921d5fd (#8890).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-11-01 01:29Z: fix B merged to dev as 5376e6a7 (PR #8888, head 3bb6627f = b6e3d739 + dev merge). Fix C remains, in the compatibility follow-up PR; state stays open until it merges. 2026-10-31 night: fix B opened by the maintainer as PR #8888 (dev <- bf/16.0.0-bf225-socket-duplicate, head b6e3d739); fix C on feat/id-compat-restore-ab. 2026-10-31 night (session -4e): fix built, PR pending. B: bf/16.0.0-bf225-socket-duplicate b6e3d739, one commit on dev 604de1cb (0 behind), push commands with the maintainer: matrix exactly the 1 predicted cell (treatments x v3 x ws to one record, equal to v15.0.9 on stored state); break-it red on the new test only; revert gives the dev pin; tiers 5591/0/3 on Node 22.23.4 and 24.22.1; lint 0 errors; a different device or no numeric date still gives a second record (tests); BF-209 test unchanged and green. C: feat/id-first-s6c-uuid-socket 2079501a on #8879 2d79d30b: 4 predicted cells (idf-uuidid-same and -time, v1/in-process then socket) to one record, replaced under compatibility B; --uuid-off 0 cells; tiers 5966/0/3; ships in the compatibility follow-up PR (order C, then B, then A). B and C composed: 5 cells as predicted, all three BF-225 cells one record. 2026-10-31 later: the maintainer chose B and C (2026-10-31, via session -4e): B, on dev (branch bf/16.0.0-bf225-socket-duplicate): the socket similar match also accepts a stored treatment whose identifier equals the one API v3 computes for the incoming body (device + date + eventType), fixing treatments x v3 x ws, while BF-209's case (an upload without identity 1 s after an AndroidAPS v3 record) still keeps both; C, on #8879 (a small rule commit): a UUID _id on a socket dbAdd treatment counts as its identifier, as v1's UUID handling does, so the two idf-uuidid-same cells become one record, replaced under decision B. Rejected: A (full 15.0.9 revert; brings back BF-209's lost treatment) and D (keep #8877's choice). Being built by -4e with full gates. 2026-10-31 correction (session -4e): the treatments x v3 x ws cell was a documented, intended change in #8877 (PR body line 29, its matrix run line 72); the idf- uuidid-same cells are undocumented. The smallest revert breaks BF-209's guard test, so the fix scope (duplicated vs possibly lost treatment) is pending the maintainer's choice. 2026-10-31 (maintainer, via session -4e): fix in 16.0.0. Being fixed by -4e on bf/16.0.0-bf225-socket-duplicate off official/dev (test first, 3-cell matrix prediction, break-it, revert, tiers, lint; trial merge into #8879 2d79d30b). 2026-10-31: filed by session -4e (bisected to cf3d4b8f over 12 matrix pins). 16.0.0 blocker candidate; the maintainer decides whether it blocks the tag. Data: session -4e's compat measurement.
+**Notes.** 2026-11-24, read-derived: both repairs are ancestors of official/dev 79144cbd0. 2026-11-01 01:29Z: fix B merged to dev as 5376e6a7 (PR #8888, head 3bb6627f = b6e3d739 + dev merge). Fix C remains, in the compatibility follow- up PR; state stays open until it merges. 2026-10-31 night: fix B opened by the maintainer as PR #8888 (dev <- bf/16.0.0-bf225-socket-duplicate, head b6e3d739); fix C on feat/id-compat-restore-ab. 2026-10-31 night (session -4e): fix built, PR pending. B: bf/16.0.0-bf225-socket-duplicate b6e3d739, one commit on dev 604de1cb (0 behind), push commands with the maintainer: matrix exactly the 1 predicted cell (treatments x v3 x ws to one record, equal to v15.0.9 on stored state); break-it red on the new test only; revert gives the dev pin; tiers 5591/0/3 on Node 22.23.4 and 24.22.1; lint 0 errors; a different device or no numeric date still gives a second record (tests); BF-209 test unchanged and green. C: feat/id-first-s6c-uuid-socket 2079501a on #8879 2d79d30b: 4 predicted cells (idf-uuidid-same and -time, v1/in-process then socket) to one record, replaced under compatibility B; --uuid-off 0 cells; tiers 5966/0/3; ships in the compatibility follow-up PR (order C, then B, then A). B and C composed: 5 cells as predicted, all three BF-225 cells one record. 2026-10-31 later: the maintainer chose B and C (2026-10-31, via session -4e): B, on dev (branch bf/16.0.0-bf225-socket-duplicate): the socket similar match also accepts a stored treatment whose identifier equals the one API v3 computes for the incoming body (device + date + eventType), fixing treatments x v3 x ws, while BF-209's case (an upload without identity 1 s after an AndroidAPS v3 record) still keeps both; C, on #8879 (a small rule commit): a UUID _id on a socket dbAdd treatment counts as its identifier, as v1's UUID handling does, so the two idf-uuidid-same cells become one record, replaced under decision B. Rejected: A (full 15.0.9 revert; brings back BF-209's lost treatment) and D (keep #8877's choice). Being built by -4e with full gates. 2026-10-31 correction (session -4e): the treatments x v3 x ws cell was a documented, intended change in #8877 (PR body line 29, its matrix run line 72); the idf-uuidid-same cells are undocumented. The smallest revert breaks BF-209's guard test, so the fix scope (duplicated vs possibly lost treatment) is pending the maintainer's choice. 2026-10-31 (maintainer, via session -4e): fix in 16.0.0. Being fixed by -4e on bf/16.0.0-bf225-socket- duplicate off official/dev (test first, 3-cell matrix prediction, break-it, revert, tiers, lint; trial merge into #8879 2d79d30b). 2026-10-31: filed by session -4e (bisected to cf3d4b8f over 12 matrix pins). 16.0.0 blocker candidate; the maintainer decides whether it blocks the tag. Data: session -4e's compat measurement.
 
 ### `BFQ-226` &mdash; BF-226 - an API v3 autoPrune of more than one record empties the type's cache with no reload
 
@@ -8575,7 +8576,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `gate-not-met` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/v3-history-continuation-20261124` |
 | base | `official/dev@79144cbd0` |
@@ -8593,13 +8594,14 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; The reproducing differential (strict continuation omits a tied record on official/dev) is to be written by the fix lane, Codex U8 in BRIEF-codex-unblock-20261124.md, red on 79144cbd0.
+- `[unit]` `node tools/queue/gates/v3-history-continuation.js --ref official/dev`
+  - The URL history reader delivers every stored identity and finishes when a client continues from either the returned ETag or the last record's modification stamp. The gate runs the selected ref's Mongo read adapter with an in-memory query engine.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Reproduced on official/dev single-site MongoDB and both multitenant PostgreSQL layouts by Codex lane U5. v15.0.9 and real client paging (AndroidAPS, Loop, Trio, xDrip) to be confirmed.
+**Notes.** Reproduced on v15.0.9 c6a0d8ed and official/dev 79144cbd0 in the unit gate and on native MongoDB 8.0.34 (U8). U5 reproduced the same omission on both multitenant PostgreSQL layouts. Read-derived on AndroidAPS, incremental treatment sync saves the numeric ETag for its next URL. The history contract decision is open.
 
 ### `BFQ-247` &mdash; BF-247 - preserve treatment history across parallel read orders
 
@@ -13105,7 +13107,7 @@ reproduced ones.
 | `SPEC-RECORDS` | Platform spec L1: the records specification (observation primitives, decomposition of today's documents, effective-dated settings snapshots) | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 | `SPEC-ACTIVE-STATE` | Decide and specify what a hub reports as active at a time, and a therapy-state version an approval can bind to | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 | `SCHEMA-INTENT-GAPS` | Registration grammar: the initiators other form, duration units on requested and applied carriers, typed carrier fields | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
-| `PLAT-ENTRY` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes | `in-flight-upstream` | `feat/nightscout-entrypoint` | minor | 0 run + 1 no-gate |
+| `PLAT-ENTRY` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes | `merged-upstream` | `feat/nightscout-entrypoint` | minor | 1 run + 1 no-gate |
 | `PLAT-SERVE` | `nightscout multitenant <roles>` (D21): multitenant roles carved from bootevent one at a time, `api` first; each listener bound separately | `merged-upstream` | `feat/nightscout-serve` | minor | 2 run |
 | `QC-MATRIX-WIRE-ATTRIBUTION` | Write-contract matrix: settle storage-socket frames after the seed and after the measured step (attribution as a guard), so `wire` stops picking up the seed's own late frame | `done` | `-` | n/a | 1 run |
 
@@ -14256,7 +14258,7 @@ reproduced ones.
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `feat/nightscout-entrypoint` |
 | base | `official/dev@8dbb60c2` |
@@ -14264,14 +14266,16 @@ reproduced ones.
 | semver | `minor` |
 | review | maintainer |
 
-**Blast radius.** New bin/nightscout.js and a package.json "bin" entry; Dockerfile ENTRYPOINT/CMD/HEALTHCHECK. lib/server/server.js stays the implementation of `single`, so Procfile, npm start, server.js, web.config (iisnode) and start.sh are untouched.
+**Blast radius.** New bin/nightscout.js and a package.json "bin" entry; Dockerfile CMD selects single, with an opt-in healthcheck command. lib/server/server.js stays the implementation of `single`, so Procfile, npm start, server.js, web.config (iisnode) and start.sh are untouched.
 
-**What an operator sees.** Nothing changes for a site started the old way. Docker images gain a health check, and `nightscout diagnose data` / `nightscout version` can be run inside the container.
+**What an operator sees.** Existing start commands still work. The image provides a healthcheck command and the Nightscout diagnostic and version commands.
 
-**Why `minor`.** Adds a command and an image health check; no existing behaviour changes.
+**Why `minor`.** Adds operator commands and preserves the existing single-site start paths.
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1b2801f7 official/dev`
+  - The application dev branch contains the CLI join from PR 8865.
 - **NO GATE** &mdash; Measured by the lab, not re-runnable from this repository alone (needs MongoDB and a crm tree). On feat/nightscout-entrypoint b63d9b7f (dev 8dbb60c2): npm test 4509/0/3 (dev 4480/0/3), test:all 4837/0/3 at 4c7d678d (dev 4808/0/3), Node 22.23.4. tests/start-paths.test.js boots seven start paths as processes and deep-compares each with `nightscout single` (three ablations of the single mapping red); unknown subcommand exits 64; healthcheck red before start, green while running, red after stop; env redacts five planted secrets (red without redact()); the image has no HEALTHCHECK (asserted, red when one is added).
 
 **Evidence.**
@@ -14279,7 +14283,7 @@ reproduced ones.
 - `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/archive/tenancy/nightscout-deployable-components-2026-09-14.md`
 
-**Notes.** 2026-10-26, later: draft #8862 opened at 4c7d678d; b63d9b7f removed the image HEALTHCHECK after the maintainer asked whether it would hide the boot-error page. It would: a site that boots with errors serves that page as a 500, and swarm or autoheal would restart it in a loop. `nightscout healthcheck` stays as an opt-in command and names the boot-error page. Open in the PR: PATH passthrough outside the image, `docker run <image> env`, SIGTERM handling, 307-to-https as healthy. 2026-10-26: the maintainer chose one executable with subcommands, the Consul / node-multienv start_container.sh / Ory `serve` pattern, and `serve <roles>` for hosted roles (D21, execution plan section 2.12). Node, not bash: self-hosters run on Windows, IIS and Azure, and the final image has no npm. The dispatcher require()s the role in-process so SIGTERM reaches the server.
+**Notes.** 2026-11-24, read-derived: #8865 incorporated the #8862 work and merged as 991b0654. The image runs nightscout single and leaves the healthcheck opt-in. 2026-10-26, later: draft #8862 opened at 4c7d678d; b63d9b7f removed the image HEALTHCHECK after the maintainer asked whether it would hide the boot-error page. It would: a site that boots with errors serves that page as a 500, and swarm or autoheal would restart it in a loop. `nightscout healthcheck` stays as an opt-in command and names the boot-error page. Open in the PR: PATH passthrough outside the image, `docker run <image> env`, SIGTERM handling, 307-to-https as healthy. 2026-10-26: the maintainer chose one executable with subcommands, the Consul / node-multienv start_container.sh / Ory `serve` pattern, and `serve <roles>` for hosted roles (D21, execution plan section 2.12). Node, not bash: self-hosters run on Windows, IIS and Azure, and the final image has no npm. The dispatcher require()s the role in-process so SIGTERM reaches the server.
 
 ### `PLAT-SERVE` &mdash; `nightscout multitenant <roles>` (D21): multitenant roles carved from bootevent one at a time, `api` first; each listener bound separately
 

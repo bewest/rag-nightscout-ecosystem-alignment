@@ -2903,3 +2903,22 @@ controls:
     proves: >
       The native suite must distinguish the frozen base from the fix. Giving the instrument
       the fixed loader on both sides removes that distinction and must fail.
+
+  - gate: node tools/queue/gates/v3-history-continuation.js --ref official/dev
+    control: node tools/queue/gates/v3-history-continuation.js --ref v15.0.9
+    positive-control: node tools/queue/gates/v3-history-continuation.js --ref v15.0.9 --whole-groups
+    control-kind: unit
+    proves: >
+      Reproduced on v15.0.9 c6a0d8ed and official/dev 79144cbd0. Identifiers went missing
+      on both continuation sources. The positive control on the same stored history and
+      reader preserved every identity and reached the end across multiple pages.
+
+  - gate: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b6e3d739 official/dev
+    control: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b6e3d739 b6e3d739^
+    control-kind: static
+    proves: The parent predates the socket matching repair in PR 8888.
+
+  - gate: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2079501a official/dev
+    control: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2079501a 5376e6a7
+    control-kind: static
+    proves: The earlier merge includes fix B. Only the later compatibility merge adds fix C.

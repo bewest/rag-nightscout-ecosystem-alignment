@@ -15,12 +15,10 @@ source head and gates before acting.*
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 35 items
+### Maintainer &mdash; 32 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `BFQ-212` | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re | #8878 |
-| `BFQ-225` | `in-flight-upstream` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3 | #8888 |
 | `LOOP-UPSTREAM-CARB-EDIT` | `in-flight-upstream` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cac | &mdash; |
 | `MT-ACTIVITY-ELIGIBILITY` | `in-flight-upstream` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may  | &mdash; |
 | `MT-ADMIN-LIFECYCLE-FIT` | `in-flight-upstream` | Restore census accepts non-clinical identities; ownership refuses on non-active  | &mdash; |
@@ -45,7 +43,6 @@ source head and gates before acting.*
 | `MT-ROOT-ADMIN-PARITY` | `in-flight-upstream` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, ad | &mdash; |
 | `MT-TENANT-EXTENDED-SETTINGS` | `in-flight-upstream` | Tenant environment carries plugin extended settings so the stale-data alarm can  | &mdash; |
 | `MT-VAULT-TOKEN-FILE` | `in-flight-upstream` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | &mdash; |
-| `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
@@ -82,9 +79,6 @@ partial fix can merge while the item remains open. Use the
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
-| **#8878** | `BFQ-212` | `bf/16.0.0-split-identity` | BF-212 - a chart-drag split leaves two treatments with one c | Maintainer |
-| **#8888** | `BFQ-225` | `bf/16.0.0-bf225-socket-duplicate` | BF-225 - socket re-sends that #8877 changed from one stored  | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 
