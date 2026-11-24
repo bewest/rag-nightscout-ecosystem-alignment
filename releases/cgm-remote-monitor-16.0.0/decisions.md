@@ -1,24 +1,13 @@
 # cgm-remote-monitor 16.0.0 — decisions
 
-*Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
-`dev` `61eb3733` (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at `dev` `991b0654`
-(2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
-it. Item state is in `queue/work-queue.yaml`; what 16.0.0 contains and what is still open is in
-[contents.md](contents.md); the test evidence is in the
-[16.0.0 integration record](../../docs/30-design/remedial/rc-16.0.0-integration-record.md). BF-72 and
-BF-161 appear by mechanism only: both are live on the shipping release, and this repository is
-public.*
+*Contributor-facing record of maintainer decisions. Dates and tested trees in the
+tables identify the evidence available when each decision was taken. Current candidate
+scope, staging and remaining acceptance are in [contents](contents.md#closing-candidate-2026-11-24).
+Past runs are in the [integration record](../../docs/30-design/remedial/rc-16.0.0-integration-record.md).*
 
-**Current follow-up, 2026-11-03:** `official/dev`
-`4a482627bfdafb1fef8dcbe0ac6c484811cae563` is the current 16.0.0 release
-candidate. Release preparation is in progress, not blocked; the remaining
-acceptance, staging and release steps are pending, and no tag is published.
-The maintainer confirms informal cohort/rig testing has started (over 24-48
-hours across testers). Acceptance outcomes still need exact builds and
-scenarios. Master's absent 4.4 requirement is removed;
-the aggregate *Tests pass* policy is not yet applied. #8829 remains
-reporter-observed on dev and not reproduced by either maintainer; obtain a
-sanitized reproducer/environment comparison before assigning cause.
+**Release placement, 2026-11-24.** The closing candidate on `official/dev` is single-tenant.
+The [staging PR](https://github.com/nightscout/cgm-remote-monitor/pull/8824) still requires review.
+
 **Maintainer decision, November 2: #8829 is not a release blocker**; it works
 in many DIY and production/service environments and neither maintainer
 reproduced the reported failure. Keep the environment-specific report open as
@@ -71,9 +60,9 @@ with unchanged anchor ids. Record new multitenant decisions there, not here.
 | **`write(intent)` slices 4 and 6 are released** (slice 4: API v3; slice 6: socket treatments, devicestatus and profile adds and updates). Slice 6 carries an extra gate, because its rules decide whether a treatment is a duplicate: each rule (exact `NSCLIENT_ID` and fallback-key match, the 2-second similar match at its edges, each BF-09 zero case, a different `eventType` as a second record, soft-deleted records never matching, the similar match setting only `created_at` and `srvModified`, the `WRITE_VALIDATION` reply slots) has a fixture that keeps today's result and an ablation that goes red; any difference is stop-and-report | maintainer, 2026-10-29 ([write-step design note](../../docs/30-design/platform/wc-step-design-note-2026-10-27.md)) | `WC-STEP-PATCH` | built; push-ready head `e8224807` (17 commits on `dev` `e1f7ac41`): the write-contract matrix differs from `dev` in 0 cells, the revert rehearsed; draft #8874 at `4f9fc4cd` on 2026-10-30, 0 behind `dev` `991b0654` |
 | **BF-211 joins the 16.0.0 merge list**, added to #8877 with BF-209; **BF-210 is withdrawn as not a defect**: a nearby socket upload of the same event type whose amounts match a stored record is absorbed as intended, and the fix (a carbs-only re-send next to a stored carbs-and-insulin record became a second record) would double-count carbs on board. Linking a bolus to carbs eaten later as one meal belongs in the display layer, not in storage de-duplication | maintainer, 2026-10-29 | `BFQ-209`, `BFQ-210` (closed), `BFQ-211`, `DISPLAY-MEAL-GROUP` | #8877 merged 2026-10-30 00:50:49Z as `cf3d4b8f` (head `ac5d77fb`) |
 | **BF-212's split fix is a 16.0.0 backfix** (ID-Q5): the chart's split stops copying identity fields onto the moved half. Direction for the rest: a lossy edit of a controller-claimed record needs a manual confirmation; two records already sharing an identifier is a question for ID-FIRST-MATCH | maintainer, 2026-10-29 | `BFQ-212` | #8878 merged 2026-10-30 01:48:51Z as `d51c7a60`; the rest of BF-212 is open (contents, Known defects) |
-| **16.0.0 scope: every single-tenant item of the next-gen plan, through the entry bar and in priority order.** A miss at the tag rolls to 16.1.0, or to 17.0.0 if it changes a default. **The identity work is the core**: it is the substance of the agreement with the Loop maintainers (identifier-first on every path, re-sends recognised, the format rules, one record per identifier). **The unique index on `identifier` is in 16.0.0**, behind `WRITE_IDENTIFIER_INDEX=try\|require\|off\|drop` (default `try`); `try` reports existing duplicates without deleting records or blocking startup. **The multitenant runtime may ship dormant and labelled alpha behind `nightscout multitenant`, or be deferred; it is not a single-tenant release gate.** The tag is gated by the bar, not by a date | maintainer, 2026-10-30 (CLI name amended 2026-11-03; [next-gen plan](../../docs/30-design/platform/next-gen-platform-plan.md) §1) | `ID-UNIQUE-INDEX`, `ID-FIRST-MATCH`, `WC-STEP-PATCH`, `HUB-REG-CRM`, `PLAT-SERVE` | #8892 and #8894 are merged; identity test evidence is in contents and the integration record. Cohort scenarios remain to be prepared for an eventual named RC. |
+| **16.0.0 scope: every single-tenant item of the next-gen plan, through the entry bar and in priority order.** A miss at the tag rolls to 16.1.0, or to 17.0.0 if it changes a default. **The identity work is the core**: it is the substance of the agreement with the Loop maintainers (identifier-first on every path, re-sends recognised, the format rules, one record per identifier). **The unique index on `identifier` is in 16.0.0**, behind `WRITE_IDENTIFIER_INDEX=try\|require\|off\|drop` (default `try`); `try` reports existing duplicates without deleting records or blocking startup. The October scope allowed a dormant runtime to be deferred. **Superseded for the closing candidate on November 24: the release is single-tenant.** The tag is gated by the bar, not by a date | maintainer, 2026-10-30 (CLI name amended 2026-11-03; [next-gen plan](../../docs/30-design/platform/next-gen-platform-plan.md) §1) | `ID-UNIQUE-INDEX`, `ID-FIRST-MATCH`, `WC-STEP-PATCH`, `HUB-REG-CRM`, `PLAT-SERVE` | #8892 and #8894 are merged; identity test evidence is in contents and the integration record. Cohort scenarios remain to be prepared for an eventual named RC. |
 | **Required before the 16.0.0 tag**: (a) a live Pushover and APNs delivery check; (b) a real-rig soak on `dev`; (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0. BF-193 (the socket's payload logging) is not a pre-tag requirement; its logging question is decided (the BF-193 row below) | maintainer, 2026-10-26 (session -66) | `RT-16-RELEASE` (blocks on `RT-16-LIVE-ALARMS`, `RT-16-RIG-SOAK`, `BFQ-72`, `BFQ-161`), `BFQ-193` | updated 2026-11-02: (b) informal cohort testing underway, acceptance not yet recorded; (a) live-delivery outcomes not recorded here; (c) private integration/final-tree validation still pending |
-| **The current 16.0.0 release candidate is `official/dev` `4a482627bfdafb1fef8dcbe0ac6c484811cae563`; release preparation remains in progress while the planned acceptance and staging steps complete.** This does not authorize a tag or publication | maintainer, 2026-11-03 | `RT-16-RELEASE` | candidate anchor read from refreshed `official/dev` after #8899; prior candidate `61eb3733` is its parent; release-level acceptance remains pending |
+| **The November 3 candidate was `official/dev` `4a482627bfdafb1fef8dcbe0ac6c484811cae563`.** Superseded by the [closing candidate](contents.md#closing-candidate-2026-11-24) after #8907 merged | maintainer, 2026-11-03 | `RT-16-RELEASE` | candidate anchor read from refreshed `official/dev` after #8899; prior candidate `61eb3733` is its parent; release-level acceptance remains pending |
 | **D21 CLI naming amendment is in the still-fungible 16.0.0 candidate scope**: replace the unavailable `nightscout serve <roles>` command with `nightscout multitenant <roles>` so the command names the tenancy profile. Do not enable multitenant roles; preserve `nightscout single`, legacy single-tenant starts, and the test-only headless API v3 launcher | maintainer, 2026-11-03 | `PLAT-SERVE` | #8899 merged at 22:52:32Z as `dev` `4a482627`, head `75fb4cdf`; full non-browser suites pass 6652/0/3 pending on Node 22.23.4 and disposable MongoDB 8.0.34 on the identical PR-head tree; targeted suites 46/0 and red no-alias control reproduced (R21); merged-head CI was in progress at capture (R22); not released |
 
 ## Tests and the jsdom harness
@@ -157,9 +146,10 @@ with unchanged anchor ids. Record new multitenant decisions there, not here.
 
 ## Architecture seams and profile integration priority (2026-11-05)
 
-| decision | who, when | queue | as it stands |
-|---|---|---|---|
-| Prioritize architecture/seam contracts and composition, then measured consolidation and integration of existing PR #8891; defer SQLite/celld experiments at low priority. | maintainer, 2026-11-05, architecture-review chat | `ARCH-SEAM-CONTRACT`, `ARCH-SEAM-COMPOSE`, `ARCH-SEAM-CONSOLIDATE`, `ST-VIEWS-PROFILE`, `ARCH-DERIVED-FRAME`, `MT-RUNTIME-PLAN`, `ARCH-SQLITE-SPIKE` | [Execution plan](../../docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md) assigns work to current storage/composition, compatibility and execution-profile lanes. R42 accepts bounded port contracts and separate management HTTP; R43 independently accepts the refreshed prototype replay. R44 accepts current-domain/backend and failure/HTTP composition with direct imported-identity evidence; R45 independently extends actual-HTTP writer replay and fixes live fixture ownership. R46 accepts bounded identical PG mechanics and direct indexed-race compatibility; R47 independently adds test-composed v1 evaluator replay. Broader helper relocation and actual shared-frame characterization remain next; read-derived frame inventory is preparation, not convergence. No acceptance promotes a milestone. #8891 stays opt-in single/nonresident until its replay/alarm entry bar and placement decision; distributed evaluation retains M5 recovery/authority gates. No new 16.0.0 tag gate, candidate admission, provider selection or production role enablement. |
+The historical [architecture execution plan](../../docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md)
+records the November 5 priorities and their evidence. The single-site nonresident profile
+proposal (#8891) remains a separate open draft. Release placement requires a maintainer
+decision and the entry checks above.
 
 ## Query layer
 

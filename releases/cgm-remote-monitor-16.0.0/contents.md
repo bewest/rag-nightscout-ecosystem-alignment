@@ -1,18 +1,33 @@
 # cgm-remote-monitor 16.0.0 — contents
 
-**Current update, 2026-11-03:** `official/dev` `4a482627bfdafb1fef8dcbe0ac6c484811cae563`
-is the current 16.0.0 release candidate. Release preparation is **in progress**,
-not blocked; the candidate is not tagged or released. Informal cohort/real-rig
-testing is underway, with over 24-48 hours reported by the maintainer, not yet a
-version-pinned acceptance record. Master protection no longer requires the absent 4.4 check; its two
-remaining required lanes are green and review/staging continues. #8829's reporter
-reports persistence on dev, but neither maintainer reproduced it and many DIY
-and production/service environments work. The maintainer dispositions #8829
-**nonblocking** for v16; diagnosis remains follow-up. #8855 now has green checks; new report proposal
-#8897 has no checks returned. BF-72/BF-161 remain private pre-tag work.
+## Closing candidate, 2026-11-24
+
+The single-tenant 16.0.0 candidate is `official/dev` at
+`79144cbd006e1137bd776ffd56560debdf880e81`. Operators on the latest
+published release are on **v15.0.9**. GitHub returned no tag matching
+`v16.0.0` or `16.0.0`. [Published release](https://github.com/nightscout/cgm-remote-monitor/releases/tag/v15.0.9) · [Candidate diff](https://github.com/nightscout/cgm-remote-monitor/compare/c6a0d8ed...79144cbd006e1137bd776ffd56560debdf880e81)
+
+| Evidence | Finding |
+|---|---|
+| Merged since the November 3 candidate (read-derived) | [#8907](https://github.com/nightscout/cgm-remote-monitor/pull/8907) is the only first-parent change after `4a482627`. Merged November 17 at 13:53:21 UTC from `bfe46155b`. Modern becomes the default for an unconfigured site and browser. The reports gain chart controls and corrections to historical calculations and calibration displays. See the [operator notes](release-notes.md#dashboard-and-reports). |
+| Staging and checks (read-derived) | [#8824](https://github.com/nightscout/cgm-remote-monitor/pull/8824) is open from `dev` to `master` at the candidate SHA. GitHub reports `BLOCKED` and `REVIEW_REQUIRED`. Master requires one approval and the passing MongoDB 6 lanes on Node 22 and 24. The recorded policy decision to require the aggregate *Tests pass* check still differs from that setting. [Push CI](https://github.com/nightscout/cgm-remote-monitor/actions/runs/44097248801), [PR CI](https://github.com/nightscout/cgm-remote-monitor/actions/runs/44097262198) and CodeQL on both events passed. The dev image publish succeeded. Release-image publication was skipped. |
+| Pre-tag acceptance (reproduced queue verdicts) | `make queue-status ID="RT-16-RELEASE RT-16-LIVE-ALARMS RT-16-RIG-SOAK BFQ-72 BFQ-161"` reports UNMEASURED for release, live alarms and real-rig soak, and FAIL for the two private-fix items (BFQ-72 static check and BFQ-161 ancestry check). The maintainer still needs the private fixes and combined-tree validation, live Pushover delivery/acknowledgement/cancellation and APNs phone delivery, and build-pinned cohort, upgrade and rollback outcomes over the final quiet period. The November informal soak report belongs to the builds actually run. [Cohort evidence guide](testing-notes.md) |
+| Scope still under review (read-derived) | BF-246 is approved for 16.0.0 and fixed on its branch at `f97df2c1c`. That commit is outside `79144cbd0`. Controller registration (#8857), the nonresident profile (#8891), iOS background pushes (#8810), translations (#8855) and the week-to-week report (#8897) remain open PRs. Other open changes to AAPS meal uploads (#8902), reports (#8910), API status (#8911), expired tokens (#8914) and chart navigation (#8916) also require review and a merge to enter the candidate. #8829 remains open and nonblocking by maintainer decision. |
+
+**Measurement sources.** In the official product checkout, use
+`git log --first-parent 4a482627..79144cbd0` for the increment and
+`git merge-base --is-ancestor f97df2c1c 79144cbd0` for BF-246 (exit 1).
+GitHub reads used `gh pr view`, `gh run list --commit`, and the
+`releases/latest`, tag matching-refs and master branch-protection endpoints.
+The [compatibility matrix](../../site/pages/cgm-remote-monitor-16.0.0-write-compatibility.html)
+compares `v15.0.9` with `497d08c9`. Final acceptance requires results on the
+eventual integrated tree and a maintainer decision to stage and tag it.
+
+### November 3 candidate history
+
 | Date | Candidate and process status | Evidence and remaining steps |
 |---|---|---|
-| 2026-11-03 | `official/dev` `61eb37335954ae42c91345a0823bd67331025165` is the current release candidate; release preparation is in progress. No tag or release is published. | Candidate anchor read from refreshed `official/dev`. Existing acceptance record has green integrated CI/CodeQL on this head; private security integration and final-tree checks, live alert checks, pinned cohort/rig/rollback evidence, and staging/review remain pending. No release-level test or cohort result is asserted here. |
+| 2026-11-03 | `official/dev` `61eb37335954ae42c91345a0823bd67331025165` was the candidate before #8899 merged. Release preparation was in progress. | Candidate anchor read from refreshed `official/dev`. Existing acceptance record has green integrated CI/CodeQL on this head; private security integration and final-tree checks, live alert checks, pinned cohort/rig/rollback evidence, and staging/review remain pending. No release-level test or cohort result is asserted here. |
 | 2026-11-03 | #8899 merged at 22:52:32Z as `official/dev` `4a482627bfdafb1fef8dcbe0ac6c484811cae563` (head `75fb4cdfd8fca37d83dab7d2bc3cc2fed37b45ed`); the D21 CLI naming amendment is in the candidate, not released. | Replaces the unavailable `nightscout serve` namespace with `nightscout multitenant`; enables no roles and preserves `single` and legacy start paths. Reproduced on the PR head: full non-browser `npm run test:all` 6652 passing / 3 pending / 0 failing on Node 22.23.4 and disposable MongoDB 8.0.34; targeted CLI/listener/headless suites 46/0; changed-file ESLint 0 errors, 6 warnings; red no-alias control. Reproduced: merged tree equals the tested PR head (`git diff --exit-code 75fb4cdf 4a482627`). Read-derived: pre-merge test/build/CodeQL checks passed, browser and maintained-MongoDB checks were still pending; merged-head CI and CodeQL were in progress at capture. See [R21](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r21---d21-cli-profile-naming-on-75fb4cdf-2026-11-03) and R22. Release-level acceptance remains pending. |
 
 
@@ -32,7 +47,7 @@ records current CI/staging blockers, candidate PR dispositions, issue follow-up
 and isolated fix preparation. Historical measurements below keep their original
 commit labels; this follow-up does not declare a named RC.
 
-**Current acceptance roadmap (2026-11-01):** scheduled backend storage/identity
+**Historical acceptance roadmap (2026-11-01):** scheduled backend storage/identity
 integration, dependency modernization and the opt-in modern theme are merged;
 do not read historical in-flight tables below as the current merge queue.
 The [current scope and hosted test totals](../../docs/10-domain/nightscout-rc-readiness-2026-11-01.md#current-test-totals-and-release-scope)
@@ -83,8 +98,10 @@ a formal named-RC announcement is not yet issued.
 | Tag to be cut | `v16.0.0` and `16.0.0`, both forms, as for `15.0.7` to `15.0.9` |
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `c6a0d8ed` = `v15.0.9` (released 2026-10-21) |
-| `dev` head | `61eb37335954ae42c91345a0823bd67331025165` (#8896, 2026-11-01 17:52:18Z), after #8895 `bb85d10f` (17:45:01Z) and #8894 `497d08c9` (16:28:25Z). Earlier measured history remains in the dated rows below. |
-| CI on current `dev` | Both CI runs 41333672054 / 41333677576 and CodeQL runs 41333672065 / 41333677478 passed on `61eb3733`. The push run published amd64/arm64 development images to `dev_61eb37335954ae42c91345a0823bd67331025165` and `latest_dev`; release-image publication was skipped. No named RC or live acceptance is implied. |
+| Candidate head | `79144cbd006e1137bd776ffd56560debdf880e81` (#8907). See [closing candidate](#closing-candidate-2026-11-24) for staging and checks. |
+| Size of `c6a0d8ed..79144cbd0` (reproduced) | 1,200 commits (714 non-merge), 72 first-parent commits (71 merges), 1,052 files changed, +174,505/−20,308. Measured with `git rev-list --count` (also `--no-merges`, `--first-parent`, and `--first-parent --merges`) and `git diff --shortstat` between the two pinned commits. |
+| `dev` head on 2026-11-01 | `61eb37335954ae42c91345a0823bd67331025165` (#8896, 2026-11-01 17:52:18Z), after #8895 `bb85d10f` (17:45:01Z) and #8894 `497d08c9` (16:28:25Z). Earlier measured history remains in the dated rows below. |
+| CI on the November 1 head | Both CI runs 41333672054 / 41333677576 and CodeQL runs 41333672065 / 41333677478 passed on `61eb3733`. The push run published amd64/arm64 development images to `dev_61eb37335954ae42c91345a0823bd67331025165` and `latest_dev`; release-image publication was skipped. No named RC or live acceptance is implied. |
 | `dev` head on 2026-10-27 | `eed31dca` (merge of #8856, 2026-10-27 20:09:35Z, by bewest), tree `584623cf`; the merges before it that day: #8868 `88676086` (20:01:50Z), #8859 `94899828` (19:52:21Z), #8866 `b84871d7` (19:42:55Z), #8864 `2dc0c1bc` (16:55:01Z, AndyLow91) and #8860 `8dbb60c2` (00:07:13Z, AndyLow91) |
 | Commits on `dev` | 1,145 at `f54941b5` (675 without merges) — `git rev-list --count official/master..official/dev`, `--no-merges`; 999 at `991b0654` (576 without merges), 921 at `eed31dca` |
 | First-parent commits on `dev` | 66 at `f54941b5` — `git rev-list --first-parent --count official/master..official/dev`; 54 at `991b0654`, 43 at `eed31dca` |
@@ -428,7 +445,7 @@ marked *owed* has a candidate change whose classification is not recorded yet:
 - [x] S2 plugin interface, boot sequence or client bundle: cut 2 (#8837) splits the client into page
   bundles and replaces the boot sequence and the client event bus with native code (a third-party
   plugin that hooks into the page is to be tested before upgrading; no plugin was run against it);
-  #8849 makes boot wait for its indexes; #8831 adds an opt-in theme
+  #8849 makes boot wait for its indexes. #8831 introduced Modern as an opt-in theme and #8907 made it the default.
 - [x] S3 environment-variable surface: new `THEME=modern` (#8831), `WRITE_VALIDATION` (#8841),
   `API3_SETTINGS_STRICT_READ_ENABLED` (#8845) and `SHOW_SECONDS` (#8555); a start-up warning when
   `SECURE_HSTS_HEADER_INCLUDE_SUBDOMAINS` is set (BF-49); leftover legacy bridge settings stop the site
@@ -471,10 +488,12 @@ through the entry bar and in priority order. An item joins the merge list when i
 (0 cells, or named cells), its red controls and ablations pass, a revert has been rehearsed, and it has had time
 on `dev` with its cohort check (entry bar, 2026-10-29). An item that misses the bar at the tag rolls to 16.1.0,
 or to 17.0.0 if it changes a default. The identity work is the core: it is the substance of the agreement with
-the Loop maintainers. Multitenant items may ship dormant, labelled alpha behind `serve`, or not ship. The tag
-is gated by the bar and the pre-tag items, not by a date.
+the Loop maintainers. The closing candidate is single-tenant. The maintainer sets the tag date after
+the entry and pre-tag checks.
 
 **Update, 2026-11-22, BF-246 candidate fix** (maintainer approval 2026-11-22: file, queue for 16.0.0, fix): the data loader's `mergeProcessSort` is quadratic in the records it holds ([register](../../docs/30-design/remedial/nightscout-backfix-register.md), queue `BFQ-246`). Local branch `claude/bf-246-dataloader-merge-linear` `f97df2c1c` on `official/dev` `79144cbd0`, not pushed: a set of ids where every id is a string, the loop otherwise; no operator-visible change besides CPU. Suites on `f97df2c1c` (Node 22.23.4, disposable MongoDB 8.0.34 container with a raised open-file limit): `npm run test:affected` 3,133 passing / 3 pending / 0 failing; `npm test` 6,369 passing / 3 pending / 0 failing; ESLint on the changed files clean; `prcheck.sh` OK (already contains `official/dev` `79144cbd0`).
+
+The following dated handoffs retain their original merge order and findings. The [closing candidate](#closing-candidate-2026-11-24) records current placement.
 
 **Handoff, 2026-10-31 (read with `git ls-remote` and `gh pr list` at about 03:00Z; plan owner session -49).**
 `dev` is `368e6c23` (#8874 merged 2026-10-31 02:02Z). Merge order on `dev` from here: #8883, then #8879 once
@@ -774,11 +793,16 @@ which this programme cannot do without real credentials; #8843 (CI diagonal) and
 
 ## Known defects on `dev` now
 
+The [backfix register](../../docs/30-design/remedial/nightscout-backfix-register.md)
+tracks current exposure and fix status. The table below records observations on
+the October trees. Read-derived correction for the closing candidate: the BF-215
+and BF-216 fixes merged in #8879 at `164e6ae8`.
+
 | defect | what | exposure | queue |
 |---|---|---|---|
 | BF-219, BF-220, BF-221: v1 treatment batch replies and PUT announcements | **fixed on `dev` by #8883** (merged 2026-10-31 16:30Z as `2f50d944`; not released). BF-219: a batch with a preBolus answers with more items than were sent, so Loop re-sends it forever. BF-220: a taken `_id` inside a batch answers 5xx after earlier items are stored. BF-221: a v1 PUT reaches open pages 1–57 s late | BF-219 and BF-220 are dosing-relevant (lost or endlessly re-sent treatments); BF-221 is display latency | `BFQ-219`, `BFQ-220`, `BFQ-221` |
 | BF-222: API v3 autoPrune leaves pruned records in the cache | **fixed on `dev` by #8883** (merged 2026-10-31 16:30Z as `2f50d944`; still on `v15.0.9`, since #6688; R18) | only where `API3_AUTOPRUNE_<collection>` is shorter than that collection's cache retention; display only | `BFQ-222` |
-| BF-215, BF-216: identifier format | **on `dev` now; fixes in #8879** (ID-FIRST-MATCH slice 2, not merged). BF-215: a numeric `identifier`; BF-216: a placeholder `identifier` shared by two apps | BF-216 is dosing-relevant data loss, narrow | `ID-FIRST-MATCH` |
+| BF-215, BF-216: identifier format | **Observed on October dev** before #8879 merged (ID-FIRST-MATCH slice 2). BF-215: a numeric `identifier`; BF-216: a placeholder `identifier` shared by two apps | BF-216 is dosing-relevant data loss, narrow | `ID-FIRST-MATCH` |
 | BF-212, the rest: shared client identity after a chart split | **first part fixed on `dev` 2026-10-30** by #8878 (`d51c7a60`): a new chart split no longer copies the client identity fields. Still open: records split before the fix keep two stored treatments with one identity, and a v1 or in-process re-send of either lands on the older record, so a re-send of the newer one overwrites the older one's amount (API v3 picks the newer record and refuses a re-send of the older one with 400; measured by the extended write-contract matrix). A full re-upload of the original by the client that still holds it writes the moved insulin back, so it is stored and counted twice, with or without identity on the copy. The follow-ups are ID-FIRST-MATCH slice 5 (the P4 pick) and the maintainer's direction that a lossy edit of a controller-claimed record needs a manual confirmation | dosing-relevant data and display, narrow: a chart drag of a record that holds both insulin and carbs; on 15.0.9 and `dev` | `BFQ-212` |
 | BF-209: two identical socket treatments within 2 s from different clients stored as one | **fixed on `dev` 2026-10-30** by #8877 (`cf3d4b8f`), for writes that carry `identifier` (scope decided 2026-10-29: in the similar match, `identifier` decides when present); writes without it keep the earlier rule, and recognising `identifier` at any time waits for ID-FIRST-MATCH. Present on 15.0.9. BF-210 (an upload with no amount absorbed by a stored one) was withdrawn 2026-10-29 as intended behaviour | socket writers: AndroidAPS's v1 NSClient (3.4.2.x) and the chart-drag split | `BFQ-209` |
 | BF-211: a delete by query empties all three in-memory caches | **fixed on `dev` 2026-10-30** by #8877 (`cf3d4b8f`); present since 14.0.4 and on 15.0.9. Cost, not correctness: the next load re-reads days of data (890 documents and 716,202 bytes after a 3-record delete; 32 documents and 10,289 bytes with the fix, cache-value lab) | sites on transfer-capped MongoDB tiers | `BFQ-211` |
@@ -1002,8 +1026,8 @@ capture, the reconciliation in [releases/README.md](../README.md).
 
 ## For the release notes
 
-A draft list of what the release notes must say; the notes themselves are written last, once the
-candidate is named.
+The [draft operator notes](release-notes.md) cover the closing candidate. The following list retains
+the earlier rationale and caveats for final changelog reconciliation.
 
 - (#8865, if merged) Nightscout stops cleanly on SIGTERM and SIGINT on every start path: it closes
   its connections and exits 0, or exits 1 if it is still open after 8 s. In the Docker image,
@@ -1039,7 +1063,8 @@ candidate is named.
 - Docker Compose starts `mongo:6.0.27` instead of `mongo:5.0.32` (cut 3): for an existing Compose
   deployment this is a database major-version upgrade (`docs/runtime-upgrade.md`).
 - Express 5 and Helmet 8 (cut 5), and the query-string array limit (above, open item 8).
-- The opt-in `THEME=modern` dashboard (#8831) and the opt-in `SHOW_SECONDS` clock (#8555).
+- #8831 introduced the Modern dashboard and #8907 made it the default where no theme is set.
+  Existing configured themes and saved browser choices take precedence. The `SHOW_SECONDS` clock (#8555) is opt-in.
 - The opt-in `WRITE_VALIDATION` for Temporary Targets (#8841), what `log` and `reject` do, that most
   uploaders lose a refused record without showing an error, and that an unrecognised value means `off`.
 - #8854 under `WRITE_VALIDATION=reject`: the realtime socket checks Temporary Targets too and answers a

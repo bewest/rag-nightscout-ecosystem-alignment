@@ -72,7 +72,7 @@
       {
         "status": "complete",
         "gate": "Post-merge CI on nightscout/cgm-remote-monitor#8894",
-        "evidence": "PR #8896 stabilized the cache-order and startup-state tests. Required checks and both post-merge workflows (41333677576 and 41333672054) passed on current dev 61eb3733."
+        "evidence": "PR #8896 stabilized the cache-order and startup-state tests. Required checks and both post-merge workflows (41333677576 and 41333672054) passed on the November 1 dev head 61eb3733."
       },
       {
         "status": "pending",

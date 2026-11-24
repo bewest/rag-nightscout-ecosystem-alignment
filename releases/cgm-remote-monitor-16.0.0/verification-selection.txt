@@ -1,6 +1,6 @@
-# The queue items the 16.0.0 verification record is captured over: every item
-# contents.md or decisions.md names, plus the release items. One id per line;
-# keep it sorted and add an id in the same commit that names it in contents.md.
+# Single-tenant items documented for the 16.0.0 verification record, including
+# the release and its pre-tag requirements. Inclusion records a status, not a
+# merge. Preview-only experiments and their acceptance gates belong in tenancy.
 # Capture (once, at the tag; VERIFICATION-RECORDS.md):
 #   python3 tools/queue/verification-record.py --release cgm-remote-monitor-16.0.0 \
 #     --captured-at "$(date +%Y-%m-%dT%H:%M:%S%:z)" \
@@ -56,6 +56,11 @@ BFQ-219
 BFQ-220
 BFQ-221
 BFQ-222
+BFQ-223
+BFQ-224
+BFQ-225
+BFQ-227
+BFQ-246
 BFQ-46
 BFQ-72
 BFQ-92
@@ -70,7 +75,6 @@ ID-RESEND-SWITCH
 ID-SIMPLE-MATCH
 ID-UNIQUE-INDEX
 ID-VALIDATE
-M4-CLIENT-LAB
 MOD-WRITE-VALIDATION
 PLAT-ENTRY
 PLAT-SERVE
@@ -85,6 +89,7 @@ RT-5
 RT-BOOT-INDEX-AWAIT
 RT-BUNDLE-THEME-SPLIT
 RT-CI-DIAGONAL
+RT-CI-FIXTURES-8896
 RT-CI-FLAKES-8DBB60C2
 RT-CI-WEBKIT-REPORTS
 RT-CONNECT-PIN-CUTS
@@ -99,17 +104,10 @@ RT-TEST-TIERS
 RT-VERSION
 ST-COUNT-ONEPATH
 ST-FILTER-READS
+ST-VIEWS-PROFILE
 ST-WRITES
 TEST-FLAKE-REPOST-FIND-COUNT
 UI-DRAWER-RESIZE
 UI-STALE-SECRET-HASH
 WC-STEP-PATCH
 WRITE-CONTRACT
-ARCH-SEAM-CONTRACT
-ARCH-SEAM-COMPOSE
-ARCH-SEAM-CONSOLIDATE
-ST-VIEWS-PROFILE
-ARCH-DERIVED-FRAME
-ARCH-SQLITE-SPIKE
-MT-REALTIME-SHARDING
-BFQ-246
