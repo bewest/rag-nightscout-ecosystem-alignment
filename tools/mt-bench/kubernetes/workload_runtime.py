@@ -60,6 +60,17 @@ def check_probe_roster(c, rows, tenants, need):
     return rows
 
 
+def oracle_scope(c, tenants, values, load, need):
+    """The write-count oracle's roster (discovery_counts): the probe's roster scope. In a load stage with vcpool
+    connectors that is every tenant except the connector group, whose rows vcpool writes and the connector score
+    judges; probe and k6 writes never reach it, so a run-marked stored row there is refused."""
+    if not (load and c.get('connectors')):
+        return tenants
+    ids = connector_ids(c, tenants)
+    need(not ids & set(values or {}), 'CONNECTOR_TENANT_RECEIVED_RUN_WRITES')
+    return [row for row in tenants if row['id'] not in ids]
+
+
 def viewer_roster(c, tenants, need):
     rows = ordinary_roster(c, tenants, need) if partial_looping(c) else tenants
     ids = connector_ids(c, tenants)

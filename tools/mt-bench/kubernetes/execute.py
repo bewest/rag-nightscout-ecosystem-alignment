@@ -833,7 +833,8 @@ def accepted_writes(out, c, values, metrics=None):
     # temporary view supplies this path without changing the runner's files.
     view = out / 'oracle-input'
     view.mkdir(mode=0o700, exist_ok=True)
-    k.write(view / 'tenants.private.json', [{'id':row['id']} for row in tenants])
+    k.write(view / 'tenants.private.json', [{'id':row['id']} for row in
+                                            workload_runtime.oracle_scope(c, tenants, values, out.name == 'load', k.need)])
     facade = SimpleNamespace(document=k.document, write=k.write, stored=lambda *_: values)
     counts, known = k.discovery_counts.observe(facade, view, out, runid, metrics,
                                                ordinary_ids=[row['id'] for row in ordinary],
