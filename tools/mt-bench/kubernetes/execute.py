@@ -357,6 +357,29 @@ def sql_bookend(d, out, c, objects, client, name):
     return value
 
 
+def catchup(d, out, c, objects, client, value):
+    """Viewer priming and load wait for the evaluator catch-up after restore (catchup_gate.py); the gate's
+    duration is warm-up, recorded apart. Not caught up by the deadline: the stage is UNMEASURED."""
+    import catchup_gate, clinical_sql
+    s = catchup_gate.settings(value)
+    sql = catchup_gate.query(c['completion'], s['overdueGraceSeconds'])
+    baseline = k.active_baseline(d)
+    def fetch():
+        pod, container = clinical_sql.observe(c, objects, client, baseline, continuity_verdict='UNMEASURED')
+        return k.postgres_read(client, pod, container, 'SET LOCAL statement_timeout=60000;\n' + sql, timeout=90)
+    progress = out / 'catchup.jsonl'
+    def log(sample):
+        with progress.open('a') as f:
+            f.write(json.dumps(sample) + '\n')
+    try:
+        record = catchup_gate.wait(fetch, s, log=log)
+    except catchup_gate.NotCaughtUp as error:
+        k.write(out / 'catchup.json', error.record)
+        raise k.Refused('K8S_CATCHUP_NOT_REACHED', 'UNMEASURED') from None
+    k.write(out / 'catchup.json', record)
+    return record
+
+
 def capture_bookend(d, out, c, objects, client, name):
     """A load bookend: durable SQL rows for writer-driven evaluators (lazy tenant loading makes the
     inspection RPC refuse unloaded tenants), the inspection RPC otherwise."""
@@ -572,6 +595,8 @@ def execute(d, c, objects, client, load=False, recovery=False):
     out.mkdir(mode=0o700)
     k.write(out / 'before.json', before)
     k.write(out / 'driver.json', readback)
+    if load and settings.get('catchupGate') is not None:
+        catchup(d, out, c, objects, client, settings['catchupGate'])
     if load and c.get('connectors'):
         # vcpool connector tenants (connectors/stage.py): entered before the probe, scored at the end.
         sys.path.insert(0, str(k.HERE / 'connectors'))

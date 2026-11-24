@@ -82,7 +82,7 @@ def viewer_roster(c, tenants, need):
 def validate(w, need, tenants=None):
     need(isinstance(w, dict) and set(w) <= {'loadSeconds', 'offeredRps', 'workloadMix',
          'workloadScale', 'logicalPollingClients', 'viewerSetup', 'probeEveryMs', 'hotFactor', 'pointId', 'setupSeconds', 'drainSeconds',
-         'driverPlan', 'driverShards', 'driverHeadroom', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget','drainObservation','latencyObservation','driverShape'}, 'WORKLOAD_FIELDS')
+         'driverPlan', 'driverShards', 'driverHeadroom', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget','drainObservation','latencyObservation','driverShape','catchupGate'}, 'WORKLOAD_FIELDS')
     # looping-v1/looping-v2 (m7-joined/looping_driver.py): realistic-v1 cadence, writes shaped like the looping
     # fixture (v1) or the AID client model (v2).
     need('driverShape' not in w or (w['driverShape'] in ('looping-v1', 'looping-v2') and w.get('workloadMix') == REALISTIC_MIX
@@ -130,6 +130,12 @@ def validate(w, need, tenants=None):
         need(workload_inputs.shard_count(w.get('driverShards', 1), tenants), 'DRIVER_SHARDS')
         driver.configuration(w['driverPlan'], w)
         need(set(w['driverPlan']['scenarios']) == set(SHAPES), 'DRIVER_SEVEN_SHAPES_REQUIRED')
+    if 'catchupGate' in w:
+        import catchup_gate
+        try:
+            catchup_gate.settings(w['catchupGate'])
+        except ValueError:
+            need(False, 'WORKLOAD_CATCHUP_GATE')
     return w
 
 

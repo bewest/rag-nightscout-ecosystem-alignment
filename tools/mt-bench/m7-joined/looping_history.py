@@ -40,6 +40,7 @@ from threading import Event
 import time
 from urllib.parse import urlsplit
 
+import edge_base
 import populated_history as h
 
 MODE = 'synthetic-history-looping-2d-v1'
@@ -580,7 +581,7 @@ def seed_and_verify(g, spec, tenants, base, sql, until, window_seconds, *, verif
     """Seed through the API and read back, for a looping generator module `g` (this one or looping_history_v2)."""
     g.validate(spec)
     require(tenants and type(window_seconds) is int and window_seconds >= 0, 'INPUT')
-    require(re.fullmatch(r'http://127\.0\.0\.1:[0-9]{1,5}', base), 'EDGE')
+    require(edge_base.ok(base, seeding=not verify_only), 'EDGE')
     port = urlsplit(base).port
     require(port and len({row['id'] for row in tenants}) == len(tenants)
             and len({row['host'] for row in tenants}) == len(tenants), 'ROSTER')

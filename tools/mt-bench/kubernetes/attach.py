@@ -51,16 +51,24 @@ def edge_id():return subprocess.check_output(kub+['get','pod',edge,'-o','jsonpat
 assert edge_id()==edgeuid
 forward_log=live/'forward.log';packet=live/'packet'; apiport=control.get('edgePort',8080)
 forward=None
+import edge_access
+service=subprocess.check_output(kub+['get','service','edge','-o','jsonpath={.spec.clusterIP} {.spec.ports[0].port}'],timeout=12).decode().split()
+direct=edge_access.base_url(cfg['context'],ns,int(service[1]),service[0])
 try:
-    log=forward_log.open('xb');forward=subprocess.Popen(kub+['port-forward','--address','127.0.0.1','pod/'+edge,':'+str(apiport)],stdout=log,stderr=subprocess.STDOUT)
-    begin=time.monotonic()
-    while time.monotonic()-begin<22 and forward.poll() is None:
-        match=re.search(r'Forwarding from 127\.0\.0\.1:(\d+) -> '+str(apiport),forward_log.read_text())
-        if match:break
-        time.sleep(.2)
-    else:raise RuntimeError('EDGE_FORWARD_UNAVAILABLE')
+    if direct:
+        # In-cluster controller: the edge Service, no port-forward (edge_access.py).
+        write(live/'edge-access.json',{'mode':'service','baseUrl':direct,'podUid':edgeuid})
+        cfg['baseUrl']=direct
+    else:
+        log=forward_log.open('xb');forward=subprocess.Popen(kub+['port-forward','--address','127.0.0.1','pod/'+edge,':'+str(apiport)],stdout=log,stderr=subprocess.STDOUT)
+        begin=time.monotonic()
+        while time.monotonic()-begin<22 and forward.poll() is None:
+            match=re.search(r'Forwarding from 127\.0\.0\.1:(\d+) -> '+str(apiport),forward_log.read_text())
+            if match:break
+            time.sleep(.2)
+        else:raise RuntimeError('EDGE_FORWARD_UNAVAILABLE')
+        cfg['baseUrl']='http://127.0.0.1:'+match[1]
     assert edge_id()==edgeuid
-    cfg['baseUrl']='http://127.0.0.1:'+match[1]
     import fixture
     import kube_adapter as k
     private = runtime/'fixture'
