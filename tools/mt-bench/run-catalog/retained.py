@@ -446,7 +446,7 @@ def pooled_signal(evidence, driver, configured, directory):
     # reducer. JWT setup has an empty scenario and is excluded.
     shard_count = count(get(configured, "driverShards")) or 1
     shards = get(driver, "shards")
-    if not isinstance(shards, list) or len(shards) != shard_count or shard_count > 16:
+    if not isinstance(shards, list) or len(shards) != shard_count:
         return None
     paths = []
     inputs = []

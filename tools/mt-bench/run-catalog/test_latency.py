@@ -52,3 +52,22 @@ class PoolingTests(unittest.TestCase):
             self.assertNotEqual(sum(per_shard) / len(per_shard), 10)
             with self.assertRaisesRegex(ValueError, "missing scenario latency samples"):
                 pooled_histogram([(fast, {"r_sgv": 97}), shards[1]])
+
+    def test_catalog_pools_all_configured_shards(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            rows = []
+            for index in range(17):
+                path = trace(root / f"k6-scheduling-{index}.csv.gz", [index + 1])
+                rows.append({"plan": {"observer": "scheduling-v1", "shardIndex": index},
+                             "byScenario": {"r_sgv": {"completed": 1}}})
+            driver = {"shards": rows}
+            configured = {"driverShards": len(rows)}
+            observed = pooled_signal(Evidence(root), driver, configured, ".")
+            self.assertIsNotNone(observed)
+            self.assertEqual(observed[:2], (17, 17))
+            rows[0]["plan"]["observer"] = "summary-v1"
+            self.assertIsNone(pooled_signal(Evidence(root), driver, configured, "."))
+            rows[0]["plan"]["observer"] = "scheduling-v1"
+            path.unlink()
+            self.assertIsNone(pooled_signal(Evidence(root), driver, configured, "."))

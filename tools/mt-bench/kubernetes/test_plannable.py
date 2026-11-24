@@ -87,6 +87,16 @@ class Profile(unittest.TestCase):
             with self.assertRaises(p.Refused):
                 p.profile(self.BASE, **kwargs)
 
+    def test_profile_accepts_representable_larger_populations(self):
+        largest = p.population_ceiling.MAX_SYNTHETIC_TENANTS
+        for count in (20001, largest):
+            profile = p.profile(self.BASE, tenants=count)
+            self.assertEqual(profile['population']['ordinaryRosterTenants'], count)
+            self.assertEqual(profile['population']['provisionedTenants'], count)
+        for invalid in (True, largest + 1, 2**32):
+            with self.subTest(invalid=invalid), self.assertRaises(p.Refused):
+                p.profile(self.BASE, tenants=invalid)
+
 
 class Ownership(unittest.TestCase):
     def test_every_tenant_owned_exactly_once_at_k_1_2_4_8(self):

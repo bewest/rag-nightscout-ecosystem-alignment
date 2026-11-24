@@ -38,6 +38,10 @@ from pathlib import Path
 import re
 import sys
 
+sys.path.append(str(Path(__file__).resolve().parents[1] / 'm7-joined'))
+import population_ceiling
+import workload_inputs
+
 # Evaluator K follows deploy evaluator-workers.js MAX_WORKERS (32 since deploy 9160d81); realtime keeps 1..8.
 K_MAX = 32
 REALTIME_K_MAX = 8
@@ -111,7 +115,7 @@ def point(k, *, realtime_k=None, api_replicas=2, pools=None, evaluator_memory=No
 def profile(base, *, tenants, history_mode=LOOPING_2D, anchor_ms=None, name=None, work_seconds=None,
             driver_shape=LOOPING_DRIVER_SHAPE):
     """A profile for TENANTS on HISTORY_MODE, from BASE (an existing workload profile document)."""
-    need(type(tenants) is int and 1 <= tenants <= 20000, 'TENANTS')
+    need(workload_inputs.tenants(tenants) and tenants <= population_ceiling.MAX_SYNTHETIC_TENANTS, 'TENANTS')
     need(isinstance(history_mode, str) and HISTORY_MODE.fullmatch(history_mode), 'HISTORY_MODE')
     value = copy.deepcopy(base)
     value['population'].update(provisionedTenants=tenants, ordinaryRosterTenants=tenants)
@@ -135,7 +139,6 @@ def profile(base, *, tenants, history_mode=LOOPING_2D, anchor_ms=None, name=None
 
 def known_history(mode):
     """Whether the harness's history generator knows MODE yet (E1 adds the looping mode)."""
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'m7-joined'))
     import populated_history
     return mode in getattr(populated_history, 'SHAPES', {}) or mode in getattr(populated_history, 'LOOPING_MODES', ())
 
