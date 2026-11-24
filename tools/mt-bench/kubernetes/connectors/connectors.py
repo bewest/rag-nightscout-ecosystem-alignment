@@ -48,11 +48,15 @@ def validate(population):
     return k
 
 
-def select(roster, population):
-    """The connector tenants: the last k roster rows, each with its site name."""
+def select(roster, population, order=None):
+    """The connector tenants: the last k roster rows, each with its site name. With order 'host' the roster
+    is taken in host order first, as the looping driver's ordinary prefix is (workload_runtime.ordinary_roster),
+    so the group stays outside that prefix."""
     k = validate(population)
     need(len(roster) == population['provisionedTenants'], 'ROSTER')
-    return [dict(row, site='s%d' % i) for i, row in enumerate(roster[len(roster) - k:])] if k else []
+    need(order in (None, 'roster', 'host'), 'CONNECTOR_ORDER')
+    rows = sorted(roster, key=lambda row: row['host']) if order == 'host' else list(roster)
+    return [dict(row, site='s%d' % i) for i, row in enumerate(rows[len(rows) - k:])] if k else []
 
 
 def sites(selected, token=lambda: token_source.token_hex(16)):
@@ -109,8 +113,11 @@ def manifests(namespace, image, history_start_ms, run_labels=None):
                     'ns-connector-score', '/run/score')
     # The scorer reads tenants through the api's public port, which admits operator Pods.
     score_pod['metadata']['labels']['nightscout.org/operator-task'] = 'connector-score'
+    # The namespace census admits these two Deployments as lab actors by this label and their names
+    # (adapter.py LAB_ACTORS); any other unrendered controller is refused.
+    actor = lambda m: dict(m, labels=dict(m['labels'], **{'nightscout.org/lab-actor': 'vcpool-connector'}))
     deployment = lambda name, component, template: {
-        'apiVersion': 'apps/v1', 'kind': 'Deployment', 'metadata': meta(name, component),
+        'apiVersion': 'apps/v1', 'kind': 'Deployment', 'metadata': actor(meta(name, component)),
         'spec': {'replicas': 1, 'strategy': {'type': 'Recreate'},
                  'selector': {'matchLabels': {LABEL: component, **({'nightscout.org/operator-task': 'connector-score'} if name == 'connector-score' else {})}},
                  'template': template}}

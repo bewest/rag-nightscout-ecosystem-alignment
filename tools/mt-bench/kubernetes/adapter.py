@@ -356,6 +356,24 @@ def owned(c, obj):
     need(m.get('labels', {}).get(c['ownerLabel']) == c['runId'], 'PEER_RESOURCE_REFUSED')
 
 
+# Lab actors: run-labelled Deployments the harness itself creates at load, admitted by label and by
+# controller name (as native_join admits the k6 Job). Today only the vcpool connector lab
+# (connectors/stage.py): the synthetic upstream and the scorer. Any other unrendered controller is refused.
+LAB_ACTOR_LABEL = 'nightscout.org/lab-actor'
+LAB_ACTORS = {'vcpool-connector': {'Deployment/nightscout-upstream', 'Deployment/connector-score'}}
+
+
+def lab_actor(c, client, ref, cleanup=False):
+    """The lab actor class of an unrendered controller, or a refusal (POD_CONTROLLER)."""
+    name = ref['kind'] + '/' + ref['name']
+    kinds = [actor for actor, names in LAB_ACTORS.items() if name in names]
+    need(len(kinds) == 1 and (kinds[0] != 'vcpool-connector' or c.get('connectors')), 'POD_CONTROLLER')
+    actual = client.get(ref['kind'], ref['name'], cleanup)
+    owned(c, actual)
+    need(actual['metadata']['uid'] == ref['uid'] and actual['metadata'].get('labels', {}).get(LAB_ACTOR_LABEL) == kinds[0], 'POD_CONTROLLER')
+    return kinds[0], actual
+
+
 def controller(obj):
     refs = [r for r in obj['metadata'].get('ownerReferences', []) if r.get('controller') is True]
     need(len(refs) == 1, 'POD_CONTROLLER')
@@ -471,6 +489,12 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             ref = controller(rs)
         name = ref['kind'] + '/' + ref['name']
         parent = result['objects'].get(name)
+        if parent is None and name not in by_key:
+            actor, owner = lab_actor(c, client, ref, cleanup)
+            result.setdefault('labActors', {})[pod['metadata']['name']] = {**meta(pod), 'class': actor, 'workload': name,
+                'controllerUid': owner['metadata']['uid'], 'nodeName': pod['spec'].get('nodeName'), 'phase': pod.get('status', {}).get('phase'),
+                'resources': {r['name']: r.get('resources', {}) for r in pod['spec'].get('containers', [])}}
+            continue
         need(parent is not None and parent['uid'] == ref['uid'], 'POD_CONTROLLER')
         expected = template(by_key[name])['spec']
         if name == native_join.JOB:
