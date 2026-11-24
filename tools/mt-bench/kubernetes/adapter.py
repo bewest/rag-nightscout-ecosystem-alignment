@@ -312,7 +312,9 @@ class Client:
         if result.returncode and re.search(rb'(?<![A-Z_])EVALUATOR_SCOPE_UNSAFE(?![A-Z_])', getattr(result, 'stderr', b'') or b''):
             raise Refused('EVALUATOR_SCOPE_UNSAFE', 'FAIL')
         if result.returncode:
-            _lost(args, limit, 'exit', result.returncode, getattr(result, 'stderr', b'') or b'', data)
+            category = guarded_get_error(result.stdout) if read and args[:1] == ['get'] else None
+            _lost(args, limit, 'exit', result.returncode, getattr(result, 'stderr', b'') or b'', data,
+                  guarded_get_error=category)
         need(result.returncode == 0, 'OBSERVATION_LOST', 'UNMEASURED')
         return bounded_response() if raw is None else raw
 
@@ -325,14 +327,33 @@ class Client:
 
 
 
-def _lost(args, limit, reason, returncode, stderr, data=None):
+def guarded_get_error(stdout):
+    """The read guard redirects kubectl stderr to stdout. Retain a category without logging the body."""
+    tail = (stdout or b'')[-4096:]
+    if isinstance(tail, bytes):
+        tail = tail.decode('utf-8', 'replace')
+    status = re.search(r'Error from server \((NotFound|Forbidden|Unauthorized|TooManyRequests|'
+                       r'ServiceUnavailable|InternalError|ServerTimeout|Timeout)\)', tail)
+    if status:
+        return status.group(1)
+    for message, category in (('i/o timeout', 'Timeout'), ('context deadline exceeded', 'Timeout'),
+                              ('connection reset by peer', 'ConnectionReset'), ('connection refused', 'ConnectionRefused'),
+                              ('unexpected eof', 'UnexpectedEOF')):
+        if message in tail.lower():
+            return category
+    return 'Unknown'
+
+
+def _lost(args, limit, reason, returncode, stderr, data=None, *, guarded_get_error=None):
     """Say which observation was lost and why, on stderr (the stage log keeps it). Verb, resource and
     flags only: no names, no input data, and stderr is cut to its last 300 bytes."""
     shape = [a for a in args[:6] if not a.startswith('--token')]
     tail = stderr[-300:].decode('utf-8', 'replace') if isinstance(stderr, bytes) else str(stderr)[-300:]
-    print(json.dumps({'observationLost': {'kubectl': shape, 'limitSeconds': round(limit, 1), 'reason': reason,
-                                          'returncode': returncode, 'stderrTail': tail,
-                                          'sqlHead': _sql_head(data)}}), file=sys.stderr, flush=True)
+    record = {'kubectl': shape, 'limitSeconds': round(limit, 1), 'reason': reason, 'returncode': returncode,
+              'stderrTail': tail, 'sqlHead': _sql_head(data)}
+    if guarded_get_error is not None:
+        record['guardedGetError'] = guarded_get_error
+    print(json.dumps({'observationLost': record}), file=sys.stderr, flush=True)
 
 
 def _sql_head(data):

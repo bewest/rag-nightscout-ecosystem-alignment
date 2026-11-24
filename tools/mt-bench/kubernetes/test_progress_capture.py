@@ -100,6 +100,24 @@ class ProgressCapture(unittest.TestCase):
         self.stack.enter_context(patch.object(k.shutil, 'which', return_value=str(tool)))
         self.observe = self.stack.enter_context(patch.object(k, 'observe', return_value=self.baseline))
 
+    def test_guarded_get_failure_records_only_the_kubectl_error_category(self):
+        from contextlib import redirect_stderr
+        from io import StringIO
+        for diagnostic, expected in [
+                (b'Error from server (NotFound): private-marker', 'NotFound'),
+                (b'Error from server (Forbidden): private-marker', 'Forbidden'),
+                (b'Unable to connect to the server: private-marker: i/o timeout', 'Timeout'),
+                (b'Unable to connect to the server: private-marker: connection reset by peer', 'ConnectionReset'),
+                (b'private-marker', 'Unknown')]:
+            with self.subTest(expected=expected):
+                self.actual_client(returncode=1, raw=diagnostic)
+                output = StringIO()
+                with redirect_stderr(output), self.assertRaisesRegex(k.Refused, 'K8S_OBSERVATION_LOST'):
+                    self.client.get('namespace', self.c['namespace'])
+                failure = json.loads(output.getvalue())['observationLost']
+                self.assertEqual(failure['guardedGetError'], expected)
+                self.assertNotIn('private-marker', output.getvalue())
+
     def test_actual_client_late_return_retains_bounded_response(self):
         self.actual_client(delay=20)
         execute.retained_progress(self.d, self.out, self.c, self.objects, self.client,
