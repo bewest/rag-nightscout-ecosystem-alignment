@@ -35,8 +35,37 @@ def ordinary_roster(c, tenants, need):
     return tenants[:count]
 
 
+def connector_ids(c, tenants):
+    """The vcpool connector group's tenant ids (connectors/stage.py): from the plan kept at entry, else
+    selected as the stage selects them. Empty without connectors."""
+    if not c.get('connectors'):
+        return set()
+    import json
+    if c['connectors'].get('planFile'):
+        return {row['id'] for row in json.loads(Path(c['connectors']['planFile']).read_text())['tenants']}
+    sys.path.insert(0, str(Path(__file__).resolve().parent / 'connectors'))
+    import connectors
+    population = {'provisionedTenants': len(tenants), 'ordinaryRosterTenants': c['connectors']['ordinaryRosterTenants'],
+                  'connectorShare': c['connectors']['share']}
+    return {row['id'] for row in connectors.select(tenants, population, c['connectors'].get('order'))}
+
+
+def check_probe_roster(c, rows, tenants, need):
+    """The probe writes entries to every tenant it is given. A probe write into a connector tenant moves the
+    connector's entries gap past older upstream rows (measured on kind 2026-11-23, lanev-conn-05), and an
+    ordinary upload does the same: both rosters must exclude the connector group, by tenant id."""
+    ids = connector_ids(c, tenants)
+    need(not ids & {row['id'] for row in rows}, 'CONNECTOR_TENANT_IN_PROBE_ROSTER')
+    need(not ids & {row['id'] for row in ordinary_roster(c, tenants, need)}, 'CONNECTOR_TENANTS_RECEIVE_ORDINARY_WRITES')
+    return rows
+
+
 def viewer_roster(c, tenants, need):
-    return ordinary_roster(c, tenants, need) if partial_looping(c) else tenants
+    rows = ordinary_roster(c, tenants, need) if partial_looping(c) else tenants
+    ids = connector_ids(c, tenants)
+    rows = [row for row in rows if row['id'] not in ids]
+    need(bool(rows), 'VIEWER_ROSTER_EMPTY')
+    return rows
 
 
 def validate(w, need, tenants=None):

@@ -99,7 +99,7 @@ def plan(c, tenants, now=None):
     population = {'provisionedTenants': len(tenants), 'ordinaryRosterTenants': selected['ordinaryRosterTenants'],
                   'connectorShare': selected['share']}
     rows = [dict(r, dataToken=r.get('dataToken') or r['token']) for r in tenants]
-    chosen = connectors.select(rows, population)
+    chosen = connectors.select(rows, population, selected.get('order'))
     connectors.need(chosen, 'NO_CONNECTOR_TENANTS')
     history = int(((now or time.time()) - HISTORY_SECONDS) * 1000)
     sites = connectors.sites(chosen)

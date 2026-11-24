@@ -256,5 +256,46 @@ class ReaderEntry(unittest.TestCase):
                 self.assertFalse((Path(d) / 'connector-plan.private.json').exists())
 
 
+class ProbeRoster(unittest.TestCase):
+    """The probe and the ordinary driver never write into a connector tenant (by tenant id)."""
+    def setUp(self):
+        sys.path.insert(0, str(HERE.parent))
+        import kube_adapter  # noqa: F401
+        import workload_runtime
+        self.w = workload_runtime
+
+    def need(self, value, code):
+        if not value:
+            raise RuntimeError(code)
+
+    def c(self, **extra):
+        return {'tenants': 8, 'ordinaryRosterTenants': 6, 'workload': {},
+                'connectors': {'share': 0.25, 'ordinaryRosterTenants': 6, 'image': 'x', **extra}}
+
+    def test_probe_roster_excludes_the_connector_group(self):
+        rows = [{'id': r['id'], 'host': r['host'], 'token': r['dataToken']} for r in roster(8)]
+        viewers = self.w.viewer_roster(self.c(), rows, self.need)
+        self.assertEqual([r['id'] for r in viewers], [r['id'] for r in rows[:6]])
+        self.w.check_probe_roster(self.c(), viewers, rows, self.need)
+        # Red control: the whole roster (the pre-fix probe input) carries the connector group and is refused.
+        with self.assertRaisesRegex(RuntimeError, 'CONNECTOR_TENANT_IN_PROBE_ROSTER'):
+            self.w.check_probe_roster(self.c(), rows, rows, self.need)
+        self.assertEqual(self.w.viewer_roster({'tenants': 8, 'workload': {}}, rows, self.need), rows)
+
+    def test_looping_prefix_is_host_ordered_and_the_group_is_its_complement(self):
+        # Roster order differs from host order, as a primer may return it.
+        rows = [{'id': r['id'], 'host': 'h%d.example.test' % ((i * 5) % 8), 'token': 't'} for i, r in enumerate(roster(8))]
+        c = self.c(order='host'); c['workload'] = {'driverShape': 'looping-v2'}
+        ordinary = {r['id'] for r in self.w.ordinary_roster(c, rows, self.need)}
+        ids = self.w.connector_ids(c, rows)
+        self.assertEqual(len(ids), 2)
+        self.assertFalse(ids & ordinary)
+        self.w.check_probe_roster(c, self.w.viewer_roster(c, rows, self.need), rows, self.need)
+        # Red control: roster-order selection under a host-ordered prefix overlaps and is refused.
+        c['connectors']['order'] = 'roster'
+        with self.assertRaisesRegex(RuntimeError, 'CONNECTOR_TENANTS_RECEIVE_ORDINARY_WRITES'):
+            self.w.check_probe_roster(c, [], rows, self.need)
+
+
 if __name__ == '__main__':
     unittest.main()

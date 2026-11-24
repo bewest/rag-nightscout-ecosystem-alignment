@@ -583,9 +583,12 @@ def execute(d, c, objects, client, load=False, recovery=False):
     node = c['driver']['node']
     viewer_workload = k.viewer_plan.stage_cadence(settings, load)
     probe_roster = c['tenantsFile']
-    if load and workload_runtime.partial_looping(c):
+    if load and (workload_runtime.partial_looping(c) or c.get('connectors')):
+        # The probe roster excludes the vcpool connector group (and, for partial looping, every tenant
+        # outside the ordinary prefix); the delivery check reads the same roster.
         probe_roster = str(out / 'probe-tenants.private.json')
-        k.write(probe_roster, workload_runtime.viewer_roster(c, tenants, k.need))
+        rows = workload_runtime.viewer_roster(c, tenants, k.need)
+        k.write(probe_roster, workload_runtime.check_probe_roster(c, rows, tenants, k.need))
     argv = [node, str(d / 'probe.cjs'), '--base', c['baseUrl'], '--tenants', probe_roster, '--runid', runid,
             '--per', '2', '--clients', str(settings['logicalPollingClients']), *k.viewer_plan.setup_args(viewer_workload), '--window', str(settings['loadSeconds']),
             '--probeEvery', str(settings['probeEveryMs'] if load else 1000), '--restart', '0', '--evalTimeout', '120',
