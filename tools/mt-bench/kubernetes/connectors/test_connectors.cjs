@@ -109,3 +109,28 @@ test('score: a stopped upstream still has expectations, so its records count as 
   assert.equal(s.verdict, 'FAIL');
   assert.ok(s.misses >= 4, String(s.misses));
 });
+
+test('upstream timing: aid-v1 (default) lands devicestatus and treatments a few seconds after the reading; stress-20-40 keeps 20/40 s', () => {
+  const after = (timing, kind, k) => upstream.at('s4', kind, k, timing) - upstream.at('s4', 'entries', k, timing);
+  for (let k = 1000; k < 1200; k++) {
+    for (const [kind, lo, hi] of [['devicestatus', 2000, 5000], ['treatments', 4000, 7000]]) {
+      const ms = after(undefined, kind, k);
+      assert.ok(ms >= lo && ms < hi, kind + ' ' + ms);
+      assert.equal(ms, after('aid-v1', kind, k), 'default is aid-v1');
+    }
+    assert.equal(after('stress-20-40', 'devicestatus', k), 20000);
+    assert.equal(after('stress-20-40', 'treatments', k), 40000);
+  }
+  assert.ok(new Set(Array.from({ length: 50 }, (_, k) => after('aid-v1', 'treatments', k))).size > 1, 'jittered');
+  assert.throws(() => upstream.createServer({ sites: {}, historyStartMs: 0, timing: 'unknown' }), /UPSTREAM_TIMING_UNKNOWN/);
+  // The scorer regenerates the same records as the server for a named timing.
+  const historyStartMs = 1795450000000, enteredAt = historyStartMs + HOUR, until = enteredAt + 30 * 60000;
+  const input = { historyStartMs, timing: 'stress-20-40', tenants: [{ site: 's4', enteredAt }] };
+  const lines = Object.keys(upstream.KINDS).flatMap(kind => upstream.records('s4', kind, { historyStartMs, untilMs: until, timing: 'stress-20-40' })
+    .map(r => { const key = upstream.keyOf(kind, r); return { t: 'seen', site: 's4', kind, key, srvCreated: Math.max(key, enteredAt) + 1000, seenAt: Math.max(key, enteredAt) + 2000 }; }));
+  const s = score.summarize(input, lines, { from: enteredAt, until, missAfterMs: 360000 });
+  assert.deepEqual([s.verdict, s.timing, s.misses], ['PASS', 'stress-20-40', 0]);
+  // Scored against the wrong timing, the same stored set is all misses for devicestatus and treatments.
+  const wrong = score.summarize({ ...input, timing: 'aid-v1' }, lines, { from: enteredAt, until, missAfterMs: 360000 });
+  assert.equal(wrong.verdict, 'FAIL');
+});

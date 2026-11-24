@@ -176,7 +176,7 @@ def _start(call, c, tenants, out, now=None):
         call(['create', 'secret', 'generic', name, '--from-file=' + key + '=/dev/stdin', '-o', 'name'],
              data=json.dumps(p['secrets'][name]).encode(), read=False)
         call(['label', 'secret', name, 'nightscout.org/run-id=' + c['runId']], read=False)
-    objects = connectors.manifests(c['namespace'], c['connectors']['image'], p['historyStartMs'], labels)
+    objects = connectors.manifests(c['namespace'], c['connectors']['image'], p['historyStartMs'], labels, connectors.timing_of(c))
     call(['apply', '-f', '-', '-o', 'name'], data=json.dumps({'apiVersion': 'v1', 'kind': 'List', 'items': objects}).encode(), read=False)
     ready(call, connectors.UPSTREAM)
     if entered_in_reader:
@@ -197,11 +197,12 @@ def _record(call, c, p, out, node):
     # Scored from here: the upstream serves and the scorer is ready.
     ready(call, 'connector-score')
     entered = int(time.time() * 1000)
-    record = {'version': 1, 'tenants': len(p['tenants']), 'entryNode': node, 'entry': 'fixture-reader' if c['connectors'].get('planFile') else 'job',
+    record = {'version': 1, 'tenants': len(p['tenants']), 'timing': connectors.timing_of(c), 'entryNode': node, 'entry': 'fixture-reader' if c['connectors'].get('planFile') else 'job',
               'share': c['connectors']['share'], 'historyStartMs': p['historyStartMs'],
               'enteredAt': entered, 'scriptsSha256': connectors.scripts_digest()}
     (out / 'connectors.json').write_text(json.dumps(record, indent=2) + '\n')
-    private = {'historyStartMs': p['historyStartMs'], 'tenants': [{'site': r['site'], 'enteredAt': entered} for r in p['tenants']]}
+    private = {'historyStartMs': p['historyStartMs'], 'timing': connectors.timing_of(c),
+               'tenants': [{'site': r['site'], 'enteredAt': entered} for r in p['tenants']]}
     path = out / 'connector-score-input.private.json'
     path.write_text(json.dumps(private) + '\n'); path.chmod(0o600)
     return record

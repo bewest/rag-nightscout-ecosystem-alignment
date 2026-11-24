@@ -78,7 +78,8 @@ const pct = (values, p) => {
 };
 const stats = v => ({ n: v.length, p50: pct(v, 50), p95: pct(v, 95), max: v.length ? Math.max(...v) : null });
 
-// input: { tenants: [{ site, enteredAt }], historyStartMs }; lines: parsed poll lines.
+// input: { tenants: [{ site, enteredAt }], historyStartMs, timing }; lines: parsed poll lines. timing is the
+// upstream's (upstream.cjs TIMINGS); absent means the default.
 function summarize (input, lines, { from, until, missAfterMs = 360000 }) {
   const firstSeen = new Map(), stored = new Map(), dupMax = new Map(), errors = {};
   for (const l of lines) {
@@ -98,7 +99,7 @@ function summarize (input, lines, { from, until, missAfterMs = 360000 }) {
   let scored = 0, backfillScored = 0;
   for (const tenant of input.tenants) {
     for (const kind of KIND_NAMES) {
-      for (const rec of upstream.records(tenant.site, kind, { historyStartMs: input.historyStartMs, untilMs: until - missAfterMs })) {
+      for (const rec of upstream.records(tenant.site, kind, { historyStartMs: input.historyStartMs, untilMs: until - missAfterMs, timing: input.timing })) {
         const t = upstream.keyOf(kind, rec), k = tenant.site + ':' + kind + ':' + t;
         const isBackfill = t < tenant.enteredAt;
         const available = isBackfill ? tenant.enteredAt : t;
@@ -117,7 +118,7 @@ function summarize (input, lines, { from, until, missAfterMs = 360000 }) {
   const duplicates = [...dupMax].filter(([, n]) => n > 1).map(([k, n]) => ({ record: k, copies: n }));
   const missed = misses.length + late.length;
   return {
-    version: 1, kind: 'vcpool-connector-score', window: { from, until, missAfterMs },
+    version: 1, kind: 'vcpool-connector-score', window: { from, until, missAfterMs }, timing: input.timing || upstream.DEFAULT_TIMING,
     basis: 'measured: srvCreated from the tenant API (server stamp), first sight from the poll loop (resolution = poll period); expected set from the synthetic generator',
     live: { scored, stored: stats(live.stored), visible: stats(live.visible) },
     backfill: { scored: backfillScored, stored: stats(backfill.stored), visible: stats(backfill.visible) },

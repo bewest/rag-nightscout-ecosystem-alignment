@@ -13,7 +13,8 @@
 // passes its timestamp, from historyStartMs on. The scorer uses the same generator, so the
 // expected set is known without asking the server (a stopped server still has expectations).
 //
-//   node upstream.cjs serve      env UPSTREAM_SITES_FILE (JSON {"<site>": "<token>"}), UPSTREAM_HISTORY_START_MS, PORT
+//   node upstream.cjs serve      env UPSTREAM_SITES_FILE (JSON {"<site>": "<token>"}), UPSTREAM_HISTORY_START_MS, PORT,
+//                                UPSTREAM_TIMING (aid-v1 default, or stress-20-40; see TIMINGS)
 // Synthetic data only; no clinical meaning.
 const crypto = require('node:crypto');
 const http = require('node:http');
@@ -21,17 +22,36 @@ const fs = require('node:fs');
 
 const STEP = 5 * 60 * 1000;
 const KINDS = Object.freeze({
-  entries: { field: 'dateString', offsetMs: 0, every: 1 },
-  devicestatus: { field: 'created_at', offsetMs: 20000, every: 1 },
-  treatments: { field: 'created_at', offsetMs: 40000, every: 6 },
+  entries: { field: 'dateString', every: 1 },
+  devicestatus: { field: 'created_at', every: 1 },
+  treatments: { field: 'created_at', every: 6 },
 });
+// When devicestatus and treatments reach the upstream after each glucose reading: [base ms, jitter ms).
+// aid-v1 (default): an AID system uploads within a few seconds of the reading it acted on (maintainer,
+// 2026-11-24: not expected later than about 18 s). stress-20-40: the earlier fixed 20 s / 40 s, which
+// nightscout-connect's poll alignment (reading + 18..36 s) misses for treatments, so they wait a cycle.
+const TIMINGS = Object.freeze({
+  'aid-v1': Object.freeze({ entries: [0, 0], devicestatus: [2000, 3000], treatments: [4000, 3000] }),
+  'stress-20-40': Object.freeze({ entries: [0, 0], devicestatus: [20000, 0], treatments: [40000, 0] }),
+});
+const DEFAULT_TIMING = 'aid-v1';
 const hex = text => crypto.createHash('sha1').update(text).digest('hex').slice(0, 24);
 // Per-site phase so sites do not all land on the same instant (0..290 s in 10 s steps).
 const phase = site => (Number.parseInt(hex('phase:' + site).slice(0, 6), 16) % 30) * 10000;
+function timingOf (name = DEFAULT_TIMING) {
+  if (!Object.hasOwn(TIMINGS, name)) throw new Error('UPSTREAM_TIMING_UNKNOWN');
+  return TIMINGS[name];
+}
+// The offset is a pure function of (site, kind, k, timing): the jitter is hashed, so the scorer
+// regenerates exactly what the server served.
+function offset (site, kind, k, timing) {
+  const [base, jitter] = timingOf(timing)[kind];
+  return base + (jitter ? Number.parseInt(hex('jitter:' + site + ':' + kind + ':' + k).slice(0, 6), 16) % jitter : 0);
+}
 
-function at (site, kind, k) { return k * STEP + phase(site) + KINDS[kind].offsetMs; }
-function record (site, kind, k) {
-  const t = at(site, kind, k), iso = new Date(t).toISOString(), id = hex(site + ':' + kind + ':' + k);
+function at (site, kind, k, timing) { return k * STEP + phase(site) + offset(site, kind, k, timing); }
+function record (site, kind, k, timing) {
+  const t = at(site, kind, k, timing), iso = new Date(t).toISOString(), id = hex(site + ':' + kind + ':' + k);
   const sgv = 110 + Math.round(45 * Math.sin(k / 9 + Number.parseInt(hex(site).slice(0, 4), 16)));
   if (kind === 'entries') return { _id: id, type: 'sgv', sgv, direction: 'Flat', device: 'synthetic-upstream', date: t, dateString: iso };
   if (kind === 'devicestatus') {
@@ -42,13 +62,13 @@ function record (site, kind, k) {
   return { _id: id, created_at: iso, eventType: 'Correction Bolus', insulin: 0.5, enteredBy: 'synthetic-upstream' };
 }
 // Records of `kind` with historyStart <= time <= until, newest first. `since` is exclusive.
-function records (site, kind, { historyStartMs, sinceMs = -Infinity, untilMs, limit = Infinity }) {
+function records (site, kind, { historyStartMs, sinceMs = -Infinity, untilMs, limit = Infinity, timing }) {
   const spec = KINDS[kind], out = [];
   for (let k = Math.floor((untilMs - phase(site)) / STEP) + 1; out.length < limit; k--) {
-    const t = at(site, kind, k);
+    const t = at(site, kind, k, timing);
     if (t > untilMs) continue;
     if (t < historyStartMs || t <= sinceMs) break;
-    if (k % spec.every === 0) out.push(record(site, kind, k));
+    if (k % spec.every === 0) out.push(record(site, kind, k, timing));
   }
   return out;
 }
@@ -57,7 +77,8 @@ const keyOf = (kind, doc) => kind === 'entries' ? Number(doc.date) : Date.parse(
 
 function bearerFor (secret, site, token) { return 'synthetic.' + crypto.createHmac('sha256', secret).update(site + ':' + token).digest('hex'); }
 
-function createServer ({ sites, historyStartMs, now = Date.now, secret = crypto.randomBytes(16) }) {
+function createServer ({ sites, historyStartMs, now = Date.now, secret = crypto.randomBytes(16), timing = DEFAULT_TIMING }) {
+  timingOf(timing);
   const counters = { requests: 0, refused: 0, served: 0 };
   const server = http.createServer((req, res) => {
     counters.requests += 1;
@@ -82,7 +103,7 @@ function createServer ({ sites, historyStartMs, now = Date.now, secret = crypto.
     const sinceMs = since ? Date.parse(since) : -Infinity;
     const count = Math.min(Number(url.searchParams.get('count') || 10), 10000);
     if (Number.isNaN(sinceMs) || !Number.isSafeInteger(count) || count < 1) { counters.refused += 1; return reply(400, { status: 400 }); }
-    const out = records(site, kind, { historyStartMs, sinceMs, untilMs: now(), limit: count });
+    const out = records(site, kind, { historyStartMs, sinceMs, untilMs: now(), limit: count, timing });
     counters.served += out.length;
     return reply(200, out);
   });
@@ -94,8 +115,9 @@ if (require.main === module && process.argv[2] === 'serve') {
   const sites = JSON.parse(fs.readFileSync(process.env.UPSTREAM_SITES_FILE, 'utf8'));
   const historyStartMs = Number(process.env.UPSTREAM_HISTORY_START_MS);
   if (!Number.isSafeInteger(historyStartMs)) throw new Error('UPSTREAM_HISTORY_START_MS required');
-  const server = createServer({ sites, historyStartMs });
-  server.listen(Number(process.env.PORT || 1337), '0.0.0.0', () => console.log(JSON.stringify({ state: 'upstream-listening', sites: Object.keys(sites).length, historyStartMs })));
+  const timing = process.env.UPSTREAM_TIMING || DEFAULT_TIMING;
+  const server = createServer({ sites, historyStartMs, timing });
+  server.listen(Number(process.env.PORT || 1337), '0.0.0.0', () => console.log(JSON.stringify({ state: 'upstream-listening', sites: Object.keys(sites).length, historyStartMs, timing })));
   process.on('SIGTERM', () => server.close(() => process.exit(0)));
 }
-module.exports = { STEP, KINDS, phase, at, record, records, keyOf, createServer };
+module.exports = { STEP, KINDS, TIMINGS, DEFAULT_TIMING, phase, offset, at, record, records, keyOf, createServer };

@@ -361,7 +361,9 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
         # connector group is then the host-order tail, so the two stay disjoint by tenant id.
         looping = profile['workload'].get('driverShape') in ('looping-v1', 'looping-v2')
         run['connectors'] = {'share': connector_share, 'ordinaryRosterTenants': profile['population']['ordinaryRosterTenants'],
-                             'image': candidate['app'], 'order': 'host' if looping else 'roster'}
+                             'image': candidate['app'], 'order': 'host' if looping else 'roster',
+                             # Upstream timing (connectors/upstream.cjs TIMINGS): aid-v1 unless the profile names a variant.
+                             'timing': profile['population'].get('connectorTiming', 'aid-v1')}
     run.update(runId=run_id,namespace=namespace,tenants=tenants,workload=traffic,resourceAccounting='requests-v1',
                tenantsFile=str(output/'runtime/fixture/data-roster.private.json'), deadlines={kind:(now+timedelta(seconds=env[seconds])).isoformat().replace('+00:00','Z')
                for kind,seconds in [('workUntil','workDeadlineSeconds'),('cleanupUntil','cleanupDeadlineSeconds')]})

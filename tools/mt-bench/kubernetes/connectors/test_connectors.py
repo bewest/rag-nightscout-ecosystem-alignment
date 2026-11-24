@@ -43,6 +43,11 @@ class Selection(unittest.TestCase):
         kinds = sorted((o['kind'], o['metadata']['name']) for o in objs)
         self.assertEqual(kinds, [('ConfigMap', 'connector-scripts'), ('Deployment', 'connector-score'), ('Deployment', 'nightscout-upstream'),
                                  ('NetworkPolicy', 'upstream-from-vcpool'), ('Service', 'nightscout-upstream')])
+        up = next(o for o in objs if o['metadata']['name'] == 'nightscout-upstream' and o['kind'] == 'Deployment')
+        env = {e['name']: e['value'] for e in up['spec']['template']['spec']['containers'][0]['env']}
+        self.assertEqual(env['UPSTREAM_TIMING'], 'aid-v1')
+        with self.assertRaisesRegex(ValueError, 'CONNECTOR_TIMING'):
+            connectors.validate({'provisionedTenants': 8, 'ordinaryRosterTenants': 6, 'connectorShare': 0.25, 'connectorTiming': 'x'})
         policy = next(o for o in objs if o['kind'] == 'NetworkPolicy')
         self.assertEqual([f['podSelector']['matchLabels']['app.kubernetes.io/component'] for f in policy['spec']['ingress'][0]['from']], ['vcpool', 'operator'])
         self.assertTrue(all(o['metadata']['labels']['nightscout.org/run-id'] == 'r1' for o in objs))
@@ -295,6 +300,50 @@ class ProbeRoster(unittest.TestCase):
         c['connectors']['order'] = 'roster'
         with self.assertRaisesRegex(RuntimeError, 'CONNECTOR_TENANTS_RECEIVE_ORDINARY_WRITES'):
             self.w.check_probe_roster(c, [], rows, self.need)
+
+
+class OracleScope(unittest.TestCase):
+    """The write-count oracle counts probe and k6 writes over the probe roster: the connector group is vcpool's."""
+    def setUp(self):
+        sys.path.insert(0, str(HERE.parent))
+        import kube_adapter  # noqa: F401
+        import workload_runtime
+        import discovery_counts
+        self.w, self.d = workload_runtime, discovery_counts
+
+    def need(self, value, code):
+        if not value:
+            raise RuntimeError(code)
+
+    def ledger(self, roster_ids, d, runid='r1'):
+        rows = {t: {'attempts': 1, 'accepted': 1, 'uncertain': 0, 'refused': 0, 'pending': 0} for t in roster_ids}
+        (d / 'probe-accounting.json').write_text(json.dumps({'version': 2, 'kind': 'm7-discovery-probe-accounting', 'runId': runid,
+            'roster': list(roster_ids), 'admissionsClosed': True, 'attempts': len(rows), 'byTenant': rows}))
+
+    def test_scope_is_the_probe_roster_and_a_short_ledger_still_refuses(self):
+        import tempfile
+        from types import SimpleNamespace
+        rows = [{'id': r['id'], 'host': r['host'], 'token': 't'} for r in roster(8)]
+        c = {'tenants': 8, 'ordinaryRosterTenants': 6, 'workload': {}, 'connectors': {'share': 0.25, 'ordinaryRosterTenants': 6, 'image': 'x'}}
+        scope = self.w.oracle_scope(c, rows, {}, True, self.need)
+        probe = self.w.viewer_roster(c, rows, self.need)
+        self.assertEqual([r['id'] for r in scope], [r['id'] for r in probe])
+        self.assertEqual(self.w.oracle_scope(c, rows, {}, False, self.need), rows)
+        with self.assertRaisesRegex(RuntimeError, 'CONNECTOR_TENANT_RECEIVED_RUN_WRITES'):
+            self.w.oracle_scope(c, rows, {rows[7]['id']: {'entries': 1}}, True, self.need)
+        a = SimpleNamespace(document=lambda f: json.loads(Path(f).read_text()))
+        expected = {r['id'] for r in scope}
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            self.ledger([r['id'] for r in probe], d)
+            self.d.probe_metadata(a, d, 'r1', expected)
+            # Before the fix the oracle took the full roster: the probe's ledger (without the group) refused.
+            with self.assertRaisesRegex(Exception, 'M7_PROBE_COUNTS_ROSTER'):
+                self.d.probe_metadata(a, d, 'r1', {r['id'] for r in rows})
+            # Red control: a ledger that omits a probe tenant still refuses.
+            self.ledger([r['id'] for r in probe[1:]], d)
+            with self.assertRaisesRegex(Exception, 'M7_PROBE_COUNTS_ROSTER'):
+                self.d.probe_metadata(a, d, 'r1', expected)
 
 
 if __name__ == '__main__':

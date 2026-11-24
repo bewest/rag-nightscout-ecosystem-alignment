@@ -45,6 +45,7 @@ def validate(population):
     n, ordinary = population['provisionedTenants'], population['ordinaryRosterTenants']
     k = count(n, share)
     need(n - ordinary >= k, 'CONNECTOR_TENANTS_RECEIVE_ORDINARY_WRITES')
+    need(population.get('connectorTiming', 'aid-v1') in TIMINGS, 'CONNECTOR_TIMING')
     return k
 
 
@@ -81,7 +82,16 @@ def scripts_digest():
     return h.hexdigest()
 
 
-def manifests(namespace, image, history_start_ms, run_labels=None):
+TIMINGS = ('aid-v1', 'stress-20-40')  # upstream.cjs TIMINGS; aid-v1 is the default
+
+
+def timing_of(c):
+    value = (c.get('connectors') or {}).get('timing', 'aid-v1')
+    need(value in TIMINGS, 'CONNECTOR_TIMING')
+    return value
+
+
+def manifests(namespace, image, history_start_ms, run_labels=None, timing='aid-v1'):
     """Upstream, its policy and the scorer. Secrets are created separately (kubectl create secret)."""
     labels = dict(run_labels or {})
     meta = lambda name, component: {'name': name, 'namespace': namespace, 'labels': dict(labels, **{LABEL: component})}
@@ -105,7 +115,8 @@ def manifests(namespace, image, history_start_ms, run_labels=None):
 
     up_pod = pod('upstream', ['/opt/connectors/upstream.cjs', 'serve'],
                  [{'name': 'UPSTREAM_SITES_FILE', 'value': '/run/upstream/sites.json'},
-                  {'name': 'UPSTREAM_HISTORY_START_MS', 'value': str(history_start_ms)}, {'name': 'PORT', 'value': str(PORT)}],
+                  {'name': 'UPSTREAM_HISTORY_START_MS', 'value': str(history_start_ms)}, {'name': 'PORT', 'value': str(PORT)},
+                  {'name': 'UPSTREAM_TIMING', 'value': timing}],
                  'ns-upstream-sites', '/run/upstream')
     up_pod['spec']['containers'][0]['ports'] = [{'name': 'http', 'containerPort': PORT}]
     up_pod['spec']['containers'][0]['readinessProbe'] = {'httpGet': {'path': '/healthz', 'port': 'http'}, 'periodSeconds': 2}
