@@ -2603,6 +2603,8 @@
       
         
       
+        
+      
     
     
     
@@ -3562,6 +3564,34 @@
     
   
     Multitenant execution log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="fixture-gap-fill-proposal-2026-11-25.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fill a fixture's time gap at restore instead of snapshotting continuations
   
 
     
@@ -6170,7 +6200,7 @@
 
 
 <h1 id="multitenant-decisions-in-force">Multitenant decisions in force<a class="headerlink" href="#multitenant-decisions-in-force" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-24 at <code>af7b9230b</code>.</em></p>
+<p><em>Living document, last changed 2026-11-24 at <code>3291895be</code>.</em></p>
 <p>The original November 18 review indexed the anchored rows at <code>a0a8c3956d</code>. Subsequent programme decisions and amendments extend that index. This is a <strong>read-derived</strong> guide. Each linked <a href="multitenancy-decisions.html">decision row</a> owns its policy and evidence. The <a href="execution-log.html#candidate-5-qualification-and-nominal-discovery">execution log</a> identifies the candidate and what has been measured.</p>
 <h2 id="in-force">In force<a class="headerlink" href="#in-force" title="Permanent link">&para;</a></h2>
 <p>Rows marked <strong>deferred</strong> or <strong>proposed</strong> record a direction that is not yet adopted behavior.</p>
@@ -6388,6 +6418,9 @@
 <li><a href="multitenancy-decisions.html#capacity-test-tiers">capacity-test-tiers</a> — Smoke, discovery and acceptance tiers with a target ladder (narrowed by <a href="multitenancy-decisions.html#cluster-fan-out-testing">cluster-fan-out-testing</a>: environments).</li>
 <li><a href="multitenancy-decisions.html#outcome-evaluator-gate">outcome-evaluator-gate</a> — The evaluator gate judges outcomes against the 120 s clinical deadline; typed transient retries are counted.</li>
 <li><a href="multitenancy-decisions.html#nominal-clinical-write-age">nominal-clinical-write-age</a> — Qualify recent direct and connector writes on sites with retained history. Measure bulk historical recovery separately.</li>
+<li><a href="multitenancy-decisions.html#fixture-attestation-witness">fixture-attestation-witness</a> — Restored or continued fixtures rely on their creation attestation plus indexed witnesses; any full digest runs after load.</li>
+<li><a href="multitenancy-decisions.html#fixture-data-checksums">fixture-data-checksums</a> — Fixture PostgreSQL clusters are created with data checksums; production is a separate decision.</li>
+<li><a href="multitenancy-decisions.html#catchup-gate-short-confirmation">catchup-gate-short-confirmation</a> — The catch-up gate confirms over 30 s and keeps reporting backlog through the load.</li>
 <li><a href="multitenancy-decisions.html#deadline-from-acceptance">deadline-from-acceptance</a> — The clinical deadline runs from acceptance; catch-up is per accepted input; no warm evidence in any gate.</li>
 <li><a href="multitenancy-decisions.html#latency-objectives">latency-objectives</a> — p95 within 30 s at expected load is the planning objective; about 1 s the stretch; 120 s the clinical gate under overload.</li>
 <li><a href="multitenancy-decisions.html#plannable-scale-campaign">plannable-scale-campaign</a> — Every fix built at once behind switches, joined by a cutoff, end state on the looping-shape fixture tested all on and all off, back down one switch at a time from failing evidence; $40, teardown 09:00 PST 2026-11-22.</li>

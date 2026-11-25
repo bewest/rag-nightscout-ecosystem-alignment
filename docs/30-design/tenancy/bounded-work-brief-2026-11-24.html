@@ -2603,6 +2603,8 @@
       
         
       
+        
+      
     
     
     
@@ -3237,6 +3239,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#7-status-after-reconciliation-with-the-codex-joins-2026-11-25-utc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Status after reconciliation with the Codex joins (2026-11-25 UTC)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Status after reconciliation with the Codex joins (2026-11-25 UTC)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#continuation-on-claudebounded-open-20261125-2026-11-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuation on claude/bounded-open-20261125 (2026-11-25)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3457,6 +3487,34 @@
     
   
     Multitenant execution log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="fixture-gap-fill-proposal-2026-11-25.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fill a fixture's time gap at restore instead of snapshotting continuations
   
 
     
@@ -5942,6 +6000,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#7-status-after-reconciliation-with-the-codex-joins-2026-11-25-utc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Status after reconciliation with the Codex joins (2026-11-25 UTC)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Status after reconciliation with the Codex joins (2026-11-25 UTC)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#continuation-on-claudebounded-open-20261125-2026-11-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuation on claude/bounded-open-20261125 (2026-11-25)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -6127,6 +6213,103 @@ workstation outage no longer ends a run.</p>
 Measure statements per request type and per-role SQL time at every point, and keep the realtime per-stage
 counter. The predictions above are confirmed or refuted by those figures. Neither this brief nor any lane
 grants capacity.</p>
+<h2 id="7-status-after-reconciliation-with-the-codex-joins-2026-11-25-utc">7. Status after reconciliation with the Codex joins (2026-11-25 UTC)<a class="headerlink" href="#7-status-after-reconciliation-with-the-codex-joins-2026-11-25-utc" title="Permanent link">&para;</a></h2>
+<p>All three lanes were integrated by the joint candidate owners. The current local candidate is core <code>427e99bd1</code>
+(<code>codex/storage-performance-join-20261124</code>), deploy <code>9cccbbbd8</code>, harness <code>13d8d4e5d9</code>. It joins realtime/API
+<code>0fec9b6c8</code> (realtime <code>42f48eac0</code> plus bounded API <code>8e43602ed</code>), storage parity and bounded v3 history pages.
+Its full qualification passed locally (reproduced: 9,368 ordinary tests, 1,199 corpus tests, three browsers).
+None of it has capacity acceptance.</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>State on <code>427e99bd1</code></th>
+<th>Open</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1</td>
+<td>Fixed. Display identity is checked once per client; the settings facade refuses <code>set_config</code> and a login with role memberships. Status reads its verifier and subject once and makes one audit append. Discovery permissions are lazy. Reproduced: status 66.3 → 23.2 statements per request on the token path.</td>
+<td>—</td>
+</tr>
+<tr>
+<td>C2</td>
+<td>Fixed: latest SGV, treatments and device status; v3 history (11 rows per ten-entry page); tenant storage size per clock stamp.</td>
+<td>v3 search; header-authenticated count-only treatments and device status (whole cache window); profile window guard</td>
+</tr>
+<tr>
+<td>C3</td>
+<td>Fixed: the verifier read returns one subject (21 → 1 rows with 21 subjects); realtime work only for watched tenants.</td>
+<td>evaluator due index (measure churn first)</td>
+</tr>
+<tr>
+<td>C4</td>
+<td>Fixed: one round trip to open (4 → 1); read requests run READ ONLY with no commit fence; the settings snapshot is bound in one statement. Reproduced: ordinary v1 reads 14.15 → 7.15 round trips.</td>
+<td>settings read-only proof as a separate statement; token-exchange audit append on a second connection</td>
+</tr>
+<tr>
+<td>C5</td>
+<td>Fixed: single-index migrations build <code>CONCURRENTLY</code>; deploy budgets derive from declared sizes.</td>
+<td><strong>New instance:</strong> migration 0105 adds a stored generated column to entries, which rewrites the table under an exclusive lock. Replace it with an expression index built concurrently.</td>
+</tr>
+<tr>
+<td>C6</td>
+<td>Fixed in the harness: derived grants, one preflight (refuses lost attempts 3, 5 and 8 offline), viewer scoring of accepted writes only, retried reads, observer in the controller Pod.</td>
+<td>viewer actor sharding (the port-range override covers 10k)</td>
+</tr>
+<tr>
+<td>C7</td>
+<td>Fixed: level-triggered realtime, receipts retired by migration, ownership quiesces and re-acquires. Booted locally: the role re-acquired its ordinal and released a withheld frame after fresh authorization.</td>
+<td>10k effect unmeasured</td>
+</tr>
+</tbody>
+</table>
+<p>The open C2, C4 and C5 items continue in the storage/API lane, from <code>427e99bd1</code>.</p>
+<h3 id="continuation-on-claudebounded-open-20261125-2026-11-25">Continuation on <code>claude/bounded-open-20261125</code> (2026-11-25)<a class="headerlink" href="#continuation-on-claudebounded-open-20261125-2026-11-25" title="Permanent link">&para;</a></h3>
+<p>Local branch from <code>427e99bd1</code>, commits <code>023aab125</code> and <code>6f43538db</code>; nothing pushed.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C5: <code>0104_entries_clinical_time</code>, <code>0105_entries_history_ms</code></td>
+<td><strong>Reproduced</strong> on PostgreSQL 16.15 up to 2.59M entries rows. Both hold ACCESS EXCLUSIVE and block writers for the whole run: 260 s and 9.9 GB WAL (0104), 49 s and 3.2 GB (0105). <code>0106</code> does not block. A linear extrapolation to 10k tenants × 30 days gives about 2.4 h and 0.47 h of blocked writes (read-derived). Expression indexes built concurrently do not block, but under row-level security the history page then examines 16,860 rows instead of 11. A leakproof wrapper restores 11 but must be created by a superuser. Two defects were found: the runner's 600 s maximum statement timeout cannot hold the rewrite at size, and <code>clinical_instant_ms</code> is declared PARALLEL SAFE while containing an EXCEPTION block, so parallel index builds fail. <strong>Maintainer decision pending.</strong></td>
+</tr>
+<tr>
+<td>C2: v3 search</td>
+<td><strong>Fixed</strong> (<code>023aab125</code>, reproduced). A date-sorted ten-entry page examines at most 11 rows, against 597 before. The MongoDB differential passes. One response changes: an unindexed array or subdocument value in <code>identifier</code> or <code>created_at</code> outside the page no longer answers 500, matching MongoDB. Default-sort and other-field searches remain unbounded (read-derived).</td>
+</tr>
+<tr>
+<td>C2: header-authenticated count-only treatments and device status</td>
+<td><strong>Not built.</strong> Parity with the cache path needs a sparse index on rows whose <code>event_ms</code> is NULL or that carry their own <code>mills</code>; a prototype read 11 rows instead of 575 (reproduced). Sealed device status also needs <code>mills</code> exposed. The index waits on the migration decision.</td>
+</tr>
+<tr>
+<td>C2: profile window guard</td>
+<td><strong>Not built.</strong> Needs a start-time text index and an exception index; a prototype read 2 rows instead of 2,000 (reproduced).</td>
+</tr>
+<tr>
+<td>C4: settings read-only proof</td>
+<td><strong>Fixed</strong> (<code>6f43538db</code>): 5 → 4 statements per settings read, with a red/green control.</td>
+</tr>
+<tr>
+<td>C4: token-exchange audit append</td>
+<td><strong>Unchanged.</strong> Moving it after COMMIT would reorder token issuance against the restore fence (read-derived).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Maintainer decisions, 2026-11-25.</strong>
+- <code>0104</code>/<code>0105</code> stay as written. No production database exists, so the table rewrite is paid once on our own fixture, migrated offline with an explicit budget.
+- <code>clinical_instant_ms</code> gets a successor migration that corrects its parallel-safety declaration.
+- The v3 search change is accepted: a stored array or subdocument in <code>identifier</code> or <code>created_at</code> no longer fails a read.
+  Writing such values is a defect in both modes. The API v3 spec types <code>identifier</code> as a string, and <code>created_at</code> is a timestamp.
+  Reproduced on <code>official/dev</code> <code>79144cbd0</code> (BF-249): a non-string <code>identifier</code> is already treated as absent, or refused under <code>WRITE_IDENTIFIER=strict</code> (#8879); it was stored on <code>v15.0.9</code>. <code>created_at</code> arrays and objects are stored as sent, or stored as a different instant, on v1 entries, profile, food, treatments and devicestatus writes and on v3 PATCH.
+  The single-tenant backfix is being checked separately; reads keep tolerating values already stored.
+- Both concurrent single-index migrations are approved: the header-authenticated follower read and the profile check.</p>
 
 
 

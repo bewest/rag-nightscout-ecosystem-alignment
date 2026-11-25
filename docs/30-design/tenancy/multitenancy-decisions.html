@@ -2603,6 +2603,8 @@
       
         
       
+        
+      
     
     
     
@@ -3927,6 +3929,34 @@
     
   
     Multitenant execution log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="fixture-gap-fill-proposal-2026-11-25.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fill a fixture's time gap at restore instead of snapshotting continuations
   
 
     
@@ -6900,13 +6930,13 @@
 
 
 <h1 id="multitenancy-decisions-and-architectural-contracts">Multitenancy decisions and architectural contracts<a class="headerlink" href="#multitenancy-decisions-and-architectural-contracts" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-24 at <code>af7b9230b</code>.</em></p>
+<p><em>Living document, last changed 2026-11-24 at <code>3291895be</code>.</em></p>
 <p><em>Contributor-facing living decision reference. Consolidated 2026-11-06 from the
 maintainer's D1–D23 decisions and their later amendments. This is a read-derived
 reorganization, not new implementation acceptance or a new decision. The
 <a href="../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">retained execution journal</a>
 preserves the original rationale, prototypes, task definitions and measurements.</em></p>
-<p>This document owns the D1–D23 decisions and <a href="#programme-decisions-after-d23">subsequent programme decisions</a>. The <a href="decisions-in-force.html">decisions in force</a> index points to amendments and retired mechanisms. <a href="owner-authority.html">Owner authority</a> explains management and verification, and the <a href="evaluator-realtime-communication.html">communication guide</a> explains the writer-driven path. The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/87ddb2020d8ffdab2eec93367e5c95c9174fabad/queue/work-queue.yaml">queue</a> owns item state and gates, and the <a href="execution-log.html">execution log</a> owns multitenant joins and measurements.</p>
+<p>This document owns the D1–D23 decisions and <a href="#programme-decisions-after-d23">subsequent programme decisions</a>. The <a href="decisions-in-force.html">decisions in force</a> index points to amendments and retired mechanisms. <a href="owner-authority.html">Owner authority</a> explains management and verification, and the <a href="evaluator-realtime-communication.html">communication guide</a> explains the writer-driven path. The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1b0de718a8c23a7c51e67f13ea786cc8b1702322/queue/work-queue.yaml">queue</a> owns item state and gates, and the <a href="execution-log.html">execution log</a> owns multitenant joins and measurements.</p>
 <h2 id="1-decisions">1. Decisions<a class="headerlink" href="#1-decisions" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -8170,7 +8200,7 @@ deployment has run.</p>
 <td><a id="internal-service-contracts"></a><strong>Internal APIs use shared transport with separate service contracts, request/response schemas, named clients and documentation. Each listener owns an explicit operation set; a component with a public contract opens a second listener/port for its private contract. Unix sockets and explicitly configured internal HTTP are supported. HTTP access policy belongs to the deployment; no new bearer authentication convention is introduced.</strong></td>
 <td>maintainer, 2026-11-09, internal IPC/API refactor discussion</td>
 <td>Realtime authority/writes, alarm delivery, lifecycle participant coordination; public/private listener separation</td>
-<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/87ddb2020d8ffdab2eec93367e5c95c9174fabad/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
+<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/1b0de718a8c23a7c51e67f13ea786cc8b1702322/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
 </tr>
 </tbody>
 </table>
@@ -9365,6 +9395,21 @@ sets the limit (reproduced). The Codex coordinator brief that dispatches this wo
 <td><a id="nominal-clinical-write-age"></a><strong>Qualify ordinary AID uploads and vcpool writes with clinical events up to 48 hours old at submission, including short connector catch-up. Qualify loading older history through a bulk backlog, import or restore as a recovery workload.</strong></td>
 <td>Maintainer, 2026-11-24</td>
 <td>Multitenant qualification. Clinical age describes the offered event. Connector delivery is timed from its schedule, and the <a href="#deadline-from-acceptance">clinical deadline</a> runs from acceptance. Existing tenants can have years of resident history and serve historical reads while live writers are active. The <a href="#restore-history-forward-correction">restore contract</a> governs restored identities and client convergence. Public read, edit, retention and write-acceptance contracts continue to apply.</td>
+</tr>
+<tr>
+<td><a id="fixture-attestation-witness"></a><strong>A restored or continued capacity fixture relies on its creation attestation plus indexed witnesses. It is not re-read in full before load.</strong> The attestation is the logical digest, the per-tenant and per-collection counts and time ranges, the source commit, the migration tree and the snapshot identity. It is recorded once, when the fixture is built. At restore the harness checks the snapshot identity, the migration ledger and per-tenant, per-collection counts and first/last time keys on existing indexes. A continuation verifies only the rows it appended. Any full or sampled digest runs after load, off the critical path, and a mismatch fails the run's verdict.</td>
+<td>Maintainer, 2026-11-25</td>
+<td>Capacity harness only. Fixture integrity is a measurement-validity concern, not a product property (<a href="#architecture-justified-removal">architecture-justified-removal</a>). The full pre-load re-read took 330 s warm and more than 900 s cold at 52 h of history, grew with history, lost paid attempts to read limits, and failed one continuation clone without an established cause. What this gives up is detecting value drift that keeps counts and time keys intact; product migration tests and the post-load digest cover it. Implemented on local harness branches <code>claude/harness-budgets-20261124</code> and <code>claude/seed-census-grant-20261125</code>.</td>
+</tr>
+<tr>
+<td><a id="fixture-data-checksums"></a><strong>Capacity fixture PostgreSQL clusters are created with data checksums enabled.</strong></td>
+<td>Maintainer, 2026-11-25</td>
+<td>Capacity harness and lab deployments. Storage corruption is then detected by PostgreSQL when it reads a page, not by a harness re-read. Whether production deployments also enable checksums, at a small CPU cost per page read, is a separate deployment decision.</td>
+</tr>
+<tr>
+<td><a id="catchup-gate-short-confirmation"></a><strong>The catch-up gate admits load after a 30 s confirmation that the restored backlog has cleared, not 300 s, and keeps sampling backlog through the load.</strong></td>
+<td>Maintainer, 2026-11-25</td>
+<td>Capacity harness only. Replay of the frozen 3k sampler (reproduced in the C5 bounded-work investigation): the backlog cleared at 153 s with 30 s confirmation, against 429 s with 300 s. A pending tenant inserted after that point still fails the short check. Recurring backlog after admission is reported, and every accepted write keeps its clinical clock, so the shorter wait hides nothing.</td>
 </tr>
 </tbody>
 </table>
