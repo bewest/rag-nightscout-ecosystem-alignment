@@ -107,3 +107,10 @@ Local branch from `427e99bd1`, commits `023aab125` and `6f43538db`; nothing push
 | C2: profile window guard | **Not built.** Needs a start-time text index and an exception index; a prototype read 2 rows instead of 2,000 (reproduced). |
 | C4: settings read-only proof | **Fixed** (`6f43538db`): 5 → 4 statements per settings read, with a red/green control. |
 | C4: token-exchange audit append | **Unchanged.** Moving it after COMMIT would reorder token issuance against the restore fence (read-derived). |
+
+**Maintainer decisions, 2026-11-25.**
+- `0104`/`0105` stay as written. No production database exists, so the table rewrite is paid once on our own fixture, migrated offline with an explicit budget.
+- `clinical_instant_ms` gets a successor migration that corrects its parallel-safety declaration.
+- The v3 search change is accepted. Single-tenant does not intend array or subdocument values in `identifier` or `created_at`, but it neither refuses them at write time nor fails a read because of them. Refusing them at write time would be a separate proposal for both modes.
+- Both concurrent single-index migrations are approved: the header-authenticated follower read and the profile check.
+- Once a production database exists, a migration must not rewrite a clinical table; it uses concurrent index builds.
