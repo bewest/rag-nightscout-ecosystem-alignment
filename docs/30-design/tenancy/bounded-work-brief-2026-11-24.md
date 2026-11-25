@@ -94,3 +94,16 @@ None of it has capacity acceptance.
 | C7 | Fixed: level-triggered realtime, receipts retired by migration, ownership quiesces and re-acquires. Booted locally: the role re-acquired its ordinal and released a withheld frame after fresh authorization. | 10k effect unmeasured |
 
 The open C2, C4 and C5 items continue in the storage/API lane, from `427e99bd1`.
+
+### Continuation on `claude/bounded-open-20261125` (2026-11-25)
+
+Local branch from `427e99bd1`, commits `023aab125` and `6f43538db`; nothing pushed.
+
+| Item | Result |
+|---|---|
+| C5: `0104_entries_clinical_time`, `0105_entries_history_ms` | **Reproduced** on PostgreSQL 16.15 up to 2.59M entries rows. Both hold ACCESS EXCLUSIVE and block writers for the whole run: 260 s and 9.9 GB WAL (0104), 49 s and 3.2 GB (0105). `0106` does not block. A linear extrapolation to 10k tenants × 30 days gives about 2.4 h and 0.47 h of blocked writes (read-derived). Expression indexes built concurrently do not block, but under row-level security the history page then examines 16,860 rows instead of 11. A leakproof wrapper restores 11 but must be created by a superuser. Two defects were found: the runner's 600 s maximum statement timeout cannot hold the rewrite at size, and `clinical_instant_ms` is declared PARALLEL SAFE while containing an EXCEPTION block, so parallel index builds fail. **Maintainer decision pending.** |
+| C2: v3 search | **Fixed** (`023aab125`, reproduced). A date-sorted ten-entry page examines at most 11 rows, against 597 before. The MongoDB differential passes. One response changes: an unindexed array or subdocument value in `identifier` or `created_at` outside the page no longer answers 500, matching MongoDB. Default-sort and other-field searches remain unbounded (read-derived). |
+| C2: header-authenticated count-only treatments and device status | **Not built.** Parity with the cache path needs a sparse index on rows whose `event_ms` is NULL or that carry their own `mills`; a prototype read 11 rows instead of 575 (reproduced). Sealed device status also needs `mills` exposed. The index waits on the migration decision. |
+| C2: profile window guard | **Not built.** Needs a start-time text index and an exception index; a prototype read 2 rows instead of 2,000 (reproduced). |
+| C4: settings read-only proof | **Fixed** (`6f43538db`): 5 → 4 statements per settings read, with a red/green control. |
+| C4: token-exchange audit append | **Unchanged.** Moving it after COMMIT would reorder token issuance against the restore fence (read-derived). |
