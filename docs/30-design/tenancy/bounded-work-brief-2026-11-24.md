@@ -113,6 +113,6 @@ Local branch from `427e99bd1`, commits `023aab125` and `6f43538db`; nothing push
 - `clinical_instant_ms` gets a successor migration that corrects its parallel-safety declaration.
 - The v3 search change is accepted: a stored array or subdocument in `identifier` or `created_at` no longer fails a read.
   Writing such values is a defect in both modes. The API v3 spec types `identifier` as a string, and `created_at` is a timestamp.
-  On `official/dev` `79144cbd0`, v1 entries and devicestatus store any `identifier` value (BF-142), and no write path checks the shape of `created_at`.
+  Reproduced on `official/dev` `79144cbd0` (BF-249): a non-string `identifier` is already treated as absent, or refused under `WRITE_IDENTIFIER=strict` (#8879); it was stored on `v15.0.9`. `created_at` arrays and objects are stored as sent, or stored as a different instant, on v1 entries, profile, food, treatments and devicestatus writes and on v3 PATCH.
   The single-tenant backfix is being checked separately; reads keep tolerating values already stored.
 - Both concurrent single-index migrations are approved: the header-authenticated follower read and the profile check.
