@@ -220,6 +220,9 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [capacity-test-tiers](multitenancy-decisions.md#capacity-test-tiers) — Smoke, discovery and acceptance tiers with a target ladder (narrowed by [cluster-fan-out-testing](multitenancy-decisions.md#cluster-fan-out-testing): environments).
 - [outcome-evaluator-gate](multitenancy-decisions.md#outcome-evaluator-gate) — The evaluator gate judges outcomes against the 120 s clinical deadline; typed transient retries are counted.
 - [nominal-clinical-write-age](multitenancy-decisions.md#nominal-clinical-write-age) — Qualify recent direct and connector writes on sites with retained history. Measure bulk historical recovery separately.
+- [fixture-attestation-witness](multitenancy-decisions.md#fixture-attestation-witness) — Restored or continued fixtures rely on their creation attestation plus indexed witnesses; any full digest runs after load.
+- [fixture-data-checksums](multitenancy-decisions.md#fixture-data-checksums) — Fixture PostgreSQL clusters are created with data checksums; production is a separate decision.
+- [catchup-gate-short-confirmation](multitenancy-decisions.md#catchup-gate-short-confirmation) — The catch-up gate confirms over 30 s and keeps reporting backlog through the load.
 - [deadline-from-acceptance](multitenancy-decisions.md#deadline-from-acceptance) — The clinical deadline runs from acceptance; catch-up is per accepted input; no warm evidence in any gate.
 - [latency-objectives](multitenancy-decisions.md#latency-objectives) — p95 within 30 s at expected load is the planning objective; about 1 s the stretch; 120 s the clinical gate under overload.
 - [plannable-scale-campaign](multitenancy-decisions.md#plannable-scale-campaign) — Every fix built at once behind switches, joined by a cutoff, end state on the looping-shape fixture tested all on and all off, back down one switch at a time from failing evidence; $40, teardown 09:00 PST 2026-11-22.
