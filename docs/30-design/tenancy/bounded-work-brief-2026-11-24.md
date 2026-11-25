@@ -74,3 +74,23 @@ The joined candidate (`37f18c6ee` + the three lanes) is qualified once, then run
 Measure statements per request type and per-role SQL time at every point, and keep the realtime per-stage
 counter. The predictions above are confirmed or refuted by those figures. Neither this brief nor any lane
 grants capacity.
+
+## 7. Status after reconciliation with the Codex joins (2026-11-25 UTC)
+
+All three lanes were integrated by the joint candidate owners. The current local candidate is core `427e99bd1`
+(`codex/storage-performance-join-20261124`), deploy `9cccbbbd8`, harness `13d8d4e5d9`. It joins realtime/API
+`0fec9b6c8` (realtime `42f48eac0` plus bounded API `8e43602ed`), storage parity and bounded v3 history pages.
+Its full qualification passed locally (reproduced: 9,368 ordinary tests, 1,199 corpus tests, three browsers).
+None of it has capacity acceptance.
+
+| Class | State on `427e99bd1` | Open |
+|---|---|---|
+| C1 | Fixed. Display identity is checked once per client; the settings facade refuses `set_config` and a login with role memberships. Status reads its verifier and subject once and makes one audit append. Discovery permissions are lazy. Reproduced: status 66.3 → 23.2 statements per request on the token path. | — |
+| C2 | Fixed: latest SGV, treatments and device status; v3 history (11 rows per ten-entry page); tenant storage size per clock stamp. | v3 search; header-authenticated count-only treatments and device status (whole cache window); profile window guard |
+| C3 | Fixed: the verifier read returns one subject (21 → 1 rows with 21 subjects); realtime work only for watched tenants. | evaluator due index (measure churn first) |
+| C4 | Fixed: one round trip to open (4 → 1); read requests run READ ONLY with no commit fence; the settings snapshot is bound in one statement. Reproduced: ordinary v1 reads 14.15 → 7.15 round trips. | settings read-only proof as a separate statement; token-exchange audit append on a second connection |
+| C5 | Fixed: single-index migrations build `CONCURRENTLY`; deploy budgets derive from declared sizes. | **New instance:** migration 0105 adds a stored generated column to entries, which rewrites the table under an exclusive lock. Replace it with an expression index built concurrently. |
+| C6 | Fixed in the harness: derived grants, one preflight (refuses lost attempts 3, 5 and 8 offline), viewer scoring of accepted writes only, retried reads, observer in the controller Pod. | viewer actor sharding (the port-range override covers 10k) |
+| C7 | Fixed: level-triggered realtime, receipts retired by migration, ownership quiesces and re-acquires. Booted locally: the role re-acquired its ordinal and released a withheld frame after fresh authorization. | 10k effect unmeasured |
+
+The open C2, C4 and C5 items continue in the storage/API lane, from `427e99bd1`.
