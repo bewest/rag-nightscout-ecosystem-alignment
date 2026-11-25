@@ -25,6 +25,8 @@ re-read them before quoting.*
   [D3](multitenancy-decisions.md#d3). Citus solves a scale-out problem we have not measured and adds a cluster of
   database nodes.
 
+The [storage boundary comparison](storage-boundary-alternatives.md) prices the joined 60-day layout and proposes matched tests of RLS, scoped historical reads and tenant-owned storage.
+
 ## 2. What has been tried
 
 All measured on synthetic tenants written through the product unless marked; detail and evidence in the
