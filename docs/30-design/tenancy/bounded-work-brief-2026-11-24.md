@@ -111,6 +111,8 @@ Local branch from `427e99bd1`, commits `023aab125` and `6f43538db`; nothing push
 **Maintainer decisions, 2026-11-25.**
 - `0104`/`0105` stay as written. No production database exists, so the table rewrite is paid once on our own fixture, migrated offline with an explicit budget.
 - `clinical_instant_ms` gets a successor migration that corrects its parallel-safety declaration.
-- The v3 search change is accepted. Single-tenant does not intend array or subdocument values in `identifier` or `created_at`, but it neither refuses them at write time nor fails a read because of them. Refusing them at write time would be a separate proposal for both modes.
+- The v3 search change is accepted: a stored array or subdocument in `identifier` or `created_at` no longer fails a read.
+  Writing such values is a defect in both modes. The API v3 spec types `identifier` as a string, and `created_at` is a timestamp.
+  On `official/dev` `79144cbd0`, v1 entries and devicestatus store any `identifier` value (BF-142), and no write path checks the shape of `created_at`.
+  The single-tenant backfix is being checked separately; reads keep tolerating values already stored.
 - Both concurrent single-index migrations are approved: the header-authenticated follower read and the profile check.
-- Once a production database exists, a migration must not rewrite a clinical table; it uses concurrent index builds.
