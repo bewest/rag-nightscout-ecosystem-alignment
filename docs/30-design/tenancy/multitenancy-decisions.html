@@ -2599,6 +2599,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -3691,6 +3695,34 @@
   
   
     <li class="md-nav__item">
+      <a href="bounded-work-brief-2026-11-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bounded work: what each operation should cost, and what changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="candidate-5-nominal-run-plan-2026-11-24.html" class="md-nav__link">
         
   
@@ -4175,6 +4207,34 @@
     
   
     Reports and statistics survey, for storage tiers and a per-tenant-day summary row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="storage-boundary-alternatives.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Which tenant boundary buys smaller clinical storage?
   
 
     
@@ -6846,7 +6906,7 @@ maintainer's D1–D23 decisions and their later amendments. This is a read-deriv
 reorganization, not new implementation acceptance or a new decision. The
 <a href="../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">retained execution journal</a>
 preserves the original rationale, prototypes, task definitions and measurements.</em></p>
-<p>This document owns the D1–D23 decisions and <a href="#programme-decisions-after-d23">subsequent programme decisions</a>. The <a href="decisions-in-force.html">decisions in force</a> index points to amendments and retired mechanisms. <a href="owner-authority.html">Owner authority</a> explains management and verification, and the <a href="evaluator-realtime-communication.html">communication guide</a> explains the writer-driven path. The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2b79be1abbe8fd39aaec1c0553e97556a69b69bd/queue/work-queue.yaml">queue</a> owns item state and gates, and the <a href="execution-log.html">execution log</a> owns multitenant joins and measurements.</p>
+<p>This document owns the D1–D23 decisions and <a href="#programme-decisions-after-d23">subsequent programme decisions</a>. The <a href="decisions-in-force.html">decisions in force</a> index points to amendments and retired mechanisms. <a href="owner-authority.html">Owner authority</a> explains management and verification, and the <a href="evaluator-realtime-communication.html">communication guide</a> explains the writer-driven path. The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/87ddb2020d8ffdab2eec93367e5c95c9174fabad/queue/work-queue.yaml">queue</a> owns item state and gates, and the <a href="execution-log.html">execution log</a> owns multitenant joins and measurements.</p>
 <h2 id="1-decisions">1. Decisions<a class="headerlink" href="#1-decisions" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -8110,7 +8170,7 @@ deployment has run.</p>
 <td><a id="internal-service-contracts"></a><strong>Internal APIs use shared transport with separate service contracts, request/response schemas, named clients and documentation. Each listener owns an explicit operation set; a component with a public contract opens a second listener/port for its private contract. Unix sockets and explicitly configured internal HTTP are supported. HTTP access policy belongs to the deployment; no new bearer authentication convention is introduced.</strong></td>
 <td>maintainer, 2026-11-09, internal IPC/API refactor discussion</td>
 <td>Realtime authority/writes, alarm delivery, lifecycle participant coordination; public/private listener separation</td>
-<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/2b79be1abbe8fd39aaec1c0553e97556a69b69bd/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
+<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/87ddb2020d8ffdab2eec93367e5c95c9174fabad/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
 </tr>
 </tbody>
 </table>
