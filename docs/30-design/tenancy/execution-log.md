@@ -949,3 +949,11 @@ The local runner exhausted its wall-clock budget after the last scenario event a
 | Harness | Local `claude/seed-census-grant-20261125` @ `ac4950d353` on `cf25aa63de`. The seed verification before load uses indexed witnesses, and seed time is counted in the derived grant. Offline replay refuses `sp-cand-60d-b`'s 3,600 s grant against 5,052 s needed. Local handoff `HANDOFF-seed-census-grant-20261125.md`. |
 | Single-tenant | BF-249 (`created_at` that is not a string), fixed on cgm-remote-monitor `bf/nonscalar-identity-20261125` @ `6f5451aa7`; records on `records/bf-nonscalar-20261125` @ `25efe2f193`. The `identifier` half did not reproduce on `official/dev`. |
 | Next join | Take `3392d3ee1` and `ac4950d353`. Add the new catalogue entries to the deploy plan and the harness ledgers. Run the full suite once, then one campaign at 3k → 5k → 10k on the joined candidate. |
+
+### Catch-up confirmation and fixture checksums (2026-11-25 UTC)
+
+| Scope | Recorded outcome |
+|---|---|
+| Harness | Local `claude/catchup-checksums-20261125` @ `585715b856` on `ac4950d353`. It implements [catchup-gate-short-confirmation](multitenancy-decisions.md#catchup-gate-short-confirmation) and [fixture-data-checksums](multitenancy-decisions.md#fixture-data-checksums). **Reproduced:** the C5 3k sampler replay clears at 153.298 s against 428.659 s. A tenant inserted inside the 30 s confirmation still blocks admission. The original control's tenant arrives after admission and is now reported as recurring backlog 61.285 s after admission. Restores label fixture checksums `ON`, `OFF` or `UNRECORDED` and never refuse on them. |
+| Deploy | Local `claude/catchup-checksums-20261125` @ `2467d3a` on `9cccbbb`. The binding input `postgresDataChecksums` defaults on for capacity and lab renders; the production preview render is byte-identical. PostgreSQL 16.16 reports `data_checksums=on`. |
+| Next join | Take harness `585715b856` (it contains `ac4950d353`) and deploy `2467d3a`, together with core `3392d3ee1` from the bounded-work pickup above. |
